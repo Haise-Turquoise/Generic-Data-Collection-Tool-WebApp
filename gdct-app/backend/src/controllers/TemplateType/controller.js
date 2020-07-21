@@ -5,7 +5,7 @@ import TemplateTypeService from '../../services/TemplateType';
 const TemplateTypeController = Service([TemplateTypeService], service => {
   const router = Router();
   return (() => {
-    router.get('/templateTypes', (req, res, next) => {
+    router.get('/templateTypes/fetchTemplateType', (req, res, next) => {
       // Get query from middleware -- auth handler
 
       service
@@ -14,14 +14,14 @@ const TemplateTypeController = Service([TemplateTypeService], service => {
         .catch(next);
     });
 
-    router.post('/templateTypes', (req, res, next) => {
+    router.post('/templateTypes/createTemplateType', (req, res, next) => {
       service
         .createTemplateType(req.body.templateType)
         .then(templateType => res.json({ templateType }))
         .catch(next);
     });
 
-    router.put('/templateTypes/:_id', (req, res, next) => {
+    router.put('/templateTypes/updateTemplateType/:_id', (req, res, next) => {
       const { _id } = req.params;
       const { templateType } = req.body;
 
@@ -31,7 +31,7 @@ const TemplateTypeController = Service([TemplateTypeService], service => {
         .catch(next);
     });
 
-    router.delete('/templateTypes/:_id', (req, res, next) => {
+    router.delete('/templateTypes/deleteTemplateType/:_id', (req, res, next) => {
       const { _id } = req.params;
 
       service
@@ -40,7 +40,7 @@ const TemplateTypeController = Service([TemplateTypeService], service => {
         .catch(next);
     });
 
-    router.post('/templateTypes/searchTemplateTypeByProgramIds', (req, res, next) => {
+    router.post('/templateTypes/fetchTemplateTypeByProgramIds', (req, res, next) => {
       const { programIds } = req.body;
 
       service

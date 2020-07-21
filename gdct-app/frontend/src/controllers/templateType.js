@@ -5,20 +5,20 @@ const templateTypeController = (() => {
     baseURL: 'http://localhost:3000/template_manager/templateTypes',
   });
   return {
-    fetch: async query => templateTypeAxios.get('').then(res => res.data.templateTypes),
+    fetch: async query => templateTypeAxios.get(`/fetchTemplateType`).then(res => res.data.templateTypes),
     fetchByProgramIds: async programIds =>
-      templateTypeAxios.post(``, { programIds }).then(res => res.data.templateTypes),
+      templateTypeAxios.post(`/createTemplateType`, { programIds }).then(res => res.data.templateTypes),
     create: async templateType =>
       templateTypeAxios
-        .post('', {
+        .post(`/createTemplateType`, {
           templateType: {
             ...templateType,
             programIds: [],
           },
         })
         .then(res => res.data.templateType),
-    delete: async _id => templateTypeAxios.delete(`/${_id}`),
-    update: async templateType => templateTypeAxios.put(`/${templateType._id}`, { templateType }),
+    delete: async _id => templateTypeAxios.delete(`/deleteTemplateType/${_id}`),
+    update: async templateType => templateTypeAxios.put(`/updateTemplateType/${templateType._id}`, { templateType }),
   };
 })();
 
