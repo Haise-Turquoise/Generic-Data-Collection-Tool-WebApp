@@ -34,8 +34,17 @@ export default class MenuRepository extends BaseRepository {
     const key = typeof name === 'string' ? 'name' : 'unknown';
     const value = typeof name === 'string' ? name : undefined;
     return await MenuModel.find({ [key]: value })
-      .populate('items')
-      .populate('subMenus')
+      .populate([
+        {
+          path: 'items',
+        },
+        {
+          path: 'subMenus',
+          populate: {
+            path: 'items',
+          },
+        },
+      ])
       .then(Menus => Menus.map(Menu => new MenuEntity(Menu.toObject())));
   }
 }
