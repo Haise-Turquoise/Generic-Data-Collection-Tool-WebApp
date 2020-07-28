@@ -1,4 +1,4 @@
-import MenuEntity from '../../entities/Menu';
+import MenuItemEntity from '../../entities/MenuItem';
 import BaseRepository from '../repository';
 import MenuItemModel from '../../models/MenuItem';
 
@@ -8,24 +8,26 @@ export default class MenuRepository extends BaseRepository {
   }
 
   async delete(id) {
-    const menu = await MenuItemModel.findById(id);
-    if (menu) {
-      menu.isActive = false;
+    const menuItem = await MenuItemModel.findById(id);
+    if (menuItem) {
+      menuItem.isActive = false;
     }
-    return this.update(id, menu);
+    return this.update(id, menuItem);
   }
 
-  async create(Menu) {
-    return MenuItemModel.create(Menu).then(Menu => new MenuEntity(Menu.toObject()));
+  async create(MenuItem) {
+    return MenuItemModel.create(MenuItem).then(MenuItem => new MenuItemEntity(MenuItem.toObject()));
   }
 
-  async update(id, Menu) {
-    return MenuItemModel.findByIdAndUpdate(id, Menu).then(Menu => new MenuEntity(Menu.toObject()));
+  async update(id, MenuItem) {
+    return MenuItemModel.findByIdAndUpdate(id, MenuItem).then(
+      MenuItem => new MenuItemEntity(MenuItem.toObject()),
+    );
   }
 
   async find(query) {
     return MenuItemModel.find(query).then(Menus =>
-      Menus.map(Menu => new MenuEntity(Menu.toObject())),
+      Menus.map(MenuItem => new MenuItemEntity(MenuItem.toObject())),
     );
   }
 }
