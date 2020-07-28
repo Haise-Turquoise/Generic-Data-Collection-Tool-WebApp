@@ -8,10 +8,9 @@ import EditOrganization from './EditOrganization';
 
 const OrgRouter = () => (
   <Switch>
-    <Route exact path="/organizations/edit/:_id" component={EditOrganization} />
-    <Route exact path="/organizations/create" component={CreateOrganization} />
-    <Route exact path="/organizations" component={Organizations} />
-
+    <Route exact path="/admin/organization/edit/:_id" component={EditOrganization} />
+    <Route exact path="/admin/organization/create" component={CreateOrganization} />
+    <Route exact path="/admin/organization" component={Organizations} />
     <Route component={NotFound} />
   </Switch>
 );

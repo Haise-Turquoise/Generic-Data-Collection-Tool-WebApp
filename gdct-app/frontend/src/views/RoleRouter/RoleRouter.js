@@ -11,11 +11,11 @@ import AppRoleResources from './AppRoleResources';
 
 const TemplateRouter = () => (
   <Switch>
-    <Route exact path="/role_manager/AppSyses" component={AppSyses} />
-    <Route exact path="/role_manager/AppSysRoles" component={AppSysRoles} />
-    <Route exact path="/role_manager/AppRoles" component={AppRoles} />
-    <Route exact path="/role_manager/AppResources" component={AppResources} />
-    <Route exact path="/role_manager/AppRoleResources" component={AppRoleResources} />
+    <Route exact path="/admin/role/appsys" component={AppSyses} />
+    <Route exact path="/admin/role/appsysrole" component={AppSysRoles} />
+    <Route exact path="/admin/role/approle" component={AppRoles} />
+    <Route exact path="/admin/role/appresource" component={AppResources} />
+    <Route exact path="/admin/role/app_role_resource" component={AppRoleResources} />
     <Route component={NotFound} />
   </Switch>
 );
