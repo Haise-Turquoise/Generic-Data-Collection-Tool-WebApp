@@ -16,18 +16,18 @@ export default class MenuRepository extends BaseRepository {
   }
 
   async create(MenuItem) {
-    return MenuItemModel.create(MenuItem).then(MenuItem => new MenuEntity(MenuItem.toObject()));
+    return MenuItemModel.create(MenuItem).then(MenuItem => new MenuItemEntity(MenuItem.toObject()));
   }
 
   async update(id, MenuItem) {
     return MenuItemModel.findByIdAndUpdate(id, MenuItem).then(
-      MenuItem => new MenuEntity(MenuItem.toObject()),
+      MenuItem => new MenuItemEntity(MenuItem.toObject()),
     );
   }
 
   async find(query) {
     return MenuItemModel.find(query).then(Menus =>
-      Menus.map(MenuItem => new MenuEntity(MenuItem.toObject())),
+      Menus.map(MenuItem => new MenuItemEntity(MenuItem.toObject())),
     );
   }
 }
