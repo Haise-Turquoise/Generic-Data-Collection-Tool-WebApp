@@ -1,0 +1,5 @@
+*.md
+.github/
+build/
+dist/
+node_modules/

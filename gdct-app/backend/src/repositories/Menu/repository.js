@@ -33,7 +33,7 @@ export default class MenuRepository extends BaseRepository {
   async populate(name) {
     const key = typeof name === 'string' ? 'name' : 'unknown';
     const value = typeof name === 'string' ? name : undefined;
-    return await MenuModel.find({ [key]: value })
+    return MenuModel.find({ [key]: value })
       .populate([
         {
           path: 'items',

@@ -23,5 +23,6 @@ module.exports = {
     'global-require': 'warn',
     'no-throw-literal': 'warn',
     'guard-for-in': 'warn',
+    'no-unused-expressions': 'warn',
   },
 };

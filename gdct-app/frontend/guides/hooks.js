@@ -13,7 +13,7 @@ const hooksCheatSheet = () => {
   const [appState, setAppState] = useState({});
   const [appState3, setAppState3] = useState(() => {
     // Calculate initial state
-    let initialState = {};
+    const initialState = {};
     // ...
     return initialState;
   });

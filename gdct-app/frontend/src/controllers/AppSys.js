@@ -7,6 +7,7 @@ const AppSysController = (() => {
     baseURL: `${host}/role_manager/appsyses`,
     withCredentials: true,
   });
+
   return {
     fetchAppSys: async _id => AppSysAxios.get(`/${_id}`).then(res => res.data.AppSys),
     fetch: async _ => AppSysAxios.get('').then(res => res.data.AppSyses),

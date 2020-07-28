@@ -40,11 +40,11 @@ const AppSysRolesTable = props => {
     }),
     shallowEqual,
   );
-  const lookupSysRoles = appSyses.reduce((acc, appSys) => {
+  const lookupSysRoles = appSyses.reduce(function (acc, appSys) {
     acc[appSys.code] = appSys.name;
     return acc;
   }, {});
-  const lookupAppRoles = appRoles.reduce((acc, appRole) => {
+  const lookupAppRoles = appRoles.reduce(function (acc, appRole) {
     acc[appRole.code] = appRole.name;
     return acc;
   }, {});

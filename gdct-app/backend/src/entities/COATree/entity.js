@@ -1,9 +1,9 @@
 export default class COATreeEntity {
-  constructor({ _id, parentId, categoryGroupId, categoryId, sheetNameId }) {
+  constructor({ _id, parentId, COAGroupId, COAIds, sheetNameId }) {
     this._id = _id;
     this.parentId = parentId;
-    this.categoryGroupId = categoryGroupId;
-    this.categoryId = categoryId;
+    this.COAGroupId = COAGroupId;
+    this.COAIds = COAIds;
     this.sheetNameId = sheetNameId;
   }
 }
