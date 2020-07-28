@@ -95,8 +95,8 @@ const App = () => {
           <PrivateRouter setLoggedIn={setLoggedIn} />
         </AuthPage>
       ) : (
-        <PublicRouter setLoggedIn={setLoggedIn} />
-      )}
+            <PublicRouter setLoggedIn={setLoggedIn} />
+          )}
     </div>
   );
 };
