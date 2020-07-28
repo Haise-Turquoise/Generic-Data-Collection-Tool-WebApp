@@ -25,12 +25,16 @@ import { StatusIdButton, SubmissionPeriodIdButton } from '../../components/butto
 import TemplateDialog from '../../components/dialogs/TemplateDialog';
 import { DialogsStoreActions } from '../../store/DialogsStore/store';
 import { TemplatePackagesStoreActions } from '../../store/TemplatePackagesStore/store';
+import ProgramDialog from '../../components/dialogs/ProgramDialog';
+
+// ! CLEAN UP - program and template have similar structures.
 
 const init = {
   name: '',
   submissionPeriodId: {},
   templateIds: [],
   statusId: {},
+  programIds: [],
 };
 
 const CustomButton = ({ text, handleClick }) => (
@@ -98,11 +102,35 @@ const SecondSection = ({ values, handleRemoveTemplate }) => {
   );
 };
 
-const ThirdSection = () => <div className="mb-2 mt-3"></div>;
+const ThirdSection = ({ values, handleRemoveProgram }) => {
+  const dispatch = useDispatch();
+
+  const handleOpenTemplateDialog = useCallback(() => {
+    dispatch(DialogsStoreActions.OPEN_PROGRAM_DIALOG());
+  }, [dispatch]);
+
+  return (
+    <div>
+      <CustomField label="Programs" handleClick={handleOpenTemplateDialog} addButton>
+        <List>
+          {values.programIds.map(program => (
+            <ListItem key={uniqid()}>
+              <ListItemText className="mr-5" primary={program.name} />
+              <ListItemSecondaryAction>
+                <CustomButton text="Delete" handleClick={() => handleRemoveProgram(program)} />
+              </ListItemSecondaryAction>
+            </ListItem>
+          ))}
+        </List>
+      </CustomField>
+    </div>
+  );
+};
 
 const Sections = ({
   values,
   handleRemoveTemplate,
+  handleRemoveProgram,
   handleChangeStatus,
   handleChangeSubmissionPeriod,
 }) => (
@@ -113,7 +141,7 @@ const Sections = ({
       handleChangeSubmissionPeriod={handleChangeSubmissionPeriod}
     />
     <SecondSection values={values} handleRemoveTemplate={handleRemoveTemplate} />
-    <ThirdSection />
+    <ThirdSection values={values} handleRemoveProgram={handleRemoveProgram} />
   </div>
 );
 
@@ -128,11 +156,20 @@ const Content = ({ setFieldValue, handleChange, values }) => {
   const handleChangeSubmissionPeriod = handleChangeField('submissionPeriodId');
   const handleChangeStatus = handleChangeField('statusId');
   const handleChangeTemplates = handleChangeField('templateIds');
+  const handleChangePrograms = handleChangeField('programIds');
 
   const selectedTemplates = useMemo(() => {
     const selected = {};
 
     values.templateIds.forEach(template => (selected[template._id] = true));
+
+    return selected;
+  }, [values]);
+
+  const selectedPrograms = useMemo(() => {
+    const selected = {};
+
+    values.programIds.forEach(program => (selected[program._id] = true));
 
     return selected;
   }, [values]);
@@ -149,12 +186,31 @@ const Content = ({ setFieldValue, handleChange, values }) => {
     [values, handleChangeTemplates],
   );
 
+  const handleAddProgram = useCallback(
+    program => {
+      let newPrograms = values.programIds.filter(({ _id }) => _id !== program._id);
+
+      if (newPrograms.length === values.programIds.length)
+        newPrograms = [...values.programIds, program];
+
+      handleChangePrograms(newPrograms);
+    },
+    [values, handleChangePrograms],
+  );
+
   const handleRemoveTemplate = useCallback(
     template => {
       handleChangeTemplates(values.templateIds.filter(({ _id }) => _id !== template._id));
     },
     [values, handleChangeTemplates],
   );
+
+  const handleRemoveProgram = useCallback(
+    (program) => {
+      handleChangePrograms(values.programIds.filter(({ _id }) => _id !== program._id));
+    },
+    [values, handleChangePrograms]
+  )
 
   return (
     <Paper className="pl-4 pr-4 pb-5 pt-4">
@@ -172,15 +228,23 @@ const Content = ({ setFieldValue, handleChange, values }) => {
         handleRemoveTemplate={handleRemoveTemplate}
         handleChangeStatus={handleChangeStatus}
         handleChangeSubmissionPeriod={handleChangeSubmissionPeriod}
+        handleRemoveProgram={handleRemoveProgram}
       />
       <TemplateDialog
         selectedTemplates={selectedTemplates}
         handleChange={handleAddTemplate}
         shouldClose={false}
       />
+      <ProgramDialog
+        selectedPrograms={selectedPrograms}
+        handleChange={handleAddProgram}
+        shouldClose={false}
+      />
     </Paper>
   );
 };
+
+
 
 const TemplatePackage = ({
   match: {
@@ -194,6 +258,7 @@ const TemplatePackage = ({
 
     return {
       templatePackage: templatePackage || init,
+
     };
   }, shallowEqual);
 
@@ -214,6 +279,7 @@ const TemplatePackage = ({
         statusId: t.statusId._id,
         submissionPeriodId: t.submissionPeriodId._id,
         templateIds: t.templateIds.map(({ _id }) => _id),
+        programIds: t.programIds.map(({ _id }) => _id),
       };
 
       dispatch(updateTemplatePackageRequest(formattedTemplatePackage, null, null, true));

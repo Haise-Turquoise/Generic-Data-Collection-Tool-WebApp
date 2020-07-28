@@ -51,7 +51,7 @@ const TemplatePackage = () => {
       {
         icon: LaunchIcon,
         tooltip: 'Open Package',
-        onClick: (_event, pckg) => history.push(`${ROUTE_TEMPLATE_PCKGS_PCKGS}${pckg._id}`),
+        onClick: (_event, pckg) => history.push(`${ROUTE_TEMPLATE_PCKGS_PCKGS}/${pckg._id}`),
       },
     ],
     [dispatch],
@@ -91,7 +91,7 @@ const TemplatePackage = () => {
       onRowAdd: templatePackage =>
         new Promise((resolve, reject) => {
           console.log(templatePackage);
-          templatePackage = { ...templatePackage, templateIds: [] };
+          templatePackage = { ...templatePackage, templateIds: [], programIds: [] };
           dispatch(createTemplatePackageRequest(templatePackage, resolve, reject));
         }),
       onRowUpdate: templatePackage =>

@@ -10,7 +10,7 @@ import { selectFactoryRESTResponseTableValues } from '../../store/common/REST/se
 import { selectProgramsStore } from '../../store/ProgramsStore/selectors';
 import DialogsStore from '../../store/DialogsStore/store';
 
-const ProgramDialog = ({ handleChange }) => {
+const ProgramDialog = ({ selectedPrograms, handleChange, shouldClose = true }) => {
   const dispatch = useDispatch();
 
   const { isProgramDialogOpen, programs } = useSelector(
@@ -27,10 +27,10 @@ const ProgramDialog = ({ handleChange }) => {
 
   const handleSelect = useCallback(
     data => {
-      handleChange(data._id);
-      handleClose();
+      handleChange(data);
+      if (shouldClose) handleClose();
     },
-    [dispatch],
+    [dispatch, shouldClose, handleChange],
   );
 
   useEffect(() => {
@@ -51,12 +51,16 @@ const ProgramDialog = ({ handleChange }) => {
     [],
   );
 
+  const getKey = selectedPrograms ? t => t._id : undefined;
+
   return (
     <SelectableTableDialog
       title="Program"
       columns={columns}
       isOpen={isProgramDialogOpen}
       data={programs}
+      getKey={getKey}
+      selectedKeys={selectedPrograms}
       handleClose={handleClose}
       handleSelect={handleSelect}
     />

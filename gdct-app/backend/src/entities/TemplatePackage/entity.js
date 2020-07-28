@@ -7,6 +7,7 @@ export default class TemplatePackageEntity {
     statusId,
     creationDate,
     userCreatorId,
+    programIds,
   }) {
     this._id = _id;
     this.name = name;
@@ -15,5 +16,6 @@ export default class TemplatePackageEntity {
     this.statusId = statusId;
     this.creationDate = creationDate;
     this.userCreatorId = userCreatorId;
+    this.programIds = programIds
   }
 }

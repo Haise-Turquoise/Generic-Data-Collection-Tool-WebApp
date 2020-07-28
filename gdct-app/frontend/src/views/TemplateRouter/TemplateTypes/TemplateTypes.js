@@ -17,6 +17,8 @@ import './TemplateTypes.scss';
 import { selectFactoryRESTResponseTableValues } from '../../../store/common/REST/selectors';
 import { selectTemplateTypesStore } from '../../../store/TemplateTypesStore/selectors';
 import { WorkflowIdButton } from '../../../components/buttons';
+import { selectWorkflowsStore } from '../../../store/WorkflowsStore/selectors';
+import { getWorkflowsRequest } from '../../../store/thunks/workflow';
 
 const TemplateTypeHeader = () => {
   return (
@@ -30,18 +32,24 @@ const TemplateTypeHeader = () => {
 const TemplateTypesTable = ({ history }) => {
   const dispatch = useDispatch();
 
-  const { templateTypes } = useSelector(
+  const { templateTypes, workflows } = useSelector(
     state => ({
       templateTypes: selectFactoryRESTResponseTableValues(selectTemplateTypesStore)(state),
+      workflows: selectFactoryRESTResponseTableValues(selectWorkflowsStore)(state),
     }),
     shallowEqual,
   );
 
+  const lookupWorkflows = workflows.reduce(function (acc, workflow) {
+    acc[workflow._id] = `${workflow.name}`;
+    return acc;
+  }, {});
+
   const columns = [
     { title: 'Name', field: 'name' },
     { title: 'Description', field: 'description' },
-    { title: 'Template Workflow', field: 'templateWorkflowId', editComponent: WorkflowIdButton },
-    // { title: 'Submission Workflow', field: 'submissionWorkflowId', editComponent: WorkflowIdButton },
+    { title: 'Submission Workflow', field: 'submissionWorkflowId', lookup: lookupWorkflows },
+    { title: 'Template Workflow', field: 'templateWorkflowId', lookup: lookupWorkflows },
     { title: 'Approvable', type: 'boolean', field: 'isApprovable' },
     { title: 'Reviewable', type: 'boolean', field: 'isReviewable' },
     { title: 'Submittable', type: 'boolean', field: 'isSubmittable' },
@@ -85,9 +93,11 @@ const TemplateTypesTable = ({ history }) => {
   );
 
   useEffect(() => {
+    dispatch(getWorkflowsRequest())
     dispatch(getTemplateTypesRequest());
   }, [dispatch]);
 
+  console.log(templateTypes)
   return (
     <MaterialTable
       columns={columns}
