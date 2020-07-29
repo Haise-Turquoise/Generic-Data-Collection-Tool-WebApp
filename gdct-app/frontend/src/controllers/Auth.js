@@ -16,7 +16,7 @@ const AuthController = (() => {
       AuthAxios.post('/register', data)
         .then(res => res.data)
         .catch(err => console.log(err)),
-    auto: async data => AuthAxios.get('/windows_auto_login'),
+    auto: async data => AuthAxios.get('/auth/auto/callback'),
     profile: async () => AuthAxios.get('/profile').then(res => res.data),
     logout: async data => AuthAxios.get('/logout').then(res => res.data),
   };
