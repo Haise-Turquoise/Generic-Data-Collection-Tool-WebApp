@@ -21,8 +21,8 @@ export default class ProgramService {
 
   logout(req, res) {
     req.logout();
-    req.session.user = null
-    req.session.token = null
+    req.session.user = null;
+    req.session.token = null;
     res.cookie('token', '').json({
       status: 'ok',
     });
@@ -47,7 +47,10 @@ export default class ProgramService {
   }
 
   profile(req, res) {
-    if ((req.session.token !== null && req.session.token !== undefined) || (req.session.user !== null && req.session.user !== undefined)) {
+    if (
+      (req.session.token !== null && req.session.token !== undefined) ||
+      (req.session.user !== null && req.session.user !== undefined)
+    ) {
       res.json({ status: 'success' });
     } else {
       res.json({ status: 'fail' });
@@ -94,7 +97,7 @@ export default class ProgramService {
       .then(user => {
         const token = user.generateJWT();
         addTokenToCookie(res, token);
-        res.json(user.returnAuthUserJson(token));
+        res.json({ user: user.returnAuthUserJson(token) });
       })
       .catch(err => res.json({ error: err }));
   }
@@ -133,7 +136,7 @@ export default class ProgramService {
           const authUser = passportUser;
           const token = passportUser.generateJWT();
           addTokenToCookie(res, token);
-          return res.json(authUser.returnAuthUserJson(token));
+          return res.json({ user: authUser.returnAuthUserJson(token) });
         }
 
         return res.status(400).info;

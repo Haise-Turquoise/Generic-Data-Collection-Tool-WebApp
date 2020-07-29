@@ -4,22 +4,19 @@ import { Switch, Route } from 'react-router-dom';
 
 import NotFound from '../../components/NotFound';
 
-import Template from './Template/Template';
-import Templates from './Templates/Templates';
+import Template from './Template';
+import Templates from './Templates';
 import TemplateTypes from './TemplateTypes';
 import TemplateType from './TemplateType';
 import TemplatePackages from './TemplatePackages';
-import { ROUTE_TEMPLATE_PCKGS_PCKGS, ROUTE_TEMPLATE_PCKGS_PCKG } from '../../constants/routes';
-import TemplatePackage from './TemplatePackage';
 
 const TemplateRouter = () => (
   <Switch>
-    <Route exact path="/template_manager/templates" component={Templates} />
-    <Route exact path="/template_manager/templates/:_id" component={Template} />
-    <Route exact path="/template_manager/templateTypes" component={TemplateTypes} />
-    <Route exact path="/template_manager/templateTypes/:_id" component={TemplateType} />
-    <Route exact path={ROUTE_TEMPLATE_PCKGS_PCKGS} component={TemplatePackages} />
-    <Route exact path={ROUTE_TEMPLATE_PCKGS_PCKG} component={TemplatePackage} />
+    <Route exact path="/admin/template/design" component={Templates} />
+    <Route exact path="/admin/template/design/:_id" component={Template} />
+    <Route exact path="/admin/template/type" component={TemplateTypes} />
+    <Route exact path="/admin/template/type/:_id" component={TemplateType} />
+    <Route exact path="/admin/template/package" component={TemplatePackages} />
     <Route component={NotFound} />
   </Switch>
 );

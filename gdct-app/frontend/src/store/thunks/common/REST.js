@@ -1,75 +1,67 @@
-export const getRequestFactory = (store, controller) => (
-  query,
-  resolve,
-  reject,
-  isPopulated = false,
-) => dispatch => {
+export const customRequestFactory = (store, controller, actionType) => query => dispatch => {
   dispatch(store.actions.REQUEST());
 
-  controller[isPopulated ? 'fetchPopulated' : 'fetch'](query)
-    .then(values => {
-      dispatch(store.actions.RECEIVE(values));
-      if (resolve) resolve();
-    })
+  controller
+    .fetch(query)
+    .then(values => dispatch(store.actions.ISLOGGEDIN(true)))
     .catch(error => {
       dispatch(store.actions.FAIL_REQUEST(error));
-      if (reject) reject();
     });
 };
 
-export const createRequestFactory = (store, controller) => (
-  value,
-  resolve,
-  reject,
-  isPopulated = false,
-) => dispatch => {
+export const getRequestFactory = (store, controller) => query => dispatch => {
   dispatch(store.actions.REQUEST());
 
-  controller[isPopulated ? 'createPopulated' : 'create'](value)
+  controller
+    .fetch(query)
+    .then(values => dispatch(store.actions.RECEIVE(values)))
+    .catch(error => {
+      dispatch(store.actions.FAIL_REQUEST(error));
+    });
+};
+
+export const createRequestFactory = (store, controller) => (value, resolve, reject) => dispatch => {
+  dispatch(store.actions.REQUEST());
+
+  controller
+    .create(value)
     .then(value => {
       dispatch(store.actions.CREATE(value));
-      if (resolve) resolve();
+      resolve();
     })
     .catch(error => {
+      console.error(error);
       dispatch(store.actions.FAIL_REQUEST(error));
-      if (reject) reject();
+      reject();
     });
 };
 
-export const deleteRequestFactory = (store, controller) => (
-  _id,
-  resolve,
-  reject,
-  isPopulated = false,
-) => dispatch => {
+export const deleteRequestFactory = (store, controller) => (_id, resolve, reject) => dispatch => {
   dispatch(store.actions.REQUEST());
 
-  controller[isPopulated ? 'deletePopulated' : 'delete'](_id)
+  controller
+    .delete(_id)
     .then(() => {
       dispatch(store.actions.DELETE(_id));
-      if (resolve) resolve();
+      resolve();
     })
     .catch(error => {
       dispatch(store.actions.FAIL_REQUEST(error));
-      if (reject) reject();
+      reject();
     });
 };
 
-export const updateRequestFactory = (store, controller) => (
-  value,
-  resolve,
-  reject,
-  isPopulated = false,
-) => dispatch => {
+export const updateRequestFactory = (store, controller) => (value, resolve, reject) => dispatch => {
   dispatch(store.actions.REQUEST());
 
-  controller[isPopulated ? 'updatePopulated' : 'update'](value)
-    .then(result => {
-      dispatch(store.actions.UPDATE(result));
-      if (resolve) resolve();
+  controller
+    .update(value)
+    .then(() => {
+      dispatch(store.actions.UPDATE(value));
+      resolve();
     })
     .catch(error => {
       dispatch(store.actions.FAIL_REQUEST(error));
-      if (reject) reject();
+      reject();
     });
 };

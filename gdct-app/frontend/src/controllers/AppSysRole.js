@@ -7,6 +7,7 @@ const AppSysRoleController = (() => {
     baseURL: `${host}/role_manager/AppSysRoles`,
     withCredentials: true,
   });
+
   return {
     fetchAppSysRole: async _id => AppSysRoleAxios.get(`/${_id}`).then(res => res.data.AppSysRole),
     fetch: async _ => AppSysRoleAxios.get('').then(res => res.data.AppSysRoles),

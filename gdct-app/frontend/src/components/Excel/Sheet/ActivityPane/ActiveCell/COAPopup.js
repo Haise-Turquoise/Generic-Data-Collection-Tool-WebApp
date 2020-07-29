@@ -85,9 +85,9 @@ const GroupLinkList = ({
 };
 
 const GroupItems = ({ groups, selectedGroup, handleSelectGroup }) =>
-  groups.map(({ _id, categoryGroupId }, index) => {
+  groups.map(({ _id, COAGroupId }, index) => {
     const handleClickGroup = () =>
-      handleSelectGroup({ _id, value: categoryGroupId ? categoryGroupId.name : '' });
+      handleSelectGroup({ _id, value: COAGroupId ? COAGroupId.name : '' });
     return (
       <ListItem
         key={`groups-group-${index}`}
@@ -95,7 +95,7 @@ const GroupItems = ({ groups, selectedGroup, handleSelectGroup }) =>
         onClick={handleClickGroup}
         button
       >
-        <ListItemText primary={`${categoryGroupId ? categoryGroupId.name : ''}`} />
+        <ListItemText primary={`${COAGroupId ? COAGroupId.name : ''}`} />
       </ListItem>
     );
   });
@@ -282,7 +282,7 @@ const GroupPopup = ({ type }) => {
       const leafId = newGroups[groupPointer - 1]._id;
       definedGroups = COATrees.filter(COATree => COATree.parentId === leafId);
     } else {
-      definedGroups = COATrees.filter(COATree => !COATree.parentId);
+      definedGroups = COATrees.filter(COATree => COATree.parentId === undefined);
     }
 
     return definedGroups;
@@ -300,7 +300,7 @@ const GroupPopup = ({ type }) => {
     // TODO: Quadratic run time
 
     if (foundGroup) {
-      foundGroup.categoryId.forEach(_id => groupMap.add(_id));
+      foundGroup.COAIds.forEach(_id => groupMap.add(_id));
 
       ids = AllCOAIds.filter(({ _id }) => groupMap.has(_id));
     }

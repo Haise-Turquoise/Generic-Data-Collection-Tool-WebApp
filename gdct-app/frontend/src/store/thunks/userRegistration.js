@@ -4,6 +4,8 @@ import organizationGroupController from '../../controllers/organizationGroup';
 import programController from '../../controllers/program';
 import templateTypeController from '../../controllers/templateType';
 import userController from '../../controllers/user';
+import userRegistrationStore from '../userRegistrationStore/store';
+import COATreesStore from '../COATreesStore/store';
 
 const handleInputTemplate = (templateSet, submission) => {
   const templateType = {

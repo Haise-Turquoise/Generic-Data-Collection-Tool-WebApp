@@ -1,7 +1,8 @@
-import React, { useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 
 import { useDispatch, useSelector } from 'react-redux';
 
+import { showAppNavigation, hideAppNavigation } from '../../store/actions/ui/isAppNavigationOpen';
 import Loading from '../../components/Loading/Loading';
 
 import { updateSubmissionExcelRequest, getSubmissionRequest } from '../../store/thunks/submission';
@@ -25,6 +26,11 @@ const Submission = ({
   useEffect(() => {
     // If fetch fails, push back to /tempaltes
     dispatch(getSubmissionRequest(_id));
+    dispatch(hideAppNavigation());
+
+    return () => {
+      dispatch(showAppNavigation());
+    };
   }, []);
 
   return isCallInProgress ? (

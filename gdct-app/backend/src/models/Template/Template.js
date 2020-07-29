@@ -8,9 +8,6 @@ const TemplateModel = model(
     {
       name: { type: String },
 
-      workflowId: { type: ObjectId, ref: 'Workflow' },
-      workflowProcessId: { type: ObjectId, ref: 'WorkflowProcess' },
-
       templateData: { type: Object },
 
       templateTypeId: { type: ObjectId, ref: 'TemplateType' },

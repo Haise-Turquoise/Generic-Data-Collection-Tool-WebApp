@@ -4,7 +4,6 @@
 
 .appContainer {
   min-height: fit-content;
-  height: 100vh;
 }
 
 .app {
@@ -12,7 +11,7 @@
   min-height: fit-content;
 
   height: 100vh;
-  
+
   &__page {
     height: 100%;
     min-height: fit-content;

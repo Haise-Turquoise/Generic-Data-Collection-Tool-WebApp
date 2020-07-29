@@ -11,11 +11,10 @@ import Submission from './Submission';
 const SubmissionRouter = () => {
   return (
     <Switch>
-      <Route exact path="/submission_manager/submissionPeriods" component={SubmissionPeriods} />
-      <Route exact path="/submission_manager/submissions" component={Submissions} />
-      <Route exact path="/submission_manager/submissions/:_id" component={Submission} />
-      <Route exact path="/submission_manager/submission" component={Submission} />
-
+      <Route exact path="/admin/submission/period" component={SubmissionPeriods} />
+      <Route exact path="/admin/submission/type" component={Submissions} />
+      <Route exact path="/admin/submission/type/:_id" component={Submission} />
+      <Route exact path="/admin/submission/type" component={Submission} />
       <Route component={NotFound} />
     </Switch>
   );

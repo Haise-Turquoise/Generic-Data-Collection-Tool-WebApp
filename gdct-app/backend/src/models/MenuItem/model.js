@@ -4,11 +4,16 @@ const MenuItemSchema = new Schema(
   {
     name: { type: String, unique: true },
     url: { type: String, required: true },
+    // appResourceId: { type: Schema.Types.ObjectId, ref: 'AppResource' },
     description: String,
     role: {
       type: String,
       enum: ['USER', 'ADMIN'],
       default: 'USER',
+    },
+    type: {
+      type: String,
+      default: 'menu',
     },
     isActive: {
       type: Boolean,

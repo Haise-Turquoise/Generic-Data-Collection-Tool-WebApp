@@ -39,6 +39,7 @@ import WorkflowController from './controllers/Workflow';
 import { errorHandler } from './middlewares/shared';
 import MenuItemController from './controllers/MenuItem';
 import MenuController from './controllers/Menu';
+import UsersController from './controllers/Users/controller';
 
 // https://www.digitalocean.com/community/tutorials/how-to-use-winston-to-log-node-js-applications
 const logger = require('morgan');
@@ -96,12 +97,13 @@ app.use('/designer', Container.get(StatusController));
 app.use('/submission_manager', Container.get(SubmissionPeriodController));
 app.use('/submission_manager', Container.get(SubmissionController));
 
-app.use('/workflow_manager', Container.get(WorkflowController));
 app.use('/COA_manager', Container.get(COAController));
 app.use('/COA_manager', Container.get(COATreeController));
 app.use('/COA_manager', Container.get(COAGroupController));
 
 app.use('/workflow_manager', Container.get(WorkflowController));
+
+app.use('/', Container.get(UsersController));
 
 app.use(
   '/role_manager',
