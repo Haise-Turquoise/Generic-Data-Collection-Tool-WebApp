@@ -15,8 +15,6 @@ export default class TemplateTypeRepository extends BaseRepository {
   async create({
     name,
     description,
-    templateWorkflowId,
-    submissionWorkflowId,
     programIds,
     isApprovable,
     isReviewable,
@@ -32,8 +30,7 @@ export default class TemplateTypeRepository extends BaseRepository {
         TemplateTypeModel.create({
           name,
           description,
-          templateWorkflowId,
-          submissionWorkflowId,
+
           programIds,
 
           isApprovable,
@@ -59,8 +56,7 @@ export default class TemplateTypeRepository extends BaseRepository {
     {
       name,
       description,
-      templateWorkflowId,
-      submissionWorkflowId,
+
       programIds,
 
       isApprovable,
@@ -78,8 +74,7 @@ export default class TemplateTypeRepository extends BaseRepository {
         TemplateTypeModel.findByIdAndUpdate(id, {
           name,
           description,
-          templateWorkflowId,
-          submissionWorkflowId,
+
           programIds,
 
           isApprovable,
@@ -106,8 +101,8 @@ export default class TemplateTypeRepository extends BaseRepository {
     );
   }
 
-  findOne() {
-    throw new Error('Method not implemented.');
+  findOne(id) {
+    throw new Error('Method not implemented.', id);
   }
 
   async delete(id) {

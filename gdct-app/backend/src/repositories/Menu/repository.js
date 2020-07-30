@@ -16,7 +16,10 @@ export default class MenuRepository extends BaseRepository {
   }
 
   async create(Menu) {
-    return MenuModel.create(Menu).then(Menu => new MenuEntity(Menu.toObject()));
+    return MenuModel.create(Menu).then(Menu => {
+      console.log('Menu:', Menu);
+      return new MenuEntity(Menu.toObject());
+    });
   }
 
   async update(id, Menu) {
@@ -25,5 +28,23 @@ export default class MenuRepository extends BaseRepository {
 
   async find(query) {
     return MenuModel.find(query).then(Menus => Menus.map(Menu => new MenuEntity(Menu.toObject())));
+  }
+
+  async populate(name) {
+    const key = typeof name === 'string' ? 'name' : 'unknown';
+    const value = typeof name === 'string' ? name : undefined;
+    return MenuModel.find({ [key]: value })
+      .populate([
+        {
+          path: 'items',
+        },
+        {
+          path: 'subMenus',
+          populate: {
+            path: 'items',
+          },
+        },
+      ])
+      .then(Menus => Menus.map(Menu => new MenuEntity(Menu.toObject())));
   }
 }

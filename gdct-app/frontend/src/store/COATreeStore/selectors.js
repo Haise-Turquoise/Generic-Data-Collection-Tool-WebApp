@@ -17,13 +17,13 @@ const selectSelectedNodeContent = createSelector([selectSelectedNode], selectedN
 );
 
 const selectSelectedNodeCOAIds = createSelector([selectSelectedNodeContent], selectedNodeContent =>
-  selectedNodeContent ? selectedNodeContent.categoryId : [],
+  selectedNodeContent ? selectedNodeContent.COAIds : [],
 );
 
-export const selectSelectedCOAIdsMap = createSelector([selectSelectedNodeCOAIds], categoryId => {
+export const selectSelectedCOAIdsMap = createSelector([selectSelectedNodeCOAIds], COAIds => {
   const selectedCOAIds = {};
 
-  categoryId.forEach(COAId => (selectedCOAIds[COAId] = true));
+  COAIds.forEach(COAId => (selectedCOAIds[COAId] = true));
 
   return selectedCOAIds;
 });

@@ -59,7 +59,7 @@ export const createCOATreeRequest = (
 ) => dispatch => {
   const COATree = {
     sheetNameId,
-    categoryGroupId: COAGroup._id,
+    COAGroupId: COAGroup,
   };
 
   dispatch(COATreesStore.actions.REQUEST());

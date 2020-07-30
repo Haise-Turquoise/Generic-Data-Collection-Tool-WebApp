@@ -6,15 +6,19 @@ import ListItem from '@material-ui/core/ListItem';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
+import { publicAxios } from '../../../../../tools/rest';
 
+import { REST_PUBLIC_DATA } from '../../../../../constants/rest';
+
+import { filterString } from './utils';
 import { setActiveCellDialog, setGroups } from '../../../../../store/actions/ui/excel/commands';
 import { getColumnNamesRequest } from '../../../../../store/thunks/columnName';
 import { selectFactoryRESTResponseValues } from '../../../../../store/common/REST/selectors';
-import { selectColumnNamesStore } from '../../../../../store/ColumnNamesStore/selectors';
+import { selectColumnNamesStore } from '../../../../../store/ColumnNameStore/selectors';
 
 const DialogActions = ({ handleClick }) => (
   <Button fullWidth onClick={handleClick}>
-    Finish
+    Cancel
   </Button>
 );
 

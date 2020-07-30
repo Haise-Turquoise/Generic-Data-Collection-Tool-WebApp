@@ -60,15 +60,6 @@ const CLOSE_TEMPLATE_DIALOG = state => ({
   isTemplateDialogOpen: false,
 });
 
-const OPEN_WORKFLOW_DIALOG = state => ({
-  ...state,
-  isWorkflowDialogOpen: true,
-});
-const CLOSE_WORKFLOW_DIALOG = state => ({
-  ...state,
-  isWorkflowDialogOpen: false,
-});
-
 const reducers = {
   OPEN_COA_GROUP_DIALOG,
   CLOSE_COA_GROUP_DIALOG,
@@ -90,8 +81,6 @@ const reducers = {
   CLOSE_REPORTING_PERIOD_DIALOG,
   OPEN_TEMPLATE_DIALOG,
   CLOSE_TEMPLATE_DIALOG,
-  OPEN_WORKFLOW_DIALOG,
-  CLOSE_WORKFLOW_DIALOG,
 };
 
 const initialState = {
@@ -105,7 +94,6 @@ const initialState = {
   isTemplateTypeDialogOpen: false,
   isReportingPeriodDialogOpen: false,
   isTemplateDialogOpen: false,
-  isWorkflowDialogOpen: false,
 };
 
 const DialogsStore = createSlice({
@@ -113,7 +101,5 @@ const DialogsStore = createSlice({
   initialState,
   reducers,
 });
-
-export const DialogsStoreActions = DialogsStore.actions;
 
 export default DialogsStore;

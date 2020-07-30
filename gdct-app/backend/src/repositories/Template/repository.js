@@ -5,7 +5,6 @@ import StatusRepository from '../Status';
 import UserRepository from '../User';
 import TemplateTypeRepository from '../TemplateType';
 import BaseRepository from '../repository';
-import WorkflowProcessRepository from '../WorkflowProcess';
 
 // MongoDB implementation
 // @Service()
@@ -16,7 +15,6 @@ export default class TemplateRepository extends BaseRepository {
     this.statusRepository = Container.get(StatusRepository);
     this.userRepository = Container.get(UserRepository);
     this.templateTypeRepository = Container.get(TemplateTypeRepository);
-    this.workflowProcessRepository = Container.get(WorkflowProcessRepository);
   }
 
   async create({
@@ -26,7 +24,6 @@ export default class TemplateRepository extends BaseRepository {
     userCreatorId,
     creationDate,
     expirationDate,
-    workflowProcessId,
     statusId,
   }) {
     return (
@@ -42,7 +39,6 @@ export default class TemplateRepository extends BaseRepository {
             userCreatorId,
             creationDate,
             expirationDate,
-            workflowProcessId,
             statusId,
           }),
         )
@@ -52,16 +48,7 @@ export default class TemplateRepository extends BaseRepository {
 
   async update(
     id,
-    {
-      name,
-      templateData,
-      templateTypeId,
-      userCreatorId,
-      creationDate,
-      expirationDate,
-      workflowProcessId,
-      statusId,
-    },
+    { name, templateData, templateTypeId, userCreatorId, creationDate, expirationDate, statusId },
   ) {
     return (
       (statusId ? this.statusRepository.validate(statusId) : new Promise(resolve => resolve()))
@@ -76,19 +63,11 @@ export default class TemplateRepository extends BaseRepository {
             userCreatorId,
             creationDate,
             expirationDate,
-            workflowProcessId,
             statusId,
           }),
         )
         .then(template => new TemplateEntity(template.toObject()))
     );
-  }
-
-  async updateWorkflowProcess(_id, workflowProcessId) {
-    return this.workflowProcessRepository
-      .validate(workflowProcessId)
-      .then(() => TemplateModel.findByIdAndUpdate(_id, { workflowProcessId }))
-      .then(template => new TemplateEntity(template.toObject()));
   }
 
   async find(query) {

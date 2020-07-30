@@ -10,6 +10,7 @@
     "start": "yarn --cwd gdct-app start"
   },
   "dependencies": {
-    "passport-google-oauth": "^2.0.0"
+    "passport-google-oauth": "^2.0.0",
+    "passport-remember-me": "^0.0.1"
   }
 }

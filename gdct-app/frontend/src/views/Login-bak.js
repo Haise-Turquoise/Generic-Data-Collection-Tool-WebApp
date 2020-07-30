@@ -72,7 +72,7 @@ const LoginForm = ({ handleLogin }) => (
             name="username"
             type="username"
             autoComplete="username"
-            autoFocus
+            autoFocus={true}
             value={values.username}
             onChange={handleChange}
           />

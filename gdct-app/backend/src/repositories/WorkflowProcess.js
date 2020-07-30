@@ -4,18 +4,6 @@ import BaseRepository from './repository';
 import WorkflowProcessModel from '../models/WorkflowProcess';
 import StatusRepository from './Status';
 
-const populateStatusId = {
-  path: 'statusId',
-  select: 'name',
-};
-
-const populateTo = {
-  path: 'to',
-  populate: {
-    path: 'statusId',
-  },
-};
-
 export default class WorkflowProcessRepository extends BaseRepository {
   constructor() {
     super(WorkflowProcessModel);
@@ -71,18 +59,5 @@ export default class WorkflowProcessRepository extends BaseRepository {
           workflowProcess => new WorkflowProcessEntity(workflowProcess.toObject()),
         ),
       );
-  }
-
-  async findMany(ids, isPopulated = false) {
-    return WorkflowProcessModel.find()
-      .populate(isPopulated ? populateTo : '')
-      .populate(isPopulated ? populateStatusId : '')
-      .where('_id')
-      .in(ids)
-      .then(workflowProcesss => {
-        return workflowProcesss.map(
-          workflowProcess => new WorkflowProcessEntity(workflowProcess.toObject()),
-        );
-      });
   }
 }

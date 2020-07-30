@@ -8,6 +8,6 @@ export const TemplatePackagesStore = createSlice({
   reducers: REST_REDUCERS,
 });
 
-export const TemplatePackagesStoreActions = TemplatePackagesStore.actions;
+export const TemplatePackagesStoreActions = TemplatePackagesStore.actions
 
 export default TemplatePackagesStore;

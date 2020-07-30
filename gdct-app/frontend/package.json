@@ -10,8 +10,8 @@
     "deploy:aws": "aws s3 sync build s3://webproto",
     "fix:eslint": "yarn lint:eslint --fix",
     "fix:prettier": "yarn lint:prettier --write",
-    "lint:eslint": "eslint \"./src/**/*.{js,jsx,ts,tsx}\"",
-    "lint:prettier": "prettier --list-different \"./src/**/*.{js,jsx,ts,tsx}\""
+    "lint:eslint": "eslint \"./**/*.{js,jsx,ts,tsx}\"",
+    "lint:prettier": "prettier --list-different \"./**/*.{js,jsx,ts,tsx}\""
   },
   "husky": {
     "hooks": {
@@ -19,7 +19,7 @@
     }
   },
   "lint-staged": {
-    "./src/**/*.js": [
+    "./**/*.{js,jsx,ts,tsx}": [
       "yarn lint:prettier",
       "yarn lint:eslint"
     ]

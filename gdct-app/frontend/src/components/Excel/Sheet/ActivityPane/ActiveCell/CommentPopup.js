@@ -64,7 +64,7 @@ const CommentInputSection = ({
       inputRef={textFieldRef}
       className="dialog__field"
       variant="outlined"
-      multiline
+      multiline={true}
       onChange={handleChange}
       fullWidth
     />

@@ -12,7 +12,7 @@ const TemplatePackageModel = model(
       templateIds: [{ type: ObjectId, ref: 'Template' }],
       creationDate: { type: Date, default: Date.now },
       userCreatorId: { type: ObjectId, ref: 'User' },
-      programIds: [{ type: ObjectId, ref: 'Program' }]
+      programIds: [{ type: ObjectId, ref: 'Program' }],
     },
     { minimize: false, autoIndex: true },
   ),

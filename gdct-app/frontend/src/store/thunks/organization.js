@@ -1,7 +1,7 @@
 import orgController from '../../controllers/organization';
 import OrgsStore from '../OrganizationsStore/store';
 import columnNameController from '../../controllers/organization';
-import ColumnNamesStore from '../ColumnNamesStore/store';
+import ColumnNamesStore from '../ColumnNameStore/store';
 
 import {
   getRequestFactory,

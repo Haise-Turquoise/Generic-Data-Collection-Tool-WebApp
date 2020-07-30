@@ -1,10 +1,14 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { ListItem, ListItemIcon, ListItemText } from '@material-ui/core';
 import { Link } from 'react-router-dom';
 import navigationConfig from '../../components/AuthPage/config';
 
 const MenuHeader = () => {
-  return navigationConfig
+  const [config, setConfig] = useState([]);
+  useEffect(() => {
+    navigationConfig().then(res => setConfig(res));
+  }, []);
+  return config
     .filter(item => item.type !== 'divider')
     .map((e, i) => {
       const { name, type, url, icon, children } = e;

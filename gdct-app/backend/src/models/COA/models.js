@@ -5,6 +5,8 @@ const COAModel = model(
   new Schema(
     {
       name: { type: String },
+      id: { type: String },
+      COA: { type: String },
     },
     { minimize: false },
   ),

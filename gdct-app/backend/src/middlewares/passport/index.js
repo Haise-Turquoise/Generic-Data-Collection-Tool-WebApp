@@ -12,6 +12,7 @@ module.exports = () => {
     });
   });
   require('./localConfig')();
+  require('./rememberConfig')();
   require('./facebookConfig')();
   require('./googleConfig')();
 };

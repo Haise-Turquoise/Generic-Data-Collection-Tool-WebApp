@@ -1,7 +1,7 @@
 export default class ColumnName {
-  constructor({ _id, ID, name }) {
+  constructor({ _id, id, name }) {
     this._id = _id;
-    this.ID = ID;
+    this.id = id;
     this.name = name;
   }
 }

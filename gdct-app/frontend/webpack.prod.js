@@ -1,13 +1,13 @@
 const webpack = require('webpack');
-const common = require('./webpack.common');
 const merge = require('webpack-merge');
 const path = require('path');
 
 const TerserJSPlugin = require('terser-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
-const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
 const ManifestPlugin = require('webpack-manifest-plugin');
+const common = require('./webpack.common');
 
 const ASSET_PATH = process.env.ASSET_PATH || '/';
 

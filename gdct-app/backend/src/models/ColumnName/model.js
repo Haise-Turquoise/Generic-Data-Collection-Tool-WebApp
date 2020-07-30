@@ -4,7 +4,8 @@ const ColumnNameModel = model(
   'Attribute',
   new Schema(
     {
-      value: { type: String, required: true },
+      name: { type: String, required: true },
+      id: { type: Number, required: true, unique: true },
     },
     { minimize: false },
   ),

@@ -15,7 +15,7 @@ export default class ReportPeriodRepository extends BaseRepository {
 
   async create(COATree) {
     return COATreeModel.create(COATree)
-      .then(COATree => COATree.populate('categoryGroupId').execPopulate())
+      .then(COATree => COATree.populate('COAGroupId').execPopulate())
       .then(COATree => new COATreeEntity(COATree.toObject()));
   }
 
@@ -41,7 +41,7 @@ export default class ReportPeriodRepository extends BaseRepository {
     }
 
     return COATreeModel.find(realQuery)
-      .populate('categoryGroupId')
+      .populate('COAGroupId')
       .exec()
       .then(COATrees => {
         return COATrees.map(COATree => new COATreeEntity(COATree.toObject()));
