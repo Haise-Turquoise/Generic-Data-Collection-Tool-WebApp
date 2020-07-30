@@ -6,8 +6,8 @@ import MenuItem from '@material-ui/core/MenuItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import { ListItem } from '@material-ui/core';
-import IconItem from '../IconItem/IconItem';
 import { Link } from 'react-router-dom';
+import IconItem from '../IconItem/IconItem';
 
 const StyledMenu = withStyles({
   paper: {

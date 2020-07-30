@@ -2,7 +2,7 @@ import { getNormalColumnWidth, getExcelColumnWidth } from '../../../../../tools/
 import { DEFAULT_EXCEL_SHEET_COLUMN_WIDTH_HEADER } from '../../../../../constants/excel';
 
 const RESIZE_COLUMN_END = (state, { leftOffsets }) => {
-  let newState = { ...state };
+  const newState = { ...state };
   const {
     columnResizeData,
     sheetFreezeColumnCount,

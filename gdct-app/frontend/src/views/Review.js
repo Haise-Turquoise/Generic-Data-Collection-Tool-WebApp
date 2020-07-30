@@ -77,7 +77,7 @@ export default function Review({
               <Typography gutterBottom>phoneNumber</Typography>
             </Grid>
             <Grid item xs={6}>
-              <Typography gutterBottom>{phoneNumber + ' ' + ext}</Typography>
+              <Typography gutterBottom>{`${phoneNumber} ${ext}`}</Typography>
             </Grid>
             <Grid item xs={12}>
               <Typography gutterBottom>Roles</Typography>

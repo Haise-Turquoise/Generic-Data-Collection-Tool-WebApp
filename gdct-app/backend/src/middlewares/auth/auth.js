@@ -55,7 +55,7 @@ export default class Auth {
     }
     const urls = await this.getResources(req.user.sysRole);
     if (!urls.includes(req.originalUrl.toLowerCase())) {
-      return next(new ErrorGDCT('You do not have permission to perform this action.', 403));
+      next(new ErrorGDCT('You do not have permission to perform this action.', 403));
     }
     next();
   }

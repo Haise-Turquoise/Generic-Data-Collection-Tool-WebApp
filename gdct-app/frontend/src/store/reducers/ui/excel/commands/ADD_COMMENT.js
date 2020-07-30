@@ -1,7 +1,7 @@
 import uniqid from 'uniqid';
 
 const ADD_COMMENT = (state, { comment, accountId, firstName, lastName }) => {
-  let newState = { ...state };
+  const newState = { ...state };
 
   const { sheetCellData, activeCellPosition } = newState;
 

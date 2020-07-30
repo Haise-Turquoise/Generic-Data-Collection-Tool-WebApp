@@ -13,10 +13,10 @@ import Typography from '@material-ui/core/Typography';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 
+import { Button } from '@material-ui/core';
 import { getAppSysRolesRequest } from '../store/thunks/AppSysRole';
 import { selectFactoryRESTResponseTableValues } from '../store/common/REST/selectors';
 import { selectAppSysRolesStore } from '../store/AppSysRolesStore/selectors';
-import { Button } from '@material-ui/core';
 
 function Copyright() {
   return (
@@ -185,10 +185,10 @@ export default function SignUp({ parentHandleChange, steps, activeStep, handleNe
                   appSysRoles.map(sysRole => (
                     <MenuItem
                       key={sysRole._id}
-                      value={sysRole.appSys + '-' + sysRole.role}
+                      value={`${sysRole.appSys}-${sysRole.role}`}
                       style={getStyles(sysRole._id, sysRoles, theme)}
                     >
-                      {sysRole.appSys + '-' + sysRole.role}
+                      {`${sysRole.appSys}-${sysRole.role}`}
                     </MenuItem>
                   ))}
               </Select>

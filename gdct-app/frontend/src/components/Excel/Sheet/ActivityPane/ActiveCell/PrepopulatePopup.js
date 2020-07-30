@@ -3,8 +3,7 @@ import React, { useState, useCallback } from 'react';
 import { useDispatch } from 'react-redux';
 import Typography from '@material-ui/core/Typography';
 
-import { LabeledTextField } from './components';
-import { DialogActions } from './components';
+import { LabeledTextField, DialogActions } from './components';
 
 import {
   setPrepopulate,
@@ -14,9 +13,9 @@ import {
 const PrepopulatePopup = ({ type, quarter, year }) => {
   const dispatch = useDispatch();
 
-  const [newType, setNewType] = useState(type ? type : '');
-  const [newQuarter, setNewQuarter] = useState(quarter ? quarter : '');
-  const [newYear, setNewYear] = useState(year ? year : '');
+  const [newType, setNewType] = useState(type || '');
+  const [newQuarter, setNewQuarter] = useState(quarter || '');
+  const [newYear, setNewYear] = useState(year || '');
 
   const handleChangeType = ({ target: { value } }) => setNewType(value);
   const handleChangeQuarter = ({ target: { value } }) => setNewQuarter(value);

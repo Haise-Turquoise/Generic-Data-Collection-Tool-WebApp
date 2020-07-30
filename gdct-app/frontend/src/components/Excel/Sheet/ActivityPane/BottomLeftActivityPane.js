@@ -27,7 +27,7 @@ const computeSelectionAreaStyle = (
 ) => {
   const { x1, y1, x2, y2 } = selectionArea;
 
-  let borderStyle = isActive
+  const borderStyle = isActive
     ? STYLE_ACTIVE_SELECTION_BORDER_STYLE
     : STYLE_STAGNANT_SELECTION_BORDER_STYLE;
   let selectionAreaWidth;
@@ -35,7 +35,7 @@ const computeSelectionAreaStyle = (
   let left;
   let top;
 
-  let customSelectionStyle = {
+  const customSelectionStyle = {
     borderLeftWidth: STYLE_SELECTION_BORDER_WIDTH,
     borderLeftColor: STYLE_SELECTION_BORDER_COLOR,
     borderLeftStyle: borderStyle,
@@ -140,15 +140,15 @@ const computeActiveCellStyle = (
     left = leftOffsets[x];
   }
 
-  let activeCellStyle = {
+  const activeCellStyle = {
     top,
     left,
     height,
     width,
   };
 
-  let topFreeze = topOffsets[sheetFreezeRowCount];
-  let heightFreeze = getNormalRowHeight(rowHeights[sheetFreezeRowCount]);
+  const topFreeze = topOffsets[sheetFreezeRowCount];
+  const heightFreeze = getNormalRowHeight(rowHeights[sheetFreezeRowCount]);
 
   activeCellStyle.top = activeCellStyle.top - topFreeze - heightFreeze;
 

@@ -14,7 +14,7 @@ const INSERT_COLUMN = state => {
     stagnantSelectionAreas,
   } = state;
 
-  let newState = { ...state };
+  const newState = { ...state };
 
   const { insertCount, insertStart } = getInsertData(
     'x',

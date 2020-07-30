@@ -1,18 +1,17 @@
-import React, { useMemo, useEffect, useCallback } from 'react';
+import React, { useMemo, useEffect } from 'react';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
-
-import {
-  getTemplatePackagesRequest,
-  createTemplatePackageRequest,
-  deleteTemplatePackageRequest,
-  updateTemplatePackageRequest,
-} from '../../../store/thunks/templatePackage';
 
 import MaterialTable from 'material-table';
 import Paper from '@material-ui/core/Paper';
 import LaunchIcon from '@material-ui/icons/Launch';
 
 import Typography from '@material-ui/core/Typography';
+import {
+  getTemplatePackagesRequest,
+  createTemplatePackageRequest,
+  deleteTemplatePackageRequest,
+  updateTemplatePackageRequest,
+} from '../../../store/thunks/templatePackage';
 
 import {
   UserIdButton,

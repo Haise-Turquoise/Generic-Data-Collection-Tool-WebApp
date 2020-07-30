@@ -1,5 +1,3 @@
-import e from 'express';
-
 export const addTokenToCookie = (res, token) => {
   const cookieOptions = {
     expires: new Date(

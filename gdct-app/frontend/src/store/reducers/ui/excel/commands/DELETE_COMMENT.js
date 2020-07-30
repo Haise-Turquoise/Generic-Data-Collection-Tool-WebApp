@@ -1,7 +1,7 @@
 import { isObjectEmpty } from '../../../../../tools/misc';
 
 const DELETE_COMMENT = (state, { commentId, _accountId }) => {
-  let newState = { ...state };
+  const newState = { ...state };
 
   const { sheetCellData, activeCellPosition } = newState;
 
@@ -10,7 +10,7 @@ const DELETE_COMMENT = (state, { commentId, _accountId }) => {
   const { x, y } = activeCellPosition;
 
   if (newSheetCellData[y] && newSheetCellData[y][x]) {
-    let { comments } = newSheetCellData[y][x];
+    const { comments } = newSheetCellData[y][x];
 
     if (comments) {
       const commentIndex = comments.findIndex(({ id }) => id === commentId);

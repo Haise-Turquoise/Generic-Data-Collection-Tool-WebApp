@@ -2,19 +2,19 @@ import React, { useEffect, useCallback } from 'react';
 
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 
+import Popover, { ArrowContainer } from 'react-tiny-popover';
 import {
   getNormalRowHeight,
   getNormalColumnWidth,
   isPrepopulateString,
   parsePrepopulateString,
   getAreaDimensions,
+  getBlockStyle,
 } from '../../../../../tools/excel';
 
 import { resetActiveCellDialog } from '../../../../../store/actions/ui/excel/commands';
 
 import CellEditor from './CellEditor';
-
-import Popover, { ArrowContainer } from 'react-tiny-popover';
 
 import topOffsetsSelector from '../../../../../store/selectors/ui/excel/topOffsets';
 import leftOffsetsSelector from '../../../../../store/selectors/ui/excel/leftOffsets';
@@ -23,8 +23,6 @@ import BusinessConceptPopup from './BusinessConceptPopup';
 import PrepopulatePopup from './PrepopulatePopup';
 import CommentPopup from './CommentPopup';
 import COAPopup from './COAPopup';
-
-import { getBlockStyle } from '../../../../../tools/excel';
 
 import './ActiveCell.scss';
 

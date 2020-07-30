@@ -1,4 +1,4 @@
-import React, { useState, Fragment, useEffect } from 'react';
+import React, { useState, Fragment, useEffect, useCallback } from 'react';
 import clsx from 'clsx';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import Drawer from '@material-ui/core/Drawer';
@@ -24,7 +24,7 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import { Link } from 'react-router-dom';
 
 import navigationConfig from './config';
-import { useCallback } from 'react';
+
 import TopItemList from '../TopItemList/TopItemList';
 
 const drawerWidth = 240;
@@ -186,48 +186,79 @@ const DrawerHandle = ({ title, classes, handleDrawerClose, theme }) => (
 
 const MenuItemIcon = ({ icon }) => <ListItemIcon>{icon}</ListItemIcon>;
 
-const MenuItemLink = ({ name, icon, url }) => (
+const MenuItemLink = ({ name, icon, url, level }) => (
   <ListItem component={url && Link} button to={url}>
     <MenuItemIcon icon={icon} />
-    <ListItemText primary={name} />
+    {level === '2' ? (
+      <ListItemText
+        primary={
+          <Typography style={{ fontSize: '0.8rem', marginLeft: '1.5rem' }}>{name}</Typography>
+        }
+      />
+    ) : (
+      <ListItemText
+        primary={
+          <Typography style={{ fontSize: '0.9rem', marginLeft: '1.2rem' }}>{name}</Typography>
+        }
+      />
+    )}
   </ListItem>
 );
 
-const MenuItems = ({ menuItems }) => {
-  return menuItems.map((menuItem, index) => (
-    <MenuItemLink key={`${menuItem.type}-${menuItem.name}-${index}`} {...menuItem} />
-  ));
+const MenuItems = ({ menuItems, level }) => {
+  return menuItems.map((menuItem, index) => {
+    if (menuItem.type === 'drawer') {
+      return (
+        <MenuDrawer key={`${menuItem.type}-${menuItem.name}-${index}`} {...menuItem} level="2" />
+      );
+    }
+    return (
+      <MenuItemLink
+        key={`${menuItem.type}-${menuItem.name}-${index}`}
+        {...menuItem}
+        level={level}
+      />
+    );
+  });
 };
 
-const MenuItemsList = ({ menuItems }) => (
+const MenuItemsList = ({ menuItems, level }) => (
   <List component="div" disablePadding>
-    <MenuItems menuItems={menuItems} />
+    <MenuItems menuItems={menuItems} level={level} />
   </List>
 );
 
-const MenuDrawerItems = ({ menuItems, open }) => (
+const MenuDrawerItems = ({ menuItems, open, level }) => (
   <Collapse in={open} timeout="auto" unmountOnExit>
-    <MenuItemsList menuItems={menuItems} />
+    <MenuItemsList menuItems={menuItems} level={level} />
   </Collapse>
 );
 
-const MenuDrawerTitle = ({ button = true, name, icon, open, handleClick }) => (
+const MenuDrawerTitle = ({ button = true, name, icon, open, handleClick, level }) => (
   <ListItem button={button} onClick={handleClick}>
     {icon && <MenuItemIcon icon={icon} />}
-    <ListItemText primary={name} />
+    {level === '2' ? (
+      <ListItemText
+        primary={
+          <Typography style={{ fontSize: '0.9rem', marginLeft: '1.2rem' }}>{name}</Typography>
+        }
+      />
+    ) : (
+      <ListItemText primary={name} />
+    )}
     {open ? <ExpandLess /> : <ExpandMore />}
   </ListItem>
 );
 
-const MenuDrawer = ({ name, icon, children }) => {
+const MenuDrawer = ({ name, icon, children, level = 1 }) => {
   const [open, setOpen] = useState(false);
 
-  const handleToggle = useCallback(() => setOpen(!open), [open]);
+  const handleToggle = useCallback(target => setOpen(!open), [open]);
 
   return (
     <Fragment>
-      <MenuDrawerTitle name={name} icon={icon} handleClick={handleToggle} />
-      <MenuDrawerItems open={open} menuItems={children} />
+      <MenuDrawerTitle name={name} icon={icon} handleClick={handleToggle} level={level} />
+      <MenuDrawerItems open={open} menuItems={children} level={level} />
     </Fragment>
   );
 };
@@ -253,7 +284,6 @@ const NavigationContent = ({ config }) => {
         Component = MenuItemLink;
         break;
     }
-
     return <Component key={`${type}-${name}-${index}`} {...item} />;
   });
 };
@@ -282,11 +312,12 @@ const NavigationDrawer = ({ title, open, theme, config, classes, handleDrawerClo
 const AuthPage = ({
   headerTitle = 'MOHLTC - Generic Data Collection Tool',
   drawerTitle = 'MOHLTC - GDCT',
-  config = navigationConfig,
+  // config = [navigationConfig],
   children,
 }) => {
   const classes = useStyles();
   const theme = useTheme();
+  const [config, setConfig] = useState([]);
   const [open, setOpen] = useState(false);
   const [isTopMenu, setTopMenu] = useState(true);
   const [isMobile, setMobile] = useState(window.matchMedia('(max-width: 1000px)').matches);
@@ -295,6 +326,10 @@ const AuthPage = ({
     const handler = e => setMobile(e.matches);
     window.matchMedia('(max-width: 1000px)').addListener(handler);
     setTopMenu(!isMobile);
+    navigationConfig().then(res => {
+      console.log('res:', res);
+      setConfig(res);
+    });
   }, [isMobile]);
 
   const handleDrawerOpen = () => setOpen(true);

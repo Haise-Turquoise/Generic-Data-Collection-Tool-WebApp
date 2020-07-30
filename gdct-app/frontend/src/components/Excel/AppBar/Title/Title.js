@@ -2,13 +2,12 @@ import React, { useCallback } from 'react';
 
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 
-import { setName } from '../../../../store/actions/ui/excel/commands';
-
 import InputBase from '@material-ui/core/InputBase';
+import { setName } from '../../../../store/actions/ui/excel/commands';
 
 // TODO : Make input width contain text - react virtualized
 // TODO : Events handler: blur, key down (escape), ...
-let Title = () => {
+const Title = () => {
   const dispatch = useDispatch();
 
   const name = useSelector(

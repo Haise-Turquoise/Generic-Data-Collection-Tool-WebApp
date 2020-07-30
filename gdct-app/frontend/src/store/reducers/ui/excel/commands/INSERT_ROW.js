@@ -10,7 +10,7 @@ const INSERT_ROW = state => {
     stagnantSelectionAreas,
   } = state;
 
-  let newState = { ...state };
+  const newState = { ...state };
 
   const { insertCount, insertStart } = getInsertData(
     'y',

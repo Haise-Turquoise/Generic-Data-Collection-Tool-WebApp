@@ -1,8 +1,7 @@
 import React from 'react';
 
-import Menu from '../Menu';
-
 import AcUnitIcon from '@material-ui/icons/AcUnit';
+import Menu from '../Menu';
 
 const View = ({ openedMenuName, handleClickMenu, handleHoverMenu }) => {
   const options = [

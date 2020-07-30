@@ -1,5 +1,5 @@
 const SELECT_END = (state, { ctrlKey }) => {
-  let newState = { ...state };
+  const newState = { ...state };
 
   const { activeSelectionArea, stagnantSelectionAreas } = newState;
 
@@ -43,7 +43,7 @@ const SELECT_END = (state, { ctrlKey }) => {
         const midBottomSY = maxY;
         const maxSY = Math.max(sY1, sY2);
 
-        let newAreas = [];
+        const newAreas = [];
 
         if (minSY !== midTopSY)
           newAreas.push({ x1: minSX, x2: maxSX, y1: minSY, y2: midTopSY - 1 });

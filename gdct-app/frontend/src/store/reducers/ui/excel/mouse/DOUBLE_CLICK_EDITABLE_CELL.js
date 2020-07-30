@@ -3,7 +3,7 @@ const DOUBLE_CLICK_EDITABLE_CELL = state => {
 
   if (isSelectionMode) return state;
 
-  let newState = { ...state };
+  const newState = { ...state };
 
   newState.isEditMode = true;
 

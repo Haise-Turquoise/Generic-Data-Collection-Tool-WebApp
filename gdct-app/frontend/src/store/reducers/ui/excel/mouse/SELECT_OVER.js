@@ -5,7 +5,7 @@ const SELECT_OVER = (state, { newX2, newY2, ctrlKey }) => {
 
   if (!isSelectionMode) return state;
 
-  let newState = { ...state };
+  const newState = { ...state };
 
   if (!ctrlKey) newState.stagnantSelectionAreas = [];
 

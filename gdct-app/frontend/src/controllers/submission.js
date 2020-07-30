@@ -1,16 +1,33 @@
 import axios from 'axios';
 
+import { host } from '../constants/domain';
+
 const submissionController = (() => {
   const submissionAxios = axios.create({
-    baseURL: 'http://localhost:3000/submission_manager/submissions',
+    baseURL: `${host}/submission_manager/submissions`,
   });
   return {
-    fetchSubmission: async _id => submissionAxios.get(`/${_id}`).then(res => res.data.submission),
+    fetchAndCreate: async (orgId, programIds) =>
+      submissionAxios.post(`/findSubmissions`, { orgId, programIds }).then(res => {
+        return res.data.submissions;
+      }),
+    create: async (submission, submissionNote, nextProcessId) =>
+      submissionAxios
+        .post('/createSubmission', { submission, submissionNote, nextProcessId })
+        .then(res => res.data.submission),
+    update: async submission => submissionAxios.put(`/updateSubmission`, { submission }),
+    updateStatus: async (submission, submissionNote, role, nextProcessId) =>
+      submissionAxios.put(`/updateSubmissionStatus`, {
+        submission,
+        submissionNote,
+        role,
+        nextProcessId,
+      }),
+    fetchSubmission: async _id =>
+      submissionAxios.get(`/findSubmission/${_id}`).then(res => res.data.submission),
     fetch: async query => submissionAxios.get('').then(res => res.data.submissions),
-    create: async submission =>
-      submissionAxios.post('', { submission }).then(res => res.data.submission),
+
     delete: async _id => submissionAxios.delete(`/${_id}`),
-    update: async submission => submissionAxios.put(`/${submission._id}`, { submission }),
   };
 })();
 

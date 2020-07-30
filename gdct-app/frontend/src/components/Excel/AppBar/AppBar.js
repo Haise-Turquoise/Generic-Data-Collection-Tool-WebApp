@@ -4,12 +4,11 @@ import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 
 import { Link } from 'react-router-dom';
 
-import { toggleTemplatePublish } from '../../../store/actions/ui/excel/commands';
-
 import Button from '@material-ui/core/Button';
 
 import FileTableOutline from 'mdi-material-ui/FileTableOutline';
 import DoubleArrowIcon from '@material-ui/icons/DoubleArrow';
+import { toggleTemplatePublish } from '../../../store/actions/ui/excel/commands';
 
 import Title from './Title';
 
@@ -46,7 +45,7 @@ const DoubleArrowIconButton = ({ buttonStyle, text, handleClick }) => (
   </Button>
 );
 
-let TemplateOptions = () => {
+const TemplateOptions = () => {
   const dispatch = useDispatch();
 
   const isTemplatePublished = useSelector(

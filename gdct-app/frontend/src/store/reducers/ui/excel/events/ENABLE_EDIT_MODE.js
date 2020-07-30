@@ -1,7 +1,7 @@
 const ENABLE_EDIT_MODE = state => {
   const { activeCellPosition, activeCellDialog, sheetCellData } = state;
 
-  let newState = { ...state };
+  const newState = { ...state };
 
   const { x, y } = activeCellPosition;
 

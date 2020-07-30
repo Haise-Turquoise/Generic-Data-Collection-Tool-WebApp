@@ -21,22 +21,19 @@ module.exports = () => {
                 if (err) {
                   return done(err);
                 }
-                UserModel.findOne({ email: profile.emails[0].value.toLowerCase() }, function (
-                  err,
-                  user1,
-                ) {
-                  req.session.user = user1;
-                  req.session.token = token;
-                });
+                user.generateAuthToken(user);
+                req.session.user = user;
+                req.session.token = token;
                 return done(null, user);
               });
             } else {
+              user.generateAuthToken(user);
               req.session.user = user;
               req.session.token = token;
               return done(null, user);
             }
           } else {
-            done(null);
+            return done(null);
           }
         });
       });

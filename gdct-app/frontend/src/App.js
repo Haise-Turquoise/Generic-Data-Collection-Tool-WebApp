@@ -3,43 +3,60 @@ import React, { useState, useEffect } from 'react';
 import { Route, Switch, Redirect } from 'react-router-dom';
 
 import { CircularProgress, Grid } from '@material-ui/core';
-import TemplateRouter from './views/TemplateRouter';
-import COARouter from './views/COARouter';
-import OrgRouter from './views/OrganizationRouter';
 import AuthPage from './components/AuthPage';
-import Statuses from './views/Statuses';
-import Programs from './views/Programs';
-import SheetNames from './views/SheetNames';
-import RoleRouter from './views/RoleRouter';
-import SubmissionRouter from './views/SubmissionRouter';
-import ReportingPeriods from './views/ReportingPeriods';
 import Error from './views/authError';
 // import Signup from './views/authSignup'
+import AuthController from './controllers/Auth';
 import Login from './views/Login';
 import SignUp from './views/SignUp';
-
-import { ROUTE_WORKFLOW } from './constants/routes';
-import WorkflowRouter from './views/WorkflowRouter/WorkflowRouter';
-import GDCTMenu from './views/GDCTMenu';
 import Logout from './views/Logout';
-import AuthController from './controllers/Auth';
+import GDCTMenu from './views/GDCTMenu';
+import Programs from './views/Programs';
+import Statuses from './views/Statuses';
+import ReportingPeriods from './views/ReportingPeriods';
+
+import UserRouter from './views/UserRouter';
+import ReportRouter from './views/ReportRouter';
+import TemplateRouter from './views/TemplateRouter';
+import OrgRouter from './views/OrganizationRouter';
+import SubmissionRouter from './views/SubmissionRouter';
+import RoleRouter from './views/RoleRouter';
+import COARouter from './views/COARouter';
+import WorkflowRouter from './views/WorkflowRouter';
+import Register from './views/UserRegistrationRouter';
+import MasterValuePopulation from './views/MasterValuePopulation';
+import { ROUTE_WORKFLOW, ROUTE_TEMPLATE_PCKGS } from './constants/routes';
+
 import './App.scss';
 
 const PrivateRouter = ({ setLoggedIn }) => {
   return (
     <Switch>
-      <Route path={ROUTE_WORKFLOW} component={WorkflowRouter} />
       <Route exact path="/" component={GDCTMenu} />
-      <Route path="/template_manager" component={TemplateRouter} />
-      <Route path="/COA_manager" component={COARouter} />
-      <Route path="/role_manager" component={RoleRouter} />
-      <Route path="/statuses" component={Statuses} />
-      <Route path="/programs" component={Programs} />
-      <Route path="/submission_manager" component={SubmissionRouter} />
-      <Route path="/reportingPeriods" component={ReportingPeriods} />
-      <Route path="/sheetNames" component={SheetNames} />
-      <Route path="/organizations" component={OrgRouter} />
-      <Route path="/logout" render={props => <Logout {...props} setLoggedIn={setLoggedIn} />} />
+      <Route path="/template" component={TemplateRouter} />
+      <Route path="/user" component={UserRouter} />
+      <Route path="/report" component={ReportRouter} />
+      <Route path={ROUTE_TEMPLATE_PCKGS} component={TemplateRouter} />
+      <Route path="/admin/populate" component={MasterValuePopulation} />
+      <Route path="/admin/organization" component={OrgRouter} />
+      <Route path="/submission" component={SubmissionRouter} />
+      <Route path="/admin/role" component={RoleRouter} />
+      <Route path="/admin/coa" component={COARouter} />
+      <Route exact path="/admin/configuration" component={null} />
+      <Route exact path="/admin/business_rule_configure" component={null} />
+      <Route exact path="/admin/user_management" component={null} />
+      <Route exact path="/admin/program" component={Programs} />
+      <Route exact path="/admin/status" component={Statuses} />
+      <Route exact path="/admin/reporting_period" component={ReportingPeriods} />
+      <Route path={ROUTE_WORKFLOW} component={WorkflowRouter} />
+      {/* <Route path="/submission_manager" component={SubmissionRouter} /> */}
+      {/* <Route path="/sheetNames" component={SheetNames} />{' '} */}
+      {/* <Route path={ROUTE_COLUMN_NAMES} component={ColumnNames} /> */}
+      <Route
+        exact
+        path="/logout"
+        render={props => <Logout {...props} setLoggedIn={setLoggedIn} />}
+      />
       <Redirect from="*" to="/" />
     </Switch>
   );
@@ -47,13 +64,10 @@ const PrivateRouter = ({ setLoggedIn }) => {
 const PublicRouter = ({ setLoggedIn }) => {
   return (
     <Switch>
+      <Route exact path="/register" component={Register} />
       <Route exact path="/login" render={props => <Login {...props} setLoggedIn={setLoggedIn} />} />
       <Route exact path="/signup" component={SignUp} />
       <Route exact path="/auth/error" component={Error} />
-      {/* <Route
-        path="/login"
-        render={(props) => <Login {...props} setLoggedIn={setLoggedIn} />}
-      /> */}
       <Redirect from="*" to="/login" />
     </Switch>
   );

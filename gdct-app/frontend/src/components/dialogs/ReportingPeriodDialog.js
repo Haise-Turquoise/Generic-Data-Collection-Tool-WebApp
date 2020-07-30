@@ -1,11 +1,10 @@
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect, useMemo } from 'react';
 
+import { useSelector, shallowEqual, useDispatch } from 'react-redux';
 import SelectableTableDialog from './SelectableTableDialog';
 
 import { getReportingPeriodsRequest } from '../../store/thunks/reportingPeriod';
 
-import { useSelector, shallowEqual, useDispatch } from 'react-redux';
-import { useMemo } from 'react';
 import DialogsStore from '../../store/DialogsStore/store';
 import { selectIsReportingPeriodDialogOpen } from '../../store/DialogsStore/selectors';
 import { selectFactoryRESTResponseTableValues } from '../../store/common/REST/selectors';

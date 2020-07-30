@@ -1,17 +1,16 @@
 import React, { useMemo, useEffect } from 'react';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 
+import MaterialTable from 'material-table';
+import Paper from '@material-ui/core/Paper';
+
+import Typography from '@material-ui/core/Typography';
 import {
   getSubmissionPeriodsRequest,
   createSubmissionPeriodRequest,
   deleteSubmissionPeriodRequest,
   updateSubmissionPeriodRequest,
 } from '../../store/thunks/submissionPeriod';
-
-import MaterialTable from 'material-table';
-import Paper from '@material-ui/core/Paper';
-
-import Typography from '@material-ui/core/Typography';
 
 import { ReportingPeriodIdButton } from '../../components/buttons';
 import { selectFactoryRESTResponseTableValues } from '../../store/common/REST/selectors';

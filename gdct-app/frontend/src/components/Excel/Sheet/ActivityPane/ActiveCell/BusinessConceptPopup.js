@@ -1,13 +1,12 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { publicAxios } from '../../../../../tools/rest';
-
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
+import { publicAxios } from '../../../../../tools/rest';
 
 import { REST_PUBLIC_DATA } from '../../../../../constants/rest';
 

@@ -1,11 +1,10 @@
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect, useMemo } from 'react';
 
+import { useSelector, shallowEqual, useDispatch } from 'react-redux';
 import SelectableTableDialog from './SelectableTableDialog';
 
 import { getTemplatesRequest } from '../../store/thunks/template';
 
-import { useSelector, shallowEqual, useDispatch } from 'react-redux';
-import { useMemo } from 'react';
 import DialogsStore from '../../store/DialogsStore/store';
 import { selectFactoryRESTResponseTableValues } from '../../store/common/REST/selectors';
 import { selectTemplatesStore } from '../../store/TemplatesStore/selectors';

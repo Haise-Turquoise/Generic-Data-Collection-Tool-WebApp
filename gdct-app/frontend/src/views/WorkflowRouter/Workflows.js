@@ -1,23 +1,22 @@
 import React, { useMemo, useEffect } from 'react';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 
-import { getWorkflowsRequest, deleteWorkflowRequest } from '../../store/thunks/workflow';
-
 import MaterialTable from 'material-table';
 import Paper from '@material-ui/core/Paper';
 import LaunchIcon from '@material-ui/icons/Launch';
 
 import Typography from '@material-ui/core/Typography';
 
+import { useHistory } from 'react-router-dom';
+import { Button } from '@material-ui/core';
 import { selectFactoryRESTResponseTableValues } from '../../store/common/REST/selectors';
 import { selectWorkflowsStore } from '../../store/WorkflowsStore/selectors';
-import { useHistory } from 'react-router-dom';
-import { ROUTE_WORKFLOW_WORKFLOWS_CREATE, ROUTE_WORKFLOW_WORKFLOWS } from '../../constants/routes';
-import { Button } from '@material-ui/core';
+import { ROUTE_WORKFLOW_CREATE, ROUTE_WORKFLOW } from '../../constants/routes';
+import { getWorkflowsRequest, deleteWorkflowRequest } from '../../store/thunks/workflow';
 
 const WorkflowHeader = () => {
   const history = useHistory();
-  const handleCreate = () => history.push(ROUTE_WORKFLOW_WORKFLOWS_CREATE);
+  const handleCreate = () => history.push(ROUTE_WORKFLOW_CREATE);
 
   return (
     <Paper className="header">
@@ -58,7 +57,7 @@ const Workflows = () => {
       {
         icon: LaunchIcon,
         tooltip: 'Open Workflow',
-        onClick: (_event, workflow) => history.push(`${ROUTE_WORKFLOW_WORKFLOWS}/${workflow._id}`),
+        onClick: (_event, workflow) => history.push(`${ROUTE_WORKFLOW}/${workflow._id}`),
       },
     ],
     [history],

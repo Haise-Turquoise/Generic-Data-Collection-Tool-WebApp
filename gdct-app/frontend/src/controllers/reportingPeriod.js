@@ -1,8 +1,10 @@
 import axios from 'axios';
 
+import { host } from '../constants/domain';
+
 const reportingPeriodController = (() => {
   const reportingPeriodAxios = axios.create({
-    baseURL: 'http://localhost:3000/reportingPeriods',
+    baseURL: `${host}/reportingPeriods`,
   });
   return {
     fetch: async query => reportingPeriodAxios.get('').then(res => res.data.reportingPeriods),

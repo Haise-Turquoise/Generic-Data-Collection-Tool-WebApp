@@ -14,6 +14,7 @@ import { makeStyles } from '@material-ui/core/styles';
 
 import { Container } from '@material-ui/core';
 import AuthController from '../controllers/Auth';
+import { host } from '../constants/domain';
 
 function Copyright() {
   return (
@@ -67,9 +68,17 @@ export default function Login({ setLoggedIn }) {
   const [password, setPassword] = useState('');
   const [errors, setErrors] = useState({});
 
+  useEffect(() => {
+    AuthController.auto().then(auto => {
+      if (auto.data === true) {
+        setLoggedIn(true);
+      }
+    });
+  }, []);
+
   const handleChange = e => {
     const { name, value } = e.target;
-    let updatedErrors = { ...errors };
+    const updatedErrors = { ...errors };
 
     switch (name) {
       case 'password':
@@ -90,6 +99,7 @@ export default function Login({ setLoggedIn }) {
         //   `http://localhost:3000/auth/local?email=${email}&password=${password}`
         // )
         await AuthController.login({ email, password }).then(data => {
+          console.log(data);
           if (data.user.token) {
             setLoggedIn(true);
           }
@@ -164,7 +174,7 @@ export default function Login({ setLoggedIn }) {
               marginBottom: 0,
             }}
             onClick={() => {
-              window.location.href = 'http://localhost:3000/auth/google/';
+              window.location.href = `${host}/auth/google/`;
             }}
           >
             <div>
@@ -182,7 +192,7 @@ export default function Login({ setLoggedIn }) {
             color="primary"
             className={classes.submit}
             onClick={() => {
-              window.location.href = 'http://localhost:3000/auth/facebook/';
+              window.location.href = `${host}/auth/facebook/`;
             }}
           >
             <div>
@@ -200,11 +210,17 @@ export default function Login({ setLoggedIn }) {
                 Forgot password?
               </Link>
             </Grid>
+
             <Grid item>
               <Link href="/signup" variant="body2">
                 {"Don't have an account? Sign Up"}
               </Link>
             </Grid>
+          </Grid>
+          <Grid item>
+            <Link href="/register" variant="body2">
+              {'Register'}
+            </Link>
           </Grid>
         </form>
       </div>

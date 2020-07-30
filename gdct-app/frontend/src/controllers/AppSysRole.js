@@ -1,10 +1,13 @@
 import axios from 'axios';
 
+import { host } from '../constants/domain';
+
 const AppSysRoleController = (() => {
   const AppSysRoleAxios = axios.create({
-    baseURL: 'http://localhost:3000/role_manager/AppSysRoles',
+    baseURL: `${host}/role_manager/AppSysRoles`,
     withCredentials: true,
   });
+
   return {
     fetchAppSysRole: async _id => AppSysRoleAxios.get(`/${_id}`).then(res => res.data.AppSysRole),
     fetch: async _ => AppSysRoleAxios.get('').then(res => res.data.AppSysRoles),

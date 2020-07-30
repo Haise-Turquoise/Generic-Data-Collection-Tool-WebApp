@@ -9,9 +9,9 @@ import Fab from '@material-ui/core/Fab';
 import AddCircleIcon from '@material-ui/icons/AddCircle';
 import Button from '@material-ui/core/Button';
 
+import { cx, css } from 'emotion';
 import { CustomEditor } from '../tools/slate';
 
-import { cx, css } from 'emotion';
 import SubmissionPeriodDialog from './dialogs/SubmissionPeriodDialog';
 import StatusDialog from './dialogs/StatusDialog';
 import ProgramDialog from './dialogs/ProgramDialog';

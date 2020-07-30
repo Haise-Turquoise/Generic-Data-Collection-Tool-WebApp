@@ -1,12 +1,11 @@
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect, useMemo } from 'react';
 import PropTypes from 'prop-types';
 
+import { useSelector, shallowEqual, useDispatch } from 'react-redux';
 import SelectableTableDialog from './SelectableTableDialog';
 
 import { getOrgsRequest } from '../../store/thunks/organization';
 
-import { useSelector, shallowEqual, useDispatch } from 'react-redux';
-import { useMemo } from 'react';
 import DialogsStore from '../../store/DialogsStore/store';
 import { selectFactoryRESTResponseTableValues } from '../../store/common/REST/selectors';
 import { selectOrgsStore } from '../../store/OrganizationsStore/selectors';

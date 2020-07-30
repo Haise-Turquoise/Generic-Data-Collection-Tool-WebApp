@@ -1,3 +1,4 @@
+/* eslint import/prefer-default-export: 0 */
 // https://nodemailer.com/smtp/testing/
 
 export const mailConfig = {

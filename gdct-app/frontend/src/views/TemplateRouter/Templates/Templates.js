@@ -1,18 +1,17 @@
 import React, { useCallback, useMemo, useEffect } from 'react';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 
+import MaterialTable from 'material-table';
+import LaunchIcon from '@material-ui/icons/Launch';
+import Paper from '@material-ui/core/Paper';
+
+import Typography from '@material-ui/core/Typography';
 import {
   getTemplatesRequest,
   createTemplateRequest,
   deleteTemplateRequest,
   updateTemplateRequest,
 } from '../../../store/thunks/template';
-
-import MaterialTable from 'material-table';
-import LaunchIcon from '@material-ui/icons/Launch';
-import Paper from '@material-ui/core/Paper';
-
-import Typography from '@material-ui/core/Typography';
 
 import { StatusIdButton, TemplateTypeIdButton } from '../../../components/buttons';
 

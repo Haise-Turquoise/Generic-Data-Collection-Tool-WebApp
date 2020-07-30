@@ -24,6 +24,6 @@ export default class ProgramService {
   }
 
   async findProgramByIds(ids) {
-    return this.ProgramRepository.findByIds(ids);
+    return this.programRepository.findByIds(ids);
   }
 }

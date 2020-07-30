@@ -3,9 +3,9 @@ import { getLastArea } from '../tools/area';
 const DELETE_CELLS_SHIFT_LEFT = state => {
   const { stagnantSelectionAreas, activeCellPosition, sheetCellData } = state;
 
-  let newState = { ...state };
+  const newState = { ...state };
 
-  let newSheetCellData = {};
+  const newSheetCellData = {};
   const { y1, y2, x1, x2 } = getLastArea(stagnantSelectionAreas, activeCellPosition);
 
   const shiftOffsetX = Math.abs(x1 - x2);
@@ -15,12 +15,12 @@ const DELETE_CELLS_SHIFT_LEFT = state => {
   const rowStart = Math.min(y1, y2);
   const rowEnd = Math.max(y1, y2);
 
-  for (let row in sheetCellData) {
+  for (const row in sheetCellData) {
     const columns = sheetCellData[row];
     if (row < rowStart || row > rowEnd) {
       newSheetCellData[row] = columns;
     } else {
-      for (let column in columns) {
+      for (const column in columns) {
         if (column < shiftStartX) {
           newSheetCellData[row] = {
             ...sheetCellData[row],

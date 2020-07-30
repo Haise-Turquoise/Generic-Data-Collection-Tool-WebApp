@@ -1,7 +1,5 @@
-import { saveActiveCellInputData } from '../tools/cell';
-import { getMergedData } from '../tools/merge';
-import { getShiftTabFreeSpot, getTabFreeSpot } from '../tools/merge';
-import { updateActiveCellPosition } from '../tools/cell';
+import { saveActiveCellInputData, updateActiveCellPosition } from '../tools/cell';
+import { getMergedData, getShiftTabFreeSpot, getTabFreeSpot } from '../tools/merge';
 
 const TAB = (state, { shiftKey }) => {
   let {
@@ -62,14 +60,14 @@ const TAB = (state, { shiftKey }) => {
     };
   }
 
-  let { x1, y1, x2, y2 } = selectionArea;
+  const { x1, y1, x2, y2 } = selectionArea;
 
   const startX = Math.min(x1, x2);
   const endX = Math.max(x1, x2);
   const startY = Math.min(y1, y2);
   const endY = Math.max(y1, y2);
 
-  let merged = getMergedData(sheetCellData, y, x);
+  const merged = getMergedData(sheetCellData, y, x);
 
   if (shiftKey) {
     if (merged) {
@@ -101,13 +99,11 @@ const TAB = (state, { shiftKey }) => {
       }
 
       x++;
+    } else if (merged) {
+      const { x2 } = merged;
+      x = x2 + 1;
     } else {
-      if (merged) {
-        const { x2 } = merged;
-        x = x2 + 1;
-      } else {
-        x++;
-      }
+      x++;
     }
   }
 
@@ -172,7 +168,7 @@ const TAB = (state, { shiftKey }) => {
             : (activeCellSelectionAreaIndex = stagnantSelectionAreasLength - 1);
         }
 
-        let newSelectionArea =
+        const newSelectionArea =
           activeCellSelectionAreaIndex === stagnantSelectionAreasLength
             ? activeSelectionArea
             : stagnantSelectionAreas[activeCellSelectionAreaIndex];

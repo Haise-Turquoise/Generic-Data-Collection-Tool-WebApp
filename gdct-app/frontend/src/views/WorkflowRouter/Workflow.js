@@ -1,16 +1,17 @@
 import React, { useEffect, useMemo, useCallback } from 'react';
 import { FlowChart, actions, REACT_FLOW_CHART } from '@mrblenny/react-flow-chart';
 import { useSelector, shallowEqual, useDispatch } from 'react-redux';
-import { selectFactoryRESTResponseValues } from '../../store/common/REST/selectors';
-import { selectStatusesStore } from '../../store/StatusesStore/selectors';
-import { getStatusesRequest } from '../../store/thunks/status';
-import { StatusesStoreActions } from '../../store/StatusesStore/store';
 import TextField from '@material-ui/core/TextField';
 import List from '@material-ui/core/List';
 import Listitem from '@material-ui/core/ListItem';
 import { mapValues } from 'lodash';
-
 import { Typography, Button, ButtonGroup } from '@material-ui/core';
+import { useRouteMatch } from 'react-router-dom';
+import { selectFactoryRESTResponseValues } from '../../store/common/REST/selectors';
+import { selectStatusesStore } from '../../store/StatusesStore/selectors';
+import { getStatusesRequest } from '../../store/thunks/status';
+import { StatusesStoreActions } from '../../store/StatusesStore/store';
+
 import {
   selectWorkflowChart,
   selectSelectedNodeId,
@@ -21,7 +22,6 @@ import {
 import { WorkflowStoreActions } from '../../store/WorkflowStore/store';
 import { submitWorkflow, updateWorkflow, loadWorkflow } from '../../store/thunks/workflow';
 import './Workflow.scss';
-import { useRouteMatch } from 'react-router-dom';
 
 const NodeInnerCustom = ({ node, config }) => <div className="workflowNode">{node.type.name}</div>;
 

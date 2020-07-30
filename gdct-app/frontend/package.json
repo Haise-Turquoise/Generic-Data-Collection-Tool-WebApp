@@ -10,8 +10,8 @@
     "deploy:aws": "aws s3 sync build s3://webproto",
     "fix:eslint": "yarn lint:eslint --fix",
     "fix:prettier": "yarn lint:prettier --write",
-    "lint:eslint": "eslint \"./src/**/*.{js,jsx,ts,tsx}\"",
-    "lint:prettier": "prettier --list-different \"./src/**/*.{js,jsx,ts,tsx}\""
+    "lint:eslint": "eslint \"./**/*.{js,jsx,ts,tsx}\"",
+    "lint:prettier": "prettier --list-different \"./**/*.{js,jsx,ts,tsx}\""
   },
   "husky": {
     "hooks": {
@@ -19,7 +19,7 @@
     }
   },
   "lint-staged": {
-    "./src/**/*.js": [
+    "./**/*.{js,jsx,ts,tsx}": [
       "yarn lint:prettier",
       "yarn lint:eslint"
     ]
@@ -36,19 +36,24 @@
     "@material-ui/pickers": "^3.2.7",
     "@material-ui/styles": "^4.5.0",
     "@mrblenny/react-flow-chart": "^0.0.13",
+    "@reduxjs/toolkit": "^1.4.0",
     "axios": "^0.18.0",
     "bootstrap": "^4.3.1",
     "classnames": "^2.2.6",
     "clone-deep": "^4.0.1",
     "clsx": "^1.1.0",
     "color": "^3.1.2",
+    "dotenv": "^8.2.0",
+    "dotenv-webpack": "^2.0.0",
     "draft-js": "^0.11.3",
     "emotion": "^10.0.27",
+    "find-config": "^1.0.0",
     "font-awesome": "^4.7.0",
     "formik": "^2.1.5",
     "hot-formula-parser": "^3.0.2",
     "is-hotkey": "^0.1.6",
     "jquery": "^3.4.1",
+    "lodash": "^4.17.19",
     "material-table": "^1.54.2",
     "mdi-material-ui": "^6.8.0",
     "memoize-one": "^5.1.1",
@@ -87,7 +92,8 @@
     "webpack-bundle-analyzer": "^3.6.0",
     "webpack-dev-server": "^3.11.0",
     "xlsx-populate": "https://github.com/greylemon/xlsx-populate",
-    "yup": "^0.29.1"
+    "yup": "^0.29.1",
+    "object-hash": "^2.0.3"
   },
   "devDependencies": {
     "@babel/core": "^7.4.4",

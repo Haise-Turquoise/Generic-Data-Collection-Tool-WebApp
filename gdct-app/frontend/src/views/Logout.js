@@ -3,7 +3,7 @@ import { useHistory } from 'react-router-dom';
 import AuthController from '../controllers/Auth';
 
 export default function Logout({ setLoggedIn }) {
-  let history = useHistory();
+  const history = useHistory();
 
   useEffect(() => {
     AuthController.logout().then(res => {

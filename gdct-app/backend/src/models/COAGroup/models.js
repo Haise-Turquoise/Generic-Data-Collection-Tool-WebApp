@@ -1,7 +1,7 @@
 import { Schema, model } from 'mongoose';
 
 const COAGroupModel = model(
-  'COAGroup',
+  'CategoryGroup',
   new Schema(
     {
       name: { type: String },
@@ -10,7 +10,7 @@ const COAGroupModel = model(
     },
     { minimize: false },
   ),
-  'COAGroup',
+  'CategoryGroup',
 );
 
 export default COAGroupModel;

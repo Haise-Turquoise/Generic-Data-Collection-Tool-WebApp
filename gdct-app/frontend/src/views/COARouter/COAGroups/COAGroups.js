@@ -1,18 +1,17 @@
 import React, { useCallback, useMemo, useEffect } from 'react';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 
+import MaterialTable from 'material-table';
+import LaunchIcon from '@material-ui/icons/Launch';
+import Paper from '@material-ui/core/Paper';
+
+import Typography from '@material-ui/core/Typography';
 import {
   getCOAGroupsRequest,
   createCOAGroupRequest,
   deleteCOAGroupRequest,
   updateCOAGroupRequest,
 } from '../../../store/thunks/COAGroup';
-
-import MaterialTable from 'material-table';
-import LaunchIcon from '@material-ui/icons/Launch';
-import Paper from '@material-ui/core/Paper';
-
-import Typography from '@material-ui/core/Typography';
 
 import './COAGroups.scss';
 import { selectFactoryRESTResponseTableValues } from '../../../store/common/REST/selectors';

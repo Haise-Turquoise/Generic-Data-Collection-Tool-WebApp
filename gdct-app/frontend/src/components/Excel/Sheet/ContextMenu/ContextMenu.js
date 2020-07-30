@@ -17,7 +17,7 @@ import {
 import './ContextMenu.scss';
 
 const MenuIcon = ({ icon, mdiIcon }) => (
-  <div className={`menuItem__icon ${mdiIcon ? mdiIcon : ''}`}>{!mdiIcon && icon}</div>
+  <div className={`menuItem__icon ${mdiIcon || ''}`}>{!mdiIcon && icon}</div>
 );
 
 const MenuTextContent = ({ text, command }) => (

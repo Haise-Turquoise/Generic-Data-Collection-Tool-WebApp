@@ -12,6 +12,7 @@ import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 
+import { useHistory } from 'react-router-dom';
 import MandatoryInfo from './MandatoryInfo';
 import ExtraInfo from './ExtraInfo';
 import Review from './Review';
@@ -21,7 +22,6 @@ import { selectFactoryRESTResponseTableValues } from '../store/common/REST/selec
 import { selectAppSysRolesStore } from '../store/AppSysRolesStore/selectors';
 
 import AuthController from '../controllers/Auth';
-import { useHistory } from 'react-router-dom';
 
 function Copyright() {
   return (
@@ -200,11 +200,11 @@ export default function SignUp() {
       title,
       phoneNumber,
       ext,
-      sysRoles,
-    }).then(res => {
+      sysRoles: sysRoles.map(e => e._id),
+    }).then(() => {
       setTimeout(() => {
         history.push('/');
-      }, 1000);
+      }, 2000);
     });
   };
   return (
@@ -230,7 +230,7 @@ export default function SignUp() {
                 Thank you for sign up in GDCT.
               </Typography>
               <Typography variant="subtitle1">
-                You will be redirected to authorized pages. Please wait in 3 sec.
+                You will be redirected to authorized pages. Please wait in 2 sec.
               </Typography>
               {processSignUp()}
             </React.Fragment>

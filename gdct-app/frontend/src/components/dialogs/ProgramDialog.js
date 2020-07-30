@@ -1,11 +1,10 @@
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect, useMemo } from 'react';
 
+import { useSelector, shallowEqual, useDispatch } from 'react-redux';
 import SelectableTableDialog from './SelectableTableDialog';
 
 import { getProgramsRequest } from '../../store/thunks/program';
 
-import { useSelector, shallowEqual, useDispatch } from 'react-redux';
-import { useMemo } from 'react';
 import { selectIsProgramDialogOpen } from '../../store/DialogsStore/selectors';
 import { selectFactoryRESTResponseTableValues } from '../../store/common/REST/selectors';
 import { selectProgramsStore } from '../../store/ProgramsStore/selectors';

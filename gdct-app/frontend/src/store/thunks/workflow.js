@@ -1,3 +1,5 @@
+import { cloneDeep } from 'lodash';
+import uniqid from 'uniqid';
 import WorkflowsStore from '../WorkflowsStore/store';
 import workflowController from '../../controllers/workflow';
 import {
@@ -6,11 +8,9 @@ import {
   selectWorkflowName,
   selectWorkflowId,
 } from '../WorkflowStore/selectors';
-import { WorkflowStoreActions } from '../WorkflowStore/store';
-import { initialWorkflowState } from '../WorkflowStore/store';
+import { WorkflowStoreActions, initialWorkflowState } from '../WorkflowStore/store';
+
 import { getRequestFactory, deleteRequestFactory, updateRequestFactory } from './common/REST';
-import { cloneDeep } from 'lodash';
-import uniqid from 'uniqid';
 
 export const getWorkflowsRequest = getRequestFactory(WorkflowsStore, workflowController);
 
@@ -30,7 +30,7 @@ const _createWorkflow = (dispatch, getState) => {
   const endNodes = new Set();
   const startNodes = new Set();
 
-  for (let link in workflowLinks) {
+  for (const link in workflowLinks) {
     const { from, to } = workflowLinks[link];
     const fromId = from.nodeId;
     const toId = to.nodeId;
@@ -59,12 +59,12 @@ const _createWorkflow = (dispatch, getState) => {
       WorkflowStoreActions.UPDATE_WORKFLOW_ERROR('There must be only one starting node'),
     );
 
-  let visited = new Set();
+  const visited = new Set();
 
   markVisitableNodes(initialNode, linkMapSet, visited);
 
   let isGraphConnected = true;
-  for (let node in workflowNodes) {
+  for (const node in workflowNodes) {
     if (!visited.has(node)) {
       isGraphConnected = false;
       break;
@@ -83,14 +83,14 @@ const _createWorkflow = (dispatch, getState) => {
   const workflowProcessesData = [];
   const statusData = [];
 
-  for (let nodeId in workflowNodes) {
+  for (const nodeId in workflowNodes) {
     const {
       type: { _id: statusId },
     } = workflowNodes[nodeId];
     statusData.push({ id: nodeId, statusId });
   }
 
-  for (let linkId in linkMapSet) {
+  for (const linkId in linkMapSet) {
     const node = workflowNodes[linkId];
     workflowProcessesData.push({
       id: linkId,
@@ -118,7 +118,7 @@ export const loadWorkflow = workflowId => dispatch => {
     workflowState.name = workflow.name;
     workflowState._id = workflow._id;
 
-    for (let workflowProcess of workflowProcesses) {
+    for (const workflowProcess of workflowProcesses) {
       const {
         _id,
         to,
@@ -152,7 +152,7 @@ export const loadWorkflow = workflowId => dispatch => {
         size: { width: 200, height: 100 },
       };
 
-      for (let connectionId of to) {
+      for (const connectionId of to) {
         const linkId = uniqid();
         workflowState.chart.links[linkId] = {
           id: linkId,

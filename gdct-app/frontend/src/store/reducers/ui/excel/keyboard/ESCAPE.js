@@ -15,7 +15,7 @@ const ESCAPE = state => {
 
   if (!isEditMode) return state;
 
-  let newState = { ...state };
+  const newState = { ...state };
 
   newState.isEditMode = false;
 

@@ -21,10 +21,10 @@ const MOUSE_DOWN = (state, { x1, y1, ctrlKey, shiftKey }) => {
     let y2;
 
     if (shiftKey) {
-      let minY = Math.min(y1, y);
-      let minX = Math.min(x1, x);
-      let maxY = Math.max(y1, y);
-      let maxX = Math.max(x1, x);
+      const minY = Math.min(y1, y);
+      const minX = Math.min(x1, x);
+      const maxY = Math.max(y1, y);
+      const maxX = Math.max(x1, x);
 
       const newArea = getWholeArea({ minX, minY, maxX, maxY, sheetCellData });
 

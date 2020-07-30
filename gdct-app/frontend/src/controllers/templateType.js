@@ -1,16 +1,21 @@
 import axios from 'axios';
 
+import { host } from '../constants/domain';
+
 const templateTypeController = (() => {
   const templateTypeAxios = axios.create({
-    baseURL: 'http://localhost:3000/template_manager/templateTypes',
+    baseURL: `${host}/template_manager/templateTypes`,
   });
   return {
-    fetch: async query => templateTypeAxios.get(`/fetchTemplateType`).then(res => res.data.templateTypes),
+    fetch: async query => templateTypeAxios.get('/fetchTemplateType').then(res => res.data.templateTypes),
+
     fetchByProgramIds: async programIds =>
-      templateTypeAxios.post(`/createTemplateType`, { programIds }).then(res => res.data.templateTypes),
+      templateTypeAxios
+        .post(`/searchTemplateTypeByProgramIds`, { programIds })
+        .then(res => res.data.templateTypes),
     create: async templateType =>
       templateTypeAxios
-        .post(`/createTemplateType`, {
+        .post('/createTemplateType', {
           templateType: {
             ...templateType,
             programIds: [],

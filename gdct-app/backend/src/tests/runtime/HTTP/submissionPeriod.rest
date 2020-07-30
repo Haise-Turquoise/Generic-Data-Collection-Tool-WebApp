@@ -1,7 +1,0 @@
-GET http://localhost:3000/submission_manager/submissionPeriods
-
-# POST http://localhost:3000/designer/submissionPeriods HTTP/1.1
-# content-type: application/json
-
-# {
-# }

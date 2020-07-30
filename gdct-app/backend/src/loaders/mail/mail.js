@@ -1,6 +1,6 @@
 import nodemailer from 'nodemailer';
 
-import { mailConfig } from '../config/mail';
+import { mailConfig } from '../../middlewares/mail/nodeMailer';
 
 // Check your messages at https://ethereal.email/ on the test email account
 // Credentials are present on mailConfig
@@ -9,7 +9,7 @@ const transporter = nodemailer.createTransport(mailConfig);
 export const sendUserVerficationEmail = registerData => {
   const { username, email } = registerData;
   const message = {
-    from: 'carrsun96@gmail.com',
+    from: 'julio32@ethereal.email',
     to: email,
     subject: 'Web-prototype User Email Verification',
     // text: `Hello ${username}! Activate your account here by going to this url: ${FRONTEND_SERVER}/verification/${id}`,
@@ -28,18 +28,17 @@ export const sendUserVerficationEmail = registerData => {
 export const sendAdminVerficationEmail = (orgInfo, hashedUsername, userId, username) => {
   const { authorizedPerson, orgId, permission } = orgInfo;
   const orgName = orgInfo.name;
-  console.log(orgInfo);
   const { name, telephone, email } = authorizedPerson;
 
   const stringList = [];
-  permission.forEach(permission => {
-    stringList.push(JSON.stringify(permission));
+  permission.forEach(e => {
+    stringList.push(JSON.stringify(e));
   });
   stringList.join('<br/>');
   console.log(stringList);
   const message = {
-    from: 'carrsun96@gmail.com',
-    to: 'haonan.sun@ontario.ca',
+    from: 'julio32@ethereal.email',
+    to: email,
     subject: 'Web-prototype Admin Email Verification',
     // text: `Hello ${username}! Activate your account here by going to this url: ${FRONTEND_SERVER}/verification/${id}`,
     html: `<p><b>Hello ${name}</b> 
@@ -52,9 +51,9 @@ export const sendAdminVerficationEmail = (orgInfo, hashedUsername, userId, usern
         <br/> Phone:        ${telephone},
         <br/> Email:        ${email},
         <br/> To approve this request, click the link below: 
-        <br/> <a>http://localhost:3000/public/verification/admin?approve=true&hashedUsername=${hashedUsername}&_id=${userId}&orgId=${orgId}</a>
+        <br/> <a>${process.env.HOST}/public/users/verifyUser?approve=true&hashedUsername=${hashedUsername}&_id=${userId}&orgId=${orgId}</a>
         <br/> To reject this request, click the link below:
-        <br/> <a>http://localhost:3000/public/verification/admin?approve=false&hashedUsername=${hashedUsername}&_id=${userId}&orgId=${orgId}</a>
+        <br/> <a>${process.env.HOST}/public/users/verifyUser?approve=false&hashedUsername=${hashedUsername}&_id=${userId}&orgId=${orgId}</a>
         </p>`,
   };
 
@@ -66,7 +65,7 @@ export const sendAdminVerficationEmail = (orgInfo, hashedUsername, userId, usern
 export const sendUserActiveEmail = user => {
   const { username, hashedUsername, _id, email } = user;
   const message = {
-    from: 'carrsun96@gmail.com',
+    from: 'julio32@ethereal.email',
     to: email,
     subject: 'Web-prototype User Email Verification',
     // text: `Hello ${username}! Activate your account here by going to this url: ${FRONTEND_SERVER}/verification/${id}`,
@@ -74,7 +73,7 @@ export const sendUserActiveEmail = user => {
         <br/>Your request has been processed.
         <br/>In order to access the site, you need activate your account.
         <br/>To activate your account, click the link below:
-        <br/> <a>http://localhost:3000/public/verification/user?hashedUsername=${hashedUsername}&_id=${_id}</a></p>`,
+        <br/> <a>${process.env.HOST}/public/users/activeUser?hashedUsername=${hashedUsername}&_id=${_id}</a></p>`,
   };
 
   return transporter

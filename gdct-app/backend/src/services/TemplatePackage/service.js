@@ -15,11 +15,11 @@ export default class TemplatePackageService {
     return this.templatePackageRepository.delete(id);
   }
 
-  async updateTemplatePackage(id, templatePackage) {
-    return this.templatePackageRepository.update(id, templatePackage);
+  async updateTemplatePackage(id, templatePackage, isPopulated = false) {
+    return this.templatePackageRepository.update(id, templatePackage, isPopulated);
   }
 
-  async findTemplatePackage(templatePackage) {
-    return this.templatePackageRepository.find(templatePackage);
+  async findTemplatePackage(templatePackage, isPopulated = false) {
+    return this.templatePackageRepository.find(templatePackage, isPopulated);
   }
 }

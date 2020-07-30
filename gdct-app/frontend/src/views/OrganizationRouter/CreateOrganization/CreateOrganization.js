@@ -1,9 +1,9 @@
 import React from 'react';
+import { useDispatch } from 'react-redux';
+import { useHistory } from 'react-router-dom';
 import ModifyOrganization, { currentTime } from '../ModifyOrganization';
 import OrgEntity from '../../../../../backend/src/entities/Organization/entity';
 import { createOrgsRequest } from '../../../store/thunks/organization';
-import { useDispatch } from 'react-redux';
-import { useHistory } from 'react-router-dom';
 
 const CreateOrganization = () => {
   const history = useHistory();

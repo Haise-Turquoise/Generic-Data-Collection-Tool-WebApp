@@ -1,8 +1,7 @@
 import React from 'react';
 
-import MenuItems from '../../../commonComponents/MenuItems';
-
 import AcUnitIcon from '@material-ui/icons/AcUnit';
+import MenuItems from '../../../commonComponents/MenuItems';
 
 const Edit = ({ openedMenuName, handleClickMenu, handleHoverMenu }) => {
   const options = [

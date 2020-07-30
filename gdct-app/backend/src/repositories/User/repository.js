@@ -9,7 +9,7 @@ export default class UserRepository extends BaseRepository {
   }
 
   async create(user) {
-    return UserModel.create(user).then(user => new UserEntity(user.toObject()));
+    return UserModel.create(user);
   }
 
   async checkAuthenticate(email, password) {

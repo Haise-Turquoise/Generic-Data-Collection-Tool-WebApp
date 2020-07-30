@@ -5,7 +5,7 @@ import ProgramService from '../../services/Program';
 const ProgramController = Service([ProgramService], service => {
   const router = Router();
   return (() => {
-    router.get('/programs', (req, res, next) => {
+    router.get('/programs/fetchPrograms', (req, res, next) => {
       // Get query from middleware -- auth handler
 
       service
@@ -14,7 +14,7 @@ const ProgramController = Service([ProgramService], service => {
         .catch(next);
     });
 
-    router.post('/programs', (req, res, next) => {
+    router.post('/programs/createProgram', (req, res, next) => {
       service
         .createProgram(req.body.program)
         .then(program => res.json({ program }))
@@ -25,7 +25,7 @@ const ProgramController = Service([ProgramService], service => {
         .catch(next);
     });
 
-    router.put('/programs/:_id', (req, res, next) => {
+    router.put('/programs/updateProgram/:_id', (req, res, next) => {
       const { _id } = req.params;
       const { program } = req.body;
 
@@ -35,7 +35,7 @@ const ProgramController = Service([ProgramService], service => {
         .catch(next);
     });
 
-    router.delete('/programs/:_id', (req, res, next) => {
+    router.delete('/programs/deleteProgram/:_id', (req, res, next) => {
       const { _id } = req.params;
 
       service
@@ -44,7 +44,7 @@ const ProgramController = Service([ProgramService], service => {
         .catch(next);
     });
 
-    router.post('/programs/searchProgramsByIds', (req, res, next) => {
+    router.post('/programs/searchPrograms', (req, res, next) => {
       const { ids } = req.body;
 
       service

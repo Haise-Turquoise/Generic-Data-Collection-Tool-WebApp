@@ -1,17 +1,16 @@
 import React, { useMemo, useEffect } from 'react';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 
+import MaterialTable from 'material-table';
+import Paper from '@material-ui/core/Paper';
+
+import Typography from '@material-ui/core/Typography';
 import {
   getAppResourcesRequest,
   createAppResourceRequest,
   deleteAppResourceRequest,
   updateAppResourceRequest,
 } from '../../../store/thunks/AppResource';
-
-import MaterialTable from 'material-table';
-import Paper from '@material-ui/core/Paper';
-
-import Typography from '@material-ui/core/Typography';
 
 import './AppResources.scss';
 import { selectFactoryRESTResponseTableValues } from '../../../store/common/REST/selectors';

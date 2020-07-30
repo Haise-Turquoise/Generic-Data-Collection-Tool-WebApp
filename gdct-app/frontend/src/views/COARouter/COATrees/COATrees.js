@@ -1,13 +1,12 @@
 import React, { useCallback, useMemo, useEffect } from 'react';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 
-import { getSheetNamesRequest } from '../../../store/thunks/sheetName';
-
 import MaterialTable from 'material-table';
 import LaunchIcon from '@material-ui/icons/Launch';
 import Paper from '@material-ui/core/Paper';
 
 import Typography from '@material-ui/core/Typography';
+import { getSheetNamesRequest } from '../../../store/thunks/sheetName';
 import { selectFactoryRESTResponseTableValues } from '../../../store/common/REST/selectors';
 import { selectSheetNamesStore } from '../../../store/SheetNamesStore/selectors';
 

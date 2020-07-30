@@ -1,11 +1,11 @@
 const SET_BUSINESS_CONCEPT = (state, { category, concept }) => {
-  let newState = { ...state };
+  const newState = { ...state };
 
   const { activeCellPosition, sheetCellData } = newState;
 
   const { x, y } = activeCellPosition;
 
-  let newSheetCellData = { ...sheetCellData };
+  const newSheetCellData = { ...sheetCellData };
 
   if (category === 'attribute') {
     if (!newSheetCellData[1]) newSheetCellData[1] = {};

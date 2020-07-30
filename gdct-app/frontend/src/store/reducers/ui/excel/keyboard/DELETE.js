@@ -2,7 +2,7 @@ import { getAllAreas } from '../tools/area';
 import { CustomEditor, createEmptyEditorValue } from '../../../../../tools/slate';
 
 const DELETE = state => {
-  let {
+  const {
     isEditMode,
 
     sheetCellData,
@@ -10,16 +10,16 @@ const DELETE = state => {
 
   if (isEditMode) return state;
 
-  let newState = { ...state };
+  const newState = { ...state };
 
-  let selectionAreaCoveredCells = getAllAreas(newState);
+  const selectionAreaCoveredCells = getAllAreas(newState);
 
-  let newSheetCellData = { ...sheetCellData };
+  const newSheetCellData = { ...sheetCellData };
 
-  for (let row in selectionAreaCoveredCells) {
-    let columns = Object.keys(selectionAreaCoveredCells[row]);
+  for (const row in selectionAreaCoveredCells) {
+    const columns = Object.keys(selectionAreaCoveredCells[row]);
 
-    let rowData = { ...newSheetCellData[row] };
+    const rowData = { ...newSheetCellData[row] };
 
     if (rowData) {
       columns.forEach(column => {

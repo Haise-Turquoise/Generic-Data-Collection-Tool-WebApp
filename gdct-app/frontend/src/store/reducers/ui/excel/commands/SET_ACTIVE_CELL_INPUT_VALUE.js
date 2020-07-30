@@ -1,7 +1,7 @@
 import cloneDeep from 'clone-deep';
 
 const SET_ACTIVE_CELL_INPUT_VALUE = (state, { value, input }) => {
-  let newState = { ...state };
+  const newState = { ...state };
 
   // newState.activeCellAutoFocus = input === "formula" ? false : true;
 

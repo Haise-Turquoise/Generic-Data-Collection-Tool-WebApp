@@ -1,7 +1,7 @@
 const ADD_SHEET = (state, { sheetName, sheetData }) => {
   const { activeSheetName, sheetNames } = state;
 
-  let newState = { ...state };
+  const newState = { ...state };
 
   newState.inactiveSheets[sheetName] = sheetData;
 

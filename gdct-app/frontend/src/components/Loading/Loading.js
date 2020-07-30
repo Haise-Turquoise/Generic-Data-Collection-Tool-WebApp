@@ -11,7 +11,7 @@ const LoadingContent = ({ message }) => (
   <Paper className="loadingContent">
     <CircularProgress />
     <Typography variant="subtitle2" color="textSecondary">
-      {message ? message : 'Loading Components...'}
+      {message || 'Loading Components...'}
     </Typography>
   </Paper>
 );

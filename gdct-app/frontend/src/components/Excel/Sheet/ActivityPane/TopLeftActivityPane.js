@@ -27,7 +27,7 @@ const computeSelectionAreaStyle = (
 ) => {
   const { x1, y1, x2, y2 } = selectionArea;
 
-  let borderStyle = isActive
+  const borderStyle = isActive
     ? STYLE_ACTIVE_SELECTION_BORDER_STYLE
     : STYLE_STAGNANT_SELECTION_BORDER_STYLE;
   let selectionAreaWidth;
@@ -35,7 +35,7 @@ const computeSelectionAreaStyle = (
   let left;
   let top;
 
-  let customSelectionStyle = {
+  const customSelectionStyle = {
     borderLeftWidth: STYLE_SELECTION_BORDER_WIDTH,
     borderLeftColor: STYLE_SELECTION_BORDER_COLOR,
     borderLeftStyle: borderStyle,

@@ -1,8 +1,10 @@
 import axios from 'axios';
 
+import { host } from '../constants/domain';
+
 const workflowController = (() => {
   const workflowAxios = axios.create({
-    baseURL: 'http://localhost:3000/workflow_manager/workflows',
+    baseURL: `${host}/workflow_manager/workflows`,
   });
   return {
     // fetchWorkflows: async (query) =>
@@ -17,6 +19,8 @@ const workflowController = (() => {
       workflowAxios.get(`/${workflowId}`).then(res => {
         return res.data.data;
       }),
+    fetchProcess: async processId =>
+      workflowAxios.get(`/workflowProcessId/${processId}`).then(res => res.data.data),
   };
 })();
 

@@ -6,8 +6,8 @@ import {
   getNormalRowHeight,
 } from '../../../../../tools/excel';
 
-import topOffsetsSelector from '../../../../../store/selectors/ui/excel/topOffsets';
-import leftOffsetsSelector from '../../../../../store/selectors/ui/excel/leftOffsets';
+import topOffsetsSelector from '../../../../selectors/ui/excel/topOffsets';
+import leftOffsetsSelector from '../../../../selectors/ui/excel/leftOffsets';
 
 import {
   DEFAULT_EXCEL_SHEET_ROW_HEIGHT_HEADER,
@@ -47,7 +47,7 @@ export const scrollTo = ({
     newX = 1;
   }
 
-  let { scrollTop, scrollLeft } = scrollData;
+  const { scrollTop, scrollLeft } = scrollData;
 
   const topFreezeStart = topOffsets[sheetFreezeRowCount];
   const leftFreezeStart = leftOffsets[sheetFreezeColumnCount];

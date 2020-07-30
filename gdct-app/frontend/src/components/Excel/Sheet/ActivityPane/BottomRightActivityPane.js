@@ -21,7 +21,7 @@ const computeSelectionAreaStyle = (
   freezeRowCount,
   isActive,
 ) => {
-  let borderStyle = isActive
+  const borderStyle = isActive
     ? STYLE_ACTIVE_SELECTION_BORDER_STYLE
     : STYLE_STAGNANT_SELECTION_BORDER_STYLE;
   let selectionAreaWidth;
@@ -31,7 +31,7 @@ const computeSelectionAreaStyle = (
 
   const { x1, y1, x2, y2 } = selectionArea;
 
-  let customSelectionStyle = {
+  const customSelectionStyle = {
     borderBottomWidth: STYLE_SELECTION_BORDER_WIDTH,
     borderBottomColor: STYLE_SELECTION_BORDER_COLOR,
     borderBottomStyle: borderStyle,

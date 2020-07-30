@@ -1,8 +1,10 @@
 import axios from 'axios';
 
+import { host } from '../constants/domain';
+
 const statusController = (() => {
   const statusAxios = axios.create({
-    baseURL: 'http://localhost:3000/designer/statuses',
+    baseURL: `${host}/designer/statuses`,
   });
   return {
     fetch: async query => statusAxios.get('').then(res => res.data.statuses),
