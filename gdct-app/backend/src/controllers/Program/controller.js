@@ -44,7 +44,7 @@ const ProgramController = Service([ProgramService], service => {
         .catch(next);
     });
 
-    router.post('/programs/searchProgramsByIds', (req, res, next) => {
+    router.post('/programs/searchPrograms', (req, res, next) => {
       const { ids } = req.body;
 
       service

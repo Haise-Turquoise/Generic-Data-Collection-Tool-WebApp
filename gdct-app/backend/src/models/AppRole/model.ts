@@ -1,18 +1,18 @@
-import { Schema, model } from 'mongoose'
-import IAppRoleDocument from './interface'
+import { Schema, model } from 'mongoose';
+import IAppRoleDocument from './interface';
 
-const ObjectId = Schema.Types.ObjectId
+const {ObjectId} = Schema.Types
 
 const AppRoleModel = model<IAppRoleDocument>(
   'AppRole',
   new Schema(
     {
       code: { type: String },
-      name: { type: String }
+      name: { type: String },
     },
-    { minimize: false, autoIndex: true }
+    { minimize: false, autoIndex: true },
   ),
-  'AppRole'
-)
+  'AppRole',
+);
 
-export default AppRoleModel
+export default AppRoleModel;

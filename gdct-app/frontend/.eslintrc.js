@@ -22,6 +22,7 @@ module.exports = {
     },
   },
   rules: {
+    'react/no-unescaped-entities': 'warn',
     'no-underscore-dangle': 'off',
     'react/prop-types': 'warn',
     'no-unused-vars': 'warn',
@@ -57,5 +58,7 @@ module.exports = {
     'no-continue': 'warn',
     'no-nested-ternary': 'warn',
     'import/no-mutable-exports': 'warn',
+    'no-case-declarations': 'warn',
+    eqeqeq: 'warn',
   },
 };

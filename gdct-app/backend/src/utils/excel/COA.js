@@ -1,4 +1,10 @@
 import pako from 'pako';
+import Container from 'typedi';
+import SheetNameRepository from '../../repositories/SheetName';
+import MasterValueRepository from '../../repositories/MasterValue';
+
+const sheetNameRepository = Container.get(SheetNameRepository);
+const masterValueRepository = Container.get(MasterValueRepository);
 
 const getCellData = (sheetData, rowIndex, columnIndex) =>
   sheetData[rowIndex] ? sheetData[rowIndex][columnIndex] : undefined;
@@ -102,4 +108,52 @@ export const extractWorkbookMasterValues = (workbookData, submissionId) => {
   }
 
   return masterValues;
+};
+
+export const extractSubmissionMasterValues = (
+  id,
+  submission,
+  org,
+  program,
+  template,
+  templateType,
+) => {
+  const { workbookData } = submission;
+
+  const masterValues = [];
+  const promiseQuery = [];
+
+  for (const sheetName in workbookData.workbookData) {
+    const sheetData = JSON.parse(
+      pako.inflate(workbookData.workbookData[sheetName], { to: 'string' }),
+    ).sheetCellData;
+
+    const columns = extractColumnNameIds(sheetData);
+    const COAs = extractCOAData(sheetData);
+    promiseQuery.push(
+      sheetNameRepository.findByName(sheetName).then(sheet => {
+        for (const row in COAs) {
+          for (const column in columns) {
+            const cellData = getCellData(sheetData, +row, +column);
+            masterValues.push({
+              submission: { _id: submission._id, name: submission.name },
+              sheet: { _id: sheet._id, name: sheetName },
+              org,
+              program,
+              template,
+              templateType,
+              reportingPeriod: submission.reportingPeriod,
+              AttributeId: columns[column],
+              CategoryId: COAs[row].COAId,
+              ...COAs[row],
+              value: cellData ? cellData.value : undefined,
+            });
+          }
+        }
+      }),
+    );
+  }
+  Promise.all(promiseQuery).then(() => {
+    masterValueRepository.bulkUpdate(id, masterValues);
+  });
 };

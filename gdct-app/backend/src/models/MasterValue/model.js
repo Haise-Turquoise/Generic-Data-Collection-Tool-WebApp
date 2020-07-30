@@ -36,14 +36,39 @@ const MasterValueModel = model(
   'MasterValue',
   new Schema(
     {
-      submissionId: { type: ObjectId, ref: 'Submission' },
+      submission: {
+        _id: { type: ObjectId, ref: 'Submission' },
+        name: { type: String },
+      },
+      sheet: {
+        _id: { type: ObjectId, ref: 'Sheet' },
+        name: { type: String },
+      },
+      reportingPeriod: { type: String, default: '' },
+
       // COATreeId: { type: ObjectId, ref: "COATree" },
       // COAId: { type: ObjectId, ref: "COA" },
       // columnNameId: { type: ObjectId, ref: "ColumnName" },
+      program: {
+        _id: { type: ObjectId, ref: 'Program' },
+        name: { type: String },
+      },
+      org: {
+        id: { type: Number, ref: 'Org' },
+        name: { type: String },
+      },
+      templateType: {
+        _id: { type: ObjectId, ref: 'TemplateType' },
+        name: { type: String },
+      },
+      template: {
+        _id: { type: ObjectId, ref: 'Template' },
+        name: { type: String },
+      },
 
       COATreeId: { type: String },
-      COAId: { type: String },
-      columnNameId: { type: String },
+      CategoryId: { type: String },
+      AttributeId: { type: String },
 
       value: { type: String },
     },

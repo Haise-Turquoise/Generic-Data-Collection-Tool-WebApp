@@ -30,6 +30,10 @@ export default class OrgRepository extends BaseRepository {
   }
 
   async findByOrgGroupId(orgGroupId) {
-    return OrgModel.find(orgGroupId).then(organizations => new OrgEntity(organizations.toObject()));
+    return OrgModel.find({ organizationGroupId: orgGroupId });
+  }
+
+  async findById(id) {
+    return OrgModel.find({ id });
   }
 }

@@ -19,6 +19,10 @@ export default class StatusRepository extends BaseRepository {
     return StatusModel.findByIdAndUpdate(id, status).then(status => new StatusEntity(status));
   }
 
+  async findByName(name) {
+    return StatusModel.find({ name });
+  }
+
   async find(query) {
     const realQuery = {};
 
