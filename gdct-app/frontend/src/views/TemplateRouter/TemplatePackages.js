@@ -68,11 +68,6 @@ const TemplatePackage = () => {
       // { title: "TemplateIds", type: "boolean", field: "templateIds" },
       { title: 'StatusId', field: 'statusId', editComponent: StatusIdButton },
       { title: 'Creation Date', field: 'creationDate', type: 'date' },
-      {
-        title: 'UserCreatorId',
-        field: 'userCreatorId',
-        editComponent: UserIdButton,
-      },
     ],
     [],
   );

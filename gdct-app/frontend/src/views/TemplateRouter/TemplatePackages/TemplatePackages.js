@@ -56,7 +56,6 @@ const TemplatePackage = () => {
 
   const columns = useMemo(
     () => [
-      { title: '_id', field: '_id', editable: 'never' },
       { title: 'Name', field: 'name' },
       {
         title: 'SubmissionPeriodId',

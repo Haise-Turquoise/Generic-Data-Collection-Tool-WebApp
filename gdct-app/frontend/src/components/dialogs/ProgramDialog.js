@@ -40,10 +40,6 @@ const ProgramDialog = ({ selectedPrograms, handleChange, shouldClose = true }) =
   const columns = useMemo(
     () => [
       {
-        title: '_id',
-        field: '_id',
-      },
-      {
         title: 'Name',
         field: 'name',
       },

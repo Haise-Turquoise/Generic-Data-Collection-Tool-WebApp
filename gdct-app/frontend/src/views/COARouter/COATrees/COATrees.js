@@ -31,13 +31,7 @@ const COATreesTable = ({ history }) => {
     shallowEqual,
   );
 
-  const columns = useMemo(
-    () => [
-      { title: '_id', field: '_id', editable: 'never' },
-      { title: 'Sheet Name', field: 'name' },
-    ],
-    [],
-  );
+  const columns = useMemo(() => [{ title: 'Sheet Name', field: 'name' }], []);
 
   const actions = useMemo(
     () => [

@@ -34,7 +34,6 @@ const SheetNamesTable = () => {
 
   const columns = useMemo(
     () => [
-      { title: '_id', field: '_id', editable: 'never' },
       { title: 'Name', field: 'name' },
       { title: 'Active', type: 'boolean', field: 'isActive' },
     ],

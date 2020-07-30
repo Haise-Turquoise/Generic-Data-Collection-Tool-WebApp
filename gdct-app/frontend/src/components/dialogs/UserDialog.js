@@ -39,10 +39,6 @@ const UserDialog = ({ handleChange }) => {
   const columns = useMemo(
     () => [
       {
-        title: '_id',
-        field: '_id',
-      },
-      {
         title: 'Username',
         field: 'username',
       },

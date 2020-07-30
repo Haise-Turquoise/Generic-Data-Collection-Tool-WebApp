@@ -13,8 +13,12 @@ import {
 } from '../../store/thunks/submissionPeriod';
 
 import { ReportingPeriodIdButton } from '../../components/buttons';
-import { selectFactoryRESTResponseTableValues } from '../../store/common/REST/selectors';
+import {
+  selectFactoryRESTResponseTableValues,
+  selectFactoryRESTLookup,
+} from '../../store/common/REST/selectors';
 import { selectSubmissionPeriodsStore } from '../../store/SubmissionPeriodsStore/selectors';
+import { selectReportingPeriodsStore } from '../../store/ReportingPeriodsStore/selectors';
 
 const SubmissionPeriodHeader = () => {
   return (
@@ -27,26 +31,26 @@ const SubmissionPeriodHeader = () => {
 const SubmissionPeriod = () => {
   const dispatch = useDispatch();
 
-  const { submissionPeriods } = useSelector(
+  const { submissionPeriods, lookupReportingPeriods } = useSelector(
     state => ({
       submissionPeriods: selectFactoryRESTResponseTableValues(selectSubmissionPeriodsStore)(state),
+      lookupReportingPeriods: selectFactoryRESTLookup(selectReportingPeriodsStore)(state),
     }),
     shallowEqual,
   );
 
   const columns = useMemo(
     () => [
-      { title: '_id', field: '_id', editable: 'never' },
       { title: 'Name', field: 'name' },
       { title: 'Start Date', type: 'date', field: 'startDate' },
       { title: 'End Date', type: 'date', field: 'endDate' },
       {
         title: 'ReportingPeriodId',
         field: 'reportingPeriodId',
-        editComponent: ReportingPeriodIdButton,
+        lookup: lookupReportingPeriods,
       },
     ],
-    [],
+    [lookupReportingPeriods],
   );
 
   const options = useMemo(() => ({ actionsColumnIndex: -1, search: false, showTitle: false }), []);
