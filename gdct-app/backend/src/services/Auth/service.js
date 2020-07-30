@@ -1,6 +1,4 @@
 import passport from 'passport';
-import mongoose from 'mongoose';
-import os from 'os';
 import UserModel from '../../models/User/model';
 import { addTokenToCookie } from '../../middlewares/shared';
 
