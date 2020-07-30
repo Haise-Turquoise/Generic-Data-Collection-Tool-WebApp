@@ -47,8 +47,8 @@ const queryREST = ({ category, ap, hfk, attribute }) => {
     for(let c of category){
         for(let h of hfk){
             const table = TABLES[isBalanceSheet(c.COA)];
-            if(c.COA.length==0) queries.push(`${REST_API}/${table}/A_P=${ye+'YE'}&ORG_ID=-1&pa=2*`); // temporary fix
-            else queries.push(`${REST_API}/${table}/A_P=${ye+'YE'}&ORG_ID=${h.id}&${c.COA}`);
+            if(c.COA.length==0) queries.push(`${REST_API}/${table}/A_P=${ye+'Q2'}&ORG_ID=-1&pa=2*`); // temporary fix
+            else queries.push(`${REST_API}/${table}/A_P=${ye+'Q2'}&ORG_ID=${h.id}&${c.COA}`);
         }
     }
     const results = queries.map(query => axios.get(query));
