@@ -20,6 +20,7 @@ import ProgramController from './controllers/Program';
 import TemplateTypeController from './controllers/TemplateType';
 import TemplatePackageController from './controllers/TemplatePackage';
 import SubmissionPeriodController from './controllers/SubmissionPeriod';
+import OrgGroupController from './controllers/OrganizationGroup';
 import ReportingPeriodController from './controllers/ReportingPeriod';
 import COAController from './controllers/COA';
 import COATreeController from './controllers/COATree';
@@ -40,6 +41,7 @@ import { errorHandler } from './middlewares/shared';
 import MenuItemController from './controllers/MenuItem';
 import MenuController from './controllers/Menu';
 import UsersController from './controllers/Users/controller';
+import SubmissionNoteController from './controllers/SubmissionNote';
 
 // https://www.digitalocean.com/community/tutorials/how-to-use-winston-to-log-node-js-applications
 const logger = require('morgan');
@@ -83,10 +85,11 @@ app.use('/', Container.get(ProgramController));
 app.use('/', Container.get(ReportingPeriodController));
 app.use('/', Container.get(SheetNameController));
 app.use('/', Container.get(ColumnNameController));
-app.use('/', Container.get(OrgController));
+app.use('/org_manager', Container.get(OrgController));
+app.use('/orgGroup_manager', Container.get(OrgGroupController));
 
 app.use('/', Container.get(AuthController));
-app.use('/public', Container.get(UserController));
+app.use('/user_management', Container.get(UserController));
 
 app.use('/template_manager', Container.get(TemplateController));
 app.use('/template_manager', Container.get(TemplatePackageController));
@@ -96,7 +99,9 @@ app.use('/designer', Container.get(StatusController));
 
 app.use('/submission_manager', Container.get(SubmissionPeriodController));
 app.use('/submission_manager', Container.get(SubmissionController));
+app.use('/submissionNote_manager', Container.get(SubmissionNoteController));
 
+app.use('/workflow_manager', Container.get(WorkflowController));
 app.use('/COA_manager', Container.get(COAController));
 app.use('/COA_manager', Container.get(COATreeController));
 app.use('/COA_manager', Container.get(COAGroupController));

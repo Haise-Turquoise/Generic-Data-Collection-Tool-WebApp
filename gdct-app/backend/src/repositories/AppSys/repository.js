@@ -31,4 +31,8 @@ export default class AppSysRepository extends BaseRepository {
       AppSyses.map(AppSys => new AppSysEntity(AppSys.toObject())),
     );
   }
+
+  async findAll() {
+    return AppSysModel.find();
+  }
 }

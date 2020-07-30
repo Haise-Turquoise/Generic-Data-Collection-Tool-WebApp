@@ -5,7 +5,7 @@ import OrgGroupService from '../../services/OrganizationGroup';
 const OrgGroupController = Service([OrgGroupService], service => {
   const router = Router();
   return (() => {
-    router.get('/orgGroups/searchAllOrgGroups', (req, res, next) => {
+    router.get('/orgGroups/searchOrganizationGroup', (req, res, next) => {
       service
         .findAllOrgGroup()
         .then(orgGroups => {
