@@ -93,11 +93,11 @@ const TemplateTypesTable = ({ history }) => {
   );
 
   useEffect(() => {
-    dispatch(getWorkflowsRequest())
+    dispatch(getWorkflowsRequest());
     dispatch(getTemplateTypesRequest());
   }, [dispatch]);
 
-  console.log(templateTypes)
+  console.log(templateTypes);
   return (
     <MaterialTable
       columns={columns}

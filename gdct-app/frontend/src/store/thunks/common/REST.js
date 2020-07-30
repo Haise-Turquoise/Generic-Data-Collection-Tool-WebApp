@@ -56,7 +56,7 @@ export const updateRequestFactory = (store, controller) => (value, resolve, reje
 
   controller[isPopulated ? 'updatePopulated' : 'update'](value)
     .then(({ data }) => {
-      console.log(data)
+      console.log(data);
       // dispatch(store.actions.UPDATE(response));
       // console.log('result', response)
       if (resolve) resolve();

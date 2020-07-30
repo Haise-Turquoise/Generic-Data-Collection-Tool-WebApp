@@ -8,6 +8,7 @@
     "build": "webpack --config webpack.prod.js",
     "build:cra": "react-app-rewired build",
     "deploy:aws": "aws s3 sync build s3://webproto",
+    "fix": "yarn fix:prettier && yarn fix:eslint",
     "fix:eslint": "yarn lint:eslint --fix",
     "fix:prettier": "yarn lint:prettier --write",
     "lint:eslint": "eslint \"./**/*.{js,jsx,ts,tsx}\"",

@@ -206,11 +206,11 @@ const Content = ({ setFieldValue, handleChange, values }) => {
   );
 
   const handleRemoveProgram = useCallback(
-    (program) => {
+    program => {
       handleChangePrograms(values.programIds.filter(({ _id }) => _id !== program._id));
     },
-    [values, handleChangePrograms]
-  )
+    [values, handleChangePrograms],
+  );
 
   return (
     <Paper className="pl-4 pr-4 pb-5 pt-4">
@@ -244,8 +244,6 @@ const Content = ({ setFieldValue, handleChange, values }) => {
   );
 };
 
-
-
 const TemplatePackage = ({
   match: {
     params: { _id },
@@ -258,7 +256,6 @@ const TemplatePackage = ({
 
     return {
       templatePackage: templatePackage || init,
-
     };
   }, shallowEqual);
 

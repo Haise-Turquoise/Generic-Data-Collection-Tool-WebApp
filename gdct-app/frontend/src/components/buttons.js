@@ -127,8 +127,7 @@ export const StatusIdButton = props => {
   );
 };
 
-export const WorkflowIdButton = ({ value, onChange, isPopulated = false }) => 
-{
+export const WorkflowIdButton = ({ value, onChange, isPopulated = false }) => {
   const dispatch = useDispatch();
 
   const text = value === undefined ? 'SELECT ID' : value;
@@ -142,7 +141,6 @@ export const WorkflowIdButton = ({ value, onChange, isPopulated = false }) =>
     </div>
   );
 };
-
 
 // export const WorkflowIdButton2 = ({ value, onChange, isPopulated = false }) => (
 //   <SelectIdButton value={value} action={DialogsStore.actions.OPEN_WORKFLOW_DIALOG}>
