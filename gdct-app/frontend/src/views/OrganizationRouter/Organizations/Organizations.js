@@ -63,7 +63,7 @@ const Organizations = ({ history }) => {
       {
         icon: EditIcon,
         tooltip: 'Edit Organization',
-        onClick: (_event, org) => history.push(`/organizations/edit/${org._id}`),
+        onClick: (_event, org) => history.push(`/admin/organization/edit/${org._id}`),
       },
     ],
     [history],
