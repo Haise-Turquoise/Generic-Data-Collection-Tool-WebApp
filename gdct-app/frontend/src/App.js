@@ -24,6 +24,7 @@ import RoleRouter from './views/RoleRouter';
 import COARouter from './views/COARouter';
 import WorkflowRouter from './views/WorkflowRouter';
 import Register from './views/UserRegistrationRouter';
+import MasterValuePopulation from './views/MasterValuePopulation';
 import { ROUTE_WORKFLOW, ROUTE_TEMPLATE_PCKGS } from './constants/routes';
 
 import './App.scss';
@@ -36,6 +37,7 @@ const PrivateRouter = ({ setLoggedIn }) => {
       <Route path="/user" component={UserRouter} />
       <Route path="/report" component={ReportRouter} />
       <Route path={ROUTE_TEMPLATE_PCKGS} component={TemplateRouter} />
+      <Route path="/admin/populate" component={MasterValuePopulation} />
       <Route path="/admin/organization" component={OrgRouter} />
       <Route path="/submission" component={SubmissionRouter} />
       <Route path="/admin/role" component={RoleRouter} />
