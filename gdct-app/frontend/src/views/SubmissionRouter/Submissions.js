@@ -72,7 +72,7 @@ const Submission = ({ history }) => {
         icon: LaunchIcon,
         tooltip: 'Open Workbook',
         onClick: (_event, submission) =>
-          history.push(`/submission_manager/submissions/${submission._id}`),
+          history.push(`/admin/submission/type/${submission._id}`),
       },
     ],
     [history],

@@ -44,7 +44,7 @@ const COATreesTable = ({ history }) => {
       {
         icon: LaunchIcon,
         tooltip: "View Sheet's Tree",
-        onClick: (_event, sheetName) => history.push(`/COA_manager/COA_trees/${sheetName._id}`),
+        onClick: (_event, sheetName) => history.push(`/admin/coa/attribute/${sheetName._id}`),
       },
     ],
     [history],

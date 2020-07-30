@@ -39,12 +39,12 @@ const PrivateRouter = ({ setLoggedIn }) => {
       <Route path="/admin/submission" component={SubmissionRouter} />
       <Route path="/admin/role" component={RoleRouter} />
       <Route path="/admin/coa" component={COARouter} />
-      <Route exact path="/admin/configuration" component={null} />
-      <Route exact path="/admin/business_rule_configure" component={null} />
-      <Route exact path="/admin/user_management" component={null} />
-      <Route exact path="/admin/program" component={Programs} />
-      <Route exact path="/admin/status" component={Statuses} />
-      <Route exact path="/admin/reporting_period" component={ReportingPeriods} />
+      <Route path="/admin/configuration" component={null} />
+      <Route path="/admin/business_rule_configure" component={null} />
+      <Route path="/admin/user_management" component={null} />
+      <Route path="/admin/program" component={Programs} />
+      <Route path="/admin/status" component={Statuses} />
+      <Route path="/admin/reporting_period" component={ReportingPeriods} />
       <Route path={ROUTE_WORKFLOW} component={WorkflowRouter} />
       {/* <Route path="/submission_manager" component={SubmissionRouter} /> */}
       {/* <Route path="/sheetNames" component={SheetNames} />{' '} */}
