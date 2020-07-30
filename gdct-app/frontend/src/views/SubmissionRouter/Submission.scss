@@ -1,0 +1,30 @@
+@import "../../styles/mixins/layouts";
+
+.submission {
+  @include center;
+
+  &_upload_button {
+    width: 5%;
+    height: 3%;
+    flex-flow: column nowrap;
+    padding: 50px;
+    text-align: left;
+  }
+
+  &__noteField {
+    min-width: 50%;
+    display: inline-block;
+  }
+  &__label {
+    width: 8.33%;
+    display: inline-block;
+  }
+
+  &__inputTitle {
+    font-size: 15px;
+    margin-top: 30px !important;
+    flex-flow: column nowrap;
+    display: inline;
+    min-width: 70px;
+  }
+}

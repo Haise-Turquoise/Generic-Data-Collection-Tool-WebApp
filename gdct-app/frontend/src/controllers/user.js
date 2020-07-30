@@ -4,10 +4,11 @@ import { host } from '../constants/domain';
 
 const userController = (() => {
   const userAxios = axios.create({
-    baseURL: `${host}/user`,
+    baseURL: `${host}/user_management`,
   });
   return {
-    create: async user => userAxios.post(`/createUser`, user).then(res => res.data.user),
+    create: async userData =>
+      userAxios.post('/users/registerUser', { userData }).then(res => res.data),
   };
 })();
 

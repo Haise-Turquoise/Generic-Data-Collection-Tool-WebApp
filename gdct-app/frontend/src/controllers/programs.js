@@ -7,6 +7,8 @@ const programController = (() => {
     baseURL: `${host}/programs`,
   });
   return {
+    fetchByIds: async ids =>
+      programAxios.post(`/searchPrograms`, { ids }).then(res => res.data.programs),
     fetch: async query => programAxios.get('/fetchPrograms').then(res => res.data.programs),
     create: async program =>
       programAxios.post('/createProgram', { program }).then(res => res.data.program),

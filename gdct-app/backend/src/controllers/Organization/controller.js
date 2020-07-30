@@ -12,6 +12,13 @@ const OrgController = Service([OrgService], service => {
         .catch(next);
     });
 
+    router.get(`/organizations/searchOrgByOrgGroupId/:orgGroupId`, (req, res) => {
+      const { orgGroupId } = req.params;
+      service.findOrgByOrgGroupId(orgGroupId).then(organizations => {
+        res.json({ organizations });
+      });
+    });
+
     router.post('/organizations/create', (req, res, next) => {
       service
         .createOrg(req.body.Org)
@@ -36,16 +43,6 @@ const OrgController = Service([OrgService], service => {
       service
         .deleteOrg(_id)
         .then(() => res.end())
-        .catch(next);
-    });
-
-    router.get(`/appSyses/searchOrganizationsByOrgGroupId/:orgGroupId`, (req, res, next) => {
-      const { orgGroupId } = req.params;
-      service
-        .findOrgByOrgGroupId(orgGroupId)
-        .then(organizations => {
-          res.json({ organizations });
-        })
         .catch(next);
     });
 

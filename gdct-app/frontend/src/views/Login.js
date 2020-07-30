@@ -99,6 +99,7 @@ export default function Login({ setLoggedIn }) {
         //   `http://localhost:3000/auth/local?email=${email}&password=${password}`
         // )
         await AuthController.login({ email, password }).then(data => {
+          console.log(data);
           if (data.user.token) {
             setLoggedIn(true);
           }
@@ -209,11 +210,17 @@ export default function Login({ setLoggedIn }) {
                 Forgot password?
               </Link>
             </Grid>
+
             <Grid item>
               <Link href="/signup" variant="body2">
                 {"Don't have an account? Sign Up"}
               </Link>
             </Grid>
+          </Grid>
+          <Grid item>
+            <Link href="/register" variant="body2">
+              {'Register'}
+            </Link>
           </Grid>
         </form>
       </div>

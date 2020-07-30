@@ -1,0 +1,171 @@
+@import "../../styles/mixins/layouts";
+
+.register {
+  @include center;
+
+  &__container {
+    width: 100%;
+    height: 100%;
+    flex-flow: column nowrap;
+    padding: 50px;
+    background-color: #f2f5f7;
+    text-align: left;
+  }
+
+  &__button {
+    margin-top: 20px !important;
+    margin-left: 1%;
+    margin-bottom: 20px;
+  }
+
+  &__buttonBack {
+    margin-top: 20px !important;
+    margin-left: 37%;
+    margin-bottom: 20px;
+  }
+
+  &__step3Button{
+    margin-left: 10px;
+    border-radius: 10px;
+    width: 150px;
+    padding: 5px;
+    font-size: 15px;
+    display: inline-block;
+  }
+
+  &__filteredMultiSelect{
+    display: inline-block;
+  }
+
+  &__field {
+    flex-flow: column nowrap;
+    width: 300px;
+    height: auto;
+    margin-bottom: 20px !important;
+    background-color: white;
+  }
+
+  &__hidden {
+    display: none;
+  }
+
+  &__select {
+    width: 200px;
+
+    display: inline-block;
+  }
+
+  &__multiSelect {
+    width: 250px;
+    padding: 10px;
+    border-radius: 10px;
+    position: relative;
+    top: 100px;
+    display: inline-block;
+  }
+
+  &__label {
+    width: 8.33%;
+    display: inline-block;
+  }
+
+  &__informationField {
+    width: 20%;
+    display: inline-block;
+  }
+
+  &__selectTitle {
+    width: 100px;
+    height: auto;
+    display: inline-block;
+  }
+
+  &__form {
+    display: inline;
+    flex-flow: column nowrap;
+
+    padding: 50px;
+  }
+
+  &__box {
+    margin-top: 20px !important;
+    width:60% !important;
+    height: fit-content;
+    margin-left: 20%;
+    margin-right: 20%;
+    padding: 10px;
+    text-align: center;
+    border-color: #EEEEEE;
+
+  }
+
+  &__buttonBox {
+    margin-top: 20px;
+    color: #EEEEEE;
+  }
+
+  &__title {
+    font-size: 20px;
+    color: #373a3c;
+    display: block;
+    justify-content: center;
+  }
+
+  &__inputTitle {
+    font-size: 15px;
+    margin-top: 30px !important;
+    flex-flow: column nowrap;
+    display: inline;
+    min-width: 70px;
+  }
+
+  &__table {
+
+  }
+
+  &__tableContainer {
+    margin-top: 150px;
+    width: 100%;
+  }
+
+  &__stepper {
+    width: 50px;
+    font-size: 20px;
+    background: #f2f5f7;
+  }
+}
+
+//.header {
+//
+//  &__container {
+//    position: relative;
+//    min-width: 240px;
+//    margin: 0;
+//    padding: 0;
+//  }
+//
+//  &__bgnd {
+//    background-image: url(../../../images/brand/HEADER_BGND.png);
+//    text-align: center;
+//    background-size: contain;
+//    min-height: 53px;
+//  }
+//
+//  &__logo {
+//    width: 12%;
+//    min-height: 53px;
+//    max-width: 160px;
+//    float: left;
+//  }
+//
+//  &__logoBar {
+//    width: 62%;
+//    min-height: 53px;
+//    max-width: 394px;
+//    padding-right: 5%;
+//  }
+//}
+//
+//.emailVerification {
+//  padding: 20px;
+//}

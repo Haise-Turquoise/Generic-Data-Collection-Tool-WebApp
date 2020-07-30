@@ -92,7 +92,8 @@
     "webpack-bundle-analyzer": "^3.6.0",
     "webpack-dev-server": "^3.11.0",
     "xlsx-populate": "https://github.com/greylemon/xlsx-populate",
-    "yup": "^0.29.1"
+    "yup": "^0.29.1",
+    "object-hash": "^2.0.3"
   },
   "devDependencies": {
     "@babel/core": "^7.4.4",

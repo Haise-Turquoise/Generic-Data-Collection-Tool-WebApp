@@ -11,12 +11,18 @@ dotenv.config();
 
 const User = new Schema(
   {
-    username: { type: String, required: true },
-    email: { type: String, required: true, unique: true },
+    username: { type: String, lowercase: true, required: true },
+    hashedUsername: { type: String, default: '' },
+    email: { type: String, required: true },
+
     title: { type: String, default: '' },
+    ext: { type: String, default: '' },
     firstName: { type: String, default: '' },
     lastName: { type: String, default: '' },
+
     phoneNumber: { type: String, default: '' },
+
+    password: String,
     sysRole: [
       {
         appSys: { type: String, default: '' },
@@ -24,6 +30,7 @@ const User = new Schema(
         org: [
           {
             orgId: { type: String, default: '' },
+            orgName: { type: String, default: '' },
             IsActive: { type: Boolean },
             program: [
               {
@@ -51,7 +58,6 @@ const User = new Schema(
       token: String,
       name: String,
     },
-    password: String,
     isActive: {
       type: Boolean,
       default: true,

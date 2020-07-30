@@ -37,77 +37,77 @@ const initialState = {
 
 const setRegistrationData = (state, { payload }) => ({
   ...state,
-  registrationData: payload.registrationData,
+  registrationData: payload,
 });
 
 const setSnackbarMessage = (state, { payload }) => ({
   ...state,
-  snackbarMessage: payload.snackbarMessage,
+  snackbarMessage: payload,
 });
 
 const setActiveStep = (state, { payload }) => ({
   ...state,
-  activeStep: payload.activeStep,
+  activeStep: payload,
 });
 const setHelperState = (state, { payload }) => ({
   ...state,
-  helperState: payload.helperState,
+  helperState: payload,
 });
 const setIsSnackbarOpen = (state, { payload }) => ({
   ...state,
-  isSnackbarOpen: payload.isSnackbarOpen,
+  isSnackbarOpen: payload,
 });
 const setAppSysOptions = (state, { payload }) => ({
   ...state,
-  appSysOptions: payload.appSysOptions,
+  appSysOptions: payload,
 });
 const setOrganizationGroupOptions = (state, { payload }) => ({
   ...state,
-  organizationGroupOptions: payload.organizationGroupOptions,
+  organizationGroupOptions: payload,
 });
 const setOrganizationOptions = (state, { payload }) => ({
   ...state,
-  organizationOptions: payload.organizationOptions,
+  organizationOptions: payload,
 });
 const setProgramOptions = (state, { payload }) => ({
   ...state,
-  programOptions: payload.programOptions,
+  programOptions: payload,
 });
 const setUserOrganizations = (state, { payload }) => ({
   ...state,
-  userOrganizations: payload.userOrganizations,
+  userOrganizations: payload,
 });
 const setUserPrograms = (state, { payload }) => ({
   ...state,
-  userPrograms: payload.userPrograms,
+  userPrograms: payload,
 });
 const setUserSubmissionList = (state, { payload }) => ({
   ...state,
-  userSubmissions: payload.userSubmissions,
+  userSubmissions: payload,
 });
 const setUserPermissionList = (state, { payload }) => ({
   ...state,
-  userPermissions: payload.userPermissions,
+  userPermissions: payload,
 });
 const setSearchKey = (state, { payload }) => ({
   ...state,
-  searchKey: payload.searchKey,
+  searchKey: payload,
 });
 const setUserAppSys = (state, { payload }) => ({
   ...state,
-  userAppSys: payload.userAppSys,
+  userAppSys: payload,
 });
 const setReference = (state, { payload }) => ({
   ...state,
-  reference: payload.reference,
+  reference: payload,
 });
 const setOrganizationGroup = (state, { payload }) => ({
   ...state,
-  organizationGroup: payload.organizationGroup,
+  organizationGroup: payload,
 });
 const setAbleToComplete = (state, { payload }) => ({
   ...state,
-  ableToComplete: payload.ableToComplete,
+  ableToComplete: payload,
 });
 
 const reducers = {
@@ -132,7 +132,7 @@ const reducers = {
 };
 
 export const UserRegistrationStore = createSlice({
-  name: 'OrganizationGroup',
+  name: 'UserRegistration',
   initialState,
   reducers,
 });

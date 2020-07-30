@@ -24,5 +24,8 @@ module.exports = {
     'no-throw-literal': 'warn',
     'guard-for-in': 'warn',
     'no-unused-expressions': 'warn',
+    eqeqeq: 'warn',
+    'no-unused-vars': 'warn',
+    'import/no-extraneous-dependencies': 'warn',
   },
 };

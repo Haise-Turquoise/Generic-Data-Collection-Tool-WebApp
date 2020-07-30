@@ -8,6 +8,8 @@ const TemplateTypeModel = model(
     {
       name: { type: String },
       description: { type: String },
+      templateWorkflowId: { type: ObjectId, ref: 'Workflow' },
+      submissionWorkflowId: { type: ObjectId, ref: 'Workflow' },
 
       programIds: [{ type: ObjectId, ref: 'Program' }],
 

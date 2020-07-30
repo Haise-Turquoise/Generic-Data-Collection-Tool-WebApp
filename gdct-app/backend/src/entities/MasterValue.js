@@ -1,9 +1,27 @@
 export default class MasterValueEntity {
-  constructor({ submissionId, COATreeId, COAId, columnNameId, value }) {
-    this.submissionId = submissionId;
+  constructor({
+    submission,
+    sheet,
+    reportingPeriod,
+    program,
+    org,
+    templateType,
+    template,
+    COATreeId,
+    CategoryId,
+    AttributeId,
+    value,
+  }) {
+    this.submission = submission;
+    this.sheet = sheet;
+    this.reportingPeriod = reportingPeriod;
+    this.program = program;
+    this.org = org;
+    this.templateType = templateType;
+    this.template = template;
     this.COATreeId = COATreeId;
-    this.COAId = COAId;
-    this.columnNameId = columnNameId;
+    this.CategoryId = CategoryId;
+    this.AttributeId = AttributeId;
     this.value = value;
   }
 }
