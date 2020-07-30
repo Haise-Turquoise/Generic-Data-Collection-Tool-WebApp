@@ -16,7 +16,6 @@ import {
 import './TemplateTypes.scss';
 import { selectFactoryRESTResponseTableValues } from '../../../store/common/REST/selectors';
 import { selectTemplateTypesStore } from '../../../store/TemplateTypesStore/selectors';
-import { WorkflowIdButton } from '../../../components/buttons';
 import { selectWorkflowsStore } from '../../../store/WorkflowsStore/selectors';
 import { getWorkflowsRequest } from '../../../store/thunks/workflow';
 

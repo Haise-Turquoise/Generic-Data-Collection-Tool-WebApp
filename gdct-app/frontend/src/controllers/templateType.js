@@ -7,7 +7,8 @@ const templateTypeController = (() => {
     baseURL: `${host}/template_manager/templateTypes`,
   });
   return {
-    fetch: async query => templateTypeAxios.get('/fetchTemplateType').then(res => res.data.templateTypes),
+    fetch: async query =>
+      templateTypeAxios.get('/fetchTemplateType').then(res => res.data.templateTypes),
 
     fetchByProgramIds: async programIds =>
       templateTypeAxios
@@ -23,7 +24,8 @@ const templateTypeController = (() => {
         })
         .then(res => res.data.templateType),
     delete: async _id => templateTypeAxios.delete(`/deleteTemplateType/${_id}`),
-    update: async templateType => templateTypeAxios.put(`/updateTemplateType/${templateType._id}`, { templateType }),
+    update: async templateType =>
+      templateTypeAxios.put(`/updateTemplateType/${templateType._id}`, { templateType }),
   };
 })();
 

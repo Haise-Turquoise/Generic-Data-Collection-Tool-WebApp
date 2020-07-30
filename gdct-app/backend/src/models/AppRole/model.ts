@@ -1,7 +1,7 @@
 import { Schema, model } from 'mongoose';
 import IAppRoleDocument from './interface';
 
-const {ObjectId} = Schema.Types
+const { ObjectId } = Schema.Types;
 
 const AppRoleModel = model<IAppRoleDocument>(
   'AppRole',

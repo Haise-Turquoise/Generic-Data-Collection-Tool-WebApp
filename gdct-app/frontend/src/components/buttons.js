@@ -127,27 +127,6 @@ export const StatusIdButton = props => {
   );
 };
 
-export const WorkflowIdButton = ({ value, onChange, isPopulated = false }) => {
-  const dispatch = useDispatch();
-
-  const text = value === undefined ? 'SELECT ID' : value;
-
-  const handleClick = () => dispatch(DialogsStore.actions.OPEN_WORKFLOW_DIALOG());
-
-  return (
-    <div>
-      <Button onClick={handleClick}>{text}</Button>
-      <WorkflowDialog handleChange={d => onChange(isPopulated ? d : d._id)} />
-    </div>
-  );
-};
-
-// export const WorkflowIdButton2 = ({ value, onChange, isPopulated = false }) => (
-//   <SelectIdButton value={value} action={DialogsStore.actions.OPEN_WORKFLOW_DIALOG}>
-//     <WorkflowDialog key="workflow2" handleChange={d => onChange(isPopulated ? d : d._id)} />
-//   </SelectIdButton>
-// );
-
 export const ProgramIdButton = ({ value, onChange }) => (
   <SelectIdButton value={value} action={DialogsStore.actions.OPEN_PROGRAM_DIALOG}>
     <ProgramDialog handleChange={onChange} />
