@@ -48,6 +48,15 @@ const WorkflowController = Service([WorkflowService], service => {
         .catch(next);
     });
 
+    router.get('/workflows/workflowProcessId/:_id', (req, res, next) => {
+      const { _id } = req.params;
+
+      service
+        .findOutwardProcessesPopulated(_id)
+        .then(workflowProcess => res.json({ data: workflowProcess }))
+        .catch(next);
+    });
+
     return router;
   })();
 });

@@ -15,7 +15,7 @@ const AuthController = Service([AuthService], service => {
 
     // POST login route (optional, everyone has access)
     router.post('/login', auth.optional, service.processLogin);
-    router.get('/profile', service.profile);
+    router.get('/profile', auth.required, service.profile);
     return router;
   })();
 });

@@ -23,6 +23,8 @@ import SubmissionRouter from './views/SubmissionRouter';
 import RoleRouter from './views/RoleRouter';
 import COARouter from './views/COARouter';
 import WorkflowRouter from './views/WorkflowRouter';
+import Register from './views/UserRegistrationRouter';
+import MasterValuePopulation from './views/MasterValuePopulation';
 import { ROUTE_WORKFLOW, ROUTE_TEMPLATE_PCKGS } from './constants/routes';
 
 import './App.scss';
@@ -31,12 +33,13 @@ const PrivateRouter = ({ setLoggedIn }) => {
   return (
     <Switch>
       <Route exact path="/" component={GDCTMenu} />
-      <Route path="/submission" component={TemplateRouter} />
+      <Route path="/template" component={TemplateRouter} />
       <Route path="/user" component={UserRouter} />
       <Route path="/report" component={ReportRouter} />
       <Route path={ROUTE_TEMPLATE_PCKGS} component={TemplateRouter} />
+      <Route path="/admin/populate" component={MasterValuePopulation} />
       <Route path="/admin/organization" component={OrgRouter} />
-      <Route path="/admin/submission" component={SubmissionRouter} />
+      <Route path="/submission" component={SubmissionRouter} />
       <Route path="/admin/role" component={RoleRouter} />
       <Route path="/admin/coa" component={COARouter} />
       <Route path="/admin/configuration" component={null} />
@@ -61,6 +64,7 @@ const PrivateRouter = ({ setLoggedIn }) => {
 const PublicRouter = ({ setLoggedIn }) => {
   return (
     <Switch>
+      <Route exact path="/register" component={Register} />
       <Route exact path="/login" render={props => <Login {...props} setLoggedIn={setLoggedIn} />} />
       <Route exact path="/signup" component={SignUp} />
       <Route exact path="/auth/error" component={Error} />

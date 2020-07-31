@@ -18,7 +18,7 @@ import { getOrgsRequest } from '../../../store/thunks/organization';
 const HeaderActions = () => {
   const history = useHistory();
 
-  const handleCreateOrg = () => history.push('/organizations/create');
+  const handleCreateOrg = () => history.push('/admin/organization/create');
 
   return (
     <div>
@@ -63,7 +63,7 @@ const Organizations = ({ history }) => {
       {
         icon: EditIcon,
         tooltip: 'Edit Organization',
-        onClick: (_event, org) => history.push(`/organizations/edit/${org._id}`),
+        onClick: (_event, org) => history.push(`/admin/organization/edit/${org._id}`),
       },
     ],
     [history],

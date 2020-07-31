@@ -75,8 +75,12 @@ export default class SheetNameRepository extends BaseRepository {
     );
   }
 
-  findOne(id) {
-    throw new Error('Method not implemented.', id);
+  async findById(id) {
+    return SheetNameModel.findById(id);
+  }
+
+  async findByName(name) {
+    return SheetNameModel.find({ name, isActive: true });
   }
 
   async delete(id) {

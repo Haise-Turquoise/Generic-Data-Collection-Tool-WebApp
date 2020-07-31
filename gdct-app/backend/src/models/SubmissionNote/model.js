@@ -6,10 +6,12 @@ const SubmissionNoteModel = model(
   'SubmissionNote',
   new Schema(
     {
+      id: { type: Number },
       note: { type: String },
       submissionId: { type: ObjectId, ref: 'Submission' },
-      creationDate: { type: Date },
+      updatedDate: { type: Date },
       userCreatorId: { type: ObjectId, ref: 'User' },
+      role: { type: String },
     },
     { minimize: false, autoIndex: true },
   ),
