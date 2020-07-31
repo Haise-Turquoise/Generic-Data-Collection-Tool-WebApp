@@ -18,7 +18,7 @@ import { getOrgsRequest } from '../../../store/thunks/organization';
 const HeaderActions = () => {
   const history = useHistory();
 
-  const handleCreateOrg = () => history.push('/admin/organizations/create');
+  const handleCreateOrg = () => history.push('/admin/organization/create');
 
   return (
     <div>
