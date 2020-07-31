@@ -95,7 +95,7 @@ const queryREST = ({ category, ap, hfk, attribute }) => {
 }
 
 const DoRetrieval = ({ category, ap, hfk, col }) => {
-    if(category&&ap&&hfk){
+    if(category&&ap&&hfk&&category.length>0&&hfk.length>0&&ap.length>0){
         let fnd = null;
         for(let elem of col){
             if(elem.name === `${ap} Actual`){
