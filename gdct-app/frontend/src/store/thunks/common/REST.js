@@ -54,12 +54,10 @@ export const deleteRequestFactory = (store, controller) => (_id, resolve, reject
 export const updateRequestFactory = (store, controller) => (value, resolve, reject) => dispatch => {
   dispatch(store.actions.REQUEST());
 
-  controller[isPopulated ? 'updatePopulated' : 'update'](value)
-    .then(({ data }) => {
-      // ! FIX THIS - backend response needs to be consisten among all that uses it
-      console.log(data);
-      // dispatch(store.actions.UPDATE(response));
-      // console.log('result', response)
+  controller.update(value)
+    .then((_response) => {
+      // ! This requires a common data object from the backend (for all tables that uses this method!!)
+      // dispatch(store.actions.UPDATE(data));
       if (resolve) resolve();
     })
     .catch(error => {
