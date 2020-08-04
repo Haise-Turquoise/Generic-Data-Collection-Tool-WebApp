@@ -8,11 +8,11 @@ import Typography from '@material-ui/core/Typography';
 import MaterialTable from 'material-table';
 
 import { useHistory } from 'react-router-dom';
-import { UserIdButton, StatusIdButton, SubmissionPeriodIdButton } from '../../components/buttons';
 
 import {
   selectFactoryRESTResponseTableValues,
   selectFactoryRESTIsCallInProgress,
+  selectFactoryRESTLookup,
 } from '../../store/common/REST/selectors';
 import { selectTemplatePackagesStore } from '../../store/TemplatePackagesStore/selectors';
 import {
@@ -23,7 +23,10 @@ import {
 } from '../../store/thunks/templatePackage';
 import { ROUTE_TEMPLATE_PCKGS_PCKGS } from '../../constants/routes';
 import { TemplatePackagesStoreActions } from '../../store/TemplatePackagesStore/store';
-import Loading from '../../components/Loading';
+import { selectStatusesStore } from '../../store/StatusesStore/selectors';
+import { getStatusesRequest } from '../../store/thunks/status';
+import { selectSubmissionPeriodsStore } from '../../store/SubmissionPeriodsStore/selectors';
+import { getSubmissionPeriodsRequest } from '../../store/thunks/submissionPeriod';
 
 const TemplatePackageHeader = () => {
   return (
@@ -38,10 +41,12 @@ const TemplatePackage = () => {
   const dispatch = useDispatch();
   const history = useHistory();
 
-  const { templatePackages, isCallInProgress } = useSelector(
+  const { templatePackages, lookupStatuses, lookupSubmissionPeriods } = useSelector(
     state => ({
       isCallInProgress: selectFactoryRESTIsCallInProgress(selectTemplatePackagesStore)(state),
       templatePackages: selectFactoryRESTResponseTableValues(selectTemplatePackagesStore)(state),
+      lookupStatuses: selectFactoryRESTLookup(selectStatusesStore)(state),
+      lookupSubmissionPeriods: selectFactoryRESTLookup(selectSubmissionPeriodsStore)(state),
     }),
     shallowEqual,
   );
@@ -63,13 +68,13 @@ const TemplatePackage = () => {
       {
         title: 'SubmissionPeriodId',
         field: 'submissionPeriodId',
-        editComponent: SubmissionPeriodIdButton,
+        lookup: lookupSubmissionPeriods,
       },
       // { title: "TemplateIds", type: "boolean", field: "templateIds" },
-      { title: 'StatusId', field: 'statusId', editComponent: StatusIdButton },
+      { title: 'StatusId', field: 'statusId', lookup: lookupStatuses },
       { title: 'Creation Date', field: 'creationDate', type: 'date' },
     ],
-    [],
+    [lookupStatuses, lookupSubmissionPeriods],
   );
 
   const options = useMemo(
@@ -103,21 +108,15 @@ const TemplatePackage = () => {
 
   useEffect(() => {
     dispatch(getTemplatePackagesRequest());
+    dispatch(getStatusesRequest());
+    dispatch(getSubmissionPeriodsRequest());
 
     return () => {
       dispatch(TemplatePackagesStoreActions.RESET());
     };
   }, [dispatch]);
 
-  // HOTFIX
-  const isPopulated = useMemo(
-    () => !!(templatePackages.length && typeof templatePackages[0].submissionPeriodId === 'object'),
-    [templatePackages],
-  );
-
-  return isCallInProgress || isPopulated ? (
-    <Loading />
-  ) : (
+  return (
     <div>
       <TemplatePackageHeader />
       <MaterialTable
