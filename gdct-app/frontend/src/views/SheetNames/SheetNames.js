@@ -28,9 +28,12 @@ const SheetNameHeader = () => {
 const SheetNamesTable = () => {
   const dispatch = useDispatch();
 
-  const { sheetNames } = useSelector(state => ({
-    sheetNames: selectFactoryRESTResponseTableValues(selectSheetNamesStore)(state),
-  }));
+  const { sheetNames } = useSelector(
+    state => ({
+      sheetNames: selectFactoryRESTResponseTableValues(selectSheetNamesStore)(state),
+    }),
+    shallowEqual,
+  );
 
   const columns = useMemo(
     () => [

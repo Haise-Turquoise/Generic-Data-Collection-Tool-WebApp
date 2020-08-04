@@ -1,4 +1,3 @@
-import PropTypes from 'prop-types';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -46,11 +45,15 @@ const queryREST = ({ category, ap, hfk, attribute }) => {
   for (const c of category) {
     for (const h of hfk) {
       const table = TABLES[isBalanceSheet(c.COA)];
-      if (c.COA.length == 0) queries.push(`${REST_API}/${table}/A_P=${`${ye}YE`}&ORG_ID=-1&pa=2*`);
-      // temporary fix
-      else queries.push(`${REST_API}/${table}/A_P=${`${ye}YE`}&ORG_ID=${h.id}&${c.COA}`);
+      if (c.COA.length == 0) {
+        queries.push(`${REST_API}/${table}/A_P=${`${ye}Q2`}&ORG_ID=-1&pa=2*`);
+      } // temporary fix
+      else {
+        queries.push(`${REST_API}/${table}/A_P=${`${ye}Q2`}&ORG_ID=${h.id}&${c.COA}`);
+      }
     }
   }
+
   const results = queries.map(query => axios.get(query));
   console.log(queries);
   const addDocument = mastervalue => {
@@ -98,7 +101,7 @@ const queryREST = ({ category, ap, hfk, attribute }) => {
 };
 
 const DoRetrieval = ({ category, ap, hfk, col }) => {
-  if (category && ap && hfk) {
+  if (category && ap && hfk && category.length > 0 && hfk.length > 0 && ap.length > 0) {
     let fnd = null;
     for (const elem of col) {
       if (elem.name === `${ap} Actual`) {
@@ -106,8 +109,9 @@ const DoRetrieval = ({ category, ap, hfk, col }) => {
         break;
       }
     }
-    if (fnd) queryREST({ category, ap, hfk, attribute: fnd });
-    else alert("Attribute doesn't exist in database");
+    if (fnd) {
+      queryREST({ category, ap, hfk, attribute: fnd });
+    } else alert("Attribute doesn't exist in database");
   } else alert('Missing one or more parameters.');
 };
 
@@ -295,7 +299,7 @@ const MasterValuePopulation = () => {
         },
       },
     ],
-    [history],
+    [],
   );
 
   const [categoryState, updateCategoryState] = useState(false);

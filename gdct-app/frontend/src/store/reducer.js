@@ -1,7 +1,5 @@
 import { combineReducers } from 'redux';
 
-import domain from './reducers/domain';
-import app from './reducers/app';
 import ui from './reducers/ui';
 
 import TemplatesStore from './TemplatesStore/store';
@@ -69,8 +67,6 @@ export const root = combineReducers({
   WorkflowStore: WorkflowStore.reducer,
   WorkflowsStore: WorkflowsStore.reducer,
 
-  app,
-  domain,
   ui,
 });
 

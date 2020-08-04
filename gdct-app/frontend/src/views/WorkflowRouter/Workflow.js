@@ -5,7 +5,7 @@ import TextField from '@material-ui/core/TextField';
 import List from '@material-ui/core/List';
 import Listitem from '@material-ui/core/ListItem';
 import { mapValues } from 'lodash';
-import { Typography, Button, ButtonGroup } from '@material-ui/core';
+import { Typography, Button } from '@material-ui/core';
 import { useRouteMatch } from 'react-router-dom';
 import { selectFactoryRESTResponseValues } from '../../store/common/REST/selectors';
 import { selectStatusesStore } from '../../store/StatusesStore/selectors';
@@ -23,7 +23,7 @@ import { WorkflowStoreActions } from '../../store/WorkflowStore/store';
 import { submitWorkflow, updateWorkflow, loadWorkflow } from '../../store/thunks/workflow';
 import './Workflow.scss';
 
-const NodeInnerCustom = ({ node, config }) => <div className="workflowNode">{node.type.name}</div>;
+const NodeInnerCustom = ({ node }) => <div className="workflowNode">{node.type.name}</div>;
 
 const createNodeDragData = (_id, name) =>
   JSON.stringify({
@@ -152,7 +152,7 @@ const WorkflowPane = ({ stateActions }) => {
       chart={chart}
       callbacks={stateActions}
       config={{
-        validateLink: ({ linkId, fromNodeId, fromPortId, toNodeId, toPortId, chart }) => {
+        validateLink: ({ fromNodeId, toNodeId, chart }) => {
           // no links between same type nodes
           return chart.nodes[fromNodeId].type !== chart.nodes[toNodeId].type;
         },

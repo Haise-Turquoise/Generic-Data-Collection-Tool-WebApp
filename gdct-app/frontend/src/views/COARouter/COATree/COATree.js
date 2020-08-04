@@ -76,10 +76,9 @@ const COATreeHeader = ({ sheetNameId }) => {
 const COATreeTreeStructure = ({ sheetNameId }) => {
   const dispatch = useDispatch();
 
-  const { localTree, isCallInProgress } = useSelector(
+  const { localTree } = useSelector(
     ({ COATreeStore: { localTree, isCallInProgress } }) => ({
       localTree,
-      isCallInProgress,
     }),
     shallowEqual,
   );
@@ -101,8 +100,8 @@ const COATreeTreeStructure = ({ sheetNameId }) => {
 
       return {
         buttons: [
-          <AddButton handleClick={handleOpenCOADialog} />,
-          <DeleteButton handleClick={handleDelete} />,
+          <AddButton key={`add-button-${nodeProps.path}`} handleClick={handleOpenCOADialog} />,
+          <DeleteButton key={`delete-button-${nodeProps.path}`} handleClick={handleDelete} />,
         ],
       };
     },

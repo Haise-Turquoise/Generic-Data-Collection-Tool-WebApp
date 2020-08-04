@@ -32,7 +32,7 @@ const EditOrganization = ({
   }));
 
   const redirect = () => {
-    history.push('/organizations');
+    history.push('/admin/organization');
   };
 
   const accept = () => {

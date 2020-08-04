@@ -10,3 +10,10 @@ tmp/
 next.config.js
 src/serviceWorker.ts
 webpack*
+/src/components/Excel
+/src/store/reducers
+/src/store/actions
+/src/tools/excel.js
+/src/tools/slate.js
+/src/tools/misc.js
+babel.config.js

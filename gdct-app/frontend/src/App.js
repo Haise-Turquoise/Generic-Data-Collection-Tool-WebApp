@@ -78,7 +78,6 @@ const App = () => {
   useEffect(() => {
     AuthController.profile()
       .then(res => {
-        console.log(res);
         setLoggedIn(res.status === 'success');
       })
       .catch(() => {
