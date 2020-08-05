@@ -55,10 +55,9 @@ export const updateRequestFactory = (store, controller) => (value, resolve, reje
   dispatch(store.actions.REQUEST());
 
   controller.update(value)
-    .then((_response) => {
-      // ! This requires a common data object from the backend (for all tables that uses this method!!)
-      // dispatch(store.actions.UPDATE(data));
-      if (resolve) resolve();
+    .then(() => {
+      dispatch(store.actions.UPDATE(value));
+      if (resolve) resolve(value);
     })
     .catch(error => {
       dispatch(store.actions.FAIL_REQUEST(error));
