@@ -9,59 +9,78 @@ export const customRequestFactory = (store, controller, actionType) => query => 
     });
 };
 
-export const getRequestFactory = (store, controller) => query => dispatch => {
+export const getRequestFactory = (store, controller) => (
+  query,
+  resolve,
+  reject,
+  isPopulated = false,
+) => dispatch => {
   dispatch(store.actions.REQUEST());
 
-  controller
-    .fetch(query)
-    .then(values => dispatch(store.actions.RECEIVE(values)))
-    .catch(error => {
-      dispatch(store.actions.FAIL_REQUEST(error));
-    });
-};
-
-export const createRequestFactory = (store, controller) => (value, resolve, reject) => dispatch => {
-  dispatch(store.actions.REQUEST());
-
-  controller
-    .create(value)
-    .then(value => {
-      dispatch(store.actions.CREATE(value));
-      resolve();
-    })
-    .catch(error => {
-      console.error(error);
-      dispatch(store.actions.FAIL_REQUEST(error));
-      reject();
-    });
-};
-
-export const deleteRequestFactory = (store, controller) => (_id, resolve, reject) => dispatch => {
-  dispatch(store.actions.REQUEST());
-
-  controller
-    .delete(_id)
-    .then(() => {
-      dispatch(store.actions.DELETE(_id));
-      resolve();
-    })
-    .catch(error => {
-      dispatch(store.actions.FAIL_REQUEST(error));
-      reject();
-    });
-};
-
-export const updateRequestFactory = (store, controller) => (value, resolve, reject) => dispatch => {
-  dispatch(store.actions.REQUEST());
-
-  controller.update(value)
-    .then((_response) => {
-      // ! This requires a common data object from the backend (for all tables that uses this method!!)
-      // dispatch(store.actions.UPDATE(data));
+  controller[isPopulated ? 'fetchPopulated' : 'fetch'](query)
+    .then(values => {
+      dispatch(store.actions.RECEIVE(values));
       if (resolve) resolve();
     })
     .catch(error => {
       dispatch(store.actions.FAIL_REQUEST(error));
-      reject();
+      if (reject) reject();
+    });
+};
+
+export const createRequestFactory = (store, controller) => (
+  value,
+  resolve,
+  reject,
+  isPopulated = false,
+) => dispatch => {
+  dispatch(store.actions.REQUEST());
+
+  controller[isPopulated ? 'createPopulated' : 'create'](value)
+    .then(value => {
+      dispatch(store.actions.CREATE(value));
+      if (resolve) resolve();
+    })
+    .catch(error => {
+      dispatch(store.actions.FAIL_REQUEST(error));
+      if (reject) reject();
+    });
+};
+
+export const deleteRequestFactory = (store, controller) => (
+  _id,
+  resolve,
+  reject,
+  isPopulated = false,
+) => dispatch => {
+  dispatch(store.actions.REQUEST());
+
+  controller[isPopulated ? 'deletePopulated' : 'delete'](_id)
+    .then(() => {
+      dispatch(store.actions.DELETE(_id));
+      if (resolve) resolve();
+    })
+    .catch(error => {
+      dispatch(store.actions.FAIL_REQUEST(error));
+      if (reject) reject();
+    });
+};
+
+export const updateRequestFactory = (store, controller) => (
+  value,
+  resolve,
+  reject,
+  isPopulated = false,
+) => dispatch => {
+  dispatch(store.actions.REQUEST());
+
+  controller[isPopulated ? 'updatePopulated' : 'update'](value)
+    .then(() => {
+      dispatch(store.actions.UPDATE(value));
+      if (resolve) resolve(value);
+    })
+    .catch(error => {
+      dispatch(store.actions.FAIL_REQUEST(error));
+      if (reject) reject();
     });
 };

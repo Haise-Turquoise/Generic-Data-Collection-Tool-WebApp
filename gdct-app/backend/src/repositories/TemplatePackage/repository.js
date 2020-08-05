@@ -85,10 +85,7 @@ export default class TemplatePackageRepository extends BaseRepository {
             { upsert: true, new: true },
           ).populate(isPopulated ? populatedParams : ''),
         )
-        .then(templatePackage => {
-          console.log(templatePackage, isPopulated);
-          return new TemplatePackageEntity(templatePackage.toObject());
-        })
+        .then(templatePackage => new TemplatePackageEntity(templatePackage.toObject()))
     );
   }
 
@@ -107,10 +104,12 @@ export default class TemplatePackageRepository extends BaseRepository {
       if (query[key]) realQuery[key] = query[key];
     }
 
-    return TemplatePackageModel.find(realQuery).then(templatePackages =>
-      templatePackages.map(
-        templatePackage => new TemplatePackageEntity(templatePackage.toObject()),
-      ),
+    const templatePackages = await TemplatePackageModel.find(realQuery).populate(
+      isPopulated ? populatedParams : '',
+    );
+
+    return templatePackages.map(
+      templatePackage => new TemplatePackageEntity(templatePackage.toObject()),
     );
   }
 

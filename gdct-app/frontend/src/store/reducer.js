@@ -25,7 +25,7 @@ import SubmissionWorkbookStore from './SubmissionWorkbookStore/store';
 import COATreeStore from './COATreeStore/store';
 import COATreesStore from './COATreesStore/store';
 import SheetNamesStore from './SheetNamesStore/store';
-import ColumnNamesStore from './ColumnNameStore/store';
+import ColumnNamesStore from './ColumnNamesStore/store';
 import OrgsStore from './OrganizationsStore/store';
 import WorkflowStore from './WorkflowStore/store';
 import WorkflowsStore from './WorkflowsStore/store';
