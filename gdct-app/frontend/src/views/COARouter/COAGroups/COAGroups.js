@@ -1,8 +1,7 @@
-import React, { useCallback, useMemo, useEffect } from 'react';
+import React, { useMemo, useEffect } from 'react';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 
 import MaterialTable from 'material-table';
-import LaunchIcon from '@material-ui/icons/Launch';
 import Paper from '@material-ui/core/Paper';
 
 import Typography from '@material-ui/core/Typography';
@@ -26,7 +25,7 @@ const COAGroupsHeader = () => {
   );
 };
 
-const COAGroupsTable = ({ history }) => {
+const COAGroupsTable = () => {
   const dispatch = useDispatch();
 
   const { COAGroups } = useSelector(
@@ -38,7 +37,6 @@ const COAGroupsTable = ({ history }) => {
 
   const columns = useMemo(
     () => [
-      { title: '_id', field: '_id', editable: 'never' },
       { title: 'Name', field: 'name' },
       { title: 'Code', field: 'code' },
       { title: 'Active', type: 'boolean', field: 'isActive' },

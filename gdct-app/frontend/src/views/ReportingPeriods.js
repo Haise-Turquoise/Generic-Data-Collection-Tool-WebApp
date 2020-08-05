@@ -33,13 +33,7 @@ const ReportingPeriodsTable = () => {
     shallowEqual,
   );
 
-  const columns = useMemo(
-    () => [
-      { title: '_id', field: '_id' },
-      { title: 'Name', field: 'name' },
-    ],
-    [],
-  );
+  const columns = useMemo(() => [{ title: 'Name', field: 'name' }], []);
 
   const options = useMemo(() => ({ actionsColumnIndex: -1, search: false, showTitle: false }), []);
 

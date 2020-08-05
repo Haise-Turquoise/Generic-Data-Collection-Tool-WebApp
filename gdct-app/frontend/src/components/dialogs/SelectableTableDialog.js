@@ -7,6 +7,7 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 
+import uniqid from 'uniqid';
 import SelectableTable from '../SelectableTable';
 
 const SelectableTableDialogActions = ({ handleClose }) => (
@@ -39,7 +40,7 @@ const SelectableTableDialog = ({
   handleClose,
   handleSelect,
 }) => (
-  <Dialog open={isOpen} onClose={handleClose}>
+  <Dialog key={uniqid()} open={isOpen} onClose={handleClose}>
     <DialogTitle>{title}</DialogTitle>
     <SelectableTableDialogContent
       columns={columns}

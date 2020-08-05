@@ -118,11 +118,14 @@ export const ReportingPeriodIdButton = ({ value, onChange }) => (
   </SelectIdButton>
 );
 
-export const StatusIdButton = ({ value, onChange }) => (
-  <SelectIdButton value={value} action={DialogsStore.actions.OPEN_STATUS_DIALOG}>
-    <StatusDialog handleChange={onChange} />
-  </SelectIdButton>
-);
+export const StatusIdButton = props => {
+  const { value, onChange, isPopulated = false } = props;
+  return (
+    <SelectIdButton value={value} action={DialogsStore.actions.OPEN_STATUS_DIALOG}>
+      <StatusDialog handleChange={d => onChange(isPopulated ? d : d._id)} />
+    </SelectIdButton>
+  );
+};
 
 export const ProgramIdButton = ({ value, onChange }) => (
   <SelectIdButton value={value} action={DialogsStore.actions.OPEN_PROGRAM_DIALOG}>

@@ -16,6 +16,8 @@ import {
 import './TemplateTypes.scss';
 import { selectFactoryRESTResponseTableValues } from '../../../store/common/REST/selectors';
 import { selectTemplateTypesStore } from '../../../store/TemplateTypesStore/selectors';
+import { selectWorkflowsStore } from '../../../store/WorkflowsStore/selectors';
+import { getWorkflowsRequest } from '../../../store/thunks/workflow';
 
 const TemplateTypeHeader = () => {
   return (
@@ -29,28 +31,32 @@ const TemplateTypeHeader = () => {
 const TemplateTypesTable = ({ history }) => {
   const dispatch = useDispatch();
 
-  const { templateTypes } = useSelector(
+  const { templateTypes, workflows } = useSelector(
     state => ({
       templateTypes: selectFactoryRESTResponseTableValues(selectTemplateTypesStore)(state),
+      workflows: selectFactoryRESTResponseTableValues(selectWorkflowsStore)(state),
     }),
     shallowEqual,
   );
 
-  const columns = useMemo(
-    () => [
-      // { title: '_id', field: '_id', editable: 'never' },
-      { title: 'Name', field: 'name' },
-      { title: 'Description', field: 'description' },
-      { title: 'Approvable', type: 'boolean', field: 'isApprovable' },
-      { title: 'Reviewable', type: 'boolean', field: 'isReviewable' },
-      { title: 'Submittable', type: 'boolean', field: 'isSubmittable' },
-      { title: 'Inputtable', type: 'boolean', field: 'isInputtable' },
-      { title: 'Viewable', type: 'boolean', field: 'isViewable' },
-      { title: 'Reportable', type: 'boolean', field: 'isReportable' },
-      { title: 'Active', type: 'boolean', field: 'isActive' },
-    ],
-    [],
-  );
+  const lookupWorkflows = workflows.reduce(function (acc, workflow) {
+    acc[workflow._id] = `${workflow.name}`;
+    return acc;
+  }, {});
+
+  const columns = [
+    { title: 'Name', field: 'name' },
+    { title: 'Description', field: 'description' },
+    { title: 'Submission Workflow', field: 'submissionWorkflowId', lookup: lookupWorkflows },
+    { title: 'Template Workflow', field: 'templateWorkflowId', lookup: lookupWorkflows },
+    { title: 'Approvable', type: 'boolean', field: 'isApprovable' },
+    { title: 'Reviewable', type: 'boolean', field: 'isReviewable' },
+    { title: 'Submittable', type: 'boolean', field: 'isSubmittable' },
+    { title: 'Inputtable', type: 'boolean', field: 'isInputtable' },
+    { title: 'Viewable', type: 'boolean', field: 'isViewable' },
+    { title: 'Reportable', type: 'boolean', field: 'isReportable' },
+    { title: 'Active', type: 'boolean', field: 'isActive' },
+  ];
 
   const actions = useMemo(
     () => [
@@ -86,9 +92,11 @@ const TemplateTypesTable = ({ history }) => {
   );
 
   useEffect(() => {
+    dispatch(getWorkflowsRequest());
     dispatch(getTemplateTypesRequest());
   }, [dispatch]);
 
+  console.log(templateTypes);
   return (
     <MaterialTable
       columns={columns}

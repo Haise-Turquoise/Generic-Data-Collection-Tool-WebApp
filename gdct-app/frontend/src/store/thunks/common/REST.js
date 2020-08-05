@@ -54,11 +54,10 @@ export const deleteRequestFactory = (store, controller) => (_id, resolve, reject
 export const updateRequestFactory = (store, controller) => (value, resolve, reject) => dispatch => {
   dispatch(store.actions.REQUEST());
 
-  controller
-    .update(value)
+  controller.update(value)
     .then(() => {
       dispatch(store.actions.UPDATE(value));
-      resolve();
+      if (resolve) resolve(value);
     })
     .catch(error => {
       dispatch(store.actions.FAIL_REQUEST(error));

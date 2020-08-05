@@ -1,28 +1,3 @@
-/**
- * App state: data that is specific to the application's behavior
- */
-
-// Activity
-export const SET_OFFLINE = 'SET_OFFLINE';
-export const SET_ONLINE = 'SET_ONLINE';
-
-// Reconnection
-export const ENABLE_RECONNECTION = 'ENABLE_RECONNECTION';
-export const DISABLE_RECONNECTION = 'DISABLE_RECONNECTION';
-
-/**
- * Domain data: data that the application needs to show, use, or modify
- */
-
-export const UPDATE_ACCOUNT = 'UPDATE_ACCOUNT';
-export const RESET_ACCOUNT = 'RESET_ACCOUNT';
-/**
- * UI data: data related to the views/components display state
- */
-export const SHOW_APP_NAVIGATION = 'SHOW_APP_NAVIGATION';
-export const HIDE_APP_NAVIGATION = 'HIDE_APP_NAVIGATION';
-
-// ! EXCEL
 export const EXCEL_ARROW_DOWN = 'EXCEL_ARROW_DOWN';
 export const EXCEL_ARROW_LEFT = 'EXCEL_ARROW_LEFT';
 export const EXCEL_ARROW_RIGHT = 'EXCEL_ARROW_RIGHT';

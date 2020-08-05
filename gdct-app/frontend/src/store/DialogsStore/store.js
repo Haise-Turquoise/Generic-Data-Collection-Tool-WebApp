@@ -102,4 +102,6 @@ const DialogsStore = createSlice({
   reducers,
 });
 
+export const DialogStoreActions = DialogsStore.actions;
+
 export default DialogsStore;

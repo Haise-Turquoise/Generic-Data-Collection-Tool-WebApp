@@ -54,7 +54,6 @@ const TemplateTypeTable = ({
 
   const columns = useMemo(
     () => [
-      // { title: '_id', field: '_id', editable: 'never' },
       { title: 'Name', field: 'name' },
       { title: 'Description', field: 'description' },
       { title: 'Approvable', type: 'boolean', field: 'isApprovable' },

@@ -23,3 +23,14 @@ export const selectFactoryRESTResponseTableValues = memoizeFunction(storeSelecto
     cloneDeep(response.Values),
   ),
 );
+
+export const selectFactoryRESTLookup = memoizeFunction((storeSelector, field = 'name') =>
+  createSelector([selectFactoryRESTResponse(storeSelector)], response => {
+    const values = cloneDeep(response.Values);
+
+    return values.reduce(function (acc, value) {
+      acc[value._id] = `${value[field]}`;
+      return acc;
+    }, {});
+  }),
+);

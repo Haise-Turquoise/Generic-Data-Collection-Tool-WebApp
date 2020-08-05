@@ -37,7 +37,6 @@ const StatusesTable = () => {
 
   const columns = useMemo(
     () => [
-      { title: '_id', field: '_id' },
       { title: 'Name', field: 'name' },
       { title: 'Description', field: 'description' },
       { title: 'Active', type: 'boolean', field: 'isActive' },

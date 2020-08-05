@@ -8,6 +8,8 @@ import TemplatePackageEntity from '../../entities/TemplatePackage';
 import StatusRepository from '../Status';
 import UsersRepository from '../Users';
 
+const populatedParams = 'submissionPeriodId templateIds statusId programIds';
+
 // MongoDB implementation
 // @Service()
 export default class TemplatePackageRepository extends BaseRepository {
@@ -21,7 +23,15 @@ export default class TemplatePackageRepository extends BaseRepository {
     this.statusRepository = Container.get(StatusRepository);
   }
 
-  async create({ name, submissionPeriodId, templateIds, statusId, creationDate, userCreatorId }) {
+  async create({
+    name,
+    submissionPeriodId,
+    templateIds,
+    statusId,
+    creationDate,
+    userCreatorId,
+    programIds,
+  }) {
     return (
       this.submissionPeriodRepository
         .validate(submissionPeriodId)
@@ -36,6 +46,7 @@ export default class TemplatePackageRepository extends BaseRepository {
             statusId,
             creationDate,
             userCreatorId,
+            programIds,
           }),
         )
         .then(templatePackage => new TemplatePackageEntity(templatePackage.toObject()))
@@ -44,7 +55,8 @@ export default class TemplatePackageRepository extends BaseRepository {
 
   async update(
     id,
-    { name, submissionPeriodId, templateIds, statusId, creationDate, userCreatorId },
+    { name, submissionPeriodId, templateIds, statusId, creationDate, userCreatorId, programIds },
+    isPopulated,
   ) {
     return (
       (statusId ? this.statusRepository.validate(statusId) : new Promise(resolve => resolve()))
@@ -59,21 +71,29 @@ export default class TemplatePackageRepository extends BaseRepository {
             return this.submissionPeriodRepository.validate(submissionPeriodId);
         })
         .then(() =>
-          TemplatePackageModel.findByIdAndUpdate(id, {
-            name,
-            submissionPeriodId,
-            templateIds,
-            statusId,
-            creationDate,
-            userCreatorId,
-          }),
+          TemplatePackageModel.findByIdAndUpdate(
+            id,
+            {
+              name,
+              submissionPeriodId,
+              templateIds,
+              statusId,
+              creationDate,
+              userCreatorId,
+              programIds,
+            },
+            { upsert: true, new: true },
+          ).populate(isPopulated ? populatedParams : ''),
         )
-        .then(templatePackage => new TemplatePackageEntity(templatePackage.toObject()))
+        .then(templatePackage => {
+          console.log(templatePackage, isPopulated);
+          return new TemplatePackageEntity(templatePackage.toObject());
+        })
     );
   }
 
   async findByProgramIds(programIds) {
-    return TemplatePackageModel.find({ programId: { $in: programIds } });
+    return TemplatePackageModel.find({ programIds: { $in: programIds } });
   }
 
   async findByName(name) {
