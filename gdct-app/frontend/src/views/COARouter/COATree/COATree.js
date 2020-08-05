@@ -77,7 +77,7 @@ const COATreeTreeStructure = ({ sheetNameId }) => {
   const dispatch = useDispatch();
 
   const { localTree } = useSelector(
-    ({ COATreeStore: { localTree, isCallInProgress } }) => ({
+    ({ COATreeStore: { localTree } }) => ({
       localTree,
     }),
     shallowEqual,

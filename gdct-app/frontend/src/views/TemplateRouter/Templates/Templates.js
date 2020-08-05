@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useEffect } from 'react';
+import React, { useMemo, useEffect } from 'react';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 
 import MaterialTable from 'material-table';
@@ -84,6 +84,7 @@ const TemplatesTable = ({ history }) => {
         }),
       onRowUpdate: template =>
         new Promise((resolve, reject) => {
+          console.log(template)
           dispatch(updateTemplateRequest(template, resolve, reject));
         }),
       onRowDelete: template =>

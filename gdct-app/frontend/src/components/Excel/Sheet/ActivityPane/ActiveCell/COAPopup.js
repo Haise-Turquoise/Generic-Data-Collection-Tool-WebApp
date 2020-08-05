@@ -6,10 +6,8 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import Button from '@material-ui/core/Button';
 import Icon from '@material-ui/core/Icon';
-import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 
-import { filterString } from './utils';
 
 import { DialogActions } from './components';
 
@@ -87,7 +85,7 @@ const GroupLinkList = ({
 const GroupItems = ({ groups, selectedGroup, handleSelectGroup }) =>
   groups.map(({ _id, categoryGroupId }, index) => {
     const handleClickGroup = () =>
-      handleSelectGroup({ _id, value: categoryGroupId  ? categoryGroupId.name : '' });
+      handleSelectGroup({ _id, value: categoryGroupId ? categoryGroupId.name : '' });
     return (
       <ListItem
         key={`groups-group-${index}`}
@@ -297,7 +295,7 @@ const GroupPopup = ({ type }) => {
     const foundGroup = COATrees.find(group => group._id === groupId);
     const groupMap = new Set();
 
-    // TODO: Quadratic run time
+    // console.log(foundGroup)
 
     if (foundGroup) {
       foundGroup.categoryId.forEach(_id => groupMap.add(_id));
@@ -307,6 +305,8 @@ const GroupPopup = ({ type }) => {
 
     return ids;
   }, [newGroups, COATrees, AllCOAIds]);
+
+  // console.log(COAIds)
 
   const handleAdd = useCallback(
     () => dispatch(setGroups({ category: type, newGroups, selectedCOAIds, COAIds })),
