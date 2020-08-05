@@ -20,6 +20,7 @@ import ReportingPeriodDialog from './dialogs/ReportingPeriodDialog';
 import DialogsStore from '../store/DialogsStore/store';
 import TemplateDialog from './dialogs/TemplateDialog';
 import OrganizationDialog from './dialogs/OrganizationDialog';
+import WorkflowDialog from './dialogs/WorkflowDialog';
 
 export const DeleteButton = ({ handleDelete }) => (
   <IconButton onClick={handleDelete} aria-label="delete">
@@ -136,6 +137,12 @@ export const ProgramIdButton = ({ value, onChange }) => (
 export const TemplateIdButton = ({ value, onChange }) => (
   <SelectIdButton value={value} action={DialogsStore.actions.OPEN_TEMPLATE_DIALOG}>
     <TemplateDialog handleChange={onChange} />
+  </SelectIdButton>
+);
+
+export const WorkflowIdButton = ({ value, onChange, isPopulated = false }) => (
+  <SelectIdButton value={value} action={DialogsStore.actions.OPEN_WORKFLOW_DIALOG}>
+    <WorkflowDialog handleChange={d => onChange(isPopulated ? d : d._id)} />
   </SelectIdButton>
 );
 
