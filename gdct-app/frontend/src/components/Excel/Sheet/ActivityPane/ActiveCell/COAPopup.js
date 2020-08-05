@@ -6,10 +6,7 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import Button from '@material-ui/core/Button';
 import Icon from '@material-ui/core/Icon';
-import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
-
-import { filterString } from './utils';
 
 import { DialogActions } from './components';
 
@@ -85,9 +82,9 @@ const GroupLinkList = ({
 };
 
 const GroupItems = ({ groups, selectedGroup, handleSelectGroup }) =>
-  groups.map(({ _id, COAGroupId }, index) => {
+  groups.map(({ _id, categoryGroupId }, index) => {
     const handleClickGroup = () =>
-      handleSelectGroup({ _id, value: COAGroupId ? COAGroupId.name : '' });
+      handleSelectGroup({ _id, value: categoryGroupId ? categoryGroupId.name : '' });
     return (
       <ListItem
         key={`groups-group-${index}`}
@@ -95,7 +92,7 @@ const GroupItems = ({ groups, selectedGroup, handleSelectGroup }) =>
         onClick={handleClickGroup}
         button
       >
-        <ListItemText primary={`${COAGroupId ? COAGroupId.name : ''}`} />
+        <ListItemText primary={`${categoryGroupId ? categoryGroupId.name : ''}`} />
       </ListItem>
     );
   });
@@ -282,7 +279,7 @@ const GroupPopup = ({ type }) => {
       const leafId = newGroups[groupPointer - 1]._id;
       definedGroups = COATrees.filter(COATree => COATree.parentId === leafId);
     } else {
-      definedGroups = COATrees.filter(COATree => COATree.parentId === undefined);
+      definedGroups = COATrees.filter(COATree => !COATree.parentId);
     }
 
     return definedGroups;
@@ -297,16 +294,18 @@ const GroupPopup = ({ type }) => {
     const foundGroup = COATrees.find(group => group._id === groupId);
     const groupMap = new Set();
 
-    // TODO: Quadratic run time
+    // console.log(foundGroup)
 
     if (foundGroup) {
-      foundGroup.COAIds.forEach(_id => groupMap.add(_id));
+      foundGroup.categoryId.forEach(_id => groupMap.add(_id));
 
       ids = AllCOAIds.filter(({ _id }) => groupMap.has(_id));
     }
 
     return ids;
   }, [newGroups, COATrees, AllCOAIds]);
+
+  // console.log(COAIds)
 
   const handleAdd = useCallback(
     () => dispatch(setGroups({ category: type, newGroups, selectedCOAIds, COAIds })),

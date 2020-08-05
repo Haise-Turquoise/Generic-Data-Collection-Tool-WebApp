@@ -37,7 +37,7 @@ const TemplatePackageHeader = () => {
   );
 };
 
-const TemplatePackage = () => {
+const TemplatePackages = () => {
   const dispatch = useDispatch();
   const history = useHistory();
 
@@ -130,4 +130,4 @@ const TemplatePackage = () => {
   );
 };
 
-export default TemplatePackage;
+export default TemplatePackages;
