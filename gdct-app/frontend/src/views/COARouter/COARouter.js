@@ -7,7 +7,11 @@ import COATrees from './COATrees';
 import COATree from './COATree';
 import COAGroups from './COAGroups';
 import COAs from './COAs';
-import { ROUTE_CATEGORY_CATEGORIES, ROUTE_CATEGORY_GROUPS, ROUTE_CATEGORY_TREES } from '../../constants/routes';
+import {
+  ROUTE_CATEGORY_CATEGORIES,
+  ROUTE_CATEGORY_GROUPS,
+  ROUTE_CATEGORY_TREES,
+} from '../../constants/routes';
 
 const TemplateRouter = () => (
   <Switch>

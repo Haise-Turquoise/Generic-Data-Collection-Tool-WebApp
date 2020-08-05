@@ -8,7 +8,6 @@ import Button from '@material-ui/core/Button';
 import Icon from '@material-ui/core/Icon';
 import Typography from '@material-ui/core/Typography';
 
-
 import { DialogActions } from './components';
 
 import { resetActiveCellDialog, setGroups } from '../../../../../store/actions/ui/excel/commands';

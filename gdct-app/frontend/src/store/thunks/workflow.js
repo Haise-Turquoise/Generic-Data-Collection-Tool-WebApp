@@ -98,7 +98,7 @@ const _createWorkflow = (dispatch, getState) => {
       to: [...linkMapSet[linkId]].map(toId => ({
         id: toId,
         statusId: workflowNodes[toId].type._id,
-      }))
+      })),
     });
   }
 
