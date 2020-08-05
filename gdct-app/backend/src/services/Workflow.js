@@ -28,7 +28,7 @@ const getWorkflowProcesses = workflowData => {
 
   // Create a workflow process for each node
   for (const item of statusData) {
-    const { id, statusId, position  } = item;
+    const { id, statusId, position } = item;
 
     workflowProcessesMap[id] = {
       _id: objectId(),

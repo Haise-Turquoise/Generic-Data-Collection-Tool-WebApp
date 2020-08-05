@@ -79,7 +79,6 @@ const TemplatePackageController = Service([TemplatePackageService], service => {
 
     return router;
   })();
-  
 });
 
 export default TemplatePackageController;
