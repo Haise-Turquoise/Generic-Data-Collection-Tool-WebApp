@@ -34,7 +34,6 @@ const PrivateRouter = ({ setLoggedIn }) => {
     <Switch>
       <Route exact path="/" component={GDCTMenu} />
       <Route path="/template" component={TemplateRouter} />
-      <Route path="/user" component={UserRouter} />
       <Route path="/report" component={ReportRouter} />
       <Route path={ROUTE_TEMPLATE_PCKGS} component={TemplateRouter} />
       <Route path="/admin/populate" component={MasterValuePopulation} />
@@ -44,7 +43,7 @@ const PrivateRouter = ({ setLoggedIn }) => {
       <Route path="/admin/coa" component={COARouter} />
       <Route exact path="/admin/configuration" component={null} />
       <Route exact path="/admin/business_rule_configure" component={null} />
-      <Route exact path="/admin/user_management" component={null} />
+      <Route path="/admin/user_management" component={UserRouter} />
       <Route exact path="/admin/program" component={Programs} />
       <Route exact path="/admin/status" component={Statuses} />
       <Route exact path="/admin/reporting_period" component={ReportingPeriods} />
