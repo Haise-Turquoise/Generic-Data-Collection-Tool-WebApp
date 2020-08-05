@@ -43,6 +43,12 @@ export const selectIsTemplateDialogOpen = createSelector(
   [selectDialogsStore],
   dialogsStore => dialogsStore.isTemplateDialogOpen,
 );
+
+export const selectIsWorkflowDialogOpen = createSelector(
+  [selectDialogsStore],
+  dialogsStore => dialogsStore.isWorkflowDialogOpen,
+);
+
 // isCOADialogOpen: false,
 // isCOAGroupDialogOpen: false,
 // isUserDialogOpen: false,

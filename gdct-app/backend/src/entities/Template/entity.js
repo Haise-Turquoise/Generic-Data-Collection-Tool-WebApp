@@ -8,6 +8,7 @@ export default class TemplateEntity {
     userCreatorId,
     creationDate,
     expirationDate,
+    workflowProcessId,
     statusId,
   }) {
     this._id = _id;
@@ -17,6 +18,7 @@ export default class TemplateEntity {
     this.userCreatorId = userCreatorId;
     this.creationDate = creationDate;
     this.expirationDate = expirationDate;
+    this.workflowProcessId = workflowProcessId;
     this.statusId = statusId;
   }
 }

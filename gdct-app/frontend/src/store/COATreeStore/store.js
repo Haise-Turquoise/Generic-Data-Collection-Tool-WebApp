@@ -3,7 +3,8 @@ import cloneDeep from 'clone-deep';
 import { removeNode, changeNodeAtPath } from 'react-sortable-tree';
 import { createSlice } from '@reduxjs/toolkit';
 
-const generateTitle = ({ COAGroupId }) => `${COAGroupId ? `${COAGroupId.name}` : ''}`;
+const generateTitle = ({ categoryGroupId }) =>
+  `${categoryGroupId ? `${categoryGroupId.name}` : ''}`;
 
 const getNodeKey = ({ treeIndex }) => treeIndex;
 
@@ -77,6 +78,8 @@ const ADD_ROOT_COA_TREE_UI = (state, { payload }) => {
     title: generateTitle(payload.tree),
   };
 
+  console.log('pl', payload);
+
   return {
     ...state,
     localTree: [...state.localTree, newRootNode],
@@ -109,9 +112,11 @@ const SELECT_COA_COA_TREE_UI = (state, { payload }) => {
       ...state.selectedNodeProps.node,
       content: {
         ...state.selectedNodeProps.node.content,
-        COAIds: state.selectedNodeProps.node.content.COAIds.includes(payload._id)
-          ? state.selectedNodeProps.node.content.COAIds.filter(curCOAId => curCOAId !== payload._id)
-          : [...state.selectedNodeProps.node.content.COAIds, payload._id],
+        categoryId: state.selectedNodeProps.node.content.categoryId.includes(payload._id)
+          ? state.selectedNodeProps.node.content.categoryId.filter(
+              curCOAId => curCOAId !== payload._id,
+            )
+          : [...state.selectedNodeProps.node.content.categoryId, payload._id],
       },
     },
   };

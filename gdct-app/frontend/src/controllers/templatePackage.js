@@ -3,18 +3,27 @@ import axios from 'axios';
 import { host } from '../constants/domain';
 
 const templatePackageController = (() => {
-  const templateAxios = axios.create({
+  const templatePackageAxios = axios.create({
     baseURL: `${host}/template_manager/templatePackages`,
   });
   return {
+    fetchPopulated: async _id =>
+      templatePackageAxios.get(`/populated/${_id}`).then(res => res.data.templatePackage),
     fetchTemplatePackage: async _id =>
-      templateAxios.get(`/${_id}`).then(res => res.data.templatePackage),
-    fetch: async query => templateAxios.get('').then(res => res.data.templatePackages),
+      templatePackageAxios.get(`/${_id}`).then(res => res.data.templatePackage),
+    fetch: async _ => templatePackageAxios.get('').then(res => res.data.templatePackages),
     create: async templatePackage =>
-      templateAxios.post('', { templatePackage }).then(res => res.data.templatePackage),
-    delete: async _id => templateAxios.delete(`/${_id}`),
+      templatePackageAxios.post('', { templatePackage }).then(res => res.data.templatePackage),
+    delete: async _id => templatePackageAxios.delete(`/${_id}`),
     update: async templatePackage =>
-      templateAxios.put(`/${templatePackage._id}`, { templatePackage }),
+      templatePackageAxios.put(`/${templatePackage._id}`, { templatePackage }),
+    updatePopulated: async templatePackage =>
+      templatePackageAxios
+        .put(`/populated/${templatePackage._id}`, { templatePackage })
+        .then(res => {
+          console.log('d', res.data.templatePackage);
+          return [res.data.templatePackage];
+        }),
   };
 })();
 

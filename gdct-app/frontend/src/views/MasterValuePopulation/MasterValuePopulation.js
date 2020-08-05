@@ -22,7 +22,7 @@ import {
 } from '../../store/common/REST/selectors';
 import { selectOrgsStore } from '../../store/OrganizationsStore/selectors';
 import { selectCOAsStore } from '../../store/COAsStore/selectors';
-import { selectColumnNamesStore } from '../../store/ColumnNameStore/selectors';
+import { selectColumnNamesStore } from '../../store/ColumnNamesStore/selectors';
 import Loading from '../../components/Loading';
 
 import { getColumnNamesRequest } from '../../store/thunks/columnName';
