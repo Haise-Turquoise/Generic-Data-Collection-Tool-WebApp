@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useEffect } from 'react';
+import React, { useMemo, useEffect } from 'react';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 
 import MaterialTable from 'material-table';
@@ -13,11 +13,16 @@ import {
   updateTemplateRequest,
 } from '../../../store/thunks/template';
 
-import { StatusIdButton, TemplateTypeIdButton } from '../../../components/buttons';
-
 import './Templates.scss';
-import { selectFactoryRESTResponseTableValues } from '../../../store/common/REST/selectors';
+import {
+  selectFactoryRESTResponseTableValues,
+  selectFactoryRESTLookup,
+} from '../../../store/common/REST/selectors';
 import { selectTemplatesStore } from '../../../store/TemplatesStore/selectors';
+import { getStatusesRequest } from '../../../store/thunks/status';
+import { getTemplateTypesRequest } from '../../../store/thunks/templateType';
+import { selectStatusesStore } from '../../../store/StatusesStore/selectors';
+import { selectTemplateTypesStore } from '../../../store/TemplateTypesStore/selectors';
 
 // const TemplateFileDropzone = () => {}
 
@@ -34,28 +39,28 @@ const TemplateHeader = () => {
 const TemplatesTable = ({ history }) => {
   const dispatch = useDispatch();
 
-  const { templates } = useSelector(
+  const { templates, lookupStatuses, lookupTemplateTypes } = useSelector(
     state => ({
       templates: selectFactoryRESTResponseTableValues(selectTemplatesStore)(state),
+      lookupStatuses: selectFactoryRESTLookup(selectStatusesStore)(state),
+      lookupTemplateTypes: selectFactoryRESTLookup(selectTemplateTypesStore)(state),
     }),
     shallowEqual,
   );
 
   const columns = useMemo(
     () => [
-      { title: '_id', field: '_id', editable: 'never' },
       { title: 'Name', field: 'name' },
       {
         title: 'TemplateTypeId',
         field: 'templateTypeId',
-        editComponent: TemplateTypeIdButton,
+        lookup: lookupTemplateTypes,
       },
-      { title: 'UserCreatorId', field: 'userCreatorId' },
       { title: 'CreationDate', type: 'date', field: 'creationDate' },
       { title: 'ExpirationDate', type: 'date', field: 'expirationDate' },
-      { title: 'StatusId', field: 'statusId', editComponent: StatusIdButton },
+      { title: 'StatusId', field: 'statusId', lookup: lookupStatuses },
     ],
-    [],
+    [lookupTemplateTypes, lookupStatuses],
   );
 
   const actions = useMemo(
@@ -63,7 +68,7 @@ const TemplatesTable = ({ history }) => {
       {
         icon: LaunchIcon,
         tooltip: 'Open Template',
-        onClick: (_event, template) => history.push(`/template_manager/templates/${template._id}`),
+        onClick: (_event, template) => history.push(`/admin/template/design/${template._id}`),
       },
     ],
     [history],
@@ -91,6 +96,8 @@ const TemplatesTable = ({ history }) => {
 
   useEffect(() => {
     dispatch(getTemplatesRequest());
+    dispatch(getStatusesRequest());
+    dispatch(getTemplateTypesRequest());
   }, [dispatch]);
 
   return (

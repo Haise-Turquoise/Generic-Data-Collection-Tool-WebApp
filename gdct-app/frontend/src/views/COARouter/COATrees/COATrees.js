@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useEffect } from 'react';
+import React, { useMemo, useEffect } from 'react';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 
 import MaterialTable from 'material-table';
@@ -9,6 +9,7 @@ import Typography from '@material-ui/core/Typography';
 import { getSheetNamesRequest } from '../../../store/thunks/sheetName';
 import { selectFactoryRESTResponseTableValues } from '../../../store/common/REST/selectors';
 import { selectSheetNamesStore } from '../../../store/SheetNamesStore/selectors';
+import { ROUTE_CATEGORY_TREES } from '../../../constants/routes';
 
 // import './COATrees.scss'
 
@@ -31,20 +32,14 @@ const COATreesTable = ({ history }) => {
     shallowEqual,
   );
 
-  const columns = useMemo(
-    () => [
-      { title: '_id', field: '_id', editable: 'never' },
-      { title: 'Sheet Name', field: 'name' },
-    ],
-    [],
-  );
+  const columns = useMemo(() => [{ title: 'Sheet Name', field: 'name' }], []);
 
   const actions = useMemo(
     () => [
       {
         icon: LaunchIcon,
         tooltip: "View Sheet's Tree",
-        onClick: (_event, sheetName) => history.push(`/COA_manager/COA_trees/${sheetName._id}`),
+        onClick: (_event, sheetName) => history.push(`${ROUTE_CATEGORY_TREES}/${sheetName._id}`),
       },
     ],
     [history],

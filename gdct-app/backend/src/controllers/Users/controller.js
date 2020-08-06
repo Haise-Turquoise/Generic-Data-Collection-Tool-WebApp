@@ -6,7 +6,7 @@ import UserService from '../../services/Users';
 const UsersController = Service([UserService], service => {
   const router = Router();
   return (() => {
-    router.get('/users/getUserInfo', (req, res, next) => {
+    router.get('/admin/user_management/getUserInfo', (req, res, next) => {
       // Get query from middleware -- auth handler
       console.log(req.query);
       service
@@ -16,14 +16,14 @@ const UsersController = Service([UserService], service => {
         .catch(next);
     });
 
-    router.post('/users', (req, res, next) => {
+    router.post('/admin/user_management', (req, res, next) => {
       service
         .createUser(req.body.user)
         .then(user => res.json({ user }))
         .catch(next);
     });
 
-    router.put('/users/updateUserInfo/:_id', (req, res, next) => {
+    router.put('/admin/user_management/updateUserInfo/:_id', (req, res, next) => {
       const { _id } = req.params;
       const { user } = req.body;
 
@@ -33,7 +33,7 @@ const UsersController = Service([UserService], service => {
         .catch(next);
     });
 
-    router.delete('/users/:_id', (req, res, next) => {
+    router.delete('/admin/user_management/:_id', (req, res, next) => {
       const { _id } = req.params;
 
       service

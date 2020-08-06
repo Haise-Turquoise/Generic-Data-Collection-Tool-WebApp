@@ -22,9 +22,13 @@ module.exports = {
     },
   },
   rules: {
-    'react/no-unescaped-entities': 'warn',
     'no-underscore-dangle': 'off',
-    'react/prop-types': 'warn',
+    'react/prop-types': 'off',
+    'no-param-reassign': 'off',
+    'import/no-named-as-default': 'off',
+    'import/prefer-default-export': 'off',
+
+    'react/no-unescaped-entities': 'warn',
     'no-unused-vars': 'warn',
     'no-undef': 'warn',
     'react/display-name': 'warn',
@@ -38,11 +42,10 @@ module.exports = {
     camelcase: 'warn',
     'no-return-assign': 'warn',
     'default-case': 'warn',
-    'no-param-reassign': 'warn',
+
     'prefer-destructuring': 'warn',
     radix: 'warn',
-    'import/no-named-as-default': 'warn',
-    'import/prefer-default-export': 'warn',
+
     'no-restricted-syntax': 'warn',
     'guard-for-in': 'warn',
     'prefer-rest-params': 'warn',

@@ -15,8 +15,15 @@ import {
   updateSubmissionRequest,
 } from '../../store/thunks/submission';
 import { selectSubmissionsStore } from '../../store/SubmissionsStore/selectors';
-import { selectFactoryRESTResponseTableValues } from '../../store/common/REST/selectors';
+import {
+  selectFactoryRESTResponseTableValues,
+  selectFactoryRESTLookup,
+} from '../../store/common/REST/selectors';
 import { TemplateIdButton, StatusIdButton } from '../../components/buttons';
+import { selectTemplatesStore } from '../../store/TemplatesStore/selectors';
+import { selectStatusesStore } from '../../store/StatusesStore/selectors';
+import { getStatusesRequest } from '../../store/thunks/status';
+import { getTemplatesRequest } from '../../store/thunks/template';
 
 const HeaderActions = () => {
   const history = useHistory();
@@ -42,26 +49,27 @@ const SubmissionHeader = () => (
 const Submission = ({ history }) => {
   const dispatch = useDispatch();
 
-  const { submissions } = useSelector(
+  const { submissions, lookupTemplates, lookupStatuses } = useSelector(
     state => ({
       submissions: selectFactoryRESTResponseTableValues(selectSubmissionsStore)(state),
+      lookupTemplates: selectFactoryRESTLookup(selectTemplatesStore)(state),
+      lookupStatuses: selectFactoryRESTLookup(selectStatusesStore)(state),
     }),
     shallowEqual,
   );
 
   const columns = useMemo(
     () => [
-      { title: '_id', field: '_id' },
       { title: 'Name', field: 'name' },
       {
         title: 'Template Id',
         field: 'templateId',
-        editComponent: TemplateIdButton,
+        lookup: lookupTemplates,
       },
       { title: 'Submitted Date', type: 'date', field: 'submittedDate' },
-      { title: 'StatusId', field: 'statusId', editComponent: StatusIdButton },
+      { title: 'StatusId', field: 'statusId', lookup: lookupStatuses },
     ],
-    [],
+    [lookupTemplates, lookupStatuses],
   );
 
   const options = useMemo(() => ({ actionsColumnIndex: -1, search: false, showTitle: false }), []);
@@ -98,6 +106,8 @@ const Submission = ({ history }) => {
 
   useEffect(() => {
     dispatch(getSubmissionsRequest());
+    dispatch(getTemplatesRequest());
+    dispatch(getStatusesRequest());
   }, [dispatch]);
 
   return (

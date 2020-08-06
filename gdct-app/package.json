@@ -7,6 +7,7 @@
     "install": "yarn --cwd backend && yarn --cwd frontend",
     "start": "concurrently \"yarn --cwd backend start\" \"yarn --cwd frontend start\"",
     "start:cra": "concurrently \"yarn --cwd backend start\" \"yarn --cwd frontend start:cra\"",
+    "fix": "yarn --cwd frontend fix && --cwd backend fix",
     "start:frontend": "yarn --cwd frontend start",
     "build:frontend": "yarn --cwd frontend build",
     "build:frontend:cra": "yarn --cwd frontend build:cra",

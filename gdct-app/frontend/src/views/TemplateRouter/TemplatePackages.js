@@ -1,28 +1,32 @@
 import React, { useMemo, useEffect } from 'react';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 
-import MaterialTable from 'material-table';
 import Paper from '@material-ui/core/Paper';
 import LaunchIcon from '@material-ui/icons/Launch';
 
 import Typography from '@material-ui/core/Typography';
+import MaterialTable from 'material-table';
+
+import { useHistory } from 'react-router-dom';
+
+import {
+  selectFactoryRESTResponseTableValues,
+  selectFactoryRESTIsCallInProgress,
+  selectFactoryRESTLookup,
+} from '../../store/common/REST/selectors';
+import { selectTemplatePackagesStore } from '../../store/TemplatePackagesStore/selectors';
 import {
   getTemplatePackagesRequest,
   createTemplatePackageRequest,
   deleteTemplatePackageRequest,
   updateTemplatePackageRequest,
-} from '../../../store/thunks/templatePackage';
-
-import {
-  UserIdButton,
-  StatusIdButton,
-  SubmissionPeriodIdButton,
-} from '../../../components/buttons';
-
-import './TemplatePackages.scss';
-import { selectFactoryRESTResponseTableValues } from '../../../store/common/REST/selectors';
-import { selectTemplatePackagesStore } from '../../../store/TemplatePackagesStore/selectors';
-import DialogsStore from '../../../store/DialogsStore/store';
+} from '../../store/thunks/templatePackage';
+import { ROUTE_TEMPLATE_PCKGS_PCKGS } from '../../constants/routes';
+import { TemplatePackagesStoreActions } from '../../store/TemplatePackagesStore/store';
+import { selectStatusesStore } from '../../store/StatusesStore/selectors';
+import { getStatusesRequest } from '../../store/thunks/status';
+import { selectSubmissionPeriodsStore } from '../../store/SubmissionPeriodsStore/selectors';
+import { getSubmissionPeriodsRequest } from '../../store/thunks/submissionPeriod';
 
 const TemplatePackageHeader = () => {
   return (
@@ -33,12 +37,16 @@ const TemplatePackageHeader = () => {
   );
 };
 
-const TemplatePackage = () => {
+const TemplatePackages = () => {
   const dispatch = useDispatch();
+  const history = useHistory();
 
-  const { templatePackages } = useSelector(
+  const { templatePackages, lookupStatuses, lookupSubmissionPeriods } = useSelector(
     state => ({
+      isCallInProgress: selectFactoryRESTIsCallInProgress(selectTemplatePackagesStore)(state),
       templatePackages: selectFactoryRESTResponseTableValues(selectTemplatePackagesStore)(state),
+      lookupStatuses: selectFactoryRESTLookup(selectStatusesStore)(state),
+      lookupSubmissionPeriods: selectFactoryRESTLookup(selectSubmissionPeriodsStore)(state),
     }),
     shallowEqual,
   );
@@ -47,8 +55,8 @@ const TemplatePackage = () => {
     () => [
       {
         icon: LaunchIcon,
-        tooltip: 'Open Templates',
-        onClick: () => dispatch(DialogsStore.actions.OPEN_COA_DIALOG()),
+        tooltip: 'Open Package',
+        onClick: (_event, pckg) => history.push(`${ROUTE_TEMPLATE_PCKGS_PCKGS}/${pckg._id}`),
       },
     ],
     [dispatch],
@@ -56,23 +64,17 @@ const TemplatePackage = () => {
 
   const columns = useMemo(
     () => [
-      { title: '_id', field: '_id', editable: 'never' },
       { title: 'Name', field: 'name' },
       {
         title: 'SubmissionPeriodId',
         field: 'submissionPeriodId',
-        editComponent: SubmissionPeriodIdButton,
+        lookup: lookupSubmissionPeriods,
       },
       // { title: "TemplateIds", type: "boolean", field: "templateIds" },
-      { title: 'StatusId', field: 'statusId', editComponent: StatusIdButton },
+      { title: 'StatusId', field: 'statusId', lookup: lookupStatuses },
       { title: 'Creation Date', field: 'creationDate', type: 'date' },
-      {
-        title: 'UserCreatorId',
-        field: 'userCreatorId',
-        editComponent: UserIdButton,
-      },
     ],
-    [],
+    [lookupStatuses, lookupSubmissionPeriods],
   );
 
   const options = useMemo(
@@ -89,7 +91,7 @@ const TemplatePackage = () => {
       onRowAdd: templatePackage =>
         new Promise((resolve, reject) => {
           console.log(templatePackage);
-          templatePackage = { ...templatePackage, templateIds: [] };
+          templatePackage = { ...templatePackage, templateIds: [], programIds: [] };
           dispatch(createTemplatePackageRequest(templatePackage, resolve, reject));
         }),
       onRowUpdate: templatePackage =>
@@ -106,6 +108,12 @@ const TemplatePackage = () => {
 
   useEffect(() => {
     dispatch(getTemplatePackagesRequest());
+    dispatch(getStatusesRequest());
+    dispatch(getSubmissionPeriodsRequest());
+
+    return () => {
+      dispatch(TemplatePackagesStoreActions.RESET());
+    };
   }, [dispatch]);
 
   return (
@@ -122,4 +130,4 @@ const TemplatePackage = () => {
   );
 };
 
-export default TemplatePackage;
+export default TemplatePackages;

@@ -7,24 +7,14 @@ import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import {
   getTemplateTypesRequest,
-  createTemplateTypeRequest,
-  deleteTemplateTypeRequest,
   updateTemplateTypeRequest,
 } from '../../../store/thunks/templateType';
 import Loading from '../../../components/Loading/Loading';
 import ProgramList from '../../OrganizationRouter/ProgramList';
 
-import {
-  getProgramsRequest,
-  createProgramsRequest,
-  deleteProgramsRequest,
-  updateProgramsRequest,
-} from '../../../store/thunks/program';
-
 import './TemplateType.scss';
 import { selectFactoryRESTResponseTableValues } from '../../../store/common/REST/selectors';
 import { selectTemplateTypesStore } from '../../../store/TemplateTypesStore/selectors';
-import { selectProgramsStore } from '../../../store/ProgramsStore/selectors';
 
 const TemplateTypeHeader = () => {
   return (
@@ -36,7 +26,6 @@ const TemplateTypeHeader = () => {
 };
 
 const TemplateTypeTable = ({
-  history,
   match: {
     params: { _id },
   },
@@ -54,7 +43,6 @@ const TemplateTypeTable = ({
 
   const columns = useMemo(
     () => [
-      // { title: '_id', field: '_id', editable: 'never' },
       { title: 'Name', field: 'name' },
       { title: 'Description', field: 'description' },
       { title: 'Approvable', type: 'boolean', field: 'isApprovable' },
@@ -88,7 +76,6 @@ const TemplateTypeTable = ({
 };
 
 const LinkProgramTable = ({
-  history,
   match: {
     params: { _id },
   },
@@ -109,10 +96,10 @@ const LinkProgramTable = ({
     ({ ProgramsStore: { isCallInProgress } }) => isCallInProgress,
   );
   const isCallInProgress = isTemplateTypesCallInProgress && isProgramsCallInProgress;
-  const accept = result => {
+  const accept = () => {
     redirect();
   };
-  const reject = error => {
+  const reject = () => {
     // reflect error message on form somehow o.O
     alert('Missing or invalid parameters');
   };

@@ -3,7 +3,7 @@ import { host } from '../constants/domain';
 
 const usersController = (() => {
   const usersAxios = axios.create({
-    baseURL: `${host}/users`,
+    baseURL: `${host}/admin/user_management`,
   });
   return {
     fetch: async query => usersAxios.get('/getUserInfo', query).then(res => res.data.users),
