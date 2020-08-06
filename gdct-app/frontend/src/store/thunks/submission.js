@@ -37,7 +37,7 @@ export const createSubmissionRequest = (
   };
 
   submissionController
-    .create(newSubmission, submissionNote, submitId)
+    .updateWorkbook(newSubmission, submissionNote)
     .then(value => {
       dispatch(SubmissionsStore.actions.CREATE(value));
     })

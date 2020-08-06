@@ -37,15 +37,14 @@ const SubmissionController = Service([SubmissionService], service => {
         .catch(next);
     });
 
-    router.post('/submissions/createSubmission', (req, res, next) => {
-      const { submission, submissionNote, nextProcessId } = req.body;
+    router.post('/submissions/uploadSubmission', (req, res, next) => {
+      const { submission, submissionNote } = req.body;
 
       service
-        .createSubmissionWithWorkbook(
+        .uploadSubmissionWorkbook(
           submission,
           submission.workbookData,
-          submissionNote,
-          nextProcessId,
+          submissionNote
         )
         .then(submissions => res.json({ submissions }));
     });
