@@ -10,6 +10,7 @@ import Select from '@material-ui/core/Select';
 import Chip from '@material-ui/core/Chip';
 import MenuItem from '@material-ui/core/MenuItem';
 import Typography from '@material-ui/core/Typography';
+import InputLabel from '@material-ui/core/InputLabel'
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 
@@ -164,6 +165,7 @@ export default function SignUp({ parentHandleChange, steps, activeStep, handleNe
               />
             </Grid>
             <Grid item xs={12}>
+              <InputLabel id="demo-mutiple-chip-label">Sys Roles</InputLabel>
               <Select
                 labelId="demo-mutiple-chip-label"
                 id="demo-mutiple-chip"

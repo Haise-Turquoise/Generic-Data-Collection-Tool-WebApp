@@ -48,6 +48,10 @@ const User = new Schema(
         ],
       },
     ],
+    sysRoles: [{
+      type: ObjectId,
+      ref: 'AppSysRole'
+    }],
     facebook: {
       id: String,
       token: String,
@@ -73,6 +77,12 @@ const User = new Schema(
   },
   { timestamp: true, minimize: false },
 );
+
+User.post('save', async function(doc, next) {
+  console.log(doc.sysRoles);
+  await doc.populate("sysRoles").execPopulate(); 
+  console.log(doc.sysRoles); 
+})
 
 User.methods.setHashedPassword = function (password) {
   this.password = bcrypt.hashSync(password, bcrypt.genSaltSync(8), null);

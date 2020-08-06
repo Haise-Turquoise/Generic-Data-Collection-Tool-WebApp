@@ -58,6 +58,7 @@ export default function MandatoryInfo({
   const myFormSchema = Yup.object().shape({
     firstName: Yup.string().required('Required'),
     lastName: Yup.string().required('Required'),
+    username: Yup.string().required('Required'),
     email: Yup.string().required('Required'),
     password: Yup.string().required('Required'),
   });
@@ -69,6 +70,7 @@ export default function MandatoryInfo({
           initialValues={{
             firstName: '',
             lastName: '',
+            username: '',
             email: '',
             password: '',
           }}
@@ -77,6 +79,7 @@ export default function MandatoryInfo({
             console.log(values);
             parentHandleChange('firstName', values.firstName);
             parentHandleChange('lastName', values.lastName);
+            parentHandleChange('username', values.username);
             parentHandleChange('email', values.email);
             parentHandleChange('password', values.password);
             handleNext();
@@ -124,6 +127,23 @@ export default function MandatoryInfo({
                   />
                   {errors.lastName && touched.lastName ? (
                     <div style={{ color: 'red' }}>{errors.lastName}</div>
+                  ) : null}
+                </Grid>
+                <Grid item xs={12}>
+                  <TextField
+                    variant="standard"
+                    required
+                    fullWidth
+                    id="username"
+                    label="Username"
+                    name="username"
+                    value={values.username}
+                    autoComplete="uname"
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                  />
+                  {errors.username && touched.username ? (
+                    <div style={{ color: 'red' }}>{errors.username}</div>
                   ) : null}
                 </Grid>
                 <Grid item xs={12}>

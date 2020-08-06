@@ -125,6 +125,7 @@ export default function SignUp() {
   const [password, setPassword] = useState('');
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
+  const [username, setUsername] = useState('');
   const [title, setTitle] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [ext, setExt] = useState('');
@@ -159,6 +160,9 @@ export default function SignUp() {
       case 'lastName':
         setLastName(value);
         break;
+      case 'username':
+        setUsername(value);
+        break;
       case 'email':
         setEmail(value);
         break;
@@ -189,14 +193,14 @@ export default function SignUp() {
     dispatch(getAppSysRolesRequest());
   }, [dispatch]);
 
-  console.log(firstName, lastName, email, password);
+  console.log(firstName, lastName, username, email, password);
   const processSignUp = () => {
     AuthController.register({
       email,
       password,
       firstName,
       lastName,
-      username: `${firstName} ${lastName}`,
+      username,
       title,
       phoneNumber,
       ext,
@@ -235,25 +239,26 @@ export default function SignUp() {
               {processSignUp()}
             </React.Fragment>
           ) : (
-            <React.Fragment>
-              {getStepContent(
-                activeStep,
-                parentHandleChange,
-                {
-                  firstName,
-                  lastName,
-                  email,
-                  title,
-                  phoneNumber,
-                  ext,
-                  sysRoles,
-                },
-                activeStep,
-                handleNext,
-                handleBack,
-              )}
-            </React.Fragment>
-          )}
+              <React.Fragment>
+                {getStepContent(
+                  activeStep,
+                  parentHandleChange,
+                  {
+                    firstName,
+                    lastName,
+                    username,
+                    email,
+                    title,
+                    phoneNumber,
+                    ext,
+                    sysRoles,
+                  },
+                  activeStep,
+                  handleNext,
+                  handleBack,
+                )}
+              </React.Fragment>
+            )}
         </React.Fragment>
       </Paper>
       <Copyright />

@@ -1,6 +1,7 @@
 import passport from 'passport';
 import UserModel from '../../models/User/model';
 import { addTokenToCookie } from '../../middlewares/shared';
+import AppSysRoleModel from '../../models/AppSysRole'
 
 export default class ProgramService {
   authenticate(req, res, next) {
