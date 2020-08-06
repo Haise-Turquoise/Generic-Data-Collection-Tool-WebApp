@@ -1,5 +1,6 @@
 import hash from 'object-hash';
 import cloneDeep from 'clone-deep';
+import bcrypt from 'bcrypt-nodejs';
 import organizationController from '../../controllers/organization';
 import AppSysController from '../../controllers/AppSys';
 import organizationGroupController from '../../controllers/organizationGroup';
@@ -69,12 +70,12 @@ const handleInputOrg = (organization, submission) => {
 
 const checkPerission = submission => {
   const permission = [];
-  if (submission.approve) permission.push('approve');
-  if (submission.review) permission.push('review');
-  if (submission.submit) permission.push('submit');
-  if (submission.input) permission.push('input');
-  if (submission.view) permission.push('view');
-  if (submission.viewCongos) permission.push('viewCongos');
+  if (submission.approve) permission.push('Submission Approver');
+  if (submission.review) permission.push('Reviewer');
+  if (submission.submit) permission.push('Submitter');
+  if (submission.input) permission.push('Inputter');
+  if (submission.view) permission.push('Viewer');
+  if (submission.viewCognos) permission.push('Reporter');
   return permission;
 };
 
@@ -179,7 +180,7 @@ const getTemplateType = userPrograms => {
         reviewAvailable: templateType.isReviewable,
         submitAvailable: templateType.isSubmittable,
         inputAvailable: templateType.isInputtable,
-        viewAvailable: templateType.isViweable,
+        viewAvailable: templateType.isViewable,
         viewCognosAvailable: templateType.isReportable,
         approve: false,
         review: false,
@@ -213,7 +214,7 @@ const submissionChange = userSubmissions => {
         review: submission.review,
         submit: submission.submit,
         view: submission.view,
-        viewCongos: submission.viewCongos,
+        viewCognos: submission.viewCognos,
         input: submission.input,
       });
     });
@@ -233,32 +234,7 @@ const handleInputSysRole = (data, permission, submission, userAppSys) => {
     });
     if (sysRoleSelected == undefined) {
       sysRoleSelected = sysRole;
-      switch (permission) {
-        case 'approve': {
-          sysRoleSelected.role = 'Submission Approver';
-          break;
-        }
-        case 'review': {
-          sysRoleSelected.role = 'Reviewer';
-          break;
-        }
-        case 'input': {
-          sysRoleSelected.role = 'Inputter';
-          break;
-        }
-        case 'view': {
-          sysRoleSelected.role = 'Viewer';
-          break;
-        }
-        case 'submit': {
-          sysRoleSelected.role = 'Submitter';
-          break;
-        }
-        case 'viewCognos': {
-          sysRoleSelected.role = 'Reporter';
-          break;
-        }
-      }
+      sysRoleSelected.role = permission;
       sysRoleSelected.appSys = userAppSys;
       data.sysRole.push(sysRoleSelected);
     }
@@ -376,7 +352,8 @@ export const submit = () => (dispatch, getState) => {
   } = getState();
   const userData = cloneDeep(registrationData);
   userData.hashedUsername = hash(userData.username);
-  userData.password = hash(userData.password);
+  userData.password = bcrypt.hashSync(userData.password, bcrypt.genSaltSync(8), null);
+  userData.email = userData.email.toLowerCase();
   delete userData.passwordConfirm;
   userSubmissions.forEach(submission => {
     handleInputSysRole(userData, 'approve', submission, userAppSys);

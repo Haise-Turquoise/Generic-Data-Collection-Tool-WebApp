@@ -11,9 +11,9 @@ const submissionController = (() => {
       submissionAxios.post(`/findSubmissions`, { orgId, programIds }).then(res => {
         return res.data.submissions;
       }),
-    create: async (submission, submissionNote, nextProcessId) =>
+    updateWorkbook: async (submission, submissionNote) =>
       submissionAxios
-        .post('/createSubmission', { submission, submissionNote, nextProcessId })
+        .post('/uploadSubmission', { submission, submissionNote })
         .then(res => res.data.submission),
     update: async submission => submissionAxios.put(`/updateSubmission`, { submission }),
     updateStatus: async (submission, submissionNote, role, nextProcessId) =>
