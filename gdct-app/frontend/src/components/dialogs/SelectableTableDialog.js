@@ -40,7 +40,7 @@ const SelectableTableDialog = ({
   handleClose,
   handleSelect,
 }) => (
-  <Dialog key={uniqid()} open={isOpen} onClose={handleClose}>
+  <Dialog open={isOpen} onClose={handleClose}>
     <DialogTitle>{title}</DialogTitle>
     <SelectableTableDialogContent
       columns={columns}

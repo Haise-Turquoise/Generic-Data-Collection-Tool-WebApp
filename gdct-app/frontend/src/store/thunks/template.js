@@ -1,3 +1,4 @@
+import cloneDeep from 'clone-deep';
 import { setExcelData } from '../actions/ui/excel/commands';
 
 import templateController from '../../controllers/template';
@@ -9,6 +10,8 @@ import {
 import TemplatesStore from '../TemplatesStore/store';
 
 import { getRequestFactory, deleteRequestFactory, updateRequestFactory } from './common/REST';
+import { selectFactoryValueById } from '../common/REST/selectors';
+import { selectTemplatesStore } from '../TemplatesStore/selectors';
 
 export const getTemplatesRequest = getRequestFactory(TemplatesStore, templateController);
 export const deleteTemplateRequest = deleteRequestFactory(TemplatesStore, templateController);
@@ -71,6 +74,21 @@ export const updateTemplateExcelRequest = () => (dispatch, getState) => {
     .update(newTemplate)
     .then(() => {
       dispatch(TemplatesStore.actions.UPDATE(newTemplate));
+    })
+    .catch(error => {
+      dispatch(TemplatesStore.actions.FAIL_REQUEST(error));
+    });
+};
+
+export const updateTemplateWorkflowProcess = (_id, workflowProcessId) => (dispatch, getState) => {
+  const template = cloneDeep(selectFactoryValueById(selectTemplatesStore)(_id)(getState()));
+
+  template.workflowProcessId = workflowProcessId;
+
+  templateController
+    .updateTemplateWorkflowProcess(_id, workflowProcessId)
+    .then(() => {
+      dispatch(TemplatesStore.actions.UPDATE(template));
     })
     .catch(error => {
       dispatch(TemplatesStore.actions.FAIL_REQUEST(error));

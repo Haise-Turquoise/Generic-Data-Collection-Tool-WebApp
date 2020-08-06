@@ -10,11 +10,11 @@ import Button from '@material-ui/core/Button';
 import { setActiveCellDialog, setGroups } from '../../../../../store/actions/ui/excel/commands';
 import { getColumnNamesRequest } from '../../../../../store/thunks/columnName';
 import { selectFactoryRESTResponseValues } from '../../../../../store/common/REST/selectors';
-import { selectColumnNamesStore } from '../../../../../store/ColumnNameStore/selectors';
+import { selectColumnNamesStore } from '../../../../../store/ColumnNamesStore/selectors';
 
 const DialogActions = ({ handleClick }) => (
   <Button fullWidth onClick={handleClick}>
-    Cancel
+    Finish
   </Button>
 );
 

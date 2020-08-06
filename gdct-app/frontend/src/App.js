@@ -25,7 +25,7 @@ import COARouter from './views/COARouter';
 import WorkflowRouter from './views/WorkflowRouter';
 import Register from './views/UserRegistrationRouter';
 import MasterValuePopulation from './views/MasterValuePopulation';
-import { ROUTE_WORKFLOW, ROUTE_TEMPLATE_PCKGS } from './constants/routes';
+import { ROUTE_WORKFLOW, ROUTE_TEMPLATE_PCKGS, ROUTE_CATEGORY } from './constants/routes';
 
 import './App.scss';
 
@@ -34,20 +34,19 @@ const PrivateRouter = ({ setLoggedIn }) => {
     <Switch>
       <Route exact path="/" component={GDCTMenu} />
       <Route path="/template" component={TemplateRouter} />
-      <Route path="/user" component={UserRouter} />
       <Route path="/report" component={ReportRouter} />
       <Route path={ROUTE_TEMPLATE_PCKGS} component={TemplateRouter} />
       <Route path="/admin/populate" component={MasterValuePopulation} />
       <Route path="/admin/organization" component={OrgRouter} />
-      <Route path="/submission" component={SubmissionRouter} />
+      <Route path="/admin/submission" component={SubmissionRouter} />
       <Route path="/admin/role" component={RoleRouter} />
-      <Route path="/admin/coa" component={COARouter} />
-      <Route path="/admin/configuration" component={null} />
-      <Route path="/admin/business_rule_configure" component={null} />
-      <Route path="/admin/user_management" component={null} />
-      <Route path="/admin/program" component={Programs} />
-      <Route path="/admin/status" component={Statuses} />
-      <Route path="/admin/reporting_period" component={ReportingPeriods} />
+      <Route path={ROUTE_CATEGORY} component={COARouter} />
+      <Route exact path="/admin/configuration" component={null} />
+      <Route exact path="/admin/business_rule_configure" component={null} />
+      <Route path="/admin/user_management" component={UserRouter} />
+      <Route exact path="/admin/program" component={Programs} />
+      <Route exact path="/admin/status" component={Statuses} />
+      <Route exact path="/admin/reporting_period" component={ReportingPeriods} />
       <Route path={ROUTE_WORKFLOW} component={WorkflowRouter} />
       {/* <Route path="/submission_manager" component={SubmissionRouter} /> */}
       {/* <Route path="/sheetNames" component={SheetNames} />{' '} */}

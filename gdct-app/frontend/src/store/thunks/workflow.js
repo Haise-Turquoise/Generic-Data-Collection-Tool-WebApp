@@ -87,7 +87,7 @@ const _createWorkflow = (dispatch, getState) => {
     const {
       type: { _id: statusId },
     } = workflowNodes[nodeId];
-    statusData.push({ id: nodeId, statusId });
+    statusData.push({ id: nodeId, statusId, position: node.position });
   }
 
   for (const linkId in linkMapSet) {
@@ -99,7 +99,6 @@ const _createWorkflow = (dispatch, getState) => {
         id: toId,
         statusId: workflowNodes[toId].type._id,
       })),
-      position: node.position,
     });
   }
 

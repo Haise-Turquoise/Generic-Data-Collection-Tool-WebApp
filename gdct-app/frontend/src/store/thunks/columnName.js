@@ -1,5 +1,5 @@
 import columnNameController from '../../controllers/columnName';
-import ColumnNamesStore from '../ColumnNameStore/store';
+import ColumnNamesStore from '../ColumnNamesStore/store';
 import {
   getRequestFactory,
   createRequestFactory,
