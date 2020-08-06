@@ -62,7 +62,7 @@ const User = new Schema(
     isActive: {
       type: Boolean,
       default: false,
-      // select: false,
+      select: false,
     },
     isEmailVerified: { type: Boolean, required: true, default: false },
 
