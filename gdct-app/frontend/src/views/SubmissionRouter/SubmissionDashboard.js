@@ -3,7 +3,6 @@ import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 
 import MaterialTable from 'material-table';
 import Paper from '@material-ui/core/Paper';
-import Button from '@material-ui/core/Button';
 import LaunchIcon from '@material-ui/icons/Launch';
 import CreateOutlinedIcon from '@material-ui/icons/CreateOutlined';
 import ExpansionPanel from '@material-ui/core/ExpansionPanel';
@@ -12,11 +11,9 @@ import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
 import Typography from '@material-ui/core/Typography';
-import { useHistory } from 'react-router-dom';
 import { getSubmissionsRequest } from '../../store/thunks/submission';
 import { selectSubmissionsStore } from '../../store/SubmissionsStore/selectors';
 import { selectFactoryRESTResponseTableValues } from '../../store/common/REST/selectors';
-import { TemplateIdButton, StatusIdButton } from '../../components/buttons';
 
 const SubmissionHeader = () => (
   <Paper className="header">
@@ -39,7 +36,6 @@ const SubmissionDashboard = ({ history }) => {
     }),
     shallowEqual,
   );
-  console.log(submissions);
 
   if (submissions[0] !== undefined)
     submissions.forEach(submission => {
@@ -68,7 +64,6 @@ const SubmissionDashboard = ({ history }) => {
 
   const checkBoxColumns = useMemo(
     () => [
-      { title: 'Year', field: 'year' },
       { title: 'Period', field: 'period' },
       { title: 'Submission', field: 'name' },
       { title: 'Program', field: 'programName' },
@@ -85,21 +80,6 @@ const SubmissionDashboard = ({ history }) => {
   );
 
   const options = useMemo(() => ({ actionsColumnIndex: -1, search: false, showTitle: false }), []);
-
-  const noCreateActions = useMemo(
-    () => [
-      {
-        icon: CreateOutlinedIcon,
-        tooltip: 'Edit Submission',
-        onClick: (_event, submission) =>
-          history.push({
-            pathname: `/submission/editSubmission/${submission._id}`,
-            state: { detail: submission },
-          }),
-      },
-    ],
-    [history],
-  );
   const actions = useMemo(
     () => [
       {
@@ -163,7 +143,7 @@ const SubmissionDashboard = ({ history }) => {
             columns={checkBoxColumns}
             options={options}
             data={submittedSubmission}
-            actions={noCreateActions}
+            actions={actions}
           />
         </ExpansionPanelDetails>
       </ExpansionPanel>
@@ -181,7 +161,7 @@ const SubmissionDashboard = ({ history }) => {
             columns={checkBoxColumns}
             options={options}
             data={rejectedSubmission}
-            actions={noCreateActions}
+            actions={actions}
           />
         </ExpansionPanelDetails>
       </ExpansionPanel>
@@ -199,7 +179,7 @@ const SubmissionDashboard = ({ history }) => {
             columns={checkBoxColumns}
             options={options}
             data={expiredSubmission}
-            actions={noCreateActions}
+            actions={actions}
           />
         </ExpansionPanelDetails>
       </ExpansionPanel>
@@ -217,7 +197,7 @@ const SubmissionDashboard = ({ history }) => {
             columns={checkBoxColumns}
             options={options}
             data={approvedSubmission}
-            actions={noCreateActions}
+            actions={actions}
           />
         </ExpansionPanelDetails>
       </ExpansionPanel>

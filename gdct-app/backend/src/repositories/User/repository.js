@@ -24,9 +24,7 @@ export default class UserRepository extends BaseRepository {
   }
 
   async findById(_id) {
-    return UserModel.findOne({ _id }).then(user => {
-      return new UserEntity(user.toObject());
-    });
+    return UserModel.findById(_id);
   }
 
   async updateSysRole(_id, sysRole) {

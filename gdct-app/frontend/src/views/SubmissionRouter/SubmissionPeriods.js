@@ -12,13 +12,13 @@ import {
   updateSubmissionPeriodRequest,
 } from '../../store/thunks/submissionPeriod';
 
-import { ReportingPeriodIdButton } from '../../components/buttons';
 import {
   selectFactoryRESTResponseTableValues,
   selectFactoryRESTLookup,
 } from '../../store/common/REST/selectors';
 import { selectSubmissionPeriodsStore } from '../../store/SubmissionPeriodsStore/selectors';
 import { selectReportingPeriodsStore } from '../../store/ReportingPeriodsStore/selectors';
+import { getReportingPeriodsRequest } from '../../store/thunks/reportingPeriod';
 
 const SubmissionPeriodHeader = () => {
   return (
@@ -75,6 +75,7 @@ const SubmissionPeriod = () => {
 
   useEffect(() => {
     dispatch(getSubmissionPeriodsRequest());
+    dispatch(getReportingPeriodsRequest());
   }, [dispatch]);
 
   return (

@@ -1,4 +1,4 @@
-import React, { useRef, useCallback } from 'react';
+import React, { useRef, useCallback, useEffect } from 'react';
 
 import { useDispatch } from 'react-redux';
 
@@ -8,7 +8,7 @@ import FormulaBar from './FormulaBar';
 import Sheet from './Sheet';
 import SheetNavigator from './SheetNavigator';
 
-import { undo, redo } from '../../store/actions/ui/excel/commands';
+import { undo, redo, resetExcelData } from '../../store/actions/ui/excel/commands';
 
 import './Excel.scss';
 
@@ -35,6 +35,12 @@ const Excel = ({ type, returnLink, handleSave }) => {
     },
     [dispatch],
   );
+
+  useEffect(() => {
+    return () => {
+      dispatch(resetExcelData());
+    };
+  }, [dispatch]);
 
   return (
     <div className="excel" onKeyDown={handleKeyDown}>

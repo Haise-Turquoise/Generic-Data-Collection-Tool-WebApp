@@ -84,6 +84,7 @@ const _createWorkflow = (dispatch, getState) => {
   const statusData = [];
 
   for (const nodeId in workflowNodes) {
+    const node = workflowNodes[nodeId];
     const {
       type: { _id: statusId },
     } = workflowNodes[nodeId];

@@ -34,6 +34,7 @@ const PrivateRouter = ({ setLoggedIn }) => {
       <Route exact path="/" component={GDCTMenu} />
       <Route path="/template" component={TemplateRouter} />
       <Route path="/report" component={ReportRouter} />
+      <Route path="/submission" component={SubmissionRouter} />
       <Route path={ROUTE_TEMPLATE_PCKGS} component={TemplateRouter} />
       <Route path="/admin/populate" component={MasterValuePopulation} />
       <Route path="/admin/organization" component={OrgRouter} />

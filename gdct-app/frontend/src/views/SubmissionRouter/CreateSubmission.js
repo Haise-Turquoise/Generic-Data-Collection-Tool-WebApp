@@ -50,8 +50,6 @@ const FileUpload = () => {
 };
 
 const CreateSubmission = props => {
-  const [submitUnavailable, setSubmitUnavailable] = useState(true);
-  const [submitId, setSubmitId] = useState('');
   //  const [workflowProcess, setWorkflowProcess] = useState()
   const dispatch = useDispatch();
 
@@ -62,20 +60,6 @@ const CreateSubmission = props => {
   const location = useLocation();
 
   useEffect(() => {
-    if (location.state.detail) {
-      workflowController
-        .fetchProcess(location.state.detail.workflowProcessId)
-        .then(workflowProcess => {
-          //         setWorkflowProcess(workflowProcess)
-          if (workflowProcess !== undefined)
-            workflowProcess.to.forEach(process => {
-              if (process.statusId.name === 'Submitted') {
-                setSubmitUnavailable(false);
-                setSubmitId(process._id);
-              }
-            });
-        });
-    }
     dispatch(SubmissionNoteStore.actions.RECEIVE(''));
   }, [location]);
 
@@ -90,15 +74,8 @@ const CreateSubmission = props => {
   );
 
   const handleCreateSubmission = useCallback(
-    (submissionNote, submissionWorkbook, submitId) =>
-      dispatch(
-        createSubmissionRequest(
-          submissionNote,
-          submissionWorkbook,
-          location.state.detail,
-          submitId,
-        ),
-      ),
+    (submissionNote, submissionWorkbook) =>
+      dispatch(createSubmissionRequest(submissionNote, submissionWorkbook, location.state.detail)),
     [dispatch],
   );
 
@@ -126,11 +103,10 @@ const CreateSubmission = props => {
           <Button
             color="primary"
             variant="contained"
-            disabled={submitUnavailable}
             size="large"
-            onClick={() => handleCreateSubmission(submissionNote, submissionWorkbook, submitId)}
+            onClick={() => handleCreateSubmission(submissionNote, submissionWorkbook)}
           >
-            Create
+            Upload
           </Button>
         </div>
       </Paper>

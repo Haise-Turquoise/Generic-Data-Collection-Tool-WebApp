@@ -11,6 +11,7 @@ import ProgramRepository from '../../repositories/Program';
 import OrgRepository from '../../repositories/Organization';
 import TemplateTypeRepository from '../../repositories/TemplateType';
 import WorkflowProcessRepository from '../../repositories/WorkflowProcess';
+import SubmissionPeriodRepository from '../../repositories/SubmissionPeriod';
 
 const mongoose = require('mongoose');
 mongoose.Promise = require('bluebird');
@@ -28,6 +29,7 @@ export default class SubmissionService {
     this.orgRepository = Container.get(OrgRepository);
     this.templateTypeRepository = Container.get(TemplateTypeRepository);
     this.workflowProcessRepository = Container.get(WorkflowProcessRepository);
+    this.submissionPeriodRepository = Container.get(SubmissionPeriodRepository);
   }
 
   async createSubmissionBaseOnTemplatePackage(submission) {
@@ -71,13 +73,11 @@ export default class SubmissionService {
     });
   }
 
-  async createSubmissionWithWorkbook(submission, workbookData, submissionNote, nextProcessId) {
+  async uploadSubmissionWorkbook(submission, workbookData, submissionNote) {
     const currentStatus = await this.statusRepository.findById(submission.statusId);
     if (currentStatus.name == 'Approved') return;
 
     submission.workbookData = workbookData;
-    submission.version += 1;
-    submission.isLatest = true;
     submission.updatedDate = new Date();
     submission.parentId = submission.parentId ? submission.parentId : submission._id;
 
@@ -85,23 +85,11 @@ export default class SubmissionService {
       note: submissionNote,
       submissionId: submission.parentId,
       updatedDate: submission.updatedDate,
-      role: 'Submitted',
+      role: currentStatus.name,
     };
 
-    return this.statusRepository.findByName('Submitted').then(status => {
-      submission.statusId = status[0].id;
-      submission.workflowProcessId = nextProcessId;
-      return this.submissionRepository.findAndSetFalse(submission._id).then(() => {
-        delete submission._id;
-        return (
-          this.submissionRepository
-            .create(submission)
-            // return this.submissionRepository.update(submission._id, submission)
-            .then(() => {
-              return this.submissionNoteRepository.create(submissionNotes);
-            })
-        );
-      });
+    return this.submissionRepository.update(submission._id, submission).then(() => {
+      return this.submissionNoteRepository.create(submissionNotes);
     });
   }
 
@@ -243,17 +231,31 @@ export default class SubmissionService {
               submissions.forEach(submission => {
                 promiseQuery2.push(
                   this.statusRepository.findById(submission.statusId).then(status => {
-                    return this.programRepository.findById(submission.programId).then(program => {
-                      const changedSubmission = {
-                        ...submission._doc,
-                        programName: program.name,
-                        programId: program._id,
-                        phase: status.name,
-                        parentId: submission.parentId ? submission.parentId : submission._id,
-                      };
-
-                      changedSubmissions.push(cloneDeep(changedSubmission));
-                    });
+                    return this.templatePackageRepository
+                      .findById(submission.templatePackageId)
+                      .then(templatePackage => {
+                        console.log(templatePackage);
+                        return this.submissionPeriodRepository
+                          .findById(templatePackage.submissionPeriodId)
+                          .then(submissionPeriod => {
+                            console.log(submissionPeriod);
+                            return this.programRepository
+                              .findById(submission.programId)
+                              .then(program => {
+                                const changedSubmission = {
+                                  ...submission._doc,
+                                  programName: program.name,
+                                  programId: program._id,
+                                  period: submissionPeriod.name,
+                                  phase: status.name,
+                                  parentId: submission.parentId
+                                    ? submission.parentId
+                                    : submission._id,
+                                };
+                                changedSubmissions.push(cloneDeep(changedSubmission));
+                              });
+                          });
+                      });
                   }),
                 );
               });

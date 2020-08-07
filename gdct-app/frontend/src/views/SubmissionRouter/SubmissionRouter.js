@@ -14,7 +14,7 @@ import EditSubmission from './EditSubmission';
 const SubmissionRouter = () => {
   return (
     <Switch>
-      <Route exact path="/admin/submission/submissionPeriods" component={SubmissionPeriods} />
+      <Route exact path="/admin/submission/period" component={SubmissionPeriods} />
       <Route exact path="/admin/submission/submissions" component={Submissions} />
       <Route exact path="/admin/submission/submissions/:_id" component={Submission} />
       <Route exact path="/admin/submission/submission" component={Submission} />
