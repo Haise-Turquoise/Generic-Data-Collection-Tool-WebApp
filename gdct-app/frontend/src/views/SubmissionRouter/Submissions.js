@@ -19,7 +19,6 @@ import {
   selectFactoryRESTResponseTableValues,
   selectFactoryRESTLookup,
 } from '../../store/common/REST/selectors';
-import { TemplateIdButton, StatusIdButton } from '../../components/buttons';
 import { selectTemplatesStore } from '../../store/TemplatesStore/selectors';
 import { selectStatusesStore } from '../../store/StatusesStore/selectors';
 import { getStatusesRequest } from '../../store/thunks/status';

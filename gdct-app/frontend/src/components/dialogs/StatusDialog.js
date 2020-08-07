@@ -27,7 +27,7 @@ const StatusDialog = ({ handleChange }) => {
 
   const handleSelect = useCallback(
     data => {
-      handleChange(data._id);
+      handleChange(data);
       handleClose();
     },
     [dispatch],

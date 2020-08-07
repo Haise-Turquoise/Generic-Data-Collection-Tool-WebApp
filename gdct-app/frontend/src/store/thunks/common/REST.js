@@ -71,12 +71,13 @@ export const updateRequestFactory = (store, controller) => (
   resolve,
   reject,
   isPopulated = false,
+  populatedData = {},
 ) => dispatch => {
   dispatch(store.actions.REQUEST());
 
   controller[isPopulated ? 'updatePopulated' : 'update'](value)
     .then(() => {
-      dispatch(store.actions.UPDATE(value));
+      dispatch(store.actions.UPDATE(isPopulated ? populatedData : value));
       if (resolve) resolve(value);
     })
     .catch(error => {
