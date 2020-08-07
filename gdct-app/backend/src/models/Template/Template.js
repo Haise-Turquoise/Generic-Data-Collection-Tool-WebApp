@@ -17,13 +17,11 @@ const TemplateModel = model(
 
       userCreatorId: { type: ObjectId, ref: 'User' },
 
-      creationDate: { type: Date },
-
       expirationDate: { type: Date },
 
       statusId: { type: ObjectId, ref: 'Status' },
     },
-    { minimize: false },
+    { minimize: false, timestamps: { createdAt: 'creationDate' } },
   ),
   'Template',
 );
