@@ -255,8 +255,7 @@ export default class SubmissionService {
                                 changedSubmissions.push(cloneDeep(changedSubmission));
                               });
                           });
-                      })
-
+                      });
                   }),
                 );
               });

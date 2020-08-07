@@ -4,7 +4,7 @@ import { host } from '../constants/domain';
 
 const columnNameController = (() => {
   const columnNameAxios = axios.create({
-    baseURL: `${host}/columnNames`,
+    baseURL: `${host}/COA_manager/columnNames`,
   });
   return {
     fetch: async query => columnNameAxios.get('').then(res => res.data.columnNames),

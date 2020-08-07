@@ -41,11 +41,7 @@ const SubmissionController = Service([SubmissionService], service => {
       const { submission, submissionNote } = req.body;
 
       service
-        .uploadSubmissionWorkbook(
-          submission,
-          submission.workbookData,
-          submissionNote
-        )
+        .uploadSubmissionWorkbook(submission, submission.workbookData, submissionNote)
         .then(submissions => res.json({ submissions }));
     });
 

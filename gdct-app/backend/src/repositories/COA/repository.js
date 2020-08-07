@@ -3,6 +3,10 @@ import BaseRepository from '../repository';
 import COAModel from '../../models/COA';
 
 export default class COARepository extends BaseRepository {
+  constructor() {
+    super(COAModel);
+  }
+
   async delete(id) {
     return COAModel.findByIdAndDelete(id).then(COA => new COAEntity(COA.toObject()));
   }

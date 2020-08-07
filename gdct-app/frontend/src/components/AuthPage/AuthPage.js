@@ -28,6 +28,7 @@ import navigationConfig from './config';
 import TopItemList from '../TopItemList/TopItemList';
 
 const drawerWidth = 240;
+const headerHeight = 55;
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -71,10 +72,13 @@ const useStyles = makeStyles(theme => ({
   content: {
     flexGrow: 1,
     padding: theme.spacing(3),
+    width: `calc(100% - ${drawerWidth}px)`,
+    height: `calc(100% - ${headerHeight}px) !important`,
     transition: theme.transitions.create('margin', {
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.leavingScreen,
     }),
+    overflow: 'auto',
   },
   contentShift: {
     transition: theme.transitions.create('margin', {

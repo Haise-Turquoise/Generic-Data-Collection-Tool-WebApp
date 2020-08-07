@@ -47,7 +47,7 @@ const Header = ({ handleSubmit }) => (
   <div className="d-flex justify-content-between p-2 mb-3">
     <Typography variant="h5">Template Packages</Typography>
     <Button onClick={handleSubmit} variant="contained" color="primary">
-      Create
+      Save
     </Button>
   </div>
 );
@@ -110,20 +110,18 @@ const ThirdSection = ({ values, handleRemoveProgram }) => {
   }, [dispatch]);
 
   return (
-    <div>
-      <CustomField label="Programs" handleClick={handleOpenTemplateDialog} addButton>
-        <List>
-          {values.programIds.map(program => (
-            <ListItem key={uniqid()}>
-              <ListItemText className="mr-5" primary={program.name} />
-              <ListItemSecondaryAction>
-                <CustomButton text="Delete" handleClick={() => handleRemoveProgram(program)} />
-              </ListItemSecondaryAction>
-            </ListItem>
-          ))}
-        </List>
-      </CustomField>
-    </div>
+    <CustomField label="Programs" handleClick={handleOpenTemplateDialog} addButton>
+      <List>
+        {values.programIds.map(program => (
+          <ListItem key={uniqid()}>
+            <ListItemText className="mr-5" primary={program.name} />
+            <ListItemSecondaryAction>
+              <CustomButton text="Delete" handleClick={() => handleRemoveProgram(program)} />
+            </ListItemSecondaryAction>
+          </ListItem>
+        ))}
+      </List>
+    </CustomField>
   );
 };
 
@@ -269,17 +267,19 @@ const TemplatePackage = ({
   }, [dispatch, _id]);
 
   const handleSubmit = useCallback(
-    t => {
+    populatedData => {
       const formattedTemplatePackage = {
         _id,
-        name: t.name,
-        statusId: t.statusId._id,
-        submissionPeriodId: t.submissionPeriodId._id,
-        templateIds: t.templateIds.map(({ _id }) => _id),
-        programIds: t.programIds.map(({ _id }) => _id),
+        name: populatedData.name,
+        statusId: populatedData.statusId._id,
+        submissionPeriodId: populatedData.submissionPeriodId._id,
+        templateIds: populatedData.templateIds.map(({ _id }) => _id),
+        programIds: populatedData.programIds.map(({ _id }) => _id),
       };
 
-      dispatch(updateTemplatePackageRequest(formattedTemplatePackage, null, null, true));
+      dispatch(
+        updateTemplatePackageRequest(formattedTemplatePackage, null, null, true, populatedData),
+      );
     },
     [dispatch, _id],
   );

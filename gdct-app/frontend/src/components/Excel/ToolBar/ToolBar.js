@@ -107,7 +107,7 @@ const FileUpload = () => {
 
       const extension = name.split('.').pop();
 
-      if (extension === 'xlsx') {
+      if (extension === 'xlsx' || extension === 'xlsm') {
         // !unoptimized function... since straight conversion to react state doesn't exist at the moment.
         // ! TODO: implement straight conversion from file to react state
         const fileStates = await convertExcelFileToState(fileData);

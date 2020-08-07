@@ -56,8 +56,8 @@ export default class UserService {
           },
         ),
       );
-    })
-    await Promise.all(promiseQuery)
+    });
+    await Promise.all(promiseQuery);
     this.UserRepository.create(registerData).then(registerRecord => {
       sendUserVerficationEmail(registerData);
       const { hashedUsername } = registerRecord;
@@ -104,7 +104,7 @@ export default class UserService {
 
   sendActiveEmail(approve, _id, orgId) {
     let checkActive = true;
-    console.log(_id)
+    console.log(_id);
     this.UserRepository.findById(_id).then(user => {
       if (approve == 'true') {
         user.sysRole.forEach(sysRole => {

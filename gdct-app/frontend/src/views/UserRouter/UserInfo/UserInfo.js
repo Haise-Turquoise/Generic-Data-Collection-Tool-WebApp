@@ -2,15 +2,13 @@ import PropTypes from 'prop-types';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
+import MaterialTable, { MTableCell } from 'material-table';
+import Paper from '@material-ui/core/Paper';
+import Typography from '@material-ui/core/Typography';
 import { getUsersRequest } from '../../../store/thunks/users';
 import { getOrgsRequest } from '../../../store/thunks/organization';
 import { getProgramsRequest } from '../../../store/thunks/program';
 import { getTemplateTypesRequest } from '../../../store/thunks/templateType';
-
-import MaterialTable, { MTableCell } from 'material-table';
-import Paper from '@material-ui/core/Paper';
-
-import Typography from '@material-ui/core/Typography';
 
 import {
   selectFactoryRESTResponseTableValues,
@@ -41,9 +39,9 @@ const EXTRACT_INFO = [
 ];
 
 const UserInfo = ({
-    match: {
-        params: { _id },
-    }
+  match: {
+    params: { _id },
+  },
 }) => {
   const dispatch = useDispatch();
 
@@ -54,60 +52,59 @@ const UserInfo = ({
     dispatch(getTemplateTypesRequest());
   }, [dispatch]);
 
-  const {
-    userObject,
-    isCallInProgress,
-    organizations,
-    programs,
-    templateTypes,
-  } = useSelector(state => ({
-    userObject: (selectFactoryRESTResponseTableValues(selectUsersStore)(state).filter(
-            elem => elem._id == _id
-        ) || [{}])[0],
-    isCallInProgress:
-      selectFactoryRESTIsCallInProgress(selectUsersStore)(state) ||
-      selectFactoryRESTIsCallInProgress(selectOrgsStore)(state) ||
-      selectFactoryRESTIsCallInProgress(selectProgramsStore)(state) ||
-      selectFactoryRESTIsCallInProgress(selectTemplateTypesStore)(state) ||
-      false,
-    organizations: selectFactoryRESTResponseTableValues(selectOrgsStore)(state),
-    programs: selectFactoryRESTResponseTableValues(selectProgramsStore)(state),
-    templateTypes: selectFactoryRESTResponseTableValues(selectTemplateTypesStore)(state),
-  }));
+  const { userObject, isCallInProgress, organizations, programs, templateTypes } = useSelector(
+    state => ({
+      userObject: (selectFactoryRESTResponseTableValues(selectUsersStore)(state).filter(
+        elem => elem._id == _id,
+      ) || [{}])[0],
+      isCallInProgress:
+        selectFactoryRESTIsCallInProgress(selectUsersStore)(state) ||
+        selectFactoryRESTIsCallInProgress(selectOrgsStore)(state) ||
+        selectFactoryRESTIsCallInProgress(selectProgramsStore)(state) ||
+        selectFactoryRESTIsCallInProgress(selectTemplateTypesStore)(state) ||
+        false,
+      organizations: selectFactoryRESTResponseTableValues(selectOrgsStore)(state),
+      programs: selectFactoryRESTResponseTableValues(selectProgramsStore)(state),
+      templateTypes: selectFactoryRESTResponseTableValues(selectTemplateTypesStore)(state),
+    }),
+  );
 
   const dfs = (object, depth, path) => {
-    for (let attribute of EXTRACT_INFO[depth]) path[attribute] = object[attribute];
+    for (const attribute of EXTRACT_INFO[depth]) path[attribute] = object[attribute];
     if (depth < MAX_DEPTH) {
       let res = [];
       if (!Object.prototype.hasOwnProperty.call(object, EDGE_PARAM[depth])) return res;
-      for (let child of object[EDGE_PARAM[depth]])
-        res = res.concat(dfs(child, depth + 1, Object.assign({}, path)));
+      for (const child of object[EDGE_PARAM[depth]])
+        res = res.concat(dfs(child, depth + 1, { ...path }));
       return res;
-    } else return [path];
+    }
+    return [path];
   };
 
   const [data, updateData] = useState([]);
 
   useEffect(() => {
-    if(userObject){
-        const extracted_data = dfs(userObject, 0, {});
-        let organizations_map = {},
-        programs_map = {},
-        templateTypes_map = {};
-        organizations.forEach(doc => (organizations_map[doc.id] = doc.name));
-        programs.forEach(doc => (programs_map[doc._id] = doc.name));
-        templateTypes.forEach(doc => (templateTypes_map[doc._id] = doc.name));
-        updateData(() =>
-            extracted_data.map(row => ({
-                user: `Username: ${row.username}\nName: ${row.firstName} ${row.lastName}\nPhone: ${row.phoneNumber}\nEmail: ${row.email}`,
-                date: `${row.creationDate}`,
-                organization: `(${row.orgId})\n${row.orgName.length>0? row.orgName : organizations_map[row.orgId]}`,
-                program: `(${row.programCode})\n${programs_map[row.programId]}`,
-                template: `${templateTypes_map[row.templateTypeId]}`,
-                permission: `${row.role}`,
-                appsys: `${row.appSys}`,
-            })),
-        );
+    if (userObject) {
+      const extracted_data = dfs(userObject, 0, {});
+      const organizations_map = {};
+      const programs_map = {};
+      const templateTypes_map = {};
+      organizations.forEach(doc => (organizations_map[doc.id] = doc.name));
+      programs.forEach(doc => (programs_map[doc._id] = doc.name));
+      templateTypes.forEach(doc => (templateTypes_map[doc._id] = doc.name));
+      updateData(() =>
+        extracted_data.map(row => ({
+          user: `Username: ${row.username}\nName: ${row.firstName} ${row.lastName}\nPhone: ${row.phoneNumber}\nEmail: ${row.email}`,
+          date: `${row.creationDate}`,
+          organization: `(${row.orgId})\n${
+            row.orgName.length > 0 ? row.orgName : organizations_map[row.orgId]
+          }`,
+          program: `(${row.programCode})\n${programs_map[row.programId]}`,
+          template: `${templateTypes_map[row.templateTypeId]}`,
+          permission: `${row.role}`,
+          appsys: `${row.appSys}`,
+        })),
+      );
     }
   }, [userObject, organizations, programs, templateTypes]);
 
@@ -134,7 +131,7 @@ const UserInfo = ({
 
   const components = useMemo(
     () => ({
-      Cell: props => <MTableCell {...props} style={{ whiteSpace: 'pre-wrap' }} />
+      Cell: props => <MTableCell {...props} style={{ whiteSpace: 'pre-wrap' }} />,
     }),
     [],
   );

@@ -3,7 +3,6 @@ import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 
 import MaterialTable from 'material-table';
 import Paper from '@material-ui/core/Paper';
-import Button from '@material-ui/core/Button';
 import LaunchIcon from '@material-ui/icons/Launch';
 import CreateOutlinedIcon from '@material-ui/icons/CreateOutlined';
 import ExpansionPanel from '@material-ui/core/ExpansionPanel';
@@ -12,11 +11,9 @@ import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
 import Typography from '@material-ui/core/Typography';
-import { useHistory } from 'react-router-dom';
 import { getSubmissionsRequest } from '../../store/thunks/submission';
 import { selectSubmissionsStore } from '../../store/SubmissionsStore/selectors';
 import { selectFactoryRESTResponseTableValues } from '../../store/common/REST/selectors';
-import { TemplateIdButton, StatusIdButton } from '../../components/buttons';
 
 const SubmissionHeader = () => (
   <Paper className="header">
@@ -39,7 +36,6 @@ const SubmissionDashboard = ({ history }) => {
     }),
     shallowEqual,
   );
-  console.log(submissions);
 
   if (submissions[0] !== undefined)
     submissions.forEach(submission => {
