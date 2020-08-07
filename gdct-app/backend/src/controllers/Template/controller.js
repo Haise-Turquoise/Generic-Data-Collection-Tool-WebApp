@@ -50,7 +50,6 @@ const TemplateController = Service([TemplateService], service => {
       service
         .updateTemplateWorkflowProcess(_id, workflowProcessId)
         .then(() => res.end())
-        .catch(error => console.error(error))
         .catch(next);
     });
 
