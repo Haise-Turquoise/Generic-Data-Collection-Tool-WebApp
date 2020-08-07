@@ -8,4 +8,6 @@ export const ColumnNamesStore = createSlice({
   reducers: REST_REDUCERS,
 });
 
+export const ColumnNamesActions = ColumnNamesStore.actions;
+
 export default ColumnNamesStore;
