@@ -210,12 +210,6 @@ export default function Login({ setLoggedIn }) {
                 Forgot password?
               </Link>
             </Grid>
-
-            <Grid item>
-              <Link href="/signup" variant="body2">
-                {"Don't have an account? Sign Up"}
-              </Link>
-            </Grid>
           </Grid>
           <Grid item>
             <Link href="/register" variant="body2">

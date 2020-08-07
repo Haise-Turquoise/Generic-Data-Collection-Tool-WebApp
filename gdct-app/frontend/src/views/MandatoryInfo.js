@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 
@@ -7,23 +7,9 @@ import TextField from '@material-ui/core/TextField';
 
 import Link from '@material-ui/core/Link';
 import Grid from '@material-ui/core/Grid';
-import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 import { Button } from '@material-ui/core';
-
-function Copyright() {
-  return (
-    <Typography variant="body2" color="textSecondary" align="center">
-      {'Copyright © '}
-      <Link color="inherit" href="https://material-ui.com/">
-        Your Website
-      </Link>{' '}
-      {new Date().getFullYear()}
-      {'.'}
-    </Typography>
-  );
-}
 
 const useStyles = makeStyles(theme => ({
   paper: {
@@ -53,7 +39,6 @@ export default function MandatoryInfo({
   handleBack,
 }) {
   const classes = useStyles();
-  const [submitting, setSubmitting] = useState(false);
 
   const myFormSchema = Yup.object().shape({
     firstName: Yup.string().required('Required'),
@@ -75,20 +60,13 @@ export default function MandatoryInfo({
             password: '',
           }}
           validationSchema={myFormSchema}
-          onSubmit={(values, { resetForm }) => {
-            console.log(values);
+          onSubmit={values => {
             parentHandleChange('firstName', values.firstName);
             parentHandleChange('lastName', values.lastName);
             parentHandleChange('username', values.username);
             parentHandleChange('email', values.email);
             parentHandleChange('password', values.password);
             handleNext();
-            // setSubmitting({ submitting: true })
-            // // submit to server
-            // setTimeout(() => {
-            //   resetForm()
-            //   setSubmitting({ submitting: false })
-            // }, 2000)
           }}
         >
           {({ values, errors, touched, handleChange, handleBlur, handleSubmit }) => (
@@ -180,13 +158,6 @@ export default function MandatoryInfo({
                   {errors.password && touched.password ? (
                     <div style={{ color: 'red' }}>{errors.password}</div>
                   ) : null}
-                </Grid>
-              </Grid>
-              <Grid container justify="flex-end">
-                <Grid item>
-                  <Link href="/login" variant="body2">
-                    Already have an account? Sign in
-                  </Link>
                 </Grid>
               </Grid>
               <div className={classes.buttons} style={{ marginTop: '2rem', textAlign: 'right' }}>

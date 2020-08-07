@@ -63,8 +63,11 @@ export default {
   Configuration: <BuildIcon style={{ fontSize: '1.2rem', marginLeft: '1.2rem' }} />,
   'Business rule configure': <ForumIcon style={{ fontSize: '1.2rem', marginLeft: '1.2rem' }} />,
   'User management': <AccountCircleIcon style={{ fontSize: '1.2rem', marginLeft: '1.2rem' }} />,
+  'User Role Management': (
+    <AccountCircleIcon style={{ fontSize: '1.2rem', marginLeft: '1.2rem' }} />
+  ),
   Program: <AccountCircleIcon style={{ fontSize: '1.2rem', marginLeft: '1.2rem' }} />,
   Status: <StorageIcon style={{ fontSize: '1.2rem', marginLeft: '1.2rem' }} />,
   'Reporting period': <EventIcon style={{ fontSize: '1.2rem', marginLeft: '1.2rem' }} />,
-  Logout: <ExitToAppIcon />,
+  Logout: <ExitToAppIcon style={{ fontSize: '1.2rem', marginLeft: '1.2rem' }}/>,
 };

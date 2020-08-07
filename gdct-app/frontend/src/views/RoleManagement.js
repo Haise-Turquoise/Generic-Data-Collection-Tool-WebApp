@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 
 import Avatar from '@material-ui/core/Avatar';
-import Button from '@material-ui/core/Button';
 import Stepper from '@material-ui/core/Stepper';
 import Step from '@material-ui/core/Step';
 import StepLabel from '@material-ui/core/StepLabel';
@@ -148,7 +147,6 @@ export default function SignUp() {
   };
 
   const parentHandleChange = (name, value) => {
-    console.log('working', name, value, firstName, email);
     const rtn = [];
     switch (name) {
       case 'firstName':
@@ -178,13 +176,12 @@ export default function SignUp() {
       case 'sysRoles':
         value.forEach(e => {
           const [appSys, role] = e.split('-');
-          appSysRoles.forEach(e => {
-            console.log(e.appSys, e.role, e.appSys === appSys, e.role === role);
-          });
           const appSysRole = appSysRoles.find(e => e.appSys === appSys && e.role === role);
           rtn.push(appSysRole);
         });
         setSysRoles(rtn);
+        break;
+      default:
         break;
     }
   };
@@ -193,7 +190,6 @@ export default function SignUp() {
     dispatch(getAppSysRolesRequest());
   }, [dispatch]);
 
-  console.log(firstName, lastName, username, email, password);
   const processSignUp = () => {
     AuthController.register({
       email,
@@ -218,7 +214,7 @@ export default function SignUp() {
           <LockOutlinedIcon />
         </Avatar>
         <Typography component="h1" variant="h5">
-          Sign up
+          User Role Management
         </Typography>
         <Stepper activeStep={activeStep} className={classes.stepper}>
           {steps.map(label => (
@@ -231,7 +227,7 @@ export default function SignUp() {
           {activeStep === steps.length ? (
             <React.Fragment>
               <Typography variant="h5" gutterBottom>
-                Thank you for sign up in GDCT.
+                The user has been created.
               </Typography>
               <Typography variant="subtitle1">
                 You will be redirected to authorized pages. Please wait in 2 sec.
@@ -239,26 +235,26 @@ export default function SignUp() {
               {processSignUp()}
             </React.Fragment>
           ) : (
-              <React.Fragment>
-                {getStepContent(
-                  activeStep,
-                  parentHandleChange,
-                  {
-                    firstName,
-                    lastName,
-                    username,
-                    email,
-                    title,
-                    phoneNumber,
-                    ext,
-                    sysRoles,
-                  },
-                  activeStep,
-                  handleNext,
-                  handleBack,
-                )}
-              </React.Fragment>
-            )}
+            <React.Fragment>
+              {getStepContent(
+                activeStep,
+                parentHandleChange,
+                {
+                  firstName,
+                  lastName,
+                  username,
+                  email,
+                  title,
+                  phoneNumber,
+                  ext,
+                  sysRoles,
+                },
+                activeStep,
+                handleNext,
+                handleBack,
+              )}
+            </React.Fragment>
+          )}
         </React.Fragment>
       </Paper>
       <Copyright />

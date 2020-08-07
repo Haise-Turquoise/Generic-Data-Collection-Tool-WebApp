@@ -5,10 +5,9 @@ import { Route, Switch, Redirect } from 'react-router-dom';
 import { CircularProgress, Grid } from '@material-ui/core';
 import AuthPage from './components/AuthPage';
 import Error from './views/authError';
-// import Signup from './views/authSignup'
 import AuthController from './controllers/Auth';
 import Login from './views/Login';
-import SignUp from './views/SignUp';
+import RoleManagement from './views/RoleManagement';
 import Logout from './views/Logout';
 import GDCTMenu from './views/GDCTMenu';
 import Programs from './views/Programs';
@@ -48,6 +47,7 @@ const PrivateRouter = ({ setLoggedIn }) => {
       <Route exact path="/admin/status" component={Statuses} />
       <Route exact path="/admin/reporting_period" component={ReportingPeriods} />
       <Route path={ROUTE_WORKFLOW} component={WorkflowRouter} />
+      <Route exact path="/admin/roleManagement" component={RoleManagement} />
       {/* <Route path="/submission_manager" component={SubmissionRouter} /> */}
       {/* <Route path="/sheetNames" component={SheetNames} />{' '} */}
       {/* <Route path={ROUTE_COLUMN_NAMES} component={ColumnNames} /> */}
@@ -65,7 +65,6 @@ const PublicRouter = ({ setLoggedIn }) => {
     <Switch>
       <Route exact path="/register" component={Register} />
       <Route exact path="/login" render={props => <Login {...props} setLoggedIn={setLoggedIn} />} />
-      <Route exact path="/signup" component={SignUp} />
       <Route exact path="/auth/error" component={Error} />
       <Redirect from="*" to="/login" />
     </Switch>

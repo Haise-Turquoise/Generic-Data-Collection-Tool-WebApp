@@ -1,7 +1,9 @@
 import passport from 'passport';
 import UserModel from '../../models/User/model';
 import { addTokenToCookie } from '../../middlewares/shared';
-import AppSysRoleModel from '../../models/AppSysRole'
+import AppSysRoleModel from '../../models/AppSysRole';
+import mongodb from 'mongodb'
+var ObjectID = mongodb.ObjectID
 
 export default class ProgramService {
   authenticate(req, res, next) {
@@ -26,24 +28,6 @@ export default class ProgramService {
       status: 'ok',
     });
   }
-
-  // auto(req, res) {
-  //   const temp = mongoose.Types.ObjectId('5efb8b638464c20f646049a6');
-  //   const uname = os.userInfo().username;
-  //   UserModel.find({ AppConfig: temp }, function (err, user1) {
-  //     let found = false;
-  //     user1.forEach(obj => {
-  //       if (obj.username === uname) {
-  //         found = true;
-  //         req.session.user = user1;
-  //         res.send(true);
-  //       }
-  //     });
-  //     if (!found) {
-  //       res.send(false);
-  //     }
-  //   });
-  // }
 
   profile(req, res) {
     if (
@@ -76,29 +60,44 @@ export default class ProgramService {
         },
       });
     }
+    var appsysRole = []
 
-    const finalUser = new UserModel({
-      email,
-      password,
-      firstName,
-      lastName,
-      username,
-      title,
-      phoneNumber,
-      ext,
-      sysRoles,
-    });
-
-    finalUser.setHashedPassword(password);
-
-    return finalUser
-      .save()
-      .then(user => {
-        const token = user.generateJWT();
-        addTokenToCookie(res, token);
-        res.json({ user: user.returnAuthUserJson(token) });
+    sysRoles.forEach(role => {
+      AppSysRoleModel.findById(role, (err, appsysrole) => {
+        appsysRole.push({
+          appSys: appsysrole.appSys,
+          role: appsysrole.role,
+          appSysRoleId: appsysrole._id,
+          _id: new ObjectID()
+        })
       })
-      .catch(err => res.json({ error: err }));
+    })
+
+    setTimeout(() => {
+      const finalUser = new UserModel({
+        email,
+        password,
+        firstName,
+        lastName,
+        username,
+        title,
+        phoneNumber,
+        ext,
+        sysRole: appsysRole,
+      });
+
+      finalUser.setHashedPassword(password);
+
+      return finalUser
+        .save()
+        .then(user => {
+          const token = user.generateJWT();
+          addTokenToCookie(res, token);
+          res.json({ user: user.returnAuthUserJson(token) });
+        })
+        .catch(err => res.json({ error: err }));
+
+    }, 1000)
   }
 
   processLogin(req, res, next) {
