@@ -41,7 +41,6 @@ const TemplateController = Service([TemplateService], service => {
       service
         .updateTemplate(_id, template)
         .then(() => res.end())
-        .catch(error => console.error(error))
         .catch(next);
     });
 
