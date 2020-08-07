@@ -1,4 +1,4 @@
-import React, { useRef, useCallback } from 'react';
+import React, { useRef, useCallback, useEffect } from 'react';
 
 import { useDispatch } from 'react-redux';
 
@@ -35,6 +35,12 @@ const Excel = ({ type, returnLink, handleSave }) => {
     },
     [dispatch],
   );
+
+  useEffect(() => {
+    return () => {
+      console.log('removed');
+    };
+  });
 
   return (
     <div className="excel" onKeyDown={handleKeyDown}>

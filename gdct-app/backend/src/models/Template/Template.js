@@ -21,7 +21,7 @@ const TemplateModel = model(
 
       statusId: { type: ObjectId, ref: 'Status' },
     },
-    { minimize: false, timestamps: { createdAt: 'creationDate' } },
+    { minimize: false, timestamps: true },
   ),
   'Template',
 );
