@@ -8,7 +8,7 @@ import FormulaBar from './FormulaBar';
 import Sheet from './Sheet';
 import SheetNavigator from './SheetNavigator';
 
-import { undo, redo } from '../../store/actions/ui/excel/commands';
+import { undo, redo, resetExcelData } from '../../store/actions/ui/excel/commands';
 
 import './Excel.scss';
 
@@ -38,9 +38,9 @@ const Excel = ({ type, returnLink, handleSave }) => {
 
   useEffect(() => {
     return () => {
-      console.log('removed');
+      dispatch(resetExcelData());
     };
-  });
+  }, [dispatch]);
 
   return (
     <div className="excel" onKeyDown={handleKeyDown}>
