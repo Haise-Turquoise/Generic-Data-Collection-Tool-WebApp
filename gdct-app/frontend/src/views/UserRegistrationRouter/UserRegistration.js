@@ -343,9 +343,9 @@ const getStepContent = (
       field: 'viewCognos',
       render: rowData => (
         <Checkbox
-          checked={rowData.viewCognos}
+          checked={rowData.Reporter}
           disabled={!rowData.viewCognosAvailable}
-          onChange={handleChangePermission.bind(this, rowData, 'viewCongos')}
+          onChange={handleChangePermission.bind(this, rowData, 'viewCognos')}
           color="primary"
         />
       ),

@@ -16,9 +16,48 @@ export default class UserService {
     this.AppSysRoleReposiotry = Container.get(AppSysRoleRepository);
   }
 
-  register(registerData) {
+  async register(registerData) {
     // JS User object
-    console.log(registerData);
+    const promiseQuery = [];
+    registerData.sysRole.forEach(sysRole => {
+      // eslint-disable-next-line default-case
+      switch (sysRole.role) {
+        case 'approve': {
+          sysRole.role = 'Submission Approver';
+          break;
+        }
+        case 'review': {
+          sysRole.role = 'Reviewer';
+          break;
+        }
+        case 'input': {
+          sysRole.role = 'Inputter';
+          break;
+        }
+        case 'view': {
+          sysRole.role = 'Viewer';
+          break;
+        }
+        case 'submit': {
+          sysRole.role = 'Submitter';
+          break;
+        }
+        case 'viewCognos': {
+          sysRole.role = 'Reporter';
+          break;
+        }
+        default:
+          break;
+      }
+      promiseQuery.push(
+        this.AppSysRoleReposiotry.findAndCreateAppSysRole(sysRole.appSys, sysRole.role).then(
+          appSysRole => {
+            sysRole.appSysRoleId = appSysRole._id;
+          },
+        ),
+      );
+    });
+    await Promise.all(promiseQuery);
     this.UserRepository.create(registerData).then(registerRecord => {
       sendUserVerficationEmail(registerData);
       const { hashedUsername } = registerRecord;
@@ -65,7 +104,7 @@ export default class UserService {
 
   sendActiveEmail(approve, _id, orgId) {
     let checkActive = true;
-
+    console.log(_id);
     this.UserRepository.findById(_id).then(user => {
       if (approve == 'true') {
         user.sysRole.forEach(sysRole => {

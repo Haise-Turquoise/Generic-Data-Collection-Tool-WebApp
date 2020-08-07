@@ -41,4 +41,15 @@ export default class AppSysRoleRepository extends BaseRepository {
       return result.toObject();
     });
   }
+
+  async findAndCreateAppSysRole(appSys, role) {
+    return AppSysRoleModel.findOne({ appSys, role }).then(appSysRole => {
+      if (appSysRole) return appSysRole;
+      return AppSysRoleModel.create({
+        role,
+        appSys,
+        isActive: true,
+      });
+    });
+  }
 }

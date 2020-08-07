@@ -27,6 +27,7 @@ const User = new Schema(
       {
         appSys: { type: String, default: '' },
         role: { type: String, default: '' },
+        appSysRoleId: { type: ObjectId },
         org: [
           {
             orgId: { type: String, default: '' },
@@ -60,8 +61,8 @@ const User = new Schema(
     },
     isActive: {
       type: Boolean,
-      default: true,
-      // select: false,
+      default: false,
+      select: false,
     },
     isEmailVerified: { type: Boolean, required: true, default: false },
 
@@ -79,6 +80,7 @@ User.methods.setHashedPassword = function (password) {
 };
 
 User.methods.validatePassword = function (password) {
+  console.log(bcrypt.compareSync(password, this.password));
   return bcrypt.compareSync(password, this.password);
 };
 

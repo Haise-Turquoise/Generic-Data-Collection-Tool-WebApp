@@ -2,15 +2,15 @@ import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
   registrationData: {
-    title: 'Mr.',
-    username: 'Haonan',
+    title: '',
+    username: '',
     email: '',
-    firstName: 'Haonan',
-    lastName: 'Sun',
-    phoneNumber: '1234567890',
-    password: '123qweASD',
-    passwordConfirm: '123qweASD',
-    ext: '111',
+    firstName: '',
+    lastName: '',
+    phoneNumber: '',
+    password: '',
+    passwordConfirm: '',
+    ext: '',
     IsActive: false,
     startDate: new Date(),
     endDate: new Date(),
