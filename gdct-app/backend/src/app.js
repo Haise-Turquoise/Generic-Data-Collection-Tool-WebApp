@@ -102,6 +102,7 @@ app.use('/submission_manager', Container.get(SubmissionController));
 app.use('/submissionNote_manager', Container.get(SubmissionNoteController));
 
 app.use('/workflow_manager', Container.get(WorkflowController));
+app.use('/COA_manager', Container.get(ColumnNameController));
 app.use('/COA_manager', Container.get(COAController));
 app.use('/COA_manager', Container.get(COATreeController));
 app.use('/COA_manager', Container.get(COAGroupController));
