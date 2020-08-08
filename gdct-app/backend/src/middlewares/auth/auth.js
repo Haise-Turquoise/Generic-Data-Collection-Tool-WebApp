@@ -54,19 +54,20 @@ export const authorized = async (req, res, next) => {
   console.log('middle-auth-authorized-roles:', req.session.resources);
 
   if (!req.user) {
-    next(new ErrorGDCT('Bad Request', 401));
+    return next(new ErrorGDCT('Bad Request', 401));
   }
 
   const isAdmin = Boolean(req.session.isAdmin);
+  console.log(isAdmin);
   if (isAdmin) {
-    next();
+    return next();
   }
 
   if (req.session.resources) {
     const urls = req.session.resources.map(e => e.resourcePath);
     console.log('middle-auth-authorized-url:', req.originalUrl.toLowerCase());
     if (!urls.includes(req.originalUrl.toLowerCase())) {
-      next(new ErrorGDCT('You do not have permission to perform this action.', 403));
+      return next(new ErrorGDCT('You do not have permission to perform this action.', 403));
     }
   }
 

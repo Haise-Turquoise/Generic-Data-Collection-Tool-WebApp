@@ -3,7 +3,6 @@ import mongoose from 'mongoose';
 import os from 'os';
 import Container from 'typedi';
 import UserModel from '../../models/User/model';
-import { addTokenToCookie } from '../../middlewares/shared';
 import { returnNormalJson, returnErrorJson } from '../../utils';
 import UserRepository from '../../repositories/User';
 import AppRoleResourceRepository from '../../repositories/AppRoleResource';
@@ -32,9 +31,7 @@ export default class AuthService {
 
   logout(req, res) {
     req.logout();
-    res.cookie('token', '').json({
-      status: 'ok',
-    });
+    returnNormalJson(res, 'logout successfully');
   }
 
   auto(req, res) {
@@ -105,9 +102,7 @@ export default class AuthService {
     return finalUser
       .save()
       .then(user => {
-        const token = user.generateJWT();
-        addTokenToCookie(res, token);
-        res.json({ user: user.returnAuthUserJson(token) });
+        returnNormalJson(res, { email: user.email });
       })
       .catch(err => res.json({ error: err }));
   }
