@@ -47,16 +47,29 @@ export default class Auth {
   //   req.user = currentUser;
   //   next();
   // }
-
-  async authorized(req, res, next) {
-    const isAdmin = req.user.sysRole.find(roleId => String(roleId) === '5eb02ec382c6a90c5fb1132f');
-    if (isAdmin) {
-      next();
-    }
-    const urls = await this.getResources(req.user.sysRole);
-    if (!urls.includes(req.originalUrl.toLowerCase())) {
-      next(new ErrorGDCT('You do not have permission to perform this action.', 403));
-    }
-    next();
-  }
 }
+
+export const authorized = async (req, res, next) => {
+  console.log('middle-auth-authorized-user:', req.session.isAdmin);
+  console.log('middle-auth-authorized-roles:', req.session.resources);
+
+  if (!req.user) {
+    return next(new ErrorGDCT('Bad Request', 401));
+  }
+
+  const isAdmin = Boolean(req.session.isAdmin);
+  console.log(isAdmin);
+  if (isAdmin) {
+    return next();
+  }
+
+  if (req.session.resources) {
+    const urls = req.session.resources.map(e => e.resourcePath);
+    console.log('middle-auth-authorized-url:', req.originalUrl.toLowerCase());
+    if (!urls.includes(req.originalUrl.toLowerCase())) {
+      return next(new ErrorGDCT('You do not have permission to perform this action.', 403));
+    }
+  }
+
+  next();
+};

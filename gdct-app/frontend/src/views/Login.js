@@ -89,6 +89,7 @@ export default function Login({ setLoggedIn }) {
         setEmail(value);
         setErrors(updatedErrors);
         break;
+      default:
     }
   };
   const handleSubmit = async e => {
@@ -99,8 +100,7 @@ export default function Login({ setLoggedIn }) {
         //   `http://localhost:3000/auth/local?email=${email}&password=${password}`
         // )
         await AuthController.login({ email, password }).then(data => {
-          console.log(data);
-          if (data.user.token) {
+          if (data.status === 'ok') {
             setLoggedIn(true);
           }
         });

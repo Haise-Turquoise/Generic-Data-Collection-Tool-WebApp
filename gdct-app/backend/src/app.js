@@ -37,11 +37,12 @@ import AuthController from './controllers/Auth';
 import AppRoleResourceController from './controllers/AppRoleResource/controller';
 import AppResourceController from './controllers/AppResource';
 import WorkflowController from './controllers/Workflow';
-import { errorHandler } from './middlewares/shared';
+import { errorHandlerController } from './middlewares/shared';
 import MenuItemController from './controllers/MenuItem';
 import MenuController from './controllers/Menu';
 import UsersController from './controllers/Users/controller';
 import SubmissionNoteController from './controllers/SubmissionNote';
+import { authorized } from './middlewares/auth/auth';
 
 // https://www.digitalocean.com/community/tutorials/how-to-use-winston-to-log-node-js-applications
 const logger = require('morgan');
@@ -74,77 +75,50 @@ app.use(
     secret: process.env.COOKIE_SECRET,
     resave: false,
     saveUninitialized: false,
-    cookie: { maxAge: 3600000 },
+    cookie: { maxAge: 30 * 60 * 1000 },
     store: new CookieStore({ mongooseConnection: mongoose.connection }),
   }),
 );
 app.use(passport.initialize());
 app.use(passport.session());
-
-app.use('/', Container.get(ProgramController));
-app.use('/', Container.get(ReportingPeriodController));
-app.use('/', Container.get(SheetNameController));
-app.use('/', Container.get(ColumnNameController));
-app.use('/org_manager', Container.get(OrgController));
-app.use('/orgGroup_manager', Container.get(OrgGroupController));
-
 app.use('/', Container.get(AuthController));
-app.use('/user_management', Container.get(UserController));
-
-app.use('/template_manager', Container.get(TemplateController));
-app.use('/template_manager', Container.get(TemplatePackageController));
-app.use('/template_manager', Container.get(TemplateTypeController));
-
-app.use('/designer', Container.get(StatusController));
-
-app.use('/submission_manager', Container.get(SubmissionPeriodController));
-app.use('/submission_manager', Container.get(SubmissionController));
-app.use('/submissionNote_manager', Container.get(SubmissionNoteController));
-
-app.use('/workflow_manager', Container.get(WorkflowController));
-app.use('/COA_manager', Container.get(ColumnNameController));
-app.use('/COA_manager', Container.get(COAController));
-app.use('/COA_manager', Container.get(COATreeController));
-app.use('/COA_manager', Container.get(COAGroupController));
-
-app.use('/workflow_manager', Container.get(WorkflowController));
-
-app.use('/', Container.get(UsersController));
-
-app.use(
-  '/role_manager',
-  // auth.required,
-  // Container.get(Auth).authorized,
-  Container.get(AppSysController),
-);
-app.use(
-  '/role_manager',
-  // auth.required,
-  // Container.get(Auth).authorized,
-  Container.get(AppRoleController),
-);
-app.use(
-  '/role_manager',
-  // auth.required,
-  // Container.get(Auth).authorized,
-  Container.get(AppSysRoleController),
-);
-app.use(
-  '/role_manager',
-  // auth.required,
-  // Container.get(Auth).authorized,
-  Container.get(AppRoleResourceController),
-);
-app.use(
-  '/role_manager',
-  // auth.required,
-  // Container.get(Auth).authorized,
-  Container.get(AppResourceController),
-);
-
 app.use('/', Container.get(MenuController));
 app.use('/', Container.get(MenuItemController));
+app.use('/', Container.get(UsersController));
 
-app.use(errorHandler);
+app.use('/', authorized, Container.get(ProgramController));
+app.use('/', authorized, Container.get(ReportingPeriodController));
+app.use('/', authorized, Container.get(SheetNameController));
+app.use('/', authorized, Container.get(ColumnNameController));
+app.use('/org_manager', authorized, Container.get(OrgController));
+app.use('/orgGroup_manager', authorized, Container.get(OrgGroupController));
+
+app.use('/user_management', authorized, Container.get(UserController));
+
+app.use('/template_manager', authorized, Container.get(TemplateController));
+app.use('/template_manager', authorized, Container.get(TemplatePackageController));
+app.use('/template_manager', authorized, Container.get(TemplateTypeController));
+
+app.use('/designer', authorized, Container.get(StatusController));
+
+app.use('/submission_manager', authorized, Container.get(SubmissionPeriodController));
+app.use('/submission_manager', authorized, Container.get(SubmissionController));
+app.use('/submissionNote_manager', authorized, Container.get(SubmissionNoteController));
+
+app.use('/workflow_manager', authorized, Container.get(WorkflowController));
+app.use('/COA_manager', authorized, Container.get(ColumnNameController));
+app.use('/COA_manager', authorized, Container.get(COAController));
+app.use('/COA_manager', authorized, Container.get(COATreeController));
+app.use('/COA_manager', authorized, Container.get(COAGroupController));
+
+app.use('/workflow_manager', authorized, Container.get(WorkflowController));
+
+app.use('/role_manager', authorized, Container.get(AppSysController));
+app.use('/role_manager', authorized, Container.get(AppRoleController));
+app.use('/role_manager', authorized, Container.get(AppSysRoleController));
+app.use('/role_manager', authorized, Container.get(AppRoleResourceController));
+app.use('/role_manager', authorized, Container.get(AppResourceController));
+
+app.use(errorHandlerController);
 
 export default app;

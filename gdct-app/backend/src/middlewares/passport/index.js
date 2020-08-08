@@ -6,9 +6,16 @@ module.exports = () => {
     done(null, user);
   });
 
-  passport.deserializeUser(function (id, done) {
-    UserModel.findById(id, function (err, user) {
-      done(err, user);
+  passport.deserializeUser(function (user, done) {
+    UserModel.findOne({ email: user.email }, function (err, dbUser) {
+      let filteredUser = {
+        facebook: dbUser.facebook,
+        google: dbUser.google,
+        fullname: `${dbUser.firstName} ${dbUser.lastName}`,
+        email: dbUser.email,
+        sysRole: dbUser.sysRole,
+      };
+      done(err, filteredUser);
     });
   });
   require('./localConfig')();

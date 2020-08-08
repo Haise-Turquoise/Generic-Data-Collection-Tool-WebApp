@@ -16,7 +16,6 @@ module.exports = () => {
         UserModel.find({ AppConfig: temp }, function (err, user1) {
           user1.forEach(obj => {
             if (obj.username === uname) {
-              obj.generateAuthToken(obj);
               req.session.user = obj;
               return done(null, obj);
             }
