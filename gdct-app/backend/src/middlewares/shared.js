@@ -9,7 +9,7 @@ export const addTokenToCookie = (res, token) => {
   res.cookie('token', token, cookieOptions);
 };
 
-export const errorHandler = (err, req, res, next) => {
+export const errorHandlerController = (err, req, res, next) => {
   if (err) {
     err.statusCode = err.statusCode || 500;
     err.status = err.status || 'error';
