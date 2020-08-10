@@ -76,7 +76,7 @@ const Template = ({
   useEffect(() => {
     // If fetch fails, push back to /tempaltes
     dispatch(getTemplateRequest(_id));
-  }, []);
+  }, [_id]);
 
   return isCallInProgress ? (
     <Loading />

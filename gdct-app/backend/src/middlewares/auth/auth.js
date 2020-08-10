@@ -61,7 +61,6 @@ export const authorized = async (req, res, next) => {
 
   if (req.session.resources) {
     const urls = req.session.resources.map(e => e.resourcePath.toLowerCase());
-    console.log(urls)
     // console.log('middle-auth-authorized-url:', req.originalUrl.toLowerCase());
     console.log('test-url:', urls, req.originalUrl);
     if (!urls.includes(req.originalUrl.toLowerCase())) {
