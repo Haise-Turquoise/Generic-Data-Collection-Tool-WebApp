@@ -5,6 +5,9 @@ import { returnNormalJson, returnErrorJson } from '../../utils';
 import UserRepository from '../../repositories/User';
 import AppRoleResourceRepository from '../../repositories/AppRoleResource';
 import AppResourceRepository from '../../repositories/AppResource';
+import AppSysRoleModel from '../../models/AppSysRole';
+import mongodb from 'mongodb'
+var ObjectID = mongodb.ObjectID
 
 export default class AuthService {
   constructor() {
