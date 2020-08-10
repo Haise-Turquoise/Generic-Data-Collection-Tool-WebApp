@@ -49,12 +49,12 @@ const TemplateTypesTable = ({ history }) => {
     { title: 'Description', field: 'description' },
     { title: 'Submission Workflow', field: 'submissionWorkflowId', lookup: lookupWorkflows },
     { title: 'Template Workflow', field: 'templateWorkflowId', lookup: lookupWorkflows },
-    { title: 'Approvable', type: 'boolean', field: 'isApprovable' },
-    { title: 'Reviewable', type: 'boolean', field: 'isReviewable' },
-    { title: 'Submittable', type: 'boolean', field: 'isSubmittable' },
-    { title: 'Inputtable', type: 'boolean', field: 'isInputtable' },
-    { title: 'Viewable', type: 'boolean', field: 'isViewable' },
-    { title: 'Reportable', type: 'boolean', field: 'isReportable' },
+    // { title: 'Approvable', type: 'boolean', field: 'isApprovable' },
+    // { title: 'Reviewable', type: 'boolean', field: 'isReviewable' },
+    // { title: 'Submittable', type: 'boolean', field: 'isSubmittable' },
+    // { title: 'Inputtable', type: 'boolean', field: 'isInputtable' },
+    // { title: 'Viewable', type: 'boolean', field: 'isViewable' },
+    // { title: 'Reportable', type: 'boolean', field: 'isReportable' },
     { title: 'Active', type: 'boolean', field: 'isActive' },
   ];
 
@@ -96,7 +96,6 @@ const TemplateTypesTable = ({ history }) => {
     dispatch(getTemplateTypesRequest());
   }, [dispatch]);
 
-  console.log(templateTypes);
   return (
     <MaterialTable
       columns={columns}
