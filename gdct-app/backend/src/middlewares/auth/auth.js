@@ -55,14 +55,14 @@ export const authorized = async (req, res, next) => {
   }
 
   const isAdmin = Boolean(req.session.isAdmin);
-  console.log(isAdmin);
   if (isAdmin) {
     return next();
   }
 
   if (req.session.resources) {
-    const urls = req.session.resources.map(e => e.resourcePath);
+    const urls = req.session.resources.map(e => e.resourcePath.toLowerCase());
     // console.log('middle-auth-authorized-url:', req.originalUrl.toLowerCase());
+    console.log('test-url:', urls, req.originalUrl);
     if (!urls.includes(req.originalUrl.toLowerCase())) {
       return next(new ErrorGDCT('You do not have permission to perform this action.', 403));
     }
