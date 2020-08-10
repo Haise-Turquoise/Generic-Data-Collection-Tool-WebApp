@@ -32,6 +32,7 @@ export default {
   Upload: <CloudUploadIcon style={{ fontSize: '1.2rem', marginLeft: '1.2rem' }} />,
   User: <AccountCircleIcon />,
   Profile: <AccountCircleIcon style={{ fontSize: '1.2rem', marginLeft: '1.2rem' }} />,
+  Logout: <ExitToAppIcon style={{ fontSize: '1.2rem', marginLeft: '1.2rem' }} />,
   Report: <ReportIcon />,
   Reports: <ReportIcon style={{ fontSize: '1.2rem', marginLeft: '1.2rem' }} />,
   Admin: <SupervisorAccountIcon />,
@@ -70,5 +71,4 @@ export default {
   Program: <AccountCircleIcon style={{ fontSize: '1.2rem', marginLeft: '1.2rem' }} />,
   Status: <StorageIcon style={{ fontSize: '1.2rem', marginLeft: '1.2rem' }} />,
   'Reporting period': <EventIcon style={{ fontSize: '1.2rem', marginLeft: '1.2rem' }} />,
-  Logout: <ExitToAppIcon style={{ fontSize: '1.2rem', marginLeft: '1.2rem' }}/>,
 };
