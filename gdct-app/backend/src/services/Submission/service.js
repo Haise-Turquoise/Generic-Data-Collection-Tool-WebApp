@@ -197,8 +197,8 @@ export default class SubmissionService {
                   const promiseQuery3 = [];
                   if (templateIds !== undefined) {
                     templateIds.forEach(templateId => {
-                      if (templatePackage.programId !== undefined) {
-                        templatePackage.programId.forEach(programId => {
+                      if (templatePackage.programIds !== undefined) {
+                        templatePackage.programIds.forEach(programId => {
                           if (programIds.find(program => program == programId) != undefined) {
                             promiseQuery3.push(
                               this.createSubmissionBaseOnTemplatePackage({
