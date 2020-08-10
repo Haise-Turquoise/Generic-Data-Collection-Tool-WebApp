@@ -50,9 +50,6 @@ export default class Auth {
 }
 
 export const authorized = async (req, res, next) => {
-  console.log('middle-auth-authorized-user:', req.session.isAdmin);
-  console.log('middle-auth-authorized-roles:', req.session.resources);
-
   if (!req.user) {
     return next(new ErrorGDCT('Bad Request', 401));
   }

@@ -126,7 +126,12 @@ export default class AuthService {
       const { email } = req.user;
       const user = await this.UserRepostory.findByEmail(email);
       if (user) {
-        req.session.isAdmin = Boolean(user.sysRole.find(e => e.role === 'Business Admin'));
+        req.session.isAdmin = Boolean(
+          user.sysRole.find(e => {
+            // console.log('service-role:', e.role);
+            return e.role === 'Business Admin';
+          }),
+        );
         req.session.resources = [];
         if (!req.session.isAdmin) {
           this.getRoles(user).then(data => {
