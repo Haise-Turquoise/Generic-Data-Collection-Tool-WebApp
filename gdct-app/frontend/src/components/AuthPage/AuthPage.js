@@ -233,7 +233,7 @@ const MenuItemsList = ({ menuItems, level }) => (
 );
 
 const MenuDrawerItems = ({ menuItems, open, level }) => (
-  <Collapse in={open} timeout="auto" unmountOnExit>
+  <Collapse in={open} timeout="auto" unmountOnExit style={{ minHeight: '1' }}>
     <MenuItemsList menuItems={menuItems} level={level} />
   </Collapse>
 );

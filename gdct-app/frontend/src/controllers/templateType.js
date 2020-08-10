@@ -5,6 +5,7 @@ import { host } from '../constants/domain';
 const templateTypeController = (() => {
   const templateTypeAxios = axios.create({
     baseURL: `${host}/template_manager/templateTypes`,
+    withCredentials: true,
   });
   return {
     fetch: async query =>

@@ -5,6 +5,7 @@ import { host } from '../constants/domain';
 const COATreeController = (() => {
   const COATreeAxios = axios.create({
     baseURL: `${host}/COA_manager/COATrees`,
+    withCredentials: true,
   });
   return {
     fetchCOATree: async _id => COATreeAxios.get(`/${_id}`).then(res => res.data.COATree),

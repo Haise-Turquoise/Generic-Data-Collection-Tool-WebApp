@@ -5,6 +5,7 @@ import { host } from '../constants/domain';
 const workflowController = (() => {
   const workflowAxios = axios.create({
     baseURL: `${host}/workflow_manager/workflows`,
+    withCredentials: true,
   });
   return {
     // fetchWorkflows: async (query) =>
