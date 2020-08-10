@@ -21,8 +21,8 @@ module.exports = () => {
               if (!user || !user.validatePassword(password)) {
                 return done(null, false, { errors: { 'email or password': 'is invalid' } });
               }
-              req.session.user = user;
-              return done(null, user);
+              req.session.user = user.email;
+              return done(null, { email: user.email });
             })
             .catch(done);
         });

@@ -35,4 +35,17 @@ export default class AppRoleResourceRepository extends BaseRepository {
       );
     });
   }
+
+  async findById(_id) {
+    return AppRoleResourceModel.findById(_id).then(appRoleResource => {
+      return new AppRoleResouceEntity(appRoleResource.toObject());
+    });
+  }
+
+  async findByAppSysRoleId(appSysRoleId) {
+    console.log('appSysRoleId:', appSysRoleId);
+    return AppRoleResourceModel.findOne({ appSysRoleId }).then(appRoleResource => {
+      return new AppRoleResouceEntity(appRoleResource.toObject());
+    });
+  }
 }

@@ -8,3 +8,5 @@ export default class ErrorGDCT extends Error {
     Error.captureStackTrace(this, this.constructor);
   }
 }
+
+export const exceptionHandler = () => {};

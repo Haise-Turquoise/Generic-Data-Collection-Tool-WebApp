@@ -1,11 +1,18 @@
 import passport from 'passport';
+import Container from 'typedi';
 import UserModel from '../../models/User/model';
-import { addTokenToCookie } from '../../middlewares/shared';
-import AppSysRoleModel from '../../models/AppSysRole';
-import mongodb from 'mongodb'
-var ObjectID = mongodb.ObjectID
+import { returnNormalJson, returnErrorJson } from '../../utils';
+import UserRepository from '../../repositories/User';
+import AppRoleResourceRepository from '../../repositories/AppRoleResource';
+import AppResourceRepository from '../../repositories/AppResource';
 
-export default class ProgramService {
+export default class AuthService {
+  constructor() {
+    this.UserRepostory = Container.get(UserRepository);
+    this.AppRoleResourceRepository = Container.get(AppRoleResourceRepository);
+    this.AppResourceRepository = Container.get(AppResourceRepository);
+  }
+
   authenticate(req, res, next) {
     const { method } = req.params;
     passport.authenticate(method, { scope: 'email' })(req, res, next);
@@ -24,19 +31,18 @@ export default class ProgramService {
     req.logout();
     req.session.user = null;
     req.session.token = null;
-    res.cookie('token', '').json({
-      status: 'ok',
-    });
+    returnNormalJson(res, 'logout successfully');
   }
 
   profile(req, res) {
-    if (
-      (req.session.token !== null && req.session.token !== undefined) ||
-      (req.session.user !== null && req.session.user !== undefined)
-    ) {
-      res.json({ status: 'success' });
-    } else {
-      res.json({ status: 'fail' });
+    try {
+      if (req.user) {
+        returnNormalJson(res, { email: req.user.email });
+      } else {
+        returnErrorJson(res, 'Not authenticated', 401);
+      }
+    } catch (err) {
+      throw err;
     }
   }
 
@@ -89,56 +95,48 @@ export default class ProgramService {
       finalUser.setHashedPassword(password);
 
       return finalUser
-        .save()
-        .then(user => {
-          const token = user.generateJWT();
-          addTokenToCookie(res, token);
-          res.json({ user: user.returnAuthUserJson(token) });
-        })
-        .catch(err => res.json({ error: err }));
+      .save()
+      .then(user => {
+        returnNormalJson(res, { email: user.email });
+      })
+      .catch(err => res.json({ error: err }));
 
     }, 1000)
+
   }
 
-  processLogin(req, res, next) {
-    const {
-      body: { email, password },
-    } = req;
-    console.log(req.body);
-    if (!email) {
-      return res.status(422).json({
-        errors: {
-          email: 'is required',
-        },
-      });
-    }
-
-    if (!password) {
-      return res.status(422).json({
-        errors: {
-          password: 'is required',
-        },
-      });
-    }
-
-    return passport.authenticate(
-      ['local', 'google', 'facebook'],
-      { session: false },
-      (err, passportUser, info) => {
-        console.log('info:', info);
-        if (err) {
-          return next(err);
+  getRoles = user => {
+    return new Promise(async (resolve, reject) => {
+      let data = [];
+      for (const sysRole of user.sysRole) {
+        const roleResouce = await this.AppRoleResourceRepository.findByAppSysRoleId(sysRole._id);
+        for (const id of roleResouce.resourceId) {
+          const resourcesData = await this.AppResourceRepository.findById(id);
+          data.push(resourcesData);
         }
+        resolve(data);
+      }
+    });
+  };
 
-        if (passportUser) {
-          const authUser = passportUser;
-          const token = passportUser.generateJWT();
-          addTokenToCookie(res, token);
-          return res.json({ user: authUser.returnAuthUserJson(token) });
+  processPassport = (req, res, next) =>
+    passport.authenticate('local')(req, res, async () => {
+      const { email } = req.user;
+      const user = await this.UserRepostory.findByEmail(email);
+      if (user) {
+        req.session.isAdmin = user.sysRole.find(e => e.role === 'Business Admin');
+        req.session.resources = [];
+        if (!req.session.isAdmin) {
+          this.getRoles(user).then(data => {
+            req.session.resources = data;
+            if (req.user) {
+              return next();
+            }
+            return returnErrorJson(res, 'Bad request');
+          });
+        } else {
+          next();
         }
-
-        return res.status(400).info;
-      },
-    )(req, res, next);
-  }
+      }
+    });
 }

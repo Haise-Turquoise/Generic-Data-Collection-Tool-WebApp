@@ -150,11 +150,12 @@ const OrgInfo = props => (
     </div>
 
     <div className="formRow" id="userInfo">
-      <TextGroup {...props} attribute={'authorizedUserId'} text={'Authorized User'} />
+      <TextGroup {...props} attribute={'authorizedUserId'} text={'Authoritative Person'} />
+      <TextGroup {...props} attribute={'contactUserId'} text={'Authoritative Person\'s Email'} />
       {/*
                 <userIdButton onChange={props.handleChanges}/>
             */}
-      <TextGroup {...props} attribute={'contactUserId'} text={'Contact User'} />
+      
     </div>
   </div>
 );

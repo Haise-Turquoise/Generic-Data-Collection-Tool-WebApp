@@ -5,6 +5,7 @@ import { host } from '../constants/domain';
 const programController = (() => {
   const programAxios = axios.create({
     baseURL: `${host}/programs`,
+    withCredentials: true,
   });
   return {
     fetchByIds: async ids =>

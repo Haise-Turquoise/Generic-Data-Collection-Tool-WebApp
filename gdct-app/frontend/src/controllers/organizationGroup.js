@@ -5,6 +5,7 @@ import { host } from '../constants/domain';
 const organizationGroupController = (() => {
   const organizationGroupAxios = axios.create({
     baseURL: `${host}/orgGroup_manager/orgGroups`,
+    withCredentials: true,
   });
   return {
     fetch: async () =>

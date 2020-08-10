@@ -77,7 +77,7 @@ const App = () => {
   useEffect(() => {
     AuthController.profile()
       .then(res => {
-        setLoggedIn(res.status === 'success');
+        setLoggedIn(res.status === 'ok');
       })
       .catch(() => {
         setLoggedIn(false);

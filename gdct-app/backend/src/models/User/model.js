@@ -3,7 +3,6 @@ import dotenv from 'dotenv';
 import { Schema, model } from 'mongoose';
 
 import bcrypt from 'bcrypt-nodejs';
-import jwt from 'jsonwebtoken';
 
 const { ObjectId } = Schema.Types;
 
@@ -88,38 +87,6 @@ User.methods.setHashedPassword = function (password) {
 User.methods.validatePassword = function (password) {
   console.log(bcrypt.compareSync(password, this.password));
   return bcrypt.compareSync(password, this.password);
-};
-
-User.methods.generateAuthToken = async user => {
-  const token = jwt.sign({ _id: user._id.toString() }, 'authenticationsecret');
-  user.token = `Bearer ${token}`;
-  await user.save();
-  return token;
-};
-
-User.methods.generateJWT = function () {
-  const today = new Date();
-  const expirationDate = new Date(today);
-  expirationDate.setDate(today.getDate() + 60);
-
-  return jwt.sign(
-    {
-      email: this.email,
-      id: this._id,
-    },
-    process.env.JWT_SECRET,
-    {
-      expiresIn: process.env.JWT_EXPIRES_IN,
-    },
-  );
-};
-
-User.methods.returnAuthUserJson = function (token) {
-  return {
-    _id: this._id,
-    email: this.email,
-    token,
-  };
 };
 
 // var User = new Schema(

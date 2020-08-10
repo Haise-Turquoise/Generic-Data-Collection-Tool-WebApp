@@ -5,6 +5,7 @@ import { host } from '../constants/domain';
 const sheetNameController = (() => {
   const sheetNameAxios = axios.create({
     baseURL: `${host}/sheetNames`,
+    withCredentials: true,
   });
   return {
     fetch: async query => sheetNameAxios.get('').then(res => res.data.sheetNames),

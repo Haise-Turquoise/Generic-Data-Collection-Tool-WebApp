@@ -5,6 +5,7 @@ import { host } from '../constants/domain';
 const submissionNoteController = (() => {
   const submissionNoteAxios = axios.create({
     baseURL: `${host}/submissionNote_manager/submissionNote`,
+    withCredentials: true,
   });
   return {
     fetchBySubmissionId: async submissionId =>
