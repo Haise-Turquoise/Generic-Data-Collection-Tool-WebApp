@@ -62,7 +62,7 @@ export const authorized = async (req, res, next) => {
 
   if (req.session.resources) {
     const urls = req.session.resources.map(e => e.resourcePath);
-    console.log('middle-auth-authorized-url:', req.originalUrl.toLowerCase());
+    // console.log('middle-auth-authorized-url:', req.originalUrl.toLowerCase());
     if (!urls.includes(req.originalUrl.toLowerCase())) {
       return next(new ErrorGDCT('You do not have permission to perform this action.', 403));
     }

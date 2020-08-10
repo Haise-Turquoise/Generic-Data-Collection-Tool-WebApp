@@ -5,6 +5,7 @@ import { host } from '../constants/domain';
 const reportingPeriodController = (() => {
   const reportingPeriodAxios = axios.create({
     baseURL: `${host}/reportingPeriods`,
+    withCredentials: true,
   });
   return {
     fetch: async query => reportingPeriodAxios.get('').then(res => res.data.reportingPeriods),

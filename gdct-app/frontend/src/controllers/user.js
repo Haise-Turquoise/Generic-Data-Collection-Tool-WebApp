@@ -5,6 +5,7 @@ import { host } from '../constants/domain';
 const userController = (() => {
   const userAxios = axios.create({
     baseURL: `${host}/user_management`,
+    withCredentials: true,
   });
   return {
     create: async userData =>

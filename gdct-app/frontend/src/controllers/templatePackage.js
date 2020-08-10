@@ -5,6 +5,7 @@ import { host } from '../constants/domain';
 const templatePackageController = (() => {
   const templatePackageAxios = axios.create({
     baseURL: `${host}/template_manager/templatePackages`,
+    withCredentials: true,
   });
   return {
     fetchPopulated: async _id =>
