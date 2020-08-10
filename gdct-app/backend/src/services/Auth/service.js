@@ -109,10 +109,12 @@ export default class AuthService {
     return new Promise(async (resolve, reject) => {
       let data = [];
       for (const sysRole of user.sysRole) {
-        const roleResouce = await this.AppRoleResourceRepository.findByAppSysRoleId(sysRole._id);
-        for (const id of roleResouce.resourceId) {
-          const resourcesData = await this.AppResourceRepository.findById(id);
-          data.push(resourcesData);
+        if (sysRole.role !== 'Business Admin') {
+          const roleResouce = await this.AppRoleResourceRepository.findByAppSysRoleId(sysRole._id);
+          for (const id of roleResouce.resourceId) {
+            const resourcesData = await this.AppResourceRepository.findById(id);
+            data.push(resourcesData);
+          }
         }
         resolve(data);
       }
@@ -124,7 +126,7 @@ export default class AuthService {
       const { email } = req.user;
       const user = await this.UserRepostory.findByEmail(email);
       if (user) {
-        req.session.isAdmin = user.sysRole.find(e => e.role === 'Business Admin');
+        req.session.isAdmin = Boolean(user.sysRole.find(e => e.role === 'Business Admin'));
         req.session.resources = [];
         if (!req.session.isAdmin) {
           this.getRoles(user).then(data => {
@@ -135,6 +137,7 @@ export default class AuthService {
             return returnErrorJson(res, 'Bad request');
           });
         } else {
+          req.session.resources = [];
           next();
         }
       }

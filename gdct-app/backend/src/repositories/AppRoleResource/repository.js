@@ -43,7 +43,6 @@ export default class AppRoleResourceRepository extends BaseRepository {
   }
 
   async findByAppSysRoleId(appSysRoleId) {
-    console.log('appSysRoleId:', appSysRoleId);
     return AppRoleResourceModel.findOne({ appSysRoleId }).then(appRoleResource => {
       return new AppRoleResouceEntity(appRoleResource.toObject());
     });
