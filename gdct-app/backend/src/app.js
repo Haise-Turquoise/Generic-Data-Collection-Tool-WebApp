@@ -83,7 +83,6 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 app.use((req, res, next) => {
-  console.log('middle-auth-authorized-user:', req.session.isAdmin);
   // console.log('middle-auth-authorized-roles:', req.session.resources);
   next();
 });

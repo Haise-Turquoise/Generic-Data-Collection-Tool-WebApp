@@ -6,7 +6,7 @@ import Template from '../../entities/Template';
 const TemplateController = Service([TemplateService], service => {
   const router = Router();
   return (() => {
-    router.get('/templates', (req, res, next) => {
+    router.get('/templates/fetchTemplate', (req, res, next) => {
       // Get query from middleware -- auth handler
       service
         .findTemplate(new Template(req.body))

@@ -55,7 +55,7 @@ export const authorized = async (req, res, next) => {
   }
 
   const isAdmin = Boolean(req.session.isAdmin);
-  console.log(isAdmin);
+  // console.log(isAdmin);
   if (isAdmin) {
     return next();
   }

@@ -49,7 +49,7 @@ const TemplateDialog = ({ handleChange }) => {
 
   return (
     <SelectableTableDialog
-      title="Template Type"
+      title="Template"
       columns={columns}
       isOpen={isTemplateDialogOpen}
       data={templates}

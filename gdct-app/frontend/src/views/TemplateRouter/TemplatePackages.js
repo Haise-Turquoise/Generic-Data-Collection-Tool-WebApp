@@ -90,12 +90,13 @@ const TemplatePackages = () => {
     () => ({
       onRowAdd: templatePackage =>
         new Promise((resolve, reject) => {
-          console.log(templatePackage);
           templatePackage = { ...templatePackage, templateIds: [], programIds: [] };
           dispatch(createTemplatePackageRequest(templatePackage, resolve, reject));
         }),
       onRowUpdate: templatePackage =>
         new Promise((resolve, reject) => {
+          delete templatePackage.templateIds;
+          delete templatePackage.programIds;
           dispatch(updateTemplatePackageRequest(templatePackage, resolve, reject));
         }),
       onRowDelete: templatePackage =>

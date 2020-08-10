@@ -68,18 +68,21 @@ export default class TemplateRepository extends BaseRepository {
         // .then(() => {
         //   if (userCreatorId) return this.userRepository.validate(userCreatorId)
         // })
-        .then(() =>
-          TemplateModel.findByIdAndUpdate(id, {
+        .then(() => {
+          const formattedTemplate = {
             name,
-            templateData,
             templateTypeId,
             userCreatorId,
             creationDate,
             expirationDate,
             workflowProcessId,
             statusId,
-          }),
-        )
+          };
+
+          if (templateData) formattedTemplate.templateData = templateData;
+
+          return TemplateModel.findByIdAndUpdate(id, formattedTemplate);
+        })
         .then(template => new TemplateEntity(template.toObject()))
     );
   }
