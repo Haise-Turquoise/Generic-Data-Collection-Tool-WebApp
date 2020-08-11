@@ -90,19 +90,19 @@ app.use('/', Container.get(AuthController));
 app.use('/', Container.get(MenuController));
 app.use('/', Container.get(MenuItemController));
 app.use('/', Container.get(UsersController));
-
 app.use('/', Container.get(ProgramController));
+app.use('/role_manager', Container.get(AppSysController));
+app.use('/org_manager', Container.get(OrgController));
+app.use('/orgGroup_manager', Container.get(OrgGroupController));
+app.use('/user_management', Container.get(UserController));
+app.use('/template_manager', Container.get(TemplateTypeController));
+
 app.use('/', authorized, Container.get(ReportingPeriodController));
 app.use('/', authorized, Container.get(SheetNameController));
 app.use('/', authorized, Container.get(ColumnNameController));
-app.use('/org_manager', Container.get(OrgController));
-app.use('/orgGroup_manager', Container.get(OrgGroupController));
-
-app.use('/user_management', Container.get(UserController));
 
 app.use('/template_manager', authorized, Container.get(TemplateController));
 app.use('/template_manager', authorized, Container.get(TemplatePackageController));
-app.use('/template_manager', Container.get(TemplateTypeController));
 
 app.use('/designer', authorized, Container.get(StatusController));
 
@@ -118,7 +118,6 @@ app.use('/COA_manager', authorized, Container.get(COAGroupController));
 
 app.use('/workflow_manager', authorized, Container.get(WorkflowController));
 
-app.use('/role_manager', Container.get(AppSysController));
 app.use('/role_manager', authorized, Container.get(AppRoleController));
 app.use('/role_manager', authorized, Container.get(AppSysRoleController));
 app.use('/role_manager', authorized, Container.get(AppRoleResourceController));

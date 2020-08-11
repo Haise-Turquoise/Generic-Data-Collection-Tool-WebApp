@@ -6,6 +6,15 @@ import { authorized } from '../../middlewares/auth/auth';
 const AppSysController = Service([AppSysService], service => {
   const router = Router();
   return (() => {
+    router.get('/appSyses/searchAllAppSyses', (req, res, next) => {
+      service
+        .findAllAppSys()
+        .then(AppSyses => {
+          res.json({ AppSyses });
+        })
+        .catch(next);
+    });
+
     router.get('/appSyses', authorized, (req, res, next) => {
       // Get query from middleware -- auth handler
 
@@ -42,15 +51,6 @@ const AppSysController = Service([AppSysService], service => {
       service
         .deleteAppSys(_id)
         .then(() => res.end())
-        .catch(next);
-    });
-
-    router.get('/appSyses/searchAllAppSyses', (req, res, next) => {
-      service
-        .findAllAppSys()
-        .then(AppSyses => {
-          res.json({ AppSyses });
-        })
         .catch(next);
     });
 
