@@ -14,17 +14,13 @@ import { Excel } from '../../../components/Excel';
 
 import './Template.scss';
 import { selectTemplatesStore } from '../../../store/TemplatesStore/selectors';
-import {
-  selectFactoryRESTIsCallInProgress,
-  selectFactoryValueById,
-} from '../../../store/common/REST/selectors';
+import { selectFactoryValueById } from '../../../store/common/REST/selectors';
 import workflowController from '../../../controllers/workflow';
 import TemplatesStore from '../../../store/TemplatesStore/store';
 
 const TemplatePhases = ({ template }) => {
   const [workflowProcess, setWorkflowProcess] = useState();
   const dispatch = useDispatch();
-
   useEffect(() => {
     if (template)
       workflowController
@@ -62,14 +58,12 @@ const Template = ({
 }) => {
   const dispatch = useDispatch();
 
-  const { isCallInProgress, template } = useSelector(
+  const { template } = useSelector(
     state => ({
-      isCallInProgress: selectFactoryRESTIsCallInProgress(selectTemplatesStore)(state),
       template: selectFactoryValueById(selectTemplatesStore)(_id)(state),
     }),
     shallowEqual,
   );
-
   const handleSaveTemplate = useCallback(() => {
     dispatch(updateTemplateExcelRequest());
   }, []);
@@ -83,9 +77,7 @@ const Template = ({
     };
   }, [_id]);
 
-  return isCallInProgress ? (
-    <Loading />
-  ) : (
+  return template && template.templateData ? (
     <div>
       <TemplatePhases template={template} />
       <Excel
@@ -94,6 +86,8 @@ const Template = ({
         handleSave={handleSaveTemplate}
       />
     </div>
+  ) : (
+    <Loading />
   );
 };
 

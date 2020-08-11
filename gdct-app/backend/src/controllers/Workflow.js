@@ -57,6 +57,13 @@ const WorkflowController = Service([WorkflowService], service => {
         .catch(next);
     });
 
+    router.get('/workflows/workflowProcesses/fetchWorkflowProcesses', (req, res, next) => {
+      service
+        .findProcesses()
+        .then(workflowProcess => res.json({ data: workflowProcess }))
+        .catch(next);
+    });
+
     return router;
   })();
 });

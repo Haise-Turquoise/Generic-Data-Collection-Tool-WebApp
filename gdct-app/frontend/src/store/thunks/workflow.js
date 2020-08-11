@@ -11,6 +11,7 @@ import {
 import { WorkflowStoreActions, initialWorkflowState } from '../WorkflowStore/store';
 
 import { getRequestFactory, deleteRequestFactory, updateRequestFactory } from './common/REST';
+import WorkflowProcessesStore from '../WorkflowProcessesStore/store';
 
 export const getWorkflowsRequest = getRequestFactory(WorkflowsStore, workflowController);
 
@@ -187,4 +188,25 @@ export const submitWorkflow = () => (dispatch, getState) => {
   workflowController
     .create(_createWorkflow(dispatch, getState))
     .catch(error => dispatch(WorkflowStoreActions.UPDATE_WORKFLOW_ERROR(error)));
+};
+
+export const getWorkflowProcessesRequest = (
+  query,
+  resolve,
+  reject,
+  isPopulated = false,
+) => dispatch => {
+  dispatch(WorkflowProcessesStore.actions.REQUEST());
+
+  workflowController
+    .fetchProcesses()
+    .then(values => {
+      dispatch(WorkflowProcessesStore.actions.RECEIVE(values));
+      if (resolve) resolve();
+    })
+    .catch(error => {
+      console.error(error);
+      dispatch(WorkflowProcessesStore.actions.FAIL_REQUEST(error));
+      if (reject) reject();
+    });
 };

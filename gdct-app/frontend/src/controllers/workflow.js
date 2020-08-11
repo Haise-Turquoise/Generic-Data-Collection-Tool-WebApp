@@ -22,6 +22,8 @@ const workflowController = (() => {
       }),
     fetchProcess: async processId =>
       workflowAxios.get(`/workflowProcessId/${processId}`).then(res => res.data.data),
+    fetchProcesses: async () =>
+      workflowAxios.get('/workflowProcesses/fetchWorkflowProcesses').then(res => res.data.data),
   };
 })();
 
