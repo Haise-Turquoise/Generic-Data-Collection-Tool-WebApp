@@ -24,7 +24,7 @@ export default class UserRepository extends BaseRepository {
   }
 
   async findById(_id) {
-    return UserModel.findeById(_id).then(user => {
+    return UserModel.findById(_id).then(user => {
       return new UserEntity(user.toObject());
     });
   }

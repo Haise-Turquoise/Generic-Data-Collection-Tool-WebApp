@@ -51,9 +51,9 @@ export const sendAdminVerficationEmail = (orgInfo, hashedUsername, userId, usern
         <br/> Phone:        ${telephone},
         <br/> Email:        ${email},
         <br/> To approve this request, click the link below: 
-        <br/> <a>${process.env.HOST}/user_management/users/verifyUser?approve=true&hashedUsername=${hashedUsername}&_id=${userId}&orgId=${orgId}</a>
+        <br/> <a href='${process.env.HOST}/user_management/users/verifyUser?approve=true&hashedUsername=${hashedUsername}&_id=${userId}&orgId=${orgId}'> Approve </a>
         <br/> To reject this request, click the link below:
-        <br/> <a>${process.env.HOST}/user_management/users/verifyUser?approve=false&hashedUsername=${hashedUsername}&_id=${userId}&orgId=${orgId}</a>
+        <br/> <a href='${process.env.HOST}/user_management/users/verifyUser?approve=false&hashedUsername=${hashedUsername}&_id=${userId}&orgId=${orgId}'> Reject </a>
         </p>`,
   };
 
@@ -73,7 +73,7 @@ export const sendUserActiveEmail = user => {
         <br/>Your request has been processed.
         <br/>In order to access the site, you need activate your account.
         <br/>To activate your account, click the link below:
-        <br/> <a>${process.env.HOST}/user_management/users/activeUser?hashedUsername=${hashedUsername}&_id=${_id}</a></p>`,
+        <br/> <a href='${process.env.HOST}/user_management/users/activeUser?hashedUsername=${hashedUsername}&_id=${_id}'> Active </a></p>`,
   };
 
   return transporter
@@ -84,7 +84,7 @@ export const sendUserActiveEmail = user => {
 export const sendUserRejectEmail = user => {
   const { username, email } = user;
   const message = {
-    from: 'carrsun96@gmail.com',
+    from: 'julio32@ethereal.email',
     to: email,
     subject: 'Web-prototype User Email Verification',
     // text: `Hello ${username}! Activate your account here by going to this url: ${FRONTEND_SERVER}/verification/${id}`,

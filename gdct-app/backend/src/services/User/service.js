@@ -102,7 +102,7 @@ export default class UserService {
 
   logout() {}
 
-  sendActiveEmail(approve, _id, orgId) {
+  async sendActiveEmail(approve, _id, orgId) {
     let checkActive = true;
     console.log(_id);
     this.UserRepository.findById(_id).then(user => {
@@ -116,9 +116,7 @@ export default class UserService {
         if (checkActive) {
           sendUserActiveEmail(user);
         }
-        this.UserRepository.updateSysRole(_id, user.sysRole).then(model => {
-          console.log(model.sysRole[0].org);
-        });
+        this.UserRepository.updateSysRole(_id, user.sysRole).then(model => {});
         return 'You have approved the user. The user will active the account by email.';
       }
       sendUserRejectEmail(user);
@@ -126,7 +124,7 @@ export default class UserService {
     });
   }
 
-  activeUser(_id) {
+  async activeUser(_id) {
     this.UserRepository.findById({ _id }).then(model => {
       console.log(model);
     });

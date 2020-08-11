@@ -165,32 +165,60 @@ const getTemplateType = userPrograms => {
     let index = 0;
 
     templateTypes.forEach(templateType => {
-      const submission = userPrograms.find(element =>
-        templateType.programIds.includes(element._id),
-      );
-      submissionList.push({
-        organization: submission.org,
-        program: {
-          name: submission.name,
-          code: submission.code,
-          _id: submission._id,
-        },
-        submission: { name: templateType.name, _id: templateType._id },
-        approveAvailable: templateType.isApprovable,
-        reviewAvailable: templateType.isReviewable,
-        submitAvailable: templateType.isSubmittable,
-        inputAvailable: templateType.isInputtable,
-        viewAvailable: templateType.isViewable,
-        viewCognosAvailable: templateType.isReportable,
-        approve: false,
-        review: false,
-        submit: false,
-        input: false,
-        view: false,
-        viewCognos: false,
-        index,
+      userPrograms.forEach(userProgram => {
+        const check = templateType.programIds.includes(userProgram._id);
+        if (check) {
+          submissionList.push({
+            organization: userProgram.org,
+            program: {
+              name: userProgram.name,
+              code: userProgram.code,
+              _id: userProgram._id,
+            },
+            submission: { name: templateType.name, _id: templateType._id },
+            approveAvailable: templateType.isApprovable,
+            reviewAvailable: templateType.isReviewable,
+            submitAvailable: templateType.isSubmittable,
+            inputAvailable: templateType.isInputtable,
+            viewAvailable: templateType.isViewable,
+            viewCognosAvailable: templateType.isReportable,
+            approve: false,
+            review: false,
+            submit: false,
+            input: false,
+            view: false,
+            viewCognos: false,
+            index,
+          });
+          index++;
+        }
       });
-      index++;
+      // const submission = userPrograms.find(element =>
+      //   templateType.programIds.includes(element._id),
+      // );
+      // submissionList.push({
+      //   organization: submission.org,
+      //   program: {
+      //     name: submission.name,
+      //     code: submission.code,
+      //     _id: submission._id,
+      //   },
+      //   submission: { name: templateType.name, _id: templateType._id },
+      //   approveAvailable: templateType.isApprovable,
+      //   reviewAvailable: templateType.isReviewable,
+      //   submitAvailable: templateType.isSubmittable,
+      //   inputAvailable: templateType.isInputtable,
+      //   viewAvailable: templateType.isViewable,
+      //   viewCognosAvailable: templateType.isReportable,
+      //   approve: false,
+      //   review: false,
+      //   submit: false,
+      //   input: false,
+      //   view: false,
+      //   viewCognos: false,
+      //   index,
+      // });
+
     });
     return submissionList;
   });
