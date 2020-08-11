@@ -27,7 +27,26 @@ export default class AuthService {
     passport.authenticate(method, {
       successRedirect: process.env.CLIENT_SERVER, // redirect to home page
       failureRedirect: `${process.env.CLIENT_SERVER}/auth/error`, // redirect to error page
-    })(req, res);
+    })(req, res, async () => {
+      const { email } = req.user;
+      const user = await this.UserRepostory.findByEmail(email);
+      if (user) {
+        req.session.isAdmin = Boolean(user.sysRole.find(e => e.role === 'Business Admin'));
+        req.session.resources = [];
+        if (!req.session.isAdmin) {
+          this.getRoles(user).then(data => {
+            req.session.resources = data;
+            if (req.user) {
+              return next();
+            }
+            return returnErrorJson(res, 'Bad request');
+          });
+        } else {
+          req.session.resources = [];
+          next();
+        }
+      }
+    });;
   }
 
   logout(req, res) {
@@ -113,7 +132,8 @@ export default class AuthService {
       let data = [];
       for (const sysRole of user.sysRole) {
         if (sysRole.role !== 'Business Admin') {
-          const roleResouce = await this.AppRoleResourceRepository.findByAppSysRoleId(sysRole._id);
+          const roleResouce = await this.AppRoleResourceRepository.findByAppSysRoleId(sysRole.appSysRoleId);
+          //const roleResouce = await this.AppRoleResourceRepository.findByAppSysRoleId(sysRole._id);
           for (const id of roleResouce.resourceId) {
             const resourcesData = await this.AppResourceRepository.findById(id);
             data.push(resourcesData);
