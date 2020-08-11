@@ -15,6 +15,7 @@ import ProgramList from '../../OrganizationRouter/ProgramList';
 import './TemplateType.scss';
 import { selectFactoryRESTResponseTableValues } from '../../../store/common/REST/selectors';
 import { selectTemplateTypesStore } from '../../../store/TemplateTypesStore/selectors';
+import TemplateTypesStore from '../../../store/TemplateTypesStore/store';
 
 const TemplateTypeHeader = () => {
   return (
@@ -63,6 +64,10 @@ const TemplateTypeTable = ({
 
   useEffect(() => {
     dispatch(getTemplateTypesRequest());
+
+    return () => {
+      dispatch(TemplateTypesStore.actions.RESET());
+    };
   }, [dispatch]);
 
   return (
