@@ -41,7 +41,7 @@ const StyledMenuItem = withStyles(theme => ({
 }))(MenuItem);
 
 export default function DrawerItem(props) {
-  const { name, icon, url, children } = props;
+  const { name, icon, url, children, isSubMenu } = props;
   const [anchorEl, setAnchorEl] = React.useState(null);
   const handleClick = event => {
     console.log(event.currentTarget);
@@ -51,15 +51,16 @@ export default function DrawerItem(props) {
   const handleClose = () => {
     setAnchorEl(null);
   };
+
   return (
-    <>
+    <div>
       <Button
         aria-controls="simple-menu"
         aria-haspopup="true"
         onClick={handleClick}
-        style={{ color: 'white' }}
+        style={{ color: 'white', width: '100%', padding: '0' }}
       >
-        <IconItem name={name} url={url} icon={icon} />
+        <IconItem name={name} url={url} icon={icon} isSubMenu={isSubMenu} />
       </Button>
       <StyledMenu
         id="customized-menu"
@@ -70,6 +71,9 @@ export default function DrawerItem(props) {
       >
         {children.map(item => {
           const { name, type, url, icon } = item;
+          if (type === 'drawer') {
+            return <DrawerItem key={`${type}-${name}`} {...item} isSubMenu={true} />;
+          }
           return (
             <ListItem key={name} component={url && Link} button to={url}>
               <ListItemIcon>{icon}</ListItemIcon>
@@ -78,6 +82,6 @@ export default function DrawerItem(props) {
           );
         })}
       </StyledMenu>
-    </>
+    </div>
   );
 }
