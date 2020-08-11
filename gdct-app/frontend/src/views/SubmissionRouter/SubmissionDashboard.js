@@ -68,7 +68,7 @@ const SubmissionDashboard = ({ history }) => {
       { title: 'Submission', field: 'name' },
       { title: 'Program', field: 'programName' },
       { title: 'Approver', field: 'approver' },
-      { title: 'Health Service Provider', field: 'hsp' },
+      { title: 'Health Service Provider', field: 'orgId' },
       { title: 'Status', field: 'phase' },
       { title: 'Created On', field: 'createdAt' },
       { title: 'Modified By', field: 'updatedBy' },
