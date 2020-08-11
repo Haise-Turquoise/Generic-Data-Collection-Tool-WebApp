@@ -11,7 +11,7 @@ const AuthController = Service([AuthService], service => {
     router.get('/logout', service.logout);
     router.get('/auth/:method', service.authenticate);
     router.get('/auth/:method/callback', service.authenticateCallback);
-    router.get('/windows_auto_login', service.auto);
+    
     // POST new user route (optional, everyone has access)
     router.post('/register', service.createUser);
 

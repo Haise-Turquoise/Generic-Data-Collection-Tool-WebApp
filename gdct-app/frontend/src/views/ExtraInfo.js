@@ -9,7 +9,7 @@ import Input from '@material-ui/core/Input';
 import Select from '@material-ui/core/Select';
 import Chip from '@material-ui/core/Chip';
 import MenuItem from '@material-ui/core/MenuItem';
-import Typography from '@material-ui/core/Typography';
+import InputLabel from '@material-ui/core/InputLabel';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 
@@ -17,19 +17,6 @@ import { Button } from '@material-ui/core';
 import { getAppSysRolesRequest } from '../store/thunks/AppSysRole';
 import { selectFactoryRESTResponseTableValues } from '../store/common/REST/selectors';
 import { selectAppSysRolesStore } from '../store/AppSysRolesStore/selectors';
-
-function Copyright() {
-  return (
-    <Typography variant="body2" color="textSecondary" align="center">
-      {'Copyright © '}
-      <Link color="inherit" href="https://material-ui.com/">
-        Your Website
-      </Link>{' '}
-      {new Date().getFullYear()}
-      {'.'}
-    </Typography>
-  );
-}
 
 const useStyles = makeStyles(theme => ({
   paper: {
@@ -86,6 +73,13 @@ export default function SignUp({ parentHandleChange, steps, activeStep, handleNe
     }),
     shallowEqual,
   );
+  const filteredSysRoles = appSysRoles.filter(role => {
+    return (
+      role.role === 'Business Admin' ||
+      role.role === 'Template Designer' ||
+      role.role === 'Template Approver'
+    );
+  });
   const classes = useStyles();
   const theme = useTheme();
   const [title, setTitle] = useState('');
@@ -111,11 +105,11 @@ export default function SignUp({ parentHandleChange, steps, activeStep, handleNe
         setSysRoles(value);
         parentHandleChange(name, sysRoles);
         break;
+      default:
+        break;
     }
     parentHandleChange(name, value);
   };
-
-  console.log('sysRoles:', sysRoles);
 
   useEffect(() => {
     dispatch(getAppSysRolesRequest());
@@ -164,6 +158,7 @@ export default function SignUp({ parentHandleChange, steps, activeStep, handleNe
               />
             </Grid>
             <Grid item xs={12}>
+              <InputLabel id="demo-mutiple-chip-label">Sys Roles</InputLabel>
               <Select
                 labelId="demo-mutiple-chip-label"
                 id="demo-mutiple-chip"
@@ -181,8 +176,8 @@ export default function SignUp({ parentHandleChange, steps, activeStep, handleNe
                 )}
                 MenuProps={MenuProps}
               >
-                {appSysRoles.length !== 0 &&
-                  appSysRoles.map(sysRole => (
+                {filteredSysRoles.length !== 0 &&
+                  filteredSysRoles.map(sysRole => (
                     <MenuItem
                       key={sysRole._id}
                       value={`${sysRole.appSys}-${sysRole.role}`}
@@ -192,13 +187,6 @@ export default function SignUp({ parentHandleChange, steps, activeStep, handleNe
                     </MenuItem>
                   ))}
               </Select>
-            </Grid>
-          </Grid>
-          <Grid container justify="flex-end">
-            <Grid item>
-              <Link href="/login" variant="body2">
-                Already have an account? Sign in
-              </Link>
             </Grid>
           </Grid>
           <div className={classes.buttons} style={{ marginTop: '2rem', textAlign: 'right' }}>

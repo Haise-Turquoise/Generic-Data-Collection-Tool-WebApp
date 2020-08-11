@@ -26,7 +26,7 @@ const User = new Schema(
       {
         appSys: { type: String, default: '' },
         role: { type: String, default: '' },
-        appSysRoleId: { type: ObjectId },
+        appSysRoleId: { type: ObjectId, ref: 'AppSysRole' },
         org: [
           {
             orgId: { type: String, default: '' },
@@ -61,7 +61,7 @@ const User = new Schema(
     isActive: {
       type: Boolean,
       default: false,
-      //select: false,
+      // select: false,
     },
     isEmailVerified: { type: Boolean, required: true, default: false },
 
@@ -73,6 +73,12 @@ const User = new Schema(
   },
   { timestamp: true, minimize: false },
 );
+
+User.post('save', async function (doc, next) {
+  console.log(doc.sysRoles);
+  await doc.populate('sysRoles').execPopulate();
+  console.log(doc.sysRoles);
+});
 
 User.methods.setHashedPassword = function (password) {
   this.password = bcrypt.hashSync(password, bcrypt.genSaltSync(8), null);

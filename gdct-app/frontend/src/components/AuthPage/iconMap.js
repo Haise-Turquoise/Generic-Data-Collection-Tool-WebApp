@@ -46,8 +46,8 @@ export default {
     <AddCircleOutlineIcon style={{ fontSize: '1rem', marginLeft: '2.2rem' }} />
   ),
   'Submission-Lookup': <HourglassEmptyIcon style={{ fontSize: '1.2rem', marginLeft: '1.2rem' }} />,
-  'Submission type': <AccountCircleIcon style={{ fontSize: '1rem', marginLeft: '2.2rem' }} />,
-  'Submission period': <HourglassEmptyIcon style={{ fontSize: '1rem', marginLeft: '2.2rem' }} />,
+  'Submission Type': <AccountCircleIcon style={{ fontSize: '1rem', marginLeft: '2.2rem' }} />,
+  'Submission Period': <HourglassEmptyIcon style={{ fontSize: '1rem', marginLeft: '2.2rem' }} />,
   Role: <AppsIcon style={{ fontSize: '1.2rem', marginLeft: '1.2rem' }} />,
   Appsys: <GroupWorkIcon style={{ fontSize: '1rem', marginLeft: '2.2rem' }} />,
   AppRole: <GroupWorkIcon style={{ fontSize: '1rem', marginLeft: '2.2rem' }} />,
@@ -56,6 +56,7 @@ export default {
   AppRoleResource: <GroupWorkIcon style={{ fontSize: '1rem', marginLeft: '2.2rem' }} />,
   COA: <DataUsageIcon style={{ fontSize: '1.2rem', marginLeft: '1.2rem' }} />,
   'Category management': <CategoryIcon style={{ fontSize: '1rem', marginLeft: '2.2rem' }} />,
+  'Tree management': <CategoryIcon style={{ fontSize: '1rem', marginLeft: '2.2rem' }} />,
   'Attribute management': <ListIcon style={{ fontSize: '1rem', marginLeft: '2.2rem' }} />,
   'Group management': <GroupIcon style={{ fontSize: '1rem', marginLeft: '2.2rem' }} />,
   Workflow: <LoopIcon style={{ fontSize: '1.2rem', marginLeft: '1.2rem' }} />,
@@ -64,6 +65,9 @@ export default {
   Configuration: <BuildIcon style={{ fontSize: '1.2rem', marginLeft: '1.2rem' }} />,
   'Business rule configure': <ForumIcon style={{ fontSize: '1.2rem', marginLeft: '1.2rem' }} />,
   'User management': <AccountCircleIcon style={{ fontSize: '1.2rem', marginLeft: '1.2rem' }} />,
+  'User Role Management': (
+    <AccountCircleIcon style={{ fontSize: '1.2rem', marginLeft: '1.2rem' }} />
+  ),
   Program: <AccountCircleIcon style={{ fontSize: '1.2rem', marginLeft: '1.2rem' }} />,
   Status: <StorageIcon style={{ fontSize: '1.2rem', marginLeft: '1.2rem' }} />,
   'Reporting period': <EventIcon style={{ fontSize: '1.2rem', marginLeft: '1.2rem' }} />,

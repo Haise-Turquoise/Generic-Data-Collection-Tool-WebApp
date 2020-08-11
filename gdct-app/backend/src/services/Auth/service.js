@@ -1,12 +1,13 @@
 import passport from 'passport';
-import mongoose from 'mongoose';
-import os from 'os';
 import Container from 'typedi';
 import UserModel from '../../models/User/model';
 import { returnNormalJson, returnErrorJson } from '../../utils';
 import UserRepository from '../../repositories/User';
 import AppRoleResourceRepository from '../../repositories/AppRoleResource';
 import AppResourceRepository from '../../repositories/AppResource';
+import AppSysRoleModel from '../../models/AppSysRole';
+import mongodb from 'mongodb'
+var ObjectID = mongodb.ObjectID
 
 export default class AuthService {
   constructor() {
@@ -31,25 +32,9 @@ export default class AuthService {
 
   logout(req, res) {
     req.logout();
+    req.session.user = null;
+    req.session.token = null;
     returnNormalJson(res, 'logout successfully');
-  }
-
-  auto(req, res) {
-    const temp = mongoose.Types.ObjectId('5efb8b638464c20f646049a6');
-    const uname = os.userInfo().username;
-    UserModel.find({ AppConfig: temp }, function (err, user1) {
-      let found = false;
-      user1.forEach(obj => {
-        if (obj.username === uname) {
-          found = true;
-          req.session.user = user1;
-          res.send(true);
-        }
-      });
-      if (!found) {
-        res.send(false);
-      }
-    });
   }
 
   profile(req, res) {
@@ -84,27 +69,43 @@ export default class AuthService {
         },
       });
     }
+    var appsysRole = []
 
-    const finalUser = new UserModel({
-      email,
-      password,
-      firstName,
-      lastName,
-      username,
-      title,
-      phoneNumber,
-      ext,
-      sysRoles,
-    });
+    sysRoles.forEach(role => {
+      AppSysRoleModel.findById(role, (err, appsysrole) => {
+        appsysRole.push({
+          appSys: appsysrole.appSys,
+          role: appsysrole.role,
+          appSysRoleId: appsysrole._id,
+          _id: new ObjectID()
+        })
+      })
+    })
 
-    finalUser.setHashedPassword(password);
+    setTimeout(() => {
+      const finalUser = new UserModel({
+        email,
+        password,
+        firstName,
+        lastName,
+        username,
+        title,
+        phoneNumber,
+        ext,
+        sysRole: appsysRole,
+      });
 
-    return finalUser
+      finalUser.setHashedPassword(password);
+
+      return finalUser
       .save()
       .then(user => {
         returnNormalJson(res, { email: user.email });
       })
       .catch(err => res.json({ error: err }));
+
+    }, 1000)
+
   }
 
   getRoles = user => {

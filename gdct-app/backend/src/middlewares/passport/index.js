@@ -8,7 +8,7 @@ module.exports = () => {
 
   passport.deserializeUser(function (user, done) {
     UserModel.findOne({ email: user.email }, function (err, dbUser) {
-      let filteredUser = {
+      const filteredUser = {
         facebook: dbUser.facebook,
         google: dbUser.google,
         fullname: `${dbUser.firstName} ${dbUser.lastName}`,
@@ -19,7 +19,7 @@ module.exports = () => {
     });
   });
   require('./localConfig')();
-  require('./rememberConfig')();
+  require('./autoConfig')();
   require('./facebookConfig')();
   require('./googleConfig')();
 };

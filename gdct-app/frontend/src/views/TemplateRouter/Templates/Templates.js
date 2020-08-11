@@ -84,6 +84,7 @@ const TemplatesTable = ({ history }) => {
         }),
       onRowUpdate: template =>
         new Promise((resolve, reject) => {
+          delete template.templateData;
           dispatch(updateTemplateRequest(template, resolve, reject));
         }),
       onRowDelete: template =>
