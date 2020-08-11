@@ -9,6 +9,7 @@ import MaterialTable from 'material-table';
 
 import { useHistory } from 'react-router-dom';
 
+import { cloneDeep } from 'lodash';
 import {
   selectFactoryRESTResponseTableValues,
   selectFactoryRESTIsCallInProgress,
@@ -27,6 +28,8 @@ import { selectStatusesStore } from '../../store/StatusesStore/selectors';
 import { getStatusesRequest } from '../../store/thunks/status';
 import { selectSubmissionPeriodsStore } from '../../store/SubmissionPeriodsStore/selectors';
 import { getSubmissionPeriodsRequest } from '../../store/thunks/submissionPeriod';
+import StatusesStore from '../../store/StatusesStore/store';
+import SubmissionPeriodsStore from '../../store/SubmissionPeriodsStore/store';
 
 const TemplatePackageHeader = () => {
   return (
@@ -95,8 +98,6 @@ const TemplatePackages = () => {
         }),
       onRowUpdate: templatePackage =>
         new Promise((resolve, reject) => {
-          delete templatePackage.templateIds;
-          delete templatePackage.programIds;
           dispatch(updateTemplatePackageRequest(templatePackage, resolve, reject));
         }),
       onRowDelete: templatePackage =>
@@ -114,6 +115,8 @@ const TemplatePackages = () => {
 
     return () => {
       dispatch(TemplatePackagesStoreActions.RESET());
+      dispatch(StatusesStore.actions.RESET());
+      dispatch(SubmissionPeriodsStore.actions.RESET());
     };
   }, [dispatch]);
 

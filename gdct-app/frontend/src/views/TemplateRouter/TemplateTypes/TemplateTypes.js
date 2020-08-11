@@ -18,6 +18,8 @@ import { selectFactoryRESTResponseTableValues } from '../../../store/common/REST
 import { selectTemplateTypesStore } from '../../../store/TemplateTypesStore/selectors';
 import { selectWorkflowsStore } from '../../../store/WorkflowsStore/selectors';
 import { getWorkflowsRequest } from '../../../store/thunks/workflow';
+import { WorkflowStoreActions } from '../../../store/WorkflowStore/store';
+import TemplateTypesStore from '../../../store/TemplateTypesStore/store';
 
 const TemplateTypeHeader = () => {
   return (
@@ -94,6 +96,11 @@ const TemplateTypesTable = ({ history }) => {
   useEffect(() => {
     dispatch(getWorkflowsRequest());
     dispatch(getTemplateTypesRequest());
+
+    return () => {
+      dispatch(WorkflowStoreActions.RESET());
+      dispatch(TemplateTypesStore.actions.RESET());
+    };
   }, [dispatch]);
 
   return (

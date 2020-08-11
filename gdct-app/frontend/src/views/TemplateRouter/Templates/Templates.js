@@ -23,6 +23,9 @@ import { getStatusesRequest } from '../../../store/thunks/status';
 import { getTemplateTypesRequest } from '../../../store/thunks/templateType';
 import { selectStatusesStore } from '../../../store/StatusesStore/selectors';
 import { selectTemplateTypesStore } from '../../../store/TemplateTypesStore/selectors';
+import TemplatesStore from '../../../store/TemplatesStore/store';
+import StatusesStore from '../../../store/StatusesStore/store';
+import TemplateTypesStore from '../../../store/TemplateTypesStore/store';
 
 // const TemplateFileDropzone = () => {}
 
@@ -99,6 +102,12 @@ const TemplatesTable = ({ history }) => {
     dispatch(getTemplatesRequest());
     dispatch(getStatusesRequest());
     dispatch(getTemplateTypesRequest());
+
+    return () => {
+      dispatch(TemplatesStore.actions.RESET());
+      dispatch(StatusesStore.actions.RESET());
+      dispatch(TemplateTypesStore.actions.RESET());
+    };
   }, [dispatch]);
 
   return (

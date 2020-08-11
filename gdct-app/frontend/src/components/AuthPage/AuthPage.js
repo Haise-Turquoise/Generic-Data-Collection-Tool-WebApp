@@ -331,7 +331,6 @@ const AuthPage = ({
     window.matchMedia('(max-width: 1000px)').addListener(handler);
     setTopMenu(!isMobile);
     navigationConfig().then(res => {
-      console.log('res:', res);
       setConfig(res);
     });
   }, [isMobile]);

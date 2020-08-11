@@ -19,6 +19,7 @@ import {
   selectFactoryValueById,
 } from '../../../store/common/REST/selectors';
 import workflowController from '../../../controllers/workflow';
+import TemplatesStore from '../../../store/TemplatesStore/store';
 
 const TemplatePhases = ({ template }) => {
   const [workflowProcess, setWorkflowProcess] = useState();
@@ -76,6 +77,10 @@ const Template = ({
   useEffect(() => {
     // If fetch fails, push back to /tempaltes
     dispatch(getTemplateRequest(_id));
+
+    return () => {
+      dispatch(TemplatesStore.actions.RESET());
+    };
   }, [_id]);
 
   return isCallInProgress ? (
