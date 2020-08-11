@@ -1,7 +1,6 @@
 import Container from 'typedi';
 import TemplateEntity from '../../entities/Template';
 import TemplateModel from '../../models/Template';
-import StatusRepository from '../Status';
 import UserRepository from '../User';
 import TemplateTypeRepository from '../TemplateType';
 import BaseRepository from '../repository';
@@ -13,7 +12,6 @@ export default class TemplateRepository extends BaseRepository {
   constructor() {
     super(TemplateModel);
 
-    this.statusRepository = Container.get(StatusRepository);
     this.userRepository = Container.get(UserRepository);
     this.templateTypeRepository = Container.get(TemplateTypeRepository);
     this.workflowProcessRepository = Container.get(WorkflowProcessRepository);
@@ -27,27 +25,21 @@ export default class TemplateRepository extends BaseRepository {
     creationDate,
     expirationDate,
     workflowProcessId,
-    statusId,
   }) {
-    return (
-      this.statusRepository
-        .validate(statusId)
-        // .then(() => this.userRepository.validate(userCreatorId))
-        .then(() => this.templateTypeRepository.validate(templateTypeId))
-        .then(() =>
-          TemplateModel.create({
-            name,
-            templateData,
-            templateTypeId,
-            userCreatorId,
-            creationDate,
-            expirationDate,
-            workflowProcessId,
-            statusId,
-          }),
-        )
-        .then(template => new TemplateEntity(template.toObject()))
-    );
+    return this.templateTypeRepository
+      .validate(templateTypeId)
+      .then(() =>
+        TemplateModel.create({
+          name,
+          templateData,
+          templateTypeId,
+          userCreatorId,
+          creationDate,
+          expirationDate,
+          workflowProcessId,
+        }),
+      )
+      .then(template => new TemplateEntity(template.toObject()));
   }
 
   async update(
@@ -60,30 +52,21 @@ export default class TemplateRepository extends BaseRepository {
       creationDate,
       expirationDate,
       workflowProcessId,
-      statusId,
     },
   ) {
-    return (
-      (statusId ? this.statusRepository.validate(statusId) : new Promise(resolve => resolve()))
-        // .then(() => {
-        //   if (userCreatorId) return this.userRepository.validate(userCreatorId)
-        // })
-        .then(() => {
-          const formattedTemplate = {
-            name,
-            templateTypeId,
-            userCreatorId,
-            creationDate,
-            expirationDate,
-            workflowProcessId,
-            statusId,
-          };
+    const formattedTemplate = {
+      name,
+      templateTypeId,
+      userCreatorId,
+      creationDate,
+      expirationDate,
+      workflowProcessId,
+    };
 
-          if (templateData) formattedTemplate.templateData = templateData;
+    if (templateData) formattedTemplate.templateData = templateData;
 
-          return TemplateModel.findByIdAndUpdate(id, formattedTemplate);
-        })
-        .then(template => new TemplateEntity(template.toObject()))
+    return TemplateModel.findByIdAndUpdate(id, formattedTemplate).then(
+      template => new TemplateEntity(template.toObject()),
     );
   }
 
