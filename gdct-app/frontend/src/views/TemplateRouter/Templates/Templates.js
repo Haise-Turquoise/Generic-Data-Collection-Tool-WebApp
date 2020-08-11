@@ -17,6 +17,7 @@ import './Templates.scss';
 import {
   selectFactoryRESTResponseTableValues,
   selectFactoryRESTLookup,
+  selectFactoryRESTResponseValues,
 } from '../../../store/common/REST/selectors';
 import { selectTemplatesStore } from '../../../store/TemplatesStore/selectors';
 import { getStatusesRequest } from '../../../store/thunks/status';
@@ -26,6 +27,9 @@ import { selectTemplateTypesStore } from '../../../store/TemplateTypesStore/sele
 import TemplatesStore from '../../../store/TemplatesStore/store';
 import StatusesStore from '../../../store/StatusesStore/store';
 import TemplateTypesStore from '../../../store/TemplateTypesStore/store';
+import { getWorkflowProcessesRequest } from '../../../store/thunks/workflow';
+import { selectWorkflowProcessesStore } from '../../../store/WorkflowProcessesStore/selectors';
+import WorkflowProcessesStore from '../../../store/WorkflowProcessesStore/store';
 
 // const TemplateFileDropzone = () => {}
 
@@ -42,14 +46,19 @@ const TemplateHeader = () => {
 const TemplatesTable = ({ history }) => {
   const dispatch = useDispatch();
 
-  const { templates, lookupStatuses, lookupTemplateTypes } = useSelector(
+  const { templates, lookupTemplateTypes, workflowProcesses } = useSelector(
     state => ({
       templates: selectFactoryRESTResponseTableValues(selectTemplatesStore)(state),
-      lookupStatuses: selectFactoryRESTLookup(selectStatusesStore)(state),
       lookupTemplateTypes: selectFactoryRESTLookup(selectTemplateTypesStore)(state),
+      workflowProcesses: selectFactoryRESTResponseValues(selectWorkflowProcessesStore)(state),
     }),
     shallowEqual,
   );
+
+  const lookupProcesses = workflowProcesses.reduce((acc, value) => {
+    acc[value._id] = value.statusId.name;
+    return acc;
+  }, {});
 
   const columns = useMemo(
     () => [
@@ -59,11 +68,11 @@ const TemplatesTable = ({ history }) => {
         field: 'templateTypeId',
         lookup: lookupTemplateTypes,
       },
-      { title: 'CreationDate', type: 'date', field: 'creationDate' },
+      { title: 'CreationDate', type: 'date', field: 'creationDate', editable: 'never' },
       { title: 'ExpirationDate', type: 'date', field: 'expirationDate' },
-      { title: 'StatusId', field: 'statusId', lookup: lookupStatuses },
+      { title: 'Workflow', field: 'workflowProcessId', lookup: lookupProcesses, editable: 'never' },
     ],
-    [lookupTemplateTypes, lookupStatuses],
+    [lookupTemplateTypes, lookupProcesses],
   );
 
   const actions = useMemo(
@@ -100,12 +109,12 @@ const TemplatesTable = ({ history }) => {
 
   useEffect(() => {
     dispatch(getTemplatesRequest());
-    dispatch(getStatusesRequest());
     dispatch(getTemplateTypesRequest());
+    dispatch(getWorkflowProcessesRequest());
 
     return () => {
       dispatch(TemplatesStore.actions.RESET());
-      dispatch(StatusesStore.actions.RESET());
+      dispatch(WorkflowProcessesStore.actions.RESET());
       dispatch(TemplateTypesStore.actions.RESET());
     };
   }, [dispatch]);
