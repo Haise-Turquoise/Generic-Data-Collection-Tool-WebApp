@@ -1,11 +1,12 @@
 import { Service } from 'typedi';
 import { Router } from 'express';
 import AppSysService from '../../services/AppSys';
+import { authorized } from '../../middlewares/auth/auth';
 
 const AppSysController = Service([AppSysService], service => {
   const router = Router();
   return (() => {
-    router.get('/appSyses', (req, res, next) => {
+    router.get('/appSyses', authorized, (req, res, next) => {
       // Get query from middleware -- auth handler
 
       service
@@ -14,7 +15,7 @@ const AppSysController = Service([AppSysService], service => {
         .catch(next);
     });
 
-    router.post('/appSyses', (req, res, next) => {
+    router.post('/appSyses', authorized, (req, res, next) => {
       service
         .createAppSys(req.body.AppSys)
         .then(AppSys => res.json({ AppSys }))
@@ -25,7 +26,7 @@ const AppSysController = Service([AppSysService], service => {
         .catch(next);
     });
 
-    router.put('/appSyses/:_id', (req, res, next) => {
+    router.put('/appSyses/:_id', authorized, (req, res, next) => {
       const { _id } = req.params;
       const { AppSys } = req.body;
 
@@ -35,7 +36,7 @@ const AppSysController = Service([AppSysService], service => {
         .catch(next);
     });
 
-    router.delete('/appSyses/:_id', (req, res, next) => {
+    router.delete('/appSyses/:_id', authorized, (req, res, next) => {
       const { _id } = req.params;
 
       service

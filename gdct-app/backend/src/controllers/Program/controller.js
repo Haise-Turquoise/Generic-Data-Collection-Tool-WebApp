@@ -1,11 +1,12 @@
 import { Service } from 'typedi';
 import { Router } from 'express';
 import ProgramService from '../../services/Program';
+import { authorized } from '../../middlewares/auth/auth';
 
 const ProgramController = Service([ProgramService], service => {
   const router = Router();
   return (() => {
-    router.get('/programs/fetchPrograms', (req, res, next) => {
+    router.get('/programs/fetchPrograms', authorized, (req, res, next) => {
       // Get query from middleware -- auth handler
 
       service
@@ -14,7 +15,7 @@ const ProgramController = Service([ProgramService], service => {
         .catch(next);
     });
 
-    router.post('/programs/createProgram', (req, res, next) => {
+    router.post('/programs/createProgram', authorized, (req, res, next) => {
       service
         .createProgram(req.body.program)
         .then(program => res.json({ program }))
@@ -25,7 +26,7 @@ const ProgramController = Service([ProgramService], service => {
         .catch(next);
     });
 
-    router.put('/programs/updateProgram/:_id', (req, res, next) => {
+    router.put('/programs/updateProgram/:_id', authorized, (req, res, next) => {
       const { _id } = req.params;
       const { program } = req.body;
 
@@ -35,7 +36,7 @@ const ProgramController = Service([ProgramService], service => {
         .catch(next);
     });
 
-    router.delete('/programs/deleteProgram/:_id', (req, res, next) => {
+    router.delete('/programs/deleteProgram/:_id', authorized, (req, res, next) => {
       const { _id } = req.params;
 
       service

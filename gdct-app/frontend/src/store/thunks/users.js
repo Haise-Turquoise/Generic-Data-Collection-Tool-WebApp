@@ -1,4 +1,4 @@
-import usersController from '../../controllers/users';
+import usersController from '../../controllers/Users';
 import UsersStore from '../UsersStore/store';
 import {
   getRequestFactory,

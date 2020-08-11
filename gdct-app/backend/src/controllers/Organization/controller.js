@@ -1,11 +1,12 @@
 import { Service } from 'typedi';
 import { Router } from 'express';
 import OrgService from '../../services/Organization';
+import { authorized } from '../../middlewares/auth/auth';
 
 const OrgController = Service([OrgService], service => {
   const router = Router();
   return (() => {
-    router.get('/organizations/fetchOrganizations', (req, res, next) => {
+    router.get('/organizations/fetchOrganizations', authorized, (req, res, next) => {
       service
         .findOrg({})
         .then(Orgs => res.json({ Orgs }))
@@ -19,7 +20,7 @@ const OrgController = Service([OrgService], service => {
       });
     });
 
-    router.post('/organizations/createOrganization', (req, res, next) => {
+    router.post('/organizations/createOrganization', authorized, (req, res, next) => {
       service
         .createOrg(req.body.Org)
         .then(Org => res.json({ Org }))
@@ -30,7 +31,7 @@ const OrgController = Service([OrgService], service => {
         .catch(next);
     });
 
-    router.put('/organizations/updateOrganization/:_id', (req, res, next) => {
+    router.put('/organizations/updateOrganization/:_id', authorized, (req, res, next) => {
       const { _id } = req.params;
       service
         .updateOrg(_id, req.body)
@@ -38,7 +39,7 @@ const OrgController = Service([OrgService], service => {
         .catch(next);
     });
 
-    router.delete('/organizations/deleteOrganization/:_id', (req, res, next) => {
+    router.delete('/organizations/deleteOrganization/:_id', authorized, (req, res, next) => {
       const { _id } = req.params;
       service
         .deleteOrg(_id)
