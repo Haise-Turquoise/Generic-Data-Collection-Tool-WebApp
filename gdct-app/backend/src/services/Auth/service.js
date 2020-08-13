@@ -112,6 +112,7 @@ export default class AuthService {
         phoneNumber,
         ext,
         sysRole: appsysRole,
+        isActive: true,
       });
 
       finalUser.setHashedPassword(password);

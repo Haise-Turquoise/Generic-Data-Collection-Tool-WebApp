@@ -46,6 +46,7 @@ export default function MandatoryInfo({
     username: Yup.string().required('Required'),
     email: Yup.string().required('Required'),
     password: Yup.string().required('Required'),
+    passwordConfirm: Yup.string().oneOf([Yup.ref('password'), null], 'Password should match').required('Required'),
   });
   return (
     <Container component="main" maxWidth="xs">
@@ -58,6 +59,7 @@ export default function MandatoryInfo({
             username: '',
             email: '',
             password: '',
+            passwordConfirm: '',
           }}
           validationSchema={myFormSchema}
           onSubmit={values => {
@@ -66,6 +68,7 @@ export default function MandatoryInfo({
             parentHandleChange('username', values.username);
             parentHandleChange('email', values.email);
             parentHandleChange('password', values.password);
+            parentHandleChange('password', values.passwordConfirm);
             handleNext();
           }}
         >
@@ -157,6 +160,24 @@ export default function MandatoryInfo({
                   />
                   {errors.password && touched.password ? (
                     <div style={{ color: 'red' }}>{errors.password}</div>
+                  ) : null}
+                </Grid>
+                <Grid item xs={12}>
+                  <TextField
+                    variant="standard"
+                    required
+                    fullWidth
+                    name="passwordConfirm"
+                    value={values.passwordConfirm}
+                    label="Confirm Password"
+                    type="password"
+                    id="passwordConfirm"
+                    autoComplete="password"
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                  />
+                  {errors.passwordConfirm && touched.passwordConfirm ? (
+                    <div style={{ color: 'red' }}>{errors.passwordConfirm}</div>
                   ) : null}
                 </Grid>
               </Grid>

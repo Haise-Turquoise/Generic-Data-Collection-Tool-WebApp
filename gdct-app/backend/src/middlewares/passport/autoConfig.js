@@ -19,7 +19,6 @@ module.exports = () => {
               req.session.user = obj.email;
               return done(null, { email: obj.email });
             }
-            console.log('failed')
             return done(null, false, { errors: { 'auto login': 'failed' } });
           });
         });
