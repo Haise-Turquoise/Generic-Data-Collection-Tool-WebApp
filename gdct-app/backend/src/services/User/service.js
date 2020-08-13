@@ -53,6 +53,7 @@ export default class UserService {
         this.AppSysRoleReposiotry.findAndCreateAppSysRole(sysRole.appSys, sysRole.role).then(
           appSysRole => {
             sysRole.appSysRoleId = appSysRole._id;
+            sysRole._id = appSysRole._id;
           },
         ),
       );
