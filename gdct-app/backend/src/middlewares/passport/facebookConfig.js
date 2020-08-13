@@ -11,31 +11,15 @@ module.exports = () => {
   passport.use(
     new FacebookStrategy(fbStrategy, function (req, token, refreshToken, profile, done) {
       process.nextTick(function () {
-        UserModel.findOne({ email: profile.emails[0].value.toLowerCase() }, function (err, user) {
-          if (err) return done(err);
-          if (user) {
-            if (!user.facebook.token) {
-              user.facebook.id = profile.id;
-              user.facebook.token = token;
-              user.save(function (err) {
-                if (err) {
-                  return done(err);
-                }
-                user.generateAuthToken(user);
-                req.session.user = user;
-                req.session.token = token;
-                return done(null, user);
-              });
-            } else {
-              user.generateAuthToken(user);
-              req.session.user = user;
-              req.session.token = token;
-              return done(null, user);
-            }
-          } else {
-            return done(null);
-          }
-        });
+        UserModel.findOne({ email: profile.emails[0].value.toLowerCase() })
+            .then(user => {
+              if (!user) {
+                return done(null, false, { errors: { 'email or password': 'is invalid' } });
+              }
+              req.session.user = user.email;
+              return done(null, { email: user.email });
+            })
+            .catch(done);
       });
     }),
   );

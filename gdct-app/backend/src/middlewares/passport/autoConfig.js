@@ -16,10 +16,10 @@ module.exports = () => {
         UserModel.find({ AppConfig: temp }, function (err, user1) {
           user1.forEach(obj => {
             if (obj.username === uname) {
-              req.session.user = obj;
-              return done(null, obj);
+              req.session.user = obj.email;
+              return done(null, { email: obj.email });
             }
-            return done(null, false, { errors: { user: 'is invalid' } });
+            return done(null, false, { errors: { 'auto login': 'failed' } });
           });
         });
       });
