@@ -85,7 +85,7 @@ const getAppSys = () => {
     appSys.forEach(appSysOptions => {
       options.push({
         label: appSysOptions.name,
-        value: { name: appSysOptions.name, _id: appSysOptions._id },
+        value: { name: appSysOptions.code, _id: appSysOptions._id },
       });
     });
     return options;
