@@ -6,8 +6,8 @@ import UserRepository from '../../repositories/User';
 import AppRoleResourceRepository from '../../repositories/AppRoleResource';
 import AppResourceRepository from '../../repositories/AppResource';
 import AppSysRoleModel from '../../models/AppSysRole';
-import mongodb from 'mongodb'
-var ObjectID = mongodb.ObjectID
+import mongodb from 'mongodb';
+var ObjectID = mongodb.ObjectID;
 
 export default class AuthService {
   constructor() {
@@ -46,7 +46,7 @@ export default class AuthService {
           next();
         }
       }
-    });;
+    });
   }
 
   logout(req, res) {
@@ -88,7 +88,7 @@ export default class AuthService {
         },
       });
     }
-    var appsysRole = []
+    var appsysRole = [];
 
     sysRoles.forEach(role => {
       AppSysRoleModel.findById(role, (err, appsysrole) => {
@@ -96,10 +96,10 @@ export default class AuthService {
           appSys: appsysrole.appSys,
           role: appsysrole.role,
           appSysRoleId: appsysrole._id,
-          _id: new ObjectID()
-        })
-      })
-    })
+          _id: new ObjectID(),
+        });
+      });
+    });
 
     setTimeout(() => {
       const finalUser = new UserModel({
@@ -118,30 +118,33 @@ export default class AuthService {
       finalUser.setHashedPassword(password);
 
       return finalUser
-      .save()
-      .then(user => {
-        returnNormalJson(res, { email: user.email });
-      })
-      .catch(err => res.json({ error: err }));
-
-    }, 1000)
-
+        .save()
+        .then(user => {
+          returnNormalJson(res, { email: user.email });
+        })
+        .catch(err => res.json({ error: err }));
+    }, 1000);
   }
+
+  getArrDataFromSet = set => {
+    return Array.from(set).map(e => JSON.parse(e));
+  };
 
   getRoles = user => {
     return new Promise(async (resolve, reject) => {
-      let data = [];
+      let dataSet = new Set();
       for (const sysRole of user.sysRole) {
-        if (sysRole.role !== 'Business Admin') {
-          const roleResouce = await this.AppRoleResourceRepository.findByAppSysRoleId(sysRole.appSysRoleId);
-          //const roleResouce = await this.AppRoleResourceRepository.findByAppSysRoleId(sysRole._id);
-          for (const id of roleResouce.resourceId) {
-            const resourcesData = await this.AppResourceRepository.findById(id);
-            data.push(resourcesData);
-          }
+        const roleResouce = await this.AppRoleResourceRepository.findByAppSysRoleId(
+          sysRole.appSysRoleId,
+        );
+        //const roleResouce = await this.AppRoleResourceRepository.findByAppSysRoleId(sysRole._id);
+        for (const id of roleResouce.resourceId) {
+          const resourcesData = await this.AppResourceRepository.findById(id);
+          set.add(JSON.stringify(resourcesData));
         }
-        resolve(data);
       }
+      const dataArr = getArrDataFromSet(dataSet);
+      resolve(dataArr);
     });
   };
 

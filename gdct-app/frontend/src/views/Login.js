@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -68,13 +68,13 @@ export default function Login({ setLoggedIn }) {
   const [password, setPassword] = useState('');
   const [errors, setErrors] = useState({});
 
-  useEffect(() => {
-    AuthController.auto().then(auto => {
-      if (auto.data === true) {
-        setLoggedIn(true);
-      }
-    });
-  }, []);
+  // useEffect(() => {
+  //   AuthController.auto().then(auto => {
+  //     if (auto.data === true) {
+  //       setLoggedIn(true);
+  //     }
+  //   });
+  // }, []);
 
   const handleChange = e => {
     const { name, value } = e.target;
