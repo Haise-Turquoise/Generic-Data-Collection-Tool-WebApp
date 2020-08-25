@@ -1,4 +1,4 @@
-import React, { useMemo, useEffect } from 'react';
+import React, {useMemo, useEffect, useState} from 'react';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 
 import MaterialTable from 'material-table';
@@ -23,7 +23,6 @@ const SubmissionHeader = () => (
 
 const SubmissionDashboard = ({ history }) => {
   const dispatch = useDispatch();
-
   const publishedSubmission = [];
   const approvedSubmission = [];
   const rejectedSubmission = [];
@@ -36,10 +35,16 @@ const SubmissionDashboard = ({ history }) => {
     }),
     shallowEqual,
   );
-
+  let submitterFlag = false;
   if (submissions[0] !== undefined)
     submissions.forEach(submission => {
-      if (submission !== undefined)
+      if (submission !== undefined) {
+        if (
+          submission.permission.find(
+            permission => permission === 'Submitter' || permission === 'Inputter',
+          ) !== undefined
+        )
+          submitterFlag = true;
         switch (submission.phase) {
           case 'Unsubmitted':
             unsubmittedSubmission.push(submission);
@@ -60,6 +65,7 @@ const SubmissionDashboard = ({ history }) => {
             publishedSubmission.push(submission);
             break;
         }
+      }
     });
 
   const checkBoxColumns = useMemo(
@@ -80,11 +86,25 @@ const SubmissionDashboard = ({ history }) => {
   );
 
   const options = useMemo(() => ({ actionsColumnIndex: -1, search: false, showTitle: false }), []);
+  const notEditableActions = useMemo(
+    () => [
+      {
+        icon: CreateOutlinedIcon,
+        tooltip: 'View/Edit Submission',
+        onClick: (_event, submission) =>
+          history.push({
+            pathname: `/submission/editSubmission/${submission._id}`,
+            state: { detail: submission },
+          }),
+      },
+    ],
+    [history],
+  );
   const actions = useMemo(
     () => [
       {
         icon: LaunchIcon,
-        tooltip: 'Create Submission',
+        tooltip: 'Upload Submission',
         onClick: (_event, submission) =>
           history.push({
             pathname: `/submission/createSubmission/${submission._id}`,
@@ -105,7 +125,7 @@ const SubmissionDashboard = ({ history }) => {
   );
 
   useEffect(() => {
-    dispatch(getSubmissionsRequest(739, ['5eadbe676a04912f04e389c9', '5eac9e579a8fe3217fe81fc2']));
+    dispatch(getSubmissionsRequest());
   }, [dispatch]);
 
   return (
@@ -125,7 +145,7 @@ const SubmissionDashboard = ({ history }) => {
             columns={checkBoxColumns}
             options={options}
             data={unsubmittedSubmission}
-            actions={actions}
+            actions={submitterFlag ? actions : notEditableActions}
           />
         </ExpansionPanelDetails>
       </ExpansionPanel>
@@ -143,7 +163,7 @@ const SubmissionDashboard = ({ history }) => {
             columns={checkBoxColumns}
             options={options}
             data={submittedSubmission}
-            actions={actions}
+            actions={notEditableActions}
           />
         </ExpansionPanelDetails>
       </ExpansionPanel>
@@ -161,7 +181,7 @@ const SubmissionDashboard = ({ history }) => {
             columns={checkBoxColumns}
             options={options}
             data={rejectedSubmission}
-            actions={actions}
+            actions={submitterFlag ? actions : notEditableActions}
           />
         </ExpansionPanelDetails>
       </ExpansionPanel>
@@ -179,7 +199,7 @@ const SubmissionDashboard = ({ history }) => {
             columns={checkBoxColumns}
             options={options}
             data={expiredSubmission}
-            actions={actions}
+            actions={notEditableActions}
           />
         </ExpansionPanelDetails>
       </ExpansionPanel>
@@ -197,7 +217,7 @@ const SubmissionDashboard = ({ history }) => {
             columns={checkBoxColumns}
             options={options}
             data={approvedSubmission}
-            actions={actions}
+            actions={notEditableActions}
           />
         </ExpansionPanelDetails>
       </ExpansionPanel>
