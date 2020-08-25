@@ -107,7 +107,7 @@ app.use('/template_manager', authorized, Container.get(TemplatePackageController
 app.use('/designer', authorized, Container.get(StatusController));
 
 app.use('/submission_manager', authorized, Container.get(SubmissionPeriodController));
-app.use('/submission_manager', authorized, Container.get(SubmissionController));
+app.use('/submission_manager', Container.get(SubmissionController));
 app.use('/submissionNote_manager', authorized, Container.get(SubmissionNoteController));
 
 app.use('/workflow_manager', authorized, Container.get(WorkflowController));
