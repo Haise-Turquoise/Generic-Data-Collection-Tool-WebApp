@@ -1,6 +1,7 @@
 import { Service } from 'typedi';
 import { Router } from 'express';
 import SubmissionService from '../../services/Submission';
+import { authorized } from '../../middlewares/auth/auth';
 
 const SubmissionController = Service([SubmissionService], service => {
   const router = Router();
@@ -17,7 +18,7 @@ const SubmissionController = Service([SubmissionService], service => {
         .catch(next);
     });
 
-    router.put('/submissions/updateSubmission', (req, res, next) => {
+    router.put('/submissions/updateSubmission', authorized, (req, res, next) => {
       // Get query from middleware -- auth handler
       const { submission } = req.body;
 
@@ -27,7 +28,7 @@ const SubmissionController = Service([SubmissionService], service => {
         .catch(next);
     });
 
-    router.put('/submissions/updateSubmissionStatus', (req, res, next) => {
+    router.put('/submissions/updateSubmissionStatus', authorized, (req, res, next) => {
       // Get query from middleware -- auth handler
       const { submission, submissionNote, role, nextProcessId } = req.body;
 
@@ -37,7 +38,7 @@ const SubmissionController = Service([SubmissionService], service => {
         .catch(next);
     });
 
-    router.post('/submissions/uploadSubmission', (req, res, next) => {
+    router.post('/submissions/uploadSubmission', authorized, (req, res, next) => {
       const { submission, submissionNote } = req.body;
 
       service
