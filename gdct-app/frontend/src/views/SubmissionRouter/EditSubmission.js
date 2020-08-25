@@ -39,6 +39,8 @@ const EditSubmission = ({ history }) => {
   const [submitUnavailable, setSubmitUnavailable] = useState(true);
   const [approveUnavailable, setApproveUnavailable] = useState(true);
   const [rejectUnavailable, setRejectUnavailable] = useState(true);
+  const [isSubmitterOrInputter, setIsSubmitterOrInputter] = useState(false);
+  const [isReviewerOrApprover, setIsReviewerOrApprover] = useState(false);
 
   const [submitId, setSubmitId] = useState('');
   const [approveId, setApproveId] = useState('');
@@ -80,16 +82,25 @@ const EditSubmission = ({ history }) => {
     shallowEqual,
   );
   useEffect(() => {
-    dispatch(SubmissionNoteStore.actions.RECEIVE(''));
-    dispatch(getSubmissionByIdRequest(location.state.detail._id));
-    dispatch(getSubmissionNoteRequest(location.state.detail.parentId));
     if (location.state.detail) {
+      console.log(location.state.detail)
+      if (
+        location.state.detail.permission.find(
+          permission => permission === 'Submitter' || permission === 'Inputter',
+        ) !== undefined
+      )
+        setIsSubmitterOrInputter(true);
+      if (
+        location.state.detail.permission.find(
+          permission => permission === 'Reviewer' || permission === 'Submission Approver',
+        ) !== undefined
+      )
+        setIsReviewerOrApprover(true);
       workflowController
         .fetchProcess(location.state.detail.workflowProcessId)
         .then(workflowProcess => {
           if (workflowProcess !== undefined)
             workflowProcess.to.forEach(process => {
-              console.log(process.statusId.name);
               switch (process.statusId.name) {
                 case 'Submitted': {
                   setSubmitUnavailable(false);
@@ -110,25 +121,34 @@ const EditSubmission = ({ history }) => {
             });
         });
     }
+    dispatch(SubmissionNoteStore.actions.RECEIVE(''));
+    dispatch(getSubmissionByIdRequest(location.state.detail._id));
+    dispatch(getSubmissionNoteRequest(location.state.detail.parentId));
   }, [location]);
 
   if (submissionNoteHistory[0] !== undefined) {
     if (submissionNoteHistory[0].note !== undefined) {
-      console.log(submissionNoteHistory[0].note);
       submissionNotes = submissionNoteHistory;
     }
   }
-  console.log(submissionNoteHistory);
+  console.log(isSubmitterOrInputter);
+  console.log(isReviewerOrApprover);
 
-  const handleOpenTemplate = () => history.push(`/submission/submissions/${submission._id}`);
+  const handleOpenTemplate = () =>
+    history.push({
+      pathname: `/submission/submissions/${submission._id}`,
+      state: { detail: location.state.detail },
+    });
 
   const handleDownloadWorkbook = () => {
     DOWNLOAD(convertStateToReactState(submission.workbookData));
   };
 
   const handleChangeStatus = (submission, submissionNote, role, newProcessId) => {
-    console.log(submission);
     dispatch(updateSubmissionStatusRequest(submission, submissionNote, role, newProcessId));
+    history.push({
+      pathname: `/submission/dashboard`,
+    });
   };
 
   return (
@@ -163,7 +183,7 @@ const EditSubmission = ({ history }) => {
             color="primary"
             variant="contained"
             size="large"
-            disabled={approveUnavailable}
+            disabled={approveUnavailable || !isReviewerOrApprover}
             onClick={() => handleChangeStatus(submission, submissionNote, 'Approved', approveId)}
           >
             Approve
@@ -172,7 +192,7 @@ const EditSubmission = ({ history }) => {
             color="primary"
             variant="contained"
             size="large"
-            disabled={rejectUnavailable}
+            disabled={rejectUnavailable || !isReviewerOrApprover}
             onClick={() => handleChangeStatus(submission, submissionNote, 'Rejected', rejectId)}
           >
             Reject
@@ -181,7 +201,7 @@ const EditSubmission = ({ history }) => {
             color="primary"
             variant="contained"
             size="large"
-            disabled={submitUnavailable}
+            disabled={submitUnavailable || !isSubmitterOrInputter}
             onClick={() => handleChangeStatus(submission, submissionNote, 'Submitted', submitId)}
           >
             Submit

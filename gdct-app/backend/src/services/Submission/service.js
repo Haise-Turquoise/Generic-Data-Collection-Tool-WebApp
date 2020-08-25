@@ -12,6 +12,7 @@ import OrgRepository from '../../repositories/Organization';
 import TemplateTypeRepository from '../../repositories/TemplateType';
 import WorkflowProcessRepository from '../../repositories/WorkflowProcess';
 import SubmissionPeriodRepository from '../../repositories/SubmissionPeriod';
+import UsersRepository from '../../repositories/Users';
 
 const mongoose = require('mongoose');
 mongoose.Promise = require('bluebird');
@@ -30,6 +31,20 @@ export default class SubmissionService {
     this.templateTypeRepository = Container.get(TemplateTypeRepository);
     this.workflowProcessRepository = Container.get(WorkflowProcessRepository);
     this.submissionPeriodRepository = Container.get(SubmissionPeriodRepository);
+    this.usersRepository = Container.get(UsersRepository);
+  }
+
+  checkUserRole(userInfo, submission, permission) {
+    userInfo[0].sysRole.forEach(sysRole => {
+      sysRole.org[0].program.forEach(program => {
+        if (
+          sysRole.org[0].orgId == submission.orgId &&
+          program.programId.toString() == submission.programId.toString()
+        ) {
+          permission.push(sysRole.role);
+        }
+      });
+    });
   }
 
   async createSubmissionBaseOnTemplatePackage(submission) {
@@ -75,7 +90,7 @@ export default class SubmissionService {
 
   async uploadSubmissionWorkbook(submission, workbookData, submissionNote) {
     const currentStatus = await this.statusRepository.findById(submission.statusId);
-    if (currentStatus.name == 'Approved') return;
+    if (currentStatus.name == 'Approved' || currentStatus.name == 'Submitted') return;
 
     submission.workbookData = workbookData;
     submission.updatedDate = new Date();
@@ -140,7 +155,6 @@ export default class SubmissionService {
   }
 
   async updateStatus(submission, submissionNote, role, nextProcessId) {
-    console.log(submissionNote);
 
     const submissionNotes = {
       note: submissionNote,
@@ -182,8 +196,65 @@ export default class SubmissionService {
     });
   }
 
-  async findSubmission(orgId, programIds) {
-    return this.templatePackageRepository.findByProgramIds(programIds).then(templatePackages => {
+  async findTemplatePackage(programAndTempTypes) {
+    const promiseQuery1 = [];
+    const newTemplatePackages = [];
+    programAndTempTypes.forEach(element => {
+      promiseQuery1.push(
+        this.templatePackageRepository.findByProgramId(element.program).then(templatePackages => {
+          const promiseQuery3 = [];
+          templatePackages.forEach(templatePackage => {
+            const promiseQuery2 = [];
+            const newTempPackage = {
+              ...templatePackage._doc,
+              templateIds: [],
+            }
+            templatePackage.templateIds.forEach(templateId => {
+              promiseQuery2.push(
+                this.templateRepository.findById(templateId).then(template => {
+                  if (
+                    element.templateTypes.find(
+                      templateType =>
+                        templateType.templateTypeId.toString() ===
+                        template.templateTypeId.toString(),
+                    ) !== undefined
+                  ) {
+                    newTempPackage.templateIds.push(templateId);
+                  }
+                }),
+              );
+            });
+            promiseQuery3.push(
+              Promise.all(promiseQuery2).then(() => {
+                if (newTempPackage.templateIds.length !== 0)
+                  newTemplatePackages.push(newTempPackage);
+                console.log(newTemplatePackages);
+              }),
+            );
+          });
+          return Promise.all(promiseQuery3);
+        }),
+      );
+    });
+
+    return Promise.all(promiseQuery1).then(() => {
+      return newTemplatePackages;
+    });
+  }
+
+  // This is specified one user can only belongs to organization
+  async findSubmission(email) {
+    const userInfo = await this.usersRepository.findByEmail(email);
+    const { orgId } = userInfo[0].sysRole[0].org[0];
+    const programAndTempTypes = [];
+    const programIds = [];
+    userInfo[0].sysRole.forEach(sysRole => {
+      sysRole.org[0].program.forEach(program => {
+        programAndTempTypes.push({ program: program.programId, templateTypes: program.template });
+        programIds.push(program.programId);
+      });
+    })
+    return this.findTemplatePackage(programAndTempTypes).then(templatePackages => {
       const name = 'Unsubmitted';
       return this.statusRepository.findByName(name).then(status => {
         const promiseQuery1 = [];
@@ -199,19 +270,21 @@ export default class SubmissionService {
                     templateIds.forEach(templateId => {
                       if (templatePackage.programIds !== undefined) {
                         templatePackage.programIds.forEach(programId => {
-                          if (programIds.find(program => program == programId) != undefined) {
-                            promiseQuery3.push(
-                              this.createSubmissionBaseOnTemplatePackage({
-                                orgId,
-                                templateId,
-                                templatePackageId: templatePackage._id,
-                                programId,
-                                statusId: status[0]._id,
-                                version: 0,
-                                isLatest: true,
-                              }),
-                            );
-                          }
+                          programAndTempTypes.forEach(element => {
+                            if (element.program.toString() == programId.toString()) {
+                              promiseQuery3.push(
+                                this.createSubmissionBaseOnTemplatePackage({
+                                  orgId,
+                                  templateId,
+                                  templatePackageId: templatePackage._id,
+                                  programId,
+                                  statusId: status[0]._id,
+                                  version: 0,
+                                  isLatest: true,
+                                }),
+                              );
+                            }
+                          });
                         });
                       }
                     });
@@ -229,16 +302,16 @@ export default class SubmissionService {
               const promiseQuery2 = [];
 
               submissions.forEach(submission => {
+                const permission = [];
+                this.checkUserRole(userInfo, submission, permission);
                 promiseQuery2.push(
                   this.statusRepository.findById(submission.statusId).then(status => {
                     return this.templatePackageRepository
                       .findById(submission.templatePackageId)
                       .then(templatePackage => {
-                        console.log(templatePackage);
                         return this.submissionPeriodRepository
                           .findById(templatePackage.submissionPeriodId)
                           .then(submissionPeriod => {
-                            console.log(submissionPeriod);
                             return this.programRepository
                               .findById(submission.programId)
                               .then(program => {
@@ -248,6 +321,7 @@ export default class SubmissionService {
                                   programId: program._id,
                                   period: submissionPeriod.name,
                                   phase: status.name,
+                                  permission,
                                   parentId: submission.parentId
                                     ? submission.parentId
                                     : submission._id,

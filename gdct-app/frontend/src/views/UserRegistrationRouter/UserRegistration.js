@@ -3,8 +3,6 @@ import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import { Formik } from 'formik';
 import cloneDeep from 'clone-deep';
 
-// import SRIHeader from "../../../SRI_Header"
-
 import Paper from '@material-ui/core/Paper';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
@@ -20,9 +18,6 @@ import './Register.scss';
 import Box from '@material-ui/core/Box';
 import * as yup from 'yup';
 import MaterialTable from 'material-table';
-import { selectUserRegistrationStore } from '../../store/UserRegistrationStore/selectors';
-import UserRegistrationStore from '../../store/UserRegistrationStore/store';
-import { updateSubmissionExcelRequest } from '../../store/thunks/submission';
 
 import {
   orgGroupChange,
@@ -39,22 +34,13 @@ import {
   searchKeyChange,
   referenceChange,
 } from '../../store/thunks/userRegistration';
-import { selectFactoryRESTResponseTableValues } from '../../store/common/REST/selectors';
-import { ROUTE_PUBLIC_LOGIN } from '../../constants/routes';
-import { selectSubmissionsStore } from '../../store/SubmissionsStore/selectors';
 
 function getSteps() {
   return ['Step1', 'Step2'];
 }
 const steps = getSteps();
 
-const titleOptions = [
-  { label: 'Mr.', value: 'Mr.' },
-  { label: 'Mrs.', value: 'Mrs.' },
-  { label: 'Ms.', value: 'Ms.' },
-  { label: 'Dr.', value: 'Dr.' },
-];
-
+// Column for permission table.
 const columns = [
   { title: 'Organization', field: 'organization.name' },
   { title: 'Program', field: 'program.code' },
@@ -74,12 +60,7 @@ const columns = [
   },
 ];
 
-const searchKeyOptions = [
-  { label: 'Organization Code', value: 'code' },
-  { label: 'Organization Name', value: 'name' },
-  { label: 'Location Name', value: 'LocationName' },
-];
-
+// The schema to validate user input
 const registerSchema = yup.object().shape({
   title: yup.string().required('Please select one title'),
   username: yup
@@ -124,6 +105,7 @@ const registerSchema = yup.object().shape({
   ext: yup.string().max(100, 'Ext is too long'),
 });
 
+// Button on the bottom of page
 const ButtonBox = ({
   activeStep,
   ableToComplete,
@@ -174,6 +156,8 @@ const ButtonBox = ({
   </Box>
 );
 
+// Read the information user select and ask controller to send request to backend
+// After responsed from backend, page will be refreshed.
 const selectOrgProgram = (
   searchKey,
   reference,
@@ -190,7 +174,6 @@ const selectOrgProgram = (
   //  if (organizationGroup !== "Health Service Providers") {
   const selectedPrograms = [];
   const selectedOrganizations = [];
-  console.log(appSysOptions);
   return (
     <>
       <Typography className="register__inputTitle"> *AppSys </Typography>
@@ -246,6 +229,7 @@ const selectOrgProgram = (
   );
 };
 
+// Have the detail UI page for each step
 const getStepContent = (
   snackbarMessage,
   activeStep,
@@ -633,36 +617,7 @@ const getStepContent = (
               style={{
                 backgroundColor: '#f2f5f7',
               }}
-              actions={
-                [
-                  // {
-                  //   icon: 'delete',
-                  //   tooltip: 'Delete Permission',
-                  //   onClick: (event, rowData) => {
-                  //     let editedPermission = userPermissions;
-                  //     editedPermission.splice(rowData.tableData.id, 1);
-                  //     setUserPermissionList(editedPermission);
-                  //   }
-                  // }
-                ]
-              }
-              components={
-                {
-                  // Action: props => (
-                  //   <Button
-                  //     onClick={(event) => props.action.onClick(event, props.data)}
-                  //     color="primary"
-                  //     variant="outlined"
-                  //     style={{textTransform: 'none'}}
-                  //     size="small"
-                  //   >
-                  //     Delete
-                  //   </Button>
-                  // )
-                }
-              }
               data={permissionList}
-              // editable={editable} options={options}
             />
             <ButtonBox
               activeStep={activeStep}
@@ -681,6 +636,7 @@ const getStepContent = (
   }
 };
 
+// Get the state and shown it on the website
 const Register_container = props => {
   const dispatch = useDispatch();
   const handleOrgGroupChange = useCallback(event => {
@@ -821,6 +777,7 @@ const Register_container = props => {
   );
 };
 
+// Main function to export
 const Register = () => {
   const handleSubmit = () => {};
 

@@ -59,6 +59,10 @@ export default class UsersRepository extends BaseRepository {
     throw new Error(`Method not implemented.${id}`);
   }
 
+  async findByEmail(email) {
+    return UserModel.find({ email });
+  }
+
   async delete(id) {
     return UserModel.findByIdAndDelete(id).then(user => new UserEntity(user));
   }

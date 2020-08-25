@@ -7,10 +7,9 @@ const SubmissionController = Service([SubmissionService], service => {
   return (() => {
     router.post('/submissions/findSubmissions', (req, res, next) => {
       // Get query from middleware -- auth handler
-      const { orgId, programIds } = req.body;
-
+      const { email } = req.body;
       service
-        .findSubmission(orgId, programIds)
+        .findSubmission(email)
         .then(submissions => {
           res.json({ submissions });
         })
