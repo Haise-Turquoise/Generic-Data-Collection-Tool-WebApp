@@ -228,7 +228,6 @@ export default class SubmissionService {
               Promise.all(promiseQuery2).then(() => {
                 if (newTempPackage.templateIds.length !== 0)
                   newTemplatePackages.push(newTempPackage);
-                console.log(newTemplatePackages);
               }),
             );
           });
@@ -245,6 +244,8 @@ export default class SubmissionService {
   // This is specified one user can only belongs to organization
   async findSubmission(email) {
     const userInfo = await this.usersRepository.findByEmail(email);
+    console.log("test");
+    console.log(userInfo);
     const { orgId } = userInfo[0].sysRole[0].org[0];
     const programAndTempTypes = [];
     const programIds = [];
