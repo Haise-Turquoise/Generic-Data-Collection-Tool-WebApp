@@ -13,7 +13,7 @@ import SubmissionWorkbookStore from '../../store/SubmissionWorkbookStore/store';
 import { selectFactoryRESTResponseTableValues } from '../../store/common/REST/selectors';
 import { selectSubmissionNoteStore } from '../../store/SubmissionNoteStore/selectors';
 import { selectSubmissionWorkbookStore } from '../../store/SubmissionWorkbookStore/selectors';
-import { createSubmissionRequest } from '../../store/thunks/submission';
+import { updateWorkbookRequest } from '../../store/thunks/submission';
 import workflowController from '../../controllers/workflow';
 
 const SubmissionHeader = () => (
@@ -75,9 +75,10 @@ const CreateSubmission = props => {
 
   const handleCreateSubmission = useCallback(
     (submissionNote, submissionWorkbook) =>
-      dispatch(createSubmissionRequest(submissionNote, submissionWorkbook, location.state.detail)),
+      dispatch(updateWorkbookRequest(submissionNote, submissionWorkbook, location.state.detail)),
     [dispatch],
   );
+  console.log( location.state.detail);
 
   return (
     <div className="submissions">
@@ -104,6 +105,10 @@ const CreateSubmission = props => {
             color="primary"
             variant="contained"
             size="large"
+            disabled={
+              location.state.detail.phase === 'Submitted' ||
+              location.state.detail.phase === 'Approved'
+            }
             onClick={() => handleCreateSubmission(submissionNote, submissionWorkbook)}
           >
             Upload

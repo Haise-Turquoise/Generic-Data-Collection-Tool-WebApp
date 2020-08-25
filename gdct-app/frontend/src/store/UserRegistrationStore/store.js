@@ -1,5 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
 
+// registrationData: user's input in step1(except sysRole) and step2 (sysRole)
+// Other part is for ui state
 const initialState = {
   registrationData: {
     title: '',
@@ -110,6 +112,7 @@ const setAbleToComplete = (state, { payload }) => ({
   ableToComplete: payload,
 });
 
+// reducers to set each state
 const reducers = {
   setRegistrationData,
   setSnackbarMessage,

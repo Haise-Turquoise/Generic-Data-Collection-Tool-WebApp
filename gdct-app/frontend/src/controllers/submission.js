@@ -8,8 +8,8 @@ const submissionController = (() => {
     withCredentials: true,
   });
   return {
-    fetchAndCreate: async (orgId, programIds) =>
-      submissionAxios.post(`/findSubmissions`, { orgId, programIds }).then(res => {
+    fetchAndCreate: async email =>
+      submissionAxios.post(`/findSubmissions`, { email }).then(res => {
         return res.data.submissions;
       }),
     updateWorkbook: async (submission, submissionNote) =>

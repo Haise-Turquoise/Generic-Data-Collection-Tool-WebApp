@@ -1,4 +1,6 @@
 import submissionController from '../../controllers/submission';
+import usersController from '../../controllers/Users';
+import AuthController from '../../controllers/Auth';
 import SubmissionsStore from '../SubmissionsStore/store';
 
 import {
@@ -10,20 +12,22 @@ import {
 import { convertStateToReactState, extractReactAndWorkbookState } from '../../tools/excel';
 import { setExcelData } from '../actions/ui/excel/commands';
 
-export const getSubmissionsRequest = (orgId, programIds) => dispatch => {
+export const getSubmissionsRequest = () => dispatch => {
   dispatch(SubmissionsStore.actions.REQUEST());
 
-  submissionController
-    .fetchAndCreate(orgId, programIds)
-    .then(values => {
-      dispatch(SubmissionsStore.actions.RECEIVE(values));
-    })
-    .catch(error => {
-      dispatch(SubmissionsStore.actions.FAIL_REQUEST(error));
-    });
+  AuthController.profile().then(profile => {
+    submissionController
+      .fetchAndCreate(profile.data.email)
+      .then(values => {
+        dispatch(SubmissionsStore.actions.RECEIVE(values));
+      })
+      .catch(error => {
+        dispatch(SubmissionsStore.actions.FAIL_REQUEST(error));
+      });
+  });
 };
 
-export const createSubmissionRequest = (
+export const updateWorkbookRequest = (
   submissionNote,
   workbookData,
   submission,
@@ -91,7 +95,7 @@ export const updateSubmissionExcelRequest = () => (dispatch, getState) => {
   };
 
   submissionController
-    .update(newSubmission)
+    .updateWorkbook(newSubmission)
     .then(() => {
       dispatch(SubmissionsStore.actions.UPDATE(newSubmission));
     })
