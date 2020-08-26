@@ -225,9 +225,9 @@ export default class SubmissionService {
             });
             promiseQuery3.push(
               Promise.all(promiseQuery2).then(() => {
-                if (newTempPackage.templateIds.length !== 0)
+                if (newTempPackage.templateIds.length !== 0) {
                   newTemplatePackages.push(newTempPackage);
-                console.log(newTemplatePackages);
+                }
               }),
             );
           });
@@ -324,6 +324,7 @@ export default class SubmissionService {
                                   parentId: submission.parentId
                                     ? submission.parentId
                                     : submission._id,
+                                  templatePackageName: templatePackage.name,
                                 };
                                 changedSubmissions.push(cloneDeep(changedSubmission));
                               });

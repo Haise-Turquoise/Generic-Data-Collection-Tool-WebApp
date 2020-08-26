@@ -33,7 +33,7 @@ const handleInputProgram = (programSet, submission) => {
     template: [],
   };
   let programSelected = programSet.find(function (element) {
-    return element.programId === submission.program.code;
+    return element.programId === submission.program._id;
   });
 
   if (programSelected === undefined) {
@@ -255,6 +255,8 @@ const handleInputSysRole = (data, permission, submission, userAppSys) => {
     role: '',
     org: [],
   };
+  console.log(data);
+  console.log(submission);
   if (submission[permission]) {
     let sysRoleSelected = data.sysRole.find(element => {
       return element.role == permission;

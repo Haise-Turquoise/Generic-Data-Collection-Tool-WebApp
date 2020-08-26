@@ -65,7 +65,12 @@ export const authorized = async (req, res, next) => {
     if (!urls.includes(req.originalUrl.toLowerCase())) {
       return next(new ErrorGDCT('You do not have permission to perform this action.', 403));
     }
+    for (const url of urls) {
+      if (req.originalUrl.toLowerCase().includes(url)) {
+        return next();
+      }
+    }
+    return next(new ErrorGDCT('You do not have permission to perform this action.', 403));
   }
-
   next();
 };
