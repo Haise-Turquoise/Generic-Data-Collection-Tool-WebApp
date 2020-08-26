@@ -155,7 +155,6 @@ export default class SubmissionService {
   }
 
   async updateStatus(submission, submissionNote, role, nextProcessId) {
-
     const submissionNotes = {
       note: submissionNote,
       submissionId: submission.parentId ? submission.parentId : submission._id,
@@ -208,7 +207,7 @@ export default class SubmissionService {
             const newTempPackage = {
               ...templatePackage._doc,
               templateIds: [],
-            }
+            };
             templatePackage.templateIds.forEach(templateId => {
               promiseQuery2.push(
                 this.templateRepository.findById(templateId).then(template => {
@@ -253,7 +252,7 @@ export default class SubmissionService {
         programAndTempTypes.push({ program: program.programId, templateTypes: program.template });
         programIds.push(program.programId);
       });
-    })
+    });
     return this.findTemplatePackage(programAndTempTypes).then(templatePackages => {
       const name = 'Unsubmitted';
       return this.statusRepository.findByName(name).then(status => {

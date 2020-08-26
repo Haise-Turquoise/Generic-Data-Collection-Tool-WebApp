@@ -46,7 +46,9 @@ export default function MandatoryInfo({
     username: Yup.string().required('Required'),
     email: Yup.string().required('Required'),
     password: Yup.string().required('Required'),
-    passwordConfirm: Yup.string().oneOf([Yup.ref('password'), null], 'Password should match').required('Required'),
+    passwordConfirm: Yup.string()
+      .oneOf([Yup.ref('password'), null], 'Password should match')
+      .required('Required'),
   });
   return (
     <Container component="main" maxWidth="xs">

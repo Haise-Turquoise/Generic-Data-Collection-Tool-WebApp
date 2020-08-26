@@ -1,13 +1,14 @@
 import passport from 'passport';
 import Container from 'typedi';
+import mongodb from 'mongodb';
 import UserModel from '../../models/User/model';
 import { returnNormalJson, returnErrorJson } from '../../utils';
 import UserRepository from '../../repositories/User';
 import AppRoleResourceRepository from '../../repositories/AppRoleResource';
 import AppResourceRepository from '../../repositories/AppResource';
 import AppSysRoleModel from '../../models/AppSysRole';
-import mongodb from 'mongodb';
-var ObjectID = mongodb.ObjectID;
+
+const { ObjectID } = mongodb;
 
 export default class AuthService {
   constructor() {
@@ -21,7 +22,7 @@ export default class AuthService {
     passport.authenticate(method, { scope: 'email' })(req, res, next);
   }
 
-  authenticateCallback(req, res) {
+  authenticateCallback(req, res, next) {
     const { method } = req.params;
     res.setHeader('Access-Control-Allow-Origin', process.env.CLIENT_SERVER);
     passport.authenticate(method, {
@@ -57,14 +58,10 @@ export default class AuthService {
   }
 
   profile(req, res) {
-    try {
-      if (req.user) {
-        returnNormalJson(res, { email: req.user.email });
-      } else {
-        returnErrorJson(res, 'Not authenticated', 401);
-      }
-    } catch (err) {
-      throw err;
+    if (req.user) {
+      returnNormalJson(res, { email: req.user.email });
+    } else {
+      returnErrorJson(res, 'Not authenticated', 401);
     }
   }
 
@@ -88,7 +85,7 @@ export default class AuthService {
         },
       });
     }
-    var appsysRole = [];
+    const appsysRole = [];
 
     sysRoles.forEach(role => {
       AppSysRoleModel.findById(role, (err, appsysrole) => {
@@ -126,47 +123,59 @@ export default class AuthService {
     }, 1000);
   }
 
-  getArrDataFromSet = set => {
+  getArrDataFromSet(set) {
     return Array.from(set).map(e => JSON.parse(e));
-  };
+  }
 
-  getRoles = user => {
+  getRoles(user) {
     return new Promise(async (resolve, reject) => {
-      let dataSet = new Set();
+      const dataSet = new Set();
       for (const sysRole of user.sysRole) {
         const roleResouce = await this.AppRoleResourceRepository.findByAppSysRoleId(
           sysRole.appSysRoleId,
         );
-        //const roleResouce = await this.AppRoleResourceRepository.findByAppSysRoleId(sysRole._id);
+        console.log('resource:', roleResouce);
+        // const roleResouce = await this.AppRoleResourceRepository.findByAppSysRoleId(sysRole._id);
         for (const id of roleResouce.resourceId) {
           const resourcesData = await this.AppResourceRepository.findById(id);
-          set.add(JSON.stringify(resourcesData));
+          console.log('resourceData:', resourcesData);
+          dataSet.add(JSON.stringify(resourcesData));
         }
       }
-      const dataArr = getArrDataFromSet(dataSet);
+      const dataArr = this.getArrDataFromSet(dataSet);
       resolve(dataArr);
     });
-  };
+  }
 
-  processPassport = (req, res, next) =>
-    passport.authenticate('local')(req, res, async () => {
+  processPassport(req, res, next) {
+    return passport.authenticate('local')(req, res, async () => {
       const { email } = req.user;
       const user = await this.UserRepostory.findByEmail(email);
+      req.session.roles = [];
+      req.session.isAdmin = false;
       if (user) {
-        req.session.isAdmin = Boolean(user.sysRole.find(e => e.role === 'Business Admin'));
-        req.session.resources = [];
-        if (!req.session.isAdmin) {
-          this.getRoles(user).then(data => {
-            req.session.resources = data;
-            if (req.user) {
-              return next();
-            }
-            return returnErrorJson(res, 'Bad request');
-          });
-        } else {
-          req.session.resources = [];
-          next();
-        }
+        user.sysRole.forEach(e => {
+          req.session.roles.push(e.role);
+          if (e.role === 'Business Admin') {
+            req.session.isAdmin = true;
+          }
+        });
+        // req.session.isAdmin = Boolean(user.sysRole.find(e => e.role === 'Business Admin'));
+
+        // req.session.resources = [];
+        // if (!req.session.isAdmin) {
+        //   this.getRoles(user).then(data => {
+        //     req.session.resources = data;
+        //     if (req.user) {
+        //       return next();
+        //     }
+        //     return returnErrorJson(res, 'Bad request');
+        //   });
+        // } else {
+        //   req.session.resources = [];
+        next();
+        // }
       }
     });
+  }
 }

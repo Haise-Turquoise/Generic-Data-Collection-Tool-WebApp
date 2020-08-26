@@ -83,7 +83,7 @@ const EditSubmission = ({ history }) => {
   );
   useEffect(() => {
     if (location.state.detail) {
-      console.log(location.state.detail)
+      console.log(location.state.detail);
       if (
         location.state.detail.permission.find(
           permission => permission === 'Submitter' || permission === 'Inputter',

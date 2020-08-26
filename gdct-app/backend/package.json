@@ -10,7 +10,7 @@
     "fix:eslint": "yarn lint:eslint --fix",
     "fix:prettier": "yarn lint:prettier --write",
     "lint:eslint": "eslint \"./**/*.{js,ts}\"",
-    "lint:prettier": "prettier --list-different \"**/*.{js,json,ts}\"",
+    "lint:prettier": "prettier --list-different \"./**/*.{js,json,ts}\"",
     "test": "jest --detectOpenHandles --forceExit --silent --verbose"
   },
   "husky": {

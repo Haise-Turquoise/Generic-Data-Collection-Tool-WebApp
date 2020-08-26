@@ -36,4 +36,20 @@ export default class MenuService {
     const menu = await this.MenuRepository.findById(id);
     return menu.items.length === 0;
   }
+
+  getAuthroizedMenus(roles) {
+    console.log('logged roles:', roles);
+    this.findMenu({}).then(menus => {
+      const filteredMenus = [];
+      for (const menu of menus) {
+        for (const role of menu.role) {
+          const myRole = role.split('-')[1];
+          if (roles.includes(myRole)) {
+            filteredMenus.push(menu);
+          }
+        }
+      }
+      return filteredMenus;
+    });
+  }
 }

@@ -44,7 +44,6 @@ export default function DrawerItem(props) {
   const { name, icon, url, children, isSubMenu } = props;
   const [anchorEl, setAnchorEl] = React.useState(null);
   const handleClick = event => {
-    console.log(event.currentTarget);
     setAnchorEl(event.currentTarget);
   };
 

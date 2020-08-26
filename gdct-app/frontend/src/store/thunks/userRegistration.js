@@ -218,7 +218,6 @@ const getTemplateType = userPrograms => {
       //   viewCognos: false,
       //   index,
       // });
-
     });
     return submissionList;
   });

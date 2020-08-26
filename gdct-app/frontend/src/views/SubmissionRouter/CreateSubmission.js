@@ -78,7 +78,7 @@ const CreateSubmission = props => {
       dispatch(updateWorkbookRequest(submissionNote, submissionWorkbook, location.state.detail)),
     [dispatch],
   );
-  console.log( location.state.detail);
+  console.log(location.state.detail);
 
   return (
     <div className="submissions">

@@ -30,7 +30,7 @@ export default class UserRepository extends BaseRepository {
   }
 
   async findByEmail(email) {
-    return await UserModel.findOne({ email }).then(user => {
+    return UserModel.findOne({ email }).then(user => {
       return new UserEntity(user.toObject());
     });
   }

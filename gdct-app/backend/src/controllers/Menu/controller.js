@@ -8,10 +8,19 @@ const MenuController = Service([MenuService], service => {
     router.get('/menus', (req, res, next) => {
       // Get query from middleware -- auth handler
 
+      // if (req.session.isAdmin) {
+      //   service
+      //     .findMenu({})
+      //     .then(Menus => res.json({ Menus }))
+      //     .catch(next);
+      // } else {
       service
-        .findMenu({})
-        .then(Menus => res.json({ Menus }))
+        .getAuthroizedMenus(req.session.roles)
+        .then(Menus => {
+          res.json({ Menus });
+        })
         .catch(next);
+      // }
     });
 
     router.get('/menus/:name', (req, res, next) => {
