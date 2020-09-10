@@ -74,6 +74,7 @@ const PublicRouter = ({ setLoggedIn }) => {
 
 const App = () => {
   const [isLoggedIn, setLoggedIn] = useState(null);
+  console.log('cookie:', document.cookie);
   useEffect(() => {
     AuthController.profile()
       .then(res => {

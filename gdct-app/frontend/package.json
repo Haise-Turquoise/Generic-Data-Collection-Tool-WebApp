@@ -11,7 +11,7 @@
     "fix": "yarn fix:prettier && yarn fix:eslint",
     "fix:eslint": "yarn lint:eslint --fix",
     "fix:prettier": "yarn lint:prettier --write",
-    "lint:eslint": "eslint \"./**/*.{js,jsx,ts,tsx}\"",
+    "lint:eslint": "eslint \"./**/*.{js,jsx,ts,tsx}\" --fix",
     "lint:prettier": "prettier --list-different \"./**/*.{js,jsx,ts,tsx}\""
   },
   "husky": {

@@ -7,9 +7,8 @@ const MenuItemSchema = new Schema(
     // appResourceId: { type: Schema.Types.ObjectId, ref: 'AppResource' },
     description: String,
     role: {
-      type: String,
-      enum: ['USER', 'ADMIN'],
-      default: 'USER',
+      type: [String],
+      required: true,
     },
     type: {
       type: String,

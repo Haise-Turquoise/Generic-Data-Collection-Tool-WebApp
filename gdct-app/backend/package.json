@@ -9,7 +9,7 @@
     "fix": "yarn fix:prettier && yarn fix:eslint",
     "fix:eslint": "yarn lint:eslint --fix",
     "fix:prettier": "yarn lint:prettier --write",
-    "lint:eslint": "eslint \"./**/*.{js,ts}\"",
+    "lint:eslint": "eslint \"./**/*.{js,ts}\" --fix",
     "lint:prettier": "prettier --list-different \"./**/*.{js,json,ts}\"",
     "test": "jest --detectOpenHandles --forceExit --silent --verbose"
   },

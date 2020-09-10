@@ -17,6 +17,17 @@ const MenuController = Service([MenuService], service => {
       service
         .getAuthroizedMenus(req.session.roles)
         .then(Menus => {
+          // console.log('server:', Menus);
+          res.json({ Menus });
+        })
+        .catch(next);
+      // }
+    });
+
+    router.get('/menus/:role', (req, res, next) => {
+      service
+        .getAuthroizedMenus([req.params.role])
+        .then(Menus => {
           res.json({ Menus });
         })
         .catch(next);

@@ -38,15 +38,22 @@ export default class MenuService {
   }
 
   getAuthroizedMenus(roles) {
-    console.log('logged roles:', roles);
-    this.findMenu({}).then(menus => {
+    return this.findMenu({}).then(menus => {
       const filteredMenus = [];
       for (const menu of menus) {
-        for (const role of menu.role) {
-          const myRole = role.split('-')[1];
-          if (roles.includes(myRole)) {
-            filteredMenus.push(menu);
+        const menuItems = menu.items;
+        menu.items = new Set();
+        for (const menuItem of menuItems) {
+          for (const role of menuItem.role) {
+            const myRole = role.split('-')[1].toLowerCase();
+            if (roles.find(e => e.toLowerCase() === myRole)) {
+              menu.items.add(menuItem);
+            }
           }
+        }
+        menu.items = [...menu.items];
+        if (menu.items.length > 0) {
+          filteredMenus.push(menu);
         }
       }
       return filteredMenus;

@@ -147,7 +147,7 @@ export default class AuthService {
     });
   }
 
-  processPassport(req, res, next) {
+  processPassport = (req, res, next) => {
     return passport.authenticate('local')(req, res, async () => {
       const { email } = req.user;
       const user = await this.UserRepostory.findByEmail(email);
@@ -173,9 +173,10 @@ export default class AuthService {
         //   });
         // } else {
         //   req.session.resources = [];
-        next();
+        return next();
         // }
       }
+      return returnErrorJson(res, 'Bad request');
     });
-  }
+  };
 }
