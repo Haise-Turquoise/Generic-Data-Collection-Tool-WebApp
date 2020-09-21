@@ -73,7 +73,7 @@ const CookieStore = mongoStore(session);
 app.use(
   session({
     secret: process.env.COOKIE_SECRET,
-    resave: false,
+    resave: true,
     saveUninitialized: false,
     cookie: { maxAge: 30 * 60 * 1000 },
     store: new CookieStore({ mongooseConnection: mongoose.connection }),
