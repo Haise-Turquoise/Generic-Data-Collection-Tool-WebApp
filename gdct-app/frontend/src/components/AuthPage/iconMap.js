@@ -37,6 +37,7 @@ export default {
   Reports: <ReportIcon style={{ fontSize: '1.2rem', marginLeft: '1.2rem' }} />,
   Admin: <SupervisorAccountIcon />,
   Template: <PhotoFilterIcon style={{ fontSize: '1.2rem', marginLeft: '1.2rem' }} />,
+  Templates: <PhotoFilterIcon />,
   'Template Design': <FileCopyIcon style={{ fontSize: '1rem', marginLeft: '2.2rem' }} />,
   'Template Type': <ExtensionIcon style={{ fontSize: '1rem', marginLeft: '2.2rem' }} />,
   'Template package': <SearchIcon style={{ fontSize: '1rem', marginLeft: '2.2rem' }} />,

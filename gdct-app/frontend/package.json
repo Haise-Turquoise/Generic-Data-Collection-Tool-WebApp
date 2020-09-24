@@ -21,8 +21,8 @@
   },
   "lint-staged": {
     "./**/*.{js,jsx,ts,tsx}": [
-      "yarn lint:prettier",
-      "yarn lint:eslint"
+      "yarn lint:eslint",
+      "yarn lint:prettier"
     ]
   },
   "author": "",

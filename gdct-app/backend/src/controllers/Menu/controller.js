@@ -1,11 +1,11 @@
-import { Service } from 'typedi';
-import { Router } from 'express';
-import MenuService from '../../services/Menu';
+import { Service } from "typedi";
+import { Router } from "express";
+import MenuService from "../../services/Menu";
 
-const MenuController = Service([MenuService], service => {
+const MenuController = Service([MenuService], (service) => {
   const router = Router();
   return (() => {
-    router.get('/menus', (req, res, next) => {
+    router.get("/menus", (req, res, next) => {
       // Get query from middleware -- auth handler
 
       // if (req.session.isAdmin) {
@@ -16,7 +16,11 @@ const MenuController = Service([MenuService], service => {
       // } else {
       service
         .getAuthroizedMenus(req.session.roles)
-        .then(Menus => {
+        .then((res) => {
+          res.sort((a, b) => a.orderId - b.orderId);
+          return res;
+        })
+        .then((Menus) => {
           // console.log('server:', Menus);
           res.json({ Menus });
         })
@@ -24,40 +28,40 @@ const MenuController = Service([MenuService], service => {
       // }
     });
 
-    router.get('/menus/:role', (req, res, next) => {
+    router.get("/menus/:role", (req, res, next) => {
       service
         .getAuthroizedMenus([req.params.role])
-        .then(Menus => {
+        .then((Menus) => {
           res.json({ Menus });
         })
         .catch(next);
       // }
     });
 
-    router.get('/menus/:name', (req, res, next) => {
+    router.get("/menus/:name", (req, res, next) => {
       // Get query from middleware -- auth handler
-      console.log('working');
+      console.log("working");
       service
         .findMenu(req.params.name)
-        .then(Menus => res.json({ Menus }))
+        .then((Menus) => res.json({ Menus }))
         .catch(next);
     });
 
-    router.post('/menus', (req, res, next) => {
+    router.post("/menus", (req, res, next) => {
       service
         .createMenu(req.body.Menu)
-        .then(Menu => {
+        .then((Menu) => {
           console.log(Menu);
           res.json({ Menu });
         })
-        .catch(error => {
+        .catch((error) => {
           console.error(error);
           throw error;
         })
         .catch(next);
     });
 
-    router.put('/menus/:_id', (req, res, next) => {
+    router.put("/menus/:_id", (req, res, next) => {
       const { _id } = req.params;
       const { Menu } = req.body;
 
@@ -67,7 +71,7 @@ const MenuController = Service([MenuService], service => {
         .catch(next);
     });
 
-    router.delete('/menus/:_id', (req, res, next) => {
+    router.delete("/menus/:_id", (req, res, next) => {
       const { _id } = req.params;
 
       service
@@ -76,10 +80,10 @@ const MenuController = Service([MenuService], service => {
         .catch(next);
     });
 
-    router.get('/menus/searchAllMenus', (req, res, next) => {
+    router.get("/menus/searchAllMenus", (req, res, next) => {
       service
         .findAllMenu()
-        .then(menus => {
+        .then((menus) => {
           res.json({ menus });
         })
         .catch(next);

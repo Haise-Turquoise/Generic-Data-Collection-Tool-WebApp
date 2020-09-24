@@ -12,17 +12,20 @@ const createUserNavigation = async () => {
           url: item.url,
           type: item.type,
           icon: iconMap[item.name],
+          orderId: item.orderId,
         };
       });
 
       if (e.subMenus.length !== 0) {
         const extraMenus = e.subMenus.map(subMenu => {
+          subMenu.items.sort((a, b) => a.orderId - b.orderId);
           const subChildren = subMenu.items.map(item => {
             return {
               name: item.name,
               url: item.url,
               type: item.type,
               icon: iconMap[item.name],
+              orderId: item.orderId,
             };
           });
           return {
@@ -30,9 +33,16 @@ const createUserNavigation = async () => {
             type: subMenu.type,
             icon: iconMap[subMenu.name],
             children: subChildren,
+            orderId: subMenu.orderId,
           };
         });
         children = [...extraMenus, ...children];
+        children.sort((a, b) => {
+          if (a.type === b.type) {
+            return b.orderId - a.orderId;
+          }
+          return a.type.localeCompare(b.type);
+        });
       }
       return { name: e.name, type: e.type, icon: iconMap[e.name], children };
     });
