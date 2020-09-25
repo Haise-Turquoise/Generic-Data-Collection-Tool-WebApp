@@ -1,7 +1,7 @@
-import Container from 'typedi';
-import MenuRepository from '../../repositories/Menu';
-import MenuItemRepository from '../../repositories/MenuItem';
-import ErrorGDCT from '../../utils/errorGDCT';
+import Container from "typedi";
+import MenuRepository from "../../repositories/Menu";
+import MenuItemRepository from "../../repositories/MenuItem";
+import ErrorGDCT from "../../utils/errorGDCT";
 
 export default class MenuService {
   constructor() {
@@ -15,7 +15,7 @@ export default class MenuService {
 
   async deleteMenu(id) {
     if (!(await this.canDelete(id))) {
-      throw ErrorGDCT('Cannot be deleted', 400);
+      throw ErrorGDCT("Cannot be deleted", 400);
     }
     return this.MenuRepository.delete(id);
   }
@@ -38,15 +38,19 @@ export default class MenuService {
   }
 
   getAuthroizedMenus(roles) {
-    return this.findMenu({}).then(menus => {
+    return this.findMenu({}).then((menus) => {
       const filteredMenus = [];
+      // console.log(
+      //   'main menu:',
+      //   menus.filter(e => e.isSubMenu === false),
+      // );
       for (const menu of menus) {
         const menuItems = menu.items;
         menu.items = new Set();
         for (const menuItem of menuItems) {
           for (const role of menuItem.role) {
-            const myRole = role.split('-')[1].toLowerCase();
-            if (roles.find(e => e.toLowerCase() === myRole)) {
+            const myRole = role.split("-")[1].toLowerCase();
+            if (roles.find((e) => e.toLowerCase() === myRole)) {
               menu.items.add(menuItem);
             }
           }
@@ -56,6 +60,7 @@ export default class MenuService {
           filteredMenus.push(menu);
         }
       }
+      // console.log('filtered:', filteredMenus);
       return filteredMenus;
     });
   }
