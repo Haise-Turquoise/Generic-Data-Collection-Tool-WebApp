@@ -39,7 +39,7 @@ const createUserNavigation = async () => {
         children = [...extraMenus, ...children];
         children.sort((a, b) => {
           if (a.type === b.type) {
-            return b.orderId - a.orderId;
+            return a.orderId - b.orderId;
           }
           return a.type.localeCompare(b.type);
         });
