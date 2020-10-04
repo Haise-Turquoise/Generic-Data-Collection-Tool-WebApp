@@ -55,10 +55,9 @@ export const initLogger = () => {
 const logger = () => {
   if (log) {
     return log;
-  } else {
-    initLogger();
-    return log;
   }
+  initLogger();
+  return log;
 };
 
 export default logger;

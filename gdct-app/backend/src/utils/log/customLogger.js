@@ -1,6 +1,6 @@
 import morgan from 'morgan';
-import logger from './winston';
 import chalk from 'chalk';
+import logger from './winston';
 
 morgan.token('status', (req, res) => {
   if (res.statusCode < 400) {

@@ -1,4 +1,4 @@
-import { Schema, model } from "mongoose";
+import { Schema, model } from 'mongoose';
 
 const MenuItemSchema = new Schema(
   {
@@ -12,7 +12,7 @@ const MenuItemSchema = new Schema(
     },
     type: {
       type: String,
-      default: "menu",
+      default: 'menu',
     },
     isActive: {
       type: Boolean,
@@ -29,6 +29,6 @@ MenuItemSchema.pre(/^find/, function (next) {
   next();
 });
 
-const MenuItem = model("MenuItem", MenuItemSchema);
+const MenuItem = model('MenuItem', MenuItemSchema);
 
 export default MenuItem;

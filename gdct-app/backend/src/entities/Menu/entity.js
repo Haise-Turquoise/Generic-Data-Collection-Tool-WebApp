@@ -1,7 +1,5 @@
 export default class MenuEntity {
-  constructor(
-    { _id, items, name, isSubMenu, subMenus, type, isActive, orderId },
-  ) {
+  constructor({ _id, items, name, isSubMenu, subMenus, type, isActive, orderId }) {
     this._id = _id;
     this.items = items;
     this.name = name;

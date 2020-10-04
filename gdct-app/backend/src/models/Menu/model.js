@@ -1,19 +1,19 @@
-import { Schema, model } from "mongoose";
+import { Schema, model } from 'mongoose';
 
 const { ObjectId } = Schema.Types;
 
 const MenuSchema = new Schema(
   {
     name: { type: String, unique: true },
-    items: [{ type: ObjectId, ref: "MenuItem" }],
+    items: [{ type: ObjectId, ref: 'MenuItem' }],
     isSubMenu: {
       type: Boolean,
       default: false,
     },
-    subMenus: [{ type: ObjectId, ref: "Menu" }],
+    subMenus: [{ type: ObjectId, ref: 'Menu' }],
     type: {
       type: String,
-      default: "drawer",
+      default: 'drawer',
     },
     isActive: {
       type: Boolean,
@@ -30,6 +30,6 @@ MenuSchema.pre(/^find/, function (next) {
   next();
 });
 
-const MenuModel = model("Menu", MenuSchema);
+const MenuModel = model('Menu', MenuSchema);
 
 export default MenuModel;
