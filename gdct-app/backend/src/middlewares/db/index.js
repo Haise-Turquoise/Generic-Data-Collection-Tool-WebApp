@@ -1,17 +1,16 @@
 import mongoose from 'mongoose';
+import { log } from '../../utils/log/winston';
 
-const logTag = '[DB][MongoDB]: ';
+const logTag = `[${__filename}][DB]: `;
 
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 // TODO: DO NOT LOAD REPOSITORIES HERE - Singleton database connection
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 export default class Database {
   connect() {
-    console.log(logTag, 'Initializing...');
+    log.info(logTag, 'Initializing...');
 
     this.initializeMongoose();
-
-    console.log(logTag, 'Initialize successful');
   }
 
   disconnect() {
@@ -22,7 +21,7 @@ export default class Database {
    * Connects to and creates the configuration for the database
    */
   initializeMongoose() {
-    console.log(logTag, 'Connecting...');
+    log.info(logTag, 'Connecting...');
 
     mongoose.connect(process.env.DATABASE_KEY, {
       useNewUrlParser: true,
@@ -31,6 +30,8 @@ export default class Database {
       useUnifiedTopology: true,
     });
 
-    console.log(logTag, 'Connection successful');
+    log.info(logTag, 'Connection successful');
   }
 }
+
+export const dbUtil = new Database();

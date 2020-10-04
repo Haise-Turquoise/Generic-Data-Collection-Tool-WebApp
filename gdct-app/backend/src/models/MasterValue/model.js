@@ -45,10 +45,6 @@ const MasterValueModel = model(
         name: { type: String },
       },
       reportingPeriod: { type: String, default: '' },
-
-      // COATreeId: { type: ObjectId, ref: "COATree" },
-      // COAId: { type: ObjectId, ref: "COA" },
-      // columnNameId: { type: ObjectId, ref: "ColumnName" },
       program: {
         _id: { type: ObjectId, ref: 'Program' },
         name: { type: String },

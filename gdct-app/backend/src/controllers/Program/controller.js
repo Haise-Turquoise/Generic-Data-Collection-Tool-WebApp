@@ -20,7 +20,6 @@ const ProgramController = Service([ProgramService], service => {
         .createProgram(req.body.program)
         .then(program => res.json({ program }))
         .catch(error => {
-          console.error(error);
           throw error;
         })
         .catch(next);

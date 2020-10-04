@@ -6,14 +6,6 @@ const MenuController = Service([MenuService], service => {
   const router = Router();
   return (() => {
     router.get('/menus', (req, res, next) => {
-      // Get query from middleware -- auth handler
-
-      // if (req.session.isAdmin) {
-      //   service
-      //     .findMenu({})
-      //     .then(Menus => res.json({ Menus }))
-      //     .catch(next);
-      // } else {
       service
         .getAuthroizedMenus(req.session.roles)
         .then(res => {
@@ -21,7 +13,6 @@ const MenuController = Service([MenuService], service => {
           return res;
         })
         .then(Menus => {
-          // console.log('server:', Menus);
           res.json({ Menus });
         })
         .catch(next);
@@ -39,8 +30,6 @@ const MenuController = Service([MenuService], service => {
     });
 
     router.get('/menus/:name', (req, res, next) => {
-      // Get query from middleware -- auth handler
-      console.log('working');
       service
         .findMenu(req.params.name)
         .then(Menus => res.json({ Menus }))
@@ -51,11 +40,9 @@ const MenuController = Service([MenuService], service => {
       service
         .createMenu(req.body.Menu)
         .then(Menu => {
-          console.log(Menu);
           res.json({ Menu });
         })
         .catch(error => {
-          console.error(error);
           throw error;
         })
         .catch(next);

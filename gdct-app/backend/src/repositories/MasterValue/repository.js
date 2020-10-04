@@ -11,11 +11,4 @@ export default class MasterValueRepository extends BaseRepository {
       MasterValueModel.create(masterValues),
     );
   }
-
-  // public async updateMany(submissionId: IId, masterValues: MasterValueEntity[]) {
-  //   return MasterValueModel.updateMany(
-  //     masterValues,
-
-  //   )
-  // }
 }

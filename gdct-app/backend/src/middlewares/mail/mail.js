@@ -1,6 +1,13 @@
 import nodemailer from 'nodemailer';
 
-import { mailConfig } from '../../middlewares/mail/nodeMailer';
+const mailConfig = {
+  host: 'smtp.ethereal.email',
+  port: 587,
+  auth: {
+    user: 'julio32@ethereal.email',
+    pass: 'qdjK2XgTyyHtR9zScz',
+  },
+};
 
 // Check your messages at https://ethereal.email/ on the test email account
 // Credentials are present on mailConfig
@@ -35,7 +42,6 @@ export const sendAdminVerficationEmail = (orgInfo, hashedUsername, userId, usern
     stringList.push(JSON.stringify(e));
   });
   stringList.join('<br/>');
-  console.log(stringList);
   const message = {
     from: 'julio32@ethereal.email',
     to: email,

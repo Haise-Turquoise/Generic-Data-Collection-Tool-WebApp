@@ -1,0 +1,447 @@
+10/3/2020, 10:50:48 PM [GDCT] info: '[32mGDCT[39m' has started in [32mdevelopment[39m mode! undefined
+10/3/2020, 10:50:49 PM [GDCT] info: [DB][MongoDB]:  ["Initializing..."]
+10/3/2020, 10:50:49 PM [GDCT] info: [DB][MongoDB]:  ["Connecting..."]
+10/3/2020, 10:50:49 PM [GDCT] info: [DB][MongoDB]:  ["Connection successful"]
+10/3/2020, 10:50:49 PM [GDCT] info: [DB][MongoDB]:  ["Initialize successful",{"test":"db","name":"tony"}]
+10/3/2020, 10:50:49 PM [GDCT] info: Listening on port ["3000"]
+10/3/2020, 10:51:55 PM [GDCT] info: '[32mGDCT[39m' has started in [32mdevelopment[39m mode! undefined
+10/3/2020, 10:51:55 PM [GDCT] info: [DB][MongoDB]:  ["Initializing..."]
+10/3/2020, 10:51:55 PM [GDCT] info: [DB][MongoDB]:  ["Connecting..."]
+10/3/2020, 10:51:55 PM [GDCT] info: [DB][MongoDB]:  ["Connection successful"]
+10/3/2020, 10:51:55 PM [GDCT] info: [DB][MongoDB]:  ["Initialize successful",{"test":"db","name":"tony"}]
+10/3/2020, 10:51:55 PM [GDCT] info: Listening on port ["3000"]
+10/3/2020, 10:53:31 PM [GDCT] info: GDCT' has started in development mode! undefined
+10/3/2020, 10:53:31 PM [GDCT] info: [DB][MongoDB]:  ["Initializing..."]
+10/3/2020, 10:53:31 PM [GDCT] info: [DB][MongoDB]:  ["Connecting..."]
+10/3/2020, 10:53:31 PM [GDCT] info: [DB][MongoDB]:  ["Connection successful"]
+10/3/2020, 10:53:31 PM [GDCT] info: [DB][MongoDB]:  ["Initialize successful",{"test":"db","name":"tony"}]
+10/3/2020, 10:53:31 PM [GDCT] info: Listening on port ["3000"]
+10/3/2020, 10:54:05 PM [GDCT] info: GDCT' has started in development mode! undefined
+10/3/2020, 10:54:05 PM [GDCT] info: [DB][MongoDB]:  ["Initializing..."]
+10/3/2020, 10:54:05 PM [GDCT] info: [DB][MongoDB]:  ["Connecting..."]
+10/3/2020, 10:54:05 PM [GDCT] info: [DB][MongoDB]:  ["Connection successful"]
+10/3/2020, 10:54:05 PM [GDCT] info: [DB][MongoDB]:  ["Initialize successful",{"test":"db","name":"tony"}]
+10/3/2020, 10:54:05 PM [GDCT] info: Listening on port ["3000"]
+10/3/2020, 10:54:57 PM [GDCT] info: GDCT' has started in development mode! undefined
+10/3/2020, 10:54:57 PM [GDCT] info: [DB][MongoDB]:  ["Initializing..."]
+10/3/2020, 10:54:57 PM [GDCT] info: [DB][MongoDB]:  ["Connecting..."]
+10/3/2020, 10:54:57 PM [GDCT] info: [DB][MongoDB]:  ["Connection successful"]
+10/3/2020, 10:54:57 PM [GDCT] info: [DB][MongoDB]:  ["Initialize successful",{"test":"db","name":"tony"}]
+10/3/2020, 10:54:57 PM [GDCT] info: Listening on port ["3000"]
+10/3/2020, 10:55:33 PM [GDCT] info: '[32mGDCT[39m' has started in [32mdevelopment[39m mode! undefined
+10/3/2020, 10:55:33 PM [GDCT] info: [DB][MongoDB]:  ["Initializing..."]
+10/3/2020, 10:55:33 PM [GDCT] info: [DB][MongoDB]:  ["Connecting..."]
+10/3/2020, 10:55:33 PM [GDCT] info: [DB][MongoDB]:  ["Connection successful"]
+10/3/2020, 10:55:33 PM [GDCT] info: [DB][MongoDB]:  ["Initialize successful",{"test":"db","name":"tony"}]
+10/3/2020, 10:55:33 PM [GDCT] info: Listening on port ["3000"]
+10/3/2020, 10:56:25 PM [GDCT] info: '[36mGDCT[39m' has started in [36mdevelopment[39m mode! undefined
+10/3/2020, 10:56:25 PM [GDCT] info: [DB][MongoDB]:  ["Initializing..."]
+10/3/2020, 10:56:25 PM [GDCT] info: [DB][MongoDB]:  ["Connecting..."]
+10/3/2020, 10:56:25 PM [GDCT] info: [DB][MongoDB]:  ["Connection successful"]
+10/3/2020, 10:56:25 PM [GDCT] info: [DB][MongoDB]:  ["Initialize successful",{"test":"db","name":"tony"}]
+10/3/2020, 10:56:25 PM [GDCT] info: Listening on port ["3000"]
+10/3/2020, 10:57:22 PM [GDCT] info: '[36mGDCT[39m' has started in [36mdevelopment[39m mode! undefined
+10/3/2020, 10:57:22 PM [GDCT] info: [DB][MongoDB]:  ["Initializing..."]
+10/3/2020, 10:57:22 PM [GDCT] info: [DB][MongoDB]:  ["Connecting..."]
+10/3/2020, 10:57:22 PM [GDCT] info: [DB][MongoDB]:  ["Connection successful"]
+10/3/2020, 10:57:22 PM [GDCT] info: [DB][MongoDB]:  ["Initialize successful",{"test":"db","name":"tony"}]
+10/3/2020, 10:57:22 PM [GDCT] info: Listening on port ["3000"]
+10/3/2020, 10:57:57 PM [GDCT] info: '[36mGDCT[39m' has started in [36mdevelopment[39m mode! undefined
+10/3/2020, 10:57:57 PM [GDCT] info: [DB][MongoDB]:  ["Initializing..."]
+10/3/2020, 10:57:57 PM [GDCT] info: [DB][MongoDB]:  ["Connecting..."]
+10/3/2020, 10:57:57 PM [GDCT] info: [DB][MongoDB]:  ["Connection successful"]
+10/3/2020, 10:57:57 PM [GDCT] info: Listening on port ["3000"]
+10/3/2020, 10:58:19 PM [GDCT] info: '[36mGDCT[39m' has started in [36mdevelopment[39m mode! undefined
+10/3/2020, 10:58:19 PM [GDCT] info: [DB][MongoDB]:  ["Initializing..."]
+10/3/2020, 10:58:19 PM [GDCT] info: [DB][MongoDB]:  ["Connecting..."]
+10/3/2020, 10:58:19 PM [GDCT] info: [DB][MongoDB]:  ["Connection successful"]
+10/3/2020, 10:58:19 PM [GDCT] info: Listening on port ["3000"]
+10/3/2020, 10:58:37 PM [GDCT] info: '[36mGDCT[39m' has started in [36mdevelopment[39m mode! undefined
+10/3/2020, 10:58:37 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][MongoDB]:  ["Initializing..."]
+10/3/2020, 10:58:37 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][MongoDB]:  ["Connecting..."]
+10/3/2020, 10:58:37 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][MongoDB]:  ["Connection successful"]
+10/3/2020, 10:58:37 PM [GDCT] info: Listening on port ["3000"]
+10/3/2020, 10:59:06 PM [GDCT] info: '[36mGDCT[39m' has started in [36mdevelopment[39m mode! undefined
+10/3/2020, 10:59:06 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]:  ["Initializing..."]
+10/3/2020, 10:59:06 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]:  ["Connecting..."]
+10/3/2020, 10:59:06 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]:  ["Connection successful"]
+10/3/2020, 10:59:06 PM [GDCT] info: Listening on port ["3000"]
+10/3/2020, 11:00:04 PM [GDCT] info: '[36mGDCT[39m' has started in [36mdevelopment[39m mode! undefined
+10/3/2020, 11:00:04 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]:  ["Initializing..."]
+10/3/2020, 11:00:04 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]:  ["Connecting..."]
+10/3/2020, 11:00:04 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]:  ["Connection successful"]
+10/3/2020, 11:00:04 PM [GDCT] info: Listening on port ["3000"]
+10/3/2020, 11:00:12 PM [GDCT] info: '[36mGDCT[39m' has started in [36mdevelopment[39m mode! undefined
+10/3/2020, 11:00:13 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]:  ["Initializing..."]
+10/3/2020, 11:00:13 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]:  ["Connecting..."]
+10/3/2020, 11:00:13 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]:  ["Connection successful"]
+10/3/2020, 11:00:13 PM [GDCT] info: Listening on port ["3000"]
+10/3/2020, 11:01:26 PM [GDCT] info: '[36mGDCT[39m' has started in [36mdevelopment[39m mode! undefined
+10/3/2020, 11:01:26 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]:  ["Initializing..."]
+10/3/2020, 11:01:26 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]:  ["Connecting..."]
+10/3/2020, 11:01:26 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]:  ["Connection successful"]
+10/3/2020, 11:01:26 PM [GDCT] info: Listening on port ["3000"]
+10/3/2020, 11:01:44 PM [GDCT] info: '[36mGDCT[39m' has started in [36mdevelopment[39m mode! undefined
+10/3/2020, 11:01:44 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]:  ["Initializing..."]
+10/3/2020, 11:01:44 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]:  ["Connecting..."]
+10/3/2020, 11:01:44 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]:  ["Connection successful"]
+10/3/2020, 11:01:44 PM [GDCT] info: Listening on port ["3000"]
+10/3/2020, 11:01:47 PM [GDCT] info: '[36mGDCT[39m' has started in [36mdevelopment[39m mode! undefined
+10/3/2020, 11:01:47 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]:  ["Initializing..."]
+10/3/2020, 11:01:47 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]:  ["Connecting..."]
+10/3/2020, 11:01:47 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]:  ["Connection successful"]
+10/3/2020, 11:01:47 PM [GDCT] info: Listening on port ["3000"]
+10/3/2020, 11:03:18 PM [GDCT] info: '[36mGDCT[39m' has started in [36mdevelopment[39m mode! undefined
+10/3/2020, 11:03:18 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]:  ["Initializing..."]
+10/3/2020, 11:03:18 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]:  ["Connecting..."]
+10/3/2020, 11:03:18 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]:  ["Connection successful"]
+10/3/2020, 11:03:18 PM [GDCT] info: Listening on port ["3000"]
+10/3/2020, 11:05:18 PM [GDCT] info: '[36mGDCT[39m' has started in [36mdevelopment[39m mode! undefined
+10/3/2020, 11:05:18 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]:  ["Initializing..."]
+10/3/2020, 11:05:18 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]:  ["Connecting..."]
+10/3/2020, 11:05:18 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]:  ["Connection successful"]
+10/3/2020, 11:05:18 PM [GDCT] info: Listening on port ["3000"]
+10/3/2020, 11:05:35 PM [GDCT] info: GET [31m401[39m /profile - [32m11.090[39m ms undefined
+10/3/2020, 11:05:52 PM [GDCT] info: POST [32m200[39m /login - [32m237.335[39m ms undefined
+10/3/2020, 11:05:52 PM [GDCT] info: GET [32m200[39m /Menus - [32m200.421[39m ms undefined
+10/3/2020, 11:05:53 PM [GDCT] info: GET [32m304[39m /Menus - [32m283.842[39m ms undefined
+10/3/2020, 11:06:47 PM [GDCT] info: '[36mGDCT[39m' has started in [36mdevelopment[39m mode! undefined
+10/3/2020, 11:06:47 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]:  ["Initializing..."]
+10/3/2020, 11:06:47 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]:  ["Connecting..."]
+10/3/2020, 11:06:47 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]:  ["Connection successful"]
+10/3/2020, 11:06:47 PM [GDCT] info: Listening on port ["3000"]
+10/3/2020, 11:07:24 PM [GDCT] info: '[36mGDCT[39m' has started in [36mdevelopment[39m mode! undefined
+10/3/2020, 11:07:24 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]:  ["Initializing..."]
+10/3/2020, 11:07:24 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]:  ["Connecting..."]
+10/3/2020, 11:07:24 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]:  ["Connection successful"]
+10/3/2020, 11:07:24 PM [GDCT] info: Listening on port ["3000"]
+10/3/2020, 11:07:32 PM [GDCT] error: uncaughtException: stream.write is not a function
+TypeError: stream.write is not a function
+    at Array.logRequest (/home/tony/git/moh/Web-Prototype/gdct-app/backend/node_modules/morgan/index.js:130:14)
+    at listener (/home/tony/git/moh/Web-Prototype/gdct-app/backend/node_modules/on-finished/index.js:169:15)
+    at onFinish (/home/tony/git/moh/Web-Prototype/gdct-app/backend/node_modules/on-finished/index.js:100:5)
+    at callback (/home/tony/git/moh/Web-Prototype/gdct-app/backend/node_modules/ee-first/index.js:55:10)
+    at ServerResponse.onevent (/home/tony/git/moh/Web-Prototype/gdct-app/backend/node_modules/ee-first/index.js:93:5)
+    at ServerResponse.emit (events.js:322:22)
+    at ServerResponse.EventEmitter.emit (domain.js:482:12)
+    at onFinish (_http_outgoing.js:731:10)
+    at onCorkedFinish (_stream_writable.js:673:5)
+    at afterWrite (_stream_writable.js:490:5)
+    at afterWriteTick (_stream_writable.js:477:10)
+    at processTicksAndRejections (internal/process/task_queues.js:83:21) undefined
+10/3/2020, 11:07:56 PM [GDCT] info: '[36mGDCT[39m' has started in [36mdevelopment[39m mode! undefined
+10/3/2020, 11:07:56 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]:  ["Initializing..."]
+10/3/2020, 11:07:56 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]:  ["Connecting..."]
+10/3/2020, 11:07:56 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]:  ["Connection successful"]
+10/3/2020, 11:07:56 PM [GDCT] info: Listening on port ["3000"]
+10/3/2020, 11:08:02 PM [GDCT] info: '[36mGDCT[39m' has started in [36mdevelopment[39m mode! undefined
+10/3/2020, 11:08:02 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]:  ["Initializing..."]
+10/3/2020, 11:08:02 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]:  ["Connecting..."]
+10/3/2020, 11:08:02 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]:  ["Connection successful"]
+10/3/2020, 11:08:02 PM [GDCT] info: Listening on port ["3000"]
+10/3/2020, 11:08:58 PM [GDCT] info: '[36mGDCT[39m' has started in [36mdevelopment[39m mode! undefined
+10/3/2020, 11:08:58 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]:  ["Initializing..."]
+10/3/2020, 11:08:58 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]:  ["Connecting..."]
+10/3/2020, 11:08:58 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]:  ["Connection successful"]
+10/3/2020, 11:08:58 PM [GDCT] info: Listening on port ["3000"]
+10/3/2020, 11:09:04 PM [GDCT] info: GET [32m304[39m /profile - [32m80.239[39m ms
+ undefined
+10/3/2020, 11:09:05 PM [GDCT] info: GET [32m304[39m /Menus - [32m179.990[39m ms
+ undefined
+10/3/2020, 11:09:05 PM [GDCT] info: GET [32m304[39m /Menus - [32m217.838[39m ms
+ undefined
+10/3/2020, 11:09:37 PM [GDCT] info: '[36mGDCT[39m' has started in [36mdevelopment[39m mode! undefined
+10/3/2020, 11:09:37 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]:  ["Initializing..."]
+10/3/2020, 11:09:37 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]:  ["Connecting..."]
+10/3/2020, 11:09:37 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]:  ["Connection successful"]
+10/3/2020, 11:09:37 PM [GDCT] info: Listening on port ["3000"]
+10/3/2020, 11:09:49 PM [GDCT] info: GET [32m304[39m /profile - [32m97.103[39m ms undefined
+10/3/2020, 11:09:49 PM [GDCT] info: GET [32m304[39m /Menus - [32m190.625[39m ms undefined
+10/3/2020, 11:09:50 PM [GDCT] info: GET [32m304[39m /Menus - [32m371.375[39m ms undefined
+10/3/2020, 11:12:37 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]:  ["Initializing..."]
+10/3/2020, 11:12:37 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]:  ["Connecting..."]
+10/3/2020, 11:12:37 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]:  ["Connection successful"]
+10/3/2020, 11:12:37 PM [GDCT] info: Listening on port ["3000"]
+10/3/2020, 11:12:54 PM [GDCT] info: GET [32m304[39m /profile - [32m89.531[39m ms undefined
+10/3/2020, 11:12:54 PM [GDCT] info: GET [32m304[39m /Menus - [32m182.872[39m ms undefined
+10/3/2020, 11:12:55 PM [GDCT] info: GET [32m304[39m /Menus - [32m211.979[39m ms undefined
+10/3/2020, 11:13:00 PM [GDCT] info: '[36mGDCT[39m' has started in [36mdevelopment[39m mode! undefined
+10/3/2020, 11:13:00 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]:  ["Initializing..."]
+10/3/2020, 11:13:00 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]:  ["Connecting..."]
+10/3/2020, 11:13:00 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]:  ["Connection successful"]
+10/3/2020, 11:13:00 PM [GDCT] info: Listening on port ["3000"]
+test
+test
+test
+test
+test
+test
+test
+test
+10/3/2020, 11:14:01 PM [GDCT] info: '[36mGDCT[39m' has started in [36mdevelopment[39m mode! undefined
+10/3/2020, 11:14:01 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]:  ["Initializing..."]
+10/3/2020, 11:14:01 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]:  ["Connecting..."]
+10/3/2020, 11:14:01 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]:  ["Connection successful"]
+10/3/2020, 11:14:01 PM [GDCT] info: Listening on port ["3000"]
+10/3/2020, 11:14:42 PM [GDCT] info: '[36mGDCT[39m' has started in [36mdevelopment[39m mode! undefined
+10/3/2020, 11:14:42 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]:  ["Initializing..."]
+10/3/2020, 11:14:42 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]:  ["Connecting..."]
+10/3/2020, 11:14:42 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]:  ["Connection successful"]
+10/3/2020, 11:14:42 PM [GDCT] info: Listening on port ["3000"]
+10/3/2020, 11:14:44 PM [GDCT] info: GET [32m304[39m /profile - [32m86.986[39m ms undefined
+10/3/2020, 11:14:45 PM [GDCT] info: GET [32m304[39m /Menus - [32m214.519[39m ms undefined
+10/3/2020, 11:14:45 PM [GDCT] info: GET [32m304[39m /Menus - [32m217.609[39m ms undefined
+10/3/2020, 11:15:13 PM [GDCT1] info2: '[36mGDCT[39m' has started in [36mdevelopment[39m mode!3 undefined4
+10/3/2020, 11:15:13 PM [GDCT1] info2: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]: 3 ["Initializing..."]4
+10/3/2020, 11:15:13 PM [GDCT1] info2: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]: 3 ["Connecting..."]4
+10/3/2020, 11:15:13 PM [GDCT1] info2: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]: 3 ["Connection successful"]4
+10/3/2020, 11:15:13 PM [GDCT1] info2: Listening on port3 ["3000"]4
+10/3/2020, 11:15:17 PM [GDCT1] info2: GET [32m304[39m /profile - [32m91.954[39m ms3 undefined4
+10/3/2020, 11:15:18 PM [GDCT1] info2: GET [32m304[39m /Menus - [32m224.572[39m ms3 undefined4
+10/3/2020, 11:15:18 PM [GDCT1] info2: GET [32m304[39m /Menus - [32m222.300[39m ms3 undefined4
+10/3/2020, 11:15:59 PM [GDCT] info: '[36mGDCT[39m' has started in [36mdevelopment[39m mode! undefined4
+10/3/2020, 11:15:59 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]:  ["Initializing..."]4
+10/3/2020, 11:15:59 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]:  ["Connecting..."]4
+10/3/2020, 11:15:59 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]:  ["Connection successful"]4
+10/3/2020, 11:15:59 PM [GDCT] info: Listening on port ["3000"]4
+10/3/2020, 11:16:04 PM [GDCT] info: GET [32m304[39m /profile - [32m328.190[39m ms undefined4
+10/3/2020, 11:16:05 PM [GDCT] info: GET [32m304[39m /Menus - [32m169.304[39m ms undefined4
+10/3/2020, 11:16:05 PM [GDCT] info: GET [32m304[39m /Menus - [32m221.029[39m ms undefined4
+10/3/2020, 11:16:55 PM [GDCT] info: '[36mGDCT[39m' has started in [36mdevelopment[39m mode!undefined4
+10/3/2020, 11:16:55 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]: ["Initializing..."]4
+10/3/2020, 11:16:55 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]: ["Connecting..."]4
+10/3/2020, 11:16:55 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]: ["Connection successful"]4
+10/3/2020, 11:16:55 PM [GDCT] info: Listening on port["3000"]4
+10/3/2020, 11:17:03 PM [GDCT] info: '[36mGDCT[39m' has started in [36mdevelopment[39m mode!
+10/3/2020, 11:17:03 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]: ["Initializing..."]4
+10/3/2020, 11:17:03 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]: ["Connecting..."]4
+10/3/2020, 11:17:03 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]: ["Connection successful"]4
+10/3/2020, 11:17:03 PM [GDCT] info: Listening on port["3000"]4
+10/3/2020, 11:17:06 PM [GDCT] info: '[36mGDCT[39m' has started in [36mdevelopment[39m mode!
+10/3/2020, 11:17:06 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]: ["Initializing..."]4
+10/3/2020, 11:17:06 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]: ["Connecting..."]4
+10/3/2020, 11:17:06 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]: ["Connection successful"]4
+10/3/2020, 11:17:06 PM [GDCT] info: Listening on port["3000"]4
+10/3/2020, 11:17:10 PM [GDCT] info: '[36mGDCT[39m' has started in [36mdevelopment[39m mode!
+10/3/2020, 11:17:10 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]: ["Initializing..."]
+10/3/2020, 11:17:10 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]: ["Connecting..."]
+10/3/2020, 11:17:10 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]: ["Connection successful"]
+10/3/2020, 11:17:10 PM [GDCT] info: Listening on port["3000"]
+10/3/2020, 11:17:12 PM [GDCT] info: GET [32m304[39m /profile - [32m94.983[39m ms
+10/3/2020, 11:17:12 PM [GDCT] info: GET [32m304[39m /Menus - [32m191.435[39m ms
+10/3/2020, 11:17:12 PM [GDCT] info: GET [32m304[39m /Menus - [32m218.326[39m ms
+10/3/2020, 11:17:25 PM [GDCT] info: '[36mGDCT[39m' has started in [36mdevelopment[39m mode!undefined
+10/3/2020, 11:17:25 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]: 
+10/3/2020, 11:17:25 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]: 
+10/3/2020, 11:17:25 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]: 
+10/3/2020, 11:17:25 PM [GDCT] info: Listening on port
+10/3/2020, 11:17:29 PM [GDCT] info: '[36mGDCT[39m' has started in [36mdevelopment[39m mode!
+10/3/2020, 11:17:29 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]: ["Initializing..."]
+10/3/2020, 11:17:29 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]: ["Connecting..."]
+10/3/2020, 11:17:30 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]: ["Connection successful"]
+10/3/2020, 11:17:30 PM [GDCT] info: Listening on port["3000"]
+10/3/2020, 11:17:31 PM [GDCT] info: GET [32m304[39m /profile - [32m117.800[39m ms
+10/3/2020, 11:17:31 PM [GDCT] info: GET [32m304[39m /Menus - [32m223.934[39m ms
+10/3/2020, 11:17:31 PM [GDCT] info: GET [32m304[39m /Menus - [32m209.040[39m ms
+10/3/2020, 11:19:21 PM [GDCT] info: '[36mGDCT[39m' has started in [36mdevelopment[39m mode!
+10/3/2020, 11:19:21 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]: ["Initializing..."]
+10/3/2020, 11:19:21 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]: ["Connecting..."]
+10/3/2020, 11:19:21 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]: ["Connection successful"]
+10/3/2020, 11:19:21 PM [GDCT] info: Listening on port["3000"]
+10/3/2020, 11:20:05 PM [GDCT] info: '[36mGDCT[39m' has started in [36mdevelopment[39m mode!
+10/3/2020, 11:20:06 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]: ["Initializing..."]
+10/3/2020, 11:20:06 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]: ["Connecting..."]
+10/3/2020, 11:20:06 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]: ["Connection successful"]
+10/3/2020, 11:20:06 PM [GDCT] info: Listening on port["3000"]
+10/3/2020, 11:20:16 PM [GDCT] info: '[36mGDCT[39m' has started in [36mdevelopment[39m mode!
+10/3/2020, 11:20:16 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]: ["Initializing..."]
+10/3/2020, 11:20:16 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]: ["Connecting..."]
+10/3/2020, 11:20:16 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]: ["Connection successful"]
+10/3/2020, 11:20:16 PM [GDCT] info: Listening on port["3000"]
+10/3/2020, 11:20:22 PM [GDCT] info: '[36mGDCT[39m' has started in [36mdevelopment[39m mode!
+10/3/2020, 11:20:22 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]: ["Initializing..."]
+10/3/2020, 11:20:22 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]: ["Connecting..."]
+10/3/2020, 11:20:22 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]: ["Connection successful"]
+10/3/2020, 11:20:22 PM [GDCT] info: Listening on port["3000"]
+10/3/2020, 11:20:26 PM [GDCT] info: '[36mGDCT[39m' has started in [36mdevelopment[39m mode!
+10/3/2020, 11:20:26 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]: ["Initializing..."]
+10/3/2020, 11:20:26 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]: ["Connecting..."]
+10/3/2020, 11:20:26 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]: ["Connection successful"]
+10/3/2020, 11:20:26 PM [GDCT] info: Listening on port["3000"]
+10/3/2020, 11:20:30 PM [GDCT] info: '[36mGDCT[39m' has started in [36mdevelopment[39m mode!
+10/3/2020, 11:20:30 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]: ["Initializing..."]
+10/3/2020, 11:20:30 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]: ["Connecting..."]
+10/3/2020, 11:20:30 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]: ["Connection successful"]
+10/3/2020, 11:20:30 PM [GDCT] info: Listening on port["3000"]
+10/3/2020, 11:20:34 PM [GDCT] info: '[36mGDCT[39m' has started in [36mdevelopment[39m mode!
+10/3/2020, 11:20:34 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]: ["Initializing..."]
+10/3/2020, 11:20:34 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]: ["Connecting..."]
+10/3/2020, 11:20:34 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]: ["Connection successful"]
+10/3/2020, 11:20:34 PM [GDCT] info: Listening on port["3000"]
+10/3/2020, 11:20:43 PM [GDCT] info: '[36mGDCT[39m' has started in [36mdevelopment[39m mode!
+10/3/2020, 11:20:43 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]: ["Initializing..."]
+10/3/2020, 11:20:43 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]: ["Connecting..."]
+10/3/2020, 11:20:43 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]: ["Connection successful"]
+10/3/2020, 11:20:43 PM [GDCT] info: Listening on port["3000"]
+10/3/2020, 11:20:50 PM [GDCT] info: '[36mGDCT[39m' has started in [36mdevelopment[39m mode!
+10/3/2020, 11:20:51 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]: ["Initializing..."]
+10/3/2020, 11:20:51 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]: ["Connecting..."]
+10/3/2020, 11:20:51 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]: ["Connection successful"]
+10/3/2020, 11:20:51 PM [GDCT] info: Listening on port["3000"]
+10/3/2020, 11:20:58 PM [GDCT] info: '[36mGDCT[39m' has started in [36mdevelopment[39m mode!
+10/3/2020, 11:20:58 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]: ["Initializing..."]
+10/3/2020, 11:20:58 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]: ["Connecting..."]
+10/3/2020, 11:20:58 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]: ["Connection successful"]
+10/3/2020, 11:20:58 PM [GDCT] info: Listening on port["3000"]
+10/3/2020, 11:21:07 PM [GDCT] info: '[36mGDCT[39m' has started in [36mdevelopment[39m mode!
+10/3/2020, 11:21:07 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]: ["Initializing..."]
+10/3/2020, 11:21:07 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]: ["Connecting..."]
+10/3/2020, 11:21:07 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]: ["Connection successful"]
+10/3/2020, 11:21:07 PM [GDCT] info: Listening on port["3000"]
+10/3/2020, 11:21:19 PM [GDCT] info: '[36mGDCT[39m' has started in [36mdevelopment[39m mode!
+10/3/2020, 11:21:19 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]: ["Initializing..."]
+10/3/2020, 11:21:19 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]: ["Connecting..."]
+10/3/2020, 11:21:19 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]: ["Connection successful"]
+10/3/2020, 11:21:19 PM [GDCT] info: Listening on port["3000"]
+10/3/2020, 11:21:24 PM [GDCT] info: '[36mGDCT[39m' has started in [36mdevelopment[39m mode!
+10/3/2020, 11:21:24 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]: ["Initializing..."]
+10/3/2020, 11:21:24 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]: ["Connecting..."]
+10/3/2020, 11:21:24 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]: ["Connection successful"]
+10/3/2020, 11:21:24 PM [GDCT] info: Listening on port["3000"]
+10/3/2020, 11:21:32 PM [GDCT] info: '[36mGDCT[39m' has started in [36mdevelopment[39m mode!
+10/3/2020, 11:21:32 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]: ["Initializing..."]
+10/3/2020, 11:21:32 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]: ["Connecting..."]
+10/3/2020, 11:21:32 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]: ["Connection successful"]
+10/3/2020, 11:21:32 PM [GDCT] info: Listening on port["3000"]
+10/3/2020, 11:21:38 PM [GDCT] info: '[36mGDCT[39m' has started in [36mdevelopment[39m mode!
+10/3/2020, 11:21:38 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]: ["Initializing..."]
+10/3/2020, 11:21:38 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]: ["Connecting..."]
+10/3/2020, 11:21:38 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]: ["Connection successful"]
+10/3/2020, 11:21:38 PM [GDCT] info: Listening on port["3000"]
+10/3/2020, 11:21:43 PM [GDCT] info: '[36mGDCT[39m' has started in [36mdevelopment[39m mode!
+10/3/2020, 11:21:43 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]: ["Initializing..."]
+10/3/2020, 11:21:43 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]: ["Connecting..."]
+10/3/2020, 11:21:43 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]: ["Connection successful"]
+10/3/2020, 11:21:43 PM [GDCT] info: Listening on port["3000"]
+10/3/2020, 11:21:51 PM [GDCT] info: '[36mGDCT[39m' has started in [36mdevelopment[39m mode!
+10/3/2020, 11:21:51 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]: ["Initializing..."]
+10/3/2020, 11:21:51 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]: ["Connecting..."]
+10/3/2020, 11:21:51 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]: ["Connection successful"]
+10/3/2020, 11:21:51 PM [GDCT] info: Listening on port["3000"]
+10/3/2020, 11:21:56 PM [GDCT] info: '[36mGDCT[39m' has started in [36mdevelopment[39m mode!
+10/3/2020, 11:21:56 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]: ["Initializing..."]
+10/3/2020, 11:21:56 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]: ["Connecting..."]
+10/3/2020, 11:21:56 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]: ["Connection successful"]
+10/3/2020, 11:21:56 PM [GDCT] info: Listening on port["3000"]
+10/3/2020, 11:22:01 PM [GDCT] info: '[36mGDCT[39m' has started in [36mdevelopment[39m mode!
+10/3/2020, 11:22:01 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]: ["Initializing..."]
+10/3/2020, 11:22:01 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]: ["Connecting..."]
+10/3/2020, 11:22:01 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]: ["Connection successful"]
+10/3/2020, 11:22:01 PM [GDCT] info: Listening on port["3000"]
+10/3/2020, 11:22:06 PM [GDCT] info: '[36mGDCT[39m' has started in [36mdevelopment[39m mode!
+10/3/2020, 11:22:06 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]: ["Initializing..."]
+10/3/2020, 11:22:06 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]: ["Connecting..."]
+10/3/2020, 11:22:06 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]: ["Connection successful"]
+10/3/2020, 11:22:06 PM [GDCT] info: Listening on port["3000"]
+10/3/2020, 11:22:10 PM [GDCT] info: '[36mGDCT[39m' has started in [36mdevelopment[39m mode!
+10/3/2020, 11:22:11 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]: ["Initializing..."]
+10/3/2020, 11:22:11 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]: ["Connecting..."]
+10/3/2020, 11:22:11 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]: ["Connection successful"]
+10/3/2020, 11:22:11 PM [GDCT] info: Listening on port["3000"]
+10/3/2020, 11:22:17 PM [GDCT] info: '[36mGDCT[39m' has started in [36mdevelopment[39m mode!
+10/3/2020, 11:22:17 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]: ["Initializing..."]
+10/3/2020, 11:22:17 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]: ["Connecting..."]
+10/3/2020, 11:22:17 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]: ["Connection successful"]
+10/3/2020, 11:22:17 PM [GDCT] info: Listening on port["3000"]
+10/3/2020, 11:22:20 PM [GDCT] info: '[36mGDCT[39m' has started in [36mdevelopment[39m mode!
+10/3/2020, 11:22:20 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]: ["Initializing..."]
+10/3/2020, 11:22:20 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]: ["Connecting..."]
+10/3/2020, 11:22:21 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]: ["Connection successful"]
+10/3/2020, 11:22:21 PM [GDCT] info: Listening on port["3000"]
+10/3/2020, 11:22:47 PM [GDCT] info: '[36mGDCT[39m' has started in [36mdevelopment[39m mode!
+10/3/2020, 11:22:47 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]: ["Initializing..."]
+10/3/2020, 11:22:47 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]: ["Connecting..."]
+10/3/2020, 11:22:47 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]: ["Connection successful"]
+10/3/2020, 11:22:47 PM [GDCT] info: Listening on port["3000"]
+10/3/2020, 11:22:56 PM [GDCT] info: '[36mGDCT[39m' has started in [36mdevelopment[39m mode!
+10/3/2020, 11:22:56 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]: ["Initializing..."]
+10/3/2020, 11:22:56 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]: ["Connecting..."]
+10/3/2020, 11:22:56 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]: ["Connection successful"]
+10/3/2020, 11:22:56 PM [GDCT] info: Listening on port["3000"]
+10/3/2020, 11:23:08 PM [GDCT] info: '[36mGDCT[39m' has started in [36mdevelopment[39m mode!
+10/3/2020, 11:23:08 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]: ["Initializing..."]
+10/3/2020, 11:23:08 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]: ["Connecting..."]
+10/3/2020, 11:23:08 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]: ["Connection successful"]
+10/3/2020, 11:23:08 PM [GDCT] info: Listening on port["3000"]
+10/3/2020, 11:23:14 PM [GDCT] info: '[36mGDCT[39m' has started in [36mdevelopment[39m mode!
+10/3/2020, 11:23:14 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]: ["Initializing..."]
+10/3/2020, 11:23:14 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]: ["Connecting..."]
+10/3/2020, 11:23:14 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]: ["Connection successful"]
+10/3/2020, 11:23:14 PM [GDCT] info: Listening on port["3000"]
+10/3/2020, 11:23:34 PM [GDCT] info: GET [32m200[39m /profile - [32m148.981[39m ms
+10/3/2020, 11:23:34 PM [GDCT] info: GET [32m200[39m /Menus - [32m273.416[39m ms
+10/3/2020, 11:23:35 PM [GDCT] info: GET [32m304[39m /Menus - [32m413.242[39m ms
+10/3/2020, 11:23:38 PM [GDCT] info: GET [32m200[39m /profile - [32m65.676[39m ms
+10/3/2020, 11:23:38 PM [GDCT] info: GET [32m304[39m /Menus - [32m282.210[39m ms
+10/3/2020, 11:23:39 PM [GDCT] info: GET [32m304[39m /Menus - [32m262.325[39m ms
+10/3/2020, 11:24:01 PM [GDCT] info: '[36mGDCT[39m' has started in [36mdevelopment[39m mode!
+10/3/2020, 11:24:01 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]: ["Initializing..."]
+10/3/2020, 11:24:01 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]: ["Connecting..."]
+10/3/2020, 11:24:01 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]: ["Connection successful"]
+10/3/2020, 11:24:01 PM [GDCT] info: Listening on port["3000"]
+10/3/2020, 11:24:10 PM [GDCT] info: '[36mGDCT[39m' has started in [36mdevelopment[39m mode!
+10/3/2020, 11:24:11 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]: ["Initializing..."]
+10/3/2020, 11:24:11 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]: ["Connecting..."]
+10/3/2020, 11:24:11 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]: ["Connection successful"]
+10/3/2020, 11:24:11 PM [GDCT] info: Listening on port["3000"]
+10/3/2020, 11:24:15 PM [GDCT] info: '[36mGDCT[39m' has started in [36mdevelopment[39m mode!
+10/3/2020, 11:24:15 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]: ["Initializing..."]
+10/3/2020, 11:24:15 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]: ["Connecting..."]
+10/3/2020, 11:24:15 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]: ["Connection successful"]
+10/3/2020, 11:24:15 PM [GDCT] info: Listening on port["3000"]
+10/3/2020, 11:24:31 PM [GDCT] info: '[36mGDCT[39m' has started in [36mdevelopment[39m mode!
+10/3/2020, 11:24:31 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]: ["Initializing..."]
+10/3/2020, 11:24:31 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]: ["Connecting..."]
+10/3/2020, 11:24:31 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]: ["Connection successful"]
+10/3/2020, 11:24:31 PM [GDCT] info: Listening on port["3000"]
+10/3/2020, 11:24:51 PM [GDCT] info: '[36mGDCT[39m' has started in [36mdevelopment[39m mode!
+10/3/2020, 11:24:51 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]: ["Initializing..."]
+10/3/2020, 11:24:51 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]: ["Connecting..."]
+10/3/2020, 11:24:51 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]: ["Connection successful"]
+10/3/2020, 11:24:51 PM [GDCT] info: Listening on port["3000"]
+10/3/2020, 11:24:58 PM [GDCT] info: '[36mGDCT[39m' has started in [36mdevelopment[39m mode!
+10/3/2020, 11:24:58 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]: ["Initializing..."]
+10/3/2020, 11:24:58 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]: ["Connecting..."]
+10/3/2020, 11:24:58 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]: ["Connection successful"]
+10/3/2020, 11:24:58 PM [GDCT] info: Listening on port["3000"]
+10/3/2020, 11:25:05 PM [GDCT] info: '[36mGDCT[39m' has started in [36mdevelopment[39m mode!
+10/3/2020, 11:25:05 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]: ["Initializing..."]
+10/3/2020, 11:25:05 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]: ["Connecting..."]
+10/3/2020, 11:25:05 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]: ["Connection successful"]
+10/3/2020, 11:25:05 PM [GDCT] info: Listening on port["3000"]
+10/3/2020, 11:25:24 PM [GDCT] info: '[36mGDCT[39m' has started in [36mdevelopment[39m mode!
+10/3/2020, 11:25:24 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]: ["Initializing..."]
+10/3/2020, 11:25:24 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]: ["Connecting..."]
+10/3/2020, 11:25:24 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]: ["Connection successful"]
+10/3/2020, 11:25:24 PM [GDCT] info: Listening on port["3000"]
+10/3/2020, 11:25:28 PM [GDCT] info: '[36mGDCT[39m' has started in [36mdevelopment[39m mode!
+10/3/2020, 11:25:28 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]: ["Initializing..."]
+10/3/2020, 11:25:28 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]: ["Connecting..."]
+10/3/2020, 11:25:28 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]: ["Connection successful"]
+10/3/2020, 11:25:28 PM [GDCT] info: Listening on port["3000"]
+10/3/2020, 11:25:40 PM [GDCT] info: '[36mGDCT[39m' has started in [36mdevelopment[39m mode!
+10/3/2020, 11:25:40 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]: ["Initializing..."]
+10/3/2020, 11:25:40 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]: ["Connecting..."]
+10/3/2020, 11:25:40 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]: ["Connection successful"]
+10/3/2020, 11:25:40 PM [GDCT] info: Listening on port["3000"]
+10/3/2020, 11:25:49 PM [GDCT] info: '[36mGDCT[39m' has started in [36mdevelopment[39m mode!
+10/3/2020, 11:25:49 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]: ["Initializing..."]
+10/3/2020, 11:25:49 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]: ["Connecting..."]
+10/3/2020, 11:25:49 PM [GDCT] info: [/home/tony/git/moh/Web-Prototype/gdct-app/backend/src/middlewares/db/index.js][DB]: ["Connection successful"]
+10/3/2020, 11:25:49 PM [GDCT] info: Listening on port["3000"]
+10/3/2020, 11:26:31 PM [GDCT] info: GET [32m304[39m /profile - [32m148.639[39m ms
+10/3/2020, 11:26:32 PM [GDCT] info: GET [32m304[39m /profile - [32m102.621[39m ms
+10/3/2020, 11:26:32 PM [GDCT] info: GET [32m304[39m /Menus - [32m291.544[39m ms
+10/3/2020, 11:26:32 PM [GDCT] info: GET [32m304[39m /Menus - [32m250.920[39m ms
+10/3/2020, 11:26:33 PM [GDCT] info: GET [32m304[39m /Menus - [32m215.617[39m ms
+10/3/2020, 11:26:33 PM [GDCT] info: GET [32m304[39m /Menus - [32m250.515[39m ms

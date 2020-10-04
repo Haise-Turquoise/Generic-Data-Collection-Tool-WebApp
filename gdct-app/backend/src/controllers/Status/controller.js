@@ -20,7 +20,6 @@ const StatusController = Service([StatusService], service => {
         .createStatus(req.body.status)
         .then(status => res.json({ status }))
         .catch(error => {
-          console.error(error);
           throw error;
         })
         .catch(next);

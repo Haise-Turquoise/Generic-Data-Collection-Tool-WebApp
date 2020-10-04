@@ -32,25 +32,22 @@ export default class TemplatePackageRepository extends BaseRepository {
     userCreatorId,
     programIds,
   }) {
-    return (
-      this.submissionPeriodRepository
-        .validate(submissionPeriodId)
-        .then(() => this.templateRepository.validateMany(templateIds))
-        .then(() => this.statusRepository.validate(statusId))
-        // .then(() => this.userRepository.validate(userCreatorId))
-        .then(() =>
-          TemplatePackageModel.create({
-            name,
-            submissionPeriodId,
-            templateIds,
-            statusId,
-            creationDate,
-            userCreatorId,
-            programIds,
-          }),
-        )
-        .then(templatePackage => new TemplatePackageEntity(templatePackage.toObject()))
-    );
+    return this.submissionPeriodRepository
+      .validate(submissionPeriodId)
+      .then(() => this.templateRepository.validateMany(templateIds))
+      .then(() => this.statusRepository.validate(statusId))
+      .then(() =>
+        TemplatePackageModel.create({
+          name,
+          submissionPeriodId,
+          templateIds,
+          statusId,
+          creationDate,
+          userCreatorId,
+          programIds,
+        }),
+      )
+      .then(templatePackage => new TemplatePackageEntity(templatePackage.toObject()));
   }
 
   async update(
@@ -58,35 +55,29 @@ export default class TemplatePackageRepository extends BaseRepository {
     { name, submissionPeriodId, templateIds, statusId, creationDate, userCreatorId, programIds },
     isPopulated,
   ) {
-    return (
-      (statusId ? this.statusRepository.validate(statusId) : new Promise(resolve => resolve()))
-        // .then(() => {
-        //   if (userCreatorId) return this.userRepository.validate(userCreatorId)
-        // })
-        .then(() => {
-          if (templateIds) return this.templateRepository.validateMany(templateIds);
-        })
-        .then(() => {
-          if (submissionPeriodId)
-            return this.submissionPeriodRepository.validate(submissionPeriodId);
-        })
-        .then(() =>
-          TemplatePackageModel.findByIdAndUpdate(
-            id,
-            {
-              name,
-              submissionPeriodId,
-              templateIds,
-              statusId,
-              creationDate,
-              userCreatorId,
-              programIds,
-            },
-            { upsert: true, new: true },
-          ).populate(isPopulated ? populatedParams : ''),
-        )
-        .then(templatePackage => new TemplatePackageEntity(templatePackage.toObject()))
-    );
+    return (statusId ? this.statusRepository.validate(statusId) : new Promise(resolve => resolve()))
+      .then(() => {
+        if (templateIds) return this.templateRepository.validateMany(templateIds);
+      })
+      .then(() => {
+        if (submissionPeriodId) return this.submissionPeriodRepository.validate(submissionPeriodId);
+      })
+      .then(() =>
+        TemplatePackageModel.findByIdAndUpdate(
+          id,
+          {
+            name,
+            submissionPeriodId,
+            templateIds,
+            statusId,
+            creationDate,
+            userCreatorId,
+            programIds,
+          },
+          { upsert: true, new: true },
+        ).populate(isPopulated ? populatedParams : ''),
+      )
+      .then(templatePackage => new TemplatePackageEntity(templatePackage.toObject()));
   }
 
   async findByProgramId(programId) {

@@ -6,7 +6,7 @@ import {
   sendAdminVerficationEmail,
   sendUserActiveEmail,
   sendUserRejectEmail,
-} from '../../loaders/mail/mail';
+} from '../../middlewares/mail/mail';
 import ErrorGDCT from '../../utils/errorGDCT';
 
 // @Service()
@@ -105,7 +105,6 @@ export default class UserService {
 
   async sendActiveEmail(approve, _id, orgId) {
     let checkActive = true;
-    console.log(_id);
     this.UserRepository.findById(_id).then(user => {
       if (approve == 'true') {
         user.sysRole.forEach(sysRole => {
@@ -130,7 +129,6 @@ export default class UserService {
       console.log(model);
     });
     this.UserRepository.activeUser({ _id }).then(model => {
-      console.log(model);
       return 'The account active';
     });
   }

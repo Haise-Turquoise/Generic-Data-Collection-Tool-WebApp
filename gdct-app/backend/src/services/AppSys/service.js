@@ -34,7 +34,6 @@ export default class AppSysService {
 
   async isRefered(id) {
     const appSys = await this.AppSysRepository.findById(id);
-    console.log('code:', appSys.code);
     const appSysRole = await this.AppSysRoleRepository.find({ appSys: appSys.code });
     return appSysRole.length !== 0;
   }

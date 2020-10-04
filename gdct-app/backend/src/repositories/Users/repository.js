@@ -50,8 +50,6 @@ export default class UsersRepository extends BaseRepository {
         })
       : '';
 
-    // console.log("realQuery: " + JSON.stringify(realQuery));
-
     return UserModel.find(realQuery).then(users => users.map(user => new UserEntity(user)));
   }
 

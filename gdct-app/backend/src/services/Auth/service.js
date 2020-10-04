@@ -134,11 +134,8 @@ export default class AuthService {
         const roleResouce = await this.AppRoleResourceRepository.findByAppSysRoleId(
           sysRole.appSysRoleId,
         );
-        console.log('resource:', roleResouce);
-        // const roleResouce = await this.AppRoleResourceRepository.findByAppSysRoleId(sysRole._id);
         for (const id of roleResouce.resourceId) {
           const resourcesData = await this.AppResourceRepository.findById(id);
-          console.log('resourceData:', resourcesData);
           dataSet.add(JSON.stringify(resourcesData));
         }
       }
@@ -160,21 +157,7 @@ export default class AuthService {
             req.session.isAdmin = true;
           }
         });
-        // req.session.isAdmin = Boolean(user.sysRole.find(e => e.role === 'Business Admin'));
-
-        // req.session.resources = [];
-        // if (!req.session.isAdmin) {
-        //   this.getRoles(user).then(data => {
-        //     req.session.resources = data;
-        //     if (req.user) {
-        //       return next();
-        //     }
-        //     return returnErrorJson(res, 'Bad request');
-        //   });
-        // } else {
-        //   req.session.resources = [];
         return next();
-        // }
       }
       return returnErrorJson(res, 'Bad request');
     });

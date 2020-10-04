@@ -25,7 +25,6 @@ const OrgController = Service([OrgService], service => {
         .createOrg(req.body.Org)
         .then(Org => res.json({ Org }))
         .catch(error => {
-          console.error(error);
           throw error;
         })
         .catch(next);

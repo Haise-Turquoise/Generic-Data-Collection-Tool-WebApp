@@ -40,18 +40,4 @@ export default class SubmissionRepository extends BaseRepository {
   async findByOrgIdAndProgramId(orgId, programIds) {
     return SubmissionModel.find({ orgId, programId: { $in: programIds }, isLatest: true });
   }
-
-  // async find(query) {
-  //   const realQuery = {};
-  //
-  //   for (const key in query) {
-  //     if (query[key]) realQuery[key] = query[key];
-  //   }
-  //
-  //   return SubmissionModel.find(realQuery)
-  //     .select('-workbookData')
-  //     .then(submissions =>
-  //       submissions.map(submission => new SubmissionEntity(submission.toObject())),
-  //     );
-  // }
 }
