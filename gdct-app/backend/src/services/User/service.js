@@ -7,7 +7,6 @@ import {
   sendUserActiveEmail,
   sendUserRejectEmail,
 } from '../../middlewares/mail/mail';
-import ErrorGDCT from '../../utils/errorGDCT';
 
 // @Service()
 export default class UserService {

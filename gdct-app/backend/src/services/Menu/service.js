@@ -1,7 +1,7 @@
 import Container from 'typedi';
 import MenuRepository from '../../repositories/Menu';
 import MenuItemRepository from '../../repositories/MenuItem';
-import ErrorGDCT from '../../utils/errorGDCT';
+import AppError from '../../utils/AppError';
 
 export default class MenuService {
   constructor() {
@@ -15,7 +15,7 @@ export default class MenuService {
 
   async deleteMenu(id) {
     if (!(await this.canDelete(id))) {
-      throw ErrorGDCT('Cannot be deleted', 400);
+      throw AppError('Cannot be deleted', 400);
     }
     return this.MenuRepository.delete(id);
   }

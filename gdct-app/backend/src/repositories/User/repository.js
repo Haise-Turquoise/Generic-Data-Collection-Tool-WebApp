@@ -1,7 +1,7 @@
 import UserEntity from '../../entities/User';
 import BaseRepository from '../repository';
 import UserModel from '../../models/User';
-import ErrorGDCT from '../../utils/errorGDCT';
+import AppError from '../../utils/AppError';
 
 export default class UserRepository extends BaseRepository {
   constructor() {
@@ -17,7 +17,7 @@ export default class UserRepository extends BaseRepository {
       .select('+password')
       .then(async user => {
         if (!user || !(await user.checkPassword(password, user.password))) {
-          throw new ErrorGDCT('Incorrect email or password', 400);
+          throw new AppError('Incorrect email or password', 400);
         }
         return new UserEntity(user.toObject());
       });

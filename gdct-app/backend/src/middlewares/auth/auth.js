@@ -1,4 +1,4 @@
-import ErrorGDCT from '../../utils/errorGDCT';
+import AppError from '../../utils/AppError';
 import UserService from '../../services/User';
 import AppRoleResourceService from '../../services/AppRoleResource';
 import AppResourceService from '../../services/AppResource';
@@ -29,7 +29,7 @@ export default class Auth {
 
 export const authorized = async (req, res, next) => {
   if (!req.user) {
-    return next(new ErrorGDCT('Bad Request', 401));
+    return next(new AppError('Bad Request', 401));
   }
 
   const isAdmin = Boolean(req.session.isAdmin);
@@ -40,14 +40,14 @@ export const authorized = async (req, res, next) => {
   if (req.session.resources) {
     const urls = req.session.resources.map(e => e.resourcePath.toLowerCase());
     if (!urls.includes(req.originalUrl.toLowerCase())) {
-      return next(new ErrorGDCT('You do not have permission to perform this action.', 403));
+      return next(new AppError('You do not have permission to perform this action.', 403));
     }
     for (const url of urls) {
       if (req.originalUrl.toLowerCase().includes(url)) {
         return next();
       }
     }
-    return next(new ErrorGDCT('You do not have permission to perform this action.', 403));
+    return next(new AppError('You do not have permission to perform this action.', 403));
   }
   next();
 };

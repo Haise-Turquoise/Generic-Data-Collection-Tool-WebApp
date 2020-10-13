@@ -5,6 +5,7 @@ import { host } from '../constants/domain';
 const AuthController = (() => {
   const AuthAxios = axios.create({
     baseURL: host,
+    // timeout: 5000, // 0 is default, which is no timeout
     withCredentials: true,
   });
   return {
