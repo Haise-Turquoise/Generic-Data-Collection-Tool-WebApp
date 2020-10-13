@@ -5,7 +5,7 @@ import { host } from '../constants/domain';
 const AuthController = (() => {
   const AuthAxios = axios.create({
     baseURL: host,
-    // timeout: 5000, // 0 is default, which is no timeout
+    timeout: 5000, // 0 is default, which is no timeout
     withCredentials: true,
   });
   return {
@@ -18,7 +18,10 @@ const AuthController = (() => {
         .then(res => res.data)
         .catch(err => console.log(err)),
     auto: async data => AuthAxios.get('/auth/auto/callback'),
-    profile: async () => AuthAxios.get('/profile').then(res => res.data),
+    profile: async () =>
+      AuthAxios.get('/profile')
+        .then(res => res.data)
+        .catch(err => console.log(err)),
     logout: async data => AuthAxios.get('/logout').then(res => res.data),
   };
 })();

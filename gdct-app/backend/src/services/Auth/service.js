@@ -7,6 +7,7 @@ import UserRepository from '../../repositories/User';
 import AppRoleResourceRepository from '../../repositories/AppRoleResource';
 import AppResourceRepository from '../../repositories/AppResource';
 import AppSysRoleModel from '../../models/AppSysRole';
+import AppError, { wrapTryCatch } from '../../utils/AppError';
 
 const { ObjectID } = mongodb;
 
@@ -58,11 +59,13 @@ export default class AuthService {
   }
 
   profile(req, res) {
+    // setTimeout(() => {
     if (req.user) {
       returnNormalJson(res, { email: req.user.email });
     } else {
       returnErrorJson(res, 'Not authenticated', 401);
     }
+    // }, 10000)
   }
 
   createUser(req, res) {
@@ -144,10 +147,11 @@ export default class AuthService {
     });
   }
 
-  processPassport = (req, res, next) => {
+  processPassport(req, res, next) {
+    const authService = new AuthService();
     return passport.authenticate('local')(req, res, async () => {
       const { email } = req.user;
-      const user = await this.UserRepostory.findByEmail(email);
+      const user = await authService.UserRepostory.findByEmail(email);
       req.session.roles = [];
       req.session.isAdmin = false;
       if (user) {
@@ -161,5 +165,5 @@ export default class AuthService {
       }
       return returnErrorJson(res, 'Bad request');
     });
-  };
+  }
 }

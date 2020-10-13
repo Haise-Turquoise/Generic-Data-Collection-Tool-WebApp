@@ -22,7 +22,7 @@
   "lint-staged": {
     "./**/*.{js,jsx,ts,tsx}": [
       "yarn lint:eslint",
-      "yarn lint:prettier"
+      "yarn fix:prettier"
     ]
   },
   "author": "",
