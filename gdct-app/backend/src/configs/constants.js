@@ -6,16 +6,4 @@ const CONSTANTS = {
   TOKEN_EXPIRED_ERROR: 'TokenExpiredError',
 };
 
-
-// domain/controller/method/sdfsdfsd
-
-export const Message = {
-  en: {
-    "Auth.service.creatUser.required": 'is required'
-  },
-  fr: {
-    "Auth.service.creatUser.required": 'franch'
-  }
-}
-
 export default CONSTANTS;

@@ -1,4 +1,4 @@
-import CONSTANTS from '../../configs/constaints';
+import CONSTANTS from '../../configs/constants';
 import errorHandler from '../../configs/errorHandler';
 import { log } from '../../utils/log/winston';
 

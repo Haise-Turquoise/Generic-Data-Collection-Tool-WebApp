@@ -6,10 +6,21 @@ import mongoose from 'mongoose';
 import mongoStore from 'connect-mongo';
 import compression from 'compression';
 import cookieParser from 'cookie-parser';
+import i18n from 'i18n';
+import path from 'path';
 import { dbUtil } from './db';
 import customLogger from '../utils/log/customLogger';
 
+i18n.configure({
+  locales: ['en', 'fr'],
+  directory: path.join(__dirname, '../configs/locales'),
+  defaultLocale: 'en',
+  cookie: 'lang'
+});
+
 export const middlewares = app => {
+  // @ts-ignore
+  require('./passport')();
   app.use(cookieParser());
   app.use(json({ limit: '50mb' }));
   app.use(urlencoded({ extended: true }));
@@ -19,8 +30,6 @@ export const middlewares = app => {
   app.use(compression());
 
   app.use(customLogger);
-
-  require('./passport')();
 
   const CookieStore = mongoStore(session);
   app.use(
@@ -34,6 +43,14 @@ export const middlewares = app => {
   );
   app.use(passport.initialize());
   app.use(passport.session());
+
+  app.use((req, res, next) => {
+    // res.cookie('lang', 'fr');
+    i18n.init(req, res);
+    res.locals.__ = res.__;
+    const currentLocale = i18n.getLocales();
+    return next();
+  });
 
   dbUtil.connect();
 };

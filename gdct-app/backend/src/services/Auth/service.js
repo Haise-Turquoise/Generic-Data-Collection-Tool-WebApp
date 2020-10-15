@@ -7,8 +7,6 @@ import UserRepository from '../../repositories/User';
 import AppRoleResourceRepository from '../../repositories/AppRoleResource';
 import AppResourceRepository from '../../repositories/AppResource';
 import AppSysRoleModel from '../../models/AppSysRole';
-import AppError, { wrapTryCatch } from '../../utils/AppError';
-import { Message } from '../../configs/constaints';
 
 const { ObjectID } = mongodb;
 
@@ -77,7 +75,7 @@ export default class AuthService {
     if (!email) {
       return res.status(422).json({
         errors: {
-          email: process.env.LANG === 'fr' ? Message.fr["Auth.service.creatUser.required"] : Message.en["Auth.service.creatUser.required"],
+          email: 'is required',
         },
       });
     }
