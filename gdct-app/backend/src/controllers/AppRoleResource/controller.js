@@ -18,9 +18,6 @@ const AppRoleResourceController = Service([AppRoleResourceService], service => {
       service
         .createAppRoleResource(req.body.AppRoleResource)
         .then(AppRoleResource => res.json({ AppRoleResource }))
-        .catch(error => {
-          throw error;
-        })
         .catch(next);
     });
 

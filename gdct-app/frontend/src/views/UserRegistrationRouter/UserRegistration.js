@@ -229,6 +229,8 @@ const selectOrgProgram = (
   );
 };
 
+
+
 // Have the detail UI page for each step
 const getStepContent = (
   snackbarMessage,
@@ -639,7 +641,7 @@ const getStepContent = (
 // Get the state and shown it on the website
 const Register_container = props => {
   const dispatch = useDispatch();
-  const handleOrgGroupChange = useCallback(event => {
+  const handleOrgGroupChange = (event => {
     dispatch(orgGroupChange(event));
   }, []);
   const handleSnackbarClose = useCallback(() => {

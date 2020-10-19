@@ -42,9 +42,6 @@ const MenuController = Service([MenuService], service => {
         .then(Menu => {
           res.json({ Menu });
         })
-        .catch(error => {
-          throw error;
-        })
         .catch(next);
     });
 

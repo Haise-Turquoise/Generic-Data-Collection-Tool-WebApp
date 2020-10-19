@@ -1,6 +1,7 @@
 import Container from 'typedi';
 import AppSysRepository from '../../repositories/AppSys';
 import AppSysRoleRepository from '../../repositories/AppSysRole';
+import APPError from '../../utils/AppError';
 
 // @Service()
 export default class AppSysService {
@@ -15,7 +16,8 @@ export default class AppSysService {
 
   async deleteAppSys(id) {
     if (await this.isRefered(id)) {
-      throw Error('existed appSysRole');
+      // throw Error('existed appSysRole');
+      throw new APPError(i18n.__("AppSys.service.deleteAppSys.existed"),409);
     }
     return this.AppSysRepository.delete(id);
   }

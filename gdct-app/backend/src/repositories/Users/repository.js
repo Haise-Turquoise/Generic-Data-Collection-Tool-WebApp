@@ -3,6 +3,8 @@ import BaseRepository from '../repository';
 import UserModel from '../../models/User';
 import TemplateRepository from '../Template';
 import UserEntity from '../../entities/Users';
+import i18n from 'i18n';
+import AppError from '../../utils/AppError';
 
 // @Service()
 export default class UsersRepository extends BaseRepository {
@@ -54,7 +56,9 @@ export default class UsersRepository extends BaseRepository {
   }
 
   findOne(id) {
-    throw new Error(`Method not implemented.${id}`);
+    const message = i18n.__("MethodNotImplemented") + ' ' + {id};
+    // throw new Error(`Method not implemented.${id}`);
+    throw new AppError(message,400);
   }
 
   async findByEmail(email) {

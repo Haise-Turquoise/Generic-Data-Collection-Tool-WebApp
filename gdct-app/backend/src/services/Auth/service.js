@@ -7,6 +7,8 @@ import UserRepository from '../../repositories/User';
 import AppRoleResourceRepository from '../../repositories/AppRoleResource';
 import AppResourceRepository from '../../repositories/AppResource';
 import AppSysRoleModel from '../../models/AppSysRole';
+import AppError from '../../utils/AppError';
+import i18n from 'i18n';
 
 const { ObjectID } = mongodb;
 
@@ -41,6 +43,7 @@ export default class AuthService {
               return next();
             }
             return returnErrorJson(res, 'Bad request');
+            // throw new AppError(i18n.__("Auth.service.authenticateCallback.badRequest"),400);
           });
         } else {
           req.session.resources = [];
@@ -55,14 +58,18 @@ export default class AuthService {
     req.session.user = null;
     req.session.token = null;
     returnNormalJson(res, 'logout successfully');
+    // throw new AppError(i18n.__("Auth.service.logout.logout"),200);
   }
 
   profile(req, res) {
     // setTimeout(() => {
     if (req.user) {
+      
+      throw new AppError(i18n.__("Auth.service.profile.emailOk"),200);
       returnNormalJson(res, { email: req.user.email });
     } else {
       returnErrorJson(res, 'Not authenticated', 401);
+      // throw new AppError(i18n.__('Auth.service.profile.NotAuthenticated'),401);
     }
     // }, 10000)
   }
@@ -78,9 +85,11 @@ export default class AuthService {
           email: 'is required',
         },
       });
+      // throw new AppError(i18n.__("Auth.service.creatUser.emailRequired"),422);
     }
 
     if (!password) {
+      // throw new AppError(i18n.__("Auth.service.creatUser.passwordRequired"),422);
       return res.status(422).json({
         errors: {
           password: 'is required',
