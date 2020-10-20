@@ -1,8 +1,9 @@
+import i18n from 'i18n';
 import AppSysRoleEntity from '../../entities/AppSysRole';
 import BaseRepository from '../repository';
 import AppSysRoleModel from '../../models/AppSysRole';
-import i18n from 'i18n';
 import AppError from '../../utils/AppError';
+
 export default class AppSysRoleRepository extends BaseRepository {
   constructor() {
     super(AppSysRoleModel);
@@ -38,7 +39,7 @@ export default class AppSysRoleRepository extends BaseRepository {
 
   async findById(id) {
     return this._model.findById(id).then(result => {
-      if (!result) throw new AppError(i18n.__("idDoesNotExist"));
+      if (!result) throw new AppError(i18n.__('idDoesNotExist'));
       return result.toObject();
     });
   }

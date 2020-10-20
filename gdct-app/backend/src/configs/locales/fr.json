@@ -1,6 +1,4 @@
-  
 {
-    "greeting": "Bienvenue sur le serveur GDCT",
-    "Auth.service.creatUser.required": "est requis"
+  "greeting": "Bienvenue sur le serveur GDCT",
+  "Auth.service.creatUser.required": "est requis"
 }
-   

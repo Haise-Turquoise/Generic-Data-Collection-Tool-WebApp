@@ -1,6 +1,7 @@
 import passport from 'passport';
 import Container from 'typedi';
 import mongodb from 'mongodb';
+import i18n from 'i18n';
 import UserModel from '../../models/User/model';
 import { returnNormalJson, returnErrorJson } from '../../utils';
 import UserRepository from '../../repositories/User';
@@ -8,7 +9,6 @@ import AppRoleResourceRepository from '../../repositories/AppRoleResource';
 import AppResourceRepository from '../../repositories/AppResource';
 import AppSysRoleModel from '../../models/AppSysRole';
 import AppError from '../../utils/AppError';
-import i18n from 'i18n';
 
 const { ObjectID } = mongodb;
 
@@ -61,17 +61,19 @@ export default class AuthService {
     // throw new AppError(i18n.__("Auth.service.logout.logout"),200);
   }
 
-  profile(req, res) {
-    // setTimeout(() => {
-    if (req.user) {
-      
-      throw new AppError(i18n.__("Auth.service.profile.emailOk"),200);
-      returnNormalJson(res, { email: req.user.email });
-    } else {
-      returnErrorJson(res, 'Not authenticated', 401);
-      // throw new AppError(i18n.__('Auth.service.profile.NotAuthenticated'),401);
+  profile(req, res, next) {
+    try {
+      // setTimeout(() => {
+      // throw new AppError(i18n.__('Auth.service.profile.emailOk'), 500);
+      if (req.user) {
+        returnNormalJson(res, { email: req.user.email });
+      } else {
+        returnErrorJson(res, 'Not authenticated', 401);
+      }
+      // }, 10000)
+    } catch (err) {
+      next(err);
     }
-    // }, 10000)
   }
 
   createUser(req, res) {

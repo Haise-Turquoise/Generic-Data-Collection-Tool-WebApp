@@ -6,13 +6,12 @@ const UserController = Service([UserService], service => {
   const router = Router();
 
   return (function () {
-    router.post(`/users/registerUser`, (req,res,next) => {
+    router.post(`/users/registerUser`, (req, res, next) => {
       const { userData } = req.body;
-      service.register(userData)
-      .catch(next);
+      service.register(userData).catch(next);
     });
 
-    router.get(`/users/verifyUser`, (req, res,next) => {
+    router.get(`/users/verifyUser`, (req, res, next) => {
       const { approve, _id, hashedUsername, orgId } = req.query;
       service
         .sendActiveEmail(approve, _id, orgId)
@@ -20,10 +19,12 @@ const UserController = Service([UserService], service => {
         .catch(next);
     });
 
-    router.get(`/users/activeUser`, (req, res,next) => {
+    router.get(`/users/activeUser`, (req, res, next) => {
       const { _id, hashedUsername } = req.query;
-      service.activeUser(_id).then(res.json({ message: 'You have activated the account' }))
-      .catch(next);
+      service
+        .activeUser(_id)
+        .then(res.json({ message: 'You have activated the account' }))
+        .catch(next);
     });
 
     return router;

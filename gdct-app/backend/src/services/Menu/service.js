@@ -1,8 +1,8 @@
 import Container from 'typedi';
+import i18n from 'i18n';
 import MenuRepository from '../../repositories/Menu';
 import MenuItemRepository from '../../repositories/MenuItem';
 import AppError from '../../utils/AppError';
-import i18n from 'i18n';
 
 export default class MenuService {
   constructor() {
@@ -16,7 +16,7 @@ export default class MenuService {
 
   async deleteMenu(id) {
     if (!(await this.canDelete(id))) {
-      throw new AppError(i18n.__("Menu.service.deleteMenu.CanNotDelete"), 400);
+      throw new AppError(i18n.__('Menu.service.deleteMenu.CanNotDelete'), 400);
     }
     return this.MenuRepository.delete(id);
   }

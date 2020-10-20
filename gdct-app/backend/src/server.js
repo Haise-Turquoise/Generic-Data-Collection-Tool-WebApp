@@ -8,9 +8,7 @@ const port = app.get('port');
 
 const server = app.listen(port, () => {
   log.info('Listening on port', port);
-  log.info("i18n test:", i18n.__("greeting"));
-  
-
+  log.info('i18n test:', i18n.__('greeting'));
 });
 
 export default server;

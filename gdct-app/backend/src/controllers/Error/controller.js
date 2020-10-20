@@ -9,7 +9,6 @@ const errorHandlerController = (err, req, res, next) => {
     const isProduction = process.env.NODE_ENV === 'production';
     err.isDetail = true; // manual setting for now
     if (isProduction) {
-      console.log('err:', err);
       if (err.isDetail) {
         if (err.name === CONSTANTS.CAST_ERROR) err = errorHandler.handleCastErrorDB(err);
         if (err.code === CONSTANTS.DUPLICATE_FIELD_ERROR)
@@ -22,8 +21,8 @@ const errorHandlerController = (err, req, res, next) => {
         err.message = 'Please contact server admin';
       }
     }
-    const stack = isProduction ? {} : err.stack;
-    log.error(`[${err.statusCode}] - ${err.message} from [${req.method} - ${req.orginalUrl}]`);
+    const stack = isProduction ? null : err.stack;
+    log.error(`[${err.statusCode}][${req.method}-${req.originalUrl}] - ${err.message}`);
     res.status(err.statusCode).json({
       status: err.status,
       data: {},

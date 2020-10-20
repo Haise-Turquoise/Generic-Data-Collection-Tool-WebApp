@@ -1,8 +1,8 @@
 import Container from 'typedi';
+import i18n from 'i18n';
 import AppRoleRepository from '../../repositories/AppRole';
 import AppSysRoleRepository from '../../repositories/AppSysRole';
-import APPError from"../../utils/AppError";
-import i18n from "i18n";
+import APPError from '../../utils/AppError';
 // @Service()
 export default class AppRoleService {
   constructor() {
@@ -17,7 +17,7 @@ export default class AppRoleService {
   async deleteAppRole(id) {
     if (await this.isRefered(id)) {
       // throw Error('existed appSysRole');
-      throw new APPError(i18n.__("AppRole.service.deleteAppSys.existed"))
+      throw new APPError(i18n.__('AppRole.service.deleteAppSys.existed'));
     }
     return this.AppRoleRepository.delete(id);
   }
