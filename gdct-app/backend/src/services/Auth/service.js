@@ -9,6 +9,7 @@ import AppRoleResourceRepository from '../../repositories/AppRoleResource';
 import AppResourceRepository from '../../repositories/AppResource';
 import AppSysRoleModel from '../../models/AppSysRole';
 import AppError from '../../utils/AppError';
+import { nextTick } from 'process';
 
 const { ObjectID } = mongodb;
 
@@ -20,120 +21,142 @@ export default class AuthService {
   }
 
   authenticate(req, res, next) {
-    const { method } = req.params;
-    passport.authenticate(method, { scope: 'email' })(req, res, next);
+    try{
+      const { method } = req.params;
+      passport.authenticate(method, { scope: 'email' })(req, res, next);
+    } catch(err){
+      next(err)
+    }
   }
 
   authenticateCallback(req, res, next) {
-    const { method } = req.params;
-    res.setHeader('Access-Control-Allow-Origin', process.env.CLIENT_SERVER);
-    passport.authenticate(method, {
-      successRedirect: process.env.CLIENT_SERVER, // redirect to home page
-      failureRedirect: `${process.env.CLIENT_SERVER}/auth/error`, // redirect to error page
-    })(req, res, async () => {
-      const { email } = req.user;
-      const user = await this.UserRepostory.findByEmail(email);
-      if (user) {
-        req.session.isAdmin = Boolean(user.sysRole.find(e => e.role === 'Business Admin'));
-        req.session.resources = [];
-        if (!req.session.isAdmin) {
-          this.getRoles(user).then(data => {
-            req.session.resources = data;
-            if (req.user) {
-              return next();
-            }
-            return returnErrorJson(res, 'Bad request');
-            // throw new AppError(i18n.__("Auth.service.authenticateCallback.badRequest"),400);
-          });
-        } else {
+    try{
+      const { method } = req.params;
+      res.setHeader('Access-Control-Allow-Origin', process.env.CLIENT_SERVER);
+      passport.authenticate(method, {
+        successRedirect: process.env.CLIENT_SERVER, // redirect to home page
+        failureRedirect: `${process.env.CLIENT_SERVER}/auth/error`, // redirect to error page
+      })(req, res, async () => {
+        const { email } = req.user;
+        const user = await this.UserRepostory.findByEmail(email);
+        if (user) {
+          req.session.isAdmin = Boolean(user.sysRole.find(e => e.role === 'Business Admin'));
           req.session.resources = [];
-          next();
+          if (!req.session.isAdmin) {
+            this.getRoles(user).then(data => {
+              req.session.resources = data;
+              if (req.user) {
+                return next();
+              }
+              return returnErrorJson(res, 'Bad request');
+              // throw new AppError(i18n.__("Auth.service.authenticateCallback.badRequest"),400);
+            });
+          } else {
+            req.session.resources = [];
+            next();
+          }
         }
-      }
-    });
+      });
+    } catch(err){
+      next(err)
+    }
   }
 
-  logout(req, res) {
-    req.logout();
-    req.session.user = null;
-    req.session.token = null;
-    returnNormalJson(res, 'logout successfully');
-    // throw new AppError(i18n.__("Auth.service.logout.logout"),200);
+  logout(req, res,next) {
+    try{
+      req.logout();
+      req.session.user = null;
+      req.session.token = null;
+      returnNormalJson(res, 'logout successfully');
+      // throw new AppError(i18n.__("Auth.service.logout.logout"),200);
+    } catch(err){
+      next(err);
+    }
   }
 
   profile(req, res, next) {
+    
     try {
       // setTimeout(() => {
       // throw new AppError(i18n.__('Auth.service.profile.emailOk'), 500);
       if (req.user) {
+        
         returnNormalJson(res, { email: req.user.email });
+        
+        
       } else {
         returnErrorJson(res, 'Not authenticated', 401);
       }
       // }, 10000)
     } catch (err) {
       next(err);
+      
     }
   }
 
-  createUser(req, res) {
-    const {
-      body: { email, password, firstName, lastName, username, title, phoneNumber, ext, sysRoles },
-    } = req;
+  createUser(req, res, next) {
+    try{
+    
+      const {
+        body: { email, password, firstName, lastName, username, title, phoneNumber, ext, sysRoles },
+      } = req;
 
-    if (!email) {
-      return res.status(422).json({
-        errors: {
-          email: 'is required',
-        },
-      });
-      // throw new AppError(i18n.__("Auth.service.creatUser.emailRequired"),422);
-    }
+      if (!email) {
+        return res.status(422).json({
+          errors: {
+            email: 'is required',
+          },
+        });
+        // throw new AppError(i18n.__("Auth.service.creatUser.emailRequired"),422);
+      }
 
-    if (!password) {
-      // throw new AppError(i18n.__("Auth.service.creatUser.passwordRequired"),422);
-      return res.status(422).json({
-        errors: {
-          password: 'is required',
-        },
-      });
-    }
-    const appsysRole = [];
+      if (!password) {
+        // throw new AppError(i18n.__("Auth.service.creatUser.passwordRequired"),422);
+        return res.status(422).json({
+          errors: {
+            password: 'is required',
+          },
+        });
+      }
+      const appsysRole = [];
 
-    sysRoles.forEach(role => {
-      AppSysRoleModel.findById(role, (err, appsysrole) => {
-        appsysRole.push({
-          appSys: appsysrole.appSys,
-          role: appsysrole.role,
-          appSysRoleId: appsysrole._id,
-          _id: new ObjectID(),
+      sysRoles.forEach(role => {
+        AppSysRoleModel.findById(role, (err, appsysrole) => {
+          appsysRole.push({
+            appSys: appsysrole.appSys,
+            role: appsysrole.role,
+            appSysRoleId: appsysrole._id,
+            _id: new ObjectID(),
+          });
         });
       });
-    });
 
-    setTimeout(() => {
-      const finalUser = new UserModel({
-        email,
-        password,
-        firstName,
-        lastName,
-        username,
-        title,
-        phoneNumber,
-        ext,
-        sysRole: appsysRole,
-        isActive: true,
-      });
+      setTimeout(() => {
+        const finalUser = new UserModel({
+          email,
+          password,
+          firstName,
+          lastName,
+          username,
+          title,
+          phoneNumber,
+          ext,
+          sysRole: appsysRole,
+          isActive: true,
+        });
 
-      finalUser.setHashedPassword(password);
+        finalUser.setHashedPassword(password);
 
-      return finalUser
-        .save()
-        .then(user => {
-          returnNormalJson(res, { email: user.email });
-        })
-        .catch(err => res.json({ error: err }));
-    }, 1000);
+        return finalUser
+          .save()
+          .then(user => {
+            returnNormalJson(res, { email: user.email });
+          })
+          .catch(err => res.json({ error: err }));
+      }, 1000);
+    } catch(err){
+      next(err)
+    }
   }
 
   getArrDataFromSet(set) {
@@ -158,22 +181,26 @@ export default class AuthService {
   }
 
   processPassport(req, res, next) {
-    const authService = new AuthService();
-    return passport.authenticate('local')(req, res, async () => {
-      const { email } = req.user;
-      const user = await authService.UserRepostory.findByEmail(email);
-      req.session.roles = [];
-      req.session.isAdmin = false;
-      if (user) {
-        user.sysRole.forEach(e => {
-          req.session.roles.push(e.role);
-          if (e.role === 'Business Admin') {
-            req.session.isAdmin = true;
-          }
-        });
-        return next();
-      }
-      return returnErrorJson(res, 'Bad request');
-    });
+    try{
+      const authService = new AuthService();
+      return passport.authenticate('local')(req, res, async () => {
+        const { email } = req.user;
+        const user = await authService.UserRepostory.findByEmail(email);
+        req.session.roles = [];
+        req.session.isAdmin = false;
+        if (user) {
+          user.sysRole.forEach(e => {
+            req.session.roles.push(e.role);
+            if (e.role === 'Business Admin') {
+              req.session.isAdmin = true;
+            }
+          });
+          return next();
+        }
+        return returnErrorJson(res, 'Bad request');
+      });
+    } catch(err){
+      next(err);
+    }
   }
 }

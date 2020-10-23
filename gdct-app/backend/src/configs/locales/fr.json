@@ -1,4 +1,14 @@
 {
   "greeting": "Bienvenue sur le serveur GDCT",
-  "Auth.service.creatUser.required": "est requis"
+  "Auth.service.creatUser.required": "est requis",
+  "AppRole.service.deleteAppSys.existed": "existait appSysRole",
+  "Auth.service.authenticateCallback.badRequest": "Mauvaise Demande",
+  "Auth.service.logout.logout": "Mauvaise Demande",
+  "Auth.service.profile.emailOk": "D'accord",
+  "Auth.service.profile.NotAuthenticated": "Non authentifié",
+  "Menu.service.deleteMenu.CanNotDelete": "Ne peut pas être supprimé",
+  "MethodNotImplemented": "Méthode non mise en œuvre",
+  "idDoesNotExist": "_id n'existe pas",
+  "User.Repository.checkAuthenticate.WrongInput": "email ou mot de passe incorrect",
+  "Menu.Controller.getMenus.error":"nous avons une erreur getMenusByRole"
 }

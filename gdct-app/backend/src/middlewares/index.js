@@ -14,7 +14,7 @@ import customLogger from '../utils/log/customLogger';
 i18n.configure({
   locales: ['en', 'fr'],
   directory: path.join(__dirname, '../configs/locales'),
-  defaultLocale: 'en',
+  defaultLocale: 'fr',
   cookie: 'lang',
 });
 

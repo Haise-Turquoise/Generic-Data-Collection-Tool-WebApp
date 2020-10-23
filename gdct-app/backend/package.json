@@ -12,7 +12,8 @@
     "lint:eslint": "eslint \"./**/*.{js,ts}\" --fix",
     "lint:prettier": "prettier --list-different \"./**/*.{js,json,ts}\"",
     "debug": "ndb src/index.js",
-    "test": "jest --detectOpenHandles --forceExit --silent --verbose"
+    "test": "jest --testEnvironment=node",
+    "coverage": "jest --coverage"
   },
   "husky": {
     "hooks": {
@@ -67,6 +68,9 @@
     "winston": "^3.3.3"
   },
   "devDependencies": {
+    "@babel/core": "7.4.5",
+    "@babel/preset-env": "7.4.5",
+    "@shelf/jest-mongodb": "^1.2.3",
     "@types/jest": "^25.2.1",
     "@typescript-eslint/eslint-plugin": "^2.9.0",
     "@typescript-eslint/parser": "^2.9.0",
@@ -88,16 +92,5 @@
     "ts-jest": "^25.4.0",
     "ts-node": "^8.10.1",
     "typescript": "^3.8.3"
-  },
-  "jest": {
-    "testEnvironment": "node",
-    "moduleFileExtensions": [
-      "ts",
-      "js"
-    ],
-    "transform": {
-      "\\.(ts|tsx)$": "<rootDir>/node_modules/ts-jest"
-    },
-    "testRegex": "/tests/.*\\.test.(ts|tsx|js)$"
   }
 }
