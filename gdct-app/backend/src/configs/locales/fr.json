@@ -10,5 +10,5 @@
   "MethodNotImplemented": "Méthode non mise en œuvre",
   "idDoesNotExist": "_id n'existe pas",
   "User.Repository.checkAuthenticate.WrongInput": "email ou mot de passe incorrect",
-  "Menu.Controller.getMenus.error":"nous avons une erreur getMenusByRole"
+  "Menu.Controller.getMenus.error": "nous avons une erreur getMenusByRole"
 }

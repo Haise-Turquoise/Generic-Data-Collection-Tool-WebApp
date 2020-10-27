@@ -15,17 +15,6 @@
     "test": "jest --testEnvironment=node",
     "coverage": "jest --coverage"
   },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged"
-    }
-  },
-  "lint-staged": {
-    "./**/*.{js,ts}": [
-      "yarn lint:eslint",
-      "yarn fix:prettier"
-    ]
-  },
   "dependencies": {
     "@types/compression": "^1.7.0",
     "@types/cors": "^2.8.6",

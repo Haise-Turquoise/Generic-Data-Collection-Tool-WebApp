@@ -183,14 +183,6 @@ const getYears = () => {
   return ret.reverse();
 };
 
-const getRange = (a, b) => {
-  const ret = [];
-  for (let i = a; i <= b; i++) {
-    ret.push(i);
-  }
-  return ret;
-};
-
 const MasterValuePopulation = () => {
   const dispatch = useDispatch();
 
@@ -220,6 +212,8 @@ const MasterValuePopulation = () => {
         false,
     }),
   );
+
+  console.log('why not:', { db_categoryList, db_hfkList, db_columnNamesList, isCallInProgress });
 
   const [categoryList, updateCategoryList] = useState([]);
 

@@ -2,6 +2,7 @@ import passport from 'passport';
 import Container from 'typedi';
 import mongodb from 'mongodb';
 import i18n from 'i18n';
+import { nextTick } from 'process';
 import UserModel from '../../models/User/model';
 import { returnNormalJson, returnErrorJson } from '../../utils';
 import UserRepository from '../../repositories/User';
@@ -9,7 +10,6 @@ import AppRoleResourceRepository from '../../repositories/AppRoleResource';
 import AppResourceRepository from '../../repositories/AppResource';
 import AppSysRoleModel from '../../models/AppSysRole';
 import AppError from '../../utils/AppError';
-import { nextTick } from 'process';
 
 const { ObjectID } = mongodb;
 
@@ -21,16 +21,16 @@ export default class AuthService {
   }
 
   authenticate(req, res, next) {
-    try{
+    try {
       const { method } = req.params;
       passport.authenticate(method, { scope: 'email' })(req, res, next);
-    } catch(err){
-      next(err)
+    } catch (err) {
+      next(err);
     }
   }
 
   authenticateCallback(req, res, next) {
-    try{
+    try {
       const { method } = req.params;
       res.setHeader('Access-Control-Allow-Origin', process.env.CLIENT_SERVER);
       passport.authenticate(method, {
@@ -57,46 +57,40 @@ export default class AuthService {
           }
         }
       });
-    } catch(err){
-      next(err)
+    } catch (err) {
+      next(err);
     }
   }
 
-  logout(req, res,next) {
-    try{
+  logout(req, res, next) {
+    try {
       req.logout();
       req.session.user = null;
       req.session.token = null;
       returnNormalJson(res, 'logout successfully');
       // throw new AppError(i18n.__("Auth.service.logout.logout"),200);
-    } catch(err){
+    } catch (err) {
       next(err);
     }
   }
 
   profile(req, res, next) {
-    
     try {
       // setTimeout(() => {
       // throw new AppError(i18n.__('Auth.service.profile.emailOk'), 500);
       if (req.user) {
-        
         returnNormalJson(res, { email: req.user.email });
-        
-        
       } else {
         returnErrorJson(res, 'Not authenticated', 401);
       }
       // }, 10000)
     } catch (err) {
       next(err);
-      
     }
   }
 
   createUser(req, res, next) {
-    try{
-    
+    try {
       const {
         body: { email, password, firstName, lastName, username, title, phoneNumber, ext, sysRoles },
       } = req;
@@ -154,8 +148,8 @@ export default class AuthService {
           })
           .catch(err => res.json({ error: err }));
       }, 1000);
-    } catch(err){
-      next(err)
+    } catch (err) {
+      next(err);
     }
   }
 
@@ -181,7 +175,7 @@ export default class AuthService {
   }
 
   processPassport(req, res, next) {
-    try{
+    try {
       const authService = new AuthService();
       return passport.authenticate('local')(req, res, async () => {
         const { email } = req.user;
@@ -199,7 +193,7 @@ export default class AuthService {
         }
         return returnErrorJson(res, 'Bad request');
       });
-    } catch(err){
+    } catch (err) {
       next(err);
     }
   }
