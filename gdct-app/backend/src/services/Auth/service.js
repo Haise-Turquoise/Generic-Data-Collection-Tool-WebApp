@@ -49,7 +49,6 @@ export default class AuthService {
                 return next();
               }
               return returnErrorJson(res, 'Bad request');
-              
             });
           } else {
             req.session.resources = [];
@@ -68,15 +67,13 @@ export default class AuthService {
       req.session.user = null;
       req.session.token = null;
       returnNormalJson(res, 'logout successfully');
-      
-    } catch(err){
+    } catch (err) {
       next(err);
     }
   }
 
   profile(req, res, next) {
     try {
-      
       if (req.user) {
         returnNormalJson(res, { email: req.user.email });
       } else {
@@ -100,11 +97,9 @@ export default class AuthService {
             email: 'is required',
           },
         });
-        
       }
 
       if (!password) {
-       
         return res.status(422).json({
           errors: {
             password: 'is required',

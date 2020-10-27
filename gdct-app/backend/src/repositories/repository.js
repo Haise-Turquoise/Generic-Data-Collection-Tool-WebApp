@@ -9,19 +9,16 @@ export default class BaseRepository {
   find(item) {
     const message = `${i18n.__('MethodNotImplemented')} ${{ item }}`;
     throw new AppError(message);
-    
   }
 
   create(item) {
     const message = `${i18n.__('MethodNotImplemented')} ${{ item }}`;
     throw new AppError(message);
-    
   }
 
   update(id, item) {
     const message = `${i18n.__('MethodNotImplemented')} ${{ id }} ${{ item }}`;
     throw new AppError(message);
-   
   }
 
   async findAll() {

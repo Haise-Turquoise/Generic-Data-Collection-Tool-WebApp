@@ -19,8 +19,7 @@ import Box from '@material-ui/core/Box';
 import * as yup from 'yup';
 import MaterialTable from 'material-table';
 
-import { useTranslation} from "react-i18next";
-
+import { useTranslation } from 'react-i18next';
 
 import {
   orgGroupChange,
@@ -261,7 +260,7 @@ const getStepContent = (
   props,
 ) => {
   const { values, handleChange, touched, handleBlur, errors, isValid } = props;
-  const {t, i18n} = useTranslation();
+  const { t, i18n } = useTranslation();
   const checkBoxColumns = [
     { title: 'Organization', field: 'organization.name' },
     { title: 'Program', field: 'program.code' },
@@ -348,7 +347,10 @@ const getStepContent = (
           <form className="register__form">
             <br />
             <div className="register__label">
-              <Typography className="register__inputTitle"> {t('UserRegistration.title')} </Typography>
+              <Typography className="register__inputTitle">
+                {' '}
+                {t('UserRegistration.title')}{' '}
+              </Typography>
             </div>
             <div className="register__informationField">
               <TextField
@@ -416,7 +418,10 @@ const getStepContent = (
 
             <br />
             <div className="register__label">
-              <Typography className="register__inputTitle"> {t('UserRegistration.phoneNumber')} </Typography>
+              <Typography className="register__inputTitle">
+                {' '}
+                {t('UserRegistration.phoneNumber')}{' '}
+              </Typography>
             </div>
             <div className="register__informationField">
               <TextField
