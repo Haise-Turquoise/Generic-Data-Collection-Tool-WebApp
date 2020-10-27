@@ -15,7 +15,7 @@ i18n.configure({
   locales: ['en', 'fr'],
   directory: path.join(__dirname, '../configs/locales'),
   defaultLocale: 'en',
-  cookie: 'lang'
+  cookie: 'lang',
 });
 
 export const middlewares = app => {

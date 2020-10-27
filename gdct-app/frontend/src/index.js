@@ -10,7 +10,7 @@ import Root from './Root';
 import * as serviceWorker from './serviceWorker';
 
 import 'bootstrap/dist/css/bootstrap.css';
-
+import './i18n'
 ReactDOM.render(
   <Provider store={store}>
     <Root />

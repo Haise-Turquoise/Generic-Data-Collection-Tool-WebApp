@@ -27,6 +27,7 @@ import MasterValuePopulation from './views/MasterValuePopulation';
 import { ROUTE_WORKFLOW, ROUTE_TEMPLATE_PCKGS, ROUTE_CATEGORY } from './constants/routes';
 
 import './App.scss';
+// import './i18n'
 
 const PrivateRouter = ({ setLoggedIn }) => {
   return (

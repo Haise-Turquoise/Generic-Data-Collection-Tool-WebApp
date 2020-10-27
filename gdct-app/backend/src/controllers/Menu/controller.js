@@ -1,6 +1,8 @@
 import { Service } from 'typedi';
 import { Router } from 'express';
+import i18n from 'i18n';
 import MenuService from '../../services/Menu';
+import AppError from '../../utils/AppError';
 
 const MenuController = Service([MenuService], service => {
   const router = Router();
@@ -41,9 +43,6 @@ const MenuController = Service([MenuService], service => {
         .createMenu(req.body.Menu)
         .then(Menu => {
           res.json({ Menu });
-        })
-        .catch(error => {
-          throw error;
         })
         .catch(next);
     });

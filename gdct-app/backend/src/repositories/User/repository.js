@@ -1,3 +1,4 @@
+import i18n from 'i18n';
 import UserEntity from '../../entities/User';
 import BaseRepository from '../repository';
 import UserModel from '../../models/User';
@@ -17,7 +18,7 @@ export default class UserRepository extends BaseRepository {
       .select('+password')
       .then(async user => {
         if (!user || !(await user.checkPassword(password, user.password))) {
-          throw new AppError('Incorrect email or password', 400);
+          throw new AppError(i18n.__('User.Repository.checkAuthenticate.WrongInput'), 400);
         }
         return new UserEntity(user.toObject());
       });

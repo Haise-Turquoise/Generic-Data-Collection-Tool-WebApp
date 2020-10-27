@@ -8,10 +8,28 @@
   "scripts": {
     "install": "yarn --cwd slate && yarn --cwd gdct-app",
     "start": "yarn --cwd gdct-app start",
-    "fix": "yarn --cwd gdct-app fix"
+    "fix": "yarn --cwd gdct-app fix",
+    "test": "jest"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "./**/*.{js,ts}": [
+      "yarn fix"
+    ]
   },
   "dependencies": {
     "passport-google-oauth": "^2.0.0",
     "passport-remember-me": "^0.0.1"
+  },
+  "devDependencies": {
+    "@babel/preset-env": "^7.12.1",
+    "babel-jest": "^26.6.0",
+    "husky": "^4.3.0",
+    "jest": "^26.6.0",
+    "lint-staged": "^10.5.0"
   }
 }
