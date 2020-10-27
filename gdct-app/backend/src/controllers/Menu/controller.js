@@ -11,7 +11,6 @@ const MenuController = Service([MenuService], service => {
       service
         .getAuthroizedMenus(req.session.roles)
         .then(res => {
-          // throw new AppError(i18n.__('Menu.Controller.getMenus.error'));
           res.sort((a, b) => a.orderId - b.orderId);
           return res;
         })

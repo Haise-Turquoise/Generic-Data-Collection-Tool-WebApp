@@ -17,7 +17,7 @@ export default class AppSysService {
 
   async deleteAppSys(id) {
     if (await this.isRefered(id)) {
-      // throw Error('existed appSysRole');
+      
       throw new AppError(i18n.__('AppSys.service.deleteAppSys.existed'), 409);
     }
     return this.AppSysRepository.delete(id);
