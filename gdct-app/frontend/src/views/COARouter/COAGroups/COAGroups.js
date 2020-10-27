@@ -15,8 +15,9 @@ import {
 import './COAGroups.scss';
 import { selectFactoryRESTResponseTableValues } from '../../../store/common/REST/selectors';
 import { selectCOAGroupsStore } from '../../../store/COAGroupsStore/selectors';
-
+import { useTranslation} from "react-i18next";
 const COAGroupsHeader = () => {
+  const {t, i18n} = useTranslation();
   return (
     <Paper className="header">
       <Typography variant="h5">COA Groups</Typography>

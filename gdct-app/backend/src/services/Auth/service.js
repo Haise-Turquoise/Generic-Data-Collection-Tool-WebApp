@@ -49,7 +49,7 @@ export default class AuthService {
                 return next();
               }
               return returnErrorJson(res, 'Bad request');
-              // throw new AppError(i18n.__("Auth.service.authenticateCallback.badRequest"),400);
+              
             });
           } else {
             req.session.resources = [];
@@ -68,7 +68,7 @@ export default class AuthService {
       req.session.user = null;
       req.session.token = null;
       returnNormalJson(res, 'logout successfully');
-      // throw new AppError(i18n.__("Auth.service.logout.logout"),200);
+      
     } catch(err){
       next(err);
     }
@@ -77,8 +77,7 @@ export default class AuthService {
   profile(req, res, next) {
     
     try {
-      // setTimeout(() => {
-      // throw new AppError(i18n.__('Auth.service.profile.emailOk'), 500);
+      
       if (req.user) {
         
         returnNormalJson(res, { email: req.user.email });
@@ -107,11 +106,11 @@ export default class AuthService {
             email: 'is required',
           },
         });
-        // throw new AppError(i18n.__("Auth.service.creatUser.emailRequired"),422);
+        
       }
 
       if (!password) {
-        // throw new AppError(i18n.__("Auth.service.creatUser.passwordRequired"),422);
+       
         return res.status(422).json({
           errors: {
             password: 'is required',

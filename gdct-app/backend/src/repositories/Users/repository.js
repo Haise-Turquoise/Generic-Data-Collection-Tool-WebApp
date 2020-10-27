@@ -57,7 +57,7 @@ export default class UsersRepository extends BaseRepository {
 
   findOne(id) {
     const message = `${i18n.__('MethodNotImplemented')} ${{ id }}`;
-    // throw new Error(`Method not implemented.${id}`);
+    
     throw new AppError(message, 400);
   }
 
