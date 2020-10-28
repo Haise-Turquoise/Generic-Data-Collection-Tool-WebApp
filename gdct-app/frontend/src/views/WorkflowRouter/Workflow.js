@@ -218,7 +218,9 @@ const Workflow = () => {
 
   return (
     <div className="workflow">
-      <WorkflowPane stateActions={stateActions} />
+      <div className="scroll-bar">
+        <WorkflowPane stateActions={stateActions} />
+      </div>
       <WorkflowSideBar stateActions={stateActions} />
     </div>
   );
