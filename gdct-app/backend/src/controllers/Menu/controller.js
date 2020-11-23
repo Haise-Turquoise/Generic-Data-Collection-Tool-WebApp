@@ -1,8 +1,8 @@
 import { Service } from 'typedi';
 import { Router } from 'express';
+import i18n from 'i18n';
 import MenuService from '../../services/Menu';
 import AppError from '../../utils/AppError';
-import i18n from 'i18n';
 
 const MenuController = Service([MenuService], service => {
   const router = Router();
@@ -25,9 +25,7 @@ const MenuController = Service([MenuService], service => {
       service
         .getAuthroizedMenus([req.params.role])
         .then(Menus => {
-          
           res.json({ Menus });
-          
         })
         .catch(next);
       // }

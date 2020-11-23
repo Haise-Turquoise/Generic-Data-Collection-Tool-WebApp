@@ -101,6 +101,7 @@ const EditSubmission = ({ history }) => {
         .then(workflowProcess => {
           if (workflowProcess !== undefined)
             workflowProcess.to.forEach(process => {
+              console.log(process.statusId.name);
               switch (process.statusId.name) {
                 case 'Submitted': {
                   setSubmitUnavailable(false);
@@ -133,6 +134,7 @@ const EditSubmission = ({ history }) => {
   }
   console.log(isSubmitterOrInputter);
   console.log(isReviewerOrApprover);
+  console.log(submitUnavailable);
 
   const handleOpenTemplate = () =>
     history.push({

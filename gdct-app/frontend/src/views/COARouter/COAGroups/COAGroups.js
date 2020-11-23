@@ -3,7 +3,7 @@ import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 
 import MaterialTable from 'material-table';
 import Paper from '@material-ui/core/Paper';
-
+import { useTranslation } from 'react-i18next';
 import Typography from '@material-ui/core/Typography';
 import {
   getCOAGroupsRequest,
@@ -15,9 +15,9 @@ import {
 import './COAGroups.scss';
 import { selectFactoryRESTResponseTableValues } from '../../../store/common/REST/selectors';
 import { selectCOAGroupsStore } from '../../../store/COAGroupsStore/selectors';
-import { useTranslation} from "react-i18next";
+
 const COAGroupsHeader = () => {
-  const {t, i18n} = useTranslation();
+  const { t, i18n } = useTranslation();
   return (
     <Paper className="header">
       <Typography variant="h5">COA Groups</Typography>
