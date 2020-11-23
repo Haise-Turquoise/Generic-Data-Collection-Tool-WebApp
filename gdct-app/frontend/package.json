@@ -14,17 +14,6 @@
     "lint:eslint": "eslint \"./**/*.{js,jsx,ts,tsx}\" --fix",
     "lint:prettier": "prettier --list-different \"./**/*.{js,jsx,ts,tsx}\""
   },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged"
-    }
-  },
-  "lint-staged": {
-    "./**/*.{js,jsx,ts,tsx}": [
-      "yarn lint:eslint",
-      "yarn fix:prettier"
-    ]
-  },
   "author": "",
   "license": "ISC",
   "dependencies": {
@@ -114,7 +103,7 @@
     "eslint-config-prettier": "^6.11.0",
     "eslint-plugin-import": "^2.22.0",
     "eslint-plugin-prettier": "^3.1.4",
-    "eslint-plugin-react": "^7.20.3",
+    "eslint-plugin-react": "^7.21.5",
     "file-loader": "^3.0.1",
     "html-webpack-plugin": "^3.2.0",
     "husky": "^4.2.5",
