@@ -2,7 +2,10 @@ import { Service } from 'typedi';
 
 import { Router } from 'express';
 import SheetNameService from '../../services/SheetName';
+import MasterValueService from '../../services/MasterValue';
+import { returnNormalJson } from '../../utils';
 
+const masterValueService = new MasterValueService();
 const SheetNameController = Service([SheetNameService], service => {
   const router = Router();
   return (() => {
@@ -41,6 +44,39 @@ const SheetNameController = Service([SheetNameService], service => {
         .catch(next);
     });
 
+    router.get('/', (req, res, next) => {
+      const { organization, category, attribute, templateType = '' } = req.query;
+      if ((organization || category || attribute) && (!organization || !category || !attribute)) {
+        throw new Error('All fields of organization, category and attribute are required');
+      }
+      masterValueService
+        .findMasterValues({
+          organization,
+          category,
+          attribute,
+          templateType,
+        })
+        .then(masterValues => {
+          returnNormalJson(res, masterValues);
+        })
+        .catch(next);
+    });
+
+    router.get('/:organization/:category/:attribute', (req, res, next) => {
+      const { organization, category, attribute } = req.params;
+      const { templateType = '' } = req.query;
+      masterValueService
+        .findMasterValueByParams({
+          organization,
+          category,
+          attribute,
+          templateType,
+        })
+        .then(masterValues => {
+          returnNormalJson(res, masterValues);
+        })
+        .catch(next);
+    });
     return router;
   })();
 });

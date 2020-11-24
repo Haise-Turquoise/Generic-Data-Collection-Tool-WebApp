@@ -26,6 +26,7 @@ import MenuItemController from './MenuItem';
 import MenuController from './Menu';
 import UsersController from './Users/controller';
 import SubmissionNoteController from './SubmissionNote';
+import MasterValueController from './MasterValue';
 import { authorized } from '../middlewares/auth/auth';
 
 export const routerManager = app => {
@@ -65,4 +66,6 @@ export const routerManager = app => {
   app.use('/role_manager', authorized, Container.get(AppSysRoleController));
   app.use('/role_manager', authorized, Container.get(AppRoleResourceController));
   app.use('/role_manager', authorized, Container.get(AppResourceController));
+
+  app.use('/masterValues', Container.get(MasterValueController));
 };
