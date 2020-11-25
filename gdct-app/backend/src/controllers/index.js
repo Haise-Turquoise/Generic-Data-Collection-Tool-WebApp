@@ -40,6 +40,7 @@ export const routerManager = app => {
   app.use('/orgGroup_manager', Container.get(OrgGroupController));
   app.use('/user_management', Container.get(UserController));
   app.use('/template_manager', Container.get(TemplateTypeController));
+  app.use('/masterValues', Container.get(MasterValueController));
 
   app.use('/', authorized, Container.get(ReportingPeriodController));
   app.use('/', authorized, Container.get(SheetNameController));
@@ -66,6 +67,4 @@ export const routerManager = app => {
   app.use('/role_manager', authorized, Container.get(AppSysRoleController));
   app.use('/role_manager', authorized, Container.get(AppRoleResourceController));
   app.use('/role_manager', authorized, Container.get(AppResourceController));
-
-  app.use('/masterValues', Container.get(MasterValueController));
 };
