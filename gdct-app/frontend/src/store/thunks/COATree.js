@@ -1,6 +1,9 @@
 import { batch } from 'react-redux';
-
+import cloneDeep from 'clone-deep';
+import SortableTree, { walk, toggleExpandedForAll } from 'react-sortable-tree';
 import COATreeController from '../../controllers/COATree';
+import COAController from '../../controllers/COA';
+import COAsStore from '../COAsStore/store';
 import COATreesStore from '../COATreesStore/store';
 import COATreeStore from '../COATreeStore/store';
 import DialogsStore from '../DialogsStore/store';
@@ -79,19 +82,75 @@ export const createCOATreeRequest = (
     });
 };
 
-export const getCOATreesBySheetNameRequest = (sheetName, isTreeComponent = false) => dispatch => {
+export const getCOATreesBySheetNameRequest = (sheetName, isTreeComponent = false) => (
+  dispatch,
+  getState,
+) => {
   dispatch(COATreesStore.actions.REQUEST());
-
-  COATreeController.fetchBySheetName(sheetName)
-    .then(COATrees => {
-      batch(() => {
-        dispatch(COATreesStore.actions.RECEIVE(COATrees));
-        if (isTreeComponent)
-          dispatch(COATreeStore.actions.LOAD_COA_TREE_UI({ treeList: COATrees }));
-      });
+  COAController.fetch()
+    .then(result => {
+      dispatch(COAsStore.actions.RECEIVE(result));
     })
-    .catch(error => {
-      dispatch(COATreesStore.actions.FAIL_REQUEST(error));
+    .then(result => {
+      COATreeController.fetchBySheetName(sheetName)
+        .then(COATrees => {
+          batch(() => {
+            dispatch(COATreesStore.actions.RECEIVE(COATrees));
+            if (isTreeComponent)
+              dispatch(COATreeStore.actions.LOAD_COA_TREE_UI({ treeList: COATrees }));
+            const {
+              COATreeStore: { localTree },
+            } = getState();
+            // console.log(localTree)
+            const {
+              COAsStore: { response },
+            } = getState();
+            // console.log(response)
+
+            const getNodeKey = ({ treeIndex }) => treeIndex;
+            const newLocalTree = cloneDeep(localTree);
+            const COAs = cloneDeep(response.Values);
+            // console.log(COAs)
+            walk({
+              treeData: newLocalTree,
+              getNodeKey,
+              callback: node => {
+                // console.log(node)
+                if (node.node.content) {
+                  // console.log(node.node.content.categoryId)
+                  if (node.node.content.categoryId) {
+                    node.node.content.categoryId.forEach(categoryId => {
+                      COAs.forEach(COA => {
+                        if (categoryId == COA.id) {
+                          // console.log(categoryId)
+                          const COACopy = cloneDeep(COA);
+                          COACopy.title = COACopy.name;
+                          if (!node.node.children) {
+                            // console.log('child is empty')
+                            node.node.children = [COACopy];
+                          } else if (!node.node.children.some(child => child.id === COACopy.id)) {
+                            // console.log('not in there')
+                            node.node.children.push(COACopy);
+                          } else if (node.node.children.some(child => child.id === COACopy.id)) {
+                            // console.log('already in there')
+                            node.node.children.push(COACopy);
+                          }
+                        }
+                      });
+                    });
+                  }
+                }
+              },
+              ignoreCollapsed: false,
+            });
+            // console.log(newLocalTree)
+
+            dispatch(COATreeStore.actions.UPDATE_LOCAL_COA_TREE_UI({ tree: newLocalTree }));
+          });
+        })
+        .catch(error => {
+          dispatch(COATreesStore.actions.FAIL_REQUEST(error));
+        });
     });
 };
 
@@ -100,10 +159,24 @@ export const updateCOATreesBySheetNameRequest = sheetNameId => (dispatch, getSta
     COATreeStore: { localTree },
   } = getState();
 
+  const treeCopy = cloneDeep(toggleExpandedForAll({ treeData: localTree, expanded: true }));
+  const getNodeKey = ({ treeIndex }) => treeIndex;
+  walk({
+    treeData: treeCopy,
+    getNodeKey,
+    callback: node => {
+      // console.log(node)
+      if (node.node.children) {
+        node.node.children = node.node.children.filter(child => child.content !== undefined);
+      }
+    },
+    ignoreCollapsed: false,
+  });
+
   dispatch(COATreesStore.actions.REQUEST());
 
-  const normalizedTrees = normalizeTrees(localTree);
-
+  const normalizedTrees = normalizeTrees(treeCopy);
+  // console.log(normalizedTrees);
   COATreeController.updateBySheetName(normalizedTrees, sheetNameId)
     .then(_COATrees => {
       dispatch(COATreeStore.actions.UPDATE_ORIGINAL_COA_TREE_UI());

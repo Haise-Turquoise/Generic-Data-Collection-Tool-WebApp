@@ -1,10 +1,21 @@
 import cloneDeep from 'clone-deep';
 
-import { removeNode, changeNodeAtPath } from 'react-sortable-tree';
+import { walk, removeNode, changeNodeAtPath, toggleExpandedForAll } from 'react-sortable-tree';
 import { createSlice } from '@reduxjs/toolkit';
-
-const generateTitle = ({ categoryGroupId }) =>
-  `${categoryGroupId ? `${categoryGroupId.name}` : ''}`;
+import { useSelector, shallowEqual } from 'react-redux';
+// const generateTitle = ({ categoryGroupId }) =>
+//   `${categoryGroupId ? `${categoryGroupId.name}` : ''}`;
+const generateTitle = content => {
+  if (content.categoryGroupId) {
+    // the node is categoryGroup
+    return content.categoryGroupId.name;
+  }
+  if (content.categoryId) {
+    // the node of category
+    return content.categoryId[0].name;
+  }
+  return '';
+};
 
 const getNodeKey = ({ treeIndex }) => treeIndex;
 
@@ -16,13 +27,12 @@ const UPDATE_ORIGINAL_COA_TREE_UI = state => ({
 const LOAD_COA_TREE_UI = (state, { payload }) => {
   const dependencyMap = {};
 
-  // Hash table of the tree
   const normalizedTreeMap = {};
 
   const parentNodes = [];
 
   payload.treeList.forEach(node => {
-    const { _id, parentId } = node;
+    const { _id, parentId, categoryId, parentKey } = node;
 
     if (!dependencyMap[parentId]) dependencyMap[parentId] = [];
 
@@ -31,6 +41,7 @@ const LOAD_COA_TREE_UI = (state, { payload }) => {
     } else {
       parentNodes.push(node);
     }
+
     normalizedTreeMap[_id] = node;
   });
 
@@ -50,8 +61,8 @@ const LOAD_COA_TREE_UI = (state, { payload }) => {
 };
 
 const createTreeBranch = (rootId, normalizedTreeMap, dependencyMap) => {
-  const children = dependencyMap[rootId];
   const content = normalizedTreeMap[rootId];
+  const children = dependencyMap[rootId];
 
   return {
     content,
@@ -62,10 +73,12 @@ const createTreeBranch = (rootId, normalizedTreeMap, dependencyMap) => {
   };
 };
 
-const UPDATE_LOCAL_COA_TREE_UI = (state, { payload }) => ({
-  ...state,
-  localTree: payload.tree,
-});
+const UPDATE_LOCAL_COA_TREE_UI = (state, { payload }) => {
+  return {
+    ...state,
+    localTree: toggleExpandedForAll({ treeData: payload.tree, expanded: true }),
+  };
+};
 
 const REVERT_COA_TREE_UI = () => ({
   ...state,
@@ -78,7 +91,7 @@ const ADD_ROOT_COA_TREE_UI = (state, { payload }) => {
     title: generateTitle(payload.tree),
   };
 
-  console.log('pl', payload);
+  // console.log('pl', payload);
 
   return {
     ...state,
@@ -87,39 +100,85 @@ const ADD_ROOT_COA_TREE_UI = (state, { payload }) => {
 };
 
 const DELETE_COA_TREE_UI = (state, { payload }) => {
+  const treeCopy = cloneDeep(state.localTree);
+  toggleExpandedForAll({ treeData: treeCopy, expanded: true });
+  let isCategory = false;
+  if (payload.node.node.id) {
+    isCategory = true;
+  }
+  if (payload.node.parentNode) {
+    walk({
+      treeData: treeCopy,
+      getNodeKey,
+      callback: node => {
+        // console.log(node)
+        // if (!node.node.content) {}
+        if (isCategory && payload.node.parentNode.content._id == node.node.content._id) {
+          // console.log('find the target category parent')
+          node.node.content.categoryId = node.node.content.categoryId.filter(
+            category => category !== payload.node.node.id,
+          );
+          // console.log(node.node.content.categoryId)
+        }
+      },
+      ignoreCollapsed: false,
+    });
+  }
+
   const newLocalTree = removeNode({
-    treeData: state.localTree,
-    path: payload.path,
+    treeData: treeCopy,
+    path: payload.node.path,
     getNodeKey,
   }).treeData;
-
   return {
     ...state,
     localTree: newLocalTree,
   };
 };
 
-const UPDATE_SELECTED_NODE_COA_TREE_UI = (state, { payload }) => ({
-  ...state,
-  selectedNodeProps: payload.nodeProps,
-});
+const UPDATE_SELECTED_NODE_COA_TREE_UI = (state, { payload }) => {
+  return {
+    ...state,
+    selectedNodeProps: payload.nodeProps,
+  };
+};
 
 const SELECT_COA_COA_TREE_UI = (state, { payload }) => {
-  // TODO: Clean this up
   const newSelectNodeProps = {
     ...state.selectedNodeProps,
     node: {
       ...state.selectedNodeProps.node,
+      children: state.selectedNodeProps.node.children
+        ? [
+            ...state.selectedNodeProps.node.children,
+            {
+              _id: payload.item._id,
+              id: payload.item.id,
+              name: payload.item.name,
+              COA: payload.item.COA,
+              title: payload.item.name,
+              children: undefined,
+            },
+          ]
+        : [
+            {
+              _id: payload.item._id,
+              id: payload.item.id,
+              name: payload.item.name,
+              COA: payload.item.COA,
+              title: payload.item.name,
+              children: undefined,
+            },
+          ],
       content: {
         ...state.selectedNodeProps.node.content,
-        categoryId: state.selectedNodeProps.node.content.categoryId.includes(payload._id)
-          ? state.selectedNodeProps.node.content.categoryId.filter(
-              curCOAId => curCOAId !== payload._id,
-            )
-          : [...state.selectedNodeProps.node.content.categoryId, payload._id],
+        categoryId: state.selectedNodeProps.node.content.categoryId.includes(payload.item.id)
+          ? [...state.selectedNodeProps.node.content.categoryId, payload.item.id]
+          : [...state.selectedNodeProps.node.content.categoryId, payload.item.id],
       },
     },
   };
+  const treeCopy = cloneDeep(state.localTree);
 
   const newLocalTree = changeNodeAtPath({
     treeData: state.localTree,
@@ -127,11 +186,11 @@ const SELECT_COA_COA_TREE_UI = (state, { payload }) => {
     getNodeKey,
     newNode: newSelectNodeProps.node,
   });
-
   return {
     ...state,
     localTree: newLocalTree,
     selectedNodeProps: newSelectNodeProps,
+    expanded: true,
   };
 };
 

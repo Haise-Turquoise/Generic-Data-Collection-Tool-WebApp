@@ -8,7 +8,7 @@ const COATreeModel = model(
     {
       parentId: { type: ObjectId, ref: 'CategoryTree' },
       categoryGroupId: { type: ObjectId, ref: 'CategoryGroup' },
-      categoryId: [{ type: ObjectId, ref: 'Category' }],
+      categoryId: [{ type: Object, ref: 'Category' }],
       sheetNameId: { type: ObjectId, ref: 'SheetName' },
     },
     { minimize: false },
