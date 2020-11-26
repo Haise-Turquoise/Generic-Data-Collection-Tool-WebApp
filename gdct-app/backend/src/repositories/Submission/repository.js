@@ -40,4 +40,11 @@ export default class SubmissionRepository extends BaseRepository {
   async findByOrgIdAndProgramId(orgId, programIds) {
     return SubmissionModel.find({ orgId, programId: { $in: programIds }, isLatest: true });
   }
+
+  async updateGoogleSheetId(_id, googleSheetId) {
+    return SubmissionModel.findByIdAndUpdate( _id,  { googleSheetId } );
+  }
+  async updateWorkbook(_id, workbookData){
+    return SubmissionModel.findByIdAndUpdate( _id, { workbookData })
+  }
 }

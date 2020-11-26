@@ -21,6 +21,7 @@ import { selectSubmissionNoteStore } from '../../store/SubmissionNoteStore/selec
 import {
   getSubmissionByIdRequest,
   updateSubmissionStatusRequest,
+  openGoogleSheetRequest,
 } from '../../store/thunks/submission';
 import DOWNLOAD from '../../store/reducers/ui/excel/commands/DOWNLOAD';
 import { selectSubmissionNoteHistoryStore } from '../../store/SubmissionNoteHistoryStore/selectors';
@@ -134,17 +135,23 @@ const EditSubmission = ({ history }) => {
   console.log(isSubmitterOrInputter);
   console.log(isReviewerOrApprover);
 
-  const handleOpenTemplate = () =>
-    history.push({
-      pathname: `/submission/submissions/${submission._id}`,
-      state: { detail: location.state.detail },
-    });
+  const handleOpenTemplate = () => {
+    // history.push({
+    //   pathname: `/submission/submissions/${submission._id}`,
+    //   state: { detail: location.state.detail },
+    // });
+
+    //Creates a new spreadsheet in google and returns the id. 
+    openGoogleSheetRequest(submission._id);
+  }
+
 
   const handleDownloadWorkbook = () => {
     DOWNLOAD(convertStateToReactState(submission.workbookData));
   };
 
   const handleChangeStatus = (submission, submissionNote, role, newProcessId) => {
+    console.log('1', submission)
     dispatch(updateSubmissionStatusRequest(submission, submissionNote, role, newProcessId));
     history.push({
       pathname: `/submission/dashboard`,

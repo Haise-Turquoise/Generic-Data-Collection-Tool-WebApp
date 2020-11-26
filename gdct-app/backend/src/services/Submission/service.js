@@ -13,6 +13,8 @@ import TemplateTypeRepository from '../../repositories/TemplateType';
 import WorkflowProcessRepository from '../../repositories/WorkflowProcess';
 import SubmissionPeriodRepository from '../../repositories/SubmissionPeriod';
 import UsersRepository from '../../repositories/Users';
+import GoogleSheetRepository from '../../repositories/GoogleSheet';
+import { createSheet, createSpreadsheet, addEditor, saveGoogleSheetInSubmission } from '../../middlewares/googleapis'
 
 const mongoose = require('mongoose');
 mongoose.Promise = require('bluebird');
@@ -32,6 +34,7 @@ export default class SubmissionService {
     this.workflowProcessRepository = Container.get(WorkflowProcessRepository);
     this.submissionPeriodRepository = Container.get(SubmissionPeriodRepository);
     this.usersRepository = Container.get(UsersRepository);
+    this.googleSheetRepository = Container.get(GoogleSheetRepository)
   }
 
   checkUserRole(userInfo, submission, permission) {
@@ -155,6 +158,15 @@ export default class SubmissionService {
   }
 
   async updateStatus(submission, submissionNote, role, nextProcessId) {
+    console.log(submission);
+    console.log(submission._id);
+    const newSubmission = await this.submissionRepository.findById(submission._id);
+    console.log(newSubmission);
+    if (newSubmission.googleSheetId){
+      saveGoogleSheetInSubmission(newSubmission.googleSheetId);
+      submission = await this.submissionRepository.findById(submission._id);
+    }
+
     const submissionNotes = {
       note: submissionNote,
       submissionId: submission.parentId ? submission.parentId : submission._id,
@@ -340,5 +352,46 @@ export default class SubmissionService {
         });
       });
     });
+  }
+
+  async openTemplate(submissionId, userEmail){
+    console.log(submissionId);
+    // Temporary email
+    userEmail = 'test34973737@gmail.com';
+    //Retrieves template JSON from database
+    const submission = await this.submissionRepository.findById(submissionId); 
+    //Runs if there is already an existing google sheet 
+    if (submission.googleSheetId){
+      const res = await this.googleSheetRepository.findById(submission.googleSheetId);
+      await Promise.resolve(addEditor(res.googleSheetId, userEmail));
+      return res.googleSheetId;
+    }
+    // //First batch of data to send to Google
+    // const firstSheetToSend = {
+    //   properties: template.templateData.properties,
+    //   sheets: '',
+    // }
+
+    // // If this is a brand new template that has never opened before, tempate.templateData.sheets will be empty and the if statement will not run
+    // // If this is template that has opened before, then an existing sheet will have to be attached.
+    // if (template.templateData.sheets){
+    //   firstSheetToSend.sheets = template.templateData.sheets[0];
+    // }
+
+    // Sends in the data from google sheet API and retrieves spreadsheetID
+    let res = await Promise.resolve(createSpreadsheet(submission.workbookData, userEmail)); 
+    const { userSpreadsheetId, duplicateSpreadsheetId, triggerId } = res;
+    // Store Google Sheet Model to the database
+    const googleSheetModel = {
+      submissionId: submissionId,
+      googleSheetId: userSpreadsheetId,
+      duplicateId: duplicateSpreadsheetId,
+      triggerId: triggerId,
+    }
+    res = await this.googleSheetRepository.create(googleSheetModel);
+    // Update googleSheetId on templateModel
+    this.submissionRepository.updateGoogleSheetId(submissionId, res._id);
+    // createSheet(template.templateData.sheets, spreadsheetId);   
+    return userSpreadsheetId;
   }
 }

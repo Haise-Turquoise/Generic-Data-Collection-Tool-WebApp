@@ -1,3 +1,7 @@
+//Last Update: Oct 16, 2020
+//This file shows a page where a list of templates present in the database is displayed
+//Users have the option of opening, editing, or deleting a template
+
 import React, { useMemo, useEffect } from 'react';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 
@@ -11,6 +15,7 @@ import {
   createTemplateRequest,
   deleteTemplateRequest,
   updateTemplateRequest,
+  openGoogleSheetRequest,
 } from '../../../store/thunks/template';
 
 import './Templates.scss';
@@ -45,7 +50,7 @@ const TemplateHeader = () => {
 
 const TemplatesTable = ({ history }) => {
   const dispatch = useDispatch();
-
+  console.log(history)
   const { templates, lookupTemplateTypes, workflowProcesses } = useSelector(
     state => ({
       templates: selectFactoryRESTResponseTableValues(selectTemplatesStore)(state),
@@ -80,7 +85,13 @@ const TemplatesTable = ({ history }) => {
       {
         icon: LaunchIcon,
         tooltip: 'Open Template',
-        onClick: (_event, template) => history.push(`/admin/template/design/${template._id}`),
+        onClick: (_event, template) => {
+          //history.push(`/admin/template/design/${template._id}`);
+          //Creates a new spreadsheet in google and returns the id. 
+          openGoogleSheetRequest(template._id);
+          // //After retrieving the id, open the link to the sheet on another tab. 
+          // window.open("https://docs.google.com/spreadsheets/d/" + spreadsheetId);
+        }
       },
     ],
     [history],

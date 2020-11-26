@@ -136,3 +136,15 @@ export const updateSubmissionStatusRequest = (
       dispatch(SubmissionsStore.actions.FAIL_REQUEST(error));
     });
 };
+
+// Added on Nov 25, 2020
+export const openGoogleSheetRequest = _id => {
+  submissionController
+    .openTemplate(_id) //Create a temporary google sheet located in google drive and open it
+    .then(spreadsheetId => {
+      window.open("https://docs.google.com/spreadsheets/d/" + spreadsheetId);
+    })
+    .catch(error => {
+      dispatch(SubmissionsStore.actions.FAIL_REQUEST(error));
+    });
+};

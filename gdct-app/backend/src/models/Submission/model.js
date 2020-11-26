@@ -31,6 +31,7 @@ const SubmissionModel = model(
       version: { type: Number, default: 0 },
       isLatest: { type: Boolean, default: true },
       parentId: { type: ObjectId },
+      googleSheetId: { type: ObjectId, ref: 'GoogleSheet'}, 
     },
     { minimize: false, timestamps: true },
   ),

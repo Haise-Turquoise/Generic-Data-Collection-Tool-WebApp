@@ -37,6 +37,7 @@ const SubmissionDashboard = ({ history }) => {
   );
   let submitterFlag = false;
   if (submissions[0] !== undefined)
+  console.log(submissions)
     submissions.forEach(submission => {
       if (submission !== undefined) {
         if (
