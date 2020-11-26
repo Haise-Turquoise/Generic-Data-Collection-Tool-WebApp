@@ -6,15 +6,37 @@ import MasterValueRepository from '../../repositories/MasterValue';
 const sheetNameRepository = Container.get(SheetNameRepository);
 const masterValueRepository = Container.get(MasterValueRepository);
 
-const getCellData = (sheetData, rowIndex, columnIndex) =>
-  sheetData[rowIndex] ? sheetData[rowIndex][columnIndex] : undefined;
+const getCellData = (sheetData, rowIndex, columnIndex) => {
+  if (sheetData.data[0].rowData.length <= rowIndex) {
+    return undefined;
+  }
+
+  const row = sheetData.data[0].rowData[rowIndex];
+
+  if (row.values === undefined) {
+    return undefined;
+  }
+
+  if (row.values <= columnIndex) {
+    return undefined;
+  }
+
+  const cell = row.values[columnIndex];
+
+  if (cell.effectiveValue === undefined) {
+    return undefined;
+  }
+
+  return { value: cell.effectiveValue.stringValue };
+  // sheetData[rowIndex] ? sheetData[rowIndex][columnIndex] : undefined;
+};
 
 /**
  * Maps column with `Column` - which represents the column header
  */
 export const extractColumnNameIds = sheetData => {
   const columns = {};
-  const firstRow = sheetData[1];
+  const firstRow = sheetData.data[0].rowData[0].values;
 
   if (firstRow) {
     for (const column in firstRow) {
@@ -39,7 +61,7 @@ export const extractColumnNameIds = sheetData => {
 export const extractCOAData = sheetData => {
   const COAs = {};
 
-  for (const row in sheetData) {
+  for (const row in sheetData.data[0].rowData) {
     const rowNumber = +row;
 
     if (rowNumber > 1) {
