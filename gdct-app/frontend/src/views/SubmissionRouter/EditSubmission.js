@@ -151,7 +151,6 @@ const EditSubmission = ({ history }) => {
   };
 
   const handleChangeStatus = (submission, submissionNote, role, newProcessId) => {
-    console.log('1', submission)
     dispatch(updateSubmissionStatusRequest(submission, submissionNote, role, newProcessId));
     history.push({
       pathname: `/submission/dashboard`,
