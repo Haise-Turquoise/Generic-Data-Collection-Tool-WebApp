@@ -7,6 +7,7 @@ const TemplateController = Service([TemplateService], service => {
   const router = Router();
   return (() => {
     router.get('/templates/fetchTemplate', (req, res, next) => {
+
       // Get query from middleware -- auth handler
       service
         .findTemplate(new Template(req.body))
@@ -20,7 +21,6 @@ const TemplateController = Service([TemplateService], service => {
 
     router.get('/templates/:_id', (req, res, next) => {
       // Get query from middleware -- auth handler
-
       service
         .findTemplateById(req.params._id)
         .then(template => res.json({ template }))
@@ -59,6 +59,15 @@ const TemplateController = Service([TemplateService], service => {
       service
         .deleteTemplate(_id)
         .then(() => res.end())
+        .catch(next);
+    });
+
+    router.get('/templates/openTemplate/:_id', (req, res, next) => {
+      // Oct 26, 2020
+      // Creates new google sheet and returns its spreadsheetID
+      service
+        .openTemplate(req.params._id, req.user.email)
+        .then(spreadsheetID => { res.json({ spreadsheetID }) })
         .catch(next);
     });
 

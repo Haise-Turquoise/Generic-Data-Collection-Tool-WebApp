@@ -1,3 +1,7 @@
+//Oct 16, 2020
+//This file exports a page that users can go in to edit templatate spreadsheet files. 
+//Since the application is moving onto using google sheets by opening a new tab, this file is currently not being used.
+
 import React, { useEffect, useCallback, useState } from 'react';
 
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
@@ -17,6 +21,9 @@ import { selectTemplatesStore } from '../../../store/TemplatesStore/selectors';
 import { selectFactoryValueById } from '../../../store/common/REST/selectors';
 import workflowController from '../../../controllers/workflow';
 import TemplatesStore from '../../../store/TemplatesStore/store';
+
+//import Ssheet from "./SpreadSheet.js";
+import Iframe from 'react-iframe'
 
 const TemplatePhases = ({ template }) => {
   const [workflowProcess, setWorkflowProcess] = useState();
@@ -80,15 +87,15 @@ const Template = ({
   return template && template.templateData ? (
     <div>
       <TemplatePhases template={template} />
-      <Excel
-        type="template"
-        returnLink="/template_manager/templates"
-        handleSave={handleSaveTemplate}
-      />
+      <Iframe url="https://docs.google.com/spreadsheets/d/1ej_7DQP6EfZ4UcQM2V5tptaTQkDm_jHWKv3yLDyjRAM/edit#gid=0"
+        height="580px"
+        title="Google Sheet"
+        className="w-100 d-flex justify-content-end"
+        position="relative"
+        />
     </div>
   ) : (
     <Loading />
   );
 };
-
 export default Template;

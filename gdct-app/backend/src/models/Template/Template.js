@@ -18,6 +18,8 @@ const TemplateModel = model(
       userCreatorId: { type: ObjectId, ref: 'User' },
 
       expirationDate: { type: Date },
+
+      googleSheetId: { type: ObjectId, ref: 'GoogleSheet' },
     },
     { minimize: false, timestamps: true },
   ),

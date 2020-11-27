@@ -104,6 +104,7 @@ export const extractCOAColumnPairs = sheetData => {
   return masterValueGroups;
 };
 
+
 export const extractWorkbookMasterValues = (workbookData, submissionId) => {
   const masterValues = [];
 
@@ -132,6 +133,7 @@ export const extractWorkbookMasterValues = (workbookData, submissionId) => {
   return masterValues;
 };
 
+
 export const extractSubmissionMasterValues = (
   id,
   submission,
@@ -140,42 +142,87 @@ export const extractSubmissionMasterValues = (
   template,
   templateType,
 ) => {
+
   const { workbookData } = submission;
 
   const masterValues = [];
-  const promiseQuery = [];
 
-  for (const sheetName in workbookData.workbookData) {
-    const sheetData = JSON.parse(
-      pako.inflate(workbookData.workbookData[sheetName], { to: 'string' }),
-    ).sheetCellData;
+  for (const sheetName in workbookData.templateData.sheets){
+    const sheetData = workbookData.templateData.sheets[sheetName];
 
     const columns = extractColumnNameIds(sheetData);
     const COAs = extractCOAData(sheetData);
-    promiseQuery.push(
-      sheetNameRepository.findByName(sheetName).then(sheet => {
-        for (const row in COAs) {
-          for (const column in columns) {
-            const cellData = getCellData(sheetData, +row, +column);
-            masterValues.push({
-              submission: { _id: submission._id, name: submission.name },
-              sheet: { _id: sheet._id, name: sheetName },
-              org,
-              program,
-              template,
-              templateType,
-              reportingPeriod: submission.reportingPeriod,
-              AttributeId: columns[column],
-              CategoryId: COAs[row].COAId,
-              ...COAs[row],
-              value: cellData ? cellData.value : undefined,
-            });
-          }
+
+    for (const row in COAs) {
+      for (const column in columns) {
+        const cellData = getCellData(sheetData, +row, +column);
+        if (cellData){
+          masterValues.push({
+            submission: { _id: submission._id, name: submission.name },
+            sheet: { _id: sheet._id, name: sheetName },
+            org,
+            program,
+            template,
+            templateType,
+            reportingPeriod: submission.reportingPeriod,
+            AttributeId: columns[column],
+            CategoryId: COAs[row],
+            value: cellData ,
+          });
         }
-      }),
-    );
+      }
+    }
+
+    Promise.all(promiseQuery).then(() => {
+      masterValueRepository.bulkUpdate(id, masterValues);
+    });
   }
-  Promise.all(promiseQuery).then(() => {
-    masterValueRepository.bulkUpdate(id, masterValues);
-  });
-};
+}
+
+// export const extractSubmissionMasterValues = (
+//   id,
+//   submission,
+//   org,
+//   program,
+//   template,
+//   templateType,
+// ) => {
+//   const { workbookData } = submission;
+
+//   const masterValues = [];
+//   const promiseQuery = [];
+
+//   for (const sheetName in workbookData.workbookData) {
+//     const sheetData = JSON.parse(
+//       pako.inflate(workbookData.workbookData[sheetName], { to: 'string' }),
+//     ).sheetCellData;
+
+//     const columns = extractColumnNameIds(sheetData);
+//     const COAs = extractCOAData(sheetData);
+//     promiseQuery.push(
+//       sheetNameRepository.findByName(sheetName).then(sheet => {
+//         for (const row in COAs) {
+//           for (const column in columns) {
+//             const cellData = getCellData(sheetData, +row, +column);
+//             masterValues.push({
+//               submission: { _id: submission._id, name: submission.name },
+//               sheet: { _id: sheet._id, name: sheetName },
+//               org,
+//               program,
+//               template,
+//               templateType,
+//               reportingPeriod: submission.reportingPeriod,
+//               AttributeId: columns[column],
+//               CategoryId: COAs[row].COAId,
+//               ...COAs[row],
+//               value: cellData ? cellData.value : undefined,
+//             });
+//           }
+//         }
+//       }),
+//     );
+//   }
+//   Promise.all(promiseQuery).then(() => {
+//     masterValueRepository.bulkUpdate(id, masterValues);
+//   });
+// };
