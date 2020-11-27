@@ -40,10 +40,10 @@ const MasterValueModel = model(
         _id: { type: ObjectId, ref: 'Submission' },
         name: { type: String },
       },
-      sheet: {
-        _id: { type: ObjectId, ref: 'Sheet' },
-        name: { type: String },
-      },
+      // sheet: {
+      //   _id: { type: ObjectId, ref: 'Sheet' },
+      //   name: { type: String },
+      // },
       reportingPeriod: { type: String, default: '' },
       program: {
         _id: { type: ObjectId, ref: 'Program' },
@@ -62,7 +62,7 @@ const MasterValueModel = model(
         name: { type: String },
       },
 
-      COATreeId: { type: String },
+      // COATreeId: { type: String },
       CategoryId: { type: String },
       AttributeId: { type: String },
 

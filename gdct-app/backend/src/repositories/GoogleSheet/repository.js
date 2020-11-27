@@ -29,4 +29,11 @@ export default class GoogleSheetRepository extends BaseRepository {
   async find(query) {
     return GoogleSheetModel.find(query);
   }
+
+  async findAllSheet() {
+    return this._model.find().then(result => {
+      if (!result) throw new AppError(i18n.__('idDoesNotExist'));
+      return result;
+    });
+  }
 }

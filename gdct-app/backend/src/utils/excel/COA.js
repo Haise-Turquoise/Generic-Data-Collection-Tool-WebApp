@@ -45,8 +45,8 @@ export const extractColumnNameIds = sheetData => {
     for (const column in firstRow) {
       const columnNumber = +column;
 
-      if (columnNumber > 1) {
-        const categoryData = getCellData(sheetData, 1, columnNumber);
+      if (columnNumber > 0) {
+        const categoryData = getCellData(sheetData, 0, columnNumber);
 
         if (categoryData && categoryData.value) {
           columns[column] = categoryData.value;
@@ -58,25 +58,75 @@ export const extractColumnNameIds = sheetData => {
   return columns;
 };
 
+// /**
+//  * Maps column with `Column` - which represents the column header
+//  */
+// export const extractColumnNameIds = sheetData => {
+//   const columns = {};
+//   const firstRow = sheetData.data[0].rowData[0].values;
+
+//   if (firstRow) {
+//     for (const column in firstRow) {
+//       const columnNumber = +column;
+
+//       if (columnNumber > 1) {
+//         const categoryData = getCellData(sheetData, 1, columnNumber);
+
+//         if (categoryData && categoryData.value) {
+//           columns[column] = categoryData.value;
+//         }
+//       }
+//     }
+//   }
+
+//   return columns;
+// };
+
+// /**
+//  * Maps rows with COA data
+//  */
+// export const extractCOAData = sheetData => {
+//   const COAs = {};
+
+//   for (const row in sheetData.data[0].rowData) {
+//     const rowNumber = +row;
+
+//     if (rowNumber > 1) {
+//       const COAIdData = getCellData(sheetData, rowNumber, 1);
+//       const COATreeIdData = getCellData(sheetData, rowNumber, 2);
+
+//       // ? Could be possible that COATreeId is not needed, ie no grouping
+//       if (COAIdData && COAIdData.value) {
+//         COAs[row] = {
+//           COAId: COAIdData.value,
+//           COATreeId: COATreeIdData ? COATreeIdData.value : undefined,
+//         };
+//       }
+//     }
+//   }
+
+//   return COAs;
+// };
+
 /**
  * Maps rows with COA data
  */
 export const extractCOAData = sheetData => {
+  // Initialize COAs
   const COAs = {};
 
   for (const row in sheetData.data[0].rowData) {
+    // Checks each row in the sheet
     const rowNumber = +row;
 
-    if (rowNumber > 1) {
-      const COAIdData = getCellData(sheetData, rowNumber, 1);
-      const COATreeIdData = getCellData(sheetData, rowNumber, 2);
+    if (rowNumber > 0 ) {
+      // Gets the value in column 0 of each row
+      const COAIdData = getCellData(sheetData, rowNumber, 0);
 
-      // ? Could be possible that COATreeId is not needed, ie no grouping
+      // If there is a value present, insert it into the COAs
       if (COAIdData && COAIdData.value) {
-        COAs[row] = {
-          COAId: COAIdData.value,
-          COATreeId: COATreeIdData ? COATreeIdData.value : undefined,
-        };
+        COAs[row] = COAIdData.value;
+
       }
     }
   }
@@ -159,10 +209,10 @@ export const extractSubmissionMasterValues = (
     for (const row in COAs) {
       for (const column in columns) {
         const cellData = getCellData(sheetData, +row, +column);
+        console.log(cellData);
         if (cellData){
           masterValues.push({
             submission: { _id: submission._id, name: submission.name },
-            sheet: { _id: sheet._id, name: sheetName },
             org,
             program,
             template,
@@ -170,7 +220,7 @@ export const extractSubmissionMasterValues = (
             reportingPeriod: submission.reportingPeriod,
             AttributeId: columns[column],
             CategoryId: COAs[row],
-            value: cellData ,
+            value: cellData.value ,
           });
         }
       }

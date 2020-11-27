@@ -195,15 +195,15 @@ export async function getSpreadsheet(spreadsheetId){
 
 // Nov 26, 2020
 // Save function for Google Sheet
-export async function saveGoogleSheetInTemplate(GoogleSheetRepositoryId){
-    const googleSheetRepository = Container.get(GoogleSheetRepository);
-    const googleSheet = googleSheetRepository.findById(GoogleSheetRepositoryId)
-    const templateRepository = Container.get(TemplateRepository);
+export async function saveGoogleSheetInTemplate(googleSheet){
+  console.log(googleSheet)
+  console.log(googleSheet.googleSheetId, googleSheet.duplicateId)
+  const templateRepository = Container.get(TemplateRepository);
     const res = await Promise.resolve(retrieveSave(googleSheet.googleSheetId, googleSheet.duplicateId));
     const newSpreadsheet = res;
     const template = await templateRepository.findById(googleSheet.templateId);
-    const updatedSpreadsheet = updateTemplate(newSpreadsheet, template.templateData, templateRepository);
-    templateRepository.updateTemplate(openGoogleSheets[i].templateId, updatedSpreadsheet);
+    const updatedSpreadsheet = updateTemplate(newSpreadsheet, template.templateData);
+    templateRepository.updateTemplate(googleSheet.templateId, updatedSpreadsheet);
 }
 
 // Nov 26, 2020
@@ -286,18 +286,18 @@ function updateTemplate(updatedTemplate, templateData){
         for (let i = 0; i < updatedTemplate.sheets.length; i++){
             const updateSheet = updatedTemplate.sheets[i];
             // If index is not -1, templateData.sheet.properties has changed 
+            if (updateSheet.properties.index != -1){
+              templateData.sheets[i].properties = updateSheet.properties;
+              }
             if (updateSheet.changed){
-            templateData.sheets[i] = updateSheet.data;
+              templateData.sheets[i] = updateSheet.data;
             } else {
-                if (updateSheet.properties.index != -1){
-                templateData.sheets[i].properties = updateSheet.properties;
-                }
-                // Checks through rowData
-                editRowData(updatedTemplate, templateData, i)
-                // For columnMetaData
-                editColumnMetadata(updatedTemplate, templateData, i)
-                // For rowMetaData
-                editRowMetadata(updatedTemplate, templateData, i)
+              // Checks through rowData
+              editRowData(updatedTemplate, templateData, i)
+              // For columnMetaData
+              editColumnMetadata(updatedTemplate, templateData, i)
+              // For rowMetaData
+              editRowMetadata(updatedTemplate, templateData, i)
             }
         }
     }
@@ -306,6 +306,7 @@ function updateTemplate(updatedTemplate, templateData){
 
 function editRowData(updatedTemplate, templateData, i){
     const rowData = updatedTemplate.sheets[i].data[0].rowData;
+    console.log(rowData)
     for (let j = 0; j < rowData.length; j++){
         // If index is -1, then entire rowData has to be changed
         if (rowData[j].index === -1){
@@ -315,24 +316,24 @@ function editRowData(updatedTemplate, templateData, i){
         const coord2 = rowData[j].index2;
         const data = rowData[j].data;
 
-        if (coord2){
+        if (coord2 >= 0){
             while (!templateData.sheets[i].data[0].rowData[coord1]){
-            templateData.sheets[i].data[0].rowData.push({})
+              templateData.sheets[i].data[0].rowData.push({})
             }
             if (!templateData.sheets[i].data[0].rowData[coord1].values){
-            templateData.sheets[i].data[0].rowData[coord1] = {
+              templateData.sheets[i].data[0].rowData[coord1] = {
                 values: [],
-            }
+              } 
             }
             while (!templateData.sheets[i].data[0].rowData[coord1].values[coord2]){
-            templateData.sheets[i].data[0].rowData[coord1].values.push({})
+              templateData.sheets[i].data[0].rowData[coord1].values.push({})
             }
             templateData.sheets[i].data[0].rowData[coord1].values[coord2] = data;
         } else {
             while (!templateData.sheets[i].data[0].rowData[coord1]){
-            templateData.sheets[i].data[0].rowData.push({})
+              templateData.sheets[i].data[0].rowData.push({})
             }
-            templateData.sheets[i].data[0].rowData[coord1] = data;
+              templateData.sheets[i].data[0].rowData[coord1] = data;
         }
         }
     }

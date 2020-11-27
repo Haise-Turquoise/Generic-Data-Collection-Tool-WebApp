@@ -27,6 +27,7 @@ import MenuController from './Menu';
 import UsersController from './Users/controller';
 import SubmissionNoteController from './SubmissionNote';
 import { authorized } from '../middlewares/auth/auth';
+import GoogleApisController from './GoogleApis'
 
 export const routerManager = app => {
   app.use('/', Container.get(AuthController));
@@ -65,4 +66,10 @@ export const routerManager = app => {
   app.use('/role_manager', authorized, Container.get(AppSysRoleController));
   app.use('/role_manager', authorized, Container.get(AppRoleResourceController));
   app.use('/role_manager', authorized, Container.get(AppResourceController));
+
+  // Oct 26, 2020
+  // Used to handle requests from google
+  app.use('/googleapis_manager', authorized, Container.get(GoogleApisController));
+
+  
 };
