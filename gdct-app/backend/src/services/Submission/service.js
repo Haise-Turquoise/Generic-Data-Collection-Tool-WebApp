@@ -160,7 +160,8 @@ export default class SubmissionService {
   async updateStatus(submission, submissionNote, role, nextProcessId) {
     const newSubmission = await this.submissionRepository.findById(submission._id);
     if (newSubmission.googleSheetId){
-      saveGoogleSheetInSubmission(newSubmission.googleSheetId);
+      console.log("Point 1")
+      await Promise.resolve(saveGoogleSheetInSubmission(newSubmission.googleSheetId));
       submission = await this.submissionRepository.findById(submission._id);
     }
 
@@ -199,6 +200,7 @@ export default class SubmissionService {
       }
       submission.isLatest = true;
       return this.submissionRepository.update(submission._id, submission).then(submission => {
+        console.log("I RAN", submission)
         if (role === 'Approved') return this.phaseSubmission(submission._id);
       });
     });

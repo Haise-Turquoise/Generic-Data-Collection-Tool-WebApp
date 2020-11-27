@@ -23,6 +23,9 @@ const getCellData = (sheetData, rowIndex, columnIndex) => {
 
   const cell = row.values[columnIndex];
 
+  if (cell === undefined){
+    return undefined;
+  }
   if (cell.effectiveValue === undefined) {
     return undefined;
   }
@@ -147,12 +150,12 @@ export const extractSubmissionMasterValues = (
 
   const masterValues = [];
 
-  for (const sheetName in workbookData.templateData.sheets){
-    const sheetData = workbookData.templateData.sheets[sheetName];
+  for (const sheetName in workbookData.sheets){
+    const sheetData = workbookData.sheets[sheetName];
 
     const columns = extractColumnNameIds(sheetData);
     const COAs = extractCOAData(sheetData);
-
+    console.log(columns, COAs);
     for (const row in COAs) {
       for (const column in columns) {
         const cellData = getCellData(sheetData, +row, +column);
@@ -172,8 +175,8 @@ export const extractSubmissionMasterValues = (
         }
       }
     }
-
-    Promise.all(promiseQuery).then(() => {
+    console.log(masterValues)
+    Promise.all(masterValues).then(() => {
       masterValueRepository.bulkUpdate(id, masterValues);
     });
   }

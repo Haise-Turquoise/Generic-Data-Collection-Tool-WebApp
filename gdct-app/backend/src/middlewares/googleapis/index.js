@@ -209,6 +209,7 @@ export async function saveGoogleSheetInTemplate(GoogleSheetRepositoryId){
 // Nov 26, 2020
 // Save function for Google Sheet
 export async function saveGoogleSheetInSubmission(GoogleSheetRepositoryId){
+  console.log("Point 2")
   const googleSheetRepository = Container.get(GoogleSheetRepository);
   const googleSheet = await googleSheetRepository.findById(GoogleSheetRepositoryId);
   const submissionRepository = Container.get(SubmissionRepository);
@@ -217,6 +218,7 @@ export async function saveGoogleSheetInSubmission(GoogleSheetRepositoryId){
   const submission = await submissionRepository.findById(googleSheet.submissionId);
   const updatedSpreadsheet = updateTemplate(newSpreadsheet, submission.workbookData);
   submissionRepository.updateWorkbook(googleSheet.submissionId, updatedSpreadsheet);
+  console.log("Point 3")
 }
 
 // Oct 26, 2020
