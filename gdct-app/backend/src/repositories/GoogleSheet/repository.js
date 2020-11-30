@@ -1,5 +1,6 @@
 // Created on Nov 12, 2020
 // The GoogleSheet collection stores the url/spreadsheetId to a Google Sheet file. 
+
 import GoogleSheetModel from '../../models/GoogleSheet';
 import BaseRepository from '../repository';
 
@@ -30,6 +31,8 @@ export default class GoogleSheetRepository extends BaseRepository {
     return GoogleSheetModel.find(query);
   }
 
+  // Created on Nov 27, 2020
+  // Retrieves every sheet from Google Sheet
   async findAllSheet() {
     return this._model.find().then(result => {
       if (!result) throw new AppError(i18n.__('idDoesNotExist'));

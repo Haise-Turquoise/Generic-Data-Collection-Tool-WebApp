@@ -28,7 +28,10 @@ export default class Auth {
 }
 
 export const authorized = async (req, res, next) => {
-  if (!req.user) {
+  // Updated on Nov 30, 2020
+  // Added req.body.user === google for requests from Appscript
+  // Temporary measure
+  if (!req.user && !(req.body.user === 'google')) {
     return next(new AppError('Bad Request', 401));
   }
 

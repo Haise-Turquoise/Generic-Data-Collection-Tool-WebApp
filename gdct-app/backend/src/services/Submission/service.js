@@ -14,8 +14,8 @@ import WorkflowProcessRepository from '../../repositories/WorkflowProcess';
 import SubmissionPeriodRepository from '../../repositories/SubmissionPeriod';
 import UsersRepository from '../../repositories/Users';
 import GoogleSheetRepository from '../../repositories/GoogleSheet';
-import { createSheet, createSpreadsheet, addEditor, saveGoogleSheetInSubmission } from '../../middlewares/googleapis'
-
+import { createSheet, createSpreadsheet, addEditor } from '../../middlewares/googleapis/request'
+import { saveGoogleSheetInSubmission }from '../../middlewares/googleapis/save'
 const mongoose = require('mongoose');
 mongoose.Promise = require('bluebird');
 
@@ -354,7 +354,6 @@ export default class SubmissionService {
   }
 
   async openTemplate(submissionId, userEmail){
-    console.log(submissionId);
     // Temporary email
     userEmail = 'test34973737@gmail.com';
     //Retrieves template JSON from database
@@ -365,17 +364,6 @@ export default class SubmissionService {
       await Promise.resolve(addEditor(res.googleSheetId, userEmail));
       return res.googleSheetId;
     }
-    // //First batch of data to send to Google
-    // const firstSheetToSend = {
-    //   properties: template.templateData.properties,
-    //   sheets: '',
-    // }
-
-    // // If this is a brand new template that has never opened before, tempate.templateData.sheets will be empty and the if statement will not run
-    // // If this is template that has opened before, then an existing sheet will have to be attached.
-    // if (template.templateData.sheets){
-    //   firstSheetToSend.sheets = template.templateData.sheets[0];
-    // }
 
     // Sends in the data from google sheet API and retrieves spreadsheetID
     let res = await Promise.resolve(createSpreadsheet(submission.workbookData, userEmail)); 

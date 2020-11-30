@@ -1,5 +1,4 @@
 import { Service } from 'typedi';
-
 import { Router } from 'express';
 import SheetNameService from '../../services/SheetName';
 
@@ -8,7 +7,6 @@ const SheetNameController = Service([SheetNameService], service => {
   return (() => {
     router.get('/sheetNames', (req, res, next) => {
       // Get query from middleware -- auth handler
-
       service
         .findSheetName({})
         .then(sheetNames => res.json({ sheetNames }))
@@ -25,7 +23,6 @@ const SheetNameController = Service([SheetNameService], service => {
     router.put('/sheetNames/:_id', (req, res, next) => {
       const { _id } = req.params;
       const { sheetName } = req.body;
-
       service
         .updateSheetName(_id, sheetName)
         .then(() => res.end())
@@ -34,7 +31,6 @@ const SheetNameController = Service([SheetNameService], service => {
 
     router.delete('/sheetNames/:_id', (req, res, next) => {
       const { _id } = req.params;
-
       service
         .deleteSheetName(_id)
         .then(() => res.end())

@@ -3,6 +3,9 @@ import BaseRepository from '../repository';
 import COAGroupModel from '../../models/COAGroup';
 
 export default class COAGroupRepository extends BaseRepository {
+  constructor() {
+    super(COAGroupModel);
+  }
   async delete(id) {
     return COAGroupModel.findByIdAndDelete(id).then(
       COAGroup => new COAGroupEntity(COAGroup.toObject()),

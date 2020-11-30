@@ -3,7 +3,7 @@ import TemplateRepository from '../../repositories/Template';
 import TemplateTypeRepository from '../../repositories/TemplateType';
 import WorkflowProcessRepository from '../../repositories/WorkflowProcess';
 import GoogleSheetRepository from '../../repositories/GoogleSheet';
-import { createSheet, createSpreadsheet, addEditor} from '../../middlewares/googleapis'
+import { createSheet, createSpreadsheet, addEditor} from '../../middlewares/googleapis/request'
 
 // @Service()
 export default class TemplateService {
@@ -71,20 +71,16 @@ export default class TemplateService {
   // templateId is the objectId of the template on the database.
   // userEmail: Email of the user that will be given access to Google Sheet. 
   async openTemplate(templateId, userEmail){
-    console.log("Point 1")
     // Temporary email
     userEmail = 'test34973737@gmail.com';
     //Retrieves template JSON from database
-    console.log("Point 2")
     const template = await this.templateRepository.findById(templateId); 
     //Runs if there is already an existing google sheet 
-    console.log("Point 3")
     if (template.googleSheetId){
       const res = await this.googleSheetRepository.findById(template.googleSheetId);
       await Promise.resolve(addEditor(res.googleSheetId, userEmail));
       return res.googleSheetId;
     }
-    console.log("Point 4")
 
     // //First batch of data to send to Google
     // const firstSheetToSend = {

@@ -1,42 +1,48 @@
-// Last Updated: Nov 17, 2020
+// Last Updated: Nov 27, 2020
 // Polls every certain period of time to delete Google Sheets
 
 import Container from 'typedi';
 import GoogleSheetRepository from './repositories/GoogleSheet';
-import TemplateRepository from './repositories/Template';
-import {checkLastSaved, deleteGoogleSheet, saveGoogleSheetInTemplate} from './middlewares/googleapis'
-import pako from 'pako'
-
+import { saveGoogleSheetInTemplate, saveGoogleSheetInSubmission } from './middlewares/googleapis/save'
+import { checkLastSaved, deleteGoogleSheet } from './middlewares/googleapis/request'
+// The frequency at which the server should check for open Google Sheets
 const pollingTime = 3600000;
 export default function polling(){
     setInterval(checkForOpenGoogleSheet, pollingTime);
 } 
 
+// The GoogleSheet collection monitors active spreadsheets present in the Google Account. This function save the Google Sheets back 
+// into the database and delete the sheets present on Google
 async function checkForOpenGoogleSheet(){
+    const googleSheetRepository = Container.get(GoogleSheetRepository);
+
+    // Current time in miliseconds
     const date = new Date();
     const currentSec = Math.floor((date.getTime()));
 
-    const googleSheetRepository = Container.get(GoogleSheetRepository);
-    const templateRepository = Container.get(TemplateRepository);
     // Retrieve all existing Google Sheet IDs from the database
     const openGoogleSheets = await googleSheetRepository.findAllSheet();
-    // Retrieve the last edited time for each Google Sheet
+
+    // CheckLastSaved will send a request to Google to find out the last time a certain Google Sheet was saved.
     const lastSavedTime = await Promise.resolve(checkLastSaved(openGoogleSheets));
     const dates = lastSavedTime.map(date => new Date(date));
     const lastSavedSec = dates.map(date => Math.floor((date.getTime())));
 
-    // For each Google Sheet, if it has been more than an hour since it was edited, delete the sheet
+    // For each Google Sheet, if it has been more than the polling time since it was edited, delete the sheet
     for (let i = 0; i < lastSavedSec.length; i++){
         if (currentSec - lastSavedSec[i] >= pollingTime){
-            console.log("Point A", openGoogleSheets[i])
-            await Promise.resolve(saveGoogleSheetInTemplate(openGoogleSheets[i]));
-            deleteGoogleSheet(openGoogleSheets[i].googleSheetId, openGoogleSheets[i].duplicateId, openGoogleSheets[i].triggerId);
-            if (openGoogleSheets[i].duplicateId){
-                deleteGoogleSheet(openGoogleSheets[i].duplicateId);
+            // Checks if the spreadsheet is for the submission or template collection
+            if (openGoogleSheets[i].templateId){
+                // Save template
+                await Promise.resolve(saveGoogleSheetInTemplate(openGoogleSheets[i]));
+            } else if (openGoogleSheets[i].submissionId){
+                // Save submission. 
+                await Promise.resolve(saveGoogleSheetInSubmission(openGoogleSheets[i]._id))
             }
-            templateRepository.updateGoogleSheetId(openGoogleSheets[i].templateId, undefined);
+            // Send a request to Google to delete the Google Sheets.
+            deleteGoogleSheet(openGoogleSheets[i].googleSheetId, openGoogleSheets[i].triggerId, openGoogleSheets[i].duplicateId);
+            // Delete the GoogleSheet Collection object
             googleSheetRepository.delete(openGoogleSheets[i]._id);
         }
     }
-
 }

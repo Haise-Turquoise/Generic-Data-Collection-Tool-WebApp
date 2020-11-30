@@ -98,9 +98,7 @@ export default class TemplateRepository extends BaseRepository {
       //template => new TemplateEntity(template.toObject()),
     );
   }
-  async updateCellValue(_id, templateData){
-    return TemplateModel.findByIdAndUpdate( _id,  { templateData } )
-  }
+  
   async updateTemplate(_id, templateData){
     return TemplateModel.findByIdAndUpdate( _id, { templateData })
   }

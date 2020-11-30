@@ -8,7 +8,7 @@ import COAGroupRepository from '../../repositories/COAGroup';
 import COARepository from '../../repositories/COA';
 import ColumnNameRepository from '../../repositories/ColumnName';
 import GoogleSheetRepository from '../../repositories/GoogleSheet';
-import { getSpreadsheet } from '../../middlewares/googleapis/index'
+import { getSpreadsheet } from '../../middlewares/googleapis/request'
 import pako from 'pako'
 
 // @Service()
@@ -98,7 +98,7 @@ export default class GoogleApisService {
       }
       spreadsheetColumn[column] = value;
 
-      this.templateRepository.updateCellValue(templateId, template.templateData)
+      this.templateRepository.updateTemplate(templateId, template.templateData)
       }
     }
 }

@@ -24,7 +24,7 @@ export default class BaseRepository {
   async findAll() {
     return this._model.find().then(result => {
       if (!result) throw new AppError(i18n.__('idDoesNotExist'));
-      return result.toObject();
+      return result;
     });
   }
 

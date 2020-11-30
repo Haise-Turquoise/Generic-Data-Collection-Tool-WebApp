@@ -62,9 +62,10 @@ const TemplateController = Service([TemplateService], service => {
         .catch(next);
     });
 
+    // Last Updated: Nov 27, 2020
+    // Creates new google sheet and returns its spreadsheetID
+    // It was developed to redirect the workflow from an embedded spreadsheet to Google Sheet
     router.get('/templates/openTemplate/:_id', (req, res, next) => {
-      // Oct 26, 2020
-      // Creates new google sheet and returns its spreadsheetID
       service
         .openTemplate(req.params._id, req.user.email)
         .then(spreadsheetID => { res.json({ spreadsheetID }) })

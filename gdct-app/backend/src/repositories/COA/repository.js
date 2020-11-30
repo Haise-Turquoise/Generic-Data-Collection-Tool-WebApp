@@ -28,4 +28,10 @@ export default class COARepository extends BaseRepository {
 
     return COAModel.find({}).then(COAs => COAs.map(COA => new COAEntity(COA.toObject())));
   }
+  
+  // Last Updated: Nov 27, 2020
+  // Used to find COAs through their ID
+  async findByIDNumber(query){
+    return COAModel.find(query);
+  }
 }
