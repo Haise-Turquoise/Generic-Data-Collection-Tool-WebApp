@@ -140,7 +140,7 @@ const EditSubmission = ({ history }) => {
     //   pathname: `/submission/submissions/${submission._id}`,
     //   state: { detail: location.state.detail },
     // });
-
+    console.log("hello", submission)
     //Creates a new spreadsheet in google and returns the id. 
     openGoogleSheetRequest(submission._id);
   }

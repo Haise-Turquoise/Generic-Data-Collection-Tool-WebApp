@@ -30,7 +30,7 @@ const getCellData = (sheetData, rowIndex, columnIndex) => {
     return undefined;
   }
 
-  return { value: cell.effectiveValue.stringValue };
+  return { value: cell.formattedValue };
   // sheetData[rowIndex] ? sheetData[rowIndex][columnIndex] : undefined;
 };
 
@@ -210,7 +210,7 @@ export const extractSubmissionMasterValues = (
       for (const column in columns) {
         const cellData = getCellData(sheetData, +row, +column);
         console.log(cellData);
-        if (cellData){
+        if (cellData && cellData.value){
           masterValues.push({
             submission: { _id: submission._id, name: submission.name },
             org,

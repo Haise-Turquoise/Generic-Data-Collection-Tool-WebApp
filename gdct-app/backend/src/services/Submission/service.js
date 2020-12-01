@@ -264,15 +264,19 @@ export default class SubmissionService {
         programIds.push(program.programId);
       });
     });
+    console.log("Point 1")
     return this.findTemplatePackage(programAndTempTypes).then(templatePackages => {
       const name = 'Unsubmitted';
+      console.log("Point 2")
       return this.statusRepository.findByName(name).then(status => {
+        console.log("Point 3")
         const promiseQuery1 = [];
         templatePackages.forEach(templatePackage => {
           promiseQuery1.push(
             this.submissionRepository
               .findByTemplatePackageId(templatePackage._id)
               .then(submissions => {
+                console.log("Point 4")
                 if (!submissions[0]) {
                   const { templateIds } = templatePackage;
                   const promiseQuery3 = [];
