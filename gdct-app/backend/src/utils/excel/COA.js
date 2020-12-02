@@ -27,7 +27,7 @@ const getCellData = (sheetData, rowIndex, columnIndex) => {
   if (cell === undefined){
     return undefined;
   }
-  if (cell.effectiveValue === undefined) {
+  if (cell.formattedValue === undefined || !cell.formattedValue.match(/^\d+(\,\d{3})*$/)) {
     return undefined;
   }
 
@@ -140,10 +140,11 @@ export const extractCOAData = sheetData => {
 
 export const extractCOAColumnPairs = sheetData => {
   const masterValueGroups = [];
-
+  // Get all the Column IDs located at the first row of the sheet
   const columnIds = extractColumnNameIds(sheetData);
+  //Get all the COA Data
   const COAIds = extractCOAData(sheetData);
-
+  // for the rows and columns that contains COA Ids, push it intor master value group
   for (const row in COAIds) {
     for (const column in columnIds) {
       const cellData = getCellData(sheetData, +row, +column);
