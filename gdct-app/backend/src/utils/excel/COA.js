@@ -4,6 +4,7 @@ import SheetNameRepository from '../../repositories/SheetName';
 import MasterValueRepository from '../../repositories/MasterValue';
 import COARepository from '../../repositories/COA';
 import ColumnNameRepository from '../../repositories/ColumnName'
+import ReportingPeriodRepository from '../../repositories/ReportingPeriod';
 
 const columNameRepository = Container.get (ColumnNameRepository)
 const coaRepository = Container.get(COARepository);
@@ -34,6 +35,9 @@ const getCellData = (sheetData, rowIndex, columnIndex) => {
     return undefined;
   }
 
+  if (cell.formattedValue === "0" || cell.formattedValue === "$0"){
+    return undefined;
+  }
   return { value: cell.formattedValue };
   // sheetData[rowIndex] ? sheetData[rowIndex][columnIndex] : undefined;
 };
@@ -199,6 +203,7 @@ export const extractSubmissionMasterValues = (
   program,
   template,
   templateType,
+  reportingPeriod,
 ) => {
 
   const { workbookData } = submission;
@@ -206,19 +211,23 @@ export const extractSubmissionMasterValues = (
   const masterValues = [];
   coaRepository.findAllCoaId().then(categoryData=>{
     columNameRepository.findAllColumnId().then(AttributeData=>{
-
+      console.log('================extractMasterValue==================')
       for (const sheetName in workbookData.sheets){
         const sheetData = workbookData.sheets[sheetName];
         const columns = extractColumnNameIds(sheetData);
         const COAs = extractCOAData(sheetData);
         console.log(columns, COAs);
+
         // Delete all the rows that does not match an existing category id
+        console.log('================DeleteAccount=================')
         for (row in COAs){
           if (!categoryData.includes(COAs[row])){
             delete COAs[row]
           }
         }
+
         // Delete all column
+        console.log('===============DeleteAccount===================')
         for (col in columns){
           if (!AttributeData.includes(columns[col])){
             delete columns[col]
@@ -244,7 +253,6 @@ export const extractSubmissionMasterValues = (
             }
           }
         }
-        console.log(masterValues)
         Promise.all(masterValues).then(() => {
           masterValueRepository.bulkUpdate(id, masterValues);
         });
