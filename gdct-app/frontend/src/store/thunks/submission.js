@@ -139,6 +139,7 @@ export const updateSubmissionStatusRequest = (
 
 // Added on Nov 25, 2020
 export const openGoogleSheetRequest = _id => {
+  console.log("Hello2", _id)
   submissionController
     .openTemplate(_id) //Create a temporary google sheet located in google drive and open it
     .then(spreadsheetId => {

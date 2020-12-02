@@ -1,6 +1,7 @@
 import { google } from 'googleapis'
 import pako from 'pako'
 import getAuthorization from '../auth'
+import fs from 'fs'
 
 // Last Updated: Nov 27, 2020
 // Function call for creating new google sheet with existing data
@@ -52,7 +53,13 @@ export async function addEditor(spreadsheetId, userEmail){
 // Last Updated: Nov 27, 2020
 // Retrieves all the changes made to the Google Sheet to update the database
 export async function retrieveSave(currentId, duplicateId){
-  const res = await Promise.resolve(await requestCall('retrieveSave', [currentId, duplicateId]));
+  let res //= await Promise.resolve(requestCall('retrieveSave', [currentId, duplicateId]));
+  console.log("point 0")
+  if (!res){
+    console.log("Point 0.5")
+    res = await Promise.resolve(requestCallToSheet(currentId));
+  }
+  console.log("Point 1.5")
   return res;
 }
 
@@ -65,7 +72,7 @@ export async function getSpreadsheet(spreadsheetId){
 }
 
 // Last Updated: Nov 27, 2020
-// Sends requests to Google.
+// Sends requests to Google through Appscript
 // @functionName: The name of the function to activate on Appscript
 // @paramters: parameters to give the function on Appscript
 async function requestCall(functionName, parameters){
@@ -94,6 +101,34 @@ async function requestCall(functionName, parameters){
   } else { 
     return res.data.response.result ;
   }
+}
+
+// Last Updated: Nov 30, 2020
+// Sends requests to Google through Google Sheet Api
+// @functionName: The name of the function to activate on Appscript
+// @paramters: parameters to give the function on Appscript
+async function requestCallToSheet(spreadsheetId){
+  // Get authorization credentials
+  const auth = await getAuthorization();
+  const sheets = google.sheets({version: 'v4', auth});
+
+  const req = {
+    spreadsheetId: spreadsheetId,
+    range: [],
+    includeGridData: true,
+  }
+
+
+  const res = await sheets.spreadsheets.get(req);
+  
+  if (res.error){
+    console.log('The API returned an error: ' + res.error);
+  } else { 
+    //const deflatedData = pako.deflate(JSON.stringify(res.data), { to: 'string' });
+    fs.writeFile('Hello.json', JSON.stringify(res.data), function (err){
+      console.log("I ran")
+    })
+    console.log(res.data); return res.data }
 }
 
 

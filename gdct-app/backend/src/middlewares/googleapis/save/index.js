@@ -49,7 +49,6 @@ function updateTemplate(updatedTemplate, templateData){
     // Clean up the updatedTemplate
     delete updatedTemplate.spreadsheetUrl;
     delete updatedTemplate.spreadsheetId;
-
     if (!updatedTemplate.index){
         // If this is the first time Google Sheet is being copied over to the template, copy the entire spreadsheet
         templateData = updatedTemplate;
