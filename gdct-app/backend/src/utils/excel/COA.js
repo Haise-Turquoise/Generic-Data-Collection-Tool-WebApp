@@ -26,11 +26,11 @@ const getCellData = (sheetData, rowIndex, columnIndex) => {
   if (cell === undefined){
     return undefined;
   }
-  if (cell.effectiveValue === undefined) {
+  if (cell.formattedValue === undefined) {
     return undefined;
   }
 
-  return { value: cell.effectiveValue.stringValue };
+  return { value: cell.formattedValue };
   // sheetData[rowIndex] ? sheetData[rowIndex][columnIndex] : undefined;
 };
 
@@ -136,10 +136,11 @@ export const extractCOAData = sheetData => {
 
 export const extractCOAColumnPairs = sheetData => {
   const masterValueGroups = [];
-
+  // Get all the Column IDs located at the first row of the sheet
   const columnIds = extractColumnNameIds(sheetData);
+  //Get all the COA Data
   const COAIds = extractCOAData(sheetData);
-
+  // for the rows and columns that contains COA Ids, push it intor master value group
   for (const row in COAIds) {
     for (const column in columnIds) {
       const cellData = getCellData(sheetData, +row, +column);
@@ -210,7 +211,7 @@ export const extractSubmissionMasterValues = (
       for (const column in columns) {
         const cellData = getCellData(sheetData, +row, +column);
         console.log(cellData);
-        if (cellData){
+        if (cellData && cellData.value){
           masterValues.push({
             submission: { _id: submission._id, name: submission.name },
             org,
