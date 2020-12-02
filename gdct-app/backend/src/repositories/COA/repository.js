@@ -34,4 +34,8 @@ export default class COARepository extends BaseRepository {
   async findByIDNumber(query){
     return COAModel.find(query);
   }
+
+  async findAllCoaId(query) {
+    return COAModel.find({}).then(COAs => COAs.map(COA => COA.id));
+  }
 }
