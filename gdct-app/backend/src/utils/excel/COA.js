@@ -2,7 +2,11 @@ import pako from 'pako';
 import Container from 'typedi';
 import SheetNameRepository from '../../repositories/SheetName';
 import MasterValueRepository from '../../repositories/MasterValue';
+import COARepository from '../../repositories/COA';
+import ColumnNameRepository from '../../repositories/ColumnName'
 
+const columNameRepository = Container.get (ColumnNameRepository)
+const coaRepository = Container.get(COARepository);
 const sheetNameRepository = Container.get(SheetNameRepository);
 const masterValueRepository = Container.get(MasterValueRepository);
 
@@ -111,7 +115,7 @@ export const extractColumnNameIds = sheetData => {
 /**
  * Maps rows with COA data
  */
-export const extractCOAData = sheetData => {
+export const extractCOAData = (sheetData) => {
   // Initialize COAs
   const COAs = {};
 
@@ -200,38 +204,99 @@ export const extractSubmissionMasterValues = (
   const { workbookData } = submission;
 
   const masterValues = [];
+  coaRepository.findAllCoaId().then(categoryData=>{
+    columNameRepository.findAllColumnId().then(AttributeData=>{
 
-  for (const sheetName in workbookData.sheets){
-    const sheetData = workbookData.sheets[sheetName];
-
-    const columns = extractColumnNameIds(sheetData);
-    const COAs = extractCOAData(sheetData);
-    console.log(columns, COAs);
-    for (const row in COAs) {
-      for (const column in columns) {
-        const cellData = getCellData(sheetData, +row, +column);
-        console.log(cellData);
-        if (cellData && cellData.value){
-          masterValues.push({
-            submission: { _id: submission._id, name: submission.name },
-            org,
-            program,
-            template,
-            templateType,
-            reportingPeriod: submission.reportingPeriod,
-            AttributeId: columns[column],
-            CategoryId: COAs[row],
-            value: cellData.value ,
-          });
+      for (const sheetName in workbookData.sheets){
+        const sheetData = workbookData.sheets[sheetName];
+        const columns = extractColumnNameIds(sheetData);
+        const COAs = extractCOAData(sheetData);
+        console.log(columns, COAs);
+        // Delete all the rows that does not match an existing category id
+        for (row in COAs){
+          if (!categoryData.includes(COAs[row])){
+            delete COAs[row]
+          }
         }
+        // Delete all column
+        for (col in columns){
+          if (!AttributeData.includes(columns[col])){
+            delete columns[col]
+          }
+        }
+
+        for (const row in COAs) {
+          for (const column in columns) {
+            const cellData = getCellData(sheetData, +row, +column);
+            console.log(cellData);
+            if (cellData && cellData.value){
+              masterValues.push({
+                submission: { _id: submission._id, name: submission.name },
+                org,
+                program,
+                template,
+                templateType,
+                reportingPeriod: submission.reportingPeriod,
+                AttributeId: columns[column],
+                CategoryId: COAs[row],
+                value: cellData.value ,
+              });
+            }
+          }
+        }
+        console.log(masterValues)
+        Promise.all(masterValues).then(() => {
+          masterValueRepository.bulkUpdate(id, masterValues);
+        });
       }
-    }
-    console.log(masterValues)
-    Promise.all(masterValues).then(() => {
-      masterValueRepository.bulkUpdate(id, masterValues);
     });
-  }
+  });
 }
+
+// export const extractSubmissionMasterValues = (
+//   id,
+//   submission,
+//   org,
+//   program,
+//   template,
+//   templateType,
+// ) => {
+
+//   const { workbookData } = submission;
+
+//   const masterValues = [];
+
+//   for (const sheetName in workbookData.sheets){
+//     const sheetData = workbookData.sheets[sheetName];
+
+//     const columns = extractColumnNameIds(sheetData);
+//     const COAs = extractCOAData(sheetData);
+//     console.log(columns, COAs);
+//     for (const row in COAs) {
+//       for (const column in columns) {
+//         const cellData = getCellData(sheetData, +row, +column);
+//         console.log(cellData);
+//         if (cellData && cellData.value){
+//           masterValues.push({
+//             submission: { _id: submission._id, name: submission.name },
+//             org,
+//             program,
+//             template,
+//             templateType,
+//             reportingPeriod: submission.reportingPeriod,
+//             AttributeId: columns[column],
+//             CategoryId: COAs[row],
+//             value: cellData.value ,
+//           });
+//         }
+//       }
+//     }
+//     console.log(masterValues)
+//     Promise.all(masterValues).then(() => {
+//       masterValueRepository.bulkUpdate(id, masterValues);
+//     });
+//   }
+// }
 
 // export const extractSubmissionMasterValues = (
 //   id,
