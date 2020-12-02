@@ -3,6 +3,9 @@ import BaseRepository from '../repository';
 import ReportingPeriodModel from '../../models/ReportingPeriod';
 
 export default class ReportPeriodRepository extends BaseRepository {
+  constructor() {
+    super(ReportingPeriodModel);
+  }
   async delete(id) {
     return ReportingPeriodModel.findByIdAndDelete(id).then(
       reportingPeriod => new ReportingPeriodEntity(reportingPeriod.toObject()),

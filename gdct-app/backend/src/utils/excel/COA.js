@@ -2,6 +2,7 @@ import pako from 'pako';
 import Container from 'typedi';
 import SheetNameRepository from '../../repositories/SheetName';
 import MasterValueRepository from '../../repositories/MasterValue';
+import ReportingPeriodRepository from '../../repositories/ReportingPeriod';
 
 const sheetNameRepository = Container.get(SheetNameRepository);
 const masterValueRepository = Container.get(MasterValueRepository);
@@ -30,6 +31,9 @@ const getCellData = (sheetData, rowIndex, columnIndex) => {
     return undefined;
   }
 
+  if (cell.formattedValue === "0" || cell.formattedValue === "$0"){
+    return undefined;
+  }
   return { value: cell.formattedValue };
   // sheetData[rowIndex] ? sheetData[rowIndex][columnIndex] : undefined;
 };
@@ -194,6 +198,7 @@ export const extractSubmissionMasterValues = (
   program,
   template,
   templateType,
+  reportingPeriod,
 ) => {
 
   const { workbookData } = submission;
@@ -217,7 +222,7 @@ export const extractSubmissionMasterValues = (
             program,
             template,
             templateType,
-            reportingPeriod: submission.reportingPeriod,
+            reportingPeriod: reportingPeriod.name,
             AttributeId: columns[column],
             CategoryId: COAs[row],
             value: cellData.value ,

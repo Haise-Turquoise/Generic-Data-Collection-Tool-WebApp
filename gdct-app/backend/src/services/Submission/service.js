@@ -16,6 +16,7 @@ import UsersRepository from '../../repositories/Users';
 import GoogleSheetRepository from '../../repositories/GoogleSheet';
 import { createSheet, createSpreadsheet, addEditor } from '../../middlewares/googleapis/request'
 import { saveGoogleSheetInSubmission }from '../../middlewares/googleapis/save'
+import ReportingPeriodRepository from '../../repositories/ReportingPeriod';
 const mongoose = require('mongoose');
 mongoose.Promise = require('bluebird');
 
@@ -35,6 +36,8 @@ export default class SubmissionService {
     this.submissionPeriodRepository = Container.get(SubmissionPeriodRepository);
     this.usersRepository = Container.get(UsersRepository);
     this.googleSheetRepository = Container.get(GoogleSheetRepository)
+    this.reportingPeriodRepository = Container.get(ReportingPeriodRepository);
+    this.submissionPeriodRepository = Container.get(SubmissionPeriodRepository);
   }
 
   checkUserRole(userInfo, submission, permission) {
@@ -132,14 +135,24 @@ export default class SubmissionService {
               .findById(template.templateTypeId)
               .then(templateType => {
                 const templateTypeConst = { _id: templateType._id, name: templateType.name };
-                extractSubmissionMasterValues(
-                  id,
-                  submission,
-                  orgConst,
-                  programConst,
-                  templateConst,
-                  templateTypeConst,
-                );
+                return this.submissionPeriodRepository
+                .findById(submission.submissionPeriodId)
+                .then(submissionPeriod => {
+                  return this.reportingPeriodRepository
+                  .findById(submissionPeriod.reportingPeriodId)
+                  .then(reportingPeriod => {
+                    const reportingPeriodConst = { name: reportingPeriod.name };
+                    extractSubmissionMasterValues(
+                      id,
+                      submission,
+                      orgConst,
+                      programConst,
+                      templateConst,
+                      templateTypeConst,
+                      reportingPeriodConst,
+                    );
+                  })
+                })
               });
           });
         });
@@ -160,8 +173,9 @@ export default class SubmissionService {
   async updateStatus(submission, submissionNote, role, nextProcessId) {
     const newSubmission = await this.submissionRepository.findById(submission._id);
     if (newSubmission.googleSheetId){
-      console.log("Point 1")
+      console.log("Test Point 1")
       await Promise.resolve(saveGoogleSheetInSubmission(newSubmission.googleSheetId));
+      console.log("Test Point 2")
       submission = await this.submissionRepository.findById(submission._id);
     }
 
@@ -195,12 +209,12 @@ export default class SubmissionService {
         submission.parentId = submission.parentId ? submission.parentId : submission._id;
         return this.submissionRepository.findAndSetFalse(submission._id).then(() => {
           delete submission._id;
+          console.log(submission);
           return this.submissionRepository.create(submission);
         });
       }
       submission.isLatest = true;
       return this.submissionRepository.update(submission._id, submission).then(submission => {
-        console.log("I RAN", submission)
         if (role === 'Approved') return this.phaseSubmission(submission._id);
       });
     });
@@ -291,6 +305,7 @@ export default class SubmissionService {
                                   orgId,
                                   templateId,
                                   templatePackageId: templatePackage._id,
+                                  submissionPeriodId: templatePackage.submissionPeriodId,
                                   programId,
                                   statusId: status[0]._id,
                                   version: 0,

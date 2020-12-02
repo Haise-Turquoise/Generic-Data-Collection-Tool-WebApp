@@ -38,9 +38,9 @@ export async function saveGoogleSheetInSubmission(GoogleSheetRepositoryId){
     // Compare the workbook from the database with the one from Google. Return the updated workbook. 
     const updatedSpreadsheet = updateTemplate(newSpreadsheet, submission.workbookData);
     // Push the new changes to submissionRepository
-    submissionRepository.updateWorkbook(googleSheet.submissionId, updatedSpreadsheet);
+    await submissionRepository.updateWorkbook(googleSheet.submissionId, updatedSpreadsheet);
     // Remove the pointer to GoogleSheet from the template since the Google sheet will not exist anymore
-    submissionRepository.updateGoogleSheetId(googleSheet.templateId, undefined);
+    await submissionRepository.updateGoogleSheetId(googleSheet.templateId, undefined);
 }
 
 // This function will compare the template coming in from Google with the template currently in the database. 
