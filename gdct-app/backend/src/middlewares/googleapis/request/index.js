@@ -7,10 +7,9 @@ import fs from 'fs'
 // Function call for creating new google sheet with existing data
 export async function createSpreadsheet(templateData, userEmail){
   // Deflate/Compress the data
-  const res = await Promise.resolve(requestCreateToSheet(templateData));
-  console.log("HERE")
-  // const deflatedData = pako.deflate(JSON.stringify(templateData), { to: 'string' })
-  // const res = await Promise.resolve(requestCall('createSpreadsheet', [{ data: deflatedData}, userEmail]));
+  // const res = await Promise.resolve(requestCreateToSheet(templateData));
+  const deflatedData = pako.deflate(JSON.stringify(templateData), { to: 'string' })
+  const res = await Promise.resolve(requestCall('createSpreadsheet', [{ data: deflatedData}, userEmail]));
   return res;
 }
 
@@ -55,14 +54,10 @@ export async function addEditor(spreadsheetId, userEmail){
 // Last Updated: Nov 27, 2020
 // Retrieves all the changes made to the Google Sheet to update the database
 export async function retrieveSave(currentId, duplicateId){
-  console.log(currentId, duplicateId);
   let res// = await Promise.resolve(requestCall('retrieveSave', [currentId, duplicateId]));
-  console.log("point 0")
   if (!res){
-    console.log("Point 0.5")
     res = await Promise.resolve(requestCallToSheet(currentId));
   }
-  console.log("Point 1.5")
   return res;
 }
 
@@ -129,7 +124,6 @@ async function requestCallToSheet(spreadsheetId){
   } else { 
     const deflatedData = pako.deflate(JSON.stringify(res.data), { to: 'string' });
     fs.writeFile('Hello.json', JSON.stringify(deflatedData), function (err){
-      console.log("I ran")
     })
     console.log(res.data); return res.data }
 }
@@ -142,18 +136,13 @@ async function requestCreateToSheet(data){
   // Get authorization credentials
   const auth = await getAuthorization();
   const sheets = google.sheets({version: 'v4', auth});
-  console.log("HELLO")
-  const req = {
-    data,
-  }
+  console.log(data);
+  const req = data;
 
-  console.log("HELLO2")
   const res = await sheets.spreadsheets.create(req);
-  console.log("HELLO3")
   if (res.error){
     console.log('The API returned an error: ' + res.error);
-  } else { 
-    console.log(res.data); 
+  } else {  
     return res.data;
    }
 }
