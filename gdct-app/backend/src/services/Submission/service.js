@@ -17,6 +17,7 @@ import GoogleSheetRepository from '../../repositories/GoogleSheet';
 import { createSheet, createSpreadsheet, addEditor } from '../../middlewares/googleapis/request'
 import { saveGoogleSheetInSubmission }from '../../middlewares/googleapis/save'
 import ReportingPeriodRepository from '../../repositories/ReportingPeriod';
+import { extractColumnNameIds, extractCOAData } from '../../utils/excel/COA'
 const mongoose = require('mongoose');
 mongoose.Promise = require('bluebird');
 
@@ -55,41 +56,69 @@ export default class SubmissionService {
 
   async createSubmissionBaseOnTemplatePackage(submission) {
     // Clone the tempalte's workbook data to be used by the user
-
     return this.programRepository.findById(submission.programId).then(program => {
       return this.templateRepository.findById(submission.templateId).then(template => {
-        return this.templateTypeRepository.findById(template.templateTypeId).then(templateType => {
-          return this.workflowProcessRepository
-            .find({ workflowId: templateType.submissionWorkflowId })
-            .then(workflowProcesses => {
-              const nodes = new Set();
-
-              const visitedNodes = new Set();
-
-              workflowProcesses.forEach(({ _id, to }) => {
-                nodes.add(_id.toString());
-                to.forEach(outNodeIds => {
-                  visitedNodes.add(outNodeIds.toString());
-                  nodes.add(outNodeIds.toString());
+        // Code for populating template has to go here
+        //return this.masterValueRepository.findAll().then(masterValues => {
+          return this.templateTypeRepository.findById(template.templateTypeId).then(templateType => {
+            return this.workflowProcessRepository
+              .find({ workflowId: templateType.submissionWorkflowId })
+              .then(workflowProcesses => {
+                const nodes = new Set();
+  
+                const visitedNodes = new Set();
+  
+                workflowProcesses.forEach(({ _id, to }) => {
+                  nodes.add(_id.toString());
+                  to.forEach(outNodeIds => {
+                    visitedNodes.add(outNodeIds.toString());
+                    nodes.add(outNodeIds.toString());
+                  });
                 });
-              });
 
-              let initialNode = null;
+                // For populating workbookData
+                for (const sheetName in template.templateData.sheets){
+                  const sheetData = template.templateData.sheets[sheetName];
+              
+                  const columns = extractColumnNameIds(sheetData);
+                  const COAs = extractCOAData(sheetData);
 
-              nodes.forEach(node => {
-                if (!visitedNodes.has(node)) {
-                  initialNode = node;
+                  console.log(columns, COAs);
+                  const attributeIds = [];
+                  const categoryIds = [];
+                  for (const row in COAs) {
+                    attributeIds.push(COAs[row]);
+                  }
+                  for (const column in columns) {
+                    categoryIds.push(columns[column]);
+                  }
+                  console.log(attributeIds, categoryIds);
+                  let res;
+                   this.masterValueRepository.batchFind(attributeIds, categoryIds).then(res2 => {
+                      res = res2
+                    });
+
+                  console.log(res);
                 }
+
+                let initialNode = null;
+  
+                nodes.forEach(node => {
+                  if (!visitedNodes.has(node)) {
+                    initialNode = node;
+                  }
+                });
+                submission.name = submission.orgId
+                  .toString()
+                  .concat('_', program.name, '_', template.name);
+                submission.workflowProcessId = initialNode;
+                submission.workbookData = template.templateData;
+                submission.workflowId = templateType.submissionWorkflowId;
+                
+                return this.submissionRepository.create(submission);
               });
-              submission.name = submission.orgId
-                .toString()
-                .concat('_', program.name, '_', template.name);
-              submission.workflowProcessId = initialNode;
-              submission.workbookData = template.templateData;
-              submission.workflowId = templateType.submissionWorkflowId;
-              return this.submissionRepository.create(submission);
-            });
-        });
+          });
+        //})
       });
     });
   }
@@ -173,9 +202,7 @@ export default class SubmissionService {
   async updateStatus(submission, submissionNote, role, nextProcessId) {
     const newSubmission = await this.submissionRepository.findById(submission._id);
     if (newSubmission.googleSheetId){
-      console.log("Test Point 1")
       await Promise.resolve(saveGoogleSheetInSubmission(newSubmission.googleSheetId));
-      console.log("Test Point 2")
       submission = await this.submissionRepository.findById(submission._id);
     }
 
@@ -209,7 +236,6 @@ export default class SubmissionService {
         submission.parentId = submission.parentId ? submission.parentId : submission._id;
         return this.submissionRepository.findAndSetFalse(submission._id).then(() => {
           delete submission._id;
-          console.log(submission);
           return this.submissionRepository.create(submission);
         });
       }
@@ -278,19 +304,15 @@ export default class SubmissionService {
         programIds.push(program.programId);
       });
     });
-    console.log("Point 1")
     return this.findTemplatePackage(programAndTempTypes).then(templatePackages => {
       const name = 'Unsubmitted';
-      console.log("Point 2")
       return this.statusRepository.findByName(name).then(status => {
-        console.log("Point 3")
         const promiseQuery1 = [];
         templatePackages.forEach(templatePackage => {
           promiseQuery1.push(
             this.submissionRepository
               .findByTemplatePackageId(templatePackage._id)
               .then(submissions => {
-                console.log("Point 4")
                 if (!submissions[0]) {
                   const { templateIds } = templatePackage;
                   const promiseQuery3 = [];
