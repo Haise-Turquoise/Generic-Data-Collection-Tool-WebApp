@@ -31,7 +31,7 @@ const getCellData = (sheetData, rowIndex, columnIndex) => {
   if (cell === undefined){
     return undefined;
   }
-  if (cell.formattedValue === undefined || !cell.formattedValue.match(/^\d+(\,\d{3})*$/)) {
+  if (cell.formattedValue === undefined) {
     return undefined;
   }
 

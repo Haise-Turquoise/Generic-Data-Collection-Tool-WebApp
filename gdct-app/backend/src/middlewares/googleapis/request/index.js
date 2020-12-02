@@ -7,10 +7,10 @@ import fs from 'fs'
 // Function call for creating new google sheet with existing data
 export async function createSpreadsheet(templateData, userEmail){
   // Deflate/Compress the data
-  const res = await Promise.resolve(requestCreateToSheet(templateData));
+  // const res = await Promise.resolve(requestCreateToSheet(templateData));
   console.log("HERE")
-  // const deflatedData = pako.deflate(JSON.stringify(templateData), { to: 'string' })
-  // const res = await Promise.resolve(requestCall('createSpreadsheet', [{ data: deflatedData}, userEmail]));
+  const deflatedData = pako.deflate(JSON.stringify(templateData), { to: 'string' })
+  const res = await Promise.resolve(requestCall('createSpreadsheet', [{ data: deflatedData}, userEmail]));
   return res;
 }
 
