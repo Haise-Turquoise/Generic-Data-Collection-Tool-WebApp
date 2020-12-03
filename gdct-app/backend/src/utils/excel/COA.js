@@ -216,28 +216,28 @@ export const extractSubmissionMasterValues = (
         const sheetData = workbookData.sheets[sheetName];
         const columns = extractColumnNameIds(sheetData);
         const COAs = extractCOAData(sheetData);
-        console.log(columns, COAs);
-
+        console.log('================printing column data and coa=================')
+        console.log(columns, AttributeData)
         // Delete all the rows that does not match an existing category id
-        console.log('================DeleteAccount=================')
-        for (row in COAs){
+        console.log('================DeleteValue=================')
+        for (const row in COAs){
           if (!categoryData.includes(COAs[row])){
             delete COAs[row]
           }
         }
 
         // Delete all column
-        console.log('===============DeleteAccount===================')
-        for (col in columns){
+        console.log('===============DeleteValue===================')
+        for (const col in columns){
           if (!AttributeData.includes(columns[col])){
             delete columns[col]
           }
         }
+        console.log(columns, COAs);
 
         for (const row in COAs) {
           for (const column in columns) {
             const cellData = getCellData(sheetData, +row, +column);
-            console.log(cellData);
             if (cellData && cellData.value){
               masterValues.push({
                 submission: { _id: submission._id, name: submission.name },
@@ -250,6 +250,17 @@ export const extractSubmissionMasterValues = (
                 CategoryId: COAs[row],
                 value: cellData.value ,
               });
+              console.log({
+                submission: { _id: submission._id, name: submission.name },
+                org,
+                program,
+                template,
+                templateType,
+                reportingPeriod: submission.reportingPeriod,
+                AttributeId: columns[column],
+                CategoryId: COAs[row],
+                value: cellData.value ,
+              })
             }
           }
         }
