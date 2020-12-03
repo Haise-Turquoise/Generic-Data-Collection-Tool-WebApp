@@ -1,9 +1,6 @@
 import pako from 'pako';
 import Container from 'typedi';
 import MasterValueRepository from '../../repositories/MasterValue';
-<<<<<<< HEAD
-
-=======
 import COARepository from '../../repositories/COA';
 import ColumnNameRepository from '../../repositories/ColumnName'
 import ReportingPeriodRepository from '../../repositories/ReportingPeriod';
@@ -11,7 +8,6 @@ import ReportingPeriodRepository from '../../repositories/ReportingPeriod';
 const columNameRepository = Container.get (ColumnNameRepository)
 const coaRepository = Container.get(COARepository);
 const sheetNameRepository = Container.get(SheetNameRepository);
->>>>>>> 9b917198e1048e369119f27949b786ded22aa87b
 const masterValueRepository = Container.get(MasterValueRepository);
 
 // Using the row and the column index, retrieve the cell value from a sheet 
@@ -28,15 +24,10 @@ const getCellData = (sheetData, rowIndex, columnIndex) => {
   }
   const cell = row.values[columnIndex];
 
-<<<<<<< HEAD
-  // Checks if the cell is empty
-  if (cell === undefined || cell.effectiveValue === undefined){
-=======
   if (cell === undefined){
     return undefined;
   }
   if (cell.formattedValue === undefined) {
->>>>>>> 9b917198e1048e369119f27949b786ded22aa87b
     return undefined;
   }
 
@@ -233,30 +224,6 @@ export const extractSubmissionMasterValues = (
           }
         }
 
-<<<<<<< HEAD
-  for (const sheetName in workbookData.sheets){
-    const sheetData = workbookData.sheets[sheetName];
-
-    const columns = extractColumnNameIds(sheetData);
-    const COAs = extractCOAData(sheetData);
-    console.log("Point 1", columns, COAs);
-    for (const row in COAs) {
-      for (const column in columns) {
-        const cellData = getCellData(sheetData, +row, +column);
-        console.log("Cell Data", cellData);
-        if (cellData && cellData.value){
-          masterValues.push({
-            submission: { _id: submission._id, name: submission.name },
-            org,
-            program,
-            template,
-            templateType,
-            reportingPeriod: reportingPeriod.name,
-            AttributeId: columns[column],
-            CategoryId: COAs[row],
-            value: cellData.value ,
-          });
-=======
         // Delete all column
         console.log('===============DeleteValue===================')
         for (const col in columns){
@@ -294,19 +261,11 @@ export const extractSubmissionMasterValues = (
               })
             }
           }
->>>>>>> 9b917198e1048e369119f27949b786ded22aa87b
         }
         Promise.all(masterValues).then(() => {
           masterValueRepository.bulkUpdate(id, masterValues);
         });
       }
-<<<<<<< HEAD
-    }
-    console.log("MasterValue", masterValues)
-    Promise.all(masterValues).then(() => {
-      masterValueRepository.bulkUpdate(id, masterValues);
-=======
->>>>>>> 9b917198e1048e369119f27949b786ded22aa87b
     });
   });
 }
