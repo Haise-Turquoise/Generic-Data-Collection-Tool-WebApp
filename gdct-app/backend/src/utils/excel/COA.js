@@ -1,7 +1,17 @@
 import pako from 'pako';
 import Container from 'typedi';
 import MasterValueRepository from '../../repositories/MasterValue';
+<<<<<<< HEAD
 
+=======
+import COARepository from '../../repositories/COA';
+import ColumnNameRepository from '../../repositories/ColumnName'
+import ReportingPeriodRepository from '../../repositories/ReportingPeriod';
+
+const columNameRepository = Container.get (ColumnNameRepository)
+const coaRepository = Container.get(COARepository);
+const sheetNameRepository = Container.get(SheetNameRepository);
+>>>>>>> 9b917198e1048e369119f27949b786ded22aa87b
 const masterValueRepository = Container.get(MasterValueRepository);
 
 // Using the row and the column index, retrieve the cell value from a sheet 
@@ -18,8 +28,15 @@ const getCellData = (sheetData, rowIndex, columnIndex) => {
   }
   const cell = row.values[columnIndex];
 
+<<<<<<< HEAD
   // Checks if the cell is empty
   if (cell === undefined || cell.effectiveValue === undefined){
+=======
+  if (cell === undefined){
+    return undefined;
+  }
+  if (cell.formattedValue === undefined) {
+>>>>>>> 9b917198e1048e369119f27949b786ded22aa87b
     return undefined;
   }
 
@@ -109,7 +126,7 @@ export const extractColumnNameIds = sheetData => {
 /**
  * Maps rows with COA data
  */
-export const extractCOAData = sheetData => {
+export const extractCOAData = (sheetData) => {
   // Initialize COAs
   const COAs = {};
 
@@ -199,7 +216,24 @@ export const extractSubmissionMasterValues = (
   const { workbookData } = submission;
 
   const masterValues = [];
+  coaRepository.findAllCoaId().then(categoryData=>{
+    columNameRepository.findAllColumnId().then(AttributeData=>{
+      console.log('================extractMasterValue==================')
+      for (const sheetName in workbookData.sheets){
+        const sheetData = workbookData.sheets[sheetName];
+        const columns = extractColumnNameIds(sheetData);
+        const COAs = extractCOAData(sheetData);
+        console.log('================printing column data and coa=================')
+        console.log(columns, AttributeData)
+        // Delete all the rows that does not match an existing category id
+        console.log('================DeleteValue=================')
+        for (const row in COAs){
+          if (!categoryData.includes(COAs[row])){
+            delete COAs[row]
+          }
+        }
 
+<<<<<<< HEAD
   for (const sheetName in workbookData.sheets){
     const sheetData = workbookData.sheets[sheetName];
 
@@ -222,15 +256,105 @@ export const extractSubmissionMasterValues = (
             CategoryId: COAs[row],
             value: cellData.value ,
           });
+=======
+        // Delete all column
+        console.log('===============DeleteValue===================')
+        for (const col in columns){
+          if (!AttributeData.includes(columns[col])){
+            delete columns[col]
+          }
         }
+        console.log(columns, COAs);
+
+        for (const row in COAs) {
+          for (const column in columns) {
+            const cellData = getCellData(sheetData, +row, +column);
+            if (cellData && cellData.value){
+              masterValues.push({
+                submission: { _id: submission._id, name: submission.name },
+                org,
+                program,
+                template,
+                templateType,
+                reportingPeriod: submission.reportingPeriod,
+                AttributeId: columns[column],
+                CategoryId: COAs[row],
+                value: cellData.value ,
+              });
+              console.log({
+                submission: { _id: submission._id, name: submission.name },
+                org,
+                program,
+                template,
+                templateType,
+                reportingPeriod: submission.reportingPeriod,
+                AttributeId: columns[column],
+                CategoryId: COAs[row],
+                value: cellData.value ,
+              })
+            }
+          }
+>>>>>>> 9b917198e1048e369119f27949b786ded22aa87b
+        }
+        Promise.all(masterValues).then(() => {
+          masterValueRepository.bulkUpdate(id, masterValues);
+        });
       }
+<<<<<<< HEAD
     }
     console.log("MasterValue", masterValues)
     Promise.all(masterValues).then(() => {
       masterValueRepository.bulkUpdate(id, masterValues);
+=======
+>>>>>>> 9b917198e1048e369119f27949b786ded22aa87b
     });
-  }
+  });
 }
+
+// export const extractSubmissionMasterValues = (
+//   id,
+//   submission,
+//   org,
+//   program,
+//   template,
+//   templateType,
+// ) => {
+
+//   const { workbookData } = submission;
+
+//   const masterValues = [];
+
+//   for (const sheetName in workbookData.sheets){
+//     const sheetData = workbookData.sheets[sheetName];
+
+//     const columns = extractColumnNameIds(sheetData);
+//     const COAs = extractCOAData(sheetData);
+//     console.log(columns, COAs);
+//     for (const row in COAs) {
+//       for (const column in columns) {
+//         const cellData = getCellData(sheetData, +row, +column);
+//         console.log(cellData);
+//         if (cellData && cellData.value){
+//           masterValues.push({
+//             submission: { _id: submission._id, name: submission.name },
+//             org,
+//             program,
+//             template,
+//             templateType,
+//             reportingPeriod: submission.reportingPeriod,
+//             AttributeId: columns[column],
+//             CategoryId: COAs[row],
+//             value: cellData.value ,
+//           });
+//         }
+//       }
+//     }
+//     console.log(masterValues)
+//     Promise.all(masterValues).then(() => {
+//       masterValueRepository.bulkUpdate(id, masterValues);
+//     });
+//   }
+// }
 
 // export const extractSubmissionMasterValues = (
 //   id,

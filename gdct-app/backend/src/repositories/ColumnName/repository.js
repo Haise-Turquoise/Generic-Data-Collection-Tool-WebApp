@@ -38,4 +38,12 @@ export default class ColumnNameRepository extends BaseRepository {
       ),
     );
   }
+
+  async findAllColumnId() {
+    return ColumnNameModel.find({}).then(fetchedColumnNames =>
+      fetchedColumnNames.map(
+        fetchedColumnName => fetchedColumnName.id.toString()
+      ),
+    );
+  }
 }
