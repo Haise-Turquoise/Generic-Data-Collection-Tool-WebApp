@@ -17,7 +17,7 @@ import GoogleSheetRepository from '../../repositories/GoogleSheet';
 import { createSheet, createSpreadsheet, addEditor } from '../../middlewares/googleapis/request'
 import { saveGoogleSheetInSubmission }from '../../middlewares/googleapis/save'
 import ReportingPeriodRepository from '../../repositories/ReportingPeriod';
-import { extractColumnNameIds, extractCOAData } from '../../utils/excel/COA'
+import { populateWorkbook } from '../../utils/excel/COA'
 const mongoose = require('mongoose');
 mongoose.Promise = require('bluebird');
 
@@ -59,7 +59,7 @@ export default class SubmissionService {
     return this.programRepository.findById(submission.programId).then(program => {
       return this.templateRepository.findById(submission.templateId).then(template => {
         // Code for populating template has to go here
-        //return this.masterValueRepository.findAll().then(masterValues => {
+        return populateWorkbook(template.templateData).then(masterValuePopulateValues => {
           return this.templateTypeRepository.findById(template.templateTypeId).then(templateType => {
             return this.workflowProcessRepository
               .find({ workflowId: templateType.submissionWorkflowId })
@@ -75,30 +75,22 @@ export default class SubmissionService {
                     nodes.add(outNodeIds.toString());
                   });
                 });
-
-                // For populating workbookData
-                for (const sheetName in template.templateData.sheets){
-                  const sheetData = template.templateData.sheets[sheetName];
-              
-                  const columns = extractColumnNameIds(sheetData);
-                  const COAs = extractCOAData(sheetData);
-
-                  console.log(columns, COAs);
-                  const attributeIds = [];
-                  const categoryIds = [];
-                  for (const row in COAs) {
-                    attributeIds.push(COAs[row]);
+                console.log("Point 1", masterValuePopulateValues)
+                for (const sheet in masterValuePopulateValues){
+                  console.log("Point 2 ", sheet)
+                  let values = masterValuePopulateValues[sheet];
+                  for (const value in values){
+                    const row = values[value].row;
+                    const column = values[value].column;
+                    const data = values[value].value;
+                    template.templateData.sheets[sheet].data[0].rowData[row].values[column].userEnteredValue = {
+                      numberValue: data
+                    }
+                    template.templateData.sheets[sheet].data[0].rowData[row].values[column].effectiveValue = {
+                      numberValue: data
+                    }
+                    template.templateData.sheets[sheet].data[0].rowData[row].values[column].formattedValue = toString(data);
                   }
-                  for (const column in columns) {
-                    categoryIds.push(columns[column]);
-                  }
-                  console.log(attributeIds, categoryIds);
-                  let res;
-                   this.masterValueRepository.batchFind(attributeIds, categoryIds).then(res2 => {
-                      res = res2
-                    });
-
-                  console.log(res);
                 }
 
                 let initialNode = null;
@@ -118,7 +110,7 @@ export default class SubmissionService {
                 return this.submissionRepository.create(submission);
               });
           });
-        //})
+        })
       });
     });
   }
@@ -203,6 +195,7 @@ export default class SubmissionService {
     const newSubmission = await this.submissionRepository.findById(submission._id);
     if (newSubmission.googleSheetId){
       await Promise.resolve(saveGoogleSheetInSubmission(newSubmission.googleSheetId));
+      
       submission = await this.submissionRepository.findById(submission._id);
     }
 

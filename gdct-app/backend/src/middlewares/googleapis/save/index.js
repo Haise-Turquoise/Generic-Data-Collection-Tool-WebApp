@@ -2,7 +2,7 @@ import Container from 'typedi';
 import TemplateRepository from '../../../repositories/Template';
 import SubmissionRepository from '../../../repositories/Submission';
 import GoogleSheetRepository from '../../../repositories/GoogleSheet';
-import { retrieveSave } from '../request';
+import { retrieveSave, deleteGoogleSheet } from '../request';
 
 // Nov 26, 2020
 // Save function for Google Sheet for template
@@ -40,7 +40,11 @@ export async function saveGoogleSheetInSubmission(GoogleSheetRepositoryId){
     // Push the new changes to submissionRepository
     await submissionRepository.updateWorkbook(googleSheet.submissionId, updatedSpreadsheet);
     // Remove the pointer to GoogleSheet from the template since the Google sheet will not exist anymore
-    await submissionRepository.updateGoogleSheetId(googleSheet.templateId, undefined);
+    await submissionRepository.updateGoogleSheetId(googleSheet.submissionId, undefined);
+    // Send a request to Google to delete the Google Sheets.
+    deleteGoogleSheet(googleSheet.googleSheetId, googleSheet.duplicateId /*, openGoogleSheets[i].triggerId*/);
+    // Delete the GoogleSheet Collection object
+    googleSheetRepository.delete(GoogleSheetRepositoryId);
 }
 
 // This function will compare the template coming in from Google with the template currently in the database. 

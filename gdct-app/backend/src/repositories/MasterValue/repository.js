@@ -6,14 +6,13 @@ export default class MasterValueRepository extends BaseRepository {
     super(MasterValueModel);
   }
 
-  async bulkUpdate(submissionId, masterValues) {
-    return MasterValueModel.deleteMany({ submissionId }).then(() =>
+  async bulkUpdate(submission, masterValues) {
+    return MasterValueModel.deleteMany({ submission }).then(() =>
       MasterValueModel.create(masterValues),
     );
   }
 
   async batchFind(attributeIds, categoryIds) {
-    return MasterValueModel.find({ AttributeId: { $in : attributeIds }, categoryId: {$in : categoryIds }}).then(values => console.log(values));
+    return MasterValueModel.find({ AttributeId: { $in : attributeIds }, CategoryId: {$in : categoryIds }}).then(values => {return values});
   }
-
 }

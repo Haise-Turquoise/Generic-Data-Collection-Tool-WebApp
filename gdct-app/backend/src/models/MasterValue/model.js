@@ -1,6 +1,6 @@
 import { Schema, model } from 'mongoose';
 
-const { ObjectId } = Schema.Types;
+const { ObjectId, Number } = Schema.Types;
 
 /**
  * Contains the values of successfully approved workbooks
@@ -63,10 +63,10 @@ const MasterValueModel = model(
       },
 
       // COATreeId: { type: String },
-      CategoryId: { type: String },
-      AttributeId: { type: String },
+      CategoryId: { type: Number },
+      AttributeId: { type: Number },
 
-      value: { type: String },
+      value: { type: Number },
     },
     { minimize: false },
   ),

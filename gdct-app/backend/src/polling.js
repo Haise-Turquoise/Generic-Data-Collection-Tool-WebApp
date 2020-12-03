@@ -6,7 +6,7 @@ import GoogleSheetRepository from './repositories/GoogleSheet';
 import { saveGoogleSheetInTemplate, saveGoogleSheetInSubmission } from './middlewares/googleapis/save'
 import { checkLastSaved, deleteGoogleSheet } from './middlewares/googleapis/request'
 // The frequency at which the server should check for open Google Sheets
-const pollingTime = 10;
+const pollingTime = 10000000;
 export default function polling(){
     setTimeout(checkForOpenGoogleSheet, pollingTime);
 } 
@@ -35,15 +35,16 @@ async function checkForOpenGoogleSheet(){
             if (openGoogleSheets[i].templateId){
                 // Save template
                 await Promise.resolve(saveGoogleSheetInTemplate(openGoogleSheets[i]));
+                // Send a request to Google to delete the Google Sheets.
+                deleteGoogleSheet(openGoogleSheets[i].googleSheetId, openGoogleSheets[i].duplicateId /*, openGoogleSheets[i].triggerId*/);
+                // Delete the GoogleSheet Collection object
+                googleSheetRepository.delete(openGoogleSheets[i]._id);
             } else if (openGoogleSheets[i].submissionId){
                 // Save submission. 
                 await Promise.resolve(saveGoogleSheetInSubmission(openGoogleSheets[i]._id))
             }
             console.log("Done")
-            // Send a request to Google to delete the Google Sheets.
-           deleteGoogleSheet(openGoogleSheets[i].googleSheetId, openGoogleSheets[i].triggerId, openGoogleSheets[i].duplicateId);
-            // Delete the GoogleSheet Collection object
-           googleSheetRepository.delete(openGoogleSheets[i]._id);
+
         }
     }
 }

@@ -40,8 +40,8 @@ export async function checkLastSaved(openGoogleSheets){
 // @googleSheetId: Id of the spreadsheet user is editing
 // @triggerId: Each spreadsheet is assigned a trigger to detect changes in cell value
 // @duplicateId: A copy of a spreadsheet hidden from users that is used to check for changes that are made
-export async function deleteGoogleSheet(googleSheetId, triggerId, duplicateId){
-  requestCall('deleteGoogleSheet', [googleSheetId, duplicateId, triggerId]);
+export async function deleteGoogleSheet(googleSheetId, duplicateId /*triggerId*/ ){
+requestCall('deleteGoogleSheet', [googleSheetId, duplicateId /*triggerId*/ ]);
 }
 
 // Last Updated: Nov 27, 2020
