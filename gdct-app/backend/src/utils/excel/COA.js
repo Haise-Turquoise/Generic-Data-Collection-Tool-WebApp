@@ -6,6 +6,10 @@ import ColumnNameRepository from '../../repositories/ColumnName'
 
 const columNameRepository = Container.get (ColumnNameRepository)
 const coaRepository = Container.get(COARepository);
+<<<<<<< HEAD
+=======
+const sheetNameRepository = Container.get(SheetNameRepository);
+>>>>>>> 777bb5e640e8d5ec6021945f043d769012e25dd6
 const masterValueRepository = Container.get(MasterValueRepository);
 
 // Using the row and the column index, retrieve the cell value from a sheet 
@@ -22,8 +26,15 @@ const getCellData = (sheetData, rowIndex, columnIndex) => {
   }
   const cell = row.values[columnIndex];
 
+<<<<<<< HEAD
   // Checks if the cell is empty
   if (cell === undefined || cell.effectiveValue === undefined){
+=======
+  if (cell === undefined){
+    return undefined;
+  }
+  if (cell.formattedValue === undefined) {
+>>>>>>> 777bb5e640e8d5ec6021945f043d769012e25dd6
     return undefined;
   }
 
@@ -161,6 +172,7 @@ export async function extractSubmissionMasterValues(
     }
     await masterValueRepository.batchDelete(filteredAttributes, filteredCategories, org);
 
+<<<<<<< HEAD
 
     for (const row in COAs){
       if (!filteredCategories.includes(COAs[row])){
@@ -194,6 +206,50 @@ export async function extractSubmissionMasterValues(
     }
     Promise.all(masterValues).then(() => {
       masterValueRepository.bulkUpdate(id, masterValues);
+=======
+        // Delete all column
+        console.log('===============DeleteValue===================')
+        for (const col in columns){
+          if (!AttributeData.includes(columns[col])){
+            delete columns[col]
+          }
+        }
+        console.log(columns, COAs);
+
+        for (const row in COAs) {
+          for (const column in columns) {
+            const cellData = getCellData(sheetData, +row, +column);
+            if (cellData && cellData.value){
+              masterValues.push({
+                submission: { _id: submission._id, name: submission.name },
+                org,
+                program,
+                template,
+                templateType,
+                reportingPeriod: submission.reportingPeriod,
+                AttributeId: columns[column],
+                CategoryId: COAs[row],
+                value: cellData.value ,
+              });
+              console.log({
+                submission: { _id: submission._id, name: submission.name },
+                org,
+                program,
+                template,
+                templateType,
+                reportingPeriod: submission.reportingPeriod,
+                AttributeId: columns[column],
+                CategoryId: COAs[row],
+                value: cellData.value ,
+              })
+            }
+          }
+        }
+        Promise.all(masterValues).then(() => {
+          masterValueRepository.bulkUpdate(id, masterValues);
+        });
+      }
+>>>>>>> 777bb5e640e8d5ec6021945f043d769012e25dd6
     });
     console.log("Mastervalue Populated")
   }
