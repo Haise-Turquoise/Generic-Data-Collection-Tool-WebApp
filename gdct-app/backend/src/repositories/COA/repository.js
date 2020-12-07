@@ -36,6 +36,10 @@ export default class COARepository extends BaseRepository {
   }
 
   async findAllCoaId(query) {
-    return COAModel.find({}).then(COAs => COAs.map(COA => COA.id));
+    return COAModel.find({}).then(COAs => COAs.map(COA => parseInt(COA.id)));
+  }
+
+  async batchFind(categoryIds) {
+    return COAModel.find({ id: { $in : categoryIds }}).then(values => {return values});
   }
 }

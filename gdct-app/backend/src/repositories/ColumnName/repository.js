@@ -39,10 +39,14 @@ export default class ColumnNameRepository extends BaseRepository {
     );
   }
 
+  async batchFind(attributeIds) {
+    return ColumnNameModel.find({ id: { $in : attributeIds }}).then(values => {return values});
+  }
+
   async findAllColumnId() {
     return ColumnNameModel.find({}).then(fetchedColumnNames =>
       fetchedColumnNames.map(
-        fetchedColumnName => fetchedColumnName.id.toString()
+        fetchedColumnName => fetchedColumnName.id
       ),
     );
   }

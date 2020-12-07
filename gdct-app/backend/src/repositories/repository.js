@@ -23,6 +23,7 @@ export default class BaseRepository {
 
   async findAll() {
     return this._model.find().then(result => {
+      console.log("FindAll", this._model)
       if (!result) throw new AppError(i18n.__('idDoesNotExist'));
       return result;
     });
@@ -37,7 +38,7 @@ export default class BaseRepository {
 
   async findById(id) {
     return this._model.findById(id).then(result => {
-
+      console.log("findById", this._model, id)
       if (!result) { console.log(id);throw new AppError(i18n.__('idDoesNotExist'));} // throw new Error('_id does not exist');
       return result.toObject();
     });
