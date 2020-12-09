@@ -39,4 +39,8 @@ export default class GoogleSheetRepository extends BaseRepository {
       return result;
     });
   }
+
+  async findOneAndUpdate(filter, update) {
+    return GoogleSheetModel.findOneAndUpdate(filter, update);
+  }
 }

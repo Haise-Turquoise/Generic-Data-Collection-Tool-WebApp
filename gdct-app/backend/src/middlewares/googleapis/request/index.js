@@ -53,9 +53,12 @@ export async function addEditor(spreadsheetId, userEmail){
 
 // Last Updated: Nov 27, 2020
 // Retrieves all the changes made to the Google Sheet to update the database
-export async function retrieveSave(currentId, duplicateId){
+export async function retrieveSave(currentId, duplicateId, previewCoord){
   let res// = await Promise.resolve(requestCall('retrieveSave', [currentId, duplicateId]));
   if (!res){
+    if (!previewCoord.length){
+      await Promise.resolve(requestCall('removePreview', [currentId, previewCoord]))
+    }
     res = await Promise.resolve(requestCallToSheet(currentId));
   }
   return res;

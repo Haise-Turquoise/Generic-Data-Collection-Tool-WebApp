@@ -192,10 +192,11 @@ export default class SubmissionService {
   }
 
   async updateStatus(submission, submissionNote, role, nextProcessId) {
+    console.log("Point 1", submission._id)
     const newSubmission = await this.submissionRepository.findById(submission._id);
     if (newSubmission.googleSheetId){
       await Promise.resolve(saveGoogleSheetInSubmission(newSubmission.googleSheetId));
-      
+      console.log("Point 2", submission._id)
       submission = await this.submissionRepository.findById(submission._id);
     }
 

@@ -8,6 +8,8 @@ const ReportingPeriodModel = model(
       startDate: { type: Date },
       endDate: { type: Date },
       application: { type: String },
+      code: { type: Number },
+      submissionClosed: { type: Boolean }
     },
     { minimize: false },
   ),

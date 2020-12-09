@@ -9,7 +9,7 @@ import { retrieveSave, deleteGoogleSheet } from '../request';
 export async function saveGoogleSheetInTemplate(googleSheet){
     const templateRepository = Container.get(TemplateRepository);
     // Retrieve Google Sheet from Google
-    const res = await Promise.resolve(retrieveSave(googleSheet.googleSheetId, googleSheet.duplicateId));
+    const res = await Promise.resolve(retrieveSave(googleSheet.googleSheetId, googleSheet.duplicateId, googleSheet.previewCoord));
     // Pako should be implemented here
     const newSpreadsheet = res;
     // Retrieve the template currently in the database

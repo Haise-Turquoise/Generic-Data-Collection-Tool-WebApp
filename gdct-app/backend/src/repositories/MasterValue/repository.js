@@ -19,4 +19,8 @@ export default class MasterValueRepository extends BaseRepository {
   async findAll(){
     return MasterValueModel.find();
   }
+  
+  async batchDelete(attributeIds, categoryIds, orgId) {
+    return MasterValueModel.deleteMany({ AttributeId: { $in : attributeIds }, CategoryId: {$in : categoryIds }, org: orgId}).then(values => {return values});
+  }
 }
