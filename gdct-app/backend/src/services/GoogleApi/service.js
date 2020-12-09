@@ -8,6 +8,7 @@ import COAGroupRepository from '../../repositories/COAGroup';
 import COARepository from '../../repositories/COA';
 import ColumnNameRepository from '../../repositories/ColumnName';
 import GoogleSheetRepository from '../../repositories/GoogleSheet';
+import MasterValueRepository from '../../repositories/MasterValue'
 import { getSpreadsheet } from '../../middlewares/googleapis/request'
 import pako from 'pako'
 
@@ -20,6 +21,7 @@ export default class GoogleApisService {
     this.COARepository = Container.get(COARepository);
     this.ColumnNameRepository = Container.get(ColumnNameRepository);
     this.googleSheetRepository = Container.get(GoogleSheetRepository)
+    this.masterValueRepository = Container.get(MasterValueRepository);
   }
 
   // Updated on Nov 16, 2020
@@ -100,7 +102,22 @@ export default class GoogleApisService {
 
       this.templateRepository.updateTemplate(templateId, template.templateData)
       }
-    }
+  }
+
+  async findOrgWithMasterValueEntries(){
+    return this.masterValueRepository.findAll().then(entries=>{
+      const organizations = [];
+      const hashTable = {};
+      entries.forEach(entry=>{
+        const {id, name} = entry.org;
+        if (hashTable[id] === undefined){
+          organizations.push(entry.org)
+          hashTable[id] = name;
+        }
+      });
+      return organizations
+    })
+  }
 }
 
 // Insert all the Attributes to the JSON Object
@@ -192,3 +209,4 @@ async function pushCategory(dataToSend, COATreeData, COAGroupRepository, COARepo
     }
   }
 }
+

@@ -15,4 +15,8 @@ export default class MasterValueRepository extends BaseRepository {
   async batchFind(attributeIds, categoryIds) {
     return MasterValueModel.find({ AttributeId: { $in : attributeIds }, CategoryId: {$in : categoryIds }}).then(values => {return values});
   }
+
+  async findAll(){
+    return MasterValueModel.find();
+  }
 }

@@ -4,7 +4,6 @@
 import { Service } from 'typedi';
 import { Router } from 'express';
 import GoogleApisService from '../../services/GoogleApi';
-
 // Used to handle API requests from google
 const GoogleApisController = Service([GoogleApisService], service => {
   const router = Router();
@@ -26,6 +25,12 @@ const GoogleApisController = Service([GoogleApisService], service => {
         .updateSpreadsheet(req.body)
         .then()
         .catch(next);
+    });
+
+    router.post('/orgWithMasterValueEntry', (req, res, next)=>{
+      service.findOrgWithMasterValueEntries().then(data=>{
+        res.send(JSON.stringify({"orgs":data}))
+      }).catch(next);
     });
 
     return router;

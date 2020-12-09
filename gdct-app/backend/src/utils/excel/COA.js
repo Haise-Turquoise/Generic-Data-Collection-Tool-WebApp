@@ -7,7 +7,6 @@ import ReportingPeriodRepository from '../../repositories/ReportingPeriod';
 
 const columNameRepository = Container.get (ColumnNameRepository)
 const coaRepository = Container.get(COARepository);
-const sheetNameRepository = Container.get(SheetNameRepository);
 const masterValueRepository = Container.get(MasterValueRepository);
 
 // Using the row and the column index, retrieve the cell value from a sheet 
