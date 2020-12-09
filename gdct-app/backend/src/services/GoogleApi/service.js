@@ -100,7 +100,20 @@ export default class GoogleApisService {
 
       this.templateRepository.updateTemplate(templateId, template.templateData)
       }
+  }
+
+  async updatePreview(request){
+    const {id, coordinate} = request; 
+
+    let filter = {
+      googleSheetId: id,
     }
+
+    let update = {
+      previewCoord: coordinate ,
+    }
+    this.googleSheetRepository.findOneAndUpdate(filter, update);
+  }
 }
 
 // Insert all the Attributes to the JSON Object

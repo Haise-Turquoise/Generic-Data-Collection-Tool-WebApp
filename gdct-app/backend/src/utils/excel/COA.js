@@ -2,15 +2,13 @@ import pako from 'pako';
 import Container from 'typedi';
 import MasterValueRepository from '../../repositories/MasterValue';
 import COARepository from '../../repositories/COA';
-import ColumnNameRepository from '../../repositories/ColumnName'
+import ColumnNameRepository from '../../repositories/ColumnName';
+import ReportingPeriodRepository from '../../repositories/ReportingPeriod';
 
 const columNameRepository = Container.get (ColumnNameRepository)
 const coaRepository = Container.get(COARepository);
-<<<<<<< HEAD
-=======
-const sheetNameRepository = Container.get(SheetNameRepository);
->>>>>>> 777bb5e640e8d5ec6021945f043d769012e25dd6
 const masterValueRepository = Container.get(MasterValueRepository);
+const reportingPeriodRepository = Container.get(ReportingPeriodRepository);
 
 // Using the row and the column index, retrieve the cell value from a sheet 
 const getCellData = (sheetData, rowIndex, columnIndex) => {
@@ -26,15 +24,8 @@ const getCellData = (sheetData, rowIndex, columnIndex) => {
   }
   const cell = row.values[columnIndex];
 
-<<<<<<< HEAD
   // Checks if the cell is empty
   if (cell === undefined || cell.effectiveValue === undefined){
-=======
-  if (cell === undefined){
-    return undefined;
-  }
-  if (cell.formattedValue === undefined) {
->>>>>>> 777bb5e640e8d5ec6021945f043d769012e25dd6
     return undefined;
   }
 
@@ -150,9 +141,9 @@ export async function extractSubmissionMasterValues(
 
     for (const column in columns){
       const columnId = parseInt(columns[column]);
-      const currentYear = 2019 * 1000;
-      const nextYear = 2020 * 1000;
-      if (currentYear < columnId && nextYear > columnId){
+      const currentPeriod = Math.floor(columnId / 1000);
+      let res = await reportingPeriodRepository.findSubmissionClosed({code: currentPeriod})
+      if (!res[0].submissionClosed){
         currentYearAttributes.push(columnId);
       }
     }
@@ -172,7 +163,6 @@ export async function extractSubmissionMasterValues(
     }
     await masterValueRepository.batchDelete(filteredAttributes, filteredCategories, org);
 
-<<<<<<< HEAD
 
     for (const row in COAs){
       if (!filteredCategories.includes(COAs[row])){
@@ -206,50 +196,6 @@ export async function extractSubmissionMasterValues(
     }
     Promise.all(masterValues).then(() => {
       masterValueRepository.bulkUpdate(id, masterValues);
-=======
-        // Delete all column
-        console.log('===============DeleteValue===================')
-        for (const col in columns){
-          if (!AttributeData.includes(columns[col])){
-            delete columns[col]
-          }
-        }
-        console.log(columns, COAs);
-
-        for (const row in COAs) {
-          for (const column in columns) {
-            const cellData = getCellData(sheetData, +row, +column);
-            if (cellData && cellData.value){
-              masterValues.push({
-                submission: { _id: submission._id, name: submission.name },
-                org,
-                program,
-                template,
-                templateType,
-                reportingPeriod: submission.reportingPeriod,
-                AttributeId: columns[column],
-                CategoryId: COAs[row],
-                value: cellData.value ,
-              });
-              console.log({
-                submission: { _id: submission._id, name: submission.name },
-                org,
-                program,
-                template,
-                templateType,
-                reportingPeriod: submission.reportingPeriod,
-                AttributeId: columns[column],
-                CategoryId: COAs[row],
-                value: cellData.value ,
-              })
-            }
-          }
-        }
-        Promise.all(masterValues).then(() => {
-          masterValueRepository.bulkUpdate(id, masterValues);
-        });
-      }
->>>>>>> 777bb5e640e8d5ec6021945f043d769012e25dd6
     });
     console.log("Mastervalue Populated")
   }
