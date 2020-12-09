@@ -120,7 +120,12 @@ export default class GoogleApisService {
   }
   
   async updatePreview(request){
-    const {id, coordinate} = request; 
+    const id = request[0].id;
+    const coordinate = [];
+    
+    for (let item in request){
+      coordinate.push(request[item].coordinate);
+    }
 
     let filter = {
       googleSheetId: id,
