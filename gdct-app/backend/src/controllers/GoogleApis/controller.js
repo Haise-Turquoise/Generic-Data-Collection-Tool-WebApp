@@ -33,22 +33,12 @@ const GoogleApisController = Service([GoogleApisService], service => {
       }).catch(next);
     });
 
-    // Last Updated: Dec 07, 2020
-    router.post('/recordPreview/', (req, res, next) => {
+    router.post('/updatePreview/', (req, res, next) => {
       service
         .recordPreview(req.body)
         .then()
         .catch(next);
     });
-
-    // Last Updated: Dec 07, 2020
-    router.post('/deletePreview/', (req, res, next) => {
-      service
-        .recordPreview(req.body)
-        .then()
-        .catch(next);
-    });
-
 
     return router;
   })();
