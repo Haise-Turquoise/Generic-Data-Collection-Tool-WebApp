@@ -20,7 +20,7 @@ export async function createSheet(templateData, spreadsheetID){
   const dataToSend = {
     properties: {title: 'Temporary Spreadsheet'},
     sheets: templateData,
-    //namedRanges: templateData.namedRanges,
+    // namedRanges: templateData.namedRanges,
   }
   // Deflate/Compress the data
   const deflatedData = pako.deflate(JSON.stringify(dataToSend), { to: 'string' })
@@ -124,9 +124,6 @@ async function requestCallToSheet(spreadsheetId){
   if (res.error){
     console.log('The API returned an error: ' + res.error);
   } else { 
-    const deflatedData = pako.deflate(JSON.stringify(res.data), { to: 'string' });
-    fs.writeFile('Hello.json', JSON.stringify(deflatedData), function (err){
-    })
     console.log(res.data); return res.data }
 }
 
