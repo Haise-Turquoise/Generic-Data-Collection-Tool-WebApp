@@ -3,6 +3,7 @@ import fs from 'fs'
 
 const SCOPES = ['https://spreadsheets.google.com/feeds', 'https://www.googleapis.com/auth/drive', 'https://www.googleapis.com/auth/script.projects','https://www.googleapis.com/auth/script.external_request', 'https://www.googleapis.com/auth/spreadsheets.currentonly'];
 const TOKEN_PATH = 'token.json';
+// , 'https://www.googleapis.com/auth/spreadsheets'
 
 // Oct 26, 2020
 // Function that creates an Oauth2 Client for sending API requests to Google
@@ -18,7 +19,7 @@ export default function getAuthorization() {
       //Check if we have previously stored a token.
       fs.readFile(TOKEN_PATH, (err, token) => {
           //If there are no tokens, create a new one
-          if (err) return getNewToken(oAuth2Client);
+          if (err) {console.log(err); return getNewToken(oAuth2Client)};
           //Call the requested function
           oAuth2Client.setCredentials(JSON.parse(token));
           resolve(oAuth2Client);
@@ -37,7 +38,7 @@ function getNewToken(oAuth2Client) {
     });
     console.log('Authorize this app by visiting this url:', authUrl);
     setTimeout(function(){
-      fs.readFile('C:/Node/git_GDCS/GDCT-3/GDCT/gdct-app/backend/src/middlewares/googleapis/code.json', (err, content) => {
+      fs.readFile('C:/Node/git_GDCS/GDCT-3/GDCT/gdct-app/backend/src/middlewares/googleapis/auth/code.json', (err, content) => {
         content = JSON.parse(content);
         const {code} = content;
         console.log(code)

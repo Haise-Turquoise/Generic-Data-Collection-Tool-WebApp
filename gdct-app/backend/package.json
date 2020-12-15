@@ -15,6 +15,9 @@
     "test": "jest --testEnvironment=node",
     "coverage": "jest --coverage"
   },
+  "nodemonConfig": {
+    "ignore": ["*.json"]
+ },
   "dependencies": {
     "@types/compression": "^1.7.0",
     "@types/cors": "^2.8.6",

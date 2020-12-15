@@ -5,11 +5,11 @@ import fs from 'fs'
 
 // Last Updated: Nov 27, 2020
 // Function call for creating new google sheet with existing data
-export async function createSpreadsheet(templateData, userEmail){
+export async function createSpreadsheet(templateData, userEmail, submission = false, submissionClosed = []){
   // Deflate/Compress the data
   // const res = await Promise.resolve(requestCreateToSheet(templateData));
   const deflatedData = pako.deflate(JSON.stringify(templateData), { to: 'string' })
-  const res = await Promise.resolve(requestCall('createSpreadsheet', [{ data: deflatedData}, userEmail]));
+  const res = await Promise.resolve(requestCall('createSpreadsheet', [{ data: deflatedData}, userEmail,  submission, submissionClosed]));
   return res;
 }
 
@@ -56,7 +56,7 @@ export async function addEditor(spreadsheetId, userEmail){
 export async function retrieveSave(currentId, duplicateId, previewCoord){
   let res// = await Promise.resolve(requestCall('retrieveSave', [currentId, duplicateId]));
   if (!res){
-    if (!previewCoord.length){
+    if (previewCoord.length){
       await Promise.resolve(requestCall('removePreview', [currentId, previewCoord]))
     }
     res = await Promise.resolve(requestCallToSheet(currentId));
@@ -93,7 +93,6 @@ async function requestCall(functionName, parameters){
     },
     scriptId: scriptId,
   }
-
   // Make the API request.
   const res = await script.scripts.run(req);
   // Show error message if there are errors
@@ -139,7 +138,6 @@ async function requestCreateToSheet(data){
   // Get authorization credentials
   const auth = await getAuthorization();
   const sheets = google.sheets({version: 'v4', auth});
-  console.log(data);
   const req = data;
 
   const res = await sheets.spreadsheets.create(req);

@@ -43,4 +43,16 @@ export default class GoogleSheetRepository extends BaseRepository {
   async findOneAndUpdate(filter, update) {
     return GoogleSheetModel.findOneAndUpdate(filter, update);
   }
+
+  async findPreview(spreadsheetId){
+    return GoogleSheetModel.find({googleSheetId: spreadsheetId}, {
+      _id: 0,
+      duplicateId: 0,
+      googleSheetId: 0,
+      templateId: 0,
+      submissionId: 0,
+      triggerId: 0,
+      // previewCoord: 1,
+    })
+  }
 }

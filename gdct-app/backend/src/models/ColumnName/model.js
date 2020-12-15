@@ -6,7 +6,7 @@ const ColumnNameModel = model(
   new Schema(
     {
       name: { type: String, required: true },
-      id: { type: Number, required: true, unique: true },
+      id: { type: String, required: true, unique: true },
     },
     { minimize: false },
   ),

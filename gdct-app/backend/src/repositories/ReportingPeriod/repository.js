@@ -39,4 +39,9 @@ export default class ReportPeriodRepository extends BaseRepository {
   async findSubmissionClosed(query) {
     return ReportingPeriodModel.find(query, { name: 0, _id: 0, endDate: 0, application: 0, code: 0});
   }
+
+  async findSubmissionOpen() {
+    const query = {submissionClosed: false}
+    return ReportingPeriodModel.find(query, { name: 0, _id: 0, startDate: 0, endDate: 0, application: 0, submissionClosed: 0});
+  }
 }

@@ -140,14 +140,13 @@ export async function extractSubmissionMasterValues(
     }
 
     for (const column in columns){
-      const columnId = parseInt(columns[column]);
-      const currentPeriod = Math.floor(columnId / 1000);
+      const columnId = columns[column].toString();
+      const currentPeriod = columnId.slice(0,6);
       let res = await reportingPeriodRepository.findSubmissionClosed({code: currentPeriod})
       if (!res[0].submissionClosed){
         currentYearAttributes.push(columnId);
       }
     }
-
     const existingAttributes = await columNameRepository.batchFind(currentYearAttributes);
     const existingCategories = await coaRepository.batchFind(categoryIds);
 
@@ -159,19 +158,19 @@ export async function extractSubmissionMasterValues(
     }
 
     for (let category in existingCategories){
-      filteredCategories.push(parseInt(existingCategories[category].id))
+      filteredCategories.push(existingCategories[category].id)
     }
     await masterValueRepository.batchDelete(filteredAttributes, filteredCategories, org);
 
 
     for (const row in COAs){
-      if (!filteredCategories.includes(COAs[row])){
+      if (!filteredCategories.includes(COAs[row].toString())){
         delete COAs[row]
       }
     }
     // Delete all column
     for (const col in columns){
-      if (!filteredAttributes.includes(columns[col])){
+      if (!filteredAttributes.includes(columns[col].toString())){
         delete columns[col]
       }
     }
@@ -187,8 +186,8 @@ export async function extractSubmissionMasterValues(
             template,
             templateType,
             reportingPeriod: reportingPeriod.name,
-            AttributeId: columns[column],
-            CategoryId: COAs[row],
+            AttributeId: columns[column].toString(),
+            CategoryId: COAs[row].toString(),
             value: cellData.value ,
           });
         }
@@ -204,12 +203,13 @@ export async function extractSubmissionMasterValues(
 export async function populateWorkbook(templateData) {
   const resMasterValue = {};
 
-  
+  const protectedAttributeIdsFull = [];
   for (const sheetName in templateData.sheets){
 
     // For populating workbookData
     const attributeIds = [];
     const categoryIds = [];
+    const protectedAttributeIds = [];
     
     const sheetData = templateData.sheets[sheetName];
 
@@ -217,26 +217,27 @@ export async function populateWorkbook(templateData) {
     const COAs = extractCOAData(sheetData);
 
     for (const row in COAs) {
-      categoryIds.push(COAs[row]);
+      categoryIds.push(COAs[row].toString());
     }
     for (const column in columns) {
-      attributeIds.push(columns[column]);
-    }
+      const columnId = columns[column].toString();
+      attributeIds.push(columnId);
+   }
     let res = await masterValueRepository.batchFind(attributeIds, categoryIds)
-    let test = [];
+    let newSheet = [];
     for (const item in res) {
       const masterValueItem = res[item]
       for (const row in COAs) {
-        if (COAs[row] === masterValueItem.CategoryId){
+        if (COAs[row].toString() === masterValueItem.CategoryId){
           for (const column in columns) {
-            if (columns[column] === masterValueItem.AttributeId){
-              test.push({ row: +row, column: +column, value: masterValueItem.value })
+            if (columns[column].toString() === masterValueItem.AttributeId){
+              newSheet.push({ row: +row, column: +column, value: masterValueItem.value })
             }
           }
         }
       }
     }
-    resMasterValue[sheetName] = test;
+    resMasterValue[sheetName] = newSheet;
     console.log("Population Complete")
   }
 

@@ -9,7 +9,8 @@ import COARepository from '../../repositories/COA';
 import ColumnNameRepository from '../../repositories/ColumnName';
 import GoogleSheetRepository from '../../repositories/GoogleSheet';
 import MasterValueRepository from '../../repositories/MasterValue'
-import { getSpreadsheet } from '../../middlewares/googleapis/request'
+import { getSpreadsheet, deleteGoogleSheet } from '../../middlewares/googleapis/request'
+import {saveGoogleSheetInTemplate, saveGoogleSheetInSubmission} from '../../middlewares/googleapis/save'
 import pako from 'pako'
 
 // @Service()
@@ -120,13 +121,16 @@ export default class GoogleApisService {
   }
   
   async updatePreview(request){
+    console.log(request)
+    request = JSON.parse(request).data
     const id = request[0].id;
     const coordinate = [];
     
+    console.log("Point 1", id)
     for (let item in request){
       coordinate.push(request[item].coordinate);
     }
-
+    console.log("POint 2", coordinate)
     let filter = {
       googleSheetId: id,
     }
@@ -135,6 +139,35 @@ export default class GoogleApisService {
       previewCoord: coordinate ,
     }
     this.googleSheetRepository.findOneAndUpdate(filter, update);
+  }
+
+  async getPreview(spreadsheetId){
+    console.log(spreadsheetId)
+    const res = await this.googleSheetRepository.findPreview(spreadsheetId);
+    let filter = {
+      googleSheetId: spreadsheetId,
+    }
+    let update = {
+      previewCoord: [],
+    }
+    this.googleSheetRepository.findOneAndUpdate(filter, update);
+    return res[0].previewCoord;
+  }
+
+  async save(spreadsheetId){
+    const res = await this.googleSheetRepository.find({googleSheetId: spreadsheetId});
+    if (res[0].templateId){
+      await Promise.resolve(saveGoogleSheetInTemplate(res[0]));
+
+      // deleteGoogleSheet(res[0].googleSheetId, res[0].duplicateId /*, openGoogleSheets[i].triggerId*/);
+      // // Delete the GoogleSheet Collection object
+      // const googleSheetRepository = Container.get(GoogleSheetRepository);
+      // googleSheetRepository.delete(res[0]._id);
+
+    } else if (res[0].submissionId){
+      saveGoogleSheetInSubmission(res[0]._id)
+    }
+
   }
 }
 
@@ -227,4 +260,6 @@ async function pushCategory(dataToSend, COATreeData, COAGroupRepository, COARepo
     }
   }
 }
+
+
 

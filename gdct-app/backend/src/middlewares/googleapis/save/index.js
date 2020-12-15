@@ -30,7 +30,7 @@ export async function saveGoogleSheetInSubmission(GoogleSheetRepositoryId){
     // Retrieve GoogleSheet collection from the database
     const googleSheet = await googleSheetRepository.findById(GoogleSheetRepositoryId);
     // Retrieve Google Sheet from Google
-    const res = await Promise.resolve(retrieveSave(googleSheet.googleSheetId, googleSheet.duplicateId));
+    const res = await Promise.resolve(retrieveSave(googleSheet.googleSheetId, googleSheet.duplicateId, []));
     // Pako should be implemented here
     const newSpreadsheet = res;
     // Retrieve the workbook currently in the database

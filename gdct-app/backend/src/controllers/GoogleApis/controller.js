@@ -35,10 +35,26 @@ const GoogleApisController = Service([GoogleApisService], service => {
 
     router.post('/updatePreview/', (req, res, next) => {
       service
-        .recordPreview(req.body)
-        .then()
+        .updatePreview(req.body.data)
+        .then(answer => res.send())
         .catch(next);
     });
+
+    router.post('/getPreview/', (req, res, next) => {
+      service
+        .getPreview(req.body.data)
+        .then(preview => 
+          {console.log(preview); res.send({data: preview} )})
+        .catch(next);
+    });
+
+    router.post('/closeEvent/', (req, res, next) => {
+      service
+        .save(req.body.id)
+        .then(preview => res.send({data: preview} ))
+        .catch(next);
+    });
+
 
     return router;
   })();

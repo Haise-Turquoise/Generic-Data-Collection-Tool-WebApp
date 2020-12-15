@@ -75,9 +75,8 @@ export default class SubmissionService {
                     nodes.add(outNodeIds.toString());
                   });
                 });
-                console.log("Point 1", masterValuePopulateValues)
+
                 for (const sheet in masterValuePopulateValues){
-                  console.log("Point 2 ", sheet)
                   let values = masterValuePopulateValues[sheet];
                   for (const value in values){
                     const row = values[value].row;
@@ -92,7 +91,7 @@ export default class SubmissionService {
                     template.templateData.sheets[sheet].data[0].rowData[row].values[column].formattedValue = toString(data);
                   }
                 }
-
+        
                 let initialNode = null;
   
                 nodes.forEach(node => {
@@ -400,8 +399,9 @@ export default class SubmissionService {
       return res.googleSheetId;
     }
 
+    let openPeriods = await this.reportingPeriodRepository.findSubmissionOpen();
     // Sends in the data from google sheet API and retrieves spreadsheetID
-    let res = await Promise.resolve(createSpreadsheet(submission.workbookData, userEmail)); 
+    let res = await Promise.resolve(createSpreadsheet(submission.workbookData, userEmail, true, openPeriods)); 
     const { userSpreadsheetId, duplicateSpreadsheetId, triggerId } = res;
     // Store Google Sheet Model to the database
     const googleSheetModel = {
