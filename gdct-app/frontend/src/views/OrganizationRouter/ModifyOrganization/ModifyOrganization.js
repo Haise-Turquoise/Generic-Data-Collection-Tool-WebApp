@@ -14,6 +14,8 @@ import Typography from '@material-ui/core/Typography';
 import './ModifyOrganization.scss';
 import ProgList from '../ProgramList';
 
+import { makeStyles } from '@material-ui/core/styles';
+
 const OrganizationHeader = ({ title }) => {
   return (
     <Paper className="header">
@@ -212,6 +214,11 @@ const OrganizationForm = props => {
     );
   };
 
+  const classes = makeStyles({
+    root: {
+      margin: '100px',
+    }
+  })
   return (
     <Paper>
       <form onSubmit={() => false}>
@@ -256,6 +263,7 @@ const OrganizationForm = props => {
             </Button>
             <Button
               type="button"
+              className="SaveButton"
               color="primary"
               variant="contained"
               size="large"

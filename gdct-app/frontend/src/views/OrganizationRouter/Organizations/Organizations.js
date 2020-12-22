@@ -56,7 +56,13 @@ const Organizations = ({ history }) => {
     [],
   );
 
-  const options = useMemo(() => ({ actionsColumnIndex: -1, search: true, showTitle: false }), []);
+  const options = useMemo(() => ({ 
+    actionsColumnIndex: -1,
+    search: true, 
+    showTitle: false, 
+    pageSizeOptions: [5,10,20,50,100],
+    maxBodyHeight: "400px",
+  }), []);
 
   const actions = useMemo(
     () => [
@@ -76,7 +82,7 @@ const Organizations = ({ history }) => {
   return (
     <div className="organizations">
       <OrganizationHeader />
-      <MaterialTable columns={columns} data={Orgs} actions={actions} options={options} />
+      <MaterialTable columns={columns} data={Orgs} actions={actions} options={options}/>
     </div>
   );
 };

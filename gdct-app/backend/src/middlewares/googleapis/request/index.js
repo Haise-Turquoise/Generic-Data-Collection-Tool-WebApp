@@ -1,7 +1,6 @@
 import { google } from 'googleapis'
 import pako from 'pako'
 import getAuthorization from '../auth'
-import fs from 'fs'
 
 // Last Updated: Nov 27, 2020
 // Function call for creating new google sheet with existing data

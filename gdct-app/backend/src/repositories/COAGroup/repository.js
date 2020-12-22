@@ -33,4 +33,8 @@ export default class COAGroupRepository extends BaseRepository {
       COAGroups.map(COAGroup => new COAGroupEntity(COAGroup.toObject())),
     );
   }
+
+  async batchFind(query){
+    return COAGroupModel.find({ _id: { "$in" : query }})
+  }
 }

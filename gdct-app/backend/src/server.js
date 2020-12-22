@@ -3,14 +3,21 @@ import app from './app';
 import { log } from './utils/log/winston';
 import AppError from './utils/AppError';
 import polling from './polling';
+import Container from 'typedi';
+import Repository from '../src/repositories/COATree'
+const repository = Container.get(Repository);
 
 app.set('port', process.env.PORT);
 const port = app.get('port');
 
 const server = app.listen(port, () => {
+  //test();
   polling();
   log.info('Listening on port', port);
   log.info('i18n test:', i18n.__('greeting'));
 });
+
+async function test(){
+}
 
 export default server;

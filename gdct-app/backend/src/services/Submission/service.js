@@ -2,7 +2,6 @@ import Container from 'typedi';
 import cloneDeep from 'clone-deep';
 import SubmissionRepository from '../../repositories/Submission';
 import SubmissionNoteRepository from '../../repositories/SubmissionNote';
-import { extractSubmissionMasterValues } from '../../utils/excel/COA';
 import TemplateRepository from '../../repositories/Template';
 import StatusRepository from '../../repositories/Status';
 import TemplatePackageRepository from '../../repositories/TemplatePackage';
@@ -14,10 +13,11 @@ import WorkflowProcessRepository from '../../repositories/WorkflowProcess';
 import SubmissionPeriodRepository from '../../repositories/SubmissionPeriod';
 import UsersRepository from '../../repositories/Users';
 import GoogleSheetRepository from '../../repositories/GoogleSheet';
-import { createSheet, createSpreadsheet, addEditor } from '../../middlewares/googleapis/request'
+import { createSpreadsheet, addEditor } from '../../middlewares/googleapis/request'
 import { saveGoogleSheetInSubmission }from '../../middlewares/googleapis/save'
 import ReportingPeriodRepository from '../../repositories/ReportingPeriod';
-import { populateWorkbook } from '../../utils/excel/COA'
+import { mastervalueExtraction } from '../../utils/mastervalue/mastervalueExtraction';
+import { mastervaluePrepopulation } from '../../utils/mastervalue/mastervaluePrepopulation'
 const mongoose = require('mongoose');
 mongoose.Promise = require('bluebird');
 
@@ -58,8 +58,7 @@ export default class SubmissionService {
     // Clone the tempalte's workbook data to be used by the user
     return this.programRepository.findById(submission.programId).then(program => {
       return this.templateRepository.findById(submission.templateId).then(template => {
-        // Code for populating template has to go here
-        return populateWorkbook(template.templateData).then(masterValuePopulateValues => {
+        return mastervaluePrepopulation(template.templateData).then(workbook => {
           return this.templateTypeRepository.findById(template.templateTypeId).then(templateType => {
             return this.workflowProcessRepository
               .find({ workflowId: templateType.submissionWorkflowId })
@@ -76,21 +75,7 @@ export default class SubmissionService {
                   });
                 });
 
-                for (const sheet in masterValuePopulateValues){
-                  let values = masterValuePopulateValues[sheet];
-                  for (const value in values){
-                    const row = values[value].row;
-                    const column = values[value].column;
-                    const data = values[value].value;
-                    template.templateData.sheets[sheet].data[0].rowData[row].values[column].userEnteredValue = {
-                      numberValue: data
-                    }
-                    template.templateData.sheets[sheet].data[0].rowData[row].values[column].effectiveValue = {
-                      numberValue: data
-                    }
-                    template.templateData.sheets[sheet].data[0].rowData[row].values[column].formattedValue = toString(data);
-                  }
-                }
+                template.templateData = workbook;
         
                 let initialNode = null;
   
@@ -142,6 +127,7 @@ export default class SubmissionService {
     return this.programRepository.findById(id);
   }
 
+  // 
   async phaseSubmission(id) {
     return this.findSubmissionById(id).then(submission => {
       if (!submission) throw 'Submission id does not exist';
@@ -162,7 +148,7 @@ export default class SubmissionService {
                   .findById(submissionPeriod.reportingPeriodId)
                   .then(reportingPeriod => {
                     const reportingPeriodConst = { name: reportingPeriod.name };
-                    extractSubmissionMasterValues(
+                    mastervalueExtraction(
                       id,
                       submission,
                       orgConst,
@@ -191,11 +177,9 @@ export default class SubmissionService {
   }
 
   async updateStatus(submission, submissionNote, role, nextProcessId) {
-    console.log("Point 1", submission._id)
     const newSubmission = await this.submissionRepository.findById(submission._id);
     if (newSubmission.googleSheetId){
       await Promise.resolve(saveGoogleSheetInSubmission(newSubmission.googleSheetId));
-      console.log("Point 2", submission._id)
       submission = await this.submissionRepository.findById(submission._id);
     }
 
