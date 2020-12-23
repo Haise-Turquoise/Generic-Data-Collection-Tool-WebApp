@@ -7,11 +7,14 @@ import Typography from '@material-ui/core/Typography';
 import Paper from '@material-ui/core/Paper';
 import { useLocation } from 'react-router-dom';
 import MaterialTable from 'material-table';
+import ArrowBackIcon from '@material-ui/icons/ArrowBack';
+import { IconButton } from '@material-ui/core';
 import { convertExcelFileToState, convertStateToReactState } from '../../tools/excel';
 import { setExcelData } from '../../store/actions/ui/excel/commands';
 import { getSubmissionNoteRequest } from '../../store/thunks/submissionNote';
 import SubmissionNoteStore from '../../store/SubmissionNoteStore/store';
 import SubmissionWorkbookStore from '../../store/SubmissionWorkbookStore/store';
+
 import {
   selectFactoryRESTResponse,
   selectFactoryRESTResponseTableValues,
@@ -160,6 +163,10 @@ const EditSubmission = ({ history }) => {
   return (
     <div className="submissions">
       <SubmissionHeader />
+      <Button size="large" onClick={()=>{pushBackHistory.push(`/submission/dashboard`);}}>
+        <ArrowBackIcon></ArrowBackIcon>
+        Back
+      </Button>
       <Paper className="pl-4 pr-4 pb-5 pt-4">
         <div className="submission__label">
           <Typography className="submission__inputTitle"> Note </Typography>

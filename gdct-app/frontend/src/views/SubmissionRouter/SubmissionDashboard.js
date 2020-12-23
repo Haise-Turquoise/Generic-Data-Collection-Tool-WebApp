@@ -14,6 +14,7 @@ import Typography from '@material-ui/core/Typography';
 import { getSubmissionsRequest } from '../../store/thunks/submission';
 import { selectSubmissionsStore } from '../../store/SubmissionsStore/selectors';
 import { selectFactoryRESTResponseTableValues } from '../../store/common/REST/selectors';
+import './SubmissionDashboard.scss'
 
 const SubmissionHeader = () => (
   <Paper className="header">
@@ -29,15 +30,18 @@ const SubmissionDashboard = ({ history }) => {
   const expiredSubmission = [];
   const submittedSubmission = [];
   const unsubmittedSubmission = [];
+  const styleFactor = '0.2%'
   const { submissions } = useSelector(
     state => ({
       submissions: selectFactoryRESTResponseTableValues(selectSubmissionsStore)(state),
     }),
     shallowEqual,
-  );
+  )
   let submitterFlag = false;
   if (submissions[0] !== undefined)
+  console.log("====================Log====================")
   console.log(submissions)
+  console.log("====================EndLog====================")
     submissions.forEach(submission => {
       if (submission !== undefined) {
         if (
@@ -71,23 +75,23 @@ const SubmissionDashboard = ({ history }) => {
 
   const checkBoxColumns = useMemo(
     () => [
-      { title: 'Period', field: 'period' },
-      { title: 'Submission', field: 'name' },
-      { title: 'Program', field: 'programName' },
+      { title: 'Period', field: 'period', headerStyle:{ padding: styleFactor}, cellStyle:{ padding: styleFactor}},
+      { title: 'Submission', field: 'name', headerStyle:{ padding: styleFactor}, cellStyle:{ padding: styleFactor}},
+      { title: 'Program', field: 'programName', headerStyle:{ padding: styleFactor}, cellStyle:{ padding: styleFactor} },
       { title: 'Approver', field: 'approver' },
-      { title: 'Health Service Provider', field: 'orgId' },
-      { title: 'Template Package Name', field: 'templatePackageName' },
-      { title: 'Status', field: 'phase' },
-      { title: 'Created On', field: 'createdAt' },
-      { title: 'Modified By', field: 'updatedBy' },
-      { title: 'Modified on', field: 'updatedAt' },
-      { title: 'version', field: 'version' },
-      { title: 'Template Name', field: 'workbookData.name' },
+      { title: 'Health Service Provider', field: 'orgId', headerStyle:{ padding: styleFactor}, cellStyle:{ padding: styleFactor} },
+      { title: 'Template Package Name', field: 'templatePackageName', headerStyle:{ padding: styleFactor}, cellStyle:{ padding: styleFactor} },
+      { title: 'Status', field: 'phase', headerStyle:{ padding: styleFactor}, cellStyle:{ padding: styleFactor} },
+      { title: 'Created On', field: 'createdAt', headerStyle:{ padding: styleFactor}, cellStyle:{ padding: styleFactor} },
+      { title: 'Modified By', field: 'updatedBy', headerStyle:{ padding: styleFactor}, cellStyle:{ padding: styleFactor} },
+      { title: 'Modified on', field: 'updatedAt', headerStyle:{ padding: styleFactor}, cellStyle:{ padding: styleFactor} },
+      { title: 'version', field: 'version', headerStyle:{ padding: styleFactor}, cellStyle:{ padding: styleFactor} },
+      { title: 'Template Name', field: 'workbookData.name', headerStyle:{ padding: styleFactor}, cellStyle:{ padding: styleFactor} },
     ],
     [],
   );
 
-  const options = useMemo(() => ({ actionsColumnIndex: -1, search: false, showTitle: false }), []);
+  const options = useMemo(() => ({ actionsColumnIndex: -1, search: false, showTitle: false}), []);
   const notEditableActions = useMemo(
     () => [
       {
@@ -142,14 +146,16 @@ const SubmissionDashboard = ({ history }) => {
         >
           <Typography> To-do </Typography>
         </ExpansionPanelSummary>
-        <ExpansionPanelDetails>
-          <MaterialTable
-            columns={checkBoxColumns}
-            options={options}
-            data={unsubmittedSubmission}
-            actions={submitterFlag ? actions : notEditableActions}
-          />
-        </ExpansionPanelDetails>
+        {/* <ExpansionPanelDetails> */}
+          <div className="MuiTableContainer">
+            <MaterialTable
+              columns={checkBoxColumns}
+              options={options}
+              data={unsubmittedSubmission}
+              actions={submitterFlag ? actions : notEditableActions}
+            />
+          </div>
+        {/* </ExpansionPanelDetails> */}
       </ExpansionPanel>
 
       <ExpansionPanel>
@@ -160,14 +166,16 @@ const SubmissionDashboard = ({ history }) => {
         >
           <Typography> Submitted</Typography>
         </ExpansionPanelSummary>
-        <ExpansionPanelDetails>
+        {/* <ExpansionPanelDetails> */}
+        <div className="MuiTableContainer">
           <MaterialTable
             columns={checkBoxColumns}
             options={options}
             data={submittedSubmission}
             actions={notEditableActions}
           />
-        </ExpansionPanelDetails>
+        </div>
+        {/* </ExpansionPanelDetails> */}
       </ExpansionPanel>
 
       <ExpansionPanel>
@@ -178,14 +186,16 @@ const SubmissionDashboard = ({ history }) => {
         >
           <Typography> Rejected</Typography>
         </ExpansionPanelSummary>
-        <ExpansionPanelDetails>
+        {/* <ExpansionPanelDetails> */}
+        <div className="MuiTableContainer">
           <MaterialTable
             columns={checkBoxColumns}
             options={options}
             data={rejectedSubmission}
             actions={submitterFlag ? actions : notEditableActions}
           />
-        </ExpansionPanelDetails>
+        </div>
+        {/* </ExpansionPanelDetails> */}
       </ExpansionPanel>
 
       <ExpansionPanel>
@@ -196,14 +206,16 @@ const SubmissionDashboard = ({ history }) => {
         >
           <Typography> Expired</Typography>
         </ExpansionPanelSummary>
-        <ExpansionPanelDetails>
+        {/* <ExpansionPanelDetails> */}
+        <div className="MuiTableContainer">
           <MaterialTable
             columns={checkBoxColumns}
             options={options}
             data={expiredSubmission}
             actions={notEditableActions}
           />
-        </ExpansionPanelDetails>
+        {/* </ExpansionPanelDetails> */}
+        </div>
       </ExpansionPanel>
 
       <ExpansionPanel>
@@ -214,14 +226,16 @@ const SubmissionDashboard = ({ history }) => {
         >
           <Typography> Approved</Typography>
         </ExpansionPanelSummary>
-        <ExpansionPanelDetails>
+        {/* <ExpansionPanelDetails> */}
+        <div className="MuiTableContainer">
           <MaterialTable
             columns={checkBoxColumns}
             options={options}
             data={approvedSubmission}
             actions={notEditableActions}
           />
-        </ExpansionPanelDetails>
+        </div>
+        {/* </ExpansionPanelDetails> */}
       </ExpansionPanel>
     </div>
   );
