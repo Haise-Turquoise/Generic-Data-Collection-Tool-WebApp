@@ -1,9 +1,8 @@
 import { google } from 'googleapis'
 import fs from 'fs'
 
-const SCOPES = ['https://spreadsheets.google.com/feeds', 'https://www.googleapis.com/auth/drive', 'https://www.googleapis.com/auth/script.projects','https://www.googleapis.com/auth/script.external_request', 'https://www.googleapis.com/auth/spreadsheets.currentonly'];
+const SCOPES = ['https://spreadsheets.google.com/feeds', 'https://www.googleapis.com/auth/drive', 'https://www.googleapis.com/auth/script.projects','https://www.googleapis.com/auth/script.external_request', 'https://www.googleapis.com/auth/spreadsheets.currentonly', 'https://www.googleapis.com/auth/spreadsheets'];
 const TOKEN_PATH = 'token.json';
-// , 'https://www.googleapis.com/auth/spreadsheets'
 
 // Oct 26, 2020
 // Function that creates an Oauth2 Client for sending API requests to Google
@@ -41,7 +40,6 @@ function getNewToken(oAuth2Client) {
       fs.readFile('C:/Node/git_GDCS/GDCT-3/GDCT/gdct-app/backend/src/middlewares/googleapis/auth/code.json', (err, content) => {
         content = JSON.parse(content);
         const {code} = content;
-        console.log(code)
         oAuth2Client.getToken(code, (err, token) => {
           if (err) return console.error('Error while trying to retrieve access token', err);
           oAuth2Client.setCredentials(token);

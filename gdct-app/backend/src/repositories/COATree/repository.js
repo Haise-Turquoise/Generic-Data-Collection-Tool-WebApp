@@ -47,4 +47,12 @@ export default class ReportPeriodRepository extends BaseRepository {
         return COATrees.map(COATree => new COATreeEntity(COATree.toObject()));
       });
   }
+
+  async batchFindByCategoryId(query, sheetTitleId){
+    return COATreeModel.find({ categoryId: { "$in" : query }, sheetNameId: sheetTitleId})
+  }
+
+  async batchFindById(query){
+    return COATreeModel.find({ _id: { "$in" : query }})
+  }
 }

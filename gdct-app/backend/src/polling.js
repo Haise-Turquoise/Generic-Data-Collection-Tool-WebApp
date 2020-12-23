@@ -8,7 +8,7 @@ import { checkLastSaved, deleteGoogleSheet } from './middlewares/googleapis/requ
 // The frequency at which the server should check for open Google Sheets
 const pollingTime = 1000000;
 export default function polling(){
-    setTimeout(checkForOpenGoogleSheet, pollingTime);
+    setInterval(checkForOpenGoogleSheet, pollingTime);
 } 
 
 // The GoogleSheet collection monitors active spreadsheets present in the Google Account. This function save the Google Sheets back 

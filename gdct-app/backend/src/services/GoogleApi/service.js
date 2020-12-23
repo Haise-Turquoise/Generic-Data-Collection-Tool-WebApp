@@ -9,9 +9,11 @@ import COARepository from '../../repositories/COA';
 import ColumnNameRepository from '../../repositories/ColumnName';
 import GoogleSheetRepository from '../../repositories/GoogleSheet';
 import MasterValueRepository from '../../repositories/MasterValue'
+import SheetNameRepository from '../../repositories/SheetName'
 import { getSpreadsheet, deleteGoogleSheet } from '../../middlewares/googleapis/request'
 import {saveGoogleSheetInTemplate, saveGoogleSheetInSubmission} from '../../middlewares/googleapis/save'
 import pako from 'pako'
+import fs from 'fs'
 
 // @Service()
 export default class GoogleApisService {
@@ -23,6 +25,7 @@ export default class GoogleApisService {
     this.ColumnNameRepository = Container.get(ColumnNameRepository);
     this.googleSheetRepository = Container.get(GoogleSheetRepository)
     this.masterValueRepository = Container.get(MasterValueRepository);
+    this.sheetNameRepository = Container.get(SheetNameRepository);
   }
 
   // Updated on Nov 16, 2020
@@ -47,13 +50,29 @@ export default class GoogleApisService {
     // JSON object that will contain all the CategoryTrees and Attributes
     let dataToSend  = {'Categories':[], 'Attributes':[]};
 
+    const sheetNameList = [];
+    const categoryGroupList = [];
+    const categoryList = [];
+
+    for (let item in COATreeData){
+      sheetNameList.push(COATreeData[item].sheetNameId)
+      categoryGroupList.push(COATreeData[item].categoryGroupId)
+      for (let category in COATreeData[item].categoryId){
+        categoryList.push(COATreeData[item].categoryId[category])
+      }
+    }
+
+    const fullCategoryGroupList = await this.COAGroupRepository.batchFind(categoryGroupList);
+    const fullCategoryList = await this.COARepository.batchFindFull(categoryList)
+    const fullSheetNamelist = await this.sheetNameRepository.batchFind(sheetNameList);
+
     // Insert all the Attributes to the JSON Object
     pushAttributes(dataToSend, AttributeData);
 
     // Some COATrees in the database are a child of another COA tree
     // This function moves child COATrees into a childCategory array
     organizeCOATree(COATreeData)
-    await Promise.resolve(pushCategory(dataToSend.Categories, COATreeData, this.COAGroupRepository, this.COARepository));
+    await Promise.resolve(pushCategory(dataToSend.Categories, COATreeData, fullCategoryGroupList, fullCategoryList, fullSheetNamelist));
 
     const deflatedData = pako.deflate(JSON.stringify(dataToSend), { to: 'string' });
     const wrappedData = {"data" : deflatedData};
@@ -121,16 +140,13 @@ export default class GoogleApisService {
   }
   
   async updatePreview(request){
-    console.log(request)
     request = JSON.parse(request).data
     const id = request[0].id;
     const coordinate = [];
     
-    console.log("Point 1", id)
     for (let item in request){
       coordinate.push(request[item].coordinate);
     }
-    console.log("POint 2", coordinate)
     let filter = {
       googleSheetId: id,
     }
@@ -219,7 +235,7 @@ function searchColumn(tree, parentId, firstIteration = true){
 }
 
 // Insert all the Attributes to the JSON Object
-async function pushCategory(dataToSend, COATreeData, COAGroupRepository, COARepository){
+async function pushCategory(dataToSend, COATreeData, fullCategoryGroupList, fullCategoryList, fullSheetNamelist){
   for (let i = 0; i < COATreeData.length; i++){
     const COATree = COATreeData[i];
     if (COATree._id){
@@ -227,35 +243,40 @@ async function pushCategory(dataToSend, COATreeData, COAGroupRepository, COARepo
       // This if loop runs if the COATreeData[i] is the root node
 
       // Retrieves the categoryGroup from the database
-      const id = COATree.categoryGroupId;
-      const categoryGroup = await COAGroupRepository.findById(id) 
+      let id = COATree.categoryGroupId;
+      let categoryGroup;
+      let sheetName = {name: "Not Assigned"};
+
+      for (let item in fullCategoryGroupList){
+        if (fullCategoryGroupList[item]._id.toString() === id.toString()){
+          categoryGroup = fullCategoryGroupList[item]
+        }
+      }
+      id = COATree.sheetNameId;
+      for (let item in fullSheetNamelist){
+        if (id && fullSheetNamelist[item]._id.toString() === id.toString()){
+          sheetName = fullSheetNamelist[item]
+        }
+      }
 
       let categories = [];
-      for (let j = 0; j < COATree.categoryId.length; j++){
-        // A CategoryTree may have multiple categoryIds 
-        // This for loop goes through each categoryId and retrieves them from the database
-        const category = await COARepository.findByIDNumber({id: String(COATree.categoryId[j])})
-        for (let k = 0; k < category.length; k++){
-          // The category returns an array of objects in the database with the categoryId
-          // Hopefully, the length of category is always one. 
-          const categoryItem = category[k];
-          categories.push({
-            id: categoryItem.id, 
-            name: categoryItem.name, 
-            COA: categoryItem.COA, 
-            unitOfMeasure: categoryItem.unitOfMeassure
-          })
+      for (let item in COATree.categoryId){
+        for (let secondItem in fullCategoryList){
+          if (fullCategoryList[secondItem]._id === COATree.categoryId[item]){
+            categories.push(fullCategoryList[secondItem])
+          }
         }
       }
       dataToSend.push({
         categoryGroup: categoryGroup.name,
         categories: categories, 
+        sheetName: sheetName.name,
         childCategory: []
       });
 
       if (COATree.childCategories){
         // This loop runs if the COATree has child COATrees
-        await pushCategory(dataToSend[dataToSend.length-1].childCategory, COATree.childCategories, COAGroupRepository, COARepository);
+        await pushCategory(dataToSend[dataToSend.length-1].childCategory, COATree.childCategories, fullCategoryGroupList, fullCategoryList, fullSheetNamelist);
       }
     }
   }
