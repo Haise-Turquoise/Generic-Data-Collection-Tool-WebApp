@@ -20,7 +20,7 @@ export const selectFactoryRESTResponseValues = memoizeFunction(storeSelector =>
 
 export const selectFactoryRESTResponseTableValues = memoizeFunction(storeSelector =>
   createSelector([selectFactoryRESTResponse(storeSelector)], response => {
-    // console.log(response)
+    console.log(response)
     return cloneDeep(response.Values);
   }),
 );
