@@ -11,7 +11,6 @@ const masterValueRepository = Container.get(MasterValueRepository);
 export async function mastervaluePrepopulation(workbook) {
   const inflatedWorkbook = pako.inflate( workbook, { to: 'string' });
   workbook = JSON.parse(inflatedWorkbook);
-
   // Go through each sheet
   for (const sheetName in workbook.sheets){
 
@@ -21,7 +20,6 @@ export async function mastervaluePrepopulation(workbook) {
     // Extract attribute and category Ids present in the sheet
     const attributes = extractAttributeIds(sheetData);
     const categories = extractCategoryData(sheetData);
-
     // To move the attributies and categories into an array to send a request to the database
     const attributeIds = [];
     const categoryIds = [];
@@ -38,9 +36,10 @@ export async function mastervaluePrepopulation(workbook) {
     const res = await masterValueRepository.batchFind(attributeIds, categoryIds);
     // The matched mastervalues from the database are not in order. Iterate through each item in the response to figure out
     // which cell the mastervalue belongs to
-    
+    console.log(attributeIds, categoryIds)
     for (const item in res) {
       const masterValueItem = res[item]
+      console.log(masterValueItem)
       for (const row in categories) {
         if (categories[row].toString() === masterValueItem.categoryId){
           for (const column in attributes) {

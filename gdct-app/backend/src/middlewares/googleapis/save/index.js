@@ -39,11 +39,11 @@ export async function saveGoogleSheetInSubmission(GoogleSheetRepositoryId){
     // Retrieve the workbook currently in the database
     const submission = await submissionRepository.findById(googleSheet.submissionId);
     // Compare the workbook from the database with the one from Google. Return the updated workbook. 
-    const updatedSpreadsheet = updateTemplate(newSpreadsheet, submission.workbookData);
+    const updatedSpreadsheet = updateTemplate(newSpreadsheet, submission.workbookData.data);
     // Compress the template
     const deflatedSpreadsheet = pako.deflate(JSON.stringify(updatedSpreadsheet), { to: 'string' })
     // Push the new changes to submissionRepository
-    await submissionRepository.updateWorkbook(googleSheet.submissionId, deflatedSpreadsheet);
+    await submissionRepository.updateWorkbook(googleSheet.submissionId, {data: deflatedSpreadsheet} );
     // Remove the pointer to GoogleSheet from the template since the Google sheet will not exist anymore
     await submissionRepository.updateGoogleSheetId(googleSheet.submissionId, undefined);
     // Send a request to Google to delete the Google Sheets.

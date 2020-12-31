@@ -30,7 +30,7 @@ export async function mastervalueExtraction(
   ){
     let { workbookData } = submission;
 
-    const inflatedWorkbook = pako.inflate( workbookData, { to: 'string' });
+    const inflatedWorkbook = pako.inflate( workbookData.data, { to: 'string' });
     workbookData = JSON.parse(inflatedWorkbook);
   
     // Iterate through each sheet in the workbook
