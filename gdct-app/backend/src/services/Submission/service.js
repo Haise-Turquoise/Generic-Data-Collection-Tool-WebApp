@@ -89,10 +89,7 @@ export default class SubmissionService {
                   .toString()
                   .concat('_', program.name, '_', template.name);
                 submission.workflowProcessId = initialNode;
-                submission.workbookData = {
-                  name: submission.orgId,
-                  data: template.templateData,
-                }
+                submission.workbookData = template.templateData;
 
                 submission.workflowId = templateType.submissionWorkflowId;
                 

@@ -52,14 +52,6 @@ const AlertSign = () => {
     }
   }, [showingAlert]);
 
-  const handleClose = (event, reason) => {
-    if (reason === 'clickaway') {
-      return;
-    }
-
-    setShowingAlert(false);
-  };
-
   return (
     <Snackbar open={showingAlert} autoHideDuration={5000}>
         <Alert
