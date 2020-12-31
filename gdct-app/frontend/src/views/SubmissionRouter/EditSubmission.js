@@ -88,7 +88,6 @@ const EditSubmission = ({ history }) => {
   );
   useEffect(() => {
     if (location.state.detail) {
-      console.log(location.state.detail);
       if (
         location.state.detail.permission.find(
           permission => permission === 'Submitter' || permission === 'Inputter',
@@ -136,8 +135,7 @@ const EditSubmission = ({ history }) => {
       submissionNotes = submissionNoteHistory;
     }
   }
-  console.log(isSubmitterOrInputter);
-  console.log(isReviewerOrApprover);
+
 
   const handleOpenTemplate = () => {
     // history.push({
@@ -146,6 +144,12 @@ const EditSubmission = ({ history }) => {
     // });
     //Creates a new spreadsheet in google and returns the id. 
     openGoogleSheetRequest(submission._id);
+  }
+
+  const backButtonAction = () => {
+    history.push({
+      pathname: `/submission/dashboard`
+    })
   }
 
 
@@ -163,7 +167,7 @@ const EditSubmission = ({ history }) => {
   return (
     <div className="submissions">        
       <SubmissionHeader />
-      <Button size="large" onClick={()=>{history.push({pathname: `/submission/dashboard`, state: { detail: submission },});}}>
+      <Button size="large" onClick={backButtonAction}>
         <ArrowBackIcon></ArrowBackIcon>
         Back
       </Button>

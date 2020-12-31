@@ -41,7 +41,6 @@ export async function mastervaluePrepopulation(workbook) {
     
     for (const item in res) {
       const masterValueItem = res[item]
-      console.log("Point 1: ", masterValueItem)
       for (const row in categories) {
         if (categories[row].toString() === masterValueItem.categoryId){
           for (const column in attributes) {

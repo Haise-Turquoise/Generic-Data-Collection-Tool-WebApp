@@ -20,6 +20,15 @@ import { getSubmissionsRequest } from '../../store/thunks/submission';
 import { selectSubmissionsStore } from '../../store/SubmissionsStore/selectors';
 import { selectFactoryRESTResponseTableValues } from '../../store/common/REST/selectors';
 import './SubmissionDashboard.scss'
+import { element } from 'prop-types';
+import { read } from 'find-config';
+
+const useStyles = makeStyles((theme) => ({
+  formControl: {
+    margin: theme.spacing(1),
+    minWidth: 120
+  }
+}));
 
 const SubmissionHeader = () => (
   <Paper className="header">
@@ -35,20 +44,43 @@ const SubmissionDashboard = ({ history }) => {
   const expiredSubmission = [];
   const submittedSubmission = [];
   const unsubmittedSubmission = [];
-  const styleFactor = '0.2%'
-  const { submissions } = useSelector(
+  const submissionPeriod = {};
+  const styleFactor = '0.2%';
+  const classTheme = useStyles();
+  const [readFilterFrom, setFilterFrom] = useState('All')
+  const [readFilterTo, setFilterTo] = useState('All')
+  let { submissions } = useSelector(
     state => ({
       submissions: selectFactoryRESTResponseTableValues(selectSubmissionsStore)(state),
     }),
     shallowEqual,
   )
   let submitterFlag = false;
+
+  if (!Array.isArray(submissions)){
+    submissions = [];
+    dispatch(getSubmissionsRequest());
+  }
   if (submissions[0] !== undefined)
-  console.log("====================Log====================")
-  console.log(submissions)
-  console.log("====================EndLog====================")
     submissions.forEach(submission => {
-      if (submission !== undefined) {
+      if (!submissionPeriod[submission.period]){
+        submissionPeriod[submission.period] = 1;
+      }
+      let filterFrom = submission.period.split(' ')[2];
+      let filterTo = filterFrom;
+
+      if (readFilterFrom != 'All'){
+        filterFrom = readFilterFrom.split(' ')[2];
+      }
+
+      if(readFilterTo != 'All'){
+        filterTo = readFilterTo.split(' ')[2];
+      }
+      console.log(filterFrom, filterTo)
+
+      if (submission !== undefined && 
+        (submission.period.split(' ')[2] >= filterFrom && submission.period.split(' ')[2] <= filterTo)) {
+        
         if (
           submission.permission.find(
             permission => permission === 'Submitter' || permission === 'Inputter',
@@ -78,6 +110,15 @@ const SubmissionDashboard = ({ history }) => {
       }
     });
 
+  const handleFilterFrom = (event)=>{
+    setFilterFrom(event.target.value);
+  }
+
+  const handleFilterTo = (event)=>{
+    setFilterTo(event.target.value);
+  }
+    
+ 
   const checkBoxColumns = useMemo(
     () => [
       { title: 'Period', field: 'period', headerStyle:{ padding: styleFactor}, cellStyle:{ padding: styleFactor}},
@@ -105,7 +146,7 @@ const SubmissionDashboard = ({ history }) => {
         onClick: (_event, submission) =>
           history.push({
             pathname: `/submission/editSubmission/${submission._id}`,
-            state: { detail: submission },
+            state: { detail: submission, submissionList: submissions},
           }),
       },
     ],
@@ -139,9 +180,41 @@ const SubmissionDashboard = ({ history }) => {
     dispatch(getSubmissionsRequest());
   }, [dispatch]);
 
+  // useEffect(()=>{
+
+  // })
+
   return (
     <div className="submissions">
       <SubmissionHeader />
+
+      <FormControl className={classTheme.formControl}>
+        <InputLabel id="demo-controlled-open-select-label">Filter Start:</InputLabel>
+        <Select
+          labelId="demo-controlled-open-select-label"
+          id="demo-controlled-open-select"
+          onChange={handleFilterFrom}
+        >
+        <MenuItem value='All'>All</MenuItem>
+          {Object.keys(submissionPeriod).map((element)=>{
+            return <MenuItem value={element}>{element}</MenuItem>
+          })}
+        </Select>
+      </FormControl>
+
+      <FormControl className={classTheme.formControl}>
+        <InputLabel id="demo-controlled-open-select-label">Filter Ends:</InputLabel>
+        <Select
+          labelId="demo-controlled-open-select-label"
+          id="demo-controlled-open-select"
+          onChange={handleFilterTo}
+        >
+        <MenuItem value='All'>All</MenuItem>
+          {Object.keys(submissionPeriod).map((element)=>{
+            return <MenuItem value={element}>{element}</MenuItem>
+          })}
+        </Select>
+      </FormControl>
 
       <ExpansionPanel>
         <ExpansionPanelSummary
@@ -162,7 +235,6 @@ const SubmissionDashboard = ({ history }) => {
           </div>
         {/* </ExpansionPanelDetails> */}
       </ExpansionPanel>
-
       <ExpansionPanel>
         <ExpansionPanelSummary
           expandIcon={<ExpandMoreIcon />}
