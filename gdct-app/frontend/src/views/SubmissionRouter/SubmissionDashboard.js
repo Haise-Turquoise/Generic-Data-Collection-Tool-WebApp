@@ -30,6 +30,7 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
+
 const SubmissionHeader = () => (
   <Paper className="header">
     <Typography variant="h5">Submissions</Typography>
@@ -49,6 +50,7 @@ const SubmissionDashboard = ({ history }) => {
   const classTheme = useStyles();
   const [readFilterFrom, setFilterFrom] = useState('All')
   const [readFilterTo, setFilterTo] = useState('All')
+  const timeOption = { year: 'numeric', month: 'numeric', day: 'numeric', hour:'numeric', minute:'numeric' };
   let { submissions } = useSelector(
     state => ({
       submissions: selectFactoryRESTResponseTableValues(selectSubmissionsStore)(state),
@@ -63,6 +65,10 @@ const SubmissionDashboard = ({ history }) => {
   }
   if (submissions[0] !== undefined)
     submissions.forEach(submission => {
+      const createdAt = new Date(submission.createdAt);
+      const modifiedAt = new Date(submission.updatedAt);
+      submission.createdAt = createdAt.toLocaleDateString("en-US", timeOption);
+      submission.updatedAt = modifiedAt.toLocaleDateString("en-US", timeOption);
       if (!submissionPeriod[submission.period]){
         submissionPeriod[submission.period] = 1;
       }
@@ -137,7 +143,14 @@ const SubmissionDashboard = ({ history }) => {
     [],
   );
 
-  const options = useMemo(() => ({ actionsColumnIndex: -1, search: false, showTitle: false}), []);
+  const options = useMemo(() => ({ 
+    actionsColumnIndex: -1, 
+    search: false, 
+    showTitle: false,
+    maxBodyHeight:"400px",
+  }), []);
+
+
   const notEditableActions = useMemo(
     () => [
       {

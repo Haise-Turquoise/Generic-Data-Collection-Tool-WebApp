@@ -166,10 +166,7 @@ const EditSubmission = ({ history }) => {
   return (
     <div className="submissions">
       <SubmissionHeader />
-      <Button size="large" onClick={backButtonAction}>
-        <ArrowBackIcon></ArrowBackIcon>
-        Back
-      </Button>
+      
       <Paper className="pl-4 pr-4 pb-5 pt-4">
         <div className="submission__label">
           <Typography className="submission__inputTitle"> Note </Typography>
@@ -229,6 +226,15 @@ const EditSubmission = ({ history }) => {
             onClick={() => handleChangeStatus(submission, submissionNote)}
           >
             Change Notes
+          </Button>
+          <Button 
+            size="large" 
+            color="primary"
+            variant="contained"
+            onClick={backButtonAction}
+          >
+            <ArrowBackIcon></ArrowBackIcon>
+            Back
           </Button>
         </div>
       </Paper>
