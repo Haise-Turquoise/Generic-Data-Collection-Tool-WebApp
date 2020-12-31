@@ -1,4 +1,5 @@
 import Container from 'typedi';
+import pako from 'pako'
 import TemplateRepository from '../../../repositories/Template';
 import SubmissionRepository from '../../../repositories/Submission';
 import GoogleSheetRepository from '../../../repositories/GoogleSheet';
@@ -16,8 +17,10 @@ export async function saveGoogleSheetInTemplate(googleSheet){
     const template = await templateRepository.findById(googleSheet.templateId);
     // Compare the template from the database with the one from Google. Return the updated template. 
     const updatedSpreadsheet = updateTemplate(newSpreadsheet, template.templateData);
+    // Compress the template
+    const deflatedSpreadsheet = pako.deflate(JSON.stringify(updatedSpreadsheet), { to: 'string' })
     // Push the new changes to templateRepository
-    templateRepository.updateTemplate(googleSheet.templateId, updatedSpreadsheet);
+    templateRepository.updateTemplate(googleSheet.templateId, deflatedSpreadsheet);
     // Remove the pointer to GoogleSheet from the template since the Google sheet will not exist anymore
     templateRepository.updateGoogleSheetId(googleSheet.templateId, undefined);
 }
@@ -36,9 +39,11 @@ export async function saveGoogleSheetInSubmission(GoogleSheetRepositoryId){
     // Retrieve the workbook currently in the database
     const submission = await submissionRepository.findById(googleSheet.submissionId);
     // Compare the workbook from the database with the one from Google. Return the updated workbook. 
-    const updatedSpreadsheet = updateTemplate(newSpreadsheet, submission.workbookData);
+    const updatedSpreadsheet = updateTemplate(newSpreadsheet, submission.workbookData.data);
+    // Compress the template
+    const deflatedSpreadsheet = pako.deflate(JSON.stringify(updatedSpreadsheet), { to: 'string' })
     // Push the new changes to submissionRepository
-    await submissionRepository.updateWorkbook(googleSheet.submissionId, updatedSpreadsheet);
+    await submissionRepository.updateWorkbook(googleSheet.submissionId, {data: deflatedSpreadsheet} );
     // Remove the pointer to GoogleSheet from the template since the Google sheet will not exist anymore
     await submissionRepository.updateGoogleSheetId(googleSheet.submissionId, undefined);
     // Send a request to Google to delete the Google Sheets.

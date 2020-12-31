@@ -87,19 +87,18 @@ export default class GoogleApisService {
     // Retrive the template from database
     const googleSheet = await this.googleSheetRepository.find({ googleSheetId: spreadsheetId })
     const templateId = googleSheet[0].templateId;
-    const template = await this.templateRepository.findById(templateId);
+    let template = await this.templateRepository.findById(templateId);
+
+    const inflatedTemplateData = pako.inflate( template.templateData, { to: 'string' });
+    template.templateData = JSON.parse(inflatedTemplateData);
     // If the templateData is empty or the sheet is not present
     if (!template.templateData.sheets || !template.templateData.sheets[sheet]){
       const res = await Promise.resolve(getSpreadsheet(spreadsheetId));
-      // const unwrappedData = res.data;
-      // const newTemplate = pako.inflate(unwrappedData, { to: 'string' });
-      // console.log(newTemplate)
-      //console.log(JSON.parse(newTemplate))
-      //newTemplate.delete()
-      //)
-      const newTemplate = res
+
+      let newTemplate = res
       delete newTemplate.spreadsheetUrl;
       delete newTemplate.spreadsheetId;
+      newTemplate = pako.deflate(JSON.stringify(newTemplate), { to: 'string' })
       this.templateRepository.updateTemplate(templateId, newTemplate);
     } else {
       // If the length of row in the spreadsheet is not large enough
@@ -158,7 +157,6 @@ export default class GoogleApisService {
   }
 
   async getPreview(spreadsheetId){
-    console.log(spreadsheetId)
     const res = await this.googleSheetRepository.findPreview(spreadsheetId);
     let filter = {
       googleSheetId: spreadsheetId,

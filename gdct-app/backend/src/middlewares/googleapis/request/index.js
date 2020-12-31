@@ -7,8 +7,7 @@ import getAuthorization from '../auth'
 export async function createSpreadsheet(templateData, userEmail, submission = false, submissionClosed = []){
   // Deflate/Compress the data
   // const res = await Promise.resolve(requestCreateToSheet(templateData));
-  const deflatedData = pako.deflate(JSON.stringify(templateData), { to: 'string' })
-  const res = await Promise.resolve(requestCall('createSpreadsheet', [{ data: deflatedData}, userEmail,  submission, submissionClosed]));
+  const res = await Promise.resolve(requestCall('createSpreadsheet', [{ data: templateData}, userEmail,  submission, submissionClosed]));
   return res;
 }
 

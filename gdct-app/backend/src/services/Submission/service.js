@@ -1,4 +1,5 @@
 import Container from 'typedi';
+import pako from 'pako'
 import cloneDeep from 'clone-deep';
 import SubmissionRepository from '../../repositories/Submission';
 import SubmissionNoteRepository from '../../repositories/SubmissionNote';
@@ -88,7 +89,11 @@ export default class SubmissionService {
                   .toString()
                   .concat('_', program.name, '_', template.name);
                 submission.workflowProcessId = initialNode;
-                submission.workbookData = template.templateData;
+                submission.workbookData = {
+                  name: submission.orgId,
+                  data: template.templateData,
+                }
+
                 submission.workflowId = templateType.submissionWorkflowId;
                 
                 return this.submissionRepository.create(submission);
@@ -328,7 +333,6 @@ export default class SubmissionService {
             .findByOrgIdAndProgramId(orgId, programIds)
             .then(submissions => {
               const promiseQuery2 = [];
-
               submissions.forEach(submission => {
                 const permission = [];
                 this.checkUserRole(userInfo, submission, permission);
@@ -343,6 +347,8 @@ export default class SubmissionService {
                             return this.programRepository
                               .findById(submission.programId)
                               .then(program => {
+                                const inflatedWorkbook = pako.inflate( submission._doc.workbookData.data, { to: 'string' });
+                                submission._doc.workbookData.data = JSON.parse(inflatedWorkbook);
                                 const changedSubmission = {
                                   ...submission._doc,
                                   programName: program.name,
@@ -356,6 +362,7 @@ export default class SubmissionService {
                                   templatePackageName: templatePackage.name,
                                 };
                                 changedSubmissions.push(cloneDeep(changedSubmission));
+                                
                               });
                           });
                       });
@@ -385,7 +392,7 @@ export default class SubmissionService {
 
     let openPeriods = await this.reportingPeriodRepository.findSubmissionOpen();
     // Sends in the data from google sheet API and retrieves spreadsheetID
-    let res = await Promise.resolve(createSpreadsheet(submission.workbookData, userEmail, true, openPeriods)); 
+    let res = await Promise.resolve(createSpreadsheet(submission.workbookData.data, userEmail, true, openPeriods)); 
     const { userSpreadsheetId, duplicateSpreadsheetId, triggerId } = res;
     // Store Google Sheet Model to the database
     const googleSheetModel = {

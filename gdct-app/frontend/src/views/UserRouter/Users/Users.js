@@ -103,7 +103,14 @@ const UsersTable = () => {
   );
 
   const options = useMemo(
-    () => ({ actionsColumnIndex: -1, search: true, showTitle: false, exportButton: true }),
+    () => ({ 
+      actionsColumnIndex: -1,
+      search: true, 
+      showTitle: false, 
+      exportButton: true, 
+      maxBodyHeight: "350px", 
+      pageSizeOptions: [5,10,20,50,100,200],
+    }),
     [],
   );
 

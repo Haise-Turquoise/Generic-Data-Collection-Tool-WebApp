@@ -1,4 +1,5 @@
 import Container from 'typedi';
+import pako from 'pako'
 import COARepository from '../../repositories/COA';
 import ColumnNameRepository from '../../repositories/ColumnName';
 import ReportingPeriodRepository from '../../repositories/ReportingPeriod';
@@ -27,7 +28,10 @@ export async function mastervalueExtraction(
     templateType,
     reportingPeriod,
   ){
-    const { workbookData } = submission;
+    let { workbookData } = submission;
+
+    const inflatedWorkbook = pako.inflate( workbookData.data, { to: 'string' });
+    workbookData = JSON.parse(inflatedWorkbook);
   
     // Iterate through each sheet in the workbook
     for (const sheetName in workbookData.sheets){

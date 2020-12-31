@@ -1,8 +1,12 @@
-import React, { useMemo, useEffect } from 'react';
+import React, { useMemo, useEffect, useState } from 'react';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 
 import MaterialTable from 'material-table';
 import Paper from '@material-ui/core/Paper';
+import Alert from '@material-ui/lab/Alert';
+import Collapse from '@material-ui/core/Collapse';
+import CloseIcon from '@material-ui/icons/Close';
+import IconButton from '@material-ui/core/IconButton';
 
 import Typography from '@material-ui/core/Typography';
 import {
@@ -12,7 +16,7 @@ import {
   updateColumnNameRequest,
 } from '../../store/thunks/columnName';
 
-import { selectFactoryRESTResponseTableValues } from '../../store/common/REST/selectors';
+import { selectFactoryRESTResponseTableValues, selectFactoryRESTError } from '../../store/common/REST/selectors';
 import { selectColumnNamesStore } from '../../store/ColumnNamesStore/selectors';
 import { ColumnNamesActions } from '../../store/ColumnNamesStore/store';
 
@@ -22,6 +26,54 @@ const ColumnNameHeader = () => {
       <Typography variant="h5">Column Names</Typography>
       {/* <HeaderActions/> */}
     </Paper>
+  );
+};
+
+const AlertSign = () => {
+  let [showingAlert, setShowingAlert] = useState(false);
+
+  const { errors } = useSelector(
+    state => ({
+      errors: selectFactoryRESTError(selectColumnNamesStore)(state)
+    }),
+    shallowEqual,
+  );
+
+  
+  useEffect(() => {
+    if (errors){
+      setShowingAlert(true);
+    }
+  }, [errors]);
+
+  useEffect(() => {
+    if (showingAlert){
+      setTimeout(()=>{
+        setShowingAlert(false)
+      }, 5000)
+    }
+  }, [showingAlert]);
+
+  return (
+    <Collapse in={showingAlert}>
+    <Alert
+      severity="error"
+      action={
+        <IconButton
+          aria-label="close"
+          color="inherit"
+          size="small"
+          onClick={() => {
+            setShowingAlert(false);
+          }}
+        >
+          <CloseIcon fontSize="inherit" />
+        </IconButton>
+      }
+    >
+      This Attribute is referenced, can't be removed
+    </Alert>
+  </Collapse>
   );
 };
 
@@ -65,6 +117,14 @@ const ColumnNamesTable = () => {
     [dispatch],
   );
 
+  
+  const style = useMemo(
+    () => ({
+      "margin-top": "10px",
+    }),
+    []
+  )
+
   useEffect(() => {
     dispatch(getColumnNamesRequest());
 
@@ -74,13 +134,14 @@ const ColumnNamesTable = () => {
   }, [dispatch]);
 
   return (
-    <MaterialTable columns={columns} data={columnNames} editable={editable} options={options} />
+    <MaterialTable style={style} columns={columns} data={columnNames} editable={editable} options={options} />
   );
 };
 
 const ColumnName = props => (
   <div className="columnNamesPage">
     <ColumnNameHeader />
+    <AlertSign />
     <ColumnNamesTable {...props} />
   </div>
 );

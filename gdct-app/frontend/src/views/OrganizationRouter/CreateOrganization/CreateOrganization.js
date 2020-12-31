@@ -26,7 +26,7 @@ const CreateOrganization = () => {
 
   const reject = () => {
     // reflect error message on form somehow o.O
-    alert('Missing or invalid parameters');
+    // alert('Missing or invalid parameters');
   };
 
   const submit = newObject => {

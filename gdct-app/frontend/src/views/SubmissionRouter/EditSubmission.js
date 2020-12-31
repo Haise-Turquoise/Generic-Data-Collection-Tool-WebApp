@@ -1,4 +1,5 @@
 import { shallowEqual, useDispatch, useSelector } from 'react-redux';
+import { Link } from "react-router-dom";
 import React, { useCallback, useMemo, useEffect, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
@@ -164,7 +165,7 @@ const EditSubmission = ({ history }) => {
   };
 
   return (
-    <div className="submissions">
+    <div className="submissions">        
       <SubmissionHeader />
       
       <Paper className="pl-4 pr-4 pb-5 pt-4">
