@@ -1,4 +1,5 @@
 import { shallowEqual, useDispatch, useSelector } from 'react-redux';
+import { Link } from "react-router-dom";
 import React, { useCallback, useMemo, useEffect, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
@@ -143,7 +144,6 @@ const EditSubmission = ({ history }) => {
     //   pathname: `/submission/submissions/${submission._id}`,
     //   state: { detail: location.state.detail },
     // });
-    console.log("hello", submission)
     //Creates a new spreadsheet in google and returns the id. 
     openGoogleSheetRequest(submission._id);
   }
@@ -161,9 +161,9 @@ const EditSubmission = ({ history }) => {
   };
 
   return (
-    <div className="submissions">
+    <div className="submissions">        
       <SubmissionHeader />
-      <Button size="large" onClick={()=>{pushBackHistory.push(`/submission/dashboard`);}}>
+      <Button size="large" onClick={()=>{history.push({pathname: `/submission/dashboard`, state: { detail: submission },});}}>
         <ArrowBackIcon></ArrowBackIcon>
         Back
       </Button>

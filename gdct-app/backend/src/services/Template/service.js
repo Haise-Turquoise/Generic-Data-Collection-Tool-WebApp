@@ -1,9 +1,10 @@
 import Container from 'typedi';
+import pako from 'pako'
 import TemplateRepository from '../../repositories/Template';
 import TemplateTypeRepository from '../../repositories/TemplateType';
 import WorkflowProcessRepository from '../../repositories/WorkflowProcess';
 import GoogleSheetRepository from '../../repositories/GoogleSheet';
-import { createSheet, createSpreadsheet, addEditor} from '../../middlewares/googleapis/request'
+import { createSpreadsheet, addEditor} from '../../middlewares/googleapis/request'
 
 // @Service()
 export default class TemplateService {
@@ -40,9 +41,15 @@ export default class TemplateService {
         initialNode = node;
       }
     });
+    const templateProperties = {
+      properties: {title: template.name}
+    }
+
+    // Compress the template
+    const deflatedTemplate = pako.deflate(JSON.stringify(templateProperties), { to: 'string' })
 
     template.workflowProcessId = initialNode;
-    template.templateData.properties = {title: template.name};
+    template.templateData = deflatedTemplate;
     template.googleSheetId;
     return this.templateRepository.create(template);
   }

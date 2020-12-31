@@ -13,7 +13,7 @@ export default class MasterValueRepository extends BaseRepository {
   }
 
   async batchFind(attributeIds, categoryIds) {
-    return MasterValueModel.find({ AttributeId: { $in : attributeIds }, CategoryId: {$in : categoryIds }}).then(values => {return values});
+    return MasterValueModel.find({ attributeId: { $in : attributeIds }, categoryId: {$in : categoryIds }}).then(values => {return values});
   }
 
   async findAll(){
@@ -22,5 +22,13 @@ export default class MasterValueRepository extends BaseRepository {
   
   async batchDelete(attributeIds, categoryIds, orgId) {
     return MasterValueModel.deleteMany({ AttributeId: { $in : attributeIds }, CategoryId: {$in : categoryIds }, org: orgId}).then(values => {return values});
+  }
+
+  async findByCategoryId(id){
+    return MasterValueModel.find({categoryId: id})
+  }
+
+  async findByAttributeId(id){
+    return MasterValueModel.find({attributeId: id})
   }
 }

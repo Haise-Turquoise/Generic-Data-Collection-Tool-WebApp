@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { useEffect, useMemo, useState } from 'react';
+import { useHistory } from "react-router-dom";
 import { useDispatch, useSelector } from 'react-redux';
 
 import MaterialTable, { MTableCell } from 'material-table';
@@ -19,6 +20,9 @@ import { selectOrgsStore } from '../../../store/OrganizationsStore/selectors';
 import { selectProgramsStore } from '../../../store/ProgramsStore/selectors';
 import { selectTemplateTypesStore } from '../../../store/TemplateTypesStore/selectors';
 import Loading from '../../../components/Loading';
+
+import Button from '@material-ui/core/Button';
+import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 
 const HeaderActions = () => {
   return (
@@ -44,6 +48,7 @@ const UserInfo = ({
   },
 }) => {
   const dispatch = useDispatch();
+  const history = useHistory();
 
   useEffect(() => {
     dispatch(getUsersRequest());
@@ -125,6 +130,7 @@ const UserInfo = ({
     () => ({
       search: true,
       showTitle: false,
+      maxBodyHeight: "400px",
     }),
     [],
   );
@@ -136,12 +142,29 @@ const UserInfo = ({
     [],
   );
 
+  const backButtonAction = () => {
+    history.push({
+      pathname: `/admin/user_management`
+    })
+  }
+
   return isCallInProgress ? (
     <Loading />
   ) : (
     <div className="userInfo">
       <HeaderActions />
       <MaterialTable components={components} columns={columns} data={data} options={options} />
+      <Button
+        type="button"
+        className="UserInfo_SaveButton"
+        color="primary"
+        variant="contained"
+        size="large"
+        onClick={backButtonAction}
+        >
+        <ArrowBackIcon></ArrowBackIcon>
+        Back
+      </Button>
     </div>
   );
 };

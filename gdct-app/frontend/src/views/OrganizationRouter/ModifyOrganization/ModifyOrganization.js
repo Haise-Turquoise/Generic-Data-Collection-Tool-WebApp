@@ -1,4 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useSelector, shallowEqual } from 'react-redux';
+
+import { selectOrgsStore } from '../../../store/OrganizationsStore/selectors';
+
+import { selectFactoryRESTError } from '../../../store/common/REST/selectors';
+
 import PropTypes from 'prop-types';
 
 import Paper from '@material-ui/core/Paper';
@@ -9,12 +15,73 @@ import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import Checkbox from '@material-ui/core/Checkbox';
 
+import Alert from '@material-ui/lab/Alert';
+import CloseIcon from '@material-ui/icons/Close';
+import IconButton from '@material-ui/core/IconButton';
+import Snackbar from '@material-ui/core/Snackbar';
+
 import Typography from '@material-ui/core/Typography';
 
 import './ModifyOrganization.scss';
 import ProgList from '../ProgramList';
 
 import { makeStyles } from '@material-ui/core/styles';
+
+const AlertSign = () => {
+  let [showingAlert, setShowingAlert] = useState(false);
+
+  const { errors } = useSelector(
+    state => ({
+      errors: selectFactoryRESTError(selectOrgsStore)(state)
+    }),
+    shallowEqual,
+  );
+
+  
+  useEffect(() => {
+    if (errors){
+      setShowingAlert(true);
+    }
+  }, [errors]);
+
+  useEffect(() => {
+    if (showingAlert){
+      setTimeout(()=>{
+        setShowingAlert(false)
+      }, 5000)
+    }
+  }, [showingAlert]);
+
+  const handleClose = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    setShowingAlert(false);
+  };
+
+  return (
+    <Snackbar open={showingAlert} autoHideDuration={5000}>
+        <Alert
+          severity="error"
+          action={
+            <IconButton
+              aria-label="close"
+              color="inherit"
+              size="small"
+              onClick={() => {
+                setShowingAlert(false);
+              }}
+            >
+              <CloseIcon fontSize="inherit" />
+            </IconButton>
+      }
+    >
+      The organization ID already exists in the database. Please select a unique ID
+    </Alert>
+  </Snackbar>
+  );
+};
 
 const OrganizationHeader = ({ title }) => {
   return (
@@ -336,6 +403,7 @@ class ModifyOrganization extends React.Component {
     return (
       <div>
         <OrganizationHeader title={this.props.title} />
+        <AlertSign/>
         <OrganizationForm
           object={this.state}
           submit={() => this.props.submit(this.state)}

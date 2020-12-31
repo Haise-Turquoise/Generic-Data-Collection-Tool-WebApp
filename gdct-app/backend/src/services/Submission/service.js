@@ -1,4 +1,5 @@
 import Container from 'typedi';
+import pako from 'pako'
 import cloneDeep from 'clone-deep';
 import SubmissionRepository from '../../repositories/Submission';
 import SubmissionNoteRepository from '../../repositories/SubmissionNote';
@@ -58,7 +59,9 @@ export default class SubmissionService {
     // Clone the tempalte's workbook data to be used by the user
     return this.programRepository.findById(submission.programId).then(program => {
       return this.templateRepository.findById(submission.templateId).then(template => {
+        console.log("Point 1")
         return mastervaluePrepopulation(template.templateData).then(workbook => {
+          console.log("Point 2")
           return this.templateTypeRepository.findById(template.templateTypeId).then(templateType => {
             return this.workflowProcessRepository
               .find({ workflowId: templateType.submissionWorkflowId })
@@ -343,6 +346,8 @@ export default class SubmissionService {
                             return this.programRepository
                               .findById(submission.programId)
                               .then(program => {
+                                const inflatedWorkbook = pako.inflate( submission._doc.workbookData, { to: 'string' });
+                                submission._doc.workbookData = JSON.parse(inflatedWorkbook);
                                 const changedSubmission = {
                                   ...submission._doc,
                                   programName: program.name,
@@ -356,6 +361,7 @@ export default class SubmissionService {
                                   templatePackageName: templatePackage.name,
                                 };
                                 changedSubmissions.push(cloneDeep(changedSubmission));
+                                
                               });
                           });
                       });
