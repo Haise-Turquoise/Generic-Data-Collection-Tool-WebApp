@@ -119,7 +119,7 @@ export async function mastervalueExtraction(
   
       let categoryTreeList = {};
       const categoryGroupQuery = [];
-      
+      console.log(categories, attributes)
       // Search for all layers of categoryTree. Should run maximum of five times according to the requirement
       await Promise.resolve(recursiveCategoryTreeSearch(categoryTrees, categoryTreeList, categoryGroupQuery, 0));
       let categoryGroupList = await coaGroupRepository.batchFind(categoryGroupQuery)

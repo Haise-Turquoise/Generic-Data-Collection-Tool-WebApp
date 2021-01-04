@@ -36,10 +36,8 @@ export async function mastervaluePrepopulation(workbook) {
     const res = await masterValueRepository.batchFind(attributeIds, categoryIds);
     // The matched mastervalues from the database are not in order. Iterate through each item in the response to figure out
     // which cell the mastervalue belongs to
-    console.log(attributeIds, categoryIds)
     for (const item in res) {
       const masterValueItem = res[item]
-      console.log(masterValueItem)
       for (const row in categories) {
         if (categories[row].toString() === masterValueItem.categoryId){
           for (const column in attributes) {
@@ -58,8 +56,12 @@ export async function mastervaluePrepopulation(workbook) {
     }
     console.log("Population Complete")
   }
-
+  const title = workbook.properties.title;
   workbook = pako.deflate(JSON.stringify(workbook), { to: 'string' })
+  workbook = {
+    name: title,
+    data: workbook,
+  }
   return workbook;
 }
 
