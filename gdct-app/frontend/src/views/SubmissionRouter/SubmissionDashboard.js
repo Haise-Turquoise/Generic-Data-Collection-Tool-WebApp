@@ -12,7 +12,6 @@ import LaunchIcon from '@material-ui/icons/Launch';
 import CreateOutlinedIcon from '@material-ui/icons/CreateOutlined';
 import ExpansionPanel from '@material-ui/core/ExpansionPanel';
 import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
-import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
 import Typography from '@material-ui/core/Typography';
@@ -20,8 +19,6 @@ import { getSubmissionsRequest } from '../../store/thunks/submission';
 import { selectSubmissionsStore } from '../../store/SubmissionsStore/selectors';
 import { selectFactoryRESTResponseTableValues } from '../../store/common/REST/selectors';
 import './SubmissionDashboard.scss'
-import { element } from 'prop-types';
-import { read } from 'find-config';
 
 const useStyles = makeStyles((theme) => ({
   formControl: {
@@ -48,8 +45,17 @@ const SubmissionDashboard = ({ history }) => {
   const submissionPeriod = {};
   const styleFactor = '0.2%';
   const classTheme = useStyles();
-  const [readFilterFrom, setFilterFrom] = useState('All')
-  const [readFilterTo, setFilterTo] = useState('All')
+
+  let publishedSubmissionCount = 0;
+  let approvedSubmissionCount = 0; 
+  let rejectedSubmissionCount = 0;
+  let expiredSubmissionCount = 0;
+  let submittedSubmissionCount = 0;
+  let unsubmittedSubmissionCount = 0;
+
+  const [readFilterFrom, setFilterFrom] = useState('All');
+  const [readFilterTo, setFilterTo] = useState('All');
+  // const[readUpdateStatus, setUpdateStatus] = useState(false);
   const timeOption = { year: 'numeric', month: 'numeric', day: 'numeric', hour:'numeric', minute:'numeric' };
   let { submissions } = useSelector(
     state => ({
@@ -63,7 +69,7 @@ const SubmissionDashboard = ({ history }) => {
     submissions = [];
     dispatch(getSubmissionsRequest());
   }
-  if (submissions[0] !== undefined)
+  if (submissions[0] !== undefined){
     submissions.forEach(submission => {
       const createdAt = new Date(submission.createdAt);
       const modifiedAt = new Date(submission.updatedAt);
@@ -82,7 +88,6 @@ const SubmissionDashboard = ({ history }) => {
       if(readFilterTo != 'All'){
         filterTo = readFilterTo.split(' ')[2];
       }
-      console.log(filterFrom, filterTo)
 
       if (submission !== undefined && 
         (submission.period.split(' ')[2] >= filterFrom && submission.period.split(' ')[2] <= filterTo)) {
@@ -115,6 +120,16 @@ const SubmissionDashboard = ({ history }) => {
         }
       }
     });
+  }
+
+  publishedSubmissionCount = publishedSubmission.length;
+  approvedSubmissionCount = approvedSubmission.length; 
+  rejectedSubmissionCount = rejectedSubmission.length;
+  expiredSubmissionCount = expiredSubmission.length;
+  submittedSubmissionCount = submittedSubmission.length;
+  unsubmittedSubmissionCount = unsubmittedSubmission.length;
+  
+  
 
   const handleFilterFrom = (event)=>{
     setFilterFrom(event.target.value);
@@ -149,6 +164,25 @@ const SubmissionDashboard = ({ history }) => {
     showTitle: false,
     maxBodyHeight:"400px",
   }), []);
+
+  const calculateOptions = (itemCount)=>{
+    let length = itemCount
+    if (length > 100) length = 100;
+    if (length == 0) length = 1;
+    return {actionsColumnIndex: -1, 
+      search: false, 
+      showTitle: false,
+      maxBodyHeight:"400px",
+      pageSize:length
+    }
+  }
+
+  const unsubmittedOptions = useMemo(()=>calculateOptions(unsubmittedSubmissionCount), [unsubmittedSubmissionCount]);
+  const submittedOptions = useMemo(()=>calculateOptions(submittedSubmissionCount), [submittedSubmissionCount]);
+  const expiredOptions = useMemo(()=>calculateOptions(expiredSubmissionCount), [expiredSubmissionCount]);
+  const rejectedOptions = useMemo(()=>calculateOptions(rejectedSubmissionCount),[rejectedSubmissionCount]);
+  const approvedOptions = useMemo(()=>calculateOptions(approvedSubmissionCount), [approvedSubmissionCount]);
+  const publishedOptions = useMemo(()=>calculateOptions(publishedSubmissionCount), [publishedSubmissionCount]);
 
 
   const notEditableActions = useMemo(
@@ -241,7 +275,7 @@ const SubmissionDashboard = ({ history }) => {
           <div className="MuiTableContainer">
             <MaterialTable
               columns={checkBoxColumns}
-              options={options}
+              options={unsubmittedOptions}
               data={unsubmittedSubmission}
               actions={submitterFlag ? actions : notEditableActions}
             />
@@ -260,7 +294,7 @@ const SubmissionDashboard = ({ history }) => {
         <div className="MuiTableContainer">
           <MaterialTable
             columns={checkBoxColumns}
-            options={options}
+            options={submittedOptions}
             data={submittedSubmission}
             actions={notEditableActions}
           />
@@ -280,7 +314,7 @@ const SubmissionDashboard = ({ history }) => {
         <div className="MuiTableContainer">
           <MaterialTable
             columns={checkBoxColumns}
-            options={options}
+            options={rejectedOptions}
             data={rejectedSubmission}
             actions={submitterFlag ? actions : notEditableActions}
           />
@@ -300,7 +334,7 @@ const SubmissionDashboard = ({ history }) => {
         <div className="MuiTableContainer">
           <MaterialTable
             columns={checkBoxColumns}
-            options={options}
+            options={expiredOptions}
             data={expiredSubmission}
             actions={notEditableActions}
           />
@@ -320,7 +354,7 @@ const SubmissionDashboard = ({ history }) => {
         <div className="MuiTableContainer">
           <MaterialTable
             columns={checkBoxColumns}
-            options={options}
+            options={approvedOptions}
             data={approvedSubmission}
             actions={notEditableActions}
           />
