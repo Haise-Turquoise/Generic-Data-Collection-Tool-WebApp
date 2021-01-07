@@ -5,6 +5,7 @@ import UserRepository from '../User';
 import TemplateTypeRepository from '../TemplateType';
 import BaseRepository from '../repository';
 import WorkflowProcessRepository from '../WorkflowProcess';
+import {ObjectId} from 'mongodb';
 
 // MongoDB implementation
 // @Service()
@@ -101,5 +102,9 @@ export default class TemplateRepository extends BaseRepository {
   
   async updateTemplate(_id, templateData){
     return TemplateModel.findByIdAndUpdate( _id, { templateData })
+  }
+  
+  async findTemplateIDByTypeID(typeID){
+    return TemplateModel.find({templateTypeId:new ObjectId(typeID)}, {_id:1})
   }
 }

@@ -1,5 +1,6 @@
 import BaseRepository from '../repository';
 import MasterValueModel from '../../models/MasterValue';
+import { ObjectID } from 'mongodb';
 
 export default class MasterValueRepository extends BaseRepository {
   constructor() {
@@ -25,10 +26,19 @@ export default class MasterValueRepository extends BaseRepository {
   }
 
   async findByCategoryId(id){
-    return MasterValueModel.find({categoryId: id})
+    return MasterValueModel.find({categoryId: id});
   }
 
   async findByAttributeId(id){
-    return MasterValueModel.find({attributeId: id})
+    return MasterValueModel.find({attributeId: id});
+  }
+
+  async findOneByProgramId(programId){
+    return MasterValueModel.findOne({"program._id": new ObjectID(programId)}, {_id:1});
+  }
+
+  async findOneByReportingPeriodName(reportingPeriodName){
+    // Please do not change the filter field, or the business rule might failed
+    return MasterValueModel.findOne({reportingPeriod: reportingPeriodName},{_id: 1})
   }
 }

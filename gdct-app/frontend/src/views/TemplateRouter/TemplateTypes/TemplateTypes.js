@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useEffect } from 'react';
+import React, { useMemo, useEffect } from 'react';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 
 import MaterialTable from 'material-table';
@@ -20,6 +20,7 @@ import { selectWorkflowsStore } from '../../../store/WorkflowsStore/selectors';
 import { getWorkflowsRequest } from '../../../store/thunks/workflow';
 import { WorkflowStoreActions } from '../../../store/WorkflowStore/store';
 import TemplateTypesStore from '../../../store/TemplateTypesStore/store';
+import ErrorBanner from '../../ErrorBanner';
 
 const TemplateTypeHeader = () => {
   return (
@@ -73,7 +74,7 @@ const TemplateTypesTable = ({ history }) => {
     [history],
   );
 
-  const options = useMemo(() => ({ actionsColumnIndex: -1, search: true, showTitle: false }), []);
+  const options = useMemo(() => ({ actionsColumnIndex: -1, search: true, showTitle: false , maxBodyHeight:"400px"}), []);
 
   const editable = useMemo(
     () => ({
@@ -118,6 +119,7 @@ const TemplateType = props => (
   <div className="templateTypesPage">
     <TemplateTypeHeader />
     {/* <FileDropzone/> */}
+    <ErrorBanner title={"The template type you are trying to delete is referenced in one or more submissions"} targetStore={selectTemplateTypesStore}/>
     <TemplateTypesTable {...props} />
   </div>
 );

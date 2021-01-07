@@ -58,7 +58,7 @@ const TemplateTypeTable = ({
   );
 
   const options = useMemo(
-    () => ({ actionsColumnIndex: -1, search: false, showTitle: true, paging: false }),
+    () => ({ actionsColumnIndex: -1, search: false, showTitle: true, paging: false, maxBodyHeight:"400px",}),
     [],
   );
 

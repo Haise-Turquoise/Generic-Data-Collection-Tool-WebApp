@@ -13,6 +13,7 @@ import { selectFactoryRESTResponseTableValues } from '../../store/common/REST/se
 import { selectWorkflowsStore } from '../../store/WorkflowsStore/selectors';
 import { ROUTE_WORKFLOW_CREATE, ROUTE_WORKFLOW } from '../../constants/routes';
 import { getWorkflowsRequest, deleteWorkflowRequest } from '../../store/thunks/workflow';
+import ErrorBanner from '../ErrorBanner';
 
 const WorkflowHeader = () => {
   const history = useHistory();
@@ -40,7 +41,7 @@ const Workflows = () => {
 
   const columns = useMemo(() => [{ title: 'Name', field: 'name' }], []);
 
-  const options = useMemo(() => ({ actionsColumnIndex: -1, search: false, showTitle: false }), []);
+  const options = useMemo(() => ({ actionsColumnIndex: -1, search: false, showTitle: false, maxBodyHeight:"400px"}), []);
 
   const editable = useMemo(
     () => ({
@@ -70,6 +71,7 @@ const Workflows = () => {
   return (
     <div>
       <WorkflowHeader />
+      <ErrorBanner title={"You cannnot delete this workflow because it is already been refernced in template type."} targetStore={selectWorkflowsStore}/>
       <MaterialTable
         columns={columns}
         data={workflows}

@@ -97,7 +97,7 @@ const ColumnNamesTable = () => {
     [],
   );
 
-  const options = useMemo(() => ({ actionsColumnIndex: -1, showTitle: false }), []);
+  const options = useMemo(() => ({ actionsColumnIndex: -1, showTitle: false, maxBodyHeight:"400px" }), []);
 
   const editable = useMemo(
     () => ({

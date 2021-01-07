@@ -9,6 +9,7 @@ const CreateOrganization = () => {
   const history = useHistory();
   const dispatch = useDispatch();
 
+  // @ts-ignore
   const initialState = new OrgEntity({
     active: true,
     programId: [],

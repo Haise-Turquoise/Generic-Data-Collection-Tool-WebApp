@@ -30,6 +30,7 @@ import { selectSubmissionPeriodsStore } from '../../store/SubmissionPeriodsStore
 import { getSubmissionPeriodsRequest } from '../../store/thunks/submissionPeriod';
 import StatusesStore from '../../store/StatusesStore/store';
 import SubmissionPeriodsStore from '../../store/SubmissionPeriodsStore/store';
+import ErrorBanner from '../ErrorBanner';
 
 const TemplatePackageHeader = () => {
   return (
@@ -85,6 +86,7 @@ const TemplatePackages = () => {
       actionsColumnIndex: -1,
       search: false,
       showTitle: false,
+      maxBodyHeight:"400px"
     }),
     [],
   );
@@ -123,6 +125,7 @@ const TemplatePackages = () => {
   return (
     <div>
       <TemplatePackageHeader />
+      <ErrorBanner title={"You cannot delete the selected template package since it was already published"} targetStore={selectTemplatePackagesStore}/>
       <MaterialTable
         columns={columns}
         data={templatePackages}

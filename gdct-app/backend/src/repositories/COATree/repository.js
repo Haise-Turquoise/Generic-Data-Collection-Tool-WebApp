@@ -1,6 +1,7 @@
 import COATreeEntity from '../../entities/COATree';
 import BaseRepository from '../repository';
 import COATreeModel from '../../models/COATree';
+import {ObjectId} from 'mongodb';
 
 export default class ReportPeriodRepository extends BaseRepository {
   constructor() {
@@ -54,5 +55,9 @@ export default class ReportPeriodRepository extends BaseRepository {
 
   async batchFindById(query){
     return COATreeModel.find({ _id: { "$in" : query }})
+  }
+
+  async findOneByCategoryGroupId(groupId){
+    return COATreeModel.findOne({categoryGroupId:new ObjectId(groupId)}, {_id:1})
   }
 }

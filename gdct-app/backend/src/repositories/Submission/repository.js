@@ -51,4 +51,8 @@ export default class SubmissionRepository extends BaseRepository {
   async updateWorkbook(_id, workbookData){
     return SubmissionModel.findByIdAndUpdate( _id, { workbookData })
   }
+
+  async findOneByTemplateIDs(templateIDs) {
+    return SubmissionModel.findOne({ templateId:{$in:templateIDs}}, {_id:1});
+  }
 }

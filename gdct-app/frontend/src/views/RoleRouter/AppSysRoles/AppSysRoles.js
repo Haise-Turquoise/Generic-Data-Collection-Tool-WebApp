@@ -60,7 +60,7 @@ const AppSysRolesTable = props => {
     [lookupSysRoles, lookupAppRoles],
   );
 
-  const options = useMemo(() => ({ actionsColumnIndex: -1, search: false, showTitle: false }), []);
+  const options = useMemo(() => ({ actionsColumnIndex: -1, search: false, showTitle: false, maxBodyHeight:"400px" }), []);
 
   const editable = useMemo(
     () => ({

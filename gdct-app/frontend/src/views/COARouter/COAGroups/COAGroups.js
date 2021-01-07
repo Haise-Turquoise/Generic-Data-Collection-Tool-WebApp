@@ -1,4 +1,4 @@
-import React, { useMemo, useEffect } from 'react';
+import React, { useMemo, useEffect, useState } from 'react';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 
 import MaterialTable from 'material-table';
@@ -14,6 +14,7 @@ import {
 } from '../../../store/thunks/COAGroup';
 
 import './COAGroups.scss';
+import ErrorBanner from '../../ErrorBanner'
 import { selectFactoryRESTResponseTableValues } from '../../../store/common/REST/selectors';
 import { selectCOAGroupsStore } from '../../../store/COAGroupsStore/selectors';
 
@@ -45,8 +46,7 @@ const COAGroupsTable = () => {
     ],
     [],
   );
-
-  const options = useMemo(() => ({ actionsColumnIndex: -1, search: false, showTitle: false }), []);
+  const options = useMemo(() => ({ actionsColumnIndex: -1, search: false, showTitle: false, maxBodyHeight:"400px"}), []);
 
   const editable = useMemo(
     () => ({
@@ -77,6 +77,7 @@ const COAGroups = props => (
   <div className="COAGroups">
     <COAGroupsHeader />
     {/* <FileDropzone/> */}
+    <ErrorBanner title={"The category group you are trying to delete is used in COA tree."} targetStore={selectCOAGroupsStore}/>
     <COAGroupsTable {...props} />
   </div>
 );

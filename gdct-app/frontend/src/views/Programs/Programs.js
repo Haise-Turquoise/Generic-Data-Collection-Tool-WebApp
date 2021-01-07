@@ -12,6 +12,8 @@ import {
   updateProgramsRequest,
 } from '../../store/thunks/program';
 
+import ErrorBanner from '../ErrorBanner';
+
 import './Programs.scss';
 import { selectFactoryRESTResponseTableValues } from '../../store/common/REST/selectors';
 import { selectProgramsStore } from '../../store/ProgramsStore/selectors';
@@ -44,7 +46,7 @@ const ProgramsTable = () => {
     [],
   );
 
-  const options = useMemo(() => ({ actionsColumnIndex: -1, search: true, showTitle: false }), []);
+  const options = useMemo(() => ({ actionsColumnIndex: -1, search: true, showTitle: false, maxBodyHeight:"400px" }), []);
 
   const editable = useMemo(
     () => ({
@@ -74,6 +76,7 @@ const ProgramsTable = () => {
 const Program = props => (
   <div className="programsPage">
     <ProgramHeader />
+    <ErrorBanner title={"Cannot delete the selected program beacuse it is referenced in master value table"} targetStore={selectProgramsStore}/>
     <ProgramsTable {...props} />
   </div>
 );
