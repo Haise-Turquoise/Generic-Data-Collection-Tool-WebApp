@@ -1,4 +1,4 @@
-import React, { useMemo, useEffect, useState } from 'react';
+import React, { useMemo, useEffect, useState, useRef } from 'react';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 
 import MenuItem from '@material-ui/core/MenuItem';
@@ -46,12 +46,12 @@ const SubmissionDashboard = ({ history }) => {
   const styleFactor = '0.2%';
   const classTheme = useStyles();
 
-  let publishedSubmissionCount = 0;
-  let approvedSubmissionCount = 0; 
-  let rejectedSubmissionCount = 0;
-  let expiredSubmissionCount = 0;
-  let submittedSubmissionCount = 0;
-  let unsubmittedSubmissionCount = 0;
+  const [readUnsubmittedLength, setUnsubmittedLength] = useState(1);
+  const [readApprovedLength, setApprovedLength] = useState(1);
+  const [readRejectedLength, setRejectedLength] = useState(1); 
+  const [readExpiredLength, setExpiredLength] = useState(1); 
+  const [readSubmittedLength, setSubmittedLength] = useState(1); 
+  const [readPublishedLength, setPublishedLength] = useState(1); 
 
   const [readFilterFrom, setFilterFrom] = useState('All');
   const [readFilterTo, setFilterTo] = useState('All');
@@ -122,13 +122,25 @@ const SubmissionDashboard = ({ history }) => {
     });
   }
 
-  publishedSubmissionCount = publishedSubmission.length;
-  approvedSubmissionCount = approvedSubmission.length; 
-  rejectedSubmissionCount = rejectedSubmission.length;
-  expiredSubmissionCount = expiredSubmission.length;
-  submittedSubmissionCount = submittedSubmission.length;
-  unsubmittedSubmissionCount = unsubmittedSubmission.length;
+  useEffect(() => {
+    setSubmittedLength(submittedSubmission.length)
+  }, [submittedSubmission])
+
+  useEffect(() => {
+    setExpiredLength(expiredSubmission.length)
+  }, [expiredSubmission])
+
+  useEffect(() => {
+    setRejectedLength(rejectedSubmission.length)
+  }, [rejectedSubmission])
   
+  useEffect(() => {
+    setUnsubmittedLength(unsubmittedSubmission.length)
+  }, [unsubmittedSubmission])
+  
+  useEffect(() => {
+    setApprovedLength(approvedSubmission.length)
+  }, [approvedSubmission])
   
 
   const handleFilterFrom = (event)=>{
@@ -158,18 +170,12 @@ const SubmissionDashboard = ({ history }) => {
     [],
   );
 
-  const options = useMemo(() => ({ 
-    actionsColumnIndex: -1, 
-    search: false, 
-    showTitle: false,
-    maxBodyHeight:"400px",
-  }), []);
-
   const calculateOptions = (itemCount)=>{
     let length = itemCount
     if (length > 100) length = 100;
-    if (length == 0) length = 1;
-    return {actionsColumnIndex: -1, 
+    else if (length == 0) length = 1;
+    return {
+      actionsColumnIndex: -1, 
       search: false, 
       showTitle: false,
       maxBodyHeight:"400px",
@@ -177,12 +183,11 @@ const SubmissionDashboard = ({ history }) => {
     }
   }
 
-  const unsubmittedOptions = useMemo(()=>calculateOptions(unsubmittedSubmissionCount), [unsubmittedSubmissionCount]);
-  const submittedOptions = useMemo(()=>calculateOptions(submittedSubmissionCount), [submittedSubmissionCount]);
-  const expiredOptions = useMemo(()=>calculateOptions(expiredSubmissionCount), [expiredSubmissionCount]);
-  const rejectedOptions = useMemo(()=>calculateOptions(rejectedSubmissionCount),[rejectedSubmissionCount]);
-  const approvedOptions = useMemo(()=>calculateOptions(approvedSubmissionCount), [approvedSubmissionCount]);
-  const publishedOptions = useMemo(()=>calculateOptions(publishedSubmissionCount), [publishedSubmissionCount]);
+  const unsubmittedOptions = useMemo(()=>calculateOptions(readUnsubmittedLength), [readUnsubmittedLength]);
+  const submittedOptions = useMemo(()=>calculateOptions(readSubmittedLength), [readSubmittedLength]);
+  const expiredOptions = useMemo(()=>calculateOptions(readExpiredLength), [readExpiredLength]);
+  const rejectedOptions = useMemo(()=>calculateOptions(readRejectedLength),[readRejectedLength]);
+  const approvedOptions = useMemo(()=>calculateOptions(readApprovedLength), [readApprovedLength]);
 
 
   const notEditableActions = useMemo(
@@ -227,9 +232,6 @@ const SubmissionDashboard = ({ history }) => {
     dispatch(getSubmissionsRequest());
   }, [dispatch]);
 
-  // useEffect(()=>{
-
-  // })
 
   return (
     <div className="submissions">
@@ -274,6 +276,7 @@ const SubmissionDashboard = ({ history }) => {
         {/* <ExpansionPanelDetails> */}
           <div className="MuiTableContainer">
             <MaterialTable
+              key={readUnsubmittedLength}
               columns={checkBoxColumns}
               options={unsubmittedOptions}
               data={unsubmittedSubmission}
@@ -282,6 +285,7 @@ const SubmissionDashboard = ({ history }) => {
           </div>
         {/* </ExpansionPanelDetails> */}
       </ExpansionPanel>
+      
       <ExpansionPanel>
         <ExpansionPanelSummary
           expandIcon={<ExpandMoreIcon />}
