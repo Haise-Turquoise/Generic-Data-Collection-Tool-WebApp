@@ -46,6 +46,7 @@ const SubmissionDashboard = ({ history }) => {
   const styleFactor = '0.2%';
   const classTheme = useStyles();
 
+  // Set up the states that update the table row number
   const [readUnsubmittedLength, setUnsubmittedLength] = useState(1);
   const [readApprovedLength, setApprovedLength] = useState(1);
   const [readRejectedLength, setRejectedLength] = useState(1); 
@@ -55,7 +56,7 @@ const SubmissionDashboard = ({ history }) => {
 
   const [readFilterFrom, setFilterFrom] = useState('All');
   const [readFilterTo, setFilterTo] = useState('All');
-  // const[readUpdateStatus, setUpdateStatus] = useState(false);
+
   const timeOption = { year: 'numeric', month: 'numeric', day: 'numeric', hour:'numeric', minute:'numeric' };
   let { submissions } = useSelector(
     state => ({
@@ -122,6 +123,7 @@ const SubmissionDashboard = ({ history }) => {
     });
   }
 
+  // Set the length state after array change, cause a refresh for the page
   useEffect(() => {
     setSubmittedLength(submittedSubmission.length)
   }, [submittedSubmission])
@@ -169,7 +171,8 @@ const SubmissionDashboard = ({ history }) => {
     ],
     [],
   );
-
+  
+  // Caculate how many rows
   const calculateOptions = (itemCount)=>{
     let length = itemCount
     if (length > 100) length = 100;
@@ -183,6 +186,8 @@ const SubmissionDashboard = ({ history }) => {
     }
   }
 
+
+  // memfunction that generate options object
   const unsubmittedOptions = useMemo(()=>calculateOptions(readUnsubmittedLength), [readUnsubmittedLength]);
   const submittedOptions = useMemo(()=>calculateOptions(readSubmittedLength), [readSubmittedLength]);
   const expiredOptions = useMemo(()=>calculateOptions(readExpiredLength), [readExpiredLength]);
@@ -273,7 +278,9 @@ const SubmissionDashboard = ({ history }) => {
         >
           <Typography> To-do </Typography>
         </ExpansionPanelSummary>
-        {/* <ExpansionPanelDetails> */}
+        
+          {/* We need to pass row number state to 
+          "key" param to force an table update */}
           <div className="MuiTableContainer">
             <MaterialTable
               key={readUnsubmittedLength}
@@ -283,7 +290,7 @@ const SubmissionDashboard = ({ history }) => {
               actions={submitterFlag ? actions : notEditableActions}
             />
           </div>
-        {/* </ExpansionPanelDetails> */}
+        
       </ExpansionPanel>
       
       <ExpansionPanel>
@@ -297,6 +304,7 @@ const SubmissionDashboard = ({ history }) => {
         {/* <ExpansionPanelDetails> */}
         <div className="MuiTableContainer">
           <MaterialTable
+            key={readSubmittedLength}
             columns={checkBoxColumns}
             options={submittedOptions}
             data={submittedSubmission}
@@ -317,6 +325,7 @@ const SubmissionDashboard = ({ history }) => {
         {/* <ExpansionPanelDetails> */}
         <div className="MuiTableContainer">
           <MaterialTable
+            key={readRejectedLength}
             columns={checkBoxColumns}
             options={rejectedOptions}
             data={rejectedSubmission}
@@ -337,6 +346,7 @@ const SubmissionDashboard = ({ history }) => {
         {/* <ExpansionPanelDetails> */}
         <div className="MuiTableContainer">
           <MaterialTable
+            key={readExpiredLength}
             columns={checkBoxColumns}
             options={expiredOptions}
             data={expiredSubmission}
@@ -357,6 +367,7 @@ const SubmissionDashboard = ({ history }) => {
         {/* <ExpansionPanelDetails> */}
         <div className="MuiTableContainer">
           <MaterialTable
+            key={readApprovedLength}
             columns={checkBoxColumns}
             options={approvedOptions}
             data={approvedSubmission}
