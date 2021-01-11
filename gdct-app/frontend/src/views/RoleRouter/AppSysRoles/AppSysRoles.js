@@ -1,4 +1,4 @@
-import React, { useMemo, useEffect } from 'react';
+import React, { useMemo, useEffect, useState } from 'react';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 
 import MaterialTable from 'material-table';
@@ -32,6 +32,8 @@ const AppSysRolesHeader = () => {
 
 const AppSysRolesTable = props => {
   const dispatch = useDispatch();
+  const [readNumRow, setNumRow] = useState(1);
+
   const { appSyses, appSysRoles, appRoles } = useSelector(
     state => ({
       appRoles: selectFactoryRESTResponseTableValues(selectAppRolesStore)(state),
@@ -44,10 +46,25 @@ const AppSysRolesTable = props => {
     acc[appSys.code] = appSys.name;
     return acc;
   }, {});
+
   const lookupAppRoles = appRoles.reduce(function (acc, appRole) {
     acc[appRole.code] = appRole.name;
     return acc;
   }, {});
+  
+  const calculateOptions = (itemCount)=>{
+    let length = itemCount
+    if (length > 100) length = 100;
+    else if (length == 0) length = 1;
+    return {
+      actionsColumnIndex: -1, 
+      search: false, 
+      showTitle: false,
+      maxBodyHeight:"400px",
+      pageSize:length
+    }
+  }
+
   const columns = useMemo(
     () => [
       {
@@ -60,7 +77,7 @@ const AppSysRolesTable = props => {
     [lookupSysRoles, lookupAppRoles],
   );
 
-  const options = useMemo(() => ({ actionsColumnIndex: -1, search: false, showTitle: false, maxBodyHeight:"400px" }), []);
+  const options = useMemo(() => calculateOptions(readNumRow), [readNumRow]);
 
   const editable = useMemo(
     () => ({
@@ -86,8 +103,10 @@ const AppSysRolesTable = props => {
     dispatch(getAppSysRolesRequest());
   }, [dispatch]);
 
+  useEffect(()=>{setNumRow(appSysRoles.length)}, [appSysRoles])
+
   return (
-    <MaterialTable columns={columns} data={appSysRoles} editable={editable} options={options} />
+    <MaterialTable key={readNumRow} columns={columns} data={appSysRoles} editable={editable} options={options} />
   );
 };
 

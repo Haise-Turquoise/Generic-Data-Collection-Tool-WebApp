@@ -1,4 +1,4 @@
-import React, { useMemo, useEffect } from 'react';
+import React, { useMemo, useEffect, useState } from 'react';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 
 import MaterialTable from 'material-table';
@@ -27,6 +27,7 @@ const AppSysesHeader = () => {
 
 const AppSysesTable = () => {
   const dispatch = useDispatch();
+  const [readRowNum, setRowNum] = useState(1);
   const { appSyses } = useSelector(
     state => ({
       appSyses: selectFactoryRESTResponseTableValues(selectAppSysesStore)(state),
@@ -42,7 +43,20 @@ const AppSysesTable = () => {
     [],
   );
 
-  const options = useMemo(() => ({ actionsColumnIndex: -1, search: false, showTitle: false, maxBodyHeight:"400px" }), []);
+  const calculateOptions = (itemCount)=>{
+    let length = itemCount
+    if (length > 100) length = 100;
+    else if (length == 0) length = 1;
+    return {
+      actionsColumnIndex: -1, 
+      search: false, 
+      showTitle: false,
+      maxBodyHeight:"400px",
+      pageSize:length
+    }
+  }
+  
+  const options = useMemo(() => calculateOptions(readRowNum), [readRowNum]);
 
   const editable = useMemo(
     () => ({
@@ -66,7 +80,9 @@ const AppSysesTable = () => {
     dispatch(getAppSysesRequest());
   }, [dispatch]);
 
-  return <MaterialTable columns={columns} data={appSyses} editable={editable} options={options} />;
+  useEffect(()=>{setRowNum(appSyses.length)}, [appSyses])
+
+  return <MaterialTable key={readRowNum} columns={columns} data={appSyses} editable={editable} options={options} />;
 };
 
 const AppSyses = props => (

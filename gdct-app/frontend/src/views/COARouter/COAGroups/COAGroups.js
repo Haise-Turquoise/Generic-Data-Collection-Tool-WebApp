@@ -30,6 +30,7 @@ const COAGroupsHeader = () => {
 
 const COAGroupsTable = () => {
   const dispatch = useDispatch();
+  const[readRowNum, setRowNum] = useState(1);
 
   const { COAGroups } = useSelector(
     state => ({
@@ -37,6 +38,22 @@ const COAGroupsTable = () => {
     }),
     shallowEqual,
   );
+
+  const calculateOptions = (itemCount)=>{
+    let length = itemCount
+    if (length > 100) length = 100;
+    else if (length == 0) length = 1;
+    return {
+      actionsColumnIndex: -1, 
+      search: false, 
+      showTitle: false,
+      maxBodyHeight:"400px",
+      pageSize:length
+    }
+  }
+
+  useEffect(()=>{setRowNum(COAGroups.length)},[COAGroups]);
+
 
   const columns = useMemo(
     () => [
@@ -46,7 +63,7 @@ const COAGroupsTable = () => {
     ],
     [],
   );
-  const options = useMemo(() => ({ actionsColumnIndex: -1, search: false, showTitle: false, maxBodyHeight:"400px"}), []);
+  const options = useMemo(() => calculateOptions(readRowNum), [readRowNum]);
 
   const editable = useMemo(
     () => ({
@@ -70,7 +87,7 @@ const COAGroupsTable = () => {
     dispatch(getCOAGroupsRequest());
   }, [dispatch]);
 
-  return <MaterialTable columns={columns} data={COAGroups} editable={editable} options={options} />;
+  return <MaterialTable key={readRowNum} columns={columns} data={COAGroups} editable={editable} options={options} />;
 };
 
 const COAGroups = props => (

@@ -1,4 +1,4 @@
-import React, { useMemo, useEffect } from 'react';
+import React, { useMemo, useEffect, useState } from 'react';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 
 import MaterialTable from 'material-table';
@@ -33,6 +33,7 @@ const TemplateTypeHeader = () => {
 
 const TemplateTypesTable = ({ history }) => {
   const dispatch = useDispatch();
+  const [readRowNum, setRowNum] = useState(1);
 
   const { templateTypes, workflows } = useSelector(
     state => ({
@@ -46,6 +47,21 @@ const TemplateTypesTable = ({ history }) => {
     acc[workflow._id] = `${workflow.name}`;
     return acc;
   }, {});
+
+  const calculateOptions = (itemCount)=>{
+    let length = itemCount
+    if (length > 100) length = 100;
+    else if (length == 0) length = 1;
+    return {
+      actionsColumnIndex: -1, 
+      search: false, 
+      showTitle: false,
+      maxBodyHeight:"400px",
+      pageSize:length
+    }
+  }
+
+  useEffect(()=>{setRowNum(templateTypes.length)}, [templateTypes])
 
   const columns = [
     { title: 'Name', field: 'name' },
@@ -74,7 +90,7 @@ const TemplateTypesTable = ({ history }) => {
     [history],
   );
 
-  const options = useMemo(() => ({ actionsColumnIndex: -1, search: true, showTitle: false , maxBodyHeight:"400px"}), []);
+  const options = useMemo(() => calculateOptions(readRowNum), [readRowNum]);
 
   const editable = useMemo(
     () => ({
@@ -106,6 +122,7 @@ const TemplateTypesTable = ({ history }) => {
 
   return (
     <MaterialTable
+      key={readRowNum}
       columns={columns}
       actions={actions}
       data={templateTypes}

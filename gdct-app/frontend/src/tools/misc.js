@@ -26,3 +26,17 @@ export const memoizeFunction = f => {
     return args in f.memoize ? f.memoize[args] : (f.memoize[args] = f.apply(this, args));
   };
 };
+
+export const calculateOptions = (itemCount)=>{
+  let length = itemCount;
+  if (length > 100) length = 100;
+  else if (length == 0) length = 1;
+  return {
+    actionsColumnIndex: -1, 
+    search: false, 
+    showTitle: false,
+    maxBodyHeight:"400px",
+    pageSizeOptions: [5,10,20,50,100],
+    pageSize:length
+  };
+};

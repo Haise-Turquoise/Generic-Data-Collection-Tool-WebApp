@@ -274,15 +274,18 @@ export default class SubmissionService {
   // This is specified one user can only belongs to organization
   async findSubmission(email) {
     const userInfo = await this.usersRepository.findByEmail(email);
-    const { orgId } = userInfo[0].sysRole[0].org[0];
+    const org = userInfo[0].sysRole[0].org[0];
+    const orgId = org? org.orgId: undefined;
     const programAndTempTypes = [];
     const programIds = [];
-    userInfo[0].sysRole.forEach(sysRole => {
-      sysRole.org[0].program.forEach(program => {
-        programAndTempTypes.push({ program: program.programId, templateTypes: program.template });
-        programIds.push(program.programId);
+    if (orgId){
+      userInfo[0].sysRole.forEach(sysRole => {
+        sysRole.org[0].program.forEach(program => {
+          programAndTempTypes.push({ program: program.programId, templateTypes: program.template });
+          programIds.push(program.programId);
+        });
       });
-    });
+    }
     return this.findTemplatePackage(programAndTempTypes).then(templatePackages => {
       const name = 'Unsubmitted';
       return this.statusRepository.findByName(name).then(status => {

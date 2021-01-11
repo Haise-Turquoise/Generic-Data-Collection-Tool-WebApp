@@ -1,4 +1,4 @@
-import React, { useMemo, useEffect } from 'react';
+import React, { useMemo, useEffect, useState } from 'react';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 
 import MaterialTable from 'material-table';
@@ -16,6 +16,8 @@ import './Statuses.scss';
 import { selectFactoryRESTResponseTableValues } from '../../store/common/REST/selectors';
 import { selectStatusesStore } from '../../store/StatusesStore/selectors';
 
+import {calculateOptions} from '../../tools/misc'
+
 const StatusHeader = () => {
   return (
     <Paper className="header">
@@ -27,7 +29,7 @@ const StatusHeader = () => {
 
 const StatusesTable = () => {
   const dispatch = useDispatch();
-
+  const [readRowNum, setRowNum] = useState(1);
   const { statuses } = useSelector(
     state => ({
       statuses: selectFactoryRESTResponseTableValues(selectStatusesStore)(state),
@@ -44,7 +46,7 @@ const StatusesTable = () => {
     [],
   );
 
-  const options = useMemo(() => ({ actionsColumnIndex: -1, search: false, showTitle: false , maxBodyHeight:"400px"}), []);
+  const options = useMemo(() => calculateOptions(readRowNum), [readRowNum]);
 
   const editable = useMemo(
     () => ({
@@ -68,7 +70,9 @@ const StatusesTable = () => {
     dispatch(getStatusesRequest());
   }, [dispatch]);
 
-  return <MaterialTable columns={columns} data={statuses} editable={editable} options={options} />;
+  useEffect(()=>{setRowNum(statuses.length)}, [statuses]);
+
+  return <MaterialTable key={readRowNum} columns={columns} data={statuses} editable={editable} options={options} />;
 };
 
 const Status = props => (

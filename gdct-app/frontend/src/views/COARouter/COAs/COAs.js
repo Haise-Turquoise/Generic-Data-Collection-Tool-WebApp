@@ -81,6 +81,7 @@ const AlertSign = () => {
 
 const COAsTable = () => {
   const dispatch = useDispatch();
+  const [readRowNum, setRowNum] = useState(1);
 
 
   const { COAs} = useSelector(
@@ -99,7 +100,22 @@ const COAsTable = () => {
     [],
   );
 
-  const options = useMemo(() => ({ actionsColumnIndex: -1, search: true, showTitle: false, maxBodyHeight:"400px" }), []);
+  const calculateOptions = (itemCount)=>{
+    let length = itemCount
+    if (length > 100) length = 100;
+    else if (length == 0) length = 1;
+    return {
+      actionsColumnIndex: -1, 
+      search: false, 
+      showTitle: false,
+      maxBodyHeight:"400px",
+      pageSize:length
+    }
+  }
+
+  useEffect(()=>{setRowNum(COAs.length)}, [COAs])
+
+  const options = useMemo(() => (calculateOptions(readRowNum)), [readRowNum]);
 
   const editable = useMemo(
     () => ({
@@ -134,7 +150,7 @@ const COAsTable = () => {
     <div>
       <COAsHeader />
       <AlertSign />
-      <MaterialTable style={style} columns={columns} data={COAs} editable={editable} options={options}/>
+      <MaterialTable key={readRowNum} style={style} columns={columns} data={COAs} editable={editable} options={options}/>
     </div>
   );
 };

@@ -1,4 +1,4 @@
-import React, { useMemo, useEffect } from 'react';
+import React, { useMemo, useEffect, useState } from 'react';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 
 import MaterialTable from 'material-table';
@@ -32,6 +32,8 @@ const WorkflowHeader = () => {
 const Workflows = () => {
   const dispatch = useDispatch();
   const history = useHistory();
+  const [readRowNum, setRowNum] = useState(1);
+
   const { workflows } = useSelector(
     state => ({
       workflows: selectFactoryRESTResponseTableValues(selectWorkflowsStore)(state),
@@ -39,9 +41,22 @@ const Workflows = () => {
     shallowEqual,
   );
 
+  const calculateOptions = (itemCount)=>{
+    let length = itemCount
+    if (length > 100) length = 100;
+    else if (length == 0) length = 1;
+    return {
+      actionsColumnIndex: -1, 
+      search: false, 
+      showTitle: false,
+      maxBodyHeight:"400px",
+      pageSize:length
+    }
+  }
+
   const columns = useMemo(() => [{ title: 'Name', field: 'name' }], []);
 
-  const options = useMemo(() => ({ actionsColumnIndex: -1, search: false, showTitle: false, maxBodyHeight:"400px"}), []);
+  const options = useMemo(() => calculateOptions(readRowNum), [readRowNum]);
 
   const editable = useMemo(
     () => ({
@@ -68,11 +83,14 @@ const Workflows = () => {
     dispatch(getWorkflowsRequest());
   }, [dispatch]);
 
+  useEffect(()=>{setRowNum(workflows.length)}, [workflows])
+
   return (
     <div>
       <WorkflowHeader />
-      <ErrorBanner title={"You cannnot delete this workflow because it is already been refernced in template type."} targetStore={selectWorkflowsStore}/>
+      <ErrorBanner title={"You cannnot delete this workflow because it is refernced in template type."} targetStore={selectWorkflowsStore}/>
       <MaterialTable
+        key={readRowNum} 
         columns={columns}
         data={workflows}
         editable={editable}

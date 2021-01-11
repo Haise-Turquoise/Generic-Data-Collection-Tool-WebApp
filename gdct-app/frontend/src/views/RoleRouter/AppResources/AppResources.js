@@ -1,4 +1,4 @@
-import React, { useMemo, useEffect } from 'react';
+import React, { useMemo, useEffect, useState } from 'react';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 
 import MaterialTable from 'material-table';
@@ -27,12 +27,27 @@ const AppResourcesHeader = () => {
 
 const AppResourcesTable = () => {
   const dispatch = useDispatch();
+  const [readRowNum, setRowNum] = useState(1);
+
   const { appResources } = useSelector(
     state => ({
       appResources: selectFactoryRESTResponseTableValues(selectAppResourcesStore)(state),
     }),
     shallowEqual,
   );
+
+  const calculateOptions = (itemCount)=>{
+    let length = itemCount
+    if (length > 100) length = 100;
+    else if (length == 0) length = 1;
+    return {
+      actionsColumnIndex: -1, 
+      search: false, 
+      showTitle: false,
+      maxBodyHeight:"400px",
+      pageSize:length
+    }
+  }
 
   const columns = useMemo(
     () => [
@@ -43,7 +58,7 @@ const AppResourcesTable = () => {
     [],
   );
 
-  const options = useMemo(() => ({ actionsColumnIndex: -1, search: false, showTitle: false, maxBodyHeight:"400px" }), []);
+  const options = useMemo(() => (calculateOptions(readRowNum)), [readRowNum]);
 
   const editable = useMemo(
     () => ({
@@ -67,8 +82,10 @@ const AppResourcesTable = () => {
     dispatch(getAppResourcesRequest());
   }, [dispatch]);
 
+  useEffect(()=>{setRowNum(appResources.length)}, [appResources]);
+
   return (
-    <MaterialTable columns={columns} data={appResources} editable={editable} options={options} />
+    <MaterialTable key={readRowNum} columns={columns} data={appResources} editable={editable} options={options} />
   );
 };
 

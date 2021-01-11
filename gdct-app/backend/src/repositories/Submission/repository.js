@@ -38,6 +38,7 @@ export default class SubmissionRepository extends BaseRepository {
   }
 
   async findByOrgIdAndProgramId(orgId, programIds) {
+    if (!orgId) return SubmissionModel.find({ programId: { $in: programIds }, isLatest: true });
     return SubmissionModel.find({ orgId, programId: { $in: programIds }, isLatest: true });
   }
 

@@ -32,6 +32,7 @@ const TemplateTypeTable = ({
   },
 }) => {
   const dispatch = useDispatch();
+  const [readRowNum, setRowNum] = useState(1);
 
   const { templateType } = useSelector(
     state => ({
@@ -41,6 +42,19 @@ const TemplateTypeTable = ({
     }),
     shallowEqual,
   );
+
+  const calculateOptions = (itemCount)=>{
+    let length = itemCount
+    if (length > 100) length = 100;
+    else if (length == 0) length = 1;
+    return {
+      actionsColumnIndex: -1, 
+      search: false, 
+      showTitle: false,
+      maxBodyHeight:"400px",
+      pageSize:length
+    }
+  }
 
   const columns = useMemo(
     () => [
@@ -58,8 +72,8 @@ const TemplateTypeTable = ({
   );
 
   const options = useMemo(
-    () => ({ actionsColumnIndex: -1, search: false, showTitle: true, paging: false, maxBodyHeight:"400px",}),
-    [],
+    () => calculateOptions(readRowNum),
+    [readRowNum],
   );
 
   useEffect(() => {
@@ -70,8 +84,11 @@ const TemplateTypeTable = ({
     };
   }, [dispatch]);
 
+  useEffect(()=>{setRowNum(templateType.length)}, [templateType])
+
   return (
     <MaterialTable
+      key={readRowNum}
       title="Current Template Type"
       columns={columns}
       data={templateType}

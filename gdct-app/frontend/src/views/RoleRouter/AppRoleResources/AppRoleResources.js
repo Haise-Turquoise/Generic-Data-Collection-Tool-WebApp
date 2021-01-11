@@ -1,4 +1,4 @@
-import React, { useMemo, useEffect } from 'react';
+import React, { useMemo, useEffect, useState } from 'react';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 
 import MaterialTable from 'material-table';
@@ -32,6 +32,7 @@ const AppRoleResourcesHeader = () => {
 
 const AppRoleResourcesTable = () => {
   const dispatch = useDispatch();
+  const [readRowNum, setRowNum] = useState(1);
   const { appRoleResources, appSysRoles, appResources } = useSelector(
     state => ({
       appRoleResources: selectFactoryRESTResponseTableValues(selectAppRoleResourcesStore)(state),
@@ -40,15 +41,30 @@ const AppRoleResourcesTable = () => {
     }),
     shallowEqual,
   );
+  
+  const calculateOptions = (itemCount)=>{
+    let length = itemCount
+    if (length > 100) length = 100;
+    else if (length == 0) length = 1;
+    return {
+      actionsColumnIndex: -1, 
+      search: false, 
+      showTitle: false,
+      maxBodyHeight:"400px",
+      pageSize:length
+    }
+  }
+
   const lookupSysRoles = appSysRoles.reduce(function (acc, sysRoles) {
     acc[sysRoles._id] = `${sysRoles.appSys} - ${sysRoles.role}`;
     return acc;
   }, {});
+
   const lookupResources = appResources.reduce(function (acc, resource) {
     acc[resource._id] = resource.resourcePath;
     return acc;
   }, {});
-  console.log(appRoleResources);
+
   const columns = useMemo(
     () => [
       { title: 'AppSysRole', field: 'appSysRoleId', lookup: lookupSysRoles },
@@ -77,7 +93,7 @@ const AppRoleResourcesTable = () => {
     [lookupSysRoles, lookupResources],
   );
 
-  const options = useMemo(() => ({ actionsColumnIndex: -1, search: false, showTitle: false, maxBodyHeight:"400px" }), []);
+  const options = useMemo(() => calculateOptions(readRowNum), [readRowNum]);
 
   const editable = useMemo(
     () => ({
@@ -103,8 +119,11 @@ const AppRoleResourcesTable = () => {
     dispatch(getAppResourcesRequest());
   }, [dispatch]);
 
+  useEffect(()=>{setRowNum(appRoleResources.length), [appRoleResources]})
+
   return (
     <MaterialTable
+      key={readRowNum}
       columns={columns}
       data={appRoleResources}
       editable={editable}

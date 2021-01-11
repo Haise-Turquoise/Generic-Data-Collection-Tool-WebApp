@@ -1,4 +1,4 @@
-import React, { useMemo, useEffect } from 'react';
+import React, { useMemo, useEffect, useState } from 'react';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 
 import MaterialTable from 'material-table';
@@ -29,6 +29,7 @@ const ProgramHeader = () => {
 
 const ProgramsTable = () => {
   const dispatch = useDispatch();
+  const [readRowNum, setRowNum] = useState(1);
 
   const { programs } = useSelector(
     state => ({
@@ -36,6 +37,19 @@ const ProgramsTable = () => {
     }),
     shallowEqual,
   );
+
+  const calculateOptions = (itemCount)=>{
+    let length = itemCount
+    if (length > 100) length = 100;
+    else if (length == 0) length = 1;
+    return {
+      actionsColumnIndex: -1, 
+      search: false, 
+      showTitle: false,
+      maxBodyHeight:"400px",
+      pageSize:length
+    }
+  }
 
   const columns = useMemo(
     () => [
@@ -46,7 +60,7 @@ const ProgramsTable = () => {
     [],
   );
 
-  const options = useMemo(() => ({ actionsColumnIndex: -1, search: true, showTitle: false, maxBodyHeight:"400px" }), []);
+  const options = useMemo(() => calculateOptions(readRowNum), [readRowNum]);
 
   const editable = useMemo(
     () => ({
@@ -70,7 +84,9 @@ const ProgramsTable = () => {
     dispatch(getProgramsRequest());
   }, [dispatch]);
 
-  return <MaterialTable columns={columns} data={programs} editable={editable} options={options} />;
+  useEffect(()=>{setRowNum(programs.length)}, [programs])
+
+  return <MaterialTable key={readRowNum} columns={columns} data={programs} editable={editable} options={options} />;
 };
 
 const Program = props => (

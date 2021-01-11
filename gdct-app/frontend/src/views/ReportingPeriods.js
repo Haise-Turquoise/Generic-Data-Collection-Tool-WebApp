@@ -1,4 +1,4 @@
-import React, { useMemo, useEffect } from 'react';
+import React, { useMemo, useEffect, useState } from 'react';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 
 import MaterialTable from 'material-table';
@@ -26,6 +26,7 @@ const ReportingPeriodHeader = () => {
 
 const ReportingPeriodsTable = () => {
   const dispatch = useDispatch();
+  const [readRowNum, setRowNum] = useState(1);
 
   const { reportingPeriods } = useSelector(
     state => ({
@@ -34,9 +35,22 @@ const ReportingPeriodsTable = () => {
     shallowEqual,
   );
 
+  const calculateOptions = (itemCount)=>{
+    let length = itemCount
+    if (length > 100) length = 100;
+    else if (length == 0) length = 1;
+    return {
+      actionsColumnIndex: -1, 
+      search: false, 
+      showTitle: false,
+      maxBodyHeight:"400px",
+      pageSize:length
+    }
+  }
+
   const columns = useMemo(() => [{ title: 'Name', field: 'name' }], []);
 
-  const options = useMemo(() => ({ actionsColumnIndex: -1, search: false, showTitle: false , maxBodyHeight:"400px"}), []);
+  const options = useMemo(() => calculateOptions(readRowNum), [readRowNum]);
 
   const editable = useMemo(
     () => ({
@@ -60,8 +74,11 @@ const ReportingPeriodsTable = () => {
     dispatch(getReportingPeriodsRequest());
   }, [dispatch]);
 
+  useEffect(()=>{setRowNum(reportingPeriods.length)}, [reportingPeriods])
+
   return (
     <MaterialTable
+      key={readRowNum}
       columns={columns}
       data={reportingPeriods}
       editable={editable}
