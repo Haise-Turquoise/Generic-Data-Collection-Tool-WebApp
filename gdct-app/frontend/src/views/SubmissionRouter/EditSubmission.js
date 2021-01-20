@@ -45,6 +45,9 @@ const EditSubmission = ({ history }) => {
   const [submitId, setSubmitId] = useState('');
   const [approveId, setApproveId] = useState('');
   const [rejectId, setRejectId] = useState('');
+  const [cursor, setCursor] = useState('standard');
+  const [userFeedback, setUserFeedback] = useState('');
+  const [refresh, setRefresh] = useState(false);
 
   const SubmissionHeader = () => (
     <Paper className="header">
@@ -63,7 +66,7 @@ const EditSubmission = ({ history }) => {
     [],
   );
 
-  const options = useMemo(() => ({ actionsColumnIndex: -1, search: false, showTitle: false }), []);
+  const options = useMemo(() => ({ actionsColumnIndex: -1, search: false, showTitle: true }), []);
 
   const handleNoteChange = event => {
     dispatch(SubmissionNoteStore.actions.RECEIVE(event.target.value));
@@ -101,7 +104,7 @@ const EditSubmission = ({ history }) => {
         .then(workflowProcess => {
           if (workflowProcess !== undefined)
             workflowProcess.to.forEach(process => {
-              console.log(process.statusId.name);
+              // console.log(process.statusId.name);
               switch (process.statusId.name) {
                 case 'Submitted': {
                   setSubmitUnavailable(false);
@@ -125,7 +128,7 @@ const EditSubmission = ({ history }) => {
     dispatch(SubmissionNoteStore.actions.RECEIVE(''));
     dispatch(getSubmissionByIdRequest(location.state.detail._id));
     dispatch(getSubmissionNoteRequest(location.state.detail.parentId));
-  }, [location]);
+  }, [location, dispatch, refresh]);
 
   if (submissionNoteHistory[0] !== undefined) {
     if (submissionNoteHistory[0].note !== undefined) {
@@ -141,20 +144,53 @@ const EditSubmission = ({ history }) => {
       pathname: `/submission/submissions/${submission._id}`,
       state: { detail: location.state.detail },
     });
-
+  const UserFeedback = feedback => {
+    setUserFeedback(feedback);
+  };
   const handleDownloadWorkbook = () => {
-    DOWNLOAD(convertStateToReactState(submission.workbookData));
+    setUserFeedback('Downloading !');
+    setCursor('progress');
+    DOWNLOAD(convertStateToReactState(submission.workbookData), UserFeedback);
+
+    setTimeout(function () {
+      UserFeedback('Download successfully !');
+    }, 2000);
+
+    setCursor('standard');
+    setTimeout(function () {
+      setUserFeedback('');
+    }, 4000);
   };
 
   const handleChangeStatus = (submission, submissionNote, role, newProcessId) => {
+    // setCursor('progress');
+
     dispatch(updateSubmissionStatusRequest(submission, submissionNote, role, newProcessId));
-    history.push({
-      pathname: `/submission/dashboard`,
-    });
+
+    // console.log(userFeedback)
+    if (!role) {
+      role = 'ChangeNote';
+    }
+    // console.log(role);
+    setUserFeedback(`${role} successfully !`);
+    setRefresh(true);
+    setTimeout(function () {
+      setRefresh(false);
+    }, 500);
+
+    // console.log(userFeedback)
+    setTimeout(function () {
+      setUserFeedback('');
+    }, 2000);
+
+    // window.location.reload(false)
+    // history.push({
+    //   pathname: `/submission/dashboard`,
+    // });
   };
 
   return (
-    <div className="submissions">
+    <div className="submissions" style={{ cursor }}>
       <SubmissionHeader />
       <Paper className="pl-4 pr-4 pb-5 pt-4">
         <div className="submission__label">
@@ -173,18 +209,36 @@ const EditSubmission = ({ history }) => {
         <div className="submission__label">
           <Typography className="submission__inputTitle"> Note History </Typography>
         </div>
-        <MaterialTable columns={checkBoxColumns} options={options} data={submissionNotes} />
+        <MaterialTable
+          title={userFeedback}
+          columns={checkBoxColumns}
+          options={options}
+          data={submissionNotes}
+        />
         <div>
-          <Button color="primary" variant="contained" size="large" onClick={handleOpenTemplate}>
+          <Button
+            color="primary"
+            variant="contained"
+            style={{ cursor }}
+            size="large"
+            onClick={handleOpenTemplate}
+          >
             View Document
           </Button>
-          <Button color="primary" variant="contained" size="large" onClick={handleDownloadWorkbook}>
+          <Button
+            color="primary"
+            variant="contained"
+            style={{ cursor }}
+            size="large"
+            onClick={handleDownloadWorkbook}
+          >
             Download
           </Button>
           <Button
             color="primary"
             variant="contained"
             size="large"
+            style={{ cursor }}
             disabled={approveUnavailable || !isReviewerOrApprover}
             onClick={() => handleChangeStatus(submission, submissionNote, 'Approved', approveId)}
           >
@@ -194,6 +248,7 @@ const EditSubmission = ({ history }) => {
             color="primary"
             variant="contained"
             size="large"
+            style={{ cursor }}
             disabled={rejectUnavailable || !isReviewerOrApprover}
             onClick={() => handleChangeStatus(submission, submissionNote, 'Rejected', rejectId)}
           >
@@ -203,6 +258,7 @@ const EditSubmission = ({ history }) => {
             color="primary"
             variant="contained"
             size="large"
+            style={{ cursor }}
             disabled={submitUnavailable || !isSubmitterOrInputter}
             onClick={() => handleChangeStatus(submission, submissionNote, 'Submitted', submitId)}
           >
@@ -212,10 +268,12 @@ const EditSubmission = ({ history }) => {
             color="primary"
             variant="contained"
             size="large"
+            style={{ cursor }}
             onClick={() => handleChangeStatus(submission, submissionNote)}
           >
             Change Notes
           </Button>
+          <div>{userFeedback}</div>
         </div>
       </Paper>
     </div>

@@ -27,8 +27,9 @@ import MenuController from './Menu';
 import UsersController from './Users/controller';
 import SubmissionNoteController from './SubmissionNote';
 import { authorized } from '../middlewares/auth/auth';
-
+import MasterValueController from './MasterValue/controller'
 export const routerManager = app => {
+ 
   app.use('/', Container.get(AuthController));
   app.use('/', Container.get(MenuController));
   app.use('/', Container.get(MenuItemController));
@@ -43,7 +44,7 @@ export const routerManager = app => {
   app.use('/', authorized, Container.get(ReportingPeriodController));
   app.use('/', authorized, Container.get(SheetNameController));
   app.use('/', authorized, Container.get(ColumnNameController));
-
+  app.use('/', authorized, Container.get(MasterValueController));
   app.use('/template_manager', authorized, Container.get(TemplateController));
   app.use('/template_manager', authorized, Container.get(TemplatePackageController));
 

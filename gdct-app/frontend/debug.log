@@ -14,3 +14,16 @@
 [1123/042243.664:ERROR:exception_snapshot_win.cc(99)] thread ID 932 not found in process
 [1123/042243.664:ERROR:exception_snapshot_win.cc(99)] thread ID 2252 not found in process
 [1123/042243.664:ERROR:scoped_process_suspend.cc(40)] NtResumeProcess: An attempt was made to access an exiting process. (0xc000010a)
+[0119/155901.333:ERROR:directory_reader_win.cc(43)] FindFirstFile: The system cannot find the path specified. (0x3)
+[0119/181019.057:ERROR:process_reader_win.cc(123)] NtOpenThread: {Access Denied} A process has requested access to an object, but has not been granted those access rights. (0xc0000022)
+[0119/181019.060:ERROR:process_reader_win.cc(123)] NtOpenThread: {Access Denied} A process has requested access to an object, but has not been granted those access rights. (0xc0000022)
+[0119/181019.058:ERROR:process_reader_win.cc(123)] NtOpenThread: {Access Denied} A process has requested access to an object, but has not been granted those access rights. (0xc0000022)
+[0119/181020.058:ERROR:exception_snapshot_win.cc(99)] thread ID 3168 not found in process
+[0119/181020.058:ERROR:exception_snapshot_win.cc(99)] thread ID 2728 not found in process
+[0119/181019.057:ERROR:process_reader_win.cc(123)] NtOpenThread: {Access Denied} A process has requested access to an object, but has not been granted those access rights. (0xc0000022)
+[0119/181020.058:ERROR:exception_snapshot_win.cc(99)] thread ID 3000 not found in process
+[0119/181020.058:ERROR:exception_snapshot_win.cc(99)] thread ID 2704 not found in process
+[0119/181019.060:ERROR:process_reader_win.cc(123)] NtOpenThread: {Access Denied} A process has requested access to an object, but has not been granted those access rights. (0xc0000022)
+[0119/181019.057:ERROR:process_reader_win.cc(123)] NtOpenThread: {Access Denied} A process has requested access to an object, but has not been granted those access rights. (0xc0000022)
+[0119/181020.058:ERROR:exception_snapshot_win.cc(99)] thread ID 3164 not found in process
+[0119/181020.058:ERROR:exception_snapshot_win.cc(99)] thread ID 8760 not found in process

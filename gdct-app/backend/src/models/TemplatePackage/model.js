@@ -13,6 +13,7 @@ const TemplatePackageModel = model(
       creationDate: { type: Date, default: Date.now },
       userCreatorId: { type: ObjectId, ref: 'User' },
       programIds: [{ type: ObjectId, ref: 'Program' }],
+      forPackage:{type: Boolean, ref: 'ForPackage'}
     },
     { minimize: false, autoIndex: true },
   ),

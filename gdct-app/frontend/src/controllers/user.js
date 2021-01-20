@@ -10,6 +10,11 @@ const userController = (() => {
   return {
     create: async userData =>
       userAxios.post('/users/registerUser', { userData }).then(res => res.data),
+    fetchUserByUserName: async username =>
+      userAxios.get(`/${username}`).then(res => {
+        console.log('front-end controller', res.data);
+        return res.data;
+      }),
   };
 })();
 

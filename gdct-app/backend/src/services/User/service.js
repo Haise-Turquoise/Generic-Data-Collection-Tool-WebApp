@@ -17,6 +17,7 @@ export default class UserService {
 
   async register(registerData) {
     // JS User object
+    
     const promiseQuery = [];
     registerData.sysRole.forEach(sysRole => {
       // eslint-disable-next-line default-case
@@ -59,6 +60,7 @@ export default class UserService {
     });
     await Promise.all(promiseQuery);
     this.UserRepository.create(registerData).then(registerRecord => {
+      
       sendUserVerficationEmail(registerData);
       const { hashedUsername } = registerRecord;
       const { username } = registerRecord;
@@ -137,4 +139,11 @@ export default class UserService {
   async findById(id) {
     return this.UserRepository.findById(id);
   }
+  async fetchUserByUserName(username) {
+    // const fetchUser = await this.UserRepository.findByUserName(username);
+    // console.log('fetchUser', fetchUser)
+    return this.UserRepository.findByUserName(username);
+    
+  }
+  
 }

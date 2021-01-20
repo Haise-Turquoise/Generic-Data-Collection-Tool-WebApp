@@ -16,7 +16,7 @@ const TemplateModel = model(
       templateTypeId: { type: ObjectId, ref: 'TemplateType' },
 
       userCreatorId: { type: ObjectId, ref: 'User' },
-
+      creationDate:{type: Date},
       expirationDate: { type: Date },
     },
     { minimize: false, timestamps: true },

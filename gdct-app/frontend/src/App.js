@@ -13,7 +13,7 @@ import GDCTMenu from './views/GDCTMenu';
 import Programs from './views/Programs';
 import Statuses from './views/Statuses';
 import ReportingPeriods from './views/ReportingPeriods';
-
+import SheetNames from './views/SheetNames';
 import UserRouter from './views/UserRouter';
 import ReportRouter from './views/ReportRouter';
 import TemplateRouter from './views/TemplateRouter';
@@ -51,7 +51,7 @@ const PrivateRouter = ({ setLoggedIn }) => {
       <Route path={ROUTE_WORKFLOW} component={WorkflowRouter} />
       <Route exact path="/admin/roleManagement" component={RoleManagement} />
       {/* <Route path="/submission_manager" component={SubmissionRouter} /> */}
-      {/* <Route path="/sheetNames" component={SheetNames} />{' '} */}
+      <Route exact path="/admin/sheetName" component={SheetNames} />
       {/* <Route path={ROUTE_COLUMN_NAMES} component={ColumnNames} /> */}
       <Route
         exact
@@ -75,6 +75,7 @@ const PublicRouter = ({ setLoggedIn }) => {
 
 const App = () => {
   const [isLoggedIn, setLoggedIn] = useState(null);
+
   console.log('cookie:', document.cookie);
   useEffect(() => {
     AuthController.profile()

@@ -1,15 +1,27 @@
-import React, { useMemo, useEffect } from 'react';
+import React, { useMemo, useEffect, useState } from 'react';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 
 import MaterialTable from 'material-table';
 import LaunchIcon from '@material-ui/icons/Launch';
 import Paper from '@material-ui/core/Paper';
-
 import Typography from '@material-ui/core/Typography';
-import { getSheetNamesRequest } from '../../../store/thunks/sheetName';
+import COATreeController from '../../../controllers/COATree';
+import sheetNameController from '../../../controllers/sheetName';
+import {
+  getSheetNamesRequest,
+  createSheetNameRequest,
+  deleteSheetNameRequest,
+  updateSheetNameRequest,
+} from '../../../store/thunks/sheetName';
+import {
+  getDetectEmptyTree,
+  deleteCOATreeBySheetName,
+} from '../../../store/thunks/DetectEmptyTree';
 import { selectFactoryRESTResponseTableValues } from '../../../store/common/REST/selectors';
 import { selectSheetNamesStore } from '../../../store/SheetNamesStore/selectors';
+import { selectDetectEmptyTreeStore } from '../../../store/DetectEmptyTreeStore/selectors';
 import { ROUTE_CATEGORY_TREES } from '../../../constants/routes';
+import DetectEmptyTreeStore from '../../../store/DetectEmptyTreeStore/store';
 
 // import './COATrees.scss'
 
@@ -24,7 +36,7 @@ const COATreesHeader = () => {
 
 const COATreesTable = ({ history }) => {
   const dispatch = useDispatch();
-
+  const [emptyCheckArray, setEmptyCheckArray] = useState('hello');
   const { sheetNames } = useSelector(
     state => ({
       sheetNames: selectFactoryRESTResponseTableValues(selectSheetNamesStore)(state),
@@ -32,6 +44,15 @@ const COATreesTable = ({ history }) => {
     shallowEqual,
   );
 
+  const { detectEmptyTree } = useSelector(
+    state => ({
+      detectEmptyTree: selectFactoryRESTResponseTableValues(selectDetectEmptyTreeStore)(state),
+    }),
+    shallowEqual,
+  );
+
+  // sheetNameController.fetch().then(result=>{console.log(result)})
+  console.log(detectEmptyTree);
   const columns = useMemo(() => [{ title: 'Sheet Name', field: 'name' }], []);
 
   const actions = useMemo(
@@ -48,10 +69,55 @@ const COATreesTable = ({ history }) => {
   const options = useMemo(() => ({ actionsColumnIndex: -1, search: false, showTitle: false }), []);
 
   useEffect(() => {
+    console.log('Page refresh');
     dispatch(getSheetNamesRequest());
+    dispatch(getDetectEmptyTree());
   }, [dispatch]);
 
-  return <MaterialTable columns={columns} actions={actions} data={sheetNames} options={options} />;
+  const editable = useMemo(
+    () => ({
+      isDeleteHidden: sheetName => {
+        // console.log(sheetName)
+        if (sheetName.value.length == 0) {
+          return true;
+        }
+        console.log('not empty');
+        return false;
+      },
+
+      // onRowAdd: sheetName =>
+      //   new Promise((resolve, reject) => {
+      //     dispatch(createSheetNameRequest(sheetName, resolve, reject));
+      //   }),
+      // onRowUpdate: sheetName =>
+      //   new Promise((resolve, reject) => {
+      //     console.log(sheetName)
+      //     // COATreeController.fetchBySheetName(sheetName._id).then(result=>{console.log(result)})
+      //     dispatch(updateSheetNameRequest(sheetName, resolve, reject));
+      //   }),
+      onRowDelete: sheetName =>
+        new Promise((resolve, reject) => {
+          dispatch(deleteCOATreeBySheetName(sheetName, resolve, reject));
+          // COATreeController.fetchBySheetName(sheetName._id).then(treeElementList=>{
+
+          //   treeElementList.forEach(treeElement => {
+          //     COATreeController.delete(treeElement._id)
+          //   })
+
+          // }).then(result=>{if (resolve) resolve();});
+        }),
+    }),
+    [dispatch],
+  );
+  return (
+    <MaterialTable
+      columns={columns}
+      actions={actions}
+      data={detectEmptyTree}
+      options={options}
+      editable={editable}
+    />
+  );
 };
 
 const COATrees = props => (

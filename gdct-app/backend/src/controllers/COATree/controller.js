@@ -77,6 +77,16 @@ const COATreeController = Service([COATreeService], service => {
         .catch(next);
     });
 
+    // router.delete('/COATrees/:sheetNameId', (req, res, next) => {
+    //   const { sheetNameId } = req.params;
+
+    //   service
+    //     .deleteCOATree(sheetNameId)
+    //     .then(() => res.end())
+    //     .catch(next);
+    // });
+
+
     return router;
   })();
 });

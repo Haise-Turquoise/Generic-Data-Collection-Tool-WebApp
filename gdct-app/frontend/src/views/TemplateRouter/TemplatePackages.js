@@ -8,7 +8,7 @@ import Typography from '@material-ui/core/Typography';
 import MaterialTable from 'material-table';
 
 import { useHistory } from 'react-router-dom';
-
+import Select from 'react-select';
 import { cloneDeep } from 'lodash';
 import {
   selectFactoryRESTResponseTableValues,
@@ -44,15 +44,25 @@ const TemplatePackages = () => {
   const dispatch = useDispatch();
   const history = useHistory();
 
-  const { templatePackages, lookupStatuses, lookupSubmissionPeriods } = useSelector(
+  const {
+    templatePackages,
+    lookupStatuses,
+    lookupSubmissionPeriods,
+    WholeLookupStatuses,
+  } = useSelector(
     state => ({
       isCallInProgress: selectFactoryRESTIsCallInProgress(selectTemplatePackagesStore)(state),
       templatePackages: selectFactoryRESTResponseTableValues(selectTemplatePackagesStore)(state),
       lookupStatuses: selectFactoryRESTLookup(selectStatusesStore)(state),
       lookupSubmissionPeriods: selectFactoryRESTLookup(selectSubmissionPeriodsStore)(state),
+      WholeLookupStatuses: selectFactoryRESTResponseTableValues(selectStatusesStore)(state),
     }),
     shallowEqual,
   );
+  console.log('templatespackages', templatePackages);
+  console.log('WholeLookupStatuses', WholeLookupStatuses);
+  // console.log('lookupStatuses', lookupStatuses)
+  // console.log('lookupSubmissionPeriods', lookupSubmissionPeriods)
 
   const actions = useMemo(
     () => [
@@ -74,8 +84,94 @@ const TemplatePackages = () => {
         lookup: lookupSubmissionPeriods,
       },
       // { title: "TemplateIds", type: "boolean", field: "templateIds" },
-      { title: 'StatusId', field: 'statusId', lookup: lookupStatuses },
-      { title: 'Creation Date', field: 'creationDate', type: 'date' },
+      {
+        title: 'StatusId',
+        field: 'statusId',
+        lookup: lookupStatuses,
+
+        editComponent: props => {
+          console.log(props);
+          // console.log(props.columnDef.lookup['5eadbe8f6a04912f04e389ca'])
+          const optionList = [];
+          for (const key in props.columnDef.lookup) {
+            // console.log(key, props.columnDef.lookup[key]);
+            optionList.push({
+              value: key,
+              label: props.columnDef.lookup[key],
+            });
+          }
+          console.log(optionList);
+          const optionListForPackage = [];
+          console.log(optionListForPackage);
+          // console.log(WholeLookupStatuses)
+          WholeLookupStatuses.forEach(status => {
+            if (status.forPackage) {
+              console.log('find');
+              // optionListForPackage.filter(item=>item.value == status._id)
+              optionListForPackage.push({
+                value: status._id,
+                label: status.name,
+              });
+            }
+          });
+          // console.log(optionListForPackage)
+          // console.log(props.rowData)
+          function isEmpty(obj) {
+            return Object.keys(obj).length === 0;
+          }
+          if (isEmpty(props.rowData) || !props.rowData.templateIds) {
+            console.log('addNew');
+            console.log(props.rowData.value);
+            // return <Select
+            // onChange={data => {
+            //   props.onChange(data.value)
+            // }}
+            // options={[{value:"5fc53f2af05fb45fed6c88b1", label:'in progress'}]}/>
+            props.rowData.statusId = '5fc53f2af05fb45fed6c88b1';
+            return <div>in progress</div>;
+          }
+          if (props.rowData.templateIds.length == 0 || props.rowData.programIds.length == 0) {
+            console.log('forPackage');
+            return (
+              <Select
+                onChange={data => {
+                  props.onChange(data.value);
+                }}
+                // options={optionListForPackage}/>
+                options={[{ value: '5fc53f2af05fb45fed6c88b1', label: 'in progress' }]}
+              />
+            );
+          }
+          return (
+            <Select
+              onChange={data => {
+                props.onChange(data.value);
+              }}
+              options={optionListForPackage}
+            />
+          );
+
+          // return <Select  options={optionList}/>
+        },
+      },
+      {
+        title: 'Creation Date',
+        field: 'creationDate',
+        type: 'date',
+        initialEditValue: Date.now,
+        // editComponent: props => {
+        //   function isEmpty(obj) {
+        //     return Object.keys(obj).length === 0;
+        //   }
+        //   if((isEmpty(props.rowData))||(!props.rowData.templateIds)){
+        //     console.log('addNewDate')
+        //     console.log(props.rowData.value)
+        //     const createDate = Date.now
+        //     const strDate = createDate.toString()
+        //     return <div>{strDate}</div>
+        //   }
+        // }
+      },
     ],
     [lookupStatuses, lookupSubmissionPeriods],
   );
@@ -98,6 +194,7 @@ const TemplatePackages = () => {
         }),
       onRowUpdate: templatePackage =>
         new Promise((resolve, reject) => {
+          console.log(templatePackage);
           dispatch(updateTemplatePackageRequest(templatePackage, resolve, reject));
         }),
       onRowDelete: templatePackage =>

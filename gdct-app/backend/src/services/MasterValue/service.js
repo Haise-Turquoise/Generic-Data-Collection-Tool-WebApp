@@ -1,25 +1,29 @@
 import Container from 'typedi';
-import SheetNameRepository from '../../repositories/SheetName';
+import MasterValueRepository from '../../repositories/MasterValue';
 
 // @Service()
-export default class SheetNameService {
+export default class MasterValueService {
   constructor() {
-    this.sheetNameRepository = Container.get(SheetNameRepository);
+    this.masterValueRepository = Container.get(MasterValueRepository);
   }
 
-  async createSheetName(sheetName) {
-    return this.sheetNameRepository.create(sheetName);
+  async createMasterValue(masterValue) {
+    return this.masterValueRepository.create(masterValue);
   }
 
-  async deleteSheetName(id) {
-    return this.sheetNameRepository.delete(id);
+  async deleteMasterValue(id) {
+    return this.masterValueRepository.delete(id);
   }
 
-  async updateSheetName(id, sheetName) {
-    return this.sheetNameRepository.update(id, sheetName);
+  async updateMasterValue(id, masterValue) {
+    return this.masterValueRepository.update(id, masterValue);
   }
 
-  async findSheetName(sheetName) {
-    return this.sheetNameRepository.find(sheetName);
+  async findMasterValue(masterValue) {
+    return this.masterValueRepository.find(masterValue);
+  }
+  async addDocument(masterValue){
+    console.log('masterValue at service',masterValue)
+    return this.masterValueRepository.addDocument(masterValue)
   }
 }

@@ -8,7 +8,15 @@ const UserController = Service([UserService], service => {
   return (function () {
     router.post(`/users/registerUser`, (req, res, next) => {
       const { userData } = req.body;
+      // console.log(userData)
       service.register(userData).catch(next);
+    });
+    router.get(`/:username`, (req, res, next) => {
+      console.log('reach backend controller')
+      const { username } = req.params;
+      console.log(username)
+      // return service.fetchUserByUserName(username)
+      service.fetchUserByUserName(username).then(user => { console.log('backend-result',user); return res.json({ user })}).catch(next);
     });
 
     router.get(`/users/verifyUser`, (req, res, next) => {
