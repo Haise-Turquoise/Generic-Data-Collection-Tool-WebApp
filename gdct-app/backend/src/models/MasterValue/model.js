@@ -68,6 +68,8 @@ const MasterValueModel = model(
       categoryGroup: { type: String },
 
       value: { type: Number },
+      categoryName: {type: String},
+      attributeName: {type: String},
     },
     { minimize: false },
   ),

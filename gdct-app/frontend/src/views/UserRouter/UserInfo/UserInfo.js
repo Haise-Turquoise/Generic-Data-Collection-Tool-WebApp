@@ -19,6 +19,7 @@ import { selectUsersStore } from '../../../store/UsersStore/selectors';
 import { selectOrgsStore } from '../../../store/OrganizationsStore/selectors';
 import { selectProgramsStore } from '../../../store/ProgramsStore/selectors';
 import { selectTemplateTypesStore } from '../../../store/TemplateTypesStore/selectors';
+import { calculateOptions } from '../../../tools/misc'
 import Loading from '../../../components/Loading';
 
 import Button from '@material-ui/core/Button';
@@ -87,6 +88,7 @@ const UserInfo = ({
   };
 
   const [data, updateData] = useState([]);
+  const [readRowNum, setRowNum] = useState(1);
 
   useEffect(() => {
     if (userObject) {
@@ -127,12 +129,8 @@ const UserInfo = ({
   );
 
   const options = useMemo(
-    () => ({
-      search: true,
-      showTitle: false,
-      maxBodyHeight: "400px",
-    }),
-    [],
+    () => calculateOptions(readRowNum),
+    [readRowNum],
   );
 
   const components = useMemo(
@@ -148,12 +146,14 @@ const UserInfo = ({
     })
   }
 
+  useEffect(()=>{setRowNum(data.length)}, [data])
+
   return isCallInProgress ? (
     <Loading />
   ) : (
     <div className="userInfo">
       <HeaderActions />
-      <MaterialTable components={components} columns={columns} data={data} options={options} />
+      <MaterialTable key={readRowNum} components={components} columns={columns} data={data} options={options} />
       <Button
         type="button"
         className="UserInfo_SaveButton"

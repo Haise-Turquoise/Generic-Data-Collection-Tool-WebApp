@@ -42,7 +42,7 @@ const ErrorBanner = (props) => {
     }, [showingAlert]);
   
     return (
-      <Snackbar open={showingAlert} autoHideDuration={5000}>
+      <Snackbar anchorOrigin={{ vertical: 'top', horizontal: 'center' }} open={showingAlert} autoHideDuration={10000}>
           <Alert
             severity="error"
             action={
@@ -58,7 +58,7 @@ const ErrorBanner = (props) => {
               </IconButton>
         }
       >
-        {props.title}
+        <h6>{props.title}</h6>
       </Alert>
     </Snackbar>
     );

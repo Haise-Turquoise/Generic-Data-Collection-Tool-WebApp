@@ -17,6 +17,7 @@ import './COAGroups.scss';
 import ErrorBanner from '../../ErrorBanner'
 import { selectFactoryRESTResponseTableValues } from '../../../store/common/REST/selectors';
 import { selectCOAGroupsStore } from '../../../store/COAGroupsStore/selectors';
+import { calculateOptions } from '../../../tools/misc';
 
 const COAGroupsHeader = () => {
   const { t, i18n } = useTranslation();
@@ -38,19 +39,6 @@ const COAGroupsTable = () => {
     }),
     shallowEqual,
   );
-
-  const calculateOptions = (itemCount)=>{
-    let length = itemCount
-    if (length > 100) length = 100;
-    else if (length == 0) length = 1;
-    return {
-      actionsColumnIndex: -1, 
-      search: false, 
-      showTitle: false,
-      maxBodyHeight:"400px",
-      pageSize:length
-    }
-  }
 
   useEffect(()=>{setRowNum(COAGroups.length)},[COAGroups]);
 
@@ -94,7 +82,7 @@ const COAGroups = props => (
   <div className="COAGroups">
     <COAGroupsHeader />
     {/* <FileDropzone/> */}
-    <ErrorBanner title={"The category group you are trying to delete is used in COA tree."} targetStore={selectCOAGroupsStore}/>
+    <ErrorBanner title={"Cannot delete the selected category group since it is referenced in COA tree."} targetStore={selectCOAGroupsStore}/>
     <COAGroupsTable {...props} />
   </div>
 );

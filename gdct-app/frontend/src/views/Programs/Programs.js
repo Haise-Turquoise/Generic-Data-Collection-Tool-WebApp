@@ -17,6 +17,7 @@ import ErrorBanner from '../ErrorBanner';
 import './Programs.scss';
 import { selectFactoryRESTResponseTableValues } from '../../store/common/REST/selectors';
 import { selectProgramsStore } from '../../store/ProgramsStore/selectors';
+import { calculateOptions } from '../../tools/misc'
 
 const ProgramHeader = () => {
   return (
@@ -37,19 +38,6 @@ const ProgramsTable = () => {
     }),
     shallowEqual,
   );
-
-  const calculateOptions = (itemCount)=>{
-    let length = itemCount
-    if (length > 100) length = 100;
-    else if (length == 0) length = 1;
-    return {
-      actionsColumnIndex: -1, 
-      search: false, 
-      showTitle: false,
-      maxBodyHeight:"400px",
-      pageSize:length
-    }
-  }
 
   const columns = useMemo(
     () => [
@@ -92,7 +80,7 @@ const ProgramsTable = () => {
 const Program = props => (
   <div className="programsPage">
     <ProgramHeader />
-    <ErrorBanner title={"Cannot delete the selected program beacuse it is referenced in master value table"} targetStore={selectProgramsStore}/>
+    <ErrorBanner title={"Cannot delete the selected program since it is referenced in the master value table"} targetStore={selectProgramsStore}/>
     <ProgramsTable {...props} />
   </div>
 );

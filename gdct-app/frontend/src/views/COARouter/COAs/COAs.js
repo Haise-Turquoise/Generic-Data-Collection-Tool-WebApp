@@ -21,6 +21,7 @@ import {
 import './COAs.scss';
 import { selectFactoryRESTResponseTableValues, selectFactoryRESTError } from '../../../store/common/REST/selectors';
 import { selectCOAsStore } from '../../../store/COAsStore/selectors';
+import { calculateOptions } from '../../../tools/misc'
 
 const COAsHeader = () => {
   return (
@@ -99,19 +100,6 @@ const COAsTable = () => {
     ],
     [],
   );
-
-  const calculateOptions = (itemCount)=>{
-    let length = itemCount
-    if (length > 100) length = 100;
-    else if (length == 0) length = 1;
-    return {
-      actionsColumnIndex: -1, 
-      search: false, 
-      showTitle: false,
-      maxBodyHeight:"400px",
-      pageSize:length
-    }
-  }
 
   useEffect(()=>{setRowNum(COAs.length)}, [COAs])
 

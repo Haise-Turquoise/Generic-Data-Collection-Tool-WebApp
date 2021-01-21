@@ -1,4 +1,4 @@
-import React, { useMemo, useEffect } from 'react';
+import React, { useMemo, useEffect, useState } from 'react';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 
 import MaterialTable from 'material-table';
@@ -15,6 +15,7 @@ import {
 import './SheetNames.scss';
 import { selectFactoryRESTResponseTableValues } from '../../store/common/REST/selectors';
 import { selectSheetNamesStore } from '../../store/SheetNamesStore/selectors';
+import { calculateOptions } from '../../tools/misc';
 
 const SheetNameHeader = () => {
   return (
@@ -27,7 +28,7 @@ const SheetNameHeader = () => {
 
 const SheetNamesTable = () => {
   const dispatch = useDispatch();
-
+  const [readRowNum, setRowNum] = useState(1);
   const { sheetNames } = useSelector(
     state => ({
       sheetNames: selectFactoryRESTResponseTableValues(selectSheetNamesStore)(state),
@@ -43,7 +44,7 @@ const SheetNamesTable = () => {
     [],
   );
 
-  const options = useMemo(() => ({ actionsColumnIndex: -1, search: false, showTitle: false }), []);
+  const options = useMemo(() => calculateOptions(readRowNum), [readRowNum]);
 
   const editable = useMemo(
     () => ({
@@ -67,8 +68,10 @@ const SheetNamesTable = () => {
     dispatch(getSheetNamesRequest());
   }, [dispatch]);
 
+  useEffect(()=>{setRowNum(sheetNames.length)}, [sheetNames])
+
   return (
-    <MaterialTable columns={columns} data={sheetNames} editable={editable} options={options} />
+    <MaterialTable key={readRowNum} columns={columns} data={sheetNames} editable={editable} options={options} />
   );
 };
 

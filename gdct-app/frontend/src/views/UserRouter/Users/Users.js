@@ -12,6 +12,7 @@ import { Button } from '@material-ui/core';
 import VisibilityIcon from '@material-ui/icons/Visibility';
 import { selectFactoryRESTResponseTableValues } from '../../../store/common/REST/selectors';
 import { selectUsersStore } from '../../../store/UsersStore/selectors';
+import { calculateOptions } from '../../../tools/misc'
 import {
   getUsersRequest,
   createUsersRequest,
@@ -51,6 +52,7 @@ const UsersTable = () => {
   const [firstName, setFirstName] = useState('');
   const [orgId, setOrgId] = useState('');
   const [orgName, setOrgName] = useState('');
+  const [readRowNum, setRowNum] = useState(1);
 
   const handleClear = () => {
     setUserName('');
@@ -103,15 +105,8 @@ const UsersTable = () => {
   );
 
   const options = useMemo(
-    () => ({ 
-      actionsColumnIndex: -1,
-      search: true, 
-      showTitle: false, 
-      exportButton: true, 
-      maxBodyHeight: "350px", 
-      pageSizeOptions: [5,10,20,50,100,200],
-    }),
-    [],
+    () => calculateOptions(readRowNum),
+    [readRowNum],
   );
 
   const localization = useMemo(
@@ -157,6 +152,8 @@ const UsersTable = () => {
     dispatch(getUsersRequest());
   }, [dispatch]);
 
+  useEffect(()=>{setRowNum(users.length)}, [users])
+
   return (
     <div>
       <Paper className="header">
@@ -187,6 +184,7 @@ const UsersTable = () => {
         </div>
       </Paper>
       <MaterialTable
+        key={readRowNum}
         columns={columns}
         data={users}
         editable={editable}

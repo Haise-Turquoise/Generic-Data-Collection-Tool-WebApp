@@ -31,12 +31,14 @@ export const calculateOptions = (itemCount)=>{
   let length = itemCount;
   if (length > 100) length = 100;
   else if (length == 0) length = 1;
+  const sizeOptions = [10,25,50,100, itemCount];
+  sizeOptions.sort((a, b) => a - b);
   return {
     actionsColumnIndex: -1, 
-    search: false, 
+    search: true, 
     showTitle: false,
     maxBodyHeight:"400px",
-    pageSizeOptions: [5,10,20,50,100],
+    pageSizeOptions: sizeOptions,
     pageSize:length
   };
 };

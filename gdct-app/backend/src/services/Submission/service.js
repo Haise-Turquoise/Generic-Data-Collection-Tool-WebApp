@@ -18,7 +18,8 @@ import { createSpreadsheet, addEditor } from '../../middlewares/googleapis/reque
 import { saveGoogleSheetInSubmission }from '../../middlewares/googleapis/save'
 import ReportingPeriodRepository from '../../repositories/ReportingPeriod';
 import { mastervalueExtraction } from '../../utils/mastervalue/mastervalueExtraction';
-import { mastervaluePrepopulation } from '../../utils/mastervalue/mastervaluePrepopulation'
+import { mastervaluePrepopulation } from '../../utils/mastervalue/mastervaluePrepopulation';
+import {ObjectId} from 'mongodb';
 const mongoose = require('mongoose');
 mongoose.Promise = require('bluebird');
 
@@ -44,14 +45,19 @@ export default class SubmissionService {
 
   checkUserRole(userInfo, submission, permission) {
     userInfo[0].sysRole.forEach(sysRole => {
-      sysRole.org[0].program.forEach(program => {
-        if (
-          sysRole.org[0].orgId == submission.orgId &&
-          program.programId.toString() == submission.programId.toString()
-        ) {
-          permission.push(sysRole.role);
-        }
-      });
+    if (sysRole.org[0]){
+        sysRole.org[0].program.forEach(program => {
+          if (
+            sysRole.org[0].orgId == submission.orgId &&
+            program.programId.toString() == submission.programId.toString()
+          ) {
+            permission.push(sysRole.role);
+          }
+        });
+    }
+    else{
+      permission.push(sysRole.role);
+    }
     });
   }
 
@@ -192,20 +198,20 @@ export default class SubmissionService {
       role,
     };
 
-    const currentStatus = await this.statusRepository.findById(submission.statusId);
+    const currentStatus = await this.statusRepository.findById(ObjectId(submission.statusId));
     if (currentStatus.name == 'Approved') {
       submissionNotes.role = 'Approved';
       return this.submissionNoteRepository.create(submissionNotes);
     }
+
 
     if (role == undefined) {
       submissionNotes.role = currentStatus.name;
       return this.submissionNoteRepository.create(submissionNotes);
     }
     await this.submissionNoteRepository.create(submissionNotes);
-
     return this.statusRepository.findByName(role).then(status => {
-      submission.statusId = status[0].id;
+      submission.statusId =  status[0].id;
       submission.workflowProcessId = nextProcessId;
       submission.updatedDate = new Date();
 
@@ -275,6 +281,7 @@ export default class SubmissionService {
   async findSubmission(email) {
     const userInfo = await this.usersRepository.findByEmail(email);
     const org = userInfo[0].sysRole[0].org[0];
+    // Update By Sheldon Su in Jan to make it work for admins
     const orgId = org? org.orgId: undefined;
     const programAndTempTypes = [];
     const programIds = [];
@@ -285,6 +292,9 @@ export default class SubmissionService {
           programIds.push(program.programId);
         });
       });
+    }else{
+      const programID = await this.programRepository.find({})
+      programID.forEach(element=>{programIds.push(element._id)})
     }
     return this.findTemplatePackage(programAndTempTypes).then(templatePackages => {
       const name = 'Unsubmitted';
@@ -296,6 +306,7 @@ export default class SubmissionService {
               .findByTemplatePackageId(templatePackage._id)
               .then(submissions => {
                 if (!submissions[0]) {
+                  console.log('here')
                   const { templateIds } = templatePackage;
                   const promiseQuery3 = [];
                   if (templateIds !== undefined) {

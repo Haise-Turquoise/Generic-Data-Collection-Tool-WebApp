@@ -31,6 +31,7 @@ import { getSubmissionPeriodsRequest } from '../../store/thunks/submissionPeriod
 import StatusesStore from '../../store/StatusesStore/store';
 import SubmissionPeriodsStore from '../../store/SubmissionPeriodsStore/store';
 import ErrorBanner from '../ErrorBanner';
+import { calculateOptions } from '../../tools/misc'
 
 const TemplatePackageHeader = () => {
   return (
@@ -55,19 +56,6 @@ const TemplatePackages = () => {
     }),
     shallowEqual,
   );
-
-  const calculateOptions = (itemCount)=>{
-    let length = itemCount
-    if (length > 100) length = 100;
-    else if (length == 0) length = 1;
-    return {
-      actionsColumnIndex: -1, 
-      search: false, 
-      showTitle: false,
-      maxBodyHeight:"400px",
-      pageSize:length
-    }
-  }
 
   const actions = useMemo(
     () => [

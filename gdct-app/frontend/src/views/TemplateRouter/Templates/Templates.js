@@ -2,7 +2,7 @@
 //This file shows a page where a list of templates present in the database is displayed
 //Users have the option of opening, editing, or deleting a template
 
-import React, { useMemo, useEffect } from 'react';
+import React, { useMemo, useEffect, useState } from 'react';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 
 import MaterialTable from 'material-table';
@@ -25,16 +25,14 @@ import {
   selectFactoryRESTResponseValues,
 } from '../../../store/common/REST/selectors';
 import { selectTemplatesStore } from '../../../store/TemplatesStore/selectors';
-import { getStatusesRequest } from '../../../store/thunks/status';
 import { getTemplateTypesRequest } from '../../../store/thunks/templateType';
-import { selectStatusesStore } from '../../../store/StatusesStore/selectors';
 import { selectTemplateTypesStore } from '../../../store/TemplateTypesStore/selectors';
 import TemplatesStore from '../../../store/TemplatesStore/store';
-import StatusesStore from '../../../store/StatusesStore/store';
 import TemplateTypesStore from '../../../store/TemplateTypesStore/store';
 import { getWorkflowProcessesRequest } from '../../../store/thunks/workflow';
 import { selectWorkflowProcessesStore } from '../../../store/WorkflowProcessesStore/selectors';
 import WorkflowProcessesStore from '../../../store/WorkflowProcessesStore/store';
+import { calculateOptions } from '../../../tools/misc'
 
 // const TemplateFileDropzone = () => {}
 
@@ -50,7 +48,7 @@ const TemplateHeader = () => {
 
 const TemplatesTable = ({ history }) => {
   const dispatch = useDispatch();
-  console.log(history)
+  const [readRowNum, setRowNum] = useState(1);
   const { templates, lookupTemplateTypes, workflowProcesses } = useSelector(
     state => ({
       templates: selectFactoryRESTResponseTableValues(selectTemplatesStore)(state),
@@ -97,7 +95,7 @@ const TemplatesTable = ({ history }) => {
     [history],
   );
 
-  const options = useMemo(() => ({ actionsColumnIndex: -1, search: false, showTitle: false }), []);
+  const options = useMemo(() => calculateOptions(readRowNum), [readRowNum]);
 
   const editable = useMemo(
     () => ({
@@ -130,8 +128,11 @@ const TemplatesTable = ({ history }) => {
     };
   }, [dispatch]);
 
+  useEffect(()=>{setRowNum(templates.length)}, [templates])
+
   return (
     <MaterialTable
+      key={readRowNum}
       columns={columns}
       actions={actions}
       data={templates}

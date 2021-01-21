@@ -1,4 +1,4 @@
-import React, { useMemo, useEffect } from 'react';
+import React, { useMemo, useEffect, useState } from 'react';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 
 import MaterialTable from 'material-table';
@@ -10,6 +10,7 @@ import { getSheetNamesRequest } from '../../../store/thunks/sheetName';
 import { selectFactoryRESTResponseTableValues } from '../../../store/common/REST/selectors';
 import { selectSheetNamesStore } from '../../../store/SheetNamesStore/selectors';
 import { ROUTE_CATEGORY_TREES } from '../../../constants/routes';
+import { calculateOptions } from '../../../tools/misc'
 
 // import './COATrees.scss'
 
@@ -24,7 +25,7 @@ const COATreesHeader = () => {
 
 const COATreesTable = ({ history }) => {
   const dispatch = useDispatch();
-
+  const [readRowNum, setRowNum] = useState(1);
   const { sheetNames } = useSelector(
     state => ({
       sheetNames: selectFactoryRESTResponseTableValues(selectSheetNamesStore)(state),
@@ -45,13 +46,15 @@ const COATreesTable = ({ history }) => {
     [history],
   );
 
-  const options = useMemo(() => ({ actionsColumnIndex: -1, search: false, showTitle: false }), []);
+  const options = useMemo(() => (calculateOptions(readRowNum)), [readRowNum]);
 
   useEffect(() => {
     dispatch(getSheetNamesRequest());
   }, [dispatch]);
 
-  return <MaterialTable columns={columns} actions={actions} data={sheetNames} options={options} />;
+  useEffect(()=>{setRowNum(sheetNames.length)}, [sheetNames])
+
+  return <MaterialTable key={readRowNum} columns={columns} actions={actions} data={sheetNames} options={options} />;
 };
 
 const COATrees = props => (

@@ -13,6 +13,7 @@ import { selectFactoryRESTResponseTableValues } from '../../store/common/REST/se
 import { selectWorkflowsStore } from '../../store/WorkflowsStore/selectors';
 import { ROUTE_WORKFLOW_CREATE, ROUTE_WORKFLOW } from '../../constants/routes';
 import { getWorkflowsRequest, deleteWorkflowRequest } from '../../store/thunks/workflow';
+import { calculateOptions } from '../../tools/misc'
 import ErrorBanner from '../ErrorBanner';
 
 const WorkflowHeader = () => {
@@ -40,19 +41,6 @@ const Workflows = () => {
     }),
     shallowEqual,
   );
-
-  const calculateOptions = (itemCount)=>{
-    let length = itemCount
-    if (length > 100) length = 100;
-    else if (length == 0) length = 1;
-    return {
-      actionsColumnIndex: -1, 
-      search: false, 
-      showTitle: false,
-      maxBodyHeight:"400px",
-      pageSize:length
-    }
-  }
 
   const columns = useMemo(() => [{ title: 'Name', field: 'name' }], []);
 

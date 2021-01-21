@@ -19,6 +19,7 @@ import {
 import { selectFactoryRESTResponseTableValues, selectFactoryRESTError } from '../../store/common/REST/selectors';
 import { selectColumnNamesStore } from '../../store/ColumnNamesStore/selectors';
 import { ColumnNamesActions } from '../../store/ColumnNamesStore/store';
+import { calculateOptions } from '../../tools/misc'
 
 const ColumnNameHeader = () => {
   return (
@@ -98,18 +99,6 @@ const ColumnNamesTable = () => {
     [],
   );
   
-  const calculateOptions = (itemCount)=>{
-    let length = itemCount
-    if (length > 100) length = 100;
-    else if (length == 0) length = 1;
-    return {
-      actionsColumnIndex: -1, 
-      search: false, 
-      showTitle: false,
-      maxBodyHeight:"400px",
-      pageSize:length
-    }
-  }
 
   const options = useMemo(() => calculateOptions(readRowNum), [readRowNum]);
 

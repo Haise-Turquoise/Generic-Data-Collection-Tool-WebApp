@@ -18,6 +18,7 @@ import Typography from '@material-ui/core/Typography';
 import { getSubmissionsRequest } from '../../store/thunks/submission';
 import { selectSubmissionsStore } from '../../store/SubmissionsStore/selectors';
 import { selectFactoryRESTResponseTableValues } from '../../store/common/REST/selectors';
+import { calculateOptions } from '../../tools/misc'
 import './SubmissionDashboard.scss'
 
 const useStyles = makeStyles((theme) => ({
@@ -171,20 +172,6 @@ const SubmissionDashboard = ({ history }) => {
     ],
     [],
   );
-  
-  // Caculate how many rows
-  const calculateOptions = (itemCount)=>{
-    let length = itemCount
-    if (length > 100) length = 100;
-    else if (length == 0) length = 1;
-    return {
-      actionsColumnIndex: -1, 
-      search: false, 
-      showTitle: false,
-      maxBodyHeight:"400px",
-      pageSize:length
-    }
-  }
 
 
   // memfunction that generate options object
