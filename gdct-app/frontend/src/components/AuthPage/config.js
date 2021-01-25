@@ -3,7 +3,6 @@ import iconMap from './iconMap';
 
 const createUserNavigation = async () => {
   const menus = await MenuController.fetch();
-  // console.log(menus)
   return menus
     .filter(e => !e.isSubMenu)
     .map(e => {

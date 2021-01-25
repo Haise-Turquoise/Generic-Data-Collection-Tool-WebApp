@@ -17,8 +17,6 @@ import MuiAlert from '@material-ui/lab/Alert';
 import { useSelector, shallowEqual, useDispatch, batch } from 'react-redux';
 import { host } from '../constants/domain';
 import AuthController from '../controllers/Auth';
-import App from '../App.js';
-import UserStore from '../store/UserStore/store';
 
 function Copyright() {
   return (
@@ -132,12 +130,12 @@ export default function Login({ setLoggedIn, setCurrentUser }) {
 
         checkLogin = await AuthController.login({ email, password })
           .then(data => {
-            console.log(data);
+            // console.log(data);
             if (data === undefined) {
               return false;
             }
             if (data.status === 'ok') {
-              console.log('ok');
+              // console.log('ok');
               // console.log(data.data.email)
               // dispatch(UserStore.actions.SET_CURRENT_USER({currentUser:data.data.email}))
               localStorage.setItem('currentUser', data.data.email);
@@ -150,7 +148,7 @@ export default function Login({ setLoggedIn, setCurrentUser }) {
             console.log(err);
           });
       }
-      console.log(checkLogin);
+      // console.log(checkLogin);
       if (!checkLogin) {
         console.log('not login in');
 

@@ -16,6 +16,7 @@ import Typography from '@material-ui/core/Typography';
 import './MasterValuePopulation.scss';
 
 import axios from 'axios';
+
 import {
   selectFactoryRESTResponseTableValues,
   selectFactoryRESTIsCallInProgress,
@@ -98,6 +99,7 @@ const queryREST = ({ category, ap, hfk, attribute }) => {
       },
       reportingPeriod: masterValue.reportingPeriod,
       template: masterValue.template,
+      value: masterValue.value,
     };
     MasterValueController.addDocument(newMasterValue).then(res => {
       console.log('hello');
@@ -106,9 +108,9 @@ const queryREST = ({ category, ap, hfk, attribute }) => {
 
   Promise.all(results)
     .then(res => {
-      console.log('res', res);
+      // console.log('res', res[0].data[0][2]);
       const upd = [];
-      let idx = 0;
+      const idx = 0;
       for (const c of category) {
         for (const h of hfk) {
           const mastervalue = {
@@ -120,7 +122,7 @@ const queryREST = ({ category, ap, hfk, attribute }) => {
             },
             CategoryId: c.id,
             AttributeId: attribute.id,
-            value: res[idx++],
+            value: res[0].data[0].length != 0 ? res[0].data[0][2] : res[0].data[0],
           };
           console.log(mastervalue);
           upd.push(addDocument(mastervalue));

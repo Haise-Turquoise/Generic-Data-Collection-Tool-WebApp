@@ -251,7 +251,7 @@ const TemplatePackage = ({
 
   const { templatePackage } = useSelector(state => {
     const templatePackage = selectFactoryValueById(selectTemplatePackagesStore)(_id)(state);
-    console.log(templatePackage);
+    // console.log(templatePackage);
     return {
       templatePackage: templatePackage || init,
     };
@@ -268,7 +268,7 @@ const TemplatePackage = ({
 
   const handleSubmit = useCallback(
     populatedData => {
-      console.log('populatedData', populatedData);
+      // console.log('populatedData', populatedData);
       const formattedTemplatePackage = {
         _id,
         name: populatedData.name,

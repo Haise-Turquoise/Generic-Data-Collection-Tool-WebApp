@@ -137,7 +137,7 @@ const EditSubmission = ({ history }) => {
   }
   console.log(isSubmitterOrInputter);
   console.log(isReviewerOrApprover);
-  console.log(submitUnavailable);
+  // console.log(submitUnavailable);
 
   const handleOpenTemplate = () =>
     history.push({
@@ -162,31 +162,28 @@ const EditSubmission = ({ history }) => {
     }, 4000);
   };
 
-  const handleChangeStatus = (submission, submissionNote, role, newProcessId) => {
+  const handleChangeStatus = async (submission, submissionNote, role, newProcessId) => {
     // setCursor('progress');
 
-    dispatch(updateSubmissionStatusRequest(submission, submissionNote, role, newProcessId));
+    const result = await dispatch(
+      updateSubmissionStatusRequest(submission, submissionNote, role, newProcessId),
+    );
+    // console.log('result', result)
+    if (result) {
+      if (!role) {
+        role = 'ChangeNote';
+      }
+      // console.log(role);
+      setUserFeedback(`${role} successfully !`);
+      setRefresh(true);
+      setTimeout(function () {
+        setRefresh(false);
+      }, 500);
 
-    // console.log(userFeedback)
-    if (!role) {
-      role = 'ChangeNote';
+      setTimeout(function () {
+        setUserFeedback('');
+      }, 2000);
     }
-    // console.log(role);
-    setUserFeedback(`${role} successfully !`);
-    setRefresh(true);
-    setTimeout(function () {
-      setRefresh(false);
-    }, 500);
-
-    // console.log(userFeedback)
-    setTimeout(function () {
-      setUserFeedback('');
-    }, 2000);
-
-    // window.location.reload(false)
-    // history.push({
-    //   pathname: `/submission/dashboard`,
-    // });
   };
 
   return (

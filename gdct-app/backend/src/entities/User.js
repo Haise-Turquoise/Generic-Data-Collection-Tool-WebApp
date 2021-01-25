@@ -16,7 +16,6 @@ export default class UserEntity {
     creationDate,
     approvedDate,
     ext,
-    
   }) {
     this._id = _id;
     this.username = username;
@@ -34,6 +33,5 @@ export default class UserEntity {
     this.creationDate = creationDate;
     this.approvedDate = approvedDate;
     this.ext = ext;
-    
   }
 }

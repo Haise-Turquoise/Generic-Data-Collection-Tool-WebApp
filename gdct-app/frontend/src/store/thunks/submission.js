@@ -11,7 +11,6 @@ import {
 } from './common/REST';
 import { convertStateToReactState, extractReactAndWorkbookState } from '../../tools/excel';
 import { setExcelData } from '../actions/ui/excel/commands';
-import EditSubmission from '../../views/SubmissionRouter/EditSubmission';
 
 export const getSubmissionsRequest = () => dispatch => {
   dispatch(SubmissionsStore.actions.REQUEST());
@@ -122,7 +121,7 @@ export const updateSubmissionStatusRequest = (
   submissionNote,
   role,
   newProcessId,
-) => dispatch => {
+) => async dispatch => {
   console.log('button click');
 
   const newSubmission = {
@@ -130,14 +129,16 @@ export const updateSubmissionStatusRequest = (
     //   name: present.name,
     phase: role,
   };
-  submissionController
+
+  await submissionController
     .updateStatus(submission, submissionNote, role, newProcessId)
     .then(() => {
-      console.log(submission);
+      // console.log(submission);
+
       dispatch(SubmissionsStore.actions.UPDATE(newSubmission));
-      return 'hello';
     })
     .catch(error => {
       dispatch(SubmissionsStore.actions.FAIL_REQUEST(error));
     });
+  return true;
 };

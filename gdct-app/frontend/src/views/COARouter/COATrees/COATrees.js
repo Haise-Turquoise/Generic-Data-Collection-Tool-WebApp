@@ -36,7 +36,7 @@ const COATreesHeader = () => {
 
 const COATreesTable = ({ history }) => {
   const dispatch = useDispatch();
-  const [emptyCheckArray, setEmptyCheckArray] = useState('hello');
+  const [refresh, setRefresh] = useState(false);
   const { sheetNames } = useSelector(
     state => ({
       sheetNames: selectFactoryRESTResponseTableValues(selectSheetNamesStore)(state),
@@ -51,8 +51,6 @@ const COATreesTable = ({ history }) => {
     shallowEqual,
   );
 
-  // sheetNameController.fetch().then(result=>{console.log(result)})
-  console.log(detectEmptyTree);
   const columns = useMemo(() => [{ title: 'Sheet Name', field: 'name' }], []);
 
   const actions = useMemo(
@@ -69,42 +67,25 @@ const COATreesTable = ({ history }) => {
   const options = useMemo(() => ({ actionsColumnIndex: -1, search: false, showTitle: false }), []);
 
   useEffect(() => {
-    console.log('Page refresh');
+    // console.log('Page refresh');
     dispatch(getSheetNamesRequest());
     dispatch(getDetectEmptyTree());
-  }, [dispatch]);
+  }, [dispatch, refresh]);
 
   const editable = useMemo(
     () => ({
       isDeleteHidden: sheetName => {
-        // console.log(sheetName)
         if (sheetName.value.length == 0) {
           return true;
         }
-        console.log('not empty');
+
         return false;
       },
 
-      // onRowAdd: sheetName =>
-      //   new Promise((resolve, reject) => {
-      //     dispatch(createSheetNameRequest(sheetName, resolve, reject));
-      //   }),
-      // onRowUpdate: sheetName =>
-      //   new Promise((resolve, reject) => {
-      //     console.log(sheetName)
-      //     // COATreeController.fetchBySheetName(sheetName._id).then(result=>{console.log(result)})
-      //     dispatch(updateSheetNameRequest(sheetName, resolve, reject));
-      //   }),
       onRowDelete: sheetName =>
         new Promise((resolve, reject) => {
           dispatch(deleteCOATreeBySheetName(sheetName, resolve, reject));
-          // COATreeController.fetchBySheetName(sheetName._id).then(treeElementList=>{
-
-          //   treeElementList.forEach(treeElement => {
-          //     COATreeController.delete(treeElement._id)
-          //   })
-
-          // }).then(result=>{if (resolve) resolve();});
+          setRefresh(true);
         }),
     }),
     [dispatch],

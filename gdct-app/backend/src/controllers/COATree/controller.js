@@ -20,7 +20,7 @@ const COATreeController = Service([COATreeService], service => {
     router.get('/COATrees/sheetName/:_id', (req, res, next) => {
       // Get query from middleware -- auth
       const { _id: sheetNameId } = req.params;
-      console.log('backend controller works');
+      // console.log('backend controller works');
       service
         .findCOATree(new COATreeEntity({ sheetNameId }))
         .then(COATrees =>
@@ -76,16 +76,6 @@ const COATreeController = Service([COATreeService], service => {
         .then(() => res.end())
         .catch(next);
     });
-
-    // router.delete('/COATrees/:sheetNameId', (req, res, next) => {
-    //   const { sheetNameId } = req.params;
-
-    //   service
-    //     .deleteCOATree(sheetNameId)
-    //     .then(() => res.end())
-    //     .catch(next);
-    // });
-
 
     return router;
   })();

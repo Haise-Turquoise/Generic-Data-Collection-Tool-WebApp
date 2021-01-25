@@ -6,8 +6,7 @@ import { customRequestFactory } from './common/REST';
 export const isSignInRequest = customRequestFactory(UserStore, AuthController);
 export const fetchUserByUsername = username => {
   UserController.fetchUserByUserName(username).then(user => {
-    console.log(user);
+    // console.log(user);
     return user;
   });
-  console.log('thunk done');
 };

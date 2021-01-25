@@ -367,26 +367,26 @@ export const stepNext = values => (dispatch, getState) => {
     getOrgGroup().then(orgGroupOptions => {
       dispatch(userRegistrationStore.actions.setOrganizationGroupOptions(orgGroupOptions));
     });
-    const {
-      UsersStore: { response },
-    } = getState();
-    const users = response.Values;
-    console.log(users);
-    console.log(values);
-    let duplicate = false;
-    users.forEach(user => {
-      if (user.username == values.username) {
-        console.log('find duplicate');
-        duplicate = true;
-      }
-    });
-    if (duplicate) {
-      alert('The username has already existed');
-    }
-    if (!duplicate) {
-      dispatch(userRegistrationStore.actions.setActiveStep(1));
-    }
-    // dispatch(userRegistrationStore.actions.setActiveStep(1));
+    // const {
+    //   UsersStore: { response },
+    // } = getState();
+    // const users = response.Values;
+    // console.log(users);
+    // console.log(values);
+    // let duplicate = false;
+    // users.forEach(user => {
+    //   if (user.username == values.username) {
+    //     console.log('find duplicate');
+    //     duplicate = true;
+    //   }
+    // });
+    // if (duplicate) {
+    //   alert('The username has already existed');
+    // }
+    // if (!duplicate) {
+    //   dispatch(userRegistrationStore.actions.setActiveStep(1));
+    // }
+    dispatch(userRegistrationStore.actions.setActiveStep(1));
   });
 };
 export const snackbarClose = () => dispatch => {

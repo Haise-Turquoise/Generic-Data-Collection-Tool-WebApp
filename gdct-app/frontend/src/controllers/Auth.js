@@ -12,7 +12,6 @@ const AuthController = (() => {
     login: async data =>
       AuthAxios.post('/login', data)
         .then(res => {
-          console.log(res.status);
           return res.data;
         })
         .catch(err => console.log(err)),

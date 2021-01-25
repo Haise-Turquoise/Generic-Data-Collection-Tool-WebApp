@@ -16,17 +16,15 @@ const MasterValueController = Service([MasterValueService], service => {
     });
 
     router.post('/masterValue', (req, res, next) => {
-      console.log('reach backend controller create')
+      // console.log('reach backend controller create')
       service
         .createMasterValue(req.body.masterValue)
         .then(masterValue => res.json({ masterValue }))
         .catch(next);
     });
 
-
     router.post('/masterValue/addDocument', (req, res, next) => {
-      console.log('reach backend controller addDocument')
-      console.log(req.body)
+      // console.log('reach backend controller addDocument')
       service
         .addDocument(req.body.masterValue)
         .then(masterValue => res.json({ masterValue }))

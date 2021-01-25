@@ -27,9 +27,9 @@ import MenuController from './Menu';
 import UsersController from './Users/controller';
 import SubmissionNoteController from './SubmissionNote';
 import { authorized } from '../middlewares/auth/auth';
-import MasterValueController from './MasterValue/controller'
+import MasterValueController from './MasterValue/controller';
+
 export const routerManager = app => {
- 
   app.use('/', Container.get(AuthController));
   app.use('/', Container.get(MenuController));
   app.use('/', Container.get(MenuItemController));

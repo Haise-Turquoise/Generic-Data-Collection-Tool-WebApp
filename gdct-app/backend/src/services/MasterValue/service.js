@@ -22,8 +22,8 @@ export default class MasterValueService {
   async findMasterValue(masterValue) {
     return this.masterValueRepository.find(masterValue);
   }
-  async addDocument(masterValue){
-    console.log('masterValue at service',masterValue)
-    return this.masterValueRepository.addDocument(masterValue)
+
+  async addDocument(masterValue) {
+    return this.masterValueRepository.addDocument(masterValue);
   }
 }

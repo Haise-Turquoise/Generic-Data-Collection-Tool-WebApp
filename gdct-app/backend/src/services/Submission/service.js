@@ -202,14 +202,14 @@ export default class SubmissionService {
       promiseQuery1.push(
         this.templatePackageRepository.findByProgramId(element.program).then(templatePackages => {
           // console.log('templatePackages',templatePackages)
-          const templatePackages_copy = []
-          templatePackages.forEach(templatePackage=>{
-            templatePackages_copy.filter(ele=>{ele._id !== templatePackage._id})
-            templatePackages_copy.push(templatePackage)
-          })
-          // console.log('templatePackages_copy', templatePackages_copy)
+          const templatePackagesCopy = [];
+          templatePackages.forEach(templatePackage => {
+            templatePackagesCopy.filter(ele => ele._id !== templatePackage._id);
+            templatePackagesCopy.push(templatePackage);
+          });
+          // console.log('templatePackagesCopy', templatePackagesCopy)
           const promiseQuery3 = [];
-          templatePackages_copy.forEach(templatePackage => {
+          templatePackagesCopy.forEach(templatePackage => {
             const promiseQuery2 = [];
             const newTempPackage = {
               ...templatePackage._doc,
@@ -235,20 +235,17 @@ export default class SubmissionService {
                 if (newTempPackage.templateIds.length !== 0) {
                   // newTemplatePackages.filter(ele=>{ele._id !== newTempPackage._id})
                   newTemplatePackages.push(newTempPackage);
-                  
                 }
               }),
             );
           });
-          
+
           return Promise.all(promiseQuery3);
         }),
       );
     });
-    
 
     return Promise.all(promiseQuery1).then(() => {
-
       // let result = newTemplatePackages.reduce((unique, o) => {
       //   if(!unique.some(obj => obj._id === o._id)) {
       //     unique.push(o);
@@ -258,11 +255,10 @@ export default class SubmissionService {
       // console.log(result);
       // console.log(newTemplatePackages)
 
-
-      const uniqueNewTemplatePackages = []
-      newTemplatePackages.forEach(newTemplatePackage=>{
-        console.log(newTemplatePackage._id)
-        let duplicate = false
+      const uniqueNewTemplatePackages = [];
+      newTemplatePackages.forEach(newTemplatePackage => {
+        // console.log(newTemplatePackage._id)
+        let duplicate = false;
         // uniqueNewTemplatePackages.forEach(ele=>{
         //   if(ele._id == newTemplatePackage._id){
         //     duplicate = true;
@@ -282,9 +278,9 @@ export default class SubmissionService {
         //     // I use createDate to compare here, if possible, change to compare base on_id
         //     // if (JSON.stringify(uniqueNewTemplatePackages[i].creationDate) == JSON.stringify(newTemplatePackage.creationDate)){
         //     // console.log(uniqueNewTemplatePackages[i]._id)
-        //     // if (uniqueNewTemplatePackages[i]._id ==newTemplatePackage._id) {  
+        //     // if (uniqueNewTemplatePackages[i]._id ==newTemplatePackage._id) {
         //     if (JSON.stringify(uniqueNewTemplatePackages[i]._id) == JSON.stringify(newTemplatePackage._id)){
-        //         console.log('find')             
+        //         console.log('find')
         //         duplicate = true;
         //         break;
         //     }
@@ -295,30 +291,30 @@ export default class SubmissionService {
         //     // console.log(uniqueNewTemplatePackages[uniqueNewTemplatePackages.length])
         //   }
         // }
-        for(var i = 0; i < uniqueNewTemplatePackages.length; i++) {
-          // I use createDate to compare here, if possible, change to compare base on_id
-          // if (JSON.stringify(uniqueNewTemplatePackages[i].creationDate) == JSON.stringify(newTemplatePackage.creationDate)){
-          // console.log(uniqueNewTemplatePackages[i]._id)
-          // if (uniqueNewTemplatePackages[i]._id ==newTemplatePackage._id) {  
-          if (JSON.stringify(uniqueNewTemplatePackages[i]._id) == JSON.stringify(newTemplatePackage._id)){
-              console.log('find')             
-              duplicate = true;
-              break;
+        uniqueNewTemplatePackages.forEach(ele => {
+          if (JSON.stringify(ele._id) == JSON.stringify(newTemplatePackage._id)) {
+            console.log('find');
+            duplicate = true;
           }
-        }
-        if(!duplicate){
-          uniqueNewTemplatePackages.push(newTemplatePackage)
+        });
+
+        // for (let i = 0; i < uniqueNewTemplatePackages.length; i++) {
+        //   if (
+        //     JSON.stringify(uniqueNewTemplatePackages[i]._id) == JSON.stringify(newTemplatePackage._id)
+        //   ) {
+        //     console.log('find');
+        //     duplicate = true;
+        //     break;
+        //   }
+        // }
+        if (!duplicate) {
+          uniqueNewTemplatePackages.push(newTemplatePackage);
           // uniqueNewTemplatePackages[uniqueNewTemplatePackages.length]._id = newTemplatePackage._id
           // console.log(uniqueNewTemplatePackages[uniqueNewTemplatePackages.length])
         }
-        
-        
-      })
-      
+      });
+
       // console.log('uniqueNewTemplatePackages', uniqueNewTemplatePackages)
-
-
-
 
       // const RemoveDuplicates = (array, key) => {
       //   return array.reduce((arr, item) => {
@@ -327,7 +323,6 @@ export default class SubmissionService {
       //   }, []);
       // };
       // console.log(RemoveDuplicates(newTemplatePackages, '_id'));
-
 
       // function getUnique(arr, comp) {
       //   const unique =  arr.map(e => e[comp])
@@ -338,19 +333,13 @@ export default class SubmissionService {
 
       // console.log(getUnique(newTemplatePackages,'_id'));
 
-
-
-
-
-
-
-      return uniqueNewTemplatePackages
+      return uniqueNewTemplatePackages;
     });
   }
 
   // This is specified one user can only belongs to organization
   async findSubmission(email) {
-    let count = 0
+    const count = 0;
     const userInfo = await this.usersRepository.findByEmail(email);
     const { orgId } = userInfo[0].sysRole[0].org[0];
     const programAndTempTypes = [];
@@ -388,30 +377,34 @@ export default class SubmissionService {
                         // console.log(programAndTempTypes)
                         templatePackage.programIds.forEach(programId => {
                           // programAndTempTypes.forEach(element => {
-                            // if (element.program.toString() == programId.toString()) {
-                              if(programAndTempTypes.find((element)=>element.program.toString()==programId.toString())){
-                              promiseQuery3.push(
-                                this.createSubmissionBaseOnTemplatePackage({
-                                  orgId,
-                                  templateId,
-                                  templatePackageId: templatePackage._id,
-                                  programId,
-                                  statusId: status[0]._id,
-                                  version: 0,
-                                  isLatest: true,
-                                }),
-                              );
-                            }
+                          // if (element.program.toString() == programId.toString()) {
+                          if (
+                            programAndTempTypes.find(
+                              element => element.program.toString() == programId.toString(),
+                            )
+                          ) {
+                            promiseQuery3.push(
+                              this.createSubmissionBaseOnTemplatePackage({
+                                orgId,
+                                templateId,
+                                templatePackageId: templatePackage._id,
+                                programId,
+                                statusId: status[0]._id,
+                                version: 0,
+                                isLatest: true,
+                              }),
+                            );
+                          }
                           // });
                         });
                       }
                     });
                     // console.log(promiseQuery3)
                     // count+=1;
-                    console.log('count', count)
-                    
+                    console.log('count', count);
+
                     return Promise.all(promiseQuery3);
-                    
+
                     // return Promise.all(promiseQuery3);
                   }
                 }
@@ -466,6 +459,5 @@ export default class SubmissionService {
         });
       });
     });
-  
   }
 }

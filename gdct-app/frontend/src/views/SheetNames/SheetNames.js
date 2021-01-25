@@ -64,6 +64,7 @@ const SheetNamesTable = () => {
   );
 
   useEffect(() => {
+    // console.log('Page Refresh')
     dispatch(getSheetNamesRequest());
   }, [dispatch]);
 

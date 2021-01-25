@@ -119,8 +119,8 @@ export const getCOATreesBySheetNameRequest = (sheetName, isTreeComponent = false
                 if (node.node.content) {
                   // console.log(node.node.content.categoryId)
                   if (node.node.content.categoryId) {
-                    node.node.content.categoryId.map(categoryId => {
-                      COAs.map(COA => {
+                    node.node.content.categoryId.forEach(categoryId => {
+                      COAs.forEach(COA => {
                         if (categoryId == COA.id) {
                           // console.log(categoryId)
                           const COACopy = cloneDeep(COA);

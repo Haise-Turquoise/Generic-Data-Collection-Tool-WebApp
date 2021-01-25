@@ -113,6 +113,7 @@ const DELETE_COA_TREE_UI = (state, { payload }) => {
       callback: node => {
         // console.log(node)
         if (!node.node.content) {
+          console.log('');
         } else if (isCategory && payload.node.parentNode.content._id == node.node.content._id) {
           // console.log('find the target category parent')
           node.node.content.categoryId = node.node.content.categoryId.filter(

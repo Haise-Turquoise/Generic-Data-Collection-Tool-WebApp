@@ -34,7 +34,7 @@ const StatusesTable = () => {
     }),
     shallowEqual,
   );
-  console.log(statuses);
+  // console.log(statuses);
   const columns = useMemo(
     () => [
       { title: 'Name', field: 'name' },

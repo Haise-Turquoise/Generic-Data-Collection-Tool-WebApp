@@ -115,7 +115,6 @@ const COATreeTreeStructure = ({ sheetNameId }) => {
   );
 
   useEffect(() => {
-    console.log('Refresh');
     dispatch(getCOATreesBySheetNameRequest(sheetNameId, true));
   }, [dispatch, sheetNameId]);
 

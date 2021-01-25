@@ -15,7 +15,6 @@ export const getDetectEmptyTree = () => dispatch => {
       );
     });
     Promise.all(promiseQuery).then(treeContent => {
-      console.log(treeContent);
       dispatch(DetectEmptyTreeStore.actions.RECEIVE(treeContent));
     });
   });
@@ -23,20 +22,16 @@ export const getDetectEmptyTree = () => dispatch => {
 
 export const deleteCOATreeBySheetName = (sheetName, resolve, reject) => (dispatch, getState) => {
   dispatch(DetectEmptyTreeStore.actions.REQUEST());
-  console.log(sheetName);
   const {
     DetectEmptyTreeStore: { response },
   } = getState();
   const newResponse = cloneDeep(response);
-  console.log(newResponse);
+  // console.log(newResponse);
   for (const ele of newResponse.Values) {
-    console.log('reach here');
     if (ele._id == sheetName._id) {
-      console.log('find the delete one');
       ele.value = [];
     }
   }
-  console.log(newResponse);
   dispatch(DetectEmptyTreeStore.actions.UPDATE(newResponse.Values));
 
   COATreeController.fetchBySheetName(sheetName._id)
@@ -46,15 +41,6 @@ export const deleteCOATreeBySheetName = (sheetName, resolve, reject) => (dispatc
       });
     })
     .then(result => {
-      // newResponse.forEach((ele)=>{
-      //     console.log('reach here')
-      //     if(ele._id == sheetName._id){
-      //         console.log('find the delete one')
-      //         ele.values = []
-      //     }
-      // })
-      // console.log(newResponse)
-      // dispatch(DetectEmptyTreeStore.actions.RECEIVE(newResponse.Values));
       if (resolve) {
         resolve();
       }
