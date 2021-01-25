@@ -46,6 +46,7 @@ const SubmissionDashboard = ({ history }) => {
   const submissionPeriod = {};
   const styleFactor = '0.2%';
   const classTheme = useStyles();
+  console.log('Hi')
 
   // Set up the states that update the table row number
   const [readUnsubmittedLength, setUnsubmittedLength] = useState(1);
@@ -53,7 +54,6 @@ const SubmissionDashboard = ({ history }) => {
   const [readRejectedLength, setRejectedLength] = useState(1); 
   const [readExpiredLength, setExpiredLength] = useState(1); 
   const [readSubmittedLength, setSubmittedLength] = useState(1); 
-  const [readPublishedLength, setPublishedLength] = useState(1); 
 
   const [readFilterFrom, setFilterFrom] = useState('All');
   const [readFilterTo, setFilterTo] = useState('All');

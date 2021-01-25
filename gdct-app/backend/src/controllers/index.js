@@ -28,6 +28,7 @@ import UsersController from './Users/controller';
 import SubmissionNoteController from './SubmissionNote';
 import { authorized } from '../middlewares/auth/auth';
 import GoogleApisController from './GoogleApis'
+import TransferStatusController from './TransferStatus'
 
 export const routerManager = app => {
   app.use('/', Container.get(AuthController));
@@ -70,6 +71,10 @@ export const routerManager = app => {
   // Oct 26, 2020
   // Used to handle requests from google
   app.use('/googleapis_manager', authorized, Container.get(GoogleApisController));
+
+  // Jan 22, 2021
+  // Use to handle transfer control
+  app.use('/transfer_manager', Container.get(TransferStatusController));
 
   
 };

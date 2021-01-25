@@ -24,6 +24,7 @@ import COARouter from './views/COARouter';
 import WorkflowRouter from './views/WorkflowRouter';
 import Register from './views/UserRegistrationRouter';
 import MasterValuePopulation from './views/MasterValuePopulation';
+import TransferStatus from './views/TransferStatus'
 import { ROUTE_WORKFLOW, ROUTE_TEMPLATE_PCKGS, ROUTE_CATEGORY } from './constants/routes';
 
 import './App.scss';
@@ -50,6 +51,7 @@ const PrivateRouter = ({ setLoggedIn }) => {
       <Route exact path="/admin/reporting_period" component={ReportingPeriods} />
       <Route path={ROUTE_WORKFLOW} component={WorkflowRouter} />
       <Route exact path="/admin/roleManagement" component={RoleManagement} />
+      <Route exact path="/admin/TransferStatus" component={TransferStatus} />
       {/* <Route path="/submission_manager" component={SubmissionRouter} /> */}
       {/* <Route path="/sheetNames" component={SheetNames} />{' '} */}
       {/* <Route path={ROUTE_COLUMN_NAMES} component={ColumnNames} /> */}

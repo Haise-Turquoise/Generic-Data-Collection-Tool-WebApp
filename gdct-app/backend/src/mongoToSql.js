@@ -8,37 +8,20 @@ import reportingPeriodRepository from './repositories/ReportingPeriod'
 import COARepository from './repositories/COA'
 import attributeRepository from './repositories/ColumnName'
 import categoryGroupRepository from './repositories/COAGroup'
+import transferStatusRepository from  './repositories/TransferStatus'
 import Container from 'typedi';
 
 const config = {
-    user: 'ohfs4rest',
-    password: 'Passw0rd',
-    server: 'ohfs4gdct.database.windows.net', 
-    database: 'ohfs',
-    pool: {
-      max: 100,
-      min: 10,
-      idleTimeoutMillis: 30000
-    }
-  };
-
-/* This is the the actual function where all the other function is called
-   This function is implemented in a sychronized way for ease of reading.
-*/
-const transfer = async ()=>{
-    const pool = new sql.ConnectionPool(config);
-    await pool.connect();
-    await orgTransfer(pool);
-    await categoryGroupTransfer(pool);
-    await AttributeTransfer(pool);
-    await COATransfer(pool);
-    await ReportingPeriodTransfer(pool);
-    await MasterValueTransfer(pool);
-    await programTransfer(pool);
-    await TemplateTypeTransfer(pool);
-    pool.close()
-
-}
+  user: process.env.AzureDBUser,
+  password: process.env.AzureDBPassword,
+  server: process.env.AzureDBServer, 
+  database: process.env.AzureDB,
+  pool: {
+    max: 50,
+    min: 10,
+    idleTimeoutMillis: 30000
+  }
+};
 
  /* 
   This function is use for organization transfer, implemented in a sycrhonized way for ease of benchmarking
@@ -140,7 +123,7 @@ const orgTransfer = async(conn)=>{
   The details are the same for all the transfer function. Plase refer to the first function for details
  */
 const categoryGroupTransfer = async(conn)=>{
-  await conn.query`DELETE FROM dbo.CategoryGroupDemo`
+  await conn.query`DELETE FROM dbo.CategoryGroup`
   const categoryGroupModel = Container.get(categoryGroupRepository)
   console.log('\n\n');
   console.log('===============================COAGroup Transfer Satistics==============================\n')
@@ -151,7 +134,7 @@ const categoryGroupTransfer = async(conn)=>{
   console.timeEnd('Mongo query time');
 
   console.time('mongo to SQL reformat time')
-  const table = new sql.Table('dbo.CategoryGroupDemo');
+  const table = new sql.Table('dbo.CategoryGroup');
   table.create = false;
 
   table.columns.add('_id', sql.VarChar(50), { nullable: false });
@@ -183,7 +166,7 @@ const categoryGroupTransfer = async(conn)=>{
   The details are the same for all the transfer function. Plase refer to the first function for details
 */
 const AttributeTransfer = async(conn)=>{
-  await conn.query`DELETE FROM dbo.AttributeDemo`
+  await conn.query`DELETE FROM dbo.Attribute`
   const attributeModel = Container.get(attributeRepository)
   console.log('\n\n');
   console.log('===============================Attribute Transfer Satistics==============================\n')
@@ -194,8 +177,8 @@ const AttributeTransfer = async(conn)=>{
   console.timeEnd('Mongo query time');
 
   console.time('mongo to SQL reformat time')
-  const table = new sql.Table('dbo.AttributeDemo');
-  table.create = true;
+  const table = new sql.Table('dbo.Attribute');
+  table.create = false;
 
   table.columns.add('_id', sql.VarChar(50), { nullable: false });
   table.columns.add('name', sql.VarChar(500), { nullable: false });
@@ -426,7 +409,7 @@ const programTransfer = async(conn)=>{
 
   console.time('mongo to SQL reformat time')
   const table = new sql.Table('dbo.program');
-  table.create = true;
+  table.create = false;
   table.columns.add('_id', sql.VarChar(50), { nullable: false });
   table.columns.add('code', sql.VarChar(500), { nullable: false });
   table.columns.add('name', sql.VarChar(500), { nullable: false });
@@ -493,7 +476,28 @@ const TemplateTypeTransfer = async(conn)=>{
   
 }
 
-// This is where the function is called in server.js for interval
-export default function startTransfer(){
-  setInterval(transfer, 1000*10);
-} 
+/* This is the the actual function where all the other function is called
+   This function is implemented in a sychronized way for ease of reading.
+*/
+const transfer = async ()=>{
+  const transferRepo = Container.get(transferStatusRepository);
+  const res = await transferRepo.findTransferStatus();
+  if (res.isActive){
+    // const pool = new sql.ConnectionPool(config);
+    // await pool.connect();
+    // await orgTransfer(pool);
+    // await categoryGroupTransfer(pool);
+    // await AttributeTransfer(pool);
+    // await COATransfer(pool);
+    // await ReportingPeriodTransfer(pool);
+    // await MasterValueTransfer(pool);
+    // await programTransfer(pool);
+    // await TemplateTypeTransfer(pool);
+    // await pool.close()
+    console.log('update!')
+  }else{
+    console.log("TransferStatus not active")
+  }
+}
+
+export default transfer;
