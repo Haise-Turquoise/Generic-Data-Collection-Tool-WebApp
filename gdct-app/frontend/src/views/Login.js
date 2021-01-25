@@ -51,7 +51,6 @@ const useStyles = makeStyles(theme => ({
     width: '25px',
     height: '25px',
     marginRight: '5px',
-    // lineHeight: '15px',
   },
 }));
 
@@ -67,14 +66,6 @@ export default function Login({ setLoggedIn }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [errors, setErrors] = useState({});
-
-  // useEffect(() => {
-  //   AuthController.auto().then(auto => {
-  //     if (auto.data === true) {
-  //       setLoggedIn(true);
-  //     }
-  //   });
-  // }, []);
 
   const handleChange = e => {
     const { name, value } = e.target;
@@ -96,18 +87,13 @@ export default function Login({ setLoggedIn }) {
     e.preventDefault();
     try {
       if (email && validateForm(errors)) {
-        // window.location.replace(
-        //   `http://localhost:3000/auth/local?email=${email}&password=${password}`
-        // )
         await AuthController.login({ email, password }).then(data => {
           if (data.status === 'ok') {
             setLoggedIn(true);
           }
         });
       }
-      // TODO: decide if it is logged in
     } catch (err) {
-      console.log(err);
       setLoggedIn(false);
     }
   };

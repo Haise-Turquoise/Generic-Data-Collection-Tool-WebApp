@@ -27,7 +27,6 @@ import MasterValuePopulation from './views/MasterValuePopulation';
 import { ROUTE_WORKFLOW, ROUTE_TEMPLATE_PCKGS, ROUTE_CATEGORY } from './constants/routes';
 
 import './App.scss';
-// import './i18n'
 
 const PrivateRouter = ({ setLoggedIn }) => {
   return (
@@ -50,9 +49,6 @@ const PrivateRouter = ({ setLoggedIn }) => {
       <Route exact path="/admin/reporting_period" component={ReportingPeriods} />
       <Route path={ROUTE_WORKFLOW} component={WorkflowRouter} />
       <Route exact path="/admin/roleManagement" component={RoleManagement} />
-      {/* <Route path="/submission_manager" component={SubmissionRouter} /> */}
-      {/* <Route path="/sheetNames" component={SheetNames} />{' '} */}
-      {/* <Route path={ROUTE_COLUMN_NAMES} component={ColumnNames} /> */}
       <Route
         exact
         path="/logout"
@@ -75,7 +71,6 @@ const PublicRouter = ({ setLoggedIn }) => {
 
 const App = () => {
   const [isLoggedIn, setLoggedIn] = useState(null);
-  console.log('cookie:', document.cookie);
   useEffect(() => {
     AuthController.profile()
       .then(res => {

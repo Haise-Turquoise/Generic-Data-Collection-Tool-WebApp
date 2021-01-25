@@ -36,7 +36,6 @@ export const authorized = async (req, res, next) => {
   if (isAdmin) {
     return next();
   }
-  console.log('auth-sessions:', req.session.resources);
   if (req.session.resources) {
     const urls = req.session.resources.map(e => e.resourcePath.toLowerCase());
     if (!urls.includes(req.originalUrl.toLowerCase())) {
