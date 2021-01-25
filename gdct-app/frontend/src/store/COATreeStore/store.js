@@ -76,7 +76,7 @@ const createTreeBranch = (rootId, normalizedTreeMap, dependencyMap) => {
 const UPDATE_LOCAL_COA_TREE_UI = (state, { payload }) => {
   return {
     ...state,
-    localTree: toggleExpandedForAll({ treeData: payload.tree, expanded: true }),
+    localTree: payload.tree,
   };
 };
 
@@ -112,8 +112,9 @@ const DELETE_COA_TREE_UI = (state, { payload }) => {
       getNodeKey,
       callback: node => {
         // console.log(node)
-        // if (!node.node.content) {}
-        if (isCategory && payload.node.parentNode.content._id == node.node.content._id) {
+        if (!node.node.content) {
+          console.log('');
+        } else if (isCategory && payload.node.parentNode.content._id == node.node.content._id) {
           // console.log('find the target category parent')
           node.node.content.categoryId = node.node.content.categoryId.filter(
             category => category !== payload.node.node.id,

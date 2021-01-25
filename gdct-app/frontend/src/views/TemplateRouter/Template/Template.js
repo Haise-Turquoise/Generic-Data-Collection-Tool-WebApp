@@ -64,6 +64,7 @@ const Template = ({
     }),
     shallowEqual,
   );
+
   const handleSaveTemplate = useCallback(() => {
     dispatch(updateTemplateExcelRequest());
   }, []);

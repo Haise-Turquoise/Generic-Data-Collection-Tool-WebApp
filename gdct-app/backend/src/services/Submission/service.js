@@ -201,8 +201,15 @@ export default class SubmissionService {
     programAndTempTypes.forEach(element => {
       promiseQuery1.push(
         this.templatePackageRepository.findByProgramId(element.program).then(templatePackages => {
-          const promiseQuery3 = [];
+          // console.log('templatePackages',templatePackages)
+          const templatePackagesCopy = [];
           templatePackages.forEach(templatePackage => {
+            templatePackagesCopy.filter(ele => ele._id !== templatePackage._id);
+            templatePackagesCopy.push(templatePackage);
+          });
+          // console.log('templatePackagesCopy', templatePackagesCopy)
+          const promiseQuery3 = [];
+          templatePackagesCopy.forEach(templatePackage => {
             const promiseQuery2 = [];
             const newTempPackage = {
               ...templatePackage._doc,
@@ -226,23 +233,113 @@ export default class SubmissionService {
             promiseQuery3.push(
               Promise.all(promiseQuery2).then(() => {
                 if (newTempPackage.templateIds.length !== 0) {
+                  // newTemplatePackages.filter(ele=>{ele._id !== newTempPackage._id})
                   newTemplatePackages.push(newTempPackage);
                 }
               }),
             );
           });
+
           return Promise.all(promiseQuery3);
         }),
       );
     });
 
     return Promise.all(promiseQuery1).then(() => {
-      return newTemplatePackages;
+      // let result = newTemplatePackages.reduce((unique, o) => {
+      //   if(!unique.some(obj => obj._id === o._id)) {
+      //     unique.push(o);
+      //   }
+      //   return unique;
+      // },[]);
+      // console.log(result);
+      // console.log(newTemplatePackages)
+
+      const uniqueNewTemplatePackages = [];
+      newTemplatePackages.forEach(newTemplatePackage => {
+        // console.log(newTemplatePackage._id)
+        let duplicate = false;
+        // uniqueNewTemplatePackages.forEach(ele=>{
+        //   if(ele._id == newTemplatePackage._id){
+        //     duplicate = true;
+        //     break;
+        //   }
+
+        // })
+        // if (uniqueNewTemplatePackages.length == 0){
+        //   console.log('first item')
+        //   uniqueNewTemplatePackages.push(newTemplatePackage)
+        //   // console.log(newTemplatePackage._id)
+        //   // console.log(uniqueNewTemplatePackages[0]._id)
+        //   // uniqueNewTemplatePackages[0]._id = newTemplatePackage._id
+        // }
+        // else{
+        //   for(var i = 0; i < uniqueNewTemplatePackages.length; i++) {
+        //     // I use createDate to compare here, if possible, change to compare base on_id
+        //     // if (JSON.stringify(uniqueNewTemplatePackages[i].creationDate) == JSON.stringify(newTemplatePackage.creationDate)){
+        //     // console.log(uniqueNewTemplatePackages[i]._id)
+        //     // if (uniqueNewTemplatePackages[i]._id ==newTemplatePackage._id) {
+        //     if (JSON.stringify(uniqueNewTemplatePackages[i]._id) == JSON.stringify(newTemplatePackage._id)){
+        //         console.log('find')
+        //         duplicate = true;
+        //         break;
+        //     }
+        //   }
+        //   if(!duplicate){
+        //     uniqueNewTemplatePackages.push(newTemplatePackage)
+        //     // uniqueNewTemplatePackages[uniqueNewTemplatePackages.length]._id = newTemplatePackage._id
+        //     // console.log(uniqueNewTemplatePackages[uniqueNewTemplatePackages.length])
+        //   }
+        // }
+        uniqueNewTemplatePackages.forEach(ele => {
+          if (JSON.stringify(ele._id) == JSON.stringify(newTemplatePackage._id)) {
+            console.log('find');
+            duplicate = true;
+          }
+        });
+
+        // for (let i = 0; i < uniqueNewTemplatePackages.length; i++) {
+        //   if (
+        //     JSON.stringify(uniqueNewTemplatePackages[i]._id) == JSON.stringify(newTemplatePackage._id)
+        //   ) {
+        //     console.log('find');
+        //     duplicate = true;
+        //     break;
+        //   }
+        // }
+        if (!duplicate) {
+          uniqueNewTemplatePackages.push(newTemplatePackage);
+          // uniqueNewTemplatePackages[uniqueNewTemplatePackages.length]._id = newTemplatePackage._id
+          // console.log(uniqueNewTemplatePackages[uniqueNewTemplatePackages.length])
+        }
+      });
+
+      // console.log('uniqueNewTemplatePackages', uniqueNewTemplatePackages)
+
+      // const RemoveDuplicates = (array, key) => {
+      //   return array.reduce((arr, item) => {
+      //     const removed = arr.filter(i => i[key] !== item[key]);
+      //     return [...removed, item];
+      //   }, []);
+      // };
+      // console.log(RemoveDuplicates(newTemplatePackages, '_id'));
+
+      // function getUnique(arr, comp) {
+      //   const unique =  arr.map(e => e[comp])
+      //   .map((e, i, final) => final.indexOf(e) === i && i)
+      //   .filter((e) => arr[e]).map(e => arr[e]);
+      //   return unique;
+      // }
+
+      // console.log(getUnique(newTemplatePackages,'_id'));
+
+      return uniqueNewTemplatePackages;
     });
   }
 
   // This is specified one user can only belongs to organization
   async findSubmission(email) {
+    const count = 0;
     const userInfo = await this.usersRepository.findByEmail(email);
     const { orgId } = userInfo[0].sysRole[0].org[0];
     const programAndTempTypes = [];
@@ -253,41 +350,62 @@ export default class SubmissionService {
         programIds.push(program.programId);
       });
     });
+    // console.log('programAndTempTypes', programAndTempTypes)
     return this.findTemplatePackage(programAndTempTypes).then(templatePackages => {
+      // console.log('templatePackages', templatePackages)
       const name = 'Unsubmitted';
       return this.statusRepository.findByName(name).then(status => {
         const promiseQuery1 = [];
+        // console.log('count in the middle ', count)
         templatePackages.forEach(templatePackage => {
+          // console.log('count in the middle 2 ', count)
+          // console,log('templatePackage', templatePackage)
           promiseQuery1.push(
             this.submissionRepository
               .findByTemplatePackageId(templatePackage._id)
               .then(submissions => {
+                // console.log('submissions',submissions)
                 if (!submissions[0]) {
                   const { templateIds } = templatePackage;
                   const promiseQuery3 = [];
                   if (templateIds !== undefined) {
+                    // console.log('templateIds',templateIds)
                     templateIds.forEach(templateId => {
+                      // console.log(templateId)
                       if (templatePackage.programIds !== undefined) {
+                        // console.log(templatePackage.programIds)
+                        // console.log(programAndTempTypes)
                         templatePackage.programIds.forEach(programId => {
-                          programAndTempTypes.forEach(element => {
-                            if (element.program.toString() == programId.toString()) {
-                              promiseQuery3.push(
-                                this.createSubmissionBaseOnTemplatePackage({
-                                  orgId,
-                                  templateId,
-                                  templatePackageId: templatePackage._id,
-                                  programId,
-                                  statusId: status[0]._id,
-                                  version: 0,
-                                  isLatest: true,
-                                }),
-                              );
-                            }
-                          });
+                          // programAndTempTypes.forEach(element => {
+                          // if (element.program.toString() == programId.toString()) {
+                          if (
+                            programAndTempTypes.find(
+                              element => element.program.toString() == programId.toString(),
+                            )
+                          ) {
+                            promiseQuery3.push(
+                              this.createSubmissionBaseOnTemplatePackage({
+                                orgId,
+                                templateId,
+                                templatePackageId: templatePackage._id,
+                                programId,
+                                statusId: status[0]._id,
+                                version: 0,
+                                isLatest: true,
+                              }),
+                            );
+                          }
+                          // });
                         });
                       }
                     });
+                    // console.log(promiseQuery3)
+                    // count+=1;
+                    console.log('count', count);
+
                     return Promise.all(promiseQuery3);
+
+                    // return Promise.all(promiseQuery3);
                   }
                 }
               }),
@@ -333,6 +451,7 @@ export default class SubmissionService {
                   }),
                 );
               });
+              // console.log('count at the end ', count)
               return Promise.all(promiseQuery2).then(() => {
                 return changedSubmissions;
               });

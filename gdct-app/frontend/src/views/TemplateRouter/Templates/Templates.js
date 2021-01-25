@@ -54,7 +54,7 @@ const TemplatesTable = ({ history }) => {
     }),
     shallowEqual,
   );
-
+  console.log('templates', templates);
   const lookupProcesses = workflowProcesses.reduce((acc, value) => {
     acc[value._id] = value.statusId.name;
     return acc;
@@ -68,7 +68,13 @@ const TemplatesTable = ({ history }) => {
         field: 'templateTypeId',
         lookup: lookupTemplateTypes,
       },
-      { title: 'CreationDate', type: 'date', field: 'creationDate', editable: 'never' },
+      {
+        title: 'CreationDate',
+        type: 'date',
+        field: 'creationDate',
+        editable: 'onAdd',
+        initialEditValue: new Date(),
+      },
       { title: 'ExpirationDate', type: 'date', field: 'expirationDate' },
       { title: 'Workflow', field: 'workflowProcessId', lookup: lookupProcesses, editable: 'never' },
     ],

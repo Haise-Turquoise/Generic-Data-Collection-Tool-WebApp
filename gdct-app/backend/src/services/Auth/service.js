@@ -1,6 +1,8 @@
 import passport from 'passport';
 import Container from 'typedi';
 import mongodb from 'mongodb';
+import i18n from 'i18n';
+import { nextTick } from 'process';
 import UserModel from '../../models/User/model';
 import { returnNormalJson, returnErrorJson } from '../../utils';
 import UserRepository from '../../repositories/User';
@@ -74,9 +76,11 @@ export default class AuthService {
     try {
       if (req.user) {
         returnNormalJson(res, { email: req.user.email });
+        // returnErrorJson(res, 'Not authenticated', 401);
       } else {
         returnErrorJson(res, 'Not authenticated', 401);
       }
+      // }, 10000)
     } catch (err) {
       next(err);
     }
@@ -171,6 +175,7 @@ export default class AuthService {
       return passport.authenticate('local')(req, res, async () => {
         const { email } = req.user;
         const user = await authService.UserRepostory.findByEmail(email);
+
         req.session.roles = [];
         req.session.isAdmin = false;
         if (user) {

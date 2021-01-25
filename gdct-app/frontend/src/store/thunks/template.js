@@ -19,7 +19,6 @@ export const updateTemplateRequest = updateRequestFactory(TemplatesStore, templa
 
 export const createTemplateRequest = (template, resolve, reject) => dispatch => {
   dispatch(TemplatesStore.actions.REQUEST());
-
   templateController
     .create({
       ...template,

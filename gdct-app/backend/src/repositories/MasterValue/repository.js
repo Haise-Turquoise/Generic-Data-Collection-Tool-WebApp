@@ -1,6 +1,5 @@
 import BaseRepository from '../repository';
 import MasterValueModel from '../../models/MasterValue';
-import { log } from '../../utils/log/winston';
 
 export default class MasterValueRepository extends BaseRepository {
   constructor() {
@@ -13,62 +12,23 @@ export default class MasterValueRepository extends BaseRepository {
     );
   }
 
-  /**
-   *
-   * @param {object} query
-   */
-  find(query = {}) {
-    const realQuery = {};
-    Object.keys(query).forEach(key => {
-      if (query[key]) realQuery[key] = query[key];
+  async addDocument(masterValue) {
+    // console.log('masterValue at Repository', masterValue)
+    const key = {
+      CategoryId: masterValue.CategoryId,
+      AttributeId: masterValue.AttributeId,
+      org: {
+        id: masterValue.org.id,
+        name: masterValue.org.name,
+      },
+    };
+    return MasterValueModel.findOne(key).then(res => {
+      if (res) {
+        // console.log('find the matched masterValue')
+        return MasterValueModel.findByIdAndUpdate(res._id, masterValue);
+      }
+      // console.log('create a new data')
+      return MasterValueModel.create(masterValue);
     });
-    return MasterValueModel.find(realQuery);
-  }
-
-  /**
-   *
-   * @param {string} id
-   */
-  findById(id) {
-    return MasterValueModel.find({ id });
-  }
-
-  /**
-   * @param {object} obj
-   * @param {string} obj.organization
-   * @param {string} obj.category
-   * @param {string} obj.attribute
-   */
-  findByOrgColumnAttribute({ organization, category, attribute, templateType }) {
-    if (templateType !== '') {
-      return MasterValueModel.find(
-        {
-          'org.id': organization,
-          CategoryId: category,
-          AttributeId: attribute,
-          'templateType.name': templateType,
-        },
-        {
-          value: 1,
-        },
-      );
-    }
-    log.info(
-      `action to read masterValue data with ${JSON.stringify({
-        organization,
-        category,
-        attribute,
-      })}`,
-    );
-    return MasterValueModel.find(
-      {
-        'org.id': organization,
-        CategoryId: category,
-        AttributeId: attribute,
-      },
-      {
-        value: 1,
-      },
-    );
   }
 }

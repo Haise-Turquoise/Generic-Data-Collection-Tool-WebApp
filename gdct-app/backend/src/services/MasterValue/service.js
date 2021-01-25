@@ -1,41 +1,29 @@
 import Container from 'typedi';
-import SheetNameRepository from '../../repositories/SheetName';
 import MasterValueRepository from '../../repositories/MasterValue';
-import { log } from '../../utils/log/winston';
 
-const repository = new MasterValueRepository();
-
-export default class SheetNameService {
+// @Service()
+export default class MasterValueService {
   constructor() {
-    this.sheetNameRepository = Container.get(SheetNameRepository);
+    this.masterValueRepository = Container.get(MasterValueRepository);
   }
 
-  async createSheetName(sheetName) {
-    return this.sheetNameRepository.create(sheetName);
+  async createMasterValue(masterValue) {
+    return this.masterValueRepository.create(masterValue);
   }
 
-  async deleteSheetName(id) {
-    return this.sheetNameRepository.delete(id);
+  async deleteMasterValue(id) {
+    return this.masterValueRepository.delete(id);
   }
 
-  async updateSheetName(id, sheetName) {
-    return this.sheetNameRepository.update(id, sheetName);
+  async updateMasterValue(id, masterValue) {
+    return this.masterValueRepository.update(id, masterValue);
   }
 
-  async findSheetName(sheetName) {
-    return this.sheetNameRepository.find(sheetName);
+  async findMasterValue(masterValue) {
+    return this.masterValueRepository.find(masterValue);
   }
 
-  findMasterValues(masterValue) {
-    log.info(`action to read masterValue data with ${JSON.stringify(masterValue)}`);
-    if (Object.keys(masterValue).length !== 0) {
-      return repository.findByOrgColumnAttribute(masterValue);
-    }
-    return repository.find(masterValue);
-  }
-
-  findMasterValueByParams(masterValue) {
-    log.info(`action to read masterValue data with ${JSON.stringify(masterValue)}`);
-    return repository.findByOrgColumnAttribute(masterValue);
+  async addDocument(masterValue) {
+    return this.masterValueRepository.addDocument(masterValue);
   }
 }

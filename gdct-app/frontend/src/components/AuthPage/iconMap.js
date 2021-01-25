@@ -71,6 +71,6 @@ export default {
   ),
   Program: <AccountCircleIcon style={{ fontSize: '1.2rem', marginLeft: '1.2rem' }} />,
   Status: <StorageIcon style={{ fontSize: '1.2rem', marginLeft: '1.2rem' }} />,
+  SheetName: <StorageIcon style={{ fontSize: '1.2rem', marginLeft: '1.2rem' }} />,
   'Reporting period': <EventIcon style={{ fontSize: '1.2rem', marginLeft: '1.2rem' }} />,
-  'Data populate': <HourglassEmptyIcon style={{ fontSize: '1.2rem', marginLeft: '1.2rem' }} />,
 };

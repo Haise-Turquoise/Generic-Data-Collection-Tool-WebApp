@@ -11,6 +11,7 @@ const COATreeController = (() => {
     fetchCOATree: async _id => COATreeAxios.get(`/${_id}`).then(res => res.data.COATree),
     fetchBySheetName: async _id =>
       COATreeAxios.get(`/sheetName/${_id}`).then(res => res.data.COATrees),
+    fetchAllTree: async () => COATreeAxios.get(`/sheetName`).then(res => res.data.COATrees),
     fetch: async query => COATreeAxios.get('').then(res => res.data.COATrees),
     create: async COATree => COATreeAxios.post('', { COATree }).then(res => res.data.COATree),
     delete: async _id => COATreeAxios.delete(`/${_id}`),

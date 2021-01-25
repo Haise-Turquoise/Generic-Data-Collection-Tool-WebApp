@@ -159,7 +159,8 @@ export const updateCOATreesBySheetNameRequest = sheetNameId => (dispatch, getSta
     COATreeStore: { localTree },
   } = getState();
 
-  const treeCopy = cloneDeep(toggleExpandedForAll({ treeData: localTree, expanded: true }));
+  // let treeCopy = cloneDeep(toggleExpandedForAll({ treeData:localTree, expanded : true }))
+  const treeCopy = cloneDeep(localTree);
   const getNodeKey = ({ treeIndex }) => treeIndex;
   walk({
     treeData: treeCopy,

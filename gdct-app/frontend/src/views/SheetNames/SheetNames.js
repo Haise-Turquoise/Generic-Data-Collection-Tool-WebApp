@@ -19,7 +19,7 @@ import { selectSheetNamesStore } from '../../store/SheetNamesStore/selectors';
 const SheetNameHeader = () => {
   return (
     <Paper className="header">
-      <Typography variant="h5">Sheet Names</Typography>
+      <Typography variant="h5">Sheet Name</Typography>
       {/* <HeaderActions/> */}
     </Paper>
   );
@@ -64,6 +64,7 @@ const SheetNamesTable = () => {
   );
 
   useEffect(() => {
+    // console.log('Page Refresh')
     dispatch(getSheetNamesRequest());
   }, [dispatch]);
 

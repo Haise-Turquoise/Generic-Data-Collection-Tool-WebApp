@@ -1,4 +1,6 @@
 import i18n from 'i18n';
+import cloneDeep from 'clone-deep';
+import { copyFile } from 'fs';
 import UserEntity from '../../entities/User';
 import BaseRepository from '../repository';
 import UserModel from '../../models/User';
@@ -10,7 +12,8 @@ export default class UserRepository extends BaseRepository {
   }
 
   async create(user) {
-    return UserModel.create(user);
+    const userCopy = cloneDeep(user);
+    return UserModel.create(userCopy);
   }
 
   async checkAuthenticate(email, password) {
@@ -30,10 +33,28 @@ export default class UserRepository extends BaseRepository {
     });
   }
 
-  async findByEmail(email) {
-    return UserModel.findOne({ email }).then(user => {
+  async findByUserName(username) {
+    return UserModel.findOne({ username }).then(user => {
+      // console.log('user',user)
+      // const feedbackUser = new UserEntity(user.toObject());
+      // console.log('feedbackUser',feedbackUser)
+      if (!user) {
+        return {};
+      }
       return new UserEntity(user.toObject());
     });
+  }
+
+  async findByEmail(email) {
+    return UserModel.findOne({ email })
+      .then(user => {
+        // console.log(user)
+
+        return new UserEntity(user.toObject());
+      })
+      .catch(err => {
+        console.log(err);
+      });
   }
 
   async updateSysRole(_id, sysRole) {

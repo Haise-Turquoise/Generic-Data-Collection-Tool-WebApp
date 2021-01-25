@@ -122,7 +122,7 @@ const COATreeTreeStructure = ({ sheetNameId }) => {
     <Paper className="COATreeContent">
       <SortableTree
         className="COATreeContent__sortableTree"
-        treeData={toggleExpandedForAll({ treeData: localTree, expanded: true })}
+        treeData={localTree}
         onChange={handleChange}
         generateNodeProps={nodeProps}
       />

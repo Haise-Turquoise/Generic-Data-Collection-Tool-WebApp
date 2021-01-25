@@ -3,6 +3,7 @@ import clsx from 'clsx';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import Drawer from '@material-ui/core/Drawer';
 import AppBar from '@material-ui/core/AppBar';
+import Chip from '@material-ui/core/Chip';
 import Toolbar from '@material-ui/core/Toolbar';
 import List from '@material-ui/core/List';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -159,6 +160,7 @@ const Header = ({
         <HeaderTitle title={title} />
       </Link>
       {isTopMenu && <TopItemList config={config} classes={classes} isMobile={isMobile} />}
+      <Chip label={localStorage.getItem('currentUser')} />
       <FormControlLabel
         className={classes.flexItem}
         control={
@@ -337,7 +339,6 @@ const AuthPage = ({
 
   const handleDrawerOpen = () => setOpen(true);
   const handleDrawerClose = () => setOpen(false);
-
   const style = open
     ? { paddingTop: '5.7rem' }
     : { paddingTop: '5.7rem', marginLeft: `-${drawerWidth}px` };

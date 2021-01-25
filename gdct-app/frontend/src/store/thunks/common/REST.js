@@ -19,6 +19,7 @@ export const getRequestFactory = (store, controller) => (
 
   controller[isPopulated ? 'fetchPopulated' : 'fetch'](query)
     .then(values => {
+      console.log('values', values);
       dispatch(store.actions.RECEIVE(values));
       if (resolve) resolve();
     })

@@ -58,8 +58,8 @@ const MasterValueModel = model(
         name: { type: String },
       },
       template: {
-        _id: { type: ObjectId, ref: 'Template' },
-        name: { type: String },
+        // _id: { type: ObjectId, ref: 'Template' },
+        // name: { type: String },
       },
 
       COATreeId: { type: String },
