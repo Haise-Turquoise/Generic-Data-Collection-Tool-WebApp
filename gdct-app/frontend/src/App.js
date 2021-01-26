@@ -14,6 +14,7 @@ import Programs from './views/Programs';
 import Statuses from './views/Statuses';
 import ReportingPeriods from './views/ReportingPeriods';
 
+import AppConfigs from './view/AppConfigs';
 import UserRouter from './views/UserRouter';
 import ReportRouter from './views/ReportRouter';
 import TemplateRouter from './views/TemplateRouter';
@@ -41,7 +42,7 @@ const PrivateRouter = ({ setLoggedIn }) => {
       <Route path="/admin/submission" component={SubmissionRouter} />
       <Route path="/admin/role" component={RoleRouter} />
       <Route path={ROUTE_CATEGORY} component={COARouter} />
-      <Route exact path="/admin/configuration" component={null} />
+      <Route exact path="/admin/configuration" component={AppConfigs} />
       <Route exact path="/admin/business_rule_configure" component={null} />
       <Route path="/admin/user_management" component={UserRouter} />
       <Route exact path="/admin/program" component={Programs} />
