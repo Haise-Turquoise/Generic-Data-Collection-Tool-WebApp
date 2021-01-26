@@ -8,11 +8,11 @@ export default class AppConfigRepository extends BaseRepository {
   }
 
   async delete(id) {
-    const appSys = await AppConfigModel.findById(id);
-    if (appSys) {
-      appSys.isActive = false;
+    const appConfig = await AppConfigModel.findById(id);
+    if (appConfig) {
+      appConfig.isActive = false;
     }
-    return this.update(id, appSys);
+    return this.update(id, appConfig);
   }
 
   async create(AppConfig) {
