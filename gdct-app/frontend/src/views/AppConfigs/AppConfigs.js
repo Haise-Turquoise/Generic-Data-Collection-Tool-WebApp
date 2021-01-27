@@ -10,11 +10,11 @@ import {
   createAppConfigsRequest,
   deleteAppConfigsRequest,
   updateAppConfigsRequest,
-} from '../../../store/thunks/AppConfig';
+} from '../../store/thunks/AppConfig';
 
 import './AppConfigs.scss';
 import { selectFactoryRESTResponseTableValues } from '../../../store/common/REST/selectors';
-import { selectAppConfigsStore } from '../../../store/AppConfigsStore/selectors';
+import { selectAppConfigsStore } from '../../store/AppConfigsStore/selectors';
 
 const AppConfigsHeader = () => {
   return (
