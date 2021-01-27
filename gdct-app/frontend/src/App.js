@@ -14,7 +14,7 @@ import Programs from './views/Programs';
 import Statuses from './views/Statuses';
 import ReportingPeriods from './views/ReportingPeriods';
 
-import AppConfigs from './view/AppConfigs';
+import AppConfigs from './views/AppConfigs';
 import UserRouter from './views/UserRouter';
 import ReportRouter from './views/ReportRouter';
 import TemplateRouter from './views/TemplateRouter';
