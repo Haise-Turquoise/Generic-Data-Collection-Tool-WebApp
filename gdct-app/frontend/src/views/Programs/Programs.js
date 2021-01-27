@@ -1,4 +1,4 @@
-import React, { useMemo, useEffect } from 'react';
+import React, { useMemo, useEffect, useState } from 'react';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 
 import MaterialTable from 'material-table';
@@ -12,9 +12,12 @@ import {
   updateProgramsRequest,
 } from '../../store/thunks/program';
 
+import ErrorBanner from '../ErrorBanner';
+
 import './Programs.scss';
 import { selectFactoryRESTResponseTableValues } from '../../store/common/REST/selectors';
 import { selectProgramsStore } from '../../store/ProgramsStore/selectors';
+import { calculateOptions } from '../../tools/misc'
 
 const ProgramHeader = () => {
   return (
@@ -27,6 +30,7 @@ const ProgramHeader = () => {
 
 const ProgramsTable = () => {
   const dispatch = useDispatch();
+  const [readRowNum, setRowNum] = useState(1);
 
   const { programs } = useSelector(
     state => ({
@@ -44,7 +48,7 @@ const ProgramsTable = () => {
     [],
   );
 
-  const options = useMemo(() => ({ actionsColumnIndex: -1, search: true, showTitle: false }), []);
+  const options = useMemo(() => calculateOptions(readRowNum), [readRowNum]);
 
   const editable = useMemo(
     () => ({
@@ -68,12 +72,15 @@ const ProgramsTable = () => {
     dispatch(getProgramsRequest());
   }, [dispatch]);
 
-  return <MaterialTable columns={columns} data={programs} editable={editable} options={options} />;
+  useEffect(()=>{setRowNum(programs.length)}, [programs])
+
+  return <MaterialTable key={readRowNum} columns={columns} data={programs} editable={editable} options={options} />;
 };
 
 const Program = props => (
   <div className="programsPage">
     <ProgramHeader />
+    <ErrorBanner title={"Cannot delete the selected program since it is referenced in the master value table"} targetStore={selectProgramsStore}/>
     <ProgramsTable {...props} />
   </div>
 );

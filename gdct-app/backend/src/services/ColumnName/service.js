@@ -1,5 +1,6 @@
 import Container from 'typedi';
 import ColumnNameRepository from '../../repositories/ColumnName';
+import MasterValueRepository from '../../repositories/MasterValue';
 
 // @Service()
 export default class ColumnNameService {
@@ -12,7 +13,13 @@ export default class ColumnNameService {
   }
 
   async deleteColumnName(id) {
-    return this.columnNameRepository.delete(id);
+    let res = await this.columnNameRepository.findById(id);
+    res = await this.masterValueRepository.findByAttributeId(res.id)
+    if (!res.length){
+      return this.columnNameRepository.delete(id);
+    } else {
+      throw new Error("Attribute exists in mastervalue");
+    }
   }
 
   async updateColumnName(id, columnName) {

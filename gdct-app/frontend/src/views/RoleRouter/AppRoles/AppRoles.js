@@ -1,4 +1,4 @@
-import React, { useMemo, useEffect } from 'react';
+import React, { useMemo, useEffect, useState } from 'react';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 
 import MaterialTable from 'material-table';
@@ -15,6 +15,7 @@ import {
 import './AppRoles.scss';
 import { selectFactoryRESTResponseTableValues } from '../../../store/common/REST/selectors';
 import { selectAppRolesStore } from '../../../store/AppRolesStore/selectors';
+import { calculateOptions } from '../../../tools/misc'
 
 const AppRolesHeader = () => {
   return (
@@ -27,6 +28,7 @@ const AppRolesHeader = () => {
 
 const AppRolesTable = () => {
   const dispatch = useDispatch();
+  const [readRowNum, setRowNum] = useState(1);
   const { appRoles } = useSelector(
     state => ({
       appRoles: selectFactoryRESTResponseTableValues(selectAppRolesStore)(state),
@@ -42,7 +44,7 @@ const AppRolesTable = () => {
     [],
   );
 
-  const options = useMemo(() => ({ actionsColumnIndex: -1, search: false, showTitle: false }), []);
+  const options = useMemo(() => calculateOptions(readRowNum), [readRowNum]);
 
   const editable = useMemo(
     () => ({
@@ -66,7 +68,9 @@ const AppRolesTable = () => {
     dispatch(getAppRolesRequest());
   }, [dispatch]);
 
-  return <MaterialTable columns={columns} data={appRoles} editable={editable} options={options} />;
+  useEffect(()=>{setRowNum(appRoles.length)}, [appRoles])
+
+  return <MaterialTable key={readRowNum} columns={columns} data={appRoles} editable={editable} options={options} />;
 };
 
 const AppRoles = props => {

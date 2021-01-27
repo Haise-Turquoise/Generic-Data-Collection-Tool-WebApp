@@ -5,6 +5,7 @@ import UserRepository from '../User';
 import TemplateTypeRepository from '../TemplateType';
 import BaseRepository from '../repository';
 import WorkflowProcessRepository from '../WorkflowProcess';
+import {ObjectId} from 'mongodb';
 
 // MongoDB implementation
 // @Service()
@@ -25,6 +26,7 @@ export default class TemplateRepository extends BaseRepository {
     creationDate,
     expirationDate,
     workflowProcessId,
+    googleSheetId,
   }) {
     return this.templateTypeRepository
       .validate(templateTypeId)
@@ -37,9 +39,9 @@ export default class TemplateRepository extends BaseRepository {
           creationDate,
           expirationDate,
           workflowProcessId,
+          googleSheetId,
         }),
-      )
-      .then(template => new TemplateEntity(template.toObject()));
+      ).then(template => new TemplateEntity(template.toObject()));
   }
 
   async update(
@@ -83,9 +85,26 @@ export default class TemplateRepository extends BaseRepository {
     for (const key in query) {
       if (query[key]) realQuery[key] = query[key];
     }
-
+    //console.log(TemplateModel.find(realQuery))
     return TemplateModel.find(realQuery)
       .select('-templateData')
       .then(templates => templates.map(template => new TemplateEntity(template.toObject())));
+  }
+
+  // Last updated: Nov 16, 2020
+  // Called when google sheets in the Google account is created or deleted
+  // Updates the googleSheetId with the new Id. 
+  async updateGoogleSheetId(_id, googleSheetId) {
+    return TemplateModel.findByIdAndUpdate( _id,  { googleSheetId } ).then(
+      //template => new TemplateEntity(template.toObject()),
+    );
+  }
+  
+  async updateTemplate(_id, templateData){
+    return TemplateModel.findByIdAndUpdate( _id, { templateData })
+  }
+  
+  async findTemplateIDByTypeID(typeID){
+    return TemplateModel.find({templateTypeId:new ObjectId(typeID)}, {_id:1})
   }
 }

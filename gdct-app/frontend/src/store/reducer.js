@@ -34,6 +34,7 @@ import UserStore from './UserStore/store';
 import UsersStore from './UsersStore/store';
 import UserRegistrationStore from './UserRegistrationStore/store';
 import WorkflowProcessesStore from './WorkflowProcessesStore/store';
+import TransferStatusStore from './TransferStatusStore/store';
 
 export const root = combineReducers({
   UserStore: UserStore.reducer,
@@ -70,6 +71,7 @@ export const root = combineReducers({
   WorkflowStore: WorkflowStore.reducer,
   WorkflowsStore: WorkflowsStore.reducer,
   WorkflowProcessesStore: WorkflowProcessesStore.reducer,
+  TransferStatusStore:TransferStatusStore.reducer,
 
   ui,
 });

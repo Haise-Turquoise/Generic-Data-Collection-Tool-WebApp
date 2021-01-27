@@ -49,4 +49,8 @@ export default class SheetNameRepository extends BaseRepository {
   async delete(id) {
     return SheetNameModel.findByIdAndDelete(id).then(sheetName => new SheetNameEntity(sheetName));
   }
+
+  async batchFind(query){
+    return SheetNameModel.find({ _id: { "$in" : query }})
+  }
 }

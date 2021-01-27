@@ -1,4 +1,4 @@
-import React, { useMemo, useEffect } from 'react';
+import React, { useMemo, useEffect, useState } from 'react';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 
 import MaterialTable from 'material-table';
@@ -13,6 +13,8 @@ import { selectFactoryRESTResponseTableValues } from '../../store/common/REST/se
 import { selectWorkflowsStore } from '../../store/WorkflowsStore/selectors';
 import { ROUTE_WORKFLOW_CREATE, ROUTE_WORKFLOW } from '../../constants/routes';
 import { getWorkflowsRequest, deleteWorkflowRequest } from '../../store/thunks/workflow';
+import { calculateOptions } from '../../tools/misc'
+import ErrorBanner from '../ErrorBanner';
 
 const WorkflowHeader = () => {
   const history = useHistory();
@@ -31,6 +33,8 @@ const WorkflowHeader = () => {
 const Workflows = () => {
   const dispatch = useDispatch();
   const history = useHistory();
+  const [readRowNum, setRowNum] = useState(1);
+
   const { workflows } = useSelector(
     state => ({
       workflows: selectFactoryRESTResponseTableValues(selectWorkflowsStore)(state),
@@ -40,7 +44,7 @@ const Workflows = () => {
 
   const columns = useMemo(() => [{ title: 'Name', field: 'name' }], []);
 
-  const options = useMemo(() => ({ actionsColumnIndex: -1, search: false, showTitle: false }), []);
+  const options = useMemo(() => calculateOptions(readRowNum), [readRowNum]);
 
   const editable = useMemo(
     () => ({
@@ -67,10 +71,14 @@ const Workflows = () => {
     dispatch(getWorkflowsRequest());
   }, [dispatch]);
 
+  useEffect(()=>{setRowNum(workflows.length)}, [workflows])
+
   return (
     <div>
       <WorkflowHeader />
+      <ErrorBanner title={"You cannnot delete this workflow because it is refernced in template type."} targetStore={selectWorkflowsStore}/>
       <MaterialTable
+        key={readRowNum} 
         columns={columns}
         data={workflows}
         editable={editable}

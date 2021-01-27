@@ -1,4 +1,5 @@
 import { shallowEqual, useDispatch, useSelector } from 'react-redux';
+import { Link } from "react-router-dom";
 import React, { useCallback, useMemo, useEffect, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
@@ -7,11 +8,14 @@ import Typography from '@material-ui/core/Typography';
 import Paper from '@material-ui/core/Paper';
 import { useLocation } from 'react-router-dom';
 import MaterialTable from 'material-table';
+import ArrowBackIcon from '@material-ui/icons/ArrowBack';
+import { IconButton } from '@material-ui/core';
 import { convertExcelFileToState, convertStateToReactState } from '../../tools/excel';
 import { setExcelData } from '../../store/actions/ui/excel/commands';
 import { getSubmissionNoteRequest } from '../../store/thunks/submissionNote';
 import SubmissionNoteStore from '../../store/SubmissionNoteStore/store';
 import SubmissionWorkbookStore from '../../store/SubmissionWorkbookStore/store';
+
 import {
   selectFactoryRESTResponse,
   selectFactoryRESTResponseTableValues,
@@ -21,6 +25,7 @@ import { selectSubmissionNoteStore } from '../../store/SubmissionNoteStore/selec
 import {
   getSubmissionByIdRequest,
   updateSubmissionStatusRequest,
+  openGoogleSheetRequest,
 } from '../../store/thunks/submission';
 import DOWNLOAD from '../../store/reducers/ui/excel/commands/DOWNLOAD';
 import { selectSubmissionNoteHistoryStore } from '../../store/SubmissionNoteHistoryStore/selectors';
@@ -86,7 +91,6 @@ const EditSubmission = ({ history }) => {
   );
   useEffect(() => {
     if (location.state.detail) {
-      console.log(location.state.detail);
       if (
         location.state.detail.permission.find(
           permission => permission === 'Submitter' || permission === 'Inputter',
@@ -135,18 +139,33 @@ const EditSubmission = ({ history }) => {
       submissionNotes = submissionNoteHistory;
     }
   }
+
   console.log(isSubmitterOrInputter);
   console.log(isReviewerOrApprover);
   // console.log(submitUnavailable);
 
-  const handleOpenTemplate = () =>
+
+
+  const handleOpenTemplate = () => {
+    // history.push({
+    //   pathname: `/submission/submissions/${submission._id}`,
+    //   state: { detail: location.state.detail },
+    // });
+    //Creates a new spreadsheet in google and returns the id. 
+    openGoogleSheetRequest(submission._id);
+  }
+
+  const backButtonAction = () => {
     history.push({
-      pathname: `/submission/submissions/${submission._id}`,
-      state: { detail: location.state.detail },
-    });
+
+      pathname: `/submission/dashboard`
+    })
+  }
+
   const UserFeedback = feedback => {
     setUserFeedback(feedback);
   };
+
   const handleDownloadWorkbook = () => {
     setUserFeedback('Downloading !');
     setCursor('progress');
@@ -187,8 +206,10 @@ const EditSubmission = ({ history }) => {
   };
 
   return (
+
     <div className="submissions" style={{ cursor }}>
       <SubmissionHeader />
+      
       <Paper className="pl-4 pr-4 pb-5 pt-4">
         <div className="submission__label">
           <Typography className="submission__inputTitle"> Note </Typography>
@@ -270,7 +291,19 @@ const EditSubmission = ({ history }) => {
           >
             Change Notes
           </Button>
+
+          <Button 
+            size="large" 
+            color="primary"
+            variant="contained"
+            onClick={backButtonAction}
+          >
+            <ArrowBackIcon></ArrowBackIcon>
+            Back
+          </Button>
+
           <div>{userFeedback}</div>
+
         </div>
       </Paper>
     </div>

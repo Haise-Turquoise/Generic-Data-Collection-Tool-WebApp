@@ -1,6 +1,6 @@
 import { Schema, model } from 'mongoose';
 
-const { ObjectId } = Schema.Types;
+const { ObjectId, Number } = Schema.Types;
 
 /**
  * Contains the values of successfully approved workbooks
@@ -40,10 +40,10 @@ const MasterValueModel = model(
         _id: { type: ObjectId, ref: 'Submission' },
         name: { type: String },
       },
-      sheet: {
-        _id: { type: ObjectId, ref: 'Sheet' },
-        name: { type: String },
-      },
+      // sheet: {
+      //   _id: { type: ObjectId, ref: 'Sheet' },
+      //   name: { type: String },
+      // },
       reportingPeriod: { type: String, default: '' },
       program: {
         _id: { type: ObjectId, ref: 'Program' },
@@ -62,11 +62,14 @@ const MasterValueModel = model(
         // name: { type: String },
       },
 
-      COATreeId: { type: String },
-      CategoryId: { type: String },
-      AttributeId: { type: String },
+      COATreeId: { type: ObjectId, ref: 'CategoryTree' },
+      categoryId: { type: String},
+      attributeId: { type: String },
+      categoryGroup: { type: String },
 
-      value: { type: String },
+      value: { type: Number },
+      categoryName: {type: String},
+      attributeName: {type: String},
     },
     { minimize: false },
   ),

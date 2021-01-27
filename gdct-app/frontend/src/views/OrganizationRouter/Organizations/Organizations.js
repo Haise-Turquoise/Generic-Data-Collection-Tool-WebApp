@@ -1,4 +1,4 @@
-import React, { useMemo, useEffect } from 'react';
+import React, { useMemo, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 
@@ -14,6 +14,7 @@ import EditIcon from '@material-ui/icons/Edit';
 import { selectFactoryRESTResponseTableValues } from '../../../store/common/REST/selectors';
 import { selectOrgsStore } from '../../../store/OrganizationsStore/selectors';
 import { getOrgsRequest } from '../../../store/thunks/organization';
+import {calculateOptions} from '../../../tools/misc'
 
 const HeaderActions = () => {
   const history = useHistory();
@@ -40,6 +41,7 @@ const OrganizationHeader = () => {
 
 const Organizations = ({ history }) => {
   const dispatch = useDispatch();
+  const [readRowNum, setRowNum] = useState(1);
 
   const { Orgs } = useSelector(state => ({
     Orgs: selectFactoryRESTResponseTableValues(selectOrgsStore)(state),
@@ -56,7 +58,7 @@ const Organizations = ({ history }) => {
     [],
   );
 
-  const options = useMemo(() => ({ actionsColumnIndex: -1, search: true, showTitle: false }), []);
+  const options = useMemo(() => calculateOptions(readRowNum), [readRowNum]);
 
   const actions = useMemo(
     () => [
@@ -73,10 +75,12 @@ const Organizations = ({ history }) => {
     dispatch(getOrgsRequest());
   }, [dispatch]);
 
+  useEffect(()=>{setRowNum(Orgs.length)}, [Orgs])
+
   return (
     <div className="organizations">
       <OrganizationHeader />
-      <MaterialTable columns={columns} data={Orgs} actions={actions} options={options} />
+      <MaterialTable key={readRowNum} columns={columns} data={Orgs} actions={actions} options={options}/>
     </div>
   );
 };

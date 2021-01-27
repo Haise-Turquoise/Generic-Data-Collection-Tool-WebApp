@@ -22,6 +22,7 @@ export default class SubmissionEntity {
     version,
     isLatest,
     parentId,
+    googleSheetId,
   }) {
     this._id = _id;
     this.id = id;
@@ -45,5 +46,6 @@ export default class SubmissionEntity {
     this.version = version;
     this.isLatest = isLatest;
     this.parentId = parentId;
-  }
+    this.googleSheetId = googleSheetId;
+   }
 }

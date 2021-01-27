@@ -27,7 +27,13 @@ import MenuController from './Menu';
 import UsersController from './Users/controller';
 import SubmissionNoteController from './SubmissionNote';
 import { authorized } from '../middlewares/auth/auth';
+
+import GoogleApisController from './GoogleApis'
+import TransferStatusController from './TransferStatus'
+import TransferStatusService from '../services/TransferStatus'
+
 import MasterValueController from './MasterValue/controller';
+
 
 export const routerManager = app => {
   app.use('/', Container.get(AuthController));
@@ -66,4 +72,25 @@ export const routerManager = app => {
   app.use('/role_manager', authorized, Container.get(AppSysRoleController));
   app.use('/role_manager', authorized, Container.get(AppRoleResourceController));
   app.use('/role_manager', authorized, Container.get(AppResourceController));
+
+  // Oct 26, 2020
+  // Used to handle requests from google
+  app.use('/googleapis_manager', authorized, Container.get(GoogleApisController));
+
+  // Jan 22, 2021
+  // Use to handle transfer control
+  
+  app.use('/transferManager', authorized, Container.get(TransferStatusController));
+
+  // const service = Container.get(TransferStatusService)
+  // app.get('/transfer_manager/startService/:time', authorized, (req, res, next)=>{
+  //   const { time } = req.params;
+  //   service.startTransferProccess(time).then(()=>res.end()).catch(next);
+  // })
+
+  // app.get('/transfer_manager/stopService', authorized, (req, res, next)=>{
+  //   service.closeCurrentTransferProcess().then(()=>res.end()).catch(next);
+  // })
+
+  
 };

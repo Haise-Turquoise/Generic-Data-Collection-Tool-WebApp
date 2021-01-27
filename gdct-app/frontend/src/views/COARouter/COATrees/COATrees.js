@@ -21,7 +21,9 @@ import { selectFactoryRESTResponseTableValues } from '../../../store/common/REST
 import { selectSheetNamesStore } from '../../../store/SheetNamesStore/selectors';
 import { selectDetectEmptyTreeStore } from '../../../store/DetectEmptyTreeStore/selectors';
 import { ROUTE_CATEGORY_TREES } from '../../../constants/routes';
+import { calculateOptions } from '../../../tools/misc'
 import DetectEmptyTreeStore from '../../../store/DetectEmptyTreeStore/store';
+
 
 // import './COATrees.scss'
 
@@ -64,13 +66,13 @@ const COATreesTable = ({ history }) => {
     [history],
   );
 
-  const options = useMemo(() => ({ actionsColumnIndex: -1, search: false, showTitle: false }), []);
 
   useEffect(() => {
     // console.log('Page refresh');
     dispatch(getSheetNamesRequest());
     dispatch(getDetectEmptyTree());
   }, [dispatch, refresh]);
+
 
   const editable = useMemo(
     () => ({

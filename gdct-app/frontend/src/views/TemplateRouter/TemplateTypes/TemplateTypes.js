@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useEffect } from 'react';
+import React, { useMemo, useEffect, useState } from 'react';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 
 import MaterialTable from 'material-table';
@@ -20,6 +20,8 @@ import { selectWorkflowsStore } from '../../../store/WorkflowsStore/selectors';
 import { getWorkflowsRequest } from '../../../store/thunks/workflow';
 import { WorkflowStoreActions } from '../../../store/WorkflowStore/store';
 import TemplateTypesStore from '../../../store/TemplateTypesStore/store';
+import ErrorBanner from '../../ErrorBanner';
+import { calculateOptions } from '../../../tools/misc'
 
 const TemplateTypeHeader = () => {
   return (
@@ -32,6 +34,7 @@ const TemplateTypeHeader = () => {
 
 const TemplateTypesTable = ({ history }) => {
   const dispatch = useDispatch();
+  const [readRowNum, setRowNum] = useState(1);
 
   const { templateTypes, workflows } = useSelector(
     state => ({
@@ -45,6 +48,8 @@ const TemplateTypesTable = ({ history }) => {
     acc[workflow._id] = `${workflow.name}`;
     return acc;
   }, {});
+
+  useEffect(()=>{setRowNum(templateTypes.length)}, [templateTypes])
 
   const columns = [
     { title: 'Name', field: 'name' },
@@ -73,7 +78,7 @@ const TemplateTypesTable = ({ history }) => {
     [history],
   );
 
-  const options = useMemo(() => ({ actionsColumnIndex: -1, search: true, showTitle: false }), []);
+  const options = useMemo(() => calculateOptions(readRowNum), [readRowNum]);
 
   const editable = useMemo(
     () => ({
@@ -105,6 +110,7 @@ const TemplateTypesTable = ({ history }) => {
 
   return (
     <MaterialTable
+      key={readRowNum}
       columns={columns}
       actions={actions}
       data={templateTypes}
@@ -118,6 +124,7 @@ const TemplateType = props => (
   <div className="templateTypesPage">
     <TemplateTypeHeader />
     {/* <FileDropzone/> */}
+    <ErrorBanner title={"The template type you are trying to delete is referenced in one or more submissions"} targetStore={selectTemplateTypesStore}/>
     <TemplateTypesTable {...props} />
   </div>
 );
