@@ -1,48 +1,47 @@
 import Container from 'typedi';
 import TransferStatusRepository from '../../repositories/TransferStatus'
-import transfer from '../../mongoToSql'
+import startTransfer from '../../mongoToSql'
+import TransferStatusModel from '../../models/TransferStatus'
 
 // @Service()
-export default class TemplateTypeService {
+class TemplateTypeService {
   constructor() {
     this.transferStatusRepository = Container.get(TransferStatusRepository);
+    this.currentTimer = null;
   }
 
   async startTransferProccess(time){
+    if (time <= 0) throw new Error("Cannot set transfer to less or equal to 0 minutes")
     const millis = time*1000*60;
-    const timerObject = this.transferStatusRepository.findTransferStatus();
-    console.log('Test point 1')
 
-    if (timerObject.currentActiveProcess){
-
-      clearInterval(timerObject.currentActiveProcess);
-      const newTimer = setInterval(transfer(), millis);
-
-      return this.transferStatusRepository.updateTimerID(newTimer).catch(err=>{
-        clearInterval(newTimer);
-        throw new Error(err)
-      })
+    if (this.currentTimer){
+      console.log('test 1')
+      clearInterval(this.currentTimer);
     }
-    const newTimer = setInterval(transfer(), millis);
-    return this.transferStatusRepository.updateTimerID(newTimer).catch(err=>{
-      clearInterval(newTimer);
-      throw new Error(err)
+
+    console.log('Test point 3') 
+    const newTimer = startTransfer(millis);
+    this.currentTimer = newTimer;
+    console.log('Test point 4')
+    return this.transferStatusRepository.updateTimerID(time, true)
+    .catch(err=>{
+      clearInterval(this.currentTimer);
+      this.currentTimer = null;
     })
-    
   }
 
   async getTransferStatus(){
     console.log('I ran')
-    const res = await this.transferStatusRepository.findTransferStatus();
-    return res;
+    return this.transferStatusRepository.findTransferStatus();
   }
 
   async closeCurrentTransferProcess(){
-    const record = this.transferStatusRepository.findTransferStatus()
-    if (record.currentActiveProcess){
-      clearInterval(record.currentActiveProcess);
-      return this.transferStatusRepository.updateTimerID(null);
+    if (this.currentTimer){
+      clearInterval(this.currentTimer);
+      return this.transferStatusRepository.updateTimerID(false);
     }
     throw new Error('There are no currently running transfer Process')
   }
 }
+
+export default TemplateTypeService;

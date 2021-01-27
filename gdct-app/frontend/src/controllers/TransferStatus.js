@@ -4,7 +4,7 @@ import { host } from '../constants/domain';
 
 const TransferStatusController = (()=>{
     const transferStatusAxios = axios.create({
-        baseURL: `${host}/transfer_manager`,
+        baseURL: `${host}/transferManager`,
         withCredentials: true,
     });
 

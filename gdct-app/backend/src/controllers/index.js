@@ -29,6 +29,8 @@ import SubmissionNoteController from './SubmissionNote';
 import { authorized } from '../middlewares/auth/auth';
 import GoogleApisController from './GoogleApis'
 import TransferStatusController from './TransferStatus'
+import TransferStatusService from '../services/TransferStatus'
+
 
 export const routerManager = app => {
   app.use('/', Container.get(AuthController));
@@ -74,7 +76,18 @@ export const routerManager = app => {
 
   // Jan 22, 2021
   // Use to handle transfer control
-  app.use('/transfer_manager', Container.get(TransferStatusController));
+  
+  app.use('/transferManager', authorized, Container.get(TransferStatusController));
+
+  // const service = Container.get(TransferStatusService)
+  // app.get('/transfer_manager/startService/:time', authorized, (req, res, next)=>{
+  //   const { time } = req.params;
+  //   service.startTransferProccess(time).then(()=>res.end()).catch(next);
+  // })
+
+  // app.get('/transfer_manager/stopService', authorized, (req, res, next)=>{
+  //   service.closeCurrentTransferProcess().then(()=>res.end()).catch(next);
+  // })
 
   
 };

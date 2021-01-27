@@ -20,6 +20,9 @@ const config = {
     max: 50,
     min: 10,
     idleTimeoutMillis: 30000
+  },
+  options:{
+    enableArithAbort:false
   }
 };
 
@@ -46,7 +49,7 @@ const orgTransfer = async(conn)=>{
   const table = new sql.Table('dbo.organizationDemo');
 
   // Set this to true if the table does not exist in Azure
-  table.create = false;
+  table.create = true;
 
   // Define all the columns, this has to be consistant with the table on Azure if it already exist
   table.columns.add('_id', sql.VarChar(50), { nullable: false });
@@ -178,7 +181,7 @@ const AttributeTransfer = async(conn)=>{
 
   console.time('mongo to SQL reformat time')
   const table = new sql.Table('dbo.Attribute');
-  table.create = false;
+  table.create = true;
 
   table.columns.add('_id', sql.VarChar(50), { nullable: false });
   table.columns.add('name', sql.VarChar(500), { nullable: false });
@@ -223,7 +226,7 @@ const COATransfer = async(conn)=>{
 
   console.time('mongo to SQL reformat time')
   const table = new sql.Table('dbo.category');
-  table.create = false;
+  table.create = true;
 
   table.columns.add('_id', sql.VarChar(50), { nullable: false });
   table.columns.add('name', sql.VarChar(500), { nullable: false });
@@ -270,7 +273,7 @@ const ReportingPeriodTransfer = async(conn)=>{
 
   console.time('mongo to SQL reformat time')
   const table = new sql.Table('dbo.ReportingPeriod');
-  table.create = false;
+  table.create = true;
 
   table.columns.add('_id', sql.VarChar(50), { nullable: false });
   table.columns.add('name', sql.VarChar(100), { nullable: false });
@@ -320,7 +323,7 @@ const MasterValueTransfer = async (conn) =>{
 
   console.time('mongo to SQL reformat time')
   const table = new sql.Table('dbo.MasterValue');
-  table.create = false;
+  table.create = true;
   table.columns.add('_id', sql.VarChar(50), { nullable: false });
   table.columns.add('reportingPeriod', sql.VarChar(50), { nullable: false });
   table.columns.add('submission_id', sql.VarChar(50), { nullable: false });
@@ -409,7 +412,7 @@ const programTransfer = async(conn)=>{
 
   console.time('mongo to SQL reformat time')
   const table = new sql.Table('dbo.program');
-  table.create = false;
+  table.create = true;
   table.columns.add('_id', sql.VarChar(50), { nullable: false });
   table.columns.add('code', sql.VarChar(500), { nullable: false });
   table.columns.add('name', sql.VarChar(500), { nullable: false });
@@ -451,7 +454,7 @@ const TemplateTypeTransfer = async(conn)=>{
 
   console.time('mongo to SQL reformat time')
   const table = new sql.Table('dbo.templateType');
-  table.create = false;
+  table.create = true;
   table.columns.add('_id', sql.VarChar(50), { nullable: false });
   table.columns.add('name', sql.VarChar(50), { nullable: false });
   table.columns.add('description', sql.VarChar(50), { nullable: false });
@@ -483,21 +486,28 @@ const transfer = async ()=>{
   const transferRepo = Container.get(transferStatusRepository);
   const res = await transferRepo.findTransferStatus();
   if (res.isActive){
-    // const pool = new sql.ConnectionPool(config);
-    // await pool.connect();
-    // await orgTransfer(pool);
-    // await categoryGroupTransfer(pool);
-    // await AttributeTransfer(pool);
-    // await COATransfer(pool);
-    // await ReportingPeriodTransfer(pool);
-    // await MasterValueTransfer(pool);
-    // await programTransfer(pool);
-    // await TemplateTypeTransfer(pool);
-    // await pool.close()
-    console.log('update!')
+    console.log('Starting Transfer')
+    try{
+      const pool = new sql.ConnectionPool(config);
+      await pool.connect();
+      // await orgTransfer(pool);
+      await categoryGroupTransfer(pool);
+      // await AttributeTransfer(pool);npm 
+      // await COATransfer(pool);
+      // await ReportingPeriodTransfer(pool);
+      // await MasterValueTransfer(pool);
+      // await programTransfer(pool);
+      // await TemplateTypeTransfer(pool);
+      await pool.close()
+    }catch(err){
+      console.log(err)
+    }
   }else{
     console.log("TransferStatus not active")
   }
 }
-
-export default transfer;
+const test = ()=>{console.log('hi')}
+const startTransfer = (interval)=>{
+  return setInterval(transfer, interval)
+}
+export default startTransfer;

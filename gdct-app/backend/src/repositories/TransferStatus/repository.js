@@ -9,8 +9,8 @@ export default class TransferStatusRepository extends BaseRepository {
     return TransferStatusModel.findOne({name:"mongoToSql"});
   }
 
-  async updateTimerID(timerObject){
-    return TransferStatusModel.updateOne({name:"mongoToSql"}, {$set:{currentActiveProcess:timerObject}})
+  async updateTimerID(time, state){
+    return TransferStatusModel.updateOne({name:"mongoToSql"}, {$set:{isActive:state, interval:time}})
   }
   
 }

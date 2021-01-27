@@ -7,21 +7,23 @@ import { log } from '../../utils/log/winston';
 const TransferStatusController = Service([TransferStatusService], service=>{
     const router = Router();
     return (()=>{
-        router.get('/startService/:time', authorized, (req, res, next)=>{
+        router.get('/startService/:time', authorized,(req, res, next)=>{
             log.info('start service');
             const { time } = req.params;
             service.startTransferProccess(time).then(()=>res.end()).catch(next);
-        })
+        });
 
-        router.get('/stopService', authorized, (req, res, next)=>{
+        router.get('/stopService', authorized ,(req, res, next)=>{
             service.closeCurrentTransferProcess().then(()=>res.end()).catch(next);
-        })
+        });
 
-        router.get('/getServiceStatus', authorized, (req, res, next)=>{
+        router.get('/getServiceStatus', (req, res, next)=>{
             console.log('controller!')
             service.getTransferStatus().then(status=>res.json({status})).catch(next);
-        })
-    })
-})
+        });
+
+        return router;
+    })();
+});
 
 export default TransferStatusController;

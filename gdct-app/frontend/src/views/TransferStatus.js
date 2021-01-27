@@ -1,9 +1,14 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useState } from 'react';
+import { shallowEqual, useDispatch, useSelector } from 'react-redux';
 import Typography from '@material-ui/core/Typography';
 import Paper from '@material-ui/core/Paper';
 import TransferStatusController from '../controllers/TransferStatus';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
+import { selectFactoryRESTResponseTableValues } from '../store/common/REST/selectors';
+import { selectTransferStatusStore } from '../store/TransferStatusStore/selectors';
+import {startTransferRequest, stopTransferRequest} from '../store/thunks/TransferStatus'
+
 
 
 
@@ -18,7 +23,13 @@ const ReportingPeriodHeader = () => {
 
 const TransferStausPanel = ()=>{
   const [readState, writeState] = useState(true)
-
+  const dispatch = useDispatch();
+  const temp = useSelector(
+    state=>({
+      respond: selectFactoryRESTResponseTableValues(selectTransferStatusStore)(state),
+    }),
+    shallowEqual,
+  );
   // useEffect(()=>{
   //   axiosBase.get('/getServiceStatus').then(value=>{
   //     console.log("run", value)
@@ -32,18 +43,16 @@ const TransferStausPanel = ()=>{
   //   })
   // },[])
 
-  const StartTransfer = ()=>{
+  const StartTransfer = useCallback(()=>{
     const time = document.getElementById('interval').value;
     console.log(time);
-    TransferStatusController.startTransfer(Number(time)).then(()=>{
-      console.log('Updated!');
-    })
+    dispatch(startTransferRequest(time));
     writeState(!readState);
-  }
-  const StopTransfer = ()=>{
-    TransferStatusController.stopTransfer().then(()=>{console.log('Stopped')})
+  }, [])
+  const StopTransfer = useCallback(()=>{
+    dispatch(stopTransferRequest());
     writeState(!readState);
-  }
+  },[])
 
   
   return (

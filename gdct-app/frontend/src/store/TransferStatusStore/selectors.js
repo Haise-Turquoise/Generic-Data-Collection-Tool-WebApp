@@ -1,1 +1,1 @@
-export const selectUserRegistrationStore = state => state.TransferStatusStore;
+export const selectTransferStatusStore = state => state.TransferStatusStore;

@@ -8,7 +8,7 @@ app.set('port', process.env.PORT);
 const port = app.get('port');
 
 const server = app.listen(port, () => {
-  // polling();
+  polling();
   log.info('Listening on port', port);
   log.info('i18n test:', i18n.__('greeting'));
 });
