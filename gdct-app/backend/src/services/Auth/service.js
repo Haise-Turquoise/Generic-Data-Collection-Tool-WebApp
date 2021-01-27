@@ -76,6 +76,7 @@ export default class AuthService {
     try {
       if (req.user) {
         returnNormalJson(res, { email: req.user.email });
+        // returnErrorJson(res, 'Not authenticated', 401);
       } else {
         returnErrorJson(res, 'Not authenticated', 401);
       }
@@ -174,6 +175,7 @@ export default class AuthService {
       return passport.authenticate('local')(req, res, async () => {
         const { email } = req.user;
         const user = await authService.UserRepostory.findByEmail(email);
+
         req.session.roles = [];
         req.session.isAdmin = false;
         if (user) {

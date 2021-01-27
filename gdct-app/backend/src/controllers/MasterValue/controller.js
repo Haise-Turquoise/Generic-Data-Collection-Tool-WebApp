@@ -1,38 +1,49 @@
 import { Service } from 'typedi';
 import { Router } from 'express';
-import SheetNameService from '../../services/SheetName';
+import MasterValueService from '../../services/MasterValue';
 
-const SheetNameController = Service([SheetNameService], service => {
+const MasterValueController = Service([MasterValueService], service => {
   const router = Router();
   return (() => {
-    router.get('/sheetNames', (req, res, next) => {
+    router.get('/masterValue', (req, res, next) => {
       // Get query from middleware -- auth handler
       service
-        .findSheetName({})
-        .then(sheetNames => res.json({ sheetNames }))
+        .findMasterValue({})
+        .then(masterValueTable => res.json({ masterValueTable }))
         .catch(next);
     });
 
-    router.post('/sheetNames', (req, res, next) => {
+    router.post('/masterValue', (req, res, next) => {
+      // console.log('reach backend controller create')
       service
-        .createSheetName(req.body.sheetName)
-        .then(sheetName => res.json({ sheetName }))
+        .createMasterValue(req.body.masterValue)
+        .then(masterValue => res.json({ masterValue }))
         .catch(next);
     });
 
-    router.put('/sheetNames/:_id', (req, res, next) => {
+    router.post('/masterValue/addDocument', (req, res, next) => {
+      // console.log('reach backend controller addDocument')
+      service
+        .addDocument(req.body.masterValue)
+        .then(masterValue => res.json({ masterValue }))
+        .catch(next);
+    });
+
+    router.put('/masterValue/:_id', (req, res, next) => {
       const { _id } = req.params;
+
       const { sheetName } = req.body;
+
       service
-        .updateSheetName(_id, sheetName)
+        .updateMasterValue(_id, masterValue)
         .then(() => res.end())
         .catch(next);
     });
 
-    router.delete('/sheetNames/:_id', (req, res, next) => {
+    router.delete('/masterValue/:_id', (req, res, next) => {
       const { _id } = req.params;
       service
-        .deleteSheetName(_id)
+        .deleteMasterValue(_id)
         .then(() => res.end())
         .catch(next);
     });
@@ -41,4 +52,4 @@ const SheetNameController = Service([SheetNameService], service => {
   })();
 });
 
-export default SheetNameController;
+export default MasterValueController;

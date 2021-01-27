@@ -36,12 +36,13 @@ const StatusesTable = () => {
     }),
     shallowEqual,
   );
-
+  // console.log(statuses);
   const columns = useMemo(
     () => [
       { title: 'Name', field: 'name' },
       { title: 'Description', field: 'description' },
       { title: 'Active', type: 'boolean', field: 'isActive' },
+      { title: 'ForPackage', type: 'boolean', field: 'forPackage' },
     ],
     [],
   );

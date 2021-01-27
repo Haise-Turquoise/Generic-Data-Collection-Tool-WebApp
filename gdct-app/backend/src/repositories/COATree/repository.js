@@ -31,7 +31,10 @@ export default class ReportPeriodRepository extends BaseRepository {
       sheetNameId,
     })
       .then(() => COATreeModel.create(COATrees))
-      .then(COATrees => COATrees.map(COATree => new COATreeEntity(COATree.toObject())));
+
+      .then(COATrees => {
+        return COATrees.map(COATree => new COATreeEntity(COATree.toObject()));
+      });
   }
 
   async find(query) {

@@ -1,11 +1,15 @@
 import PropTypes from 'prop-types';
 import React, { useEffect, useMemo, useState } from 'react';
+
 import { useHistory } from "react-router-dom";
+
 import { useDispatch, useSelector } from 'react-redux';
 
 import MaterialTable, { MTableCell } from 'material-table';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
+import Button from '@material-ui/core/Button';
+import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import { getUsersRequest } from '../../../store/thunks/users';
 import { getOrgsRequest } from '../../../store/thunks/organization';
 import { getProgramsRequest } from '../../../store/thunks/program';
@@ -153,7 +157,9 @@ const UserInfo = ({
   ) : (
     <div className="userInfo">
       <HeaderActions />
+
       <MaterialTable key={readRowNum} components={components} columns={columns} data={data} options={options} />
+
       <Button
         type="button"
         className="UserInfo_SaveButton"
@@ -162,6 +168,7 @@ const UserInfo = ({
         size="large"
         onClick={backButtonAction}
         >
+
         <ArrowBackIcon></ArrowBackIcon>
         Back
       </Button>

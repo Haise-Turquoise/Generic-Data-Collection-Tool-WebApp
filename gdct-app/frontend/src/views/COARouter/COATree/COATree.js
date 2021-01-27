@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect } from 'react';
 
-import SortableTree from 'react-sortable-tree';
+import SortableTree, { toggleExpandedForAll } from 'react-sortable-tree';
 import { useSelector, shallowEqual, useDispatch, batch } from 'react-redux';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
@@ -90,17 +90,23 @@ const COATreeTreeStructure = ({ sheetNameId }) => {
   const nodeProps = useCallback(
     nodeProps => {
       const handleDelete = () =>
-        dispatch(COATreeStore.actions.DELETE_COA_TREE_UI({ path: nodeProps.path }));
+        dispatch(COATreeStore.actions.DELETE_COA_TREE_UI({ node: nodeProps }));
       const handleOpenCOADialog = () => {
         batch(() => {
           dispatch(DialogsStore.actions.OPEN_COA_DIALOG());
           dispatch(COATreeStore.actions.UPDATE_SELECTED_NODE_COA_TREE_UI({ nodeProps }));
         });
       };
-
+      if (nodeProps.node.content) {
+        return {
+          buttons: [
+            <AddButton key={`add-button-${nodeProps.path}`} handleClick={handleOpenCOADialog} />,
+            <DeleteButton key={`delete-button-${nodeProps.path}`} handleClick={handleDelete} />,
+          ],
+        };
+      }
       return {
         buttons: [
-          <AddButton key={`add-button-${nodeProps.path}`} handleClick={handleOpenCOADialog} />,
           <DeleteButton key={`delete-button-${nodeProps.path}`} handleClick={handleDelete} />,
         ],
       };

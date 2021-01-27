@@ -10,6 +10,10 @@ const userController = (() => {
   return {
     create: async userData =>
       userAxios.post('/users/registerUser', { userData }).then(res => res.data),
+    fetchUserByUserName: async username =>
+      userAxios.get(`/${username}`).then(res => {
+        return res.data;
+      }),
   };
 })();
 

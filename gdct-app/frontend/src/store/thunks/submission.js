@@ -121,20 +121,26 @@ export const updateSubmissionStatusRequest = (
   submissionNote,
   role,
   newProcessId,
-) => dispatch => {
+) => async dispatch => {
+  console.log('button click');
+
   const newSubmission = {
     ...submission,
     //   name: present.name,
     phase: role,
   };
-  submissionController
+
+  await submissionController
     .updateStatus(submission, submissionNote, role, newProcessId)
     .then(() => {
+      // console.log(submission);
+
       dispatch(SubmissionsStore.actions.UPDATE(newSubmission));
     })
     .catch(error => {
       dispatch(SubmissionsStore.actions.FAIL_REQUEST(error));
     });
+  return true;
 };
 
 // Added on Nov 25, 2020

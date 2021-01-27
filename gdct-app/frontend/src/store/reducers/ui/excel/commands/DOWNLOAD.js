@@ -3,7 +3,7 @@
 
 import { downloadWorkbook } from '../../../../../tools/excel';
 
-const DOWNLOAD = state => {
+const DOWNLOAD = (state, UserFeedback) => {
   const { name, activeSheetName, inactiveSheets } = state;
 
   const sheets = {
@@ -12,7 +12,9 @@ const DOWNLOAD = state => {
   };
 
   downloadWorkbook(name, activeSheetName, sheets);
-
+  // setUserFeedback('DOwnload Successfully !')
+  // console.log('get userFeedback')
+  // UserFeedback('Download successfully !')
   return state;
 };
 
