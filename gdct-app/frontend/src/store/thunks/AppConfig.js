@@ -8,7 +8,7 @@ import {
   updateRequestFactory,
 } from './common/REST';
 
-export const getAppConfigsRequest = getRequestFactory(AppConfigsStore, appSysController);
-export const createAppConfigRequest = createRequestFactory(AppConfigsStore, appSysController);
-export const deleteAppConfigRequest = deleteRequestFactory(AppConfigsStore, appSysController);
-export const updateAppConfigRequest = updateRequestFactory(AppConfigsStore, appSysController);
+export const getAppConfigsRequest = getRequestFactory(AppConfigsStore, appConfigController);
+export const createAppConfigRequest = createRequestFactory(AppConfigsStore, appConfigController);
+export const deleteAppConfigRequest = deleteRequestFactory(AppConfigsStore, appConfigController);
+export const updateAppConfigRequest = updateRequestFactory(AppConfigsStore, appConfigController);

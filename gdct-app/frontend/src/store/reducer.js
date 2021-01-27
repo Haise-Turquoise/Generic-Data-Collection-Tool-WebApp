@@ -15,6 +15,7 @@ import AppSysRolesStore from './AppSysRolesStore/store';
 import DialogsStore from './DialogsStore/store';
 import ReportingPeriodsStore from './ReportingPeriodsStore/store';
 
+import AppConfigsStore from './AppConfigsStore/store';
 import StatusesStore from './StatusesStore/store';
 import SubmissionPeriodsStore from './SubmissionPeriodsStore/store';
 import ProgramsStore from './ProgramsStore/store';
