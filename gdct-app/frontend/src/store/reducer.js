@@ -55,6 +55,7 @@ export const root = combineReducers({
   OrgsStore: OrgsStore.reducer,
   UsersStore: UsersStore.reducer,
 
+  AppConfigsStore: AppConfigsStore.reducer,
   COATreeStore: COATreeStore.reducer,
   SheetNamesStore: SheetNamesStore.reducer,
   SubmissionPeriodsStore: SubmissionPeriodsStore.reducer,
