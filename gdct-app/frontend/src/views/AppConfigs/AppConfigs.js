@@ -65,7 +65,7 @@ const AppConfigsTable = () => {
   useEffect(() => {
     dispatch(getAppConfigsRequest());
   }, [dispatch]);
-
+console.log (appConfigs)
   return <MaterialTable columns={columns} data={appConfigs} editable={editable} options={options} />;
 };
 

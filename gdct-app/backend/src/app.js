@@ -14,6 +14,7 @@ import compression from 'compression';
 import { Container } from 'typedi';
 import Database from './loaders/database';
 
+import AppConfigController from './controllers/AppConfig';
 import TemplateController from './controllers/Template';
 import StatusController from './controllers/Status';
 import ProgramController from './controllers/Program';
@@ -96,6 +97,7 @@ app.use('/org_manager', Container.get(OrgController));
 app.use('/orgGroup_manager', Container.get(OrgGroupController));
 app.use('/user_management', Container.get(UserController));
 app.use('/template_manager', Container.get(TemplateTypeController));
+app.use('/role_manager', Container.get(AppConfigController));
 
 app.use('/', authorized, Container.get(ReportingPeriodController));
 app.use('/', authorized, Container.get(SheetNameController));

@@ -6,7 +6,7 @@ import { authorized } from '../../middlewares/auth/auth';
 const AppConfigController = Service([AppConfigService], service => {
   const router = Router();
   return (() => {
-    router.get('/appConfigs/searchAllAppConfigs', (req, res, next) => {
+    router.get('/appConfigs/searchAllAppConfigs', (req, res, next) => {console.log ('reach here')
       service
         .findAllAppConfig()
         .then(AppConfigs => {

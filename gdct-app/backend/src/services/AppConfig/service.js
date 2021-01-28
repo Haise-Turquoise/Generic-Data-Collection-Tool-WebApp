@@ -28,7 +28,7 @@ export default class AppConfigService {
     return this.AppConfigRepository.find(AppConfig);
   }
 
-  async findAllAppConfig() {
+  async findAllAppConfig() { console.log ('reach here')
     return this.AppConfigRepository.findAll();
   }
 
