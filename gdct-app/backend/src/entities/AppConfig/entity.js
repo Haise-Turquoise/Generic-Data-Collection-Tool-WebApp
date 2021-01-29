@@ -3,6 +3,7 @@ export default class AppConfigEntity {
       this._id = _id;
       this.value = value;
       this.key = key;
+      this.sys = sys;
       this.isActive = isActive;
     }
   }

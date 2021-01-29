@@ -38,6 +38,7 @@ const AppConfigsTable = () => {
     () => [
       { title: 'Key', field: 'key' },
       { title: 'Value', field: 'value' },
+      { title: 'Sys', field: 'sys' },
     ],
     [],
   );

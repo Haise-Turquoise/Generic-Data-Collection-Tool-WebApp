@@ -4,6 +4,7 @@ const AppConfig = new Schema(
   {
     key: { type: String },
     value: { type: String },
+    sys: { type: String },
     isActive: {
       type: Boolean,
       default: true,
