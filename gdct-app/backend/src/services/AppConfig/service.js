@@ -6,7 +6,6 @@ import AppSysRoleRepository from '../../repositories/AppSysRole';
 export default class AppConfigService {
   constructor() {
     this.AppConfigRepository = Container.get(AppConfigRepository);
-    this.AppSysRoleRepository = Container.get(AppSysRoleRepository);
   }
 
   async createAppConfig(AppConfig) {

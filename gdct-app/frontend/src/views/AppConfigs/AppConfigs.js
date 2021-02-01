@@ -12,9 +12,13 @@ import {
   updateAppConfigsRequest,
 } from '../../store/thunks/AppConfig';
 
+import { getAppSysesRequest } from '../../../store/thunks/AppSys';
+
 import './AppConfigs.scss';
 import { selectFactoryRESTResponseTableValues } from '../../store/common/REST/selectors';
 import { selectAppConfigsStore } from '../../store/AppConfigsStore/selectors';
+import { selectAppSysesStore } from '../../../store/AppSysesStore/selectors';
+import AppConfigsStore from '../../store/AppConfigsStore/store';
 
 const AppConfigsHeader = () => {
   return (
@@ -27,20 +31,26 @@ const AppConfigsHeader = () => {
 
 const AppConfigsTable = () => {
   const dispatch = useDispatch();
-  const { appConfigs } = useSelector(
+  const { appConfigs, appSysRoles } = useSelector(
     state => ({
       appConfigs: selectFactoryRESTResponseTableValues(selectAppConfigsStore)(state),
+      appSyses: selectFactoryRESTResponseTableValues(selectAppSysesStore)(state),
     }),
     shallowEqual,
   );
+
+  const lookupSysRoles = appSyses.reduce(function (acc, appSys) {
+    acc[appSys.code] = appSys.name;
+    return acc;
+  }, {});
 
   const columns = useMemo(
     () => [
       { title: 'Key', field: 'key' },
       { title: 'Value', field: 'value' },
-      { title: 'Sys', field: 'sys' },
+      { title: 'System', field: 'appSys', lookup: lookupSysRoles },
     ],
-    [],
+    [lookupSysRoles],
   );
 
   const options = useMemo(() => ({ actionsColumnIndex: -1, search: false, showTitle: false }), []);
@@ -64,10 +74,26 @@ const AppConfigsTable = () => {
   );
 
   useEffect(() => {
+    dispatch(getAppSysesRequest());
     dispatch(getAppConfigsRequest());
   }, [dispatch]);
-console.log (appConfigs)
-  return <MaterialTable columns={columns} data={appConfigs} editable={editable} options={options} />;
+ 
+//  Based on Appsys:  
+//    return () => {
+//      dispatch(WorkflowStoreActions.RESET());
+//      dispatch(AppConfigsStore.actions.RESET());
+//    };
+//  }, [dispatch]);
+
+  return (
+    <MaterialTable 
+      columns={columns}
+      actions={actions}
+      data={appConfigs}
+      editable={editable}
+      options={options}
+    />
+  );
 };
 
 const AppConfigs = props => (
