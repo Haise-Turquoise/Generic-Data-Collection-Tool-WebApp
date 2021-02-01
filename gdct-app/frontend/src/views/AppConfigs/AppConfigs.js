@@ -59,15 +59,15 @@ const AppConfigsTable = () => {
     () => ({
       onRowAdd: appConfig =>
         new Promise((resolve, reject) => {
-          dispatch(createAppSysRequest(appConfig, resolve, reject));
+          dispatch(createAppConfigRequest(appConfig, resolve, reject));
         }),
       onRowUpdate: appConfig =>
         new Promise((resolve, reject) => {
-          dispatch(updateAppSysRequest(appConfig, resolve, reject));
+          dispatch(updateAppConfigRequest(appConfig, resolve, reject));
         }),
       onRowDelete: appConfig =>
         new Promise((resolve, reject) => {
-          dispatch(deleteAppSysRequest(appConfig._id, resolve, reject));
+          dispatch(deleteAppConfigRequest(appConfig._id, resolve, reject));
         }),
     }),
     [dispatch],
@@ -88,7 +88,7 @@ const AppConfigsTable = () => {
   return (
     <MaterialTable 
       columns={columns}
-      actions={actions}
+//      actions={actions}
       data={appConfigs}
       editable={editable}
       options={options}
