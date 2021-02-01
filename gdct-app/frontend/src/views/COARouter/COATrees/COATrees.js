@@ -39,6 +39,7 @@ const COATreesHeader = () => {
 const COATreesTable = ({ history }) => {
   const dispatch = useDispatch();
   const [refresh, setRefresh] = useState(false);
+  const[readRowNum, setRowNum] = useState(1);
   const { sheetNames } = useSelector(
     state => ({
       sheetNames: selectFactoryRESTResponseTableValues(selectSheetNamesStore)(state),
@@ -54,6 +55,10 @@ const COATreesTable = ({ history }) => {
   );
 
   const columns = useMemo(() => [{ title: 'Sheet Name', field: 'name' }], []);
+
+  const options = useMemo(() => calculateOptions(readRowNum), [readRowNum]);
+
+  useEffect(()=>{setRowNum(sheetNames.length)},[sheetNames]);
 
   const actions = useMemo(
     () => [
@@ -94,6 +99,7 @@ const COATreesTable = ({ history }) => {
   );
   return (
     <MaterialTable
+      key={readRowNum}
       columns={columns}
       actions={actions}
       data={detectEmptyTree}
