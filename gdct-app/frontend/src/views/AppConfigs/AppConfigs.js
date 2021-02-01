@@ -12,12 +12,12 @@ import {
   updateAppConfigsRequest,
 } from '../../store/thunks/AppConfig';
 
-import { getAppSysesRequest } from '../../../store/thunks/AppSys';
+import { getAppSysesRequest } from '../../store/thunks/AppSys';
 
 import './AppConfigs.scss';
 import { selectFactoryRESTResponseTableValues } from '../../store/common/REST/selectors';
 import { selectAppConfigsStore } from '../../store/AppConfigsStore/selectors';
-import { selectAppSysesStore } from '../../../store/AppSysesStore/selectors';
+import { selectAppSysesStore } from '../../store/AppSysesStore/selectors';
 import AppConfigsStore from '../../store/AppConfigsStore/store';
 
 const AppConfigsHeader = () => {
@@ -31,7 +31,7 @@ const AppConfigsHeader = () => {
 
 const AppConfigsTable = () => {
   const dispatch = useDispatch();
-  const { appConfigs, appSysRoles } = useSelector(
+  const { appConfigs, appSyses } = useSelector(
     state => ({
       appConfigs: selectFactoryRESTResponseTableValues(selectAppConfigsStore)(state),
       appSyses: selectFactoryRESTResponseTableValues(selectAppSysesStore)(state),
