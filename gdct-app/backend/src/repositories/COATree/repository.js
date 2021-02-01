@@ -50,4 +50,12 @@ export default class ReportPeriodRepository extends BaseRepository {
         return COATrees.map(COATree => new COATreeEntity(COATree.toObject()));
       });
   }
+
+  async batchFindByCategoryIdWithoutSheetName(query) {
+    return COATreeModel.find({ categoryId: { $in: query } });
+  }
+
+  async batchFindById(query) {
+    return COATreeModel.find({ _id: { $in: query } });
+  }
 }

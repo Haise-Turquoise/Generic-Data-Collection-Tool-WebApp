@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 
 import MaterialTable from 'material-table';
 import Paper from '@material-ui/core/Paper';
@@ -31,10 +31,11 @@ import { getCOAsRequest } from '../../store/thunks/COA';
 import { getOrgsRequest } from '../../store/thunks/organization';
 import MasterValueModel from '../../../../backend/src/models/MasterValue';
 import MasterValueController from '../../controllers/MasterValue';
-
+import { selectReportingPeriodsStore } from '../../store/ReportingPeriodsStore/selectors';
+import { getReportingPeriodsRequest } from '../../store/thunks/reportingPeriod';
 // const REST_API = 'https://hscgiqdcapwsa05/webohfs/faces';
 // const REST_API = 'https://ohfsrestservice.azurewebsites.net';
-const REST_API = 'https://ohfsrestservice.azurewebsites.net';
+const REST_API = 'https://ohfsrest.azurewebsites.net';
 const TABLES = ['FCLTY_BSA_YTD_ACTL_FORCST_DETL', 'FCLTY_SECDY_YTD_ACTL_FORCST_DT'];
 
 const isBalanceSheet = COA => {
@@ -45,15 +46,32 @@ const isBalanceSheet = COA => {
 
 const queryREST = ({ category, ap, hfk, attribute }) => {
   const queries = [];
+  const upsList = [];
   const ye = ap.split('/')[0];
+  const year = ye.slice(2, 4);
+  const stage = ap.slice(8, 10);
+  // console.log(year)
+  // console.log(stage)
   for (const c of category) {
     for (const h of hfk) {
+      upsList.push({
+        reportingPeriod: ap,
+        template: 'OHFS',
+        org: {
+          id: h.id,
+          name: h.name,
+        },
+        categoryId: c.id,
+        categoryName: c.name,
+        attributeId: attribute.id,
+        attributeName: attribute.name,
+      });
       const table = TABLES[isBalanceSheet(c.COA)];
       if (c.COA.length == 0) {
-        queries.push(`${REST_API}/${table}/A_P=${`${ye}Q2`}&ORG_ID=-1&pa=2*`);
+        queries.push(`${REST_API}/${table}/A_P=${`${year}${stage}`}&ORG_ID=-1&pa=2*`);
       } // temporary fix
       else {
-        queries.push(`${REST_API}/${table}/A_P=${`${ye}Q2`}&ORG_ID=${h.id}&${c.COA}`);
+        queries.push(`${REST_API}/${table}/A_P=${`${year}${stage}`}&ORG_ID=${h.id}&${c.COA}`);
       }
     }
   }
@@ -64,14 +82,14 @@ const queryREST = ({ category, ap, hfk, attribute }) => {
   };
 
   const results = queries.map(query => {
-    const config = {
-      method: 'get',
-      url: query,
-      headers: {
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Methods': 'GET,PUT,POST,DELETE,PATCH,OPTIONS',
-      },
-    };
+    // const config = {
+    //   method: 'get',
+    //   url: query,
+    //   headers: {
+    //     'Access-Control-Allow-Origin': '*',
+    //     'Access-Control-Allow-Methods': 'GET,PUT,POST,DELETE,PATCH,OPTIONS',
+    //   },
+    // };
     return axios.get(query);
   });
   console.log(queries);
@@ -91,8 +109,10 @@ const queryREST = ({ category, ap, hfk, attribute }) => {
     //   console.log(error);
     // });;
     const newMasterValue = {
-      CategoryId: masterValue.CategoryId,
-      AttributeId: masterValue.AttributeId,
+      categoryId: masterValue.categoryId,
+      categoryName: masterValue.categoryName,
+      attributeId: masterValue.attributeId,
+      attributeName: masterValue.attributeName,
       org: {
         id: masterValue.org.id,
         name: masterValue.org.name,
@@ -108,26 +128,48 @@ const queryREST = ({ category, ap, hfk, attribute }) => {
 
   Promise.all(results)
     .then(res => {
-      // console.log('res', res[0].data[0][2]);
+      // console.log(upsList)
+      const masterValueList = upsList;
+      // console.log('res', res[0]);
       const upd = [];
       const idx = 0;
-      for (const c of category) {
-        for (const h of hfk) {
-          const mastervalue = {
-            reportingPeriod: ap,
-            template: 'OHFS',
-            org: {
-              id: h.id,
-              name: h.name,
-            },
-            CategoryId: c.id,
-            AttributeId: attribute.id,
-            value: res[0].data[0].length != 0 ? res[0].data[0][2] : res[0].data[0],
-          };
-          console.log(mastervalue);
-          upd.push(addDocument(mastervalue));
+      for (const idx in res) {
+        // console.log(res[idx].data)
+        // console.log(masterValueList[idx])
+        if (res[idx].data.length > 0) {
+          // console.log(res[idx].data)
+          masterValueList[idx].value = res[idx].data[0][2];
+          // console.log(masterValueList[idx])
+          upd.push(addDocument(masterValueList[idx]));
         }
       }
+
+      // console.log(response)
+      // for (const c of category) {
+      //   for (const h of hfk) {
+      //     console.log(response)
+      //     const mastervalue = {
+      //       reportingPeriod: ap,
+      //       template: 'OHFS',
+      //       org: {
+      //         id: h.id,
+      //         name: h.name,
+      //       },
+      //       categoryId: c.id,
+      //       categoryName:c.name,
+      //       attributeId: attribute.id,
+      //       attributeName:attribute.name,
+      //       value: response.data[0] ? response.data[0][2] : '',
+      //     };
+
+      //     if(mastervalue.value != ''|| mastervalue.value !=0 ){
+      //       console.log(mastervalue);
+      //       upd.push(addDocument(mastervalue));
+      //     }
+      //     // upd.push(addDocument(mastervalue));
+      //   }
+      // }
+
       Promise.all(upd).then(() => {
         console.log('Finished uploading.');
       });
@@ -140,9 +182,12 @@ const queryREST = ({ category, ap, hfk, attribute }) => {
 
 const DoRetrieval = ({ category, ap, hfk, col }) => {
   if (category && ap && hfk && category.length > 0 && hfk.length > 0 && ap.length > 0) {
+    // console.log(ap)
+    const period = ap.split(' ')[0];
+    console.log(period);
     let fnd = null;
     for (const elem of col) {
-      if (elem.name === `${ap} Actual`) {
+      if (elem.name === `${period} Actual`) {
         fnd = elem;
         break;
       }
@@ -212,14 +257,15 @@ const Selection = ({ val, data, name, handleChange }) => {
   );
 };
 
-const getYears = () => {
-  const ret = [];
-  const cur = new Date().getFullYear();
-  for (let i = 2010; i <= cur; i++) {
-    ret.push(`${i}/${(i + 1) % 100}`);
-  }
-  return ret.reverse();
-};
+// const getYears = () => {
+
+//   const ret = [];
+//   const cur = new Date().getFullYear();
+//   for (let i = 2010; i <= cur; i++) {
+//     ret.push(`${i}/${(i + 1) % 100}`);
+//   }
+//   return ret.reverse();
+// };
 
 const MasterValuePopulation = () => {
   const dispatch = useDispatch();
@@ -230,28 +276,63 @@ const MasterValuePopulation = () => {
     dispatch(getOrgsRequest());
     dispatch(getCOAsRequest());
     dispatch(getColumnNamesRequest());
+    dispatch(getReportingPeriodsRequest());
   }, [dispatch]);
 
-  const yearList = useMemo(() => getYears(), []);
-
+  // const yearList = useMemo(() => getYears(), []);
+  // console.log(yearList)
   // const [hfkList, updateHfkList] = useState(
   //     getRange(1, 999).map(id => ({ checked: false, id: `${id}` }))
   // );
 
-  const { db_categoryList, db_hfkList, db_columnNamesList, isCallInProgress } = useSelector(
-    state => ({
-      db_categoryList: selectFactoryRESTResponseTableValues(selectCOAsStore)(state),
-      db_hfkList: selectFactoryRESTResponseTableValues(selectOrgsStore)(state),
-      db_columnNamesList: selectFactoryRESTResponseTableValues(selectColumnNamesStore)(state),
-      isCallInProgress:
-        selectFactoryRESTIsCallInProgress(selectCOAsStore)(state) ||
-        selectFactoryRESTIsCallInProgress(selectOrgsStore)(state) ||
-        selectFactoryRESTIsCallInProgress(selectColumnNamesStore)(state) ||
-        false,
-    }),
-  );
+  const {
+    db_categoryList,
+    db_hfkList,
+    db_columnNamesList,
+    reportingPeriods,
+    isCallInProgress,
+  } = useSelector(state => ({
+    db_categoryList: selectFactoryRESTResponseTableValues(selectCOAsStore)(state),
+    db_hfkList: selectFactoryRESTResponseTableValues(selectOrgsStore)(state),
+    db_columnNamesList: selectFactoryRESTResponseTableValues(selectColumnNamesStore)(state),
+    reportingPeriods: selectFactoryRESTResponseTableValues(selectReportingPeriodsStore)(state),
+    isCallInProgress:
+      selectFactoryRESTIsCallInProgress(selectCOAsStore)(state) ||
+      selectFactoryRESTIsCallInProgress(selectOrgsStore)(state) ||
+      selectFactoryRESTIsCallInProgress(selectColumnNamesStore)(state) ||
+      false,
+  }));
 
-  console.log('why not:', { db_categoryList, db_hfkList, db_columnNamesList, isCallInProgress });
+  console.log('why not:', {
+    db_categoryList,
+    db_hfkList,
+    db_columnNamesList,
+    reportingPeriods,
+    isCallInProgress,
+  });
+
+  const getYears = reportingPeriods => {
+    console.log(reportingPeriods);
+    const yearList = [];
+    reportingPeriods.forEach(rp => {
+      yearList.push(rp.name);
+    });
+    const ret = [];
+    const cur = new Date().getFullYear();
+    for (let i = 2010; i <= cur; i++) {
+      ret.push(`${i}/${(i + 1) % 100}`);
+    }
+    return ret.reverse();
+  };
+  const yearList = useMemo(() => getYears(reportingPeriods), []);
+  // console.log(yearList)
+  // console.log(reportingPeriods)
+  const periodList = [];
+  reportingPeriods.forEach(period => {
+    periodList.push(period.name);
+  });
+  periodList.sort().reverse();
+  // console.log('periodList', periodList)
 
   const [categoryList, updateCategoryList] = useState([]);
 
@@ -386,7 +467,7 @@ const MasterValuePopulation = () => {
     <Loading />
   ) : (
     <div>
-      <HeaderActions val={query.year} data={yearList} name={'year'} handleChange={handleChange} />
+      <HeaderActions val={query.year} data={periodList} name={'year'} handleChange={handleChange} />
       <div className="tableContainer">
         <div className="tableWrapper">
           <MaterialTable
