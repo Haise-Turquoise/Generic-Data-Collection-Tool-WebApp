@@ -82,15 +82,7 @@ export const routerManager = app => {
   
   app.use('/transferManager', authorized, Container.get(TransferStatusController));
 
-  // const service = Container.get(TransferStatusService)
-  // app.get('/transfer_manager/startService/:time', authorized, (req, res, next)=>{
-  //   const { time } = req.params;
-  //   service.startTransferProccess(time).then(()=>res.end()).catch(next);
-  // })
 
-  // app.get('/transfer_manager/stopService', authorized, (req, res, next)=>{
-  //   service.closeCurrentTransferProcess().then(()=>res.end()).catch(next);
-  // })
 
   
 };
