@@ -1,6 +1,6 @@
 import Container from 'typedi';
 import AppConfigRepository from '../../repositories/AppConfig';
-import AppSysRoleRepository from '../../repositories/AppSysRole';
+// import AppSysRoleRepository from '../../repositories/AppSysRole';
 
 // @Service()
 export default class AppConfigService {

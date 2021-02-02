@@ -18,7 +18,6 @@ import './AppConfigs.scss';
 import { selectFactoryRESTResponseTableValues } from '../../store/common/REST/selectors';
 import { selectAppConfigsStore } from '../../store/AppConfigsStore/selectors';
 import { selectAppSysesStore } from '../../store/AppSysesStore/selectors';
-import AppConfigsStore from '../../store/AppConfigsStore/store';
 
 const AppConfigsHeader = () => {
   return (
