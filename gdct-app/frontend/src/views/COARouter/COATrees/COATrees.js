@@ -16,7 +16,7 @@ import { ROUTE_CATEGORY_TREES } from '../../../constants/routes';
 const COATreesHeader = () => {
   return (
     <Paper className="header">
-      <Typography variant="h5">COA Trees</Typography>
+      <Typography variant="h5">Category Tree Management</Typography>
       {/* <HeaderActions/> */}
     </Paper>
   );
