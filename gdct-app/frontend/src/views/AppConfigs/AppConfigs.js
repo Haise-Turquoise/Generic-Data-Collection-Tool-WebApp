@@ -22,7 +22,7 @@ import { selectAppSysesStore } from '../../store/AppSysesStore/selectors';
 const AppConfigsHeader = () => {
   return (
     <Paper className="header">
-      <Typography variant="h5">AppConfigs</Typography>
+      <Typography variant="h5">Configuration</Typography>
       {/* <HeaderActions/> */}
     </Paper>
   );
