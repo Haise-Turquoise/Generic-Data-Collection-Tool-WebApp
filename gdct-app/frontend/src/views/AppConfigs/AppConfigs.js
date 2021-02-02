@@ -7,9 +7,9 @@ import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import {
   getAppConfigsRequest,
-  createAppConfigsRequest,
-  deleteAppConfigsRequest,
-  updateAppConfigsRequest,
+  createAppConfigRequest,
+  deleteAppConfigRequest,
+  updateAppConfigRequest,
 } from '../../store/thunks/AppConfig';
 
 import { getAppSysesRequest } from '../../store/thunks/AppSys';
