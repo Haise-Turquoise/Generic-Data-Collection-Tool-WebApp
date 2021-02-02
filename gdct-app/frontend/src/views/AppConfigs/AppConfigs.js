@@ -47,7 +47,7 @@ const AppConfigsTable = () => {
     () => [
       { title: 'Key', field: 'key' },
       { title: 'Value', field: 'value' },
-      { title: 'System', field: 'appSys', lookup: lookupSysRoles },
+      { title: 'System', field: 'sys', lookup: lookupSysRoles },
     ],
     [lookupSysRoles],
   );
