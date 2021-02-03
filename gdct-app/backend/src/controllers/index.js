@@ -27,6 +27,7 @@ import MenuController from './Menu';
 import UsersController from './Users/controller';
 import SubmissionNoteController from './SubmissionNote';
 import MasterValueController from './MasterValue';
+import AuditLogController from './AuditLog';
 import { authorized } from '../middlewares/auth/auth';
 
 export const routerManager = app => {
@@ -41,6 +42,7 @@ export const routerManager = app => {
   app.use('/user_management', Container.get(UserController));
   app.use('/template_manager', Container.get(TemplateTypeController));
   app.use('/masterValues', Container.get(MasterValueController));
+  app.use('/AuditLog', Container.get(AuditLogController));
 
   app.use('/', authorized, Container.get(ReportingPeriodController));
   app.use('/', authorized, Container.get(SheetNameController));

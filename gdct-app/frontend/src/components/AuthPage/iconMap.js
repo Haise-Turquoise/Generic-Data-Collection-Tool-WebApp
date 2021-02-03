@@ -72,4 +72,5 @@ export default {
   Program: <AccountCircleIcon style={{ fontSize: '1.2rem', marginLeft: '1.2rem' }} />,
   Status: <StorageIcon style={{ fontSize: '1.2rem', marginLeft: '1.2rem' }} />,
   'Reporting period': <EventIcon style={{ fontSize: '1.2rem', marginLeft: '1.2rem' }} />,
+  AuditLog: <StorageIcon style={{ fontSize: '1.2rem', marginLeft: '1.2rem' }} />,
 };
