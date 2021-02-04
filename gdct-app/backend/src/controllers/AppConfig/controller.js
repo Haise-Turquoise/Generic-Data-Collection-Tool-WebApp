@@ -1,12 +1,12 @@
 import { Service } from 'typedi';
 import { Router } from 'express';
 import AppConfigService from '../../services/AppConfig';
-// import { authorized } from '../../middlewares/auth/auth';
+import { authorized } from '../../middlewares/auth/auth';
 
 const AppConfigController = Service([AppConfigService], service => {
   const router = Router();
   return (() => {
-    router.get('/appConfigs/searchAllAppConfigs', (req, res, next) => {console.log ('reach here')
+    router.get('/appConfigs/searchAllAppConfigs', authorized, (req, res, next) => {console.log ('reach here')
       service
         .findAllAppConfig()
         .then(AppConfigs => {
@@ -15,16 +15,16 @@ const AppConfigController = Service([AppConfigService], service => {
         .catch(next);
     });
 
-    router.get('/appConfigs', (req, res, next) => {
+    //router.get('/appConfigs', (req, res, next) => {
       // Get query from middleware -- auth handler
 
-      service
-        .findAppConfig({})
-        .then(AppConfigs => res.json({ AppConfigs }))
-        .catch(next);
-    });
+    //   service
+    //     .findAppConfig({})
+    //     .then(AppConfigs => res.json({ AppConfigs }))
+    //     .catch(next);
+    // });
 
-    router.post('/appConfigs', (req, res, next) => {
+    router.post('/appConfigs', authorized, (req, res, next) => {
       service
         .createAppConfig(req.body.AppConfig)
         .then(AppConfig => res.json({ AppConfig }))
@@ -35,7 +35,7 @@ const AppConfigController = Service([AppConfigService], service => {
         .catch(next);
     });
 
-    router.put('/appConfigs/:_id', (req, res, next) => {
+    router.put('/appConfigs/:_id', authorized, (req, res, next) => {
       const { _id } = req.params;
       const { AppConfig } = req.body;
 
@@ -45,7 +45,7 @@ const AppConfigController = Service([AppConfigService], service => {
         .catch(next);
     });
 
-    router.delete('/appConfigs/:_id', (req, res, next) => {
+    router.delete('/appConfigs/:_id', authorized, (req, res, next) => {
       const { _id } = req.params;
 
       service

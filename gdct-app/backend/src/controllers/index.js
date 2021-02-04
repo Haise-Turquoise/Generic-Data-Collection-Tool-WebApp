@@ -48,7 +48,7 @@ export const routerManager = app => {
   app.use('/user_management', Container.get(UserController));
   app.use('/template_manager', Container.get(TemplateTypeController));
 
-  app.use('/role_manager', Container.get(AppConfigController));
+  app.use('/role_manager', authorized, Container.get(AppConfigController));
   app.use('/', authorized, Container.get(ReportingPeriodController));
   app.use('/', authorized, Container.get(SheetNameController));
   app.use('/', authorized, Container.get(ColumnNameController));
