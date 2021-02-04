@@ -24,6 +24,7 @@ import StorageIcon from '@material-ui/icons/Storage';
 import EventIcon from '@material-ui/icons/Event';
 import ReportIcon from '@material-ui/icons/Report';
 import SearchIcon from '@material-ui/icons/Search';
+import TransitEnterexitIcon from '@material-ui/icons/TransitEnterexit';
 
 export default {
   Submission: <SendIcon />,
@@ -71,6 +72,8 @@ export default {
   ),
   Program: <AccountCircleIcon style={{ fontSize: '1.2rem', marginLeft: '1.2rem' }} />,
   Status: <StorageIcon style={{ fontSize: '1.2rem', marginLeft: '1.2rem' }} />,
+  SheetName: <StorageIcon style={{ fontSize: '1.2rem', marginLeft: '1.2rem' }} />,
   'Reporting period': <EventIcon style={{ fontSize: '1.2rem', marginLeft: '1.2rem' }} />,
   AuditLog: <StorageIcon style={{ fontSize: '1.2rem', marginLeft: '1.2rem' }} />,
+  'ETL Setting': <TransitEnterexitIcon style={{ fontSize: '1.2rem', marginLeft: '1.2rem' }}/>
 };

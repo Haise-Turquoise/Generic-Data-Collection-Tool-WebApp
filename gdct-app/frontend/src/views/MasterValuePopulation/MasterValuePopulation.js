@@ -16,6 +16,7 @@ import Typography from '@material-ui/core/Typography';
 import './MasterValuePopulation.scss';
 
 import axios from 'axios';
+
 import {
   selectFactoryRESTResponseTableValues,
   selectFactoryRESTIsCallInProgress,
@@ -29,8 +30,11 @@ import { getColumnNamesRequest } from '../../store/thunks/columnName';
 import { getCOAsRequest } from '../../store/thunks/COA';
 import { getOrgsRequest } from '../../store/thunks/organization';
 import MasterValueModel from '../../../../backend/src/models/MasterValue';
+import MasterValueController from '../../controllers/MasterValue';
 
-const REST_API = 'https://hscgiqdcapwsa05/webohfs/faces';
+// const REST_API = 'https://hscgiqdcapwsa05/webohfs/faces';
+// const REST_API = 'https://ohfsrestservice.azurewebsites.net';
+const REST_API = 'https://ohfsrestservice.azurewebsites.net';
 const TABLES = ['FCLTY_BSA_YTD_ACTL_FORCST_DETL', 'FCLTY_SECDY_YTD_ACTL_FORCST_DT'];
 
 const isBalanceSheet = COA => {
@@ -41,7 +45,7 @@ const isBalanceSheet = COA => {
 
 const queryREST = ({ category, ap, hfk, attribute }) => {
   const queries = [];
-  const ye = ap.split('/')[1];
+  const ye = ap.split('/')[0];
   for (const c of category) {
     for (const h of hfk) {
       const table = TABLES[isBalanceSheet(c.COA)];
@@ -53,27 +57,60 @@ const queryREST = ({ category, ap, hfk, attribute }) => {
       }
     }
   }
+  const axiosConfig = {
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+    },
+  };
 
-  const results = queries.map(query => axios.get(query));
-  console.log(queries);
-  const addDocument = mastervalue => {
-    return MasterValueModel.findOne({
-      CategoryId: mastervalue.CategoryId,
-      AttributeId: mastervalue.AttributeId,
-      org: {
-        id: mastervalue.org.id,
-        name: mastervalue.org.name,
+  const results = queries.map(query => {
+    const config = {
+      method: 'get',
+      url: query,
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'GET,PUT,POST,DELETE,PATCH,OPTIONS',
       },
-    }).then(res => {
-      if (res) return MasterValueModel.findByIdAndUpdate(res._id, mastervalue);
-      return MasterValueModel.create(mastervalue);
+    };
+    return axios.get(query);
+  });
+  console.log(queries);
+  const addDocument = masterValue => {
+    // return MasterValueModel.findOne({
+    //   CategoryId: mastervalue.CategoryId,
+    //   AttributeId: mastervalue.AttributeId,
+    //   org: {
+    //     id: mastervalue.org.id,
+    //     name: mastervalue.org.name,
+    //   },
+    // }).then(res => {
+
+    //   if (res) {console.log('find');return MasterValueModel.findByIdAndUpdate(res._id, mastervalue);}
+    //   else {console.log('not find');return MasterValueModel.create(mastervalue);}
+    // }).catch((error) => {
+    //   console.log(error);
+    // });;
+    const newMasterValue = {
+      CategoryId: masterValue.CategoryId,
+      AttributeId: masterValue.AttributeId,
+      org: {
+        id: masterValue.org.id,
+        name: masterValue.org.name,
+      },
+      reportingPeriod: masterValue.reportingPeriod,
+      template: masterValue.template,
+      value: masterValue.value,
+    };
+    MasterValueController.addDocument(newMasterValue).then(res => {
+      console.log('hello');
     });
   };
 
   Promise.all(results)
     .then(res => {
+      // console.log('res', res[0].data[0][2]);
       const upd = [];
-      let idx = 0;
+      const idx = 0;
       for (const c of category) {
         for (const h of hfk) {
           const mastervalue = {
@@ -85,18 +122,19 @@ const queryREST = ({ category, ap, hfk, attribute }) => {
             },
             CategoryId: c.id,
             AttributeId: attribute.id,
-            value: res[idx++],
+            value: res[0].data[0].length != 0 ? res[0].data[0][2] : res[0].data[0],
           };
           console.log(mastervalue);
-          // upd.push(addDocument(mastervalue));
+          upd.push(addDocument(mastervalue));
         }
       }
       Promise.all(upd).then(() => {
         console.log('Finished uploading.');
       });
     })
-    .catch(() => {
-      console.log('There was an error when querying REST service.');
+    .catch(error => {
+      // console.log('There was an error when querying REST service.');
+      console.log(error);
     });
 };
 

@@ -25,6 +25,7 @@ import SubmissionNoteHistoryStore from './SubmissionNoteHistoryStore/store';
 import SubmissionWorkbookStore from './SubmissionWorkbookStore/store';
 import COATreeStore from './COATreeStore/store';
 import COATreesStore from './COATreesStore/store';
+import DetectEmptyTreeStore from './DetectEmptyTreeStore/store';
 import SheetNamesStore from './SheetNamesStore/store';
 import ColumnNamesStore from './ColumnNamesStore/store';
 import OrgsStore from './OrganizationsStore/store';
@@ -34,6 +35,7 @@ import UserStore from './UserStore/store';
 import UsersStore from './UsersStore/store';
 import UserRegistrationStore from './UserRegistrationStore/store';
 import WorkflowProcessesStore from './WorkflowProcessesStore/store';
+import TransferStatusStore from './TransferStatusStore/store';
 
 export const root = combineReducers({
   UserStore: UserStore.reducer,
@@ -57,6 +59,7 @@ export const root = combineReducers({
   UsersStore: UsersStore.reducer,
 
   COATreeStore: COATreeStore.reducer,
+  DetectEmptyTreeStore: DetectEmptyTreeStore.reducer,
   SheetNamesStore: SheetNamesStore.reducer,
   SubmissionPeriodsStore: SubmissionPeriodsStore.reducer,
   SubmissionsStore: SubmissionsStore.reducer,
@@ -70,6 +73,7 @@ export const root = combineReducers({
   WorkflowStore: WorkflowStore.reducer,
   WorkflowsStore: WorkflowsStore.reducer,
   WorkflowProcessesStore: WorkflowProcessesStore.reducer,
+  TransferStatusStore:TransferStatusStore.reducer,
 
   ui,
 });

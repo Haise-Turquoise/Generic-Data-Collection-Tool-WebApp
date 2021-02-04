@@ -121,16 +121,35 @@ export const updateSubmissionStatusRequest = (
   submissionNote,
   role,
   newProcessId,
-) => dispatch => {
+) => async dispatch => {
+  console.log('button click');
+
   const newSubmission = {
     ...submission,
     //   name: present.name,
     phase: role,
   };
-  submissionController
+
+  await submissionController
     .updateStatus(submission, submissionNote, role, newProcessId)
     .then(() => {
+      // console.log(submission);
+
       dispatch(SubmissionsStore.actions.UPDATE(newSubmission));
+    })
+    .catch(error => {
+      dispatch(SubmissionsStore.actions.FAIL_REQUEST(error));
+    });
+  return true;
+};
+
+// Added on Nov 25, 2020
+export const openGoogleSheetRequest = _id => {
+  console.log("Hello2", _id)
+  submissionController
+    .openTemplate(_id) //Create a temporary google sheet located in google drive and open it
+    .then(spreadsheetId => {
+      window.open("https://docs.google.com/spreadsheets/d/" + spreadsheetId);
     })
     .catch(error => {
       dispatch(SubmissionsStore.actions.FAIL_REQUEST(error));

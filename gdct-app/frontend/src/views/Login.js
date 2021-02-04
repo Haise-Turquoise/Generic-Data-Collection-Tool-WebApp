@@ -11,10 +11,12 @@ import Grid from '@material-ui/core/Grid';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
-
 import { Container } from '@material-ui/core';
-import AuthController from '../controllers/Auth';
+import Snackbar from '@material-ui/core/Snackbar';
+import MuiAlert from '@material-ui/lab/Alert';
+import { useSelector, shallowEqual, useDispatch, batch } from 'react-redux';
 import { host } from '../constants/domain';
+import AuthController from '../controllers/Auth';
 
 function Copyright() {
   return (
@@ -28,7 +30,9 @@ function Copyright() {
     </Typography>
   );
 }
-
+function Alert(props) {
+  return <MuiAlert elevation={6} variant="filled" {...props} />;
+}
 const useStyles = makeStyles(theme => ({
   paper: {
     marginTop: theme.spacing(8),
@@ -53,6 +57,12 @@ const useStyles = makeStyles(theme => ({
     marginRight: '5px',
     // lineHeight: '15px',
   },
+  // root: {
+  //   width: '100%',
+  //   '& > * + *': {
+  //     marginTop: theme.spacing(2),
+  //   },
+  // },
 }));
 
 const validEmailRegex = /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/;
@@ -62,11 +72,15 @@ const validateForm = errors => {
   return valid;
 };
 
-export default function Login({ setLoggedIn }) {
+export default function Login({ setLoggedIn, setCurrentUser }) {
   const classes = useStyles();
+  const dispatch = useDispatch();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [errors, setErrors] = useState({});
+  const [userFeedback, setUserFeedback] = useState('');
+  const [checkLogin, setCheckLogin] = useState('false');
+  const [open, setOpen] = React.useState(false);
 
   // useEffect(() => {
   //   AuthController.auto().then(auto => {
@@ -75,6 +89,17 @@ export default function Login({ setLoggedIn }) {
   //     }
   //   });
   // }, []);
+  const displayUserFeedback = () => {
+    setOpen(true);
+  };
+
+  const handleClose = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    setOpen(false);
+  };
 
   const handleChange = e => {
     const { name, value } = e.target;
@@ -88,29 +113,55 @@ export default function Login({ setLoggedIn }) {
         updatedErrors.email = !validEmailRegex.test(value) ? 'Not a Valid Email' : '';
         setEmail(value);
         setErrors(updatedErrors);
+
         break;
       default:
     }
   };
   const handleSubmit = async e => {
     e.preventDefault();
+
+    let checkLogin;
     try {
       if (email && validateForm(errors)) {
         // window.location.replace(
         //   `http://localhost:3000/auth/local?email=${email}&password=${password}`
         // )
-        await AuthController.login({ email, password }).then(data => {
-          if (data.status === 'ok') {
-            setLoggedIn(true);
-          }
-        });
+
+        checkLogin = await AuthController.login({ email, password })
+          .then(data => {
+            // console.log(data);
+            if (data === undefined) {
+              return false;
+            }
+            if (data.status === 'ok') {
+              // console.log('ok');
+              // console.log(data.data.email)
+              // dispatch(UserStore.actions.SET_CURRENT_USER({currentUser:data.data.email}))
+              localStorage.setItem('currentUser', data.data.email);
+
+              setLoggedIn(true);
+              return true;
+            }
+          })
+          .catch(err => {
+            console.log(err);
+          });
       }
+      // console.log(checkLogin);
+      if (!checkLogin) {
+        console.log('not login in');
+
+        displayUserFeedback();
+      }
+
       // TODO: decide if it is logged in
     } catch (err) {
       console.log(err);
       setLoggedIn(false);
     }
   };
+
   return (
     <Container component="main" maxWidth="xs">
       <CssBaseline />
@@ -152,6 +203,11 @@ export default function Login({ setLoggedIn }) {
             control={<Checkbox value="remember" color="primary" />}
             label="Remember me"
           />
+          <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
+            <Alert onClose={handleClose} severity="error">
+              please enter the correct password or email
+            </Alert>
+          </Snackbar>
           <Button
             type="submit"
             fullWidth

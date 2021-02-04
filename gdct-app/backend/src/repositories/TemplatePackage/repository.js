@@ -109,4 +109,9 @@ export default class TemplatePackageRepository extends BaseRepository {
       templatePackage => new TemplatePackageEntity(templatePackage.toObject()),
     );
   }
+
+  async findStatusById(id){
+    const statusID = await TemplatePackageModel.findById(id, {_id:0, statusId:1});
+    return this.statusRepository.findById({_id:statusID.statusId}, {name:1});
+  }
 }

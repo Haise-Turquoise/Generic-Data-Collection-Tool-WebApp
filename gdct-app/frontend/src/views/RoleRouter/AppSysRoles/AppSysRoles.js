@@ -1,4 +1,4 @@
-import React, { useMemo, useEffect } from 'react';
+import React, { useMemo, useEffect, useState } from 'react';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 
 import MaterialTable from 'material-table';
@@ -20,6 +20,8 @@ import { selectFactoryRESTResponseTableValues } from '../../../store/common/REST
 import { selectAppSysRolesStore } from '../../../store/AppSysRolesStore/selectors';
 import { selectAppSysesStore } from '../../../store/AppSysesStore/selectors';
 import { selectAppRolesStore } from '../../../store/AppRolesStore/selectors';
+import { calculateOptions } from '../../../tools/misc'
+
 
 const AppSysRolesHeader = () => {
   return (
@@ -32,6 +34,8 @@ const AppSysRolesHeader = () => {
 
 const AppSysRolesTable = props => {
   const dispatch = useDispatch();
+  const [readNumRow, setNumRow] = useState(1);
+
   const { appSyses, appSysRoles, appRoles } = useSelector(
     state => ({
       appRoles: selectFactoryRESTResponseTableValues(selectAppRolesStore)(state),
@@ -44,10 +48,12 @@ const AppSysRolesTable = props => {
     acc[appSys.code] = appSys.name;
     return acc;
   }, {});
+
   const lookupAppRoles = appRoles.reduce(function (acc, appRole) {
     acc[appRole.code] = appRole.name;
     return acc;
   }, {});
+
   const columns = useMemo(
     () => [
       {
@@ -60,7 +66,7 @@ const AppSysRolesTable = props => {
     [lookupSysRoles, lookupAppRoles],
   );
 
-  const options = useMemo(() => ({ actionsColumnIndex: -1, search: false, showTitle: false }), []);
+  const options = useMemo(() => calculateOptions(readNumRow), [readNumRow]);
 
   const editable = useMemo(
     () => ({
@@ -86,8 +92,10 @@ const AppSysRolesTable = props => {
     dispatch(getAppSysRolesRequest());
   }, [dispatch]);
 
+  useEffect(()=>{setNumRow(appSysRoles.length)}, [appSysRoles])
+
   return (
-    <MaterialTable columns={columns} data={appSysRoles} editable={editable} options={options} />
+    <MaterialTable key={readNumRow} columns={columns} data={appSysRoles} editable={editable} options={options} />
   );
 };
 

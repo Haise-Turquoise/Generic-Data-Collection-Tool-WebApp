@@ -1,10 +1,15 @@
 import PropTypes from 'prop-types';
 import React, { useEffect, useMemo, useState } from 'react';
+
+import { useHistory } from "react-router-dom";
+
 import { useDispatch, useSelector } from 'react-redux';
 
 import MaterialTable, { MTableCell } from 'material-table';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
+import Button from '@material-ui/core/Button';
+import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import { getUsersRequest } from '../../../store/thunks/users';
 import { getOrgsRequest } from '../../../store/thunks/organization';
 import { getProgramsRequest } from '../../../store/thunks/program';
@@ -18,7 +23,9 @@ import { selectUsersStore } from '../../../store/UsersStore/selectors';
 import { selectOrgsStore } from '../../../store/OrganizationsStore/selectors';
 import { selectProgramsStore } from '../../../store/ProgramsStore/selectors';
 import { selectTemplateTypesStore } from '../../../store/TemplateTypesStore/selectors';
+import { calculateOptions } from '../../../tools/misc'
 import Loading from '../../../components/Loading';
+
 
 const HeaderActions = () => {
   return (
@@ -44,6 +51,7 @@ const UserInfo = ({
   },
 }) => {
   const dispatch = useDispatch();
+  const history = useHistory();
 
   useEffect(() => {
     dispatch(getUsersRequest());
@@ -82,6 +90,7 @@ const UserInfo = ({
   };
 
   const [data, updateData] = useState([]);
+  const [readRowNum, setRowNum] = useState(1);
 
   useEffect(() => {
     if (userObject) {
@@ -122,11 +131,8 @@ const UserInfo = ({
   );
 
   const options = useMemo(
-    () => ({
-      search: true,
-      showTitle: false,
-    }),
-    [],
+    () => calculateOptions(readRowNum),
+    [readRowNum],
   );
 
   const components = useMemo(
@@ -136,12 +142,34 @@ const UserInfo = ({
     [],
   );
 
+  const backButtonAction = () => {
+    history.push({
+      pathname: `/admin/user_management`
+    })
+  }
+
+  useEffect(()=>{setRowNum(data.length)}, [data])
+
   return isCallInProgress ? (
     <Loading />
   ) : (
     <div className="userInfo">
       <HeaderActions />
-      <MaterialTable components={components} columns={columns} data={data} options={options} />
+
+      <MaterialTable key={readRowNum} components={components} columns={columns} data={data} options={options} />
+
+      <Button
+        type="button"
+        className="UserInfo_SaveButton"
+        color="primary"
+        variant="contained"
+        size="large"
+        onClick={backButtonAction}
+        >
+
+        <ArrowBackIcon></ArrowBackIcon>
+        Back
+      </Button>
     </div>
   );
 };

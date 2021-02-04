@@ -35,11 +35,13 @@
 
   &__filteredMultiSelect{
     display: inline-block;
+    margin-right: 100px;
   }
 
   &__field {
     flex-flow: column nowrap;
-    width: 300px;
+    // width: 300px;
+    width: auto;
     height: auto;
     margin-bottom: 20px !important;
     background-color: white;
@@ -48,16 +50,32 @@
   &__hidden {
     display: none;
   }
-
+  &__selectField {
+    width: 50%;
+    
+    position: relative;
+    display: inline-block;
+  }
+  &__multiSelectField {
+    width: 50%;
+    
+    // margin-right :5%;
+    position: relative;
+    display: inline-block;
+  }
   &__select {
-    width: 200px;
-
+    width: 350px;
+    // width: 50%;
+    // margin-left: 20px;
+    margin-right: 120px;
+    position: relative;
     display: inline-block;
   }
 
   &__multiSelect {
-    width: 250px;
-    padding: 10px;
+    width: 280px;
+    // width: 50%;
+    // padding: 20px;
     border-radius: 10px;
     position: relative;
     top: 100px;
@@ -65,13 +83,42 @@
   }
 
   &__label {
+    margin-left: 1%;
+    
     width: 8.33%;
+    // width: 100px;
+    // width: auto;
+    position: relative;
     display: inline-block;
+    // min-width: 8.33%;
+    
   }
 
   &__informationField {
-    width: 20%;
+    margin-right: 3%;
+    margin-left: 3%;
+    width: 18%;
+    // width: auto;
+    // width: auto;
+    
     display: inline-block;
+    position: relative;
+    // min-width: 20%;
+    // margin-right: 30px;
+    min-width: 16%;
+  }
+
+  &__inputTitle {
+    margin-right: 3%;
+    
+    // font-size: 15px;
+    // margin-top: 30px !important;
+    position:relative;
+    flex-flow: column nowrap;
+    display: inline-block;
+    // word-break: break-all
+    
+    min-width: 150px;
   }
 
   &__selectTitle {
@@ -81,10 +128,11 @@
   }
 
   &__form {
-    display: inline;
+    
+    display: inline-block;
     flex-flow: column nowrap;
 
-    padding: 50px;
+    // padding: 50px;
   }
 
   &__box {
@@ -111,13 +159,7 @@
     justify-content: center;
   }
 
-  &__inputTitle {
-    font-size: 15px;
-    margin-top: 30px !important;
-    flex-flow: column nowrap;
-    display: inline;
-    min-width: 70px;
-  }
+  
 
   &__table {
 

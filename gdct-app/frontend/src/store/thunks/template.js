@@ -19,11 +19,11 @@ export const updateTemplateRequest = updateRequestFactory(TemplatesStore, templa
 
 export const createTemplateRequest = (template, resolve, reject) => dispatch => {
   dispatch(TemplatesStore.actions.REQUEST());
-
   templateController
     .create({
       ...template,
-      templateData: createBlankReactState(),
+      //templateData: createBlankReactState(),
+      templateData: {},
     })
     .then(template => {
       dispatch(TemplatesStore.actions.CREATE(template));
@@ -35,7 +35,20 @@ export const createTemplateRequest = (template, resolve, reject) => dispatch => 
     });
 };
 
-// ? Cause page redirection on error
+// Oct 26, 2020
+// Requests for template by opening a new tab on google sheet
+export const openGoogleSheetRequest = _id => {
+  templateController
+    .openTemplate(_id) //Create a temporary google sheet located in google drive and open it
+    .then(spreadsheetID => {
+      window.open("https://docs.google.com/spreadsheets/d/" + spreadsheetID);
+    })
+    .catch(error => {
+      dispatch(TemplatesStore.actions.FAIL_REQUEST(error));
+    });
+};
+
+//? Cause page redirection on error
 export const getTemplateRequest = _id => dispatch => {
   dispatch(TemplatesStore.actions.REQUEST());
 

@@ -3,6 +3,9 @@ import BaseRepository from '../repository';
 import COAGroupModel from '../../models/COAGroup';
 
 export default class COAGroupRepository extends BaseRepository {
+  constructor() {
+    super(COAGroupModel);
+  }
   async delete(id) {
     return COAGroupModel.findByIdAndDelete(id).then(
       COAGroup => new COAGroupEntity(COAGroup.toObject()),
@@ -29,5 +32,9 @@ export default class COAGroupRepository extends BaseRepository {
     return COAGroupModel.find(realQuery).then(COAGroups =>
       COAGroups.map(COAGroup => new COAGroupEntity(COAGroup.toObject())),
     );
+  }
+
+  async batchFind(query){
+    return COAGroupModel.find({ _id: { "$in" : query }})
   }
 }

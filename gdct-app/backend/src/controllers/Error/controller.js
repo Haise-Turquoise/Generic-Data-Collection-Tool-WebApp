@@ -4,6 +4,7 @@ import { log } from '../../utils/log/winston';
 
 const errorHandlerController = (err, req, res, next) => {
   if (err) {
+    console.log(err)
     err.statusCode = err.statusCode || 500;
     err.status = err.status || 'error';
     const isProduction = process.env.NODE_ENV === 'production';

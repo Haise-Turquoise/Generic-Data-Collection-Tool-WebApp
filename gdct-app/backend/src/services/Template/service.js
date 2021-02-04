@@ -1,7 +1,10 @@
 import Container from 'typedi';
+import pako from 'pako'
 import TemplateRepository from '../../repositories/Template';
 import TemplateTypeRepository from '../../repositories/TemplateType';
 import WorkflowProcessRepository from '../../repositories/WorkflowProcess';
+import GoogleSheetRepository from '../../repositories/GoogleSheet';
+import { createSpreadsheet, addEditor} from '../../middlewares/googleapis/request'
 
 // @Service()
 export default class TemplateService {
@@ -9,6 +12,7 @@ export default class TemplateService {
     this.templateRepository = Container.get(TemplateRepository);
     this.templateTypeRepository = Container.get(TemplateTypeRepository);
     this.workflowProcessRepository = Container.get(WorkflowProcessRepository);
+    this.googleSheetRepository = Container.get(GoogleSheetRepository);
   }
 
   async createTemplate(template) {
@@ -37,9 +41,16 @@ export default class TemplateService {
         initialNode = node;
       }
     });
+    const templateProperties = {
+      properties: {title: template.name}
+    }
+
+    // Compress the template
+    const deflatedTemplate = pako.deflate(JSON.stringify(templateProperties), { to: 'string' })
 
     template.workflowProcessId = initialNode;
-
+    template.templateData = deflatedTemplate;
+    template.googleSheetId;
     return this.templateRepository.create(template);
   }
 
@@ -61,5 +72,49 @@ export default class TemplateService {
 
   async findTemplateById(id) {
     return this.templateRepository.findById(id);
+  }
+  // Updated on Nov 16
+  // Opens template at Google Sheet
+  // templateId is the objectId of the template on the database.
+  // userEmail: Email of the user that will be given access to Google Sheet. 
+  async openTemplate(templateId, userEmail){
+    // Temporary email
+    userEmail = 'test34973737@gmail.com';
+    //Retrieves template JSON from database
+    const template = await this.templateRepository.findById(templateId); 
+    //Runs if there is already an existing google sheet 
+    if (template.googleSheetId){
+      const res = await this.googleSheetRepository.findById(template.googleSheetId);
+      await Promise.resolve(addEditor(res.googleSheetId, userEmail));
+      return res.googleSheetId;
+    }
+
+    // //First batch of data to send to Google
+    // const firstSheetToSend = {
+    //   properties: template.templateData.properties,
+    //   sheets: '',
+    // }
+
+    // // If this is a brand new template that has never opened before, tempate.templateData.sheets will be empty and the if statement will not run
+    // // If this is template that has opened before, then an existing sheet will have to be attached.
+    // if (template.templateData.sheets){
+    //   firstSheetToSend.sheets = template.templateData.sheets[0];
+    // }
+
+    // Sends in the data from google sheet API and retrieves spreadsheetID
+    let res = await Promise.resolve(createSpreadsheet(template.templateData, userEmail)); 
+    const { userSpreadsheetId, duplicateSpreadsheetId, triggerId } = res;
+    // Store Google Sheet Model to the database
+    const googleSheetModel = {
+      templateId: templateId,
+      googleSheetId: userSpreadsheetId,
+      duplicateId: duplicateSpreadsheetId,
+      triggerId: triggerId,
+    }
+    res = await this.googleSheetRepository.create(googleSheetModel);
+    // Update googleSheetId on templateModel
+    this.templateRepository.updateGoogleSheetId(templateId, res._id);
+    // createSheet(template.templateData.sheets, spreadsheetId);   
+    return userSpreadsheetId;
   }
 }

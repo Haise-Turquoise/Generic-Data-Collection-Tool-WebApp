@@ -1,4 +1,7 @@
 import React, { useState } from 'react';
+import { selectOrgsStore } from '../../../store/OrganizationsStore/selectors';
+
+
 import PropTypes from 'prop-types';
 
 import Paper from '@material-ui/core/Paper';
@@ -13,6 +16,8 @@ import Typography from '@material-ui/core/Typography';
 
 import './ModifyOrganization.scss';
 import ProgList from '../ProgramList';
+import ErrorBanner from '../../ErrorBanner'
+import { makeStyles } from '@material-ui/core/styles';
 
 const OrganizationHeader = ({ title }) => {
   return (
@@ -212,6 +217,11 @@ const OrganizationForm = props => {
     );
   };
 
+  const classes = makeStyles({
+    root: {
+      margin: '100px',
+    }
+  })
   return (
     <Paper>
       <form onSubmit={() => false}>
@@ -256,6 +266,7 @@ const OrganizationForm = props => {
             </Button>
             <Button
               type="button"
+              className="SaveButton"
               color="primary"
               variant="contained"
               size="large"
@@ -328,6 +339,7 @@ class ModifyOrganization extends React.Component {
     return (
       <div>
         <OrganizationHeader title={this.props.title} />
+        <ErrorBanner title={"The organization ID already exists in the database. Please select a unique ID"} targetStore={selectOrgsStore}/>
         <OrganizationForm
           object={this.state}
           submit={() => this.props.submit(this.state)}

@@ -1,4 +1,4 @@
-import React, { useMemo, useEffect } from 'react';
+import React, { useMemo, useEffect, useState } from 'react';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 
 import MaterialTable from 'material-table';
@@ -19,6 +19,7 @@ import {
 import { selectSubmissionPeriodsStore } from '../../store/SubmissionPeriodsStore/selectors';
 import { selectReportingPeriodsStore } from '../../store/ReportingPeriodsStore/selectors';
 import { getReportingPeriodsRequest } from '../../store/thunks/reportingPeriod';
+import { calculateOptions } from '../../tools/misc'
 
 const SubmissionPeriodHeader = () => {
   return (
@@ -30,6 +31,7 @@ const SubmissionPeriodHeader = () => {
 
 const SubmissionPeriod = () => {
   const dispatch = useDispatch();
+  const [readRowNum, setRowNum] = useState(1);
 
   const { submissionPeriods, lookupReportingPeriods } = useSelector(
     state => ({
@@ -53,7 +55,7 @@ const SubmissionPeriod = () => {
     [lookupReportingPeriods],
   );
 
-  const options = useMemo(() => ({ actionsColumnIndex: -1, search: false, showTitle: false }), []);
+  const options = useMemo(() => calculateOptions(readRowNum), [readRowNum]);
 
   const editable = useMemo(
     () => ({
@@ -78,10 +80,13 @@ const SubmissionPeriod = () => {
     dispatch(getReportingPeriodsRequest());
   }, [dispatch]);
 
+  useEffect(()=>{setRowNum(submissionPeriods.length)}, [submissionPeriods])
+
   return (
     <div>
       <SubmissionPeriodHeader />
       <MaterialTable
+        key={readRowNum}
         columns={columns}
         data={submissionPeriods}
         editable={editable}

@@ -9,6 +9,7 @@ const CreateOrganization = () => {
   const history = useHistory();
   const dispatch = useDispatch();
 
+  // @ts-ignore
   const initialState = new OrgEntity({
     active: true,
     programId: [],
@@ -26,7 +27,7 @@ const CreateOrganization = () => {
 
   const reject = () => {
     // reflect error message on form somehow o.O
-    alert('Missing or invalid parameters');
+    // alert('Missing or invalid parameters');
   };
 
   const submit = newObject => {
