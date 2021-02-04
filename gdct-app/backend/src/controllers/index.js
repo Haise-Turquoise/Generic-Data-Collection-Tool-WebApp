@@ -26,6 +26,7 @@ import MenuItemController from './MenuItem';
 import MenuController from './Menu';
 import UsersController from './Users/controller';
 import SubmissionNoteController from './SubmissionNote';
+import AuditLogController from './AuditLog';
 import { authorized } from '../middlewares/auth/auth';
 
 import GoogleApisController from './GoogleApis'
@@ -46,6 +47,7 @@ export const routerManager = app => {
   app.use('/orgGroup_manager', Container.get(OrgGroupController));
   app.use('/user_management', Container.get(UserController));
   app.use('/template_manager', Container.get(TemplateTypeController));
+  app.use('/AuditLog', Container.get(AuditLogController));
 
   app.use('/', authorized, Container.get(ReportingPeriodController));
   app.use('/', authorized, Container.get(SheetNameController));

@@ -74,5 +74,6 @@ export default {
   Status: <StorageIcon style={{ fontSize: '1.2rem', marginLeft: '1.2rem' }} />,
   SheetName: <StorageIcon style={{ fontSize: '1.2rem', marginLeft: '1.2rem' }} />,
   'Reporting period': <EventIcon style={{ fontSize: '1.2rem', marginLeft: '1.2rem' }} />,
+  AuditLog: <StorageIcon style={{ fontSize: '1.2rem', marginLeft: '1.2rem' }} />,
   'ETL Setting': <TransitEnterexitIcon style={{ fontSize: '1.2rem', marginLeft: '1.2rem' }}/>
 };

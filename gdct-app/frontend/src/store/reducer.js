@@ -12,6 +12,7 @@ import AppResourcesStore from './AppResourcesStore/store';
 import AppRoleResourcesStore from './AppRoleResourcesStore/store';
 import AppSysesStore from './AppSysesStore/store';
 import AppSysRolesStore from './AppSysRolesStore/store';
+import AuditLogStore from './AuditLogStore/store';
 import DialogsStore from './DialogsStore/store';
 import ReportingPeriodsStore from './ReportingPeriodsStore/store';
 
@@ -51,6 +52,7 @@ export const root = combineReducers({
   AppRoleResourcesStore: AppRoleResourcesStore.reducer,
   AppSysesStore: AppSysesStore.reducer,
   AppSysRolesStore: AppSysRolesStore.reducer,
+  AuditLogStore: AuditLogStore.reducer,
   DialogsStore: DialogsStore.reducer,
   ReportingPeriodsStore: ReportingPeriodsStore.reducer,
   OrgsStore: OrgsStore.reducer,
