@@ -7,13 +7,13 @@ export default class AuditLogService {
     this.AuditLogRepository = Container.get(AuditLogRepository);
   }
 
-  async createAuditLog(AuditLog) {
-    return this.AuditLogRepository.create(AuditLog);
+  async createAuditLog(AuditLogInfo) {
+    return this.AuditLogRepository.create(AuditLogInfo);
   }
 
-  async findAuditLog(AuditLog) {
-    return this.AuditLogRepository.find(AuditLog);
-  }
+  // async findAuditLog(AuditLog) {
+  //   return this.AuditLogRepository.find(AuditLog);
+  // }
 
   async findAllAuditLog() {
     return this.AuditLogRepository.findAll();

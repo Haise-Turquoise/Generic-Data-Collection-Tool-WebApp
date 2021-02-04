@@ -9,8 +9,12 @@ const AuditLogController = (() => {
   });
 
   return {
-    create: async AuditLog => AuditLogAxios.post('', { AuditLog }).then(res => res.data.AuditLog),
-    fetch: async () => AuditLogAxios.get('/fetchAllAuditLogs').then(res => res.data.auditlogs),
+    fetch: async () => AuditLogAxios.get('/fetchAllAuditLogs')
+      .then(res => { 
+        //console.log(res.data); 
+        return res.data 
+      }),
+    //create: async AuditLog => AuditLogAxios.post(`/createAuditLog`, { AuditLog }).then(res => res.data.AuditLog),
   };
 })();
 

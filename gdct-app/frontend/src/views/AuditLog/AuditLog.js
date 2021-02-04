@@ -3,15 +3,13 @@ import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 
 import MaterialTable from 'material-table';
 import Paper from '@material-ui/core/Paper';
-
 import Typography from '@material-ui/core/Typography';
-import {
-    getAuditLogRequest
-} from '../../store/thunks/AuditLog';
-
-import './AuditLog.scss';
 import { selectFactoryRESTResponseTableValues } from '../../store/common/REST/selectors';
+
+import { getAuditLogRequest } from '../../store/thunks/AuditLog';
 import { selectAuditLogStore } from '../../store/AuditLogStore/selectors';
+
+//import './AuditLog.scss';
 
 const AuditLogHeader = () => {
   return (
@@ -25,24 +23,26 @@ const AuditLogHeader = () => {
 const AuditLogTable = () => {
   const dispatch = useDispatch();
 
+  // Prepare the table columns for MaterialTable
+  const columns = useMemo(
+    () => [
+      { title: 'Time', field: 'timestamp' },
+      { title: 'User', field: 'user.name' },
+      { title: 'Activity', field: 'activity' },
+    ],
+    [],
+  );
+  
+  // Prepare the options for MaterialTable
+  const options = useMemo(() => ({ actionsColumnIndex: -1, search: true, showTitle: false }), []);
+  
+  // Prepare the data for MaterialTable on initial load
   const { auditlogs } = useSelector(
     state => ({
       auditlogs: selectFactoryRESTResponseTableValues(selectAuditLogStore)(state),
     }),
     shallowEqual,
   );
-
-  const columns = useMemo(
-    () => [
-      { title: 'Time', field: 'timestamp' },
-      { title: 'User', field: 'user' },
-      { title: 'Activity', field: 'activity' },
-    ],
-    [],
-  );
-
-  const options = useMemo(() => ({ actionsColumnIndex: -1, search: true, showTitle: false }), []);
-
   useEffect(() => {
     dispatch(getAuditLogRequest());
   }, [dispatch]);

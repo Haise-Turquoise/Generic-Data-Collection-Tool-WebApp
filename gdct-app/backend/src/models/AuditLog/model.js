@@ -10,7 +10,7 @@ const AuditLogModel = model(
             user: {type: Object},
             activity: {type: String},
             module: {type: Object},
-            timestamp: {type: Date},
+            timestamp: {type: Date, default: Date.now},
         },
         { 
             minimize: false 

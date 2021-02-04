@@ -5,23 +5,28 @@ import AuditLogEntity from '../../entities/AuditLog';
 import { authorized } from '../../middlewares/auth/auth';
 
 const AuditLogController = Service([AuditLogService], service => {
-    const router = Router();
-  
-    return (function () {
-        router.post(`/AuditLog/createAuditLog`, (req, res, next) => {
-            const { auditInfo } = req.body;
-            service.createAuditLog(auditInfo).catch(next)
-        });
+  const router = Router();
 
-        router.get('/AuditLog/fetchAllAuditLogs', (req, res, next) => {
-            service
-                .findAllAuditLog()
-                .then(auditlogs => res.json({ auditlogs }))
-                .catch(next)
+  return (function () {
+    // Get All Audit Logs
+    router.get('/fetchAllAuditLogs', (req, res, next) => {
+      service
+        .findAllAuditLog()
+        .then(auditlogs => {
+          //console.log(auditlogs)
+          return res.json(auditlogs)
         })
+        .catch(next)
+    })
+    
+    // Create one Audit Log
+    router.post(`/createAuditLog`, (req, res, next) => {
+      const { AuditLogInfo } = req.body;
+      service.createAuditLog(AuditLogInfo).catch(next)
+    });
 
-        return router;
-    })();
+    return router;
+  })();
 });
   
 export default AuditLogController;

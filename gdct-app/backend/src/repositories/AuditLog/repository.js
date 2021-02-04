@@ -7,16 +7,15 @@ export default class AuditLogRepository extends BaseRepository {
     super(AuditLogModel);
   }
 
-  async create(AuditLog) {
-    AuditLog.isActive = true;
-    return AuditLogModel.create(AuditLog).then(AuditLog => new AuditLogEntity(AuditLog.toObject()));
+  async create(AuditLogInfo) {
+    return AuditLogModel.create(AuditLogInfo).then(AuditLog => new AuditLogEntity(AuditLogInfo.toObject()));
   }
 
-  async find(query) {
-    return AuditLogModel.find(query).then(AuditLoges =>
-      AuditLoges.map(AuditLog => new AuditLogEntity(AuditLog.toObject())),
-    );
-  }
+  // async find(query) {
+  //   return AuditLogModel.find(query).then(AuditLoges =>
+  //     AuditLoges.map(AuditLog => new AuditLogEntity(AuditLog.toObject())),
+  //   );
+  // }
 
   async findAll() {
     return AuditLogModel.find();
