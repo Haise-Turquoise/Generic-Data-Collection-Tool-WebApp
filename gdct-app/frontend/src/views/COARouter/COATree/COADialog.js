@@ -33,7 +33,7 @@ const COADialog = () => {
 
   const handleSelect = useCallback(
     item => {
-      dispatch(COATreeStore.actions.SELECT_COA_COA_TREE_UI({ _id: item._id }));
+      dispatch(COATreeStore.actions.SELECT_COA_COA_TREE_UI({ item }));
     },
     [dispatch],
   );

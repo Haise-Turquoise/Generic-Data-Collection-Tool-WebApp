@@ -1,37 +1,29 @@
 import React, { useState, useEffect } from 'react';
-import { ListItem, ListItemIcon, ListItemText } from '@material-ui/core';
-import { Link } from 'react-router-dom';
 import navigationConfig from '../../components/AuthPage/config';
+import DrawerItem from '../../components/DrawerItem/DrawerItem';
+import IconItem from '../../components/IconItem/IconItem';
 
 const MenuHeader = () => {
   const [config, setConfig] = useState([]);
   useEffect(() => {
-    navigationConfig().then(res => setConfig(res));
-  }, []);
-  return config
-    .filter(item => item.type !== 'divider')
-    .map((e, i) => {
-      const { name, type, url, icon, children } = e;
-      return (
-        <ListItem key={i} component={url && Link} button to={url} style={{ display: 'block' }}>
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-            }}
-          >
-            <ListItemIcon
-              style={{ color: '#3F51B5' }}
-              // onClick={handleClick}
-            >
-              {icon}
-            </ListItemIcon>
-            <ListItemText primary={name} />
-          </div>
-          <ListItemText secondary={'Simple description can be here about the menu'} />
-        </ListItem>
-      );
+    navigationConfig().then(res => {
+      setConfig(res);
     });
+  }, []);
+  return (
+    <>
+      {config
+        .filter(item => item.type !== 'divider')
+        .map((item, index) => {
+          const { type, name, icon, url } = item;
+          return item.type !== 'drawer' ? (
+            <IconItem key={`${type}-${name}-${index}`} name={name} url={url} icon={icon} />
+          ) : (
+            <DrawerItem key={`${type}-${name}-${index}`} {...item} option="main" />
+          );
+        })}
+    </>
+  );
 };
 
 const GDCTMenu = () => {

@@ -28,10 +28,6 @@ const AppSysController = Service([AppSysService], service => {
       service
         .createAppSys(req.body.AppSys)
         .then(AppSys => res.json({ AppSys }))
-        .catch(error => {
-          console.error(error);
-          throw error;
-        })
         .catch(next);
     });
 

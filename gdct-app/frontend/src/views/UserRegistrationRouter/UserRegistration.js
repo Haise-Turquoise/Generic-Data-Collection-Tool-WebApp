@@ -1,9 +1,7 @@
-import React, { lazy, useCallback, useMemo, useEffect } from 'react';
+import React, { lazy, useCallback, useMemo, useEffect, useState } from 'react';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import { Formik } from 'formik';
 import cloneDeep from 'clone-deep';
-
-// import SRIHeader from "../../../SRI_Header"
 
 import Paper from '@material-ui/core/Paper';
 import TextField from '@material-ui/core/TextField';
@@ -20,9 +18,8 @@ import './Register.scss';
 import Box from '@material-ui/core/Box';
 import * as yup from 'yup';
 import MaterialTable from 'material-table';
-import { selectUserRegistrationStore } from '../../store/UserRegistrationStore/selectors';
-import UserRegistrationStore from '../../store/UserRegistrationStore/store';
-import { updateSubmissionExcelRequest } from '../../store/thunks/submission';
+
+import { useTranslation } from 'react-i18next';
 
 import {
   orgGroupChange,
@@ -39,22 +36,18 @@ import {
   searchKeyChange,
   referenceChange,
 } from '../../store/thunks/userRegistration';
+import { getUsersRequest } from '../../store/thunks/users';
+import { fetchUserByUsername } from '../../store/thunks/user';
 import { selectFactoryRESTResponseTableValues } from '../../store/common/REST/selectors';
-import { ROUTE_PUBLIC_LOGIN } from '../../constants/routes';
-import { selectSubmissionsStore } from '../../store/SubmissionsStore/selectors';
+import { selectUsersStore } from '../../store/UsersStore/selectors';
+import UserController from '../../controllers/user';
 
 function getSteps() {
   return ['Step1', 'Step2'];
 }
 const steps = getSteps();
 
-const titleOptions = [
-  { label: 'Mr.', value: 'Mr.' },
-  { label: 'Mrs.', value: 'Mrs.' },
-  { label: 'Ms.', value: 'Ms.' },
-  { label: 'Dr.', value: 'Dr.' },
-];
-
+// Column for permission table.
 const columns = [
   { title: 'Organization', field: 'organization.name' },
   { title: 'Program', field: 'program.code' },
@@ -74,56 +67,65 @@ const columns = [
   },
 ];
 
-const searchKeyOptions = [
-  { label: 'Organization Code', value: 'code' },
-  { label: 'Organization Name', value: 'name' },
-  { label: 'Location Name', value: 'LocationName' },
-];
+// The schema to validate user input
+const registerSchema = () =>
+  yup.object().shape({
+    title: yup.string().required('Please select one title'),
+    username: yup
+      .string()
+      .min(6, 'Username must be 6 to 20 characters long')
+      .max(20, 'Username must be 6 to 20 characters long')
+      .test('Unique Username', 'Username has already been used', async function (value) {
+        const fetchData = await UserController.fetchUserByUserName(value);
 
-const registerSchema = yup.object().shape({
-  title: yup.string().required('Please select one title'),
-  username: yup
-    .string()
-    .min(6, 'Username must be 6 to 20 characters long')
-    .max(20, 'Username must be 6 to 20 characters long')
-    .required('Please enter a username'),
-  password: yup
-    .string()
-    .min(8, 'The given password is too short. Password must be at least 8 character(s) long')
-    .matches(
-      /[{0-9}]/,
-      'Password has too few numeric characters (0-9). The password must have at least 1 numeric character(s)',
-    )
-    .matches(
-      /[{a-z}{A-Z}}]/,
-      'Password has too few alphabetic characters (A-Z, a-z). The password must have at least 2 alphabetic character(s)',
-    )
-    .required('Please enter a password'),
-  passwordConfirm: yup
-    .string()
-    .oneOf([yup.ref('password'), null], 'Password should match with Verify Password')
-    .required('Please confirm your password'),
-  firstName: yup
-    .string()
-    .required('Please enter first name')
-    .max(100, 'Name is too long, please enter an alias or nickname instead'),
-  lastName: yup
-    .string()
-    .required('Please enter last name')
-    .max(100, 'Name is too long, please enter an alias or nickname instead'),
-  phoneNumber: yup
-    .string()
-    .length(10, 'Please enter valid phone number')
-    .matches(/^[0-9]+$/, 'Please enter valid phone number')
-    .required('Please enter phone number'),
-  email: yup
-    .string()
-    .email('Please enter a valid email')
-    .max(254, 'Email is too long')
-    .required('Please enter your email'),
-  ext: yup.string().max(100, 'Ext is too long'),
-});
+        if (Object.keys(fetchData.user).length === 0 && fetchData.user.constructor === Object) {
+          return true;
+        }
+        return false;
+      })
+      .required('Please enter a username'),
+    password: yup
+      .string()
+      .min(8, 'The given password is too short. Password must be at least 8 character(s) long')
+      .matches(
+        /[{0-9}]/,
+        'Password has too few numeric characters (0-9). The password must have at least 1 numeric character(s)',
+      )
+      .matches(
+        /[{a-z}{A-Z}}]/,
+        'Password has too few alphabetic characters (A-Z, a-z). The password must have at least 2 alphabetic character(s)',
+      )
+      .required('Please enter a password'),
+    passwordConfirm: yup
+      .string()
+      .oneOf([yup.ref('password'), null], 'Password should match with Verify Password')
+      .required('Please confirm your password'),
+    firstName: yup
+      .string()
+      .required('Please enter first name')
+      .max(100, 'Name is too long, please enter an alias or nickname instead'),
+    lastName: yup
+      .string()
+      .required('Please enter last name')
+      .max(100, 'Name is too long, please enter an alias or nickname instead'),
+    phoneNumber: yup
+      .string()
+      // .length(10, 'Please enter valid phone number')
+      // .matches(/^[0-9]+$/, 'Please enter valid phone number')
+      .matches(/\(?\d{3}\)?-? *\d{3}-? *-?\d{4}/, 'Please enter valid phone number')
+      .required('Please enter phone number'),
+    email: yup
+      .string()
+      .email('Please enter a valid email')
+      .max(254, 'Email is too long')
+      .required('Please enter your email'),
+    ext: yup
+      .string()
+      .matches(/^[0-9]+$/, 'Please enter valid ext number')
+      .max(100, 'Ext is too long'),
+  });
 
+// Button on the bottom of page
 const ButtonBox = ({
   activeStep,
   ableToComplete,
@@ -174,6 +176,8 @@ const ButtonBox = ({
   </Box>
 );
 
+// Read the information user select and ask controller to send request to backend
+// After responsed from backend, page will be refreshed.
 const selectOrgProgram = (
   searchKey,
   reference,
@@ -190,62 +194,69 @@ const selectOrgProgram = (
   //  if (organizationGroup !== "Health Service Providers") {
   const selectedPrograms = [];
   const selectedOrganizations = [];
-  console.log(appSysOptions);
   return (
     <>
-      <Typography className="register__inputTitle"> *AppSys </Typography>
-      <Select
-        name="appSys"
-        options={appSysOptions}
-        onChange={handleAppSysChange}
-        className="register__select"
-      />
+      <div className="register__selectField">
+        <Typography className="register__inputTitle"> *Application </Typography>
+        <Select
+          name="appSys"
+          options={appSysOptions}
+          onChange={handleAppSysChange}
+          className="register__select"
+        />
+      </div>
+      <div className="register__selectField">
+        <Typography className="register__inputTitle">*Organization Groups</Typography>
+        <Select
+          name="organizations"
+          options={organizationGroupOptions}
+          onChange={handleOrgGroupChange}
+          className="register__select"
+        />
+      </div>
 
-      <Typography className="register__inputTitle">*OrganizationsGroups</Typography>
-      <Select
-        name="organizations"
-        options={organizationGroupOptions}
-        onChange={handleOrgGroupChange}
-        className="register__select"
-      />
       <br />
-      <Typography className="register__inputTitle"> *Organizations </Typography>
 
-      <FilteredMultiSelect
-        onChange={handleOrgChange}
-        options={organizationOptions}
-        selectedOptions={selectedOrganizations}
-        textProp="label"
-        valueProp="value"
-        buttonText="Add Organization"
-        className="register__filteredMultiSelect"
-        showFilter={false}
-        classNames={{
-          button: 'register__step3Button',
-          select: 'register__multiSelect',
-        }}
-      />
+      <div className="register__multiSelectField">
+        <Typography className="register__inputTitle"> *Organizations </Typography>
+        <FilteredMultiSelect
+          onChange={handleOrgChange}
+          options={organizationOptions}
+          selectedOptions={selectedOrganizations}
+          textProp="label"
+          valueProp="value"
+          buttonText="Add Organization"
+          className="register__filteredMultiSelect"
+          showFilter={false}
+          classNames={{
+            button: 'register__step3Button',
+            select: 'register__multiSelect',
+          }}
+        />
+      </div>
 
-      <Typography className="register__inputTitle"> *Program </Typography>
-
-      <FilteredMultiSelect
-        onChange={handleProgramChange}
-        options={programOptions}
-        selectedOptions={selectedPrograms}
-        textProp="label"
-        valueProp="value"
-        buttonText="Add Program"
-        className="register__filteredMultiSelect"
-        showFilter={false}
-        classNames={{
-          button: 'register__step3Button',
-          select: 'register__multiSelect',
-        }}
-      />
+      <div className="register__multiSelectField">
+        <Typography className="register__inputTitle"> *Program</Typography>
+        <FilteredMultiSelect
+          onChange={handleProgramChange}
+          options={programOptions}
+          selectedOptions={selectedPrograms}
+          textProp="label"
+          valueProp="value"
+          buttonText="Add Program"
+          className="register__filteredMultiSelect"
+          showFilter={false}
+          classNames={{
+            button: 'register__step3Button',
+            select: 'register__multiSelect',
+          }}
+        />
+      </div>
     </>
   );
 };
 
+// Have the detail UI page for each step
 const getStepContent = (
   snackbarMessage,
   activeStep,
@@ -274,6 +285,50 @@ const getStepContent = (
   props,
 ) => {
   const { values, handleChange, touched, handleBlur, errors, isValid } = props;
+  const [userSubmissionsLength, setSubmissionsLength] = useState(1);
+  const [userPermissionsLength, setPermissionsLength] = useState(1);
+  const [maxPhoneLength, setMaxPhoneLength] = useState(10);
+
+  useEffect(() => {
+    setSubmissionsLength(userSubmissions.length);
+  }, [userSubmissions]);
+
+  useEffect(() => {
+    setPermissionsLength(userPermissions.length);
+  }, [userPermissions]);
+
+  const calculateOptions = itemCount => {
+    let length = itemCount;
+    if (length > 100) length = 100;
+    else if (length == 0) length = 1;
+    return {
+      actionsColumnIndex: -1,
+      search: false,
+      showTitle: false,
+      maxBodyHeight: '400px',
+      pageSize: length,
+    };
+  };
+
+  const calculateMaxLength = value => {
+    let max = 10;
+    for (const character of value) {
+      if (character == '-') {
+        max = 12;
+      }
+    }
+
+    return { maxLength: max };
+  };
+  const userSubmissionsOptions = useMemo(() => calculateOptions(userSubmissionsLength), [
+    userSubmissionsLength,
+  ]);
+  const userPermissionsOptions = useMemo(() => calculateOptions(userPermissionsLength), [
+    userPermissionsLength,
+  ]);
+  const maxLengthSize = useMemo(() => calculateMaxLength(values.phoneNumber), [values.phoneNumber]);
+
+  const { t, i18n } = useTranslation();
   const checkBoxColumns = [
     { title: 'Organization', field: 'organization.name' },
     { title: 'Program', field: 'program.code' },
@@ -354,12 +409,16 @@ const getStepContent = (
 
   switch (activeStep) {
     case 0:
+      // const {t, i18n} = useTranslation();
       return (
         <>
           <form className="register__form">
             <br />
             <div className="register__label">
-              <Typography className="register__inputTitle"> *Title </Typography>
+              <Typography className="register__inputTitle">
+                {' '}
+                {t('UserRegistration.title')}{' '}
+              </Typography>
             </div>
             <div className="register__informationField">
               <TextField
@@ -375,7 +434,8 @@ const getStepContent = (
                 onBlur={handleBlur}
                 InputProps={{
                   style: {
-                    height: 30,
+                    height: 50,
+                    backgroundColor: 'aliceblue',
                   },
                 }}
               />
@@ -397,7 +457,8 @@ const getStepContent = (
                 onBlur={handleBlur}
                 InputProps={{
                   style: {
-                    height: 30,
+                    height: 50,
+                    backgroundColor: 'aliceblue',
                   },
                 }}
               />
@@ -419,7 +480,8 @@ const getStepContent = (
                 onBlur={handleBlur}
                 InputProps={{
                   style: {
-                    height: 30,
+                    height: 50,
+                    backgroundColor: 'aliceblue',
                   },
                 }}
               />
@@ -427,7 +489,10 @@ const getStepContent = (
 
             <br />
             <div className="register__label">
-              <Typography className="register__inputTitle"> *Phone Number </Typography>
+              <Typography className="register__inputTitle">
+                {' '}
+                {t('UserRegistration.phoneNumber')}{' '}
+              </Typography>
             </div>
             <div className="register__informationField">
               <TextField
@@ -443,9 +508,11 @@ const getStepContent = (
                 onBlur={handleBlur}
                 InputProps={{
                   style: {
-                    height: 30,
+                    height: 50,
+                    backgroundColor: 'aliceblue',
                   },
                 }}
+                inputProps={maxLengthSize}
               />
             </div>
             <div className="register__label">
@@ -455,15 +522,18 @@ const getStepContent = (
               <TextField
                 variant="outlined"
                 className="register__field"
-                id="Ext."
-                name="Ext."
-                type="Ext."
+                id="ext"
+                name="ext"
+                type="ext"
                 value={values.ext}
                 onChange={handleChange}
+                error={touched.ext && !!errors.ext}
+                helperText={touched.ext && errors.ext}
                 onBlur={handleBlur}
                 InputProps={{
                   style: {
-                    height: 30,
+                    height: 50,
+                    backgroundColor: 'aliceblue',
                   },
                 }}
               />
@@ -486,7 +556,8 @@ const getStepContent = (
                 onBlur={handleBlur}
                 InputProps={{
                   style: {
-                    height: 30,
+                    height: 50,
+                    backgroundColor: 'aliceblue',
                   },
                 }}
               />
@@ -509,7 +580,8 @@ const getStepContent = (
                 onBlur={handleBlur}
                 InputProps={{
                   style: {
-                    height: 30,
+                    height: 50,
+                    backgroundColor: 'aliceblue',
                   },
                 }}
               />
@@ -525,6 +597,7 @@ const getStepContent = (
                 id="password"
                 name="password"
                 type="password"
+                autoComplete="new-password"
                 value={values.password}
                 onChange={handleChange}
                 error={touched.password && !!errors.password}
@@ -532,7 +605,8 @@ const getStepContent = (
                 onBlur={handleBlur}
                 InputProps={{
                   style: {
-                    height: 30,
+                    height: 50,
+                    backgroundColor: 'aliceblue',
                   },
                 }}
               />
@@ -555,7 +629,8 @@ const getStepContent = (
                 onBlur={handleBlur}
                 InputProps={{
                   style: {
-                    height: 30,
+                    height: 50,
+                    backgroundColor: 'aliceblue',
                   },
                 }}
               />
@@ -595,18 +670,22 @@ const getStepContent = (
           <div className="register__tableContainer">
             <MaterialTable
               className="register__table"
+              key={userSubmissionsLength}
               columns={checkBoxColumns}
-              options={{
-                toolbar: false,
-                showTitle: false,
-                headerStyle: {
-                  backgroundColor: '#f2f5f7',
-                },
-              }}
+              // options={{
+              //   toolbar: false,
+              //   showTitle: false,
+
+              //   headerStyle: {
+              //     backgroundColor: '#f2f5f7',
+              //   },
+              // }}
+              options={userSubmissionsOptions}
               style={{
                 backgroundColor: '#f2f5f7',
               }}
               data={submissionList}
+
               // editable={editable} options={options}
             />
           </div>
@@ -622,47 +701,21 @@ const getStepContent = (
           <div className="register__tableContainer">
             <MaterialTable
               className="register__table"
+              key={userPermissionsLength}
               columns={columns}
-              options={{
-                toolbar: false,
-                showTitle: false,
-                headerStyle: {
-                  backgroundColor: '#f2f5f7',
-                },
-              }}
+              // options={{
+              //   toolbar: false,
+              //   showTitle: false,
+
+              //   headerStyle: {
+              //     backgroundColor: '#f2f5f7',
+              //   },
+              // }}
+              options={userPermissionsOptions}
               style={{
                 backgroundColor: '#f2f5f7',
               }}
-              actions={
-                [
-                  // {
-                  //   icon: 'delete',
-                  //   tooltip: 'Delete Permission',
-                  //   onClick: (event, rowData) => {
-                  //     let editedPermission = userPermissions;
-                  //     editedPermission.splice(rowData.tableData.id, 1);
-                  //     setUserPermissionList(editedPermission);
-                  //   }
-                  // }
-                ]
-              }
-              components={
-                {
-                  // Action: props => (
-                  //   <Button
-                  //     onClick={(event) => props.action.onClick(event, props.data)}
-                  //     color="primary"
-                  //     variant="outlined"
-                  //     style={{textTransform: 'none'}}
-                  //     size="small"
-                  //   >
-                  //     Delete
-                  //   </Button>
-                  // )
-                }
-              }
               data={permissionList}
-              // editable={editable} options={options}
             />
             <ButtonBox
               activeStep={activeStep}
@@ -681,6 +734,7 @@ const getStepContent = (
   }
 };
 
+// Get the state and shown it on the website
 const Register_container = props => {
   const dispatch = useDispatch();
   const handleOrgGroupChange = useCallback(event => {
@@ -821,9 +875,10 @@ const Register_container = props => {
   );
 };
 
+// Main function to export
 const Register = () => {
   const handleSubmit = () => {};
-
+  const dispatch = useDispatch();
   const { registrationData } = useSelector(
     ({ UserRegistrationStore: { registrationData } }) => ({
       registrationData,

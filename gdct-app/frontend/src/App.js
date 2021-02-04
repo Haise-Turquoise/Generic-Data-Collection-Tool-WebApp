@@ -13,8 +13,8 @@ import GDCTMenu from './views/GDCTMenu';
 import Programs from './views/Programs';
 import Statuses from './views/Statuses';
 import ReportingPeriods from './views/ReportingPeriods';
-
 import AppConfigs from './views/AppConfigs';
+import SheetNames from './views/SheetNames';
 import UserRouter from './views/UserRouter';
 import ReportRouter from './views/ReportRouter';
 import TemplateRouter from './views/TemplateRouter';
@@ -25,9 +25,12 @@ import COARouter from './views/COARouter';
 import WorkflowRouter from './views/WorkflowRouter';
 import Register from './views/UserRegistrationRouter';
 import MasterValuePopulation from './views/MasterValuePopulation';
+import AuditLog from './views/AuditLog';
+import TransferStatus from './views/TransferStatus'
 import { ROUTE_WORKFLOW, ROUTE_TEMPLATE_PCKGS, ROUTE_CATEGORY } from './constants/routes';
 
 import './App.scss';
+// import './i18n'
 
 const PrivateRouter = ({ setLoggedIn }) => {
   return (
@@ -37,6 +40,7 @@ const PrivateRouter = ({ setLoggedIn }) => {
       <Route path="/report" component={ReportRouter} />
       <Route path="/submission" component={SubmissionRouter} />
       <Route path={ROUTE_TEMPLATE_PCKGS} component={TemplateRouter} />
+      <Route path="/admin/auditlog" component={AuditLog} />
       <Route path="/admin/populate" component={MasterValuePopulation} />
       <Route path="/admin/organization" component={OrgRouter} />
       <Route path="/admin/submission" component={SubmissionRouter} />
@@ -50,8 +54,9 @@ const PrivateRouter = ({ setLoggedIn }) => {
       <Route exact path="/admin/reporting_period" component={ReportingPeriods} />
       <Route path={ROUTE_WORKFLOW} component={WorkflowRouter} />
       <Route exact path="/admin/roleManagement" component={RoleManagement} />
+      <Route exact path="/admin/TransferStatus" component={TransferStatus} />
       {/* <Route path="/submission_manager" component={SubmissionRouter} /> */}
-      {/* <Route path="/sheetNames" component={SheetNames} />{' '} */}
+      <Route exact path="/admin/sheetName" component={SheetNames} />
       {/* <Route path={ROUTE_COLUMN_NAMES} component={ColumnNames} /> */}
       <Route
         exact
@@ -75,6 +80,8 @@ const PublicRouter = ({ setLoggedIn }) => {
 
 const App = () => {
   const [isLoggedIn, setLoggedIn] = useState(null);
+
+  console.log('cookie:', document.cookie);
   useEffect(() => {
     AuthController.profile()
       .then(res => {

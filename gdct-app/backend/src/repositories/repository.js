@@ -1,37 +1,43 @@
+import i18n from 'i18n';
+import AppError from '../utils/AppError';
+
 export default class BaseRepository {
   constructor(model) {
     this._model = model;
   }
 
   find(item) {
-    throw new Error('Method not implemented.', item);
+    const message = `${i18n.__('MethodNotImplemented')} ${{ item }}`;
+    throw new AppError(message);
   }
 
   create(item) {
-    throw new Error('Method not implemented.', item);
+    const message = `${i18n.__('MethodNotImplemented')} ${{ item }}`;
+    throw new AppError(message);
   }
 
   update(id, item) {
-    throw new Error('Method not implemented.', id, item);
+    const message = `${i18n.__('MethodNotImplemented')} ${{ id }} ${{ item }}`;
+    throw new AppError(message);
   }
 
   async findAll() {
     return this._model.find().then(result => {
-      if (!result) throw new Error('_id does not exist');
-      return result.toObject();
+      if (!result) throw new AppError(i18n.__('idDoesNotExist'));
+      return result;
     });
   }
 
   async delete(id) {
     return this._model.findByIdAndDelete(id).then(result => {
-      if (!result) throw new Error('_id does not exist');
+      if (!result) throw new AppError(i18n.__('idDoesNotExist')); // throw new Error('_id does not exist');
       return result.toObject();
     });
   }
 
   async findById(id) {
     return this._model.findById(id).then(result => {
-      if (!result) throw new Error('_id does not exist');
+      if (!result) { console.log(id);throw new AppError(i18n.__('idDoesNotExist'));} // throw new Error('_id does not exist');
       return result.toObject();
     });
   }

@@ -18,10 +18,6 @@ const MenuItemController = Service([MenuItemService], service => {
       service
         .createMenuItem(req.body.MenuItem)
         .then(MenuItem => res.json({ MenuItem }))
-        .catch(error => {
-          console.error(error);
-          throw error;
-        })
         .catch(next);
     });
 

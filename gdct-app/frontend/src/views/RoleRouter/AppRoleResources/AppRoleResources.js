@@ -1,4 +1,4 @@
-import React, { useMemo, useEffect } from 'react';
+import React, { useMemo, useEffect, useState } from 'react';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 
 import MaterialTable from 'material-table';
@@ -20,6 +20,8 @@ import { selectFactoryRESTResponseTableValues } from '../../../store/common/REST
 import { selectAppRoleResourcesStore } from '../../../store/AppRoleResourcesStore/selectors';
 import { selectAppSysRolesStore } from '../../../store/AppSysRolesStore/selectors';
 import { selectAppResourcesStore } from '../../../store/AppResourcesStore/selectors';
+import { calculateOptions } from '../../../tools/misc'
+
 
 const AppRoleResourcesHeader = () => {
   return (
@@ -32,6 +34,7 @@ const AppRoleResourcesHeader = () => {
 
 const AppRoleResourcesTable = () => {
   const dispatch = useDispatch();
+  const [readRowNum, setRowNum] = useState(1);
   const { appRoleResources, appSysRoles, appResources } = useSelector(
     state => ({
       appRoleResources: selectFactoryRESTResponseTableValues(selectAppRoleResourcesStore)(state),
@@ -40,15 +43,17 @@ const AppRoleResourcesTable = () => {
     }),
     shallowEqual,
   );
+
   const lookupSysRoles = appSysRoles.reduce(function (acc, sysRoles) {
     acc[sysRoles._id] = `${sysRoles.appSys} - ${sysRoles.role}`;
     return acc;
   }, {});
+
   const lookupResources = appResources.reduce(function (acc, resource) {
     acc[resource._id] = resource.resourcePath;
     return acc;
   }, {});
-  console.log(appRoleResources);
+
   const columns = useMemo(
     () => [
       { title: 'AppSysRole', field: 'appSysRoleId', lookup: lookupSysRoles },
@@ -77,7 +82,7 @@ const AppRoleResourcesTable = () => {
     [lookupSysRoles, lookupResources],
   );
 
-  const options = useMemo(() => ({ actionsColumnIndex: -1, search: false, showTitle: false }), []);
+  const options = useMemo(() => calculateOptions(readRowNum), [readRowNum]);
 
   const editable = useMemo(
     () => ({
@@ -103,8 +108,11 @@ const AppRoleResourcesTable = () => {
     dispatch(getAppResourcesRequest());
   }, [dispatch]);
 
+  useEffect(()=>{setRowNum(appRoleResources.length), [appRoleResources]})
+
   return (
     <MaterialTable
+      key={readRowNum}
       columns={columns}
       data={appRoleResources}
       editable={editable}

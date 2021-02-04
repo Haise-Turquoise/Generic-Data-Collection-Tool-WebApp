@@ -1,0 +1,13 @@
+{
+    "UserRegistration.title":"*Titre",
+    "UserRegistration.step1":"Étape 1",
+    "UserRegistration.step2":"Étape 2",
+    "UserRegistration.phoneNumber":"*Numéro de téléphone",
+    "UserRegistration.lastName":"Nom de famille",
+    "UserRegistration.firstName":"Prénom",
+    "UserRegistration.email":"Email",
+    "UserRegistration.userID":"*Identifiant d'utilisateur",
+    "UserRegistration.password":"*Mot de passe",
+    "UserRegistration.confirmPassword":"*Confirmez le mot de passe"
+
+}

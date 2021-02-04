@@ -12,55 +12,18 @@ export default class SheetNameRepository extends BaseRepository {
     this.templateRepository = Container.get(TemplateRepository);
   }
 
-  async create({
-    // templateId,
-    name,
-    isActive,
-  }) {
-    return (
-      // this.templateRepository
-      // .validate(templateId)
-      // .then(() =>
-      //   SheetNameModel.create({
-      //     templateId,
-      //     name,
-      //     isActive
-      //   })
-      // )
-      SheetNameModel.create({
-        // templateId,
-        name,
-        isActive,
-      }).then(sheetName => new SheetNameEntity(sheetName))
-    );
-  }
-
-  async update(
-    id,
-    {
-      // templateId,
+  async create({ name, isActive }) {
+    return SheetNameModel.create({
       name,
       isActive,
-    },
-  ) {
-    return (
-      // this.templateRepository.validate(templateId)
-      //   .then(
-      //     () => SheetNameModel.findByIdAndUpdate(
-      //       id,
-      //       {
-      //         templateId,
-      //         name,
-      //         isActive
-      //       }
-      //     )
-      //   )
-      SheetNameModel.findByIdAndUpdate(id, {
-        // templateId,
-        name,
-        isActive,
-      }).then(sheetName => new SheetNameEntity(sheetName.toObject()))
-    );
+    }).then(sheetName => new SheetNameEntity(sheetName));
+  }
+
+  async update(id, { name, isActive }) {
+    return SheetNameModel.findByIdAndUpdate(id, {
+      name,
+      isActive,
+    }).then(sheetName => new SheetNameEntity(sheetName.toObject()));
   }
 
   async find(query) {
@@ -85,5 +48,9 @@ export default class SheetNameRepository extends BaseRepository {
 
   async delete(id) {
     return SheetNameModel.findByIdAndDelete(id).then(sheetName => new SheetNameEntity(sheetName));
+  }
+
+  async batchFind(query){
+    return SheetNameModel.find({ _id: { "$in" : query }})
   }
 }

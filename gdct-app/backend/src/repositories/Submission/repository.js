@@ -38,20 +38,22 @@ export default class SubmissionRepository extends BaseRepository {
   }
 
   async findByOrgIdAndProgramId(orgId, programIds) {
+    if (!orgId) return SubmissionModel.find({ programId: { $in: programIds }, isLatest: true });
     return SubmissionModel.find({ orgId, programId: { $in: programIds }, isLatest: true });
   }
 
-  // async find(query) {
-  //   const realQuery = {};
-  //
-  //   for (const key in query) {
-  //     if (query[key]) realQuery[key] = query[key];
-  //   }
-  //
-  //   return SubmissionModel.find(realQuery)
-  //     .select('-workbookData')
-  //     .then(submissions =>
-  //       submissions.map(submission => new SubmissionEntity(submission.toObject())),
-  //     );
-  // }
+  // Created on Nov 26, 2020
+  // Updates
+  async updateGoogleSheetId(_id, googleSheetId) {
+    return SubmissionModel.findByIdAndUpdate( _id,  { googleSheetId } );
+  }
+  // Created on Nov 27, 2020
+  // Updates submission with new workkbook
+  async updateWorkbook(_id, workbookData){
+    return SubmissionModel.findByIdAndUpdate( _id, { workbookData })
+  }
+
+  async findOneByTemplateIDs(templateIDs) {
+    return SubmissionModel.findOne({ templateId:{$in:templateIDs}}, {_id:1});
+  }
 }

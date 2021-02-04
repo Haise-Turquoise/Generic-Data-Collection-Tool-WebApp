@@ -18,10 +18,6 @@ const ReportingPeriodController = Service([ReportingPeriodService], service => {
       service
         .createReportingPeriod(req.body.reportingPeriod)
         .then(reportingPeriod => res.json({ reportingPeriod }))
-        .catch(error => {
-          console.error(error);
-          throw error;
-        })
         .catch(next);
     });
 

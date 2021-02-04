@@ -7,6 +7,7 @@ const COAModel = model(
       name: { type: String },
       id: { type: String },
       COA: { type: String },
+      unitOfMeassure : {type: String},
     },
     { minimize: false },
   ),

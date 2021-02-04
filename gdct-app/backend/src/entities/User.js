@@ -15,6 +15,7 @@ export default class UserEntity {
     isApproved,
     creationDate,
     approvedDate,
+    ext,
   }) {
     this._id = _id;
     this.username = username;
@@ -31,5 +32,6 @@ export default class UserEntity {
     this.isApproved = isApproved;
     this.creationDate = creationDate;
     this.approvedDate = approvedDate;
+    this.ext = ext;
   }
 }

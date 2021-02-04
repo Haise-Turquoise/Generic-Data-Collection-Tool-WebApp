@@ -18,10 +18,6 @@ const COAGroupController = Service([COAGroupService], service => {
       service
         .createCOAGroup(req.body.COAGroup)
         .then(COAGroup => res.json({ COAGroup }))
-        .catch(error => {
-          console.error(error);
-          throw error;
-        })
         .catch(next);
     });
 

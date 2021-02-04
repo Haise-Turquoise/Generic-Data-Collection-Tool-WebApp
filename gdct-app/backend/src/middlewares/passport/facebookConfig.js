@@ -12,14 +12,14 @@ module.exports = () => {
     new FacebookStrategy(fbStrategy, function (req, token, refreshToken, profile, done) {
       process.nextTick(function () {
         UserModel.findOne({ email: profile.emails[0].value.toLowerCase() })
-            .then(user => {
-              if (!user) {
-                return done(null, false, { errors: { 'email or password': 'is invalid' } });
-              }
-              req.session.user = user.email;
-              return done(null, { email: user.email });
-            })
-            .catch(done);
+          .then(user => {
+            if (!user) {
+              return done(null, false, { errors: { 'email or password': 'is invalid' } });
+            }
+            req.session.user = user.email;
+            return done(null, { email: user.email });
+          })
+          .catch(done);
       });
     }),
   );

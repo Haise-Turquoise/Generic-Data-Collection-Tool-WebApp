@@ -1,7 +1,8 @@
 import Container from 'typedi';
+import i18n from 'i18n';
 import MenuRepository from '../../repositories/Menu';
 import MenuItemRepository from '../../repositories/MenuItem';
-import ErrorGDCT from '../../utils/errorGDCT';
+import AppError from '../../utils/AppError';
 
 export default class MenuService {
   constructor() {
@@ -15,7 +16,7 @@ export default class MenuService {
 
   async deleteMenu(id) {
     if (!(await this.canDelete(id))) {
-      throw ErrorGDCT('Cannot be deleted', 400);
+      throw new AppError(i18n.__('Menu.service.deleteMenu.CanNotDelete'), 400);
     }
     return this.MenuRepository.delete(id);
   }
@@ -35,5 +36,31 @@ export default class MenuService {
   async canDelete(id) {
     const menu = await this.MenuRepository.findById(id);
     return menu.items.length === 0;
+  }
+
+  getAuthroizedMenus(roles) {
+    if (!roles) {
+      throw new AppError(i18n.__('Auth.service.profile.NotAuthenticated'), 400);
+    }
+    return this.findMenu({}).then(menus => {
+      const filteredMenus = [];
+      for (const menu of menus) {
+        const menuItems = menu.items;
+        menu.items = new Set();
+        for (const menuItem of menuItems) {
+          for (const role of menuItem.role) {
+            const myRole = role.split('-')[1].toLowerCase();
+            if (roles.find(e => e.toLowerCase() === myRole)) {
+              menu.items.add(menuItem);
+            }
+          }
+        }
+        menu.items = [...menu.items];
+        if (menu.items.length > 0) {
+          filteredMenus.push(menu);
+        }
+      }
+      return filteredMenus;
+    });
   }
 }

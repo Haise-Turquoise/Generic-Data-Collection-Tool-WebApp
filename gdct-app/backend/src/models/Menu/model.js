@@ -20,6 +20,7 @@ const MenuSchema = new Schema(
       default: true,
       select: false,
     },
+    orderId: Number,
   },
   { minimize: false, timestamps: true },
 );

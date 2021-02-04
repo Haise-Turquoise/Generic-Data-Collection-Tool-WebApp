@@ -2,6 +2,7 @@ import mongoose from 'mongoose';
 import Container from 'typedi';
 import WorkflowRepository from '../repositories/Workflow';
 import WorkflowProcessRepository from '../repositories/WorkflowProcess';
+import TemplateTypeRepository from '../repositories/TemplateType';
 
 const objectId = mongoose.Types.ObjectId;
 
@@ -54,6 +55,7 @@ export default class WorkflowService {
   constructor() {
     this.workflowRepository = Container.get(WorkflowRepository);
     this.workflowProcessesRepository = Container.get(WorkflowProcessRepository);
+    this.templateTypeRepository = Container.get(TemplateTypeRepository);
   }
 
   async createWorkflow(workflowData) {
@@ -81,6 +83,8 @@ export default class WorkflowService {
   }
 
   async deleteWorkflow(workflowId) {
+    const templateType = await this.templateTypeRepository.findOneByWorkFlowID(workflowId);
+    if (templateType != null) throw new Error("Workflow referenced in template type.");
     return this.workflowRepository
       .delete(workflowId)
       .then(() => this.workflowProcessesRepository.deleteMany(workflowId));

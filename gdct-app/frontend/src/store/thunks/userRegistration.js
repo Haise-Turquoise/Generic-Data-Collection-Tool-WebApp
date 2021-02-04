@@ -1,6 +1,7 @@
 import hash from 'object-hash';
 import cloneDeep from 'clone-deep';
 import bcrypt from 'bcrypt-nodejs';
+import { fromAddress } from 'xlsx-populate/lib/addressConverter';
 import organizationController from '../../controllers/organization';
 import AppSysController from '../../controllers/AppSys';
 import organizationGroupController from '../../controllers/organizationGroup';
@@ -8,6 +9,9 @@ import programController from '../../controllers/programs';
 import templateTypeController from '../../controllers/templateType';
 import userController from '../../controllers/user';
 import userRegistrationStore from '../UserRegistrationStore/store';
+import { getUsersRequest } from './users';
+
+import UsersStore from '../UsersStore/store';
 
 const handleInputTemplate = (templateSet, submission) => {
   const templateType = {
@@ -33,7 +37,7 @@ const handleInputProgram = (programSet, submission) => {
     template: [],
   };
   let programSelected = programSet.find(function (element) {
-    return element.programId === submission.program.code;
+    return element.programId === submission.program._id;
   });
 
   if (programSelected === undefined) {
@@ -218,7 +222,6 @@ const getTemplateType = userPrograms => {
       //   viewCognos: false,
       //   index,
       // });
-
     });
     return submissionList;
   });
@@ -256,6 +259,8 @@ const handleInputSysRole = (data, permission, submission, userAppSys) => {
     role: '',
     org: [],
   };
+  console.log(data);
+  console.log(submission);
   if (submission[permission]) {
     let sysRoleSelected = data.sysRole.find(element => {
       return element.role == permission;
@@ -355,13 +360,32 @@ export const searchOrganization = () => (dispatch, getState) => {
   dispatch(userRegistrationStore.actions.setOrganizationOptions(orgOptions));
 };
 
-export const stepNext = values => dispatch => {
+export const stepNext = values => (dispatch, getState) => {
   dispatch(userRegistrationStore.actions.setRegistrationData(values));
   getAppSys().then(appSys => {
     dispatch(userRegistrationStore.actions.setAppSysOptions(appSys));
     getOrgGroup().then(orgGroupOptions => {
       dispatch(userRegistrationStore.actions.setOrganizationGroupOptions(orgGroupOptions));
     });
+    // const {
+    //   UsersStore: { response },
+    // } = getState();
+    // const users = response.Values;
+    // console.log(users);
+    // console.log(values);
+    // let duplicate = false;
+    // users.forEach(user => {
+    //   if (user.username == values.username) {
+    //     console.log('find duplicate');
+    //     duplicate = true;
+    //   }
+    // });
+    // if (duplicate) {
+    //   alert('The username has already existed');
+    // }
+    // if (!duplicate) {
+    //   dispatch(userRegistrationStore.actions.setActiveStep(1));
+    // }
     dispatch(userRegistrationStore.actions.setActiveStep(1));
   });
 };
@@ -379,6 +403,7 @@ export const submit = () => (dispatch, getState) => {
     UserRegistrationStore: { userSubmissions, registrationData, userAppSys },
   } = getState();
   const userData = cloneDeep(registrationData);
+  userData.phoneNumber = userData.phoneNumber.replace('-', '');
   userData.hashedUsername = hash(userData.username);
   userData.password = bcrypt.hashSync(userData.password, bcrypt.genSaltSync(8), null);
   userData.email = userData.email.toLowerCase();
@@ -391,5 +416,6 @@ export const submit = () => (dispatch, getState) => {
     handleInputSysRole(userData, 'view', submission, userAppSys);
     handleInputSysRole(userData, 'viewCognos', submission, userAppSys);
   });
+  console.log('ready to send data');
   sendRegistrationData(userData);
 };

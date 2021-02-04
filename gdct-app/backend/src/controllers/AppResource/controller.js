@@ -16,10 +16,6 @@ const AppResourceController = Service([AppResourceService], service => {
       service
         .createAppResource(req.body.AppResource)
         .then(AppResource => res.json({ AppResource }))
-        .catch(error => {
-          console.error(error);
-          throw error;
-        })
         .catch(next);
     });
 

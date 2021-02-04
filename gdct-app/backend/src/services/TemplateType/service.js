@@ -1,10 +1,14 @@
 import Container from 'typedi';
 import TemplateTypeRepository from '../../repositories/TemplateType';
+import SubmissionRepository from '../../repositories/Submission';
+import TemplateRepository from '../../repositories/Template';
 
 // @Service()
 export default class TemplateTypeService {
   constructor() {
     this.templateTypeRepository = Container.get(TemplateTypeRepository);
+    this.submissionRepository = Container.get(SubmissionRepository);
+    this.templateRepository = Container.get(TemplateRepository);
   }
 
   async createTemplateType(templateType) {
@@ -12,6 +16,10 @@ export default class TemplateTypeService {
   }
 
   async deleteTemplateType(id) {
+    const templates = await this.templateRepository.findTemplateIDByTypeID(id);
+    templates.map(template=>template._id);
+    const submission = await this.submissionRepository.findOneByTemplateIDs(templates);
+    if (submission != null) throw new Error('Template types already referenced');
     return this.templateTypeRepository.delete(id);
   }
 

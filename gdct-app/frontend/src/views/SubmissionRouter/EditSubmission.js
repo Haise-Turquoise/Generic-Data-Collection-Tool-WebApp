@@ -1,4 +1,5 @@
 import { shallowEqual, useDispatch, useSelector } from 'react-redux';
+import { Link } from "react-router-dom";
 import React, { useCallback, useMemo, useEffect, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
@@ -7,11 +8,14 @@ import Typography from '@material-ui/core/Typography';
 import Paper from '@material-ui/core/Paper';
 import { useLocation } from 'react-router-dom';
 import MaterialTable from 'material-table';
+import ArrowBackIcon from '@material-ui/icons/ArrowBack';
+import { IconButton } from '@material-ui/core';
 import { convertExcelFileToState, convertStateToReactState } from '../../tools/excel';
 import { setExcelData } from '../../store/actions/ui/excel/commands';
 import { getSubmissionNoteRequest } from '../../store/thunks/submissionNote';
 import SubmissionNoteStore from '../../store/SubmissionNoteStore/store';
 import SubmissionWorkbookStore from '../../store/SubmissionWorkbookStore/store';
+
 import {
   selectFactoryRESTResponse,
   selectFactoryRESTResponseTableValues,
@@ -21,6 +25,7 @@ import { selectSubmissionNoteStore } from '../../store/SubmissionNoteStore/selec
 import {
   getSubmissionByIdRequest,
   updateSubmissionStatusRequest,
+  openGoogleSheetRequest,
 } from '../../store/thunks/submission';
 import DOWNLOAD from '../../store/reducers/ui/excel/commands/DOWNLOAD';
 import { selectSubmissionNoteHistoryStore } from '../../store/SubmissionNoteHistoryStore/selectors';
@@ -39,10 +44,15 @@ const EditSubmission = ({ history }) => {
   const [submitUnavailable, setSubmitUnavailable] = useState(true);
   const [approveUnavailable, setApproveUnavailable] = useState(true);
   const [rejectUnavailable, setRejectUnavailable] = useState(true);
+  const [isSubmitterOrInputter, setIsSubmitterOrInputter] = useState(false);
+  const [isReviewerOrApprover, setIsReviewerOrApprover] = useState(false);
 
   const [submitId, setSubmitId] = useState('');
   const [approveId, setApproveId] = useState('');
   const [rejectId, setRejectId] = useState('');
+  const [cursor, setCursor] = useState('standard');
+  const [userFeedback, setUserFeedback] = useState('');
+  const [refresh, setRefresh] = useState(false);
 
   const SubmissionHeader = () => (
     <Paper className="header">
@@ -61,7 +71,7 @@ const EditSubmission = ({ history }) => {
     [],
   );
 
-  const options = useMemo(() => ({ actionsColumnIndex: -1, search: false, showTitle: false }), []);
+  const options = useMemo(() => ({ actionsColumnIndex: -1, search: false, showTitle: true }), []);
 
   const handleNoteChange = event => {
     dispatch(SubmissionNoteStore.actions.RECEIVE(event.target.value));
@@ -80,16 +90,25 @@ const EditSubmission = ({ history }) => {
     shallowEqual,
   );
   useEffect(() => {
-    dispatch(SubmissionNoteStore.actions.RECEIVE(''));
-    dispatch(getSubmissionByIdRequest(location.state.detail._id));
-    dispatch(getSubmissionNoteRequest(location.state.detail.parentId));
     if (location.state.detail) {
+      if (
+        location.state.detail.permission.find(
+          permission => permission === 'Submitter' || permission === 'Inputter',
+        ) !== undefined
+      )
+        setIsSubmitterOrInputter(true);
+      if (
+        location.state.detail.permission.find(
+          permission => permission === 'Reviewer' || permission === 'Submission Approver',
+        ) !== undefined
+      )
+        setIsReviewerOrApprover(true);
       workflowController
         .fetchProcess(location.state.detail.workflowProcessId)
         .then(workflowProcess => {
           if (workflowProcess !== undefined)
             workflowProcess.to.forEach(process => {
-              console.log(process.statusId.name);
+              // console.log(process.statusId.name);
               switch (process.statusId.name) {
                 case 'Submitted': {
                   setSubmitUnavailable(false);
@@ -110,30 +129,87 @@ const EditSubmission = ({ history }) => {
             });
         });
     }
-  }, [location]);
+    dispatch(SubmissionNoteStore.actions.RECEIVE(''));
+    dispatch(getSubmissionByIdRequest(location.state.detail._id));
+    dispatch(getSubmissionNoteRequest(location.state.detail.parentId));
+  }, [location, dispatch, refresh]);
 
   if (submissionNoteHistory[0] !== undefined) {
     if (submissionNoteHistory[0].note !== undefined) {
-      console.log(submissionNoteHistory[0].note);
       submissionNotes = submissionNoteHistory;
     }
   }
-  console.log(submissionNoteHistory);
 
-  const handleOpenTemplate = () => history.push(`/submission/submissions/${submission._id}`);
+  console.log(isSubmitterOrInputter);
+  console.log(isReviewerOrApprover);
+  // console.log(submitUnavailable);
 
-  const handleDownloadWorkbook = () => {
-    DOWNLOAD(convertStateToReactState(submission.workbookData));
+
+
+  const handleOpenTemplate = () => {
+    // history.push({
+    //   pathname: `/submission/submissions/${submission._id}`,
+    //   state: { detail: location.state.detail },
+    // });
+    //Creates a new spreadsheet in google and returns the id. 
+    openGoogleSheetRequest(submission._id);
+  }
+
+  const backButtonAction = () => {
+    history.push({
+
+      pathname: `/submission/dashboard`
+    })
+  }
+
+  const UserFeedback = feedback => {
+    setUserFeedback(feedback);
   };
 
-  const handleChangeStatus = (submission, submissionNote, role, newProcessId) => {
-    console.log(submission);
-    dispatch(updateSubmissionStatusRequest(submission, submissionNote, role, newProcessId));
+  const handleDownloadWorkbook = () => {
+    setUserFeedback('Downloading !');
+    setCursor('progress');
+    DOWNLOAD(convertStateToReactState(submission.workbookData), UserFeedback);
+
+    setTimeout(function () {
+      UserFeedback('Download successfully !');
+    }, 2000);
+
+    setCursor('standard');
+    setTimeout(function () {
+      setUserFeedback('');
+    }, 4000);
+  };
+
+  const handleChangeStatus = async (submission, submissionNote, role, newProcessId) => {
+    // setCursor('progress');
+
+    const result = await dispatch(
+      updateSubmissionStatusRequest(submission, submissionNote, role, newProcessId),
+    );
+    // console.log('result', result)
+    if (result) {
+      if (!role) {
+        role = 'ChangeNote';
+      }
+      // console.log(role);
+      setUserFeedback(`${role} successfully !`);
+      setRefresh(true);
+      setTimeout(function () {
+        setRefresh(false);
+      }, 500);
+
+      setTimeout(function () {
+        setUserFeedback('');
+      }, 2000);
+    }
   };
 
   return (
-    <div className="submissions">
+
+    <div className="submissions" style={{ cursor }}>
       <SubmissionHeader />
+      
       <Paper className="pl-4 pr-4 pb-5 pt-4">
         <div className="submission__label">
           <Typography className="submission__inputTitle"> Note </Typography>
@@ -151,19 +227,37 @@ const EditSubmission = ({ history }) => {
         <div className="submission__label">
           <Typography className="submission__inputTitle"> Note History </Typography>
         </div>
-        <MaterialTable columns={checkBoxColumns} options={options} data={submissionNotes} />
+        <MaterialTable
+          title={userFeedback}
+          columns={checkBoxColumns}
+          options={options}
+          data={submissionNotes}
+        />
         <div>
-          <Button color="primary" variant="contained" size="large" onClick={handleOpenTemplate}>
+          <Button
+            color="primary"
+            variant="contained"
+            style={{ cursor }}
+            size="large"
+            onClick={handleOpenTemplate}
+          >
             View Document
           </Button>
-          <Button color="primary" variant="contained" size="large" onClick={handleDownloadWorkbook}>
+          <Button
+            color="primary"
+            variant="contained"
+            style={{ cursor }}
+            size="large"
+            onClick={handleDownloadWorkbook}
+          >
             Download
           </Button>
           <Button
             color="primary"
             variant="contained"
             size="large"
-            disabled={approveUnavailable}
+            style={{ cursor }}
+            disabled={approveUnavailable || !isReviewerOrApprover}
             onClick={() => handleChangeStatus(submission, submissionNote, 'Approved', approveId)}
           >
             Approve
@@ -172,7 +266,8 @@ const EditSubmission = ({ history }) => {
             color="primary"
             variant="contained"
             size="large"
-            disabled={rejectUnavailable}
+            style={{ cursor }}
+            disabled={rejectUnavailable || !isReviewerOrApprover}
             onClick={() => handleChangeStatus(submission, submissionNote, 'Rejected', rejectId)}
           >
             Reject
@@ -181,7 +276,8 @@ const EditSubmission = ({ history }) => {
             color="primary"
             variant="contained"
             size="large"
-            disabled={submitUnavailable}
+            style={{ cursor }}
+            disabled={submitUnavailable || !isSubmitterOrInputter}
             onClick={() => handleChangeStatus(submission, submissionNote, 'Submitted', submitId)}
           >
             Submit
@@ -190,10 +286,24 @@ const EditSubmission = ({ history }) => {
             color="primary"
             variant="contained"
             size="large"
+            style={{ cursor }}
             onClick={() => handleChangeStatus(submission, submissionNote)}
           >
             Change Notes
           </Button>
+
+          <Button 
+            size="large" 
+            color="primary"
+            variant="contained"
+            onClick={backButtonAction}
+          >
+            <ArrowBackIcon></ArrowBackIcon>
+            Back
+          </Button>
+
+          <div>{userFeedback}</div>
+
         </div>
       </Paper>
     </div>

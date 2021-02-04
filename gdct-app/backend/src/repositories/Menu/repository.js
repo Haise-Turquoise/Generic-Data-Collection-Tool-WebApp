@@ -17,7 +17,6 @@ export default class MenuRepository extends BaseRepository {
 
   async create(Menu) {
     return MenuModel.create(Menu).then(Menu => {
-      console.log('Menu:', Menu);
       return new MenuEntity(Menu.toObject());
     });
   }

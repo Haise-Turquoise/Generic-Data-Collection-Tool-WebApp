@@ -18,10 +18,6 @@ const AppSysRoleController = Service([AppSysRoleService], service => {
       service
         .createAppSysRole(req.body.AppSysRole)
         .then(AppSysRole => res.json({ AppSysRole }))
-        .catch(error => {
-          console.error(error);
-          throw error;
-        })
         .catch(next);
     });
 

@@ -8,10 +8,9 @@ const SubmissionController = Service([SubmissionService], service => {
   return (() => {
     router.post('/submissions/findSubmissions', (req, res, next) => {
       // Get query from middleware -- auth handler
-      const { orgId, programIds } = req.body;
-
+      const { email } = req.body;
       service
-        .findSubmission(orgId, programIds)
+        .findSubmission(email)
         .then(submissions => {
           res.json({ submissions });
         })
@@ -87,6 +86,17 @@ const SubmissionController = Service([SubmissionService], service => {
       service
         .deleteSubmission(_id)
         .then(() => res.end())
+        .catch(next);
+    });
+
+    // Added on Nov 25, 2020
+    // Creates new google sheet and returns its spreadsheetID
+    // It was developed to redirect the workflow from an embedded spreadsheet to Google Sheet
+    router.get('/submissions/openTemplate/:_id', (req, res, next) => {
+      console.log('Here')
+      service
+        .openTemplate(req.params._id, req.user.email)
+        .then(spreadsheetId => { res.json({ spreadsheetId }) })
         .catch(next);
     });
 

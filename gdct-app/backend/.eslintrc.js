@@ -14,6 +14,10 @@ module.exports = {
   },
   rules: {
     'no-underscore-dangle': 'off',
+    'import/named': 'off',
+    'import/prefer-default-export': 'off',
+    'no-async-promise-executor': 'off',
+    'import/no-mutable-exports': 'off',
     'class-methods-use-this': 'warn',
     'no-restricted-syntax': 'warn',
     'no-await-in-loop': 'warn',

@@ -12,7 +12,7 @@ const COAController = (() => {
     fetchCOA: async _id => COAAxios.get(`/${_id}`).then(res => res.data.COA),
     fetch: async () => COAAxios.get('').then(res => res.data.COAs),
     create: async COA => COAAxios.post('', { COA }).then(res => res.data.COA),
-    delete: async _id => COAAxios.delete(`/${_id}`),
+    delete: async _id => COAAxios.delete(`/${_id}`).then(res => res.data.COA),
     update: async COA => COAAxios.put(`/${COA._id}`, { COA }),
   };
 })();

@@ -41,10 +41,9 @@ const StyledMenuItem = withStyles(theme => ({
 }))(MenuItem);
 
 export default function DrawerItem(props) {
-  const { name, icon, url, children, isSubMenu } = props;
+  const { name, icon, url, children, isSubMenu, option } = props;
   const [anchorEl, setAnchorEl] = React.useState(null);
   const handleClick = event => {
-    console.log(event.currentTarget);
     setAnchorEl(event.currentTarget);
   };
 
@@ -60,7 +59,7 @@ export default function DrawerItem(props) {
         onClick={handleClick}
         style={{ color: 'white', width: '100%', padding: '0' }}
       >
-        <IconItem name={name} url={url} icon={icon} isSubMenu={isSubMenu} />
+        <IconItem name={name} url={url} icon={icon} isSubMenu={isSubMenu} option={option} />
       </Button>
       <StyledMenu
         id="customized-menu"

@@ -1,6 +1,6 @@
 import { Schema, model } from 'mongoose';
 
-const { ObjectId } = Schema.Types;
+const { ObjectId, Number } = Schema.Types;
 
 /**
  * Contains the values of successfully approved workbooks
@@ -40,15 +40,11 @@ const MasterValueModel = model(
         _id: { type: ObjectId, ref: 'Submission' },
         name: { type: String },
       },
-      sheet: {
-        _id: { type: ObjectId, ref: 'Sheet' },
-        name: { type: String },
-      },
+      // sheet: {
+      //   _id: { type: ObjectId, ref: 'Sheet' },
+      //   name: { type: String },
+      // },
       reportingPeriod: { type: String, default: '' },
-
-      // COATreeId: { type: ObjectId, ref: "COATree" },
-      // COAId: { type: ObjectId, ref: "COA" },
-      // columnNameId: { type: ObjectId, ref: "ColumnName" },
       program: {
         _id: { type: ObjectId, ref: 'Program' },
         name: { type: String },
@@ -62,15 +58,18 @@ const MasterValueModel = model(
         name: { type: String },
       },
       template: {
-        _id: { type: ObjectId, ref: 'Template' },
-        name: { type: String },
+        // _id: { type: ObjectId, ref: 'Template' },
+        // name: { type: String },
       },
 
-      COATreeId: { type: String },
-      CategoryId: { type: String },
-      AttributeId: { type: String },
+      COATreeId: { type: ObjectId, ref: 'CategoryTree' },
+      categoryId: { type: String},
+      attributeId: { type: String },
+      categoryGroup: { type: String },
 
-      value: { type: String },
+      value: { type: Number },
+      categoryName: {type: String},
+      attributeName: {type: String},
     },
     { minimize: false },
   ),

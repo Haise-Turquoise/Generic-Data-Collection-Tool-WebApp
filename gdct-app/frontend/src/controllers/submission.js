@@ -8,8 +8,8 @@ const submissionController = (() => {
     withCredentials: true,
   });
   return {
-    fetchAndCreate: async (orgId, programIds) =>
-      submissionAxios.post(`/findSubmissions`, { orgId, programIds }).then(res => {
+    fetchAndCreate: async email =>
+      submissionAxios.post(`/findSubmissions`, { email }).then(res => {
         return res.data.submissions;
       }),
     updateWorkbook: async (submission, submissionNote) =>
@@ -29,6 +29,7 @@ const submissionController = (() => {
     fetch: async query => submissionAxios.get('').then(res => res.data.submissions),
 
     delete: async _id => submissionAxios.delete(`/${_id}`),
+    openTemplate: async _id => submissionAxios.get(`/openTemplate/${_id}`).then(res => res.data.spreadsheetId),
   };
 })();
 

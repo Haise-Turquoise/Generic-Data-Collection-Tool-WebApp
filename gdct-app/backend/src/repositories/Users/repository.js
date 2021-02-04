@@ -1,8 +1,10 @@
 import Container from 'typedi';
+import i18n from 'i18n';
 import BaseRepository from '../repository';
 import UserModel from '../../models/User';
 import TemplateRepository from '../Template';
 import UserEntity from '../../entities/Users';
+import AppError from '../../utils/AppError';
 
 // @Service()
 export default class UsersRepository extends BaseRepository {
@@ -50,13 +52,17 @@ export default class UsersRepository extends BaseRepository {
         })
       : '';
 
-    // console.log("realQuery: " + JSON.stringify(realQuery));
-
     return UserModel.find(realQuery).then(users => users.map(user => new UserEntity(user)));
   }
 
   findOne(id) {
-    throw new Error(`Method not implemented.${id}`);
+    const message = `${i18n.__('MethodNotImplemented')} ${{ id }}`;
+
+    throw new AppError(message, 400);
+  }
+
+  async findByEmail(email) {
+    return UserModel.find({ email });
   }
 
   async delete(id) {

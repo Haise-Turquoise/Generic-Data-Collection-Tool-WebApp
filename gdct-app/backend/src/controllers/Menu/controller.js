@@ -6,17 +6,30 @@ const MenuController = Service([MenuService], service => {
   const router = Router();
   return (() => {
     router.get('/menus', (req, res, next) => {
-      // Get query from middleware -- auth handler
-
       service
-        .findMenu({})
-        .then(Menus => res.json({ Menus }))
+        .getAuthroizedMenus(req.session.roles)
+        .then(res => {
+          res.sort((a, b) => a.orderId - b.orderId);
+          return res;
+        })
+        .then(Menus => {
+          res.json({ Menus });
+        })
         .catch(next);
+      // }
+    });
+
+    router.get('/menus/:role', (req, res, next) => {
+      service
+        .getAuthroizedMenus([req.params.role])
+        .then(Menus => {
+          res.json({ Menus });
+        })
+        .catch(next);
+      // }
     });
 
     router.get('/menus/:name', (req, res, next) => {
-      // Get query from middleware -- auth handler
-      console.log('working');
       service
         .findMenu(req.params.name)
         .then(Menus => res.json({ Menus }))
@@ -27,12 +40,7 @@ const MenuController = Service([MenuService], service => {
       service
         .createMenu(req.body.Menu)
         .then(Menu => {
-          console.log(Menu);
           res.json({ Menu });
-        })
-        .catch(error => {
-          console.error(error);
-          throw error;
         })
         .catch(next);
     });

@@ -3,6 +3,7 @@ import TemplateTypeEntity from '../../entities/TemplateType';
 import BaseRepository from '../repository';
 import TemplateTypeModel from '../../models/TemplateType/model';
 import ProgramRepository from '../Program';
+import {ObjectId} from 'mongodb';
 
 // @Service()
 export default class TemplateTypeRepository extends BaseRepository {
@@ -105,6 +106,17 @@ export default class TemplateTypeRepository extends BaseRepository {
 
   async findById(id) {
     return TemplateTypeModel.findById(id);
+  }
+
+  async findOneByWorkFlowID(workflowID){
+    const objectID = new ObjectId(workflowID);
+    return TemplateTypeModel.findOne({
+      $or:[
+        {workflowId: objectID},
+        {submissionWorkflowId: objectID},
+        {templateWorkflowId: objectID}
+      ]
+    }, {_id:1})
   }
 
   async delete(id) {
