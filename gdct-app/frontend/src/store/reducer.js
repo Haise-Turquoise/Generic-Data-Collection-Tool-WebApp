@@ -16,6 +16,7 @@ import AuditLogStore from './AuditLogStore/store';
 import DialogsStore from './DialogsStore/store';
 import ReportingPeriodsStore from './ReportingPeriodsStore/store';
 
+import AppConfigsStore from './AppConfigsStore/store';
 import StatusesStore from './StatusesStore/store';
 import SubmissionPeriodsStore from './SubmissionPeriodsStore/store';
 import ProgramsStore from './ProgramsStore/store';
@@ -58,6 +59,7 @@ export const root = combineReducers({
   OrgsStore: OrgsStore.reducer,
   UsersStore: UsersStore.reducer,
 
+  AppConfigsStore: AppConfigsStore.reducer,
   COATreeStore: COATreeStore.reducer,
   DetectEmptyTreeStore: DetectEmptyTreeStore.reducer,
   SheetNamesStore: SheetNamesStore.reducer,

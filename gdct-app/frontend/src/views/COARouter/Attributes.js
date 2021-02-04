@@ -24,7 +24,7 @@ import { calculateOptions } from '../../tools/misc'
 const ColumnNameHeader = () => {
   return (
     <Paper className="header">
-      <Typography variant="h5">Column Names</Typography>
+      <Typography variant="h5">Attribute Management</Typography>
       {/* <HeaderActions/> */}
     </Paper>
   );

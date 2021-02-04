@@ -26,7 +26,7 @@ import { calculateOptions } from '../../../tools/misc'
 const COAsHeader = () => {
   return (
     <Paper className="header">
-      <Typography variant="h5">COAs</Typography>
+      <Typography variant="h5">Category Management</Typography>
       {/* <HeaderActions/> */}
     </Paper>
   );

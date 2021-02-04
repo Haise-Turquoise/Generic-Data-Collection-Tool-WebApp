@@ -12,6 +12,7 @@ import COATreeController from './COATree';
 import COAGroupController from './COAGroup';
 import OrgController from './Organization';
 import SheetNameController from './SheetName';
+import AppConfigController from './AppConfig';
 import AppSysController from './AppSys';
 import AppRoleController from './AppRole';
 import AppSysRoleController from './AppSysRole';
@@ -47,6 +48,7 @@ export const routerManager = app => {
   app.use('/orgGroup_manager', Container.get(OrgGroupController));
   app.use('/user_management', Container.get(UserController));
   app.use('/template_manager', Container.get(TemplateTypeController));
+  app.use('/role_manager', authorized, Container.get(AppConfigController));
   app.use('/AuditLog', Container.get(AuditLogController));
 
   app.use('/', authorized, Container.get(ReportingPeriodController));
@@ -85,6 +87,7 @@ export const routerManager = app => {
   app.use('/transferManager', authorized, Container.get(TransferStatusController));
 
 
-
+  
   
 };
+

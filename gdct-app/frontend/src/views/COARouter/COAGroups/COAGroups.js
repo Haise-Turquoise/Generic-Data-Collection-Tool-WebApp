@@ -23,7 +23,7 @@ const COAGroupsHeader = () => {
   const { t, i18n } = useTranslation();
   return (
     <Paper className="header">
-      <Typography variant="h5">COA Groups</Typography>
+      <Typography variant="h5">Category Group Management</Typography>
       {/* <HeaderActions/> */}
     </Paper>
   );
