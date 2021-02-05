@@ -11,6 +11,7 @@ const SubmissionNoteModel = model(
       submissionId: { type: ObjectId, ref: 'Submission' },
       updatedDate: { type: Date },
       userCreatorId: { type: ObjectId, ref: 'User' },
+      updatedBy: { type: String },
       role: { type: String },
     },
     { minimize: false, autoIndex: true },

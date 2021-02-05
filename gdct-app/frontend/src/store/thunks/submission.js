@@ -122,7 +122,8 @@ export const updateSubmissionStatusRequest = (
   role,
   newProcessId,
 ) => async dispatch => {
-  console.log('button click');
+
+  const updatedBy = localStorage.getItem('currentUser');
 
   const newSubmission = {
     ...submission,
@@ -131,7 +132,8 @@ export const updateSubmissionStatusRequest = (
   };
 
   await submissionController
-    .updateStatus(submission, submissionNote, role, newProcessId)
+
+    .updateStatus(submission, submissionNote, role, newProcessId, updatedBy)
     .then(() => {
       // console.log(submission);
 

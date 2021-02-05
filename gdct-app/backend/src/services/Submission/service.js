@@ -184,6 +184,8 @@ export default class SubmissionService {
     });
   }
 
+
+  
   async updateStatus(submission, submissionNote, role, nextProcessId) {
     const newSubmission = await this.submissionRepository.findById(submission._id);
     if (newSubmission.googleSheetId){
@@ -195,6 +197,7 @@ export default class SubmissionService {
       note: submissionNote,
       submissionId: submission.parentId ? submission.parentId : submission._id,
       updatedDate: new Date(),
+      updatedBy,
       role,
     };
 
@@ -390,11 +393,12 @@ export default class SubmissionService {
         });
       });
 
+
     }else{
       const programID = await this.programRepository.find({})
       programID.forEach(element=>{programIds.push(element._id)})
     }
-
+    
     return this.findTemplatePackage(programAndTempTypes).then(templatePackages => {
       // console.log('templatePackages', templatePackages)
       const name = 'Unsubmitted';
@@ -438,6 +442,7 @@ export default class SubmissionService {
                               );
                             }
                           });
+
                         });
                       }
                     });

@@ -3,7 +3,7 @@ import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 
 import MaterialTable from 'material-table';
 import Paper from '@material-ui/core/Paper';
-
+import { useTranslation } from 'react-i18next';
 import Typography from '@material-ui/core/Typography';
 import { useTranslation } from 'react-i18next';
 import {
@@ -17,7 +17,9 @@ import './COAGroups.scss';
 import ErrorBanner from '../../ErrorBanner'
 import { selectFactoryRESTResponseTableValues } from '../../../store/common/REST/selectors';
 import { selectCOAGroupsStore } from '../../../store/COAGroupsStore/selectors';
+
 import { calculateOptions } from '../../../tools/misc';
+
 
 const COAGroupsHeader = () => {
   const { t, i18n } = useTranslation();
