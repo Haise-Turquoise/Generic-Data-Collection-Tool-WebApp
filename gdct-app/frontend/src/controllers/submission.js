@@ -17,12 +17,13 @@ const submissionController = (() => {
         .post('/uploadSubmission', { submission, submissionNote })
         .then(res => res.data.submission),
     update: async submission => submissionAxios.put(`/updateSubmission`, { submission }),
-    updateStatus: async (submission, submissionNote, role, nextProcessId) =>
+    updateStatus: async (submission, submissionNote, role, nextProcessId, updatedBy) =>
       submissionAxios.put(`/updateSubmissionStatus`, {
         submission,
         submissionNote,
         role,
         nextProcessId,
+        updatedBy,
       }),
     fetchSubmission: async _id =>
       submissionAxios.get(`/findSubmission/${_id}`).then(res => res.data.submission),

@@ -28,7 +28,6 @@ export default class MasterValueService {
   }
 
   async addDocument(masterValue) {
-    console.log(masterValue);
     const query = [];
     query.push(masterValue.categoryId);
     const categoryTreeList = {};
@@ -38,10 +37,9 @@ export default class MasterValueService {
     await Promise.resolve(
       this.recursiveCategoryTreeSearch(categoryTrees, categoryTreeList, categoryGroupQuery, 0),
     );
-    // console.log('categoryGroupQuery', categoryGroupQuery)
 
     const categoryGroupList = await coaGroupRepository.batchFind(categoryGroupQuery);
-    console.log(categoryGroupList);
+    // console.log(categoryGroupList);
     let string = '';
     for (const item in categoryGroupList) {
       console.log(item);
@@ -49,10 +47,6 @@ export default class MasterValueService {
       string += ', ';
     }
     string = string.substring(0, string.length - 2);
-    console.log(string);
-    // categoryGroupList.forEach(categoryGroup=>{
-    //   string
-    // })
     masterValue.categoryGroup = string;
     return this.masterValueRepository.addDocument(masterValue);
   }
@@ -67,7 +61,6 @@ export default class MasterValueService {
       categoryGroupQuery.push(currentTree[item].categoryGroupId);
     }
     if (categoryTreeQuery.length) {
-      console.log('parentTree', categoryTreeQuery);
       const nextTree = await coaTreeRepository.batchFindById(categoryTreeQuery);
       iteration += 1;
       await Promise.resolve(

@@ -154,11 +154,12 @@ export default class SubmissionService {
     });
   }
 
-  async updateStatus(submission, submissionNote, role, nextProcessId) {
+  async updateStatus(submission, submissionNote, role, nextProcessId, updatedBy) {
     const submissionNotes = {
       note: submissionNote,
       submissionId: submission.parentId ? submission.parentId : submission._id,
       updatedDate: new Date(),
+      updatedBy,
       role,
     };
 

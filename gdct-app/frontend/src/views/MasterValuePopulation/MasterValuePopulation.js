@@ -33,8 +33,7 @@ import MasterValueModel from '../../../../backend/src/models/MasterValue';
 import MasterValueController from '../../controllers/MasterValue';
 import { selectReportingPeriodsStore } from '../../store/ReportingPeriodsStore/selectors';
 import { getReportingPeriodsRequest } from '../../store/thunks/reportingPeriod';
-// const REST_API = 'https://hscgiqdcapwsa05/webohfs/faces';
-// const REST_API = 'https://ohfsrestservice.azurewebsites.net';
+
 const REST_API = 'https://ohfsrest.azurewebsites.net';
 const TABLES = ['FCLTY_BSA_YTD_ACTL_FORCST_DETL', 'FCLTY_SECDY_YTD_ACTL_FORCST_DT'];
 
@@ -50,8 +49,6 @@ const queryREST = ({ category, ap, hfk, attribute }) => {
   const ye = ap.split('/')[0];
   const year = ye.slice(2, 4);
   const stage = ap.slice(8, 10);
-  // console.log(year)
-  // console.log(stage)
   for (const c of category) {
     for (const h of hfk) {
       upsList.push({
@@ -82,32 +79,11 @@ const queryREST = ({ category, ap, hfk, attribute }) => {
   };
 
   const results = queries.map(query => {
-    // const config = {
-    //   method: 'get',
-    //   url: query,
-    //   headers: {
-    //     'Access-Control-Allow-Origin': '*',
-    //     'Access-Control-Allow-Methods': 'GET,PUT,POST,DELETE,PATCH,OPTIONS',
-    //   },
-    // };
     return axios.get(query);
   });
   console.log(queries);
-  const addDocument = masterValue => {
-    // return MasterValueModel.findOne({
-    //   CategoryId: mastervalue.CategoryId,
-    //   AttributeId: mastervalue.AttributeId,
-    //   org: {
-    //     id: mastervalue.org.id,
-    //     name: mastervalue.org.name,
-    //   },
-    // }).then(res => {
 
-    //   if (res) {console.log('find');return MasterValueModel.findByIdAndUpdate(res._id, mastervalue);}
-    //   else {console.log('not find');return MasterValueModel.create(mastervalue);}
-    // }).catch((error) => {
-    //   console.log(error);
-    // });;
+  const addDocument = masterValue => {
     const newMasterValue = {
       categoryId: masterValue.categoryId,
       categoryName: masterValue.categoryName,
@@ -128,18 +104,13 @@ const queryREST = ({ category, ap, hfk, attribute }) => {
 
   Promise.all(results)
     .then(res => {
-      // console.log(upsList)
       const masterValueList = upsList;
-      // console.log('res', res[0]);
+
       const upd = [];
       const idx = 0;
       for (const idx in res) {
-        // console.log(res[idx].data)
-        // console.log(masterValueList[idx])
         if (res[idx].data.length > 0) {
-          // console.log(res[idx].data)
           masterValueList[idx].value = res[idx].data[0][2];
-          // console.log(masterValueList[idx])
           upd.push(addDocument(masterValueList[idx]));
         }
       }
@@ -172,6 +143,7 @@ const queryREST = ({ category, ap, hfk, attribute }) => {
 
       Promise.all(upd).then(() => {
         console.log('Finished uploading.');
+        alert('Finished uploading');
       });
     })
     .catch(error => {
@@ -183,11 +155,11 @@ const queryREST = ({ category, ap, hfk, attribute }) => {
 const DoRetrieval = ({ category, ap, hfk, col }) => {
   if (category && ap && hfk && category.length > 0 && hfk.length > 0 && ap.length > 0) {
     // console.log(ap)
-    const period = ap.split(' ')[0];
-    console.log(period);
+    // const period = ap.split(' ')[0];
+    console.log(ap);
     let fnd = null;
     for (const elem of col) {
-      if (elem.name === `${period} Actual`) {
+      if (elem.name === `${ap} Actual`) {
         fnd = elem;
         break;
       }
@@ -277,7 +249,7 @@ const MasterValuePopulation = () => {
     dispatch(getCOAsRequest());
     dispatch(getColumnNamesRequest());
     dispatch(getReportingPeriodsRequest());
-  }, [dispatch]);
+  }, [dispatch, localStorage.getItem('dataLoadingFeedback')]);
 
   // const yearList = useMemo(() => getYears(), []);
   // console.log(yearList)
@@ -311,31 +283,29 @@ const MasterValuePopulation = () => {
     isCallInProgress,
   });
 
-  const getYears = reportingPeriods => {
-    console.log(reportingPeriods);
-    const yearList = [];
-    reportingPeriods.forEach(rp => {
-      yearList.push(rp.name);
-    });
-    const ret = [];
-    const cur = new Date().getFullYear();
-    for (let i = 2010; i <= cur; i++) {
-      ret.push(`${i}/${(i + 1) % 100}`);
-    }
-    return ret.reverse();
-  };
-  const yearList = useMemo(() => getYears(reportingPeriods), []);
-  // console.log(yearList)
-  // console.log(reportingPeriods)
+  // const getYears = reportingPeriods => {
+  //   console.log(reportingPeriods);
+  //   const yearList = [];
+  //   reportingPeriods.forEach(rp => {
+  //     yearList.push(rp.name);
+  //   });
+  //   const ret = [];
+  //   const cur = new Date().getFullYear();
+  //   for (let i = 2010; i <= cur; i++) {
+  //     ret.push(`${i}/${(i + 1) % 100}`);
+  //   }
+  //   return ret.reverse();
+  // };
+  // const yearList = useMemo(() => getYears(reportingPeriods), []);
+
   const periodList = [];
   reportingPeriods.forEach(period => {
     periodList.push(period.name);
   });
   periodList.sort().reverse();
-  // console.log('periodList', periodList)
 
   const [categoryList, updateCategoryList] = useState([]);
-
+  const [userFeedBack, setUserFeedBack] = useState('');
   const [hfkList, updateHfkList] = useState([]);
 
   useEffect(() => {
@@ -491,6 +461,7 @@ const MasterValuePopulation = () => {
         </div>
       </div>
       <FooterActions getPopulateParameters={getPopulateParameters} />
+      <div></div>
     </div>
   );
 };

@@ -29,10 +29,10 @@ const SubmissionController = Service([SubmissionService], service => {
 
     router.put('/submissions/updateSubmissionStatus', authorized, (req, res, next) => {
       // Get query from middleware -- auth handler
-      const { submission, submissionNote, role, nextProcessId } = req.body;
+      const { submission, submissionNote, role, nextProcessId, updatedBy } = req.body;
 
       service
-        .updateStatus(submission, submissionNote, role, nextProcessId)
+        .updateStatus(submission, submissionNote, role, nextProcessId, updatedBy)
         .then(() => res.end())
         .catch(next);
     });
