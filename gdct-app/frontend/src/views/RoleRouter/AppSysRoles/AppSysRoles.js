@@ -26,7 +26,7 @@ import { calculateOptions } from '../../../tools/misc'
 const AppSysRolesHeader = () => {
   return (
     <Paper className="header">
-      <Typography variant="h5">AppSysRoles</Typography>
+      <Typography variant="h5">Application System Role</Typography>
       {/* <HeaderActions/> */}
     </Paper>
   );
@@ -57,7 +57,7 @@ const AppSysRolesTable = props => {
   const columns = useMemo(
     () => [
       {
-        title: 'AppSys',
+        title: 'Application System',
         field: 'appSys',
         lookup: lookupSysRoles,
       },

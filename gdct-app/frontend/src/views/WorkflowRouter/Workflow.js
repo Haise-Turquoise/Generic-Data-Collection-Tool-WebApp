@@ -129,7 +129,7 @@ const WorkflowStatuses = () => {
         className="workflowPicker__search"
         variant="outlined"
         size="small"
-        placeholder="Search statuses..."
+        placeholder="Search for a status..."
         onChange={handleChangeFilter}
       />
       <StatusItems statuses={statuses} />
@@ -196,7 +196,7 @@ const WorkflowHeader = ({ type }) => {
       <TextField
         variant="outlined"
         size="small"
-        placeholder="Name"
+        placeholder="Name of your workflow"
         value={name}
         onChange={handleChangeName}
       />

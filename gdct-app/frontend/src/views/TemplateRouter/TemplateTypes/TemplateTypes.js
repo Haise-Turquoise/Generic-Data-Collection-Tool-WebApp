@@ -26,7 +26,7 @@ import { calculateOptions } from '../../../tools/misc'
 const TemplateTypeHeader = () => {
   return (
     <Paper className="header">
-      <Typography variant="h5">Template Types</Typography>
+      <Typography variant="h5">Template Type</Typography>
       {/* <HeaderActions/> */}
     </Paper>
   );

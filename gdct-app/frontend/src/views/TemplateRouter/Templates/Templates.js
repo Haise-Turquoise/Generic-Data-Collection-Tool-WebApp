@@ -40,7 +40,7 @@ import { calculateOptions } from '../../../tools/misc'
 const TemplateHeader = () => {
   return (
     <Paper className="header">
-      <Typography variant="h5">Templates</Typography>
+      <Typography variant="h5">Template Design</Typography>
       {/* <HeaderActions/> */}
     </Paper>
   );
@@ -67,18 +67,18 @@ const TemplatesTable = ({ history }) => {
     () => [
       { title: 'Name', field: 'name' },
       {
-        title: 'TemplateTypeId',
+        title: 'Template Type ID',
         field: 'templateTypeId',
         lookup: lookupTemplateTypes,
       },
       {
-        title: 'CreationDate',
+        title: 'Creation Date',
         type: 'date',
         field: 'creationDate',
         editable: 'onAdd',
         initialEditValue: new Date(),
       },
-      { title: 'ExpirationDate', type: 'date', field: 'expirationDate' },
+      { title: 'Expiration Date', type: 'date', field: 'expirationDate' },
       { title: 'Workflow', field: 'workflowProcessId', lookup: lookupProcesses, editable: 'never' },
     ],
     [lookupTemplateTypes, lookupProcesses],

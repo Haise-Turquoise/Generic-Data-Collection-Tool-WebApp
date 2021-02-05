@@ -22,7 +22,7 @@ import { calculateOptions } from '../../tools/misc'
 const ProgramHeader = () => {
   return (
     <Paper className="header">
-      <Typography variant="h5">Programs</Typography>
+      <Typography variant="h5">Program</Typography>
       {/* <HeaderActions/> */}
     </Paper>
   );

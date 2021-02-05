@@ -45,7 +45,7 @@ const CustomButton = ({ text, handleClick }) => (
 
 const Header = ({ handleSubmit }) => (
   <div className="d-flex justify-content-between p-2 mb-3">
-    <Typography variant="h5">Template Packages</Typography>
+    <Typography variant="h5">Template Package</Typography>
     <Button onClick={handleSubmit} variant="contained" color="primary">
       Save
     </Button>

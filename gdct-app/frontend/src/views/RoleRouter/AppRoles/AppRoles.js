@@ -20,7 +20,7 @@ import { calculateOptions } from '../../../tools/misc'
 const AppRolesHeader = () => {
   return (
     <Paper className="header">
-      <Typography variant="h5">AppRoles</Typography>
+      <Typography variant="h5">Application Role</Typography>
       {/* <HeaderActions/> */}
     </Paper>
   );

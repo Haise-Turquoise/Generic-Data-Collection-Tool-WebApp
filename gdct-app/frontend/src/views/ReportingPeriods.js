@@ -19,7 +19,7 @@ import { calculateOptions } from '../tools/misc'
 const ReportingPeriodHeader = () => {
   return (
     <Paper className="header">
-      <Typography variant="h5">Reporting Periods</Typography>
+      <Typography variant="h5">Reporting Period</Typography>
       {/* <HeaderActions/> */}
     </Paper>
   );

@@ -22,7 +22,7 @@ const WorkflowHeader = () => {
 
   return (
     <Paper className="header">
-      <Typography variant="h5">Workflows</Typography>
+      <Typography variant="h5">Workflow</Typography>
       <Button variant="contained" color="primary" onClick={handleCreate}>
         Create
       </Button>
