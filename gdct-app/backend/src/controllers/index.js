@@ -29,12 +29,13 @@ import UsersController from './Users/controller';
 import SubmissionNoteController from './SubmissionNote';
 import AuditLogController from './AuditLog';
 import { authorized } from '../middlewares/auth/auth';
+import MasterValueController from './MasterValue/controller';
 
 import GoogleApisController from './GoogleApis'
 import TransferStatusController from './TransferStatus'
 import TransferStatusService from '../services/TransferStatus'
 
-import MasterValueController from './MasterValue/controller';
+
 
 
 export const routerManager = app => {

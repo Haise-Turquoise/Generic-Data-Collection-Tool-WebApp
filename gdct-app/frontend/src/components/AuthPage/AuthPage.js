@@ -1,6 +1,6 @@
 import React, { useState, Fragment, useEffect, useCallback } from 'react';
 import clsx from 'clsx';
-import { makeStyles, useTheme } from '@material-ui/core/styles';
+import { makeStyles, useTheme, withStyles } from '@material-ui/core/styles';
 import Drawer from '@material-ui/core/Drawer';
 import AppBar from '@material-ui/core/AppBar';
 import Chip from '@material-ui/core/Chip';
@@ -22,8 +22,10 @@ import ExpandLess from '@material-ui/icons/ExpandLess';
 import Switch from '@material-ui/core/Switch';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 
+import MenuItem from '@material-ui/core/MenuItem';
 import { Link } from 'react-router-dom';
 
+import { event } from 'jquery';
 import navigationConfig from './config';
 
 import TopItemList from '../TopItemList/TopItemList';
@@ -192,8 +194,20 @@ const DrawerHandle = ({ title, classes, handleDrawerClose, theme }) => (
 
 const MenuItemIcon = ({ icon }) => <ListItemIcon>{icon}</ListItemIcon>;
 
+const StyledMenuItem = withStyles(theme => ({
+  root: {
+    '&:focus': {
+      color: theme.palette.common.white,
+      backgroundColor: theme.palette.primary.main,
+      '& .MuiListItemIcon-root, & .MuiListItemText-primary': {
+        color: theme.palette.common.white,
+      },
+    },
+  },
+}))(MenuItem);
+
 const MenuItemLink = ({ name, icon, url, level }) => (
-  <ListItem component={url && Link} button to={url}>
+  <StyledMenuItem component={url && Link} button to={url}>
     <MenuItemIcon icon={icon} />
     {level === '2' ? (
       <ListItemText
@@ -208,7 +222,7 @@ const MenuItemLink = ({ name, icon, url, level }) => (
         }
       />
     )}
-  </ListItem>
+  </StyledMenuItem>
 );
 
 const MenuItems = ({ menuItems, level }) => {
@@ -270,6 +284,7 @@ const MenuDrawer = ({ name, icon, children, level = 1 }) => {
 };
 
 const NavigationContent = ({ config }) => {
+  console.log('config', config);
   return config.map((item, index) => {
     let Component;
 
