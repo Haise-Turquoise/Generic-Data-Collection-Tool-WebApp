@@ -6,14 +6,16 @@ const AuditLogModel = model(
     'AuditLog',
     new Schema(
         {
-            _id: {type: ObjectId},
             user: {type: Object},
             activity: {type: String},
-            module: {type: Object},
+            moduleName: {type: String},
+            recordId: {type: ObjectId},
+            oldValue: {type: Object},
+            newValue: {type: Object},
             timestamp: {type: Date, default: Date.now},
         },
-        { 
-            minimize: false 
+        {
+            minimize: false
         },
     ),
     'AuditLog',
