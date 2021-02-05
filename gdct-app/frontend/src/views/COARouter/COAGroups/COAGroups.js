@@ -5,7 +5,7 @@ import MaterialTable from 'material-table';
 import Paper from '@material-ui/core/Paper';
 import { useTranslation } from 'react-i18next';
 import Typography from '@material-ui/core/Typography';
-import { useTranslation } from 'react-i18next';
+
 import {
   getCOAGroupsRequest,
   createCOAGroupRequest,

@@ -186,13 +186,15 @@ export default class SubmissionService {
 
 
   
-  async updateStatus(submission, submissionNote, role, nextProcessId) {
+  async updateStatus(submission, submissionNote, role, nextProcessId,updatedBy) {
     const newSubmission = await this.submissionRepository.findById(submission._id);
+    
     if (newSubmission.googleSheetId){
+      console.log('is using googleSheet')
       await Promise.resolve(saveGoogleSheetInSubmission(newSubmission.googleSheetId));
       submission = await this.submissionRepository.findById(submission._id);
     }
-
+    
     const submissionNotes = {
       note: submissionNote,
       submissionId: submission.parentId ? submission.parentId : submission._id,

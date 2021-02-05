@@ -35,7 +35,7 @@ import GoogleApisController from './GoogleApis'
 import TransferStatusController from './TransferStatus'
 import TransferStatusService from '../services/TransferStatus'
 
-import MasterValueController from './MasterValue/controller';
+
 
 
 export const routerManager = app => {

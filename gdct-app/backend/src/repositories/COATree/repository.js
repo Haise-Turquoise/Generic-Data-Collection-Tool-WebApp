@@ -59,7 +59,7 @@ export default class ReportPeriodRepository extends BaseRepository {
 
   async batchFindById(query) {
     return COATreeModel.find({ _id: { $in: query } });
-
+  }
   async batchFindByCategoryId(query, sheetTitleId){
     return COATreeModel.find({ categoryId: { "$in" : query }, sheetNameId: sheetTitleId})
   }
