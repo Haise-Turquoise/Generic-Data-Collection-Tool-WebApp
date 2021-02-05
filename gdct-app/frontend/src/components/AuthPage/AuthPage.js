@@ -21,7 +21,7 @@ import ExpandMore from '@material-ui/icons/ExpandMore';
 import ExpandLess from '@material-ui/icons/ExpandLess';
 import Switch from '@material-ui/core/Switch';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
-
+import './_chip.scss';
 import MenuItem from '@material-ui/core/MenuItem';
 import { Link } from 'react-router-dom';
 
@@ -216,12 +216,12 @@ const MenuItemLink = ({ name, icon, url, level }) => (
         }
       />
     ) : (
-      <ListItemText
-        primary={
-          <Typography style={{ fontSize: '0.9rem', marginLeft: '1.2rem' }}>{name}</Typography>
-        }
-      />
-    )}
+        <ListItemText
+          primary={
+            <Typography style={{ fontSize: '0.9rem', marginLeft: '1.2rem' }}>{name}</Typography>
+          }
+        />
+      )}
   </StyledMenuItem>
 );
 
@@ -264,8 +264,8 @@ const MenuDrawerTitle = ({ button = true, name, icon, open, handleClick, level }
         }
       />
     ) : (
-      <ListItemText primary={name} />
-    )}
+        <ListItemText primary={name} />
+      )}
     {open ? <ExpandLess /> : <ExpandMore />}
   </ListItem>
 );

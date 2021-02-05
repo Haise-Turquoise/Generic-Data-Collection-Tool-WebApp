@@ -10,12 +10,13 @@ import AppRoleResourceRepository from '../../repositories/AppRoleResource';
 import AppResourceRepository from '../../repositories/AppResource';
 import AppSysRoleModel from '../../models/AppSysRole';
 import AppError from '../../utils/AppError';
+import async from 'async';
 
 const { ObjectID } = mongodb;
 
 export default class AuthService {
   constructor() {
-    this.UserRepostory = Container.get(UserRepository);
+    this.UserRepository = Container.get(UserRepository);
     this.AppRoleResourceRepository = Container.get(AppRoleResourceRepository);
     this.AppResourceRepository = Container.get(AppResourceRepository);
   }
@@ -75,8 +76,12 @@ export default class AuthService {
   profile(req, res, next) {
     try {
       if (req.user) {
-        returnNormalJson(res, { email: req.user.email });
-        // returnErrorJson(res, 'Not authenticated', 401);
+        const authService = new AuthService();
+        authService.UserRepository.findByEmail(req.user.email)
+          .then(data => {
+              //console.log(data)
+              returnNormalJson(res, data);
+          })
       } else {
         returnErrorJson(res, 'Not authenticated', 401);
       }
@@ -85,6 +90,20 @@ export default class AuthService {
       next(err);
     }
   }
+
+  // profile(req, res, next) {
+  //   try {
+  //     if (req.user) {
+  //       returnNormalJson(res, { email: req.user.email });
+  //       // returnErrorJson(res, 'Not authenticated', 401);
+  //     } else {
+  //       returnErrorJson(res, 'Not authenticated', 401);
+  //     }
+  //     // }, 10000)
+  //   } catch (err) {
+  //     next(err);
+  //   }
+  // }
 
   createUser(req, res, next) {
     try {
@@ -174,7 +193,7 @@ export default class AuthService {
       const authService = new AuthService();
       return passport.authenticate('local')(req, res, async () => {
         const { email } = req.user;
-        const user = await authService.UserRepostory.findByEmail(email);
+        const user = await authService.UserRepository.findByEmail(email);
 
         req.session.roles = [];
         req.session.isAdmin = false;

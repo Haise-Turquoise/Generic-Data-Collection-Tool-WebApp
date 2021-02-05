@@ -4,6 +4,7 @@ import { host } from '../constants/domain';
 
 const AuditLogController = (() => {
   const AuditLogAxios = axios.create({
+    // The real baseURL used in backend is defined in backend/src/controller/index.js
     baseURL: `${host}/AuditLog`,
     withCredentials: true,
   });
@@ -14,7 +15,8 @@ const AuditLogController = (() => {
         //console.log(res.data); 
         return res.data 
       }),
-    //create: async AuditLog => AuditLogAxios.post(`/createAuditLog`, { AuditLog }).then(res => res.data.AuditLog),
+    create: async AuditLogInfo => AuditLogAxios.post(`/createAuditLog`, { AuditLogInfo })
+      .then(res => res.data.AuditLogInfo),
   };
 })();
 

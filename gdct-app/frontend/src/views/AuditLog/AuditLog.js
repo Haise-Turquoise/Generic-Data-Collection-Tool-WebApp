@@ -27,8 +27,9 @@ const AuditLogTable = () => {
   const columns = useMemo(
     () => [
       { title: 'Time', field: 'timestamp' },
-      { title: 'User', field: 'user.name' },
+      { title: 'User Email', field: 'user.email' },
       { title: 'Activity', field: 'activity' },
+      { title: 'Module Name', field: 'moduleName'},
     ],
     [],
   );
@@ -37,12 +38,19 @@ const AuditLogTable = () => {
   const options = useMemo(() => ({ actionsColumnIndex: -1, search: true, showTitle: false }), []);
   
   // Prepare the data for MaterialTable on initial load
-  const { auditlogs } = useSelector(
+  let { auditlogs } = useSelector(
     state => ({
       auditlogs: selectFactoryRESTResponseTableValues(selectAuditLogStore)(state),
     }),
     shallowEqual,
   );
+
+  // Convert Date format
+  const timeOption = { year: 'numeric', month: 'numeric', day: 'numeric', hour:'numeric', minute:'numeric' };
+  auditlogs.forEach(auditlog => {
+    const logtime = new Date(auditlog.timestamp);
+    auditlog.timestamp = logtime.toLocaleDateString("en-CA", timeOption);
+  })
   useEffect(() => {
     dispatch(getAuditLogRequest());
   }, [dispatch]);
