@@ -36,7 +36,7 @@ import { calculateOptions } from '../../tools/misc'
 const TemplatePackageHeader = () => {
   return (
     <Paper className="header">
-      <Typography variant="h5">Template Packages</Typography>
+      <Typography variant="h5">Template Package</Typography>
       {/* <HeaderActions/> */}
     </Paper>
   );
