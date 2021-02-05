@@ -1,9 +1,11 @@
 import Container from 'typedi';
 import OrgRepository from '../../repositories/Organization';
 
+
 class OrgService {
   constructor() {
     this.OrgRepository = Container.get(OrgRepository);
+    
   }
 
   async createOrg(Org) {

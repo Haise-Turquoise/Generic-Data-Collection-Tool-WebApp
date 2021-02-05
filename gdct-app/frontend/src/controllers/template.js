@@ -15,6 +15,7 @@ const templateController = (() => {
     update: async template => templateAxios.put(`/${template._id}`, { template }),
     updateTemplateWorkflowProcess: async (_id, workflowProcessId) =>
       templateAxios.put(`/${_id}/workflowProcess/${workflowProcessId}`),
+    openTemplate: async _id => templateAxios.get(`/openTemplate/${_id}`).then(res => res.data.spreadsheetID),
   };
 })();
 

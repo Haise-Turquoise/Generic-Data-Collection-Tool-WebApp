@@ -1,0 +1,1 @@
+export const selectTransferStatusStore = state => state.TransferStatusStore;

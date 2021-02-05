@@ -12,6 +12,7 @@ import COATreeController from './COATree';
 import COAGroupController from './COAGroup';
 import OrgController from './Organization';
 import SheetNameController from './SheetName';
+import AppConfigController from './AppConfig';
 import AppSysController from './AppSys';
 import AppRoleController from './AppRole';
 import AppSysRoleController from './AppSysRole';
@@ -26,8 +27,16 @@ import MenuItemController from './MenuItem';
 import MenuController from './Menu';
 import UsersController from './Users/controller';
 import SubmissionNoteController from './SubmissionNote';
+import AuditLogController from './AuditLog';
 import { authorized } from '../middlewares/auth/auth';
 import MasterValueController from './MasterValue/controller';
+
+import GoogleApisController from './GoogleApis'
+import TransferStatusController from './TransferStatus'
+import TransferStatusService from '../services/TransferStatus'
+
+import MasterValueController from './MasterValue/controller';
+
 
 export const routerManager = app => {
   app.use('/', Container.get(AuthController));
@@ -40,6 +49,8 @@ export const routerManager = app => {
   app.use('/orgGroup_manager', Container.get(OrgGroupController));
   app.use('/user_management', Container.get(UserController));
   app.use('/template_manager', Container.get(TemplateTypeController));
+  app.use('/role_manager', authorized, Container.get(AppConfigController));
+  app.use('/AuditLog', Container.get(AuditLogController));
 
   app.use('/', authorized, Container.get(ReportingPeriodController));
   app.use('/', authorized, Container.get(SheetNameController));
@@ -66,4 +77,18 @@ export const routerManager = app => {
   app.use('/role_manager', authorized, Container.get(AppSysRoleController));
   app.use('/role_manager', authorized, Container.get(AppRoleResourceController));
   app.use('/role_manager', authorized, Container.get(AppResourceController));
+
+  // Oct 26, 2020
+  // Used to handle requests from google
+  app.use('/googleapis_manager', authorized, Container.get(GoogleApisController));
+
+  // Jan 22, 2021
+  // Use to handle transfer control
+  
+  app.use('/transferManager', authorized, Container.get(TransferStatusController));
+
+
+  
+  
 };
+

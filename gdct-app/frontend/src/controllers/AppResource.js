@@ -12,7 +12,6 @@ const AppResourceController = (() => {
       AppResourceAxios.get(`/${_id}`).then(res => res.data.AppResource),
     fetch: async _ =>
       AppResourceAxios.get('').then(res => {
-        console.log('res:', res);
         return res.data.AppResources;
       }),
     create: async AppResource =>

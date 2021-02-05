@@ -1,10 +1,11 @@
-import React, { useMemo, useEffect } from 'react';
+import React, { useMemo, useEffect, useState } from 'react';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 
 import MaterialTable from 'material-table';
 import Paper from '@material-ui/core/Paper';
 import { useTranslation } from 'react-i18next';
 import Typography from '@material-ui/core/Typography';
+import { useTranslation } from 'react-i18next';
 import {
   getCOAGroupsRequest,
   createCOAGroupRequest,
@@ -13,14 +14,18 @@ import {
 } from '../../../store/thunks/COAGroup';
 
 import './COAGroups.scss';
+import ErrorBanner from '../../ErrorBanner'
 import { selectFactoryRESTResponseTableValues } from '../../../store/common/REST/selectors';
 import { selectCOAGroupsStore } from '../../../store/COAGroupsStore/selectors';
+
+import { calculateOptions } from '../../../tools/misc';
+
 
 const COAGroupsHeader = () => {
   const { t, i18n } = useTranslation();
   return (
     <Paper className="header">
-      <Typography variant="h5">COA Groups</Typography>
+      <Typography variant="h5">Category Group Management</Typography>
       {/* <HeaderActions/> */}
     </Paper>
   );
@@ -28,6 +33,7 @@ const COAGroupsHeader = () => {
 
 const COAGroupsTable = () => {
   const dispatch = useDispatch();
+  const[readRowNum, setRowNum] = useState(1);
 
   const { COAGroups } = useSelector(
     state => ({
@@ -35,6 +41,9 @@ const COAGroupsTable = () => {
     }),
     shallowEqual,
   );
+
+  useEffect(()=>{setRowNum(COAGroups.length)},[COAGroups]);
+
 
   const columns = useMemo(
     () => [
@@ -44,8 +53,7 @@ const COAGroupsTable = () => {
     ],
     [],
   );
-
-  const options = useMemo(() => ({ actionsColumnIndex: -1, search: false, showTitle: false }), []);
+  const options = useMemo(() => calculateOptions(readRowNum), [readRowNum]);
 
   const editable = useMemo(
     () => ({
@@ -69,13 +77,14 @@ const COAGroupsTable = () => {
     dispatch(getCOAGroupsRequest());
   }, [dispatch]);
 
-  return <MaterialTable columns={columns} data={COAGroups} editable={editable} options={options} />;
+  return <MaterialTable key={readRowNum} columns={columns} data={COAGroups} editable={editable} options={options} />;
 };
 
 const COAGroups = props => (
   <div className="COAGroups">
     <COAGroupsHeader />
     {/* <FileDropzone/> */}
+    <ErrorBanner title={"Cannot delete the selected category group since it is referenced in COA tree."} targetStore={selectCOAGroupsStore}/>
     <COAGroupsTable {...props} />
   </div>
 );

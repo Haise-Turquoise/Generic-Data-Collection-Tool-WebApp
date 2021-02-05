@@ -32,6 +32,11 @@
   padding: 10px 0;
 }
 
+.scroll-bar {
+  width: 70%;
+  overflow: auto;
+}
+
 .sections {
   @include shadow;
   border: 1px solid lightgray;

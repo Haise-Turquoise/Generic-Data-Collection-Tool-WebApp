@@ -31,10 +31,11 @@ import { getCOAsRequest } from '../../store/thunks/COA';
 import { getOrgsRequest } from '../../store/thunks/organization';
 import MasterValueModel from '../../../../backend/src/models/MasterValue';
 import MasterValueController from '../../controllers/MasterValue';
+
 import { selectReportingPeriodsStore } from '../../store/ReportingPeriodsStore/selectors';
 import { getReportingPeriodsRequest } from '../../store/thunks/reportingPeriod';
-
 const REST_API = 'https://ohfsrest.azurewebsites.net';
+
 const TABLES = ['FCLTY_BSA_YTD_ACTL_FORCST_DETL', 'FCLTY_SECDY_YTD_ACTL_FORCST_DT'];
 
 const isBalanceSheet = COA => {
@@ -45,10 +46,13 @@ const isBalanceSheet = COA => {
 
 const queryREST = ({ category, ap, hfk, attribute }) => {
   const queries = [];
+
   const upsList = [];
   const ye = ap.split('/')[0];
   const year = ye.slice(2, 4);
   const stage = ap.slice(8, 10);
+
+
   for (const c of category) {
     for (const h of hfk) {
       upsList.push({
@@ -79,6 +83,7 @@ const queryREST = ({ category, ap, hfk, attribute }) => {
   };
 
   const results = queries.map(query => {
+
     return axios.get(query);
   });
   console.log(queries);

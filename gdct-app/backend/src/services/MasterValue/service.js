@@ -4,8 +4,10 @@ import MasterValueRepository from '../../repositories/MasterValue';
 import COATreeRepository from '../../repositories/COATree';
 import COAGroupRepository from '../../repositories/COAGroup';
 // @Service()
+
 const coaTreeRepository = Container.get(COATreeRepository);
 const coaGroupRepository = Container.get(COAGroupRepository);
+
 export default class MasterValueService {
   constructor() {
     this.masterValueRepository = Container.get(MasterValueRepository);
@@ -68,5 +70,6 @@ export default class MasterValueService {
       );
     }
     return 0;
+
   }
 }

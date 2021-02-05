@@ -21,14 +21,18 @@ import { selectFactoryRESTResponseTableValues } from '../../../store/common/REST
 import { selectSheetNamesStore } from '../../../store/SheetNamesStore/selectors';
 import { selectDetectEmptyTreeStore } from '../../../store/DetectEmptyTreeStore/selectors';
 import { ROUTE_CATEGORY_TREES } from '../../../constants/routes';
+
+import { calculateOptions } from '../../../tools/misc'
 import DetectEmptyTreeStore from '../../../store/DetectEmptyTreeStore/store';
+
+
 
 // import './COATrees.scss'
 
 const COATreesHeader = () => {
   return (
     <Paper className="header">
-      <Typography variant="h5">COA Trees</Typography>
+      <Typography variant="h5">Category Tree Management</Typography>
       {/* <HeaderActions/> */}
     </Paper>
   );
@@ -37,6 +41,8 @@ const COATreesHeader = () => {
 const COATreesTable = ({ history }) => {
   const dispatch = useDispatch();
   const [refresh, setRefresh] = useState(false);
+
+  const[readRowNum, setRowNum] = useState(1);
   const { sheetNames } = useSelector(
     state => ({
       sheetNames: selectFactoryRESTResponseTableValues(selectSheetNamesStore)(state),
@@ -53,6 +59,10 @@ const COATreesTable = ({ history }) => {
 
   const columns = useMemo(() => [{ title: 'Sheet Name', field: 'name' }], []);
 
+  const options = useMemo(() => calculateOptions(readRowNum), [readRowNum]);
+
+  useEffect(()=>{setRowNum(sheetNames.length)},[sheetNames]);
+
   const actions = useMemo(
     () => [
       {
@@ -64,13 +74,14 @@ const COATreesTable = ({ history }) => {
     [history],
   );
 
-  const options = useMemo(() => ({ actionsColumnIndex: -1, search: false, showTitle: false }), []);
 
   useEffect(() => {
     // console.log('Page refresh');
     dispatch(getSheetNamesRequest());
     dispatch(getDetectEmptyTree());
   }, [dispatch, refresh]);
+
+
 
   const editable = useMemo(
     () => ({
@@ -92,6 +103,7 @@ const COATreesTable = ({ history }) => {
   );
   return (
     <MaterialTable
+      key={readRowNum}
       columns={columns}
       actions={actions}
       data={detectEmptyTree}

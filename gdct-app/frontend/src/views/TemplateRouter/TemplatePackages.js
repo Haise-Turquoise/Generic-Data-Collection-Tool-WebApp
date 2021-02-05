@@ -1,4 +1,4 @@
-import React, { useMemo, useEffect } from 'react';
+import React, { useMemo, useEffect, useState } from 'react';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 
 import Paper from '@material-ui/core/Paper';
@@ -30,6 +30,8 @@ import { selectSubmissionPeriodsStore } from '../../store/SubmissionPeriodsStore
 import { getSubmissionPeriodsRequest } from '../../store/thunks/submissionPeriod';
 import StatusesStore from '../../store/StatusesStore/store';
 import SubmissionPeriodsStore from '../../store/SubmissionPeriodsStore/store';
+import ErrorBanner from '../ErrorBanner';
+import { calculateOptions } from '../../tools/misc'
 
 const TemplatePackageHeader = () => {
   return (
@@ -43,6 +45,7 @@ const TemplatePackageHeader = () => {
 const TemplatePackages = () => {
   const dispatch = useDispatch();
   const history = useHistory();
+  const [readRowNum, setRowNum] = useState(1);
 
   const {
     templatePackages,
@@ -161,12 +164,8 @@ const TemplatePackages = () => {
   );
 
   const options = useMemo(
-    () => ({
-      actionsColumnIndex: -1,
-      search: false,
-      showTitle: false,
-    }),
-    [],
+    () => calculateOptions(readRowNum),
+    [readRowNum],
   );
 
   const editable = useMemo(
@@ -201,10 +200,14 @@ const TemplatePackages = () => {
     };
   }, [dispatch]);
 
+  useEffect(()=>{setRowNum(templatePackages.length)}, [templatePackages])
+
   return (
     <div>
       <TemplatePackageHeader />
+      <ErrorBanner title={"You cannot delete the selected template package since it was already published"} targetStore={selectTemplatePackagesStore}/>
       <MaterialTable
+        key={readRowNum}
         columns={columns}
         data={templatePackages}
         editable={editable}

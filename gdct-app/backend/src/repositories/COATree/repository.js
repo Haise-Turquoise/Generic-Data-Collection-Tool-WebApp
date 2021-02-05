@@ -1,6 +1,7 @@
 import COATreeEntity from '../../entities/COATree';
 import BaseRepository from '../repository';
 import COATreeModel from '../../models/COATree';
+import {ObjectId} from 'mongodb';
 
 export default class ReportPeriodRepository extends BaseRepository {
   constructor() {
@@ -51,11 +52,22 @@ export default class ReportPeriodRepository extends BaseRepository {
       });
   }
 
+
   async batchFindByCategoryIdWithoutSheetName(query) {
     return COATreeModel.find({ categoryId: { $in: query } });
   }
 
   async batchFindById(query) {
     return COATreeModel.find({ _id: { $in: query } });
+
+  async batchFindByCategoryId(query, sheetTitleId){
+    return COATreeModel.find({ categoryId: { "$in" : query }, sheetNameId: sheetTitleId})
+  }
+
+
+
+  async findOneByCategoryGroupId(groupId){
+    return COATreeModel.findOne({categoryGroupId:new ObjectId(groupId)}, {_id:1})
+
   }
 }

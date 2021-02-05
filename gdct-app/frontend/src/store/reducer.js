@@ -12,9 +12,11 @@ import AppResourcesStore from './AppResourcesStore/store';
 import AppRoleResourcesStore from './AppRoleResourcesStore/store';
 import AppSysesStore from './AppSysesStore/store';
 import AppSysRolesStore from './AppSysRolesStore/store';
+import AuditLogStore from './AuditLogStore/store';
 import DialogsStore from './DialogsStore/store';
 import ReportingPeriodsStore from './ReportingPeriodsStore/store';
 
+import AppConfigsStore from './AppConfigsStore/store';
 import StatusesStore from './StatusesStore/store';
 import SubmissionPeriodsStore from './SubmissionPeriodsStore/store';
 import ProgramsStore from './ProgramsStore/store';
@@ -34,6 +36,7 @@ import UserStore from './UserStore/store';
 import UsersStore from './UsersStore/store';
 import UserRegistrationStore from './UserRegistrationStore/store';
 import WorkflowProcessesStore from './WorkflowProcessesStore/store';
+import TransferStatusStore from './TransferStatusStore/store';
 
 export const root = combineReducers({
   UserStore: UserStore.reducer,
@@ -50,11 +53,13 @@ export const root = combineReducers({
   AppRoleResourcesStore: AppRoleResourcesStore.reducer,
   AppSysesStore: AppSysesStore.reducer,
   AppSysRolesStore: AppSysRolesStore.reducer,
+  AuditLogStore: AuditLogStore.reducer,
   DialogsStore: DialogsStore.reducer,
   ReportingPeriodsStore: ReportingPeriodsStore.reducer,
   OrgsStore: OrgsStore.reducer,
   UsersStore: UsersStore.reducer,
 
+  AppConfigsStore: AppConfigsStore.reducer,
   COATreeStore: COATreeStore.reducer,
   DetectEmptyTreeStore: DetectEmptyTreeStore.reducer,
   SheetNamesStore: SheetNamesStore.reducer,
@@ -70,6 +75,7 @@ export const root = combineReducers({
   WorkflowStore: WorkflowStore.reducer,
   WorkflowsStore: WorkflowsStore.reducer,
   WorkflowProcessesStore: WorkflowProcessesStore.reducer,
+  TransferStatusStore:TransferStatusStore.reducer,
 
   ui,
 });
