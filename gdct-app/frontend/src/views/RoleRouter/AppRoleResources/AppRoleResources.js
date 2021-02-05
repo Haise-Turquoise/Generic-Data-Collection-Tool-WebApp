@@ -26,7 +26,7 @@ import { calculateOptions } from '../../../tools/misc'
 const AppRoleResourcesHeader = () => {
   return (
     <Paper className="header">
-      <Typography variant="h5">AppRoleResources</Typography>
+      <Typography variant="h5">Application Role Resource</Typography>
       {/* <HeaderActions/> */}
     </Paper>
   );
@@ -56,7 +56,7 @@ const AppRoleResourcesTable = () => {
 
   const columns = useMemo(
     () => [
-      { title: 'AppSysRole', field: 'appSysRoleId', lookup: lookupSysRoles },
+      { title: 'Application System Role', field: 'appSysRoleId', lookup: lookupSysRoles },
       {
         title: 'Resource',
         field: 'resourceId',

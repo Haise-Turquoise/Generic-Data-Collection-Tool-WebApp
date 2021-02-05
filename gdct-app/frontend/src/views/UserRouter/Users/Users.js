@@ -23,7 +23,7 @@ import {
 const UsersHeader = () => {
   return (
     <Paper className="header">
-      <Typography variant="h5">Users</Typography>
+      <Typography variant="h5">User Management</Typography>
       {/* <HeaderActions/> */}
     </Paper>
   );
@@ -94,11 +94,11 @@ const UsersTable = () => {
 
   const columns = useMemo(
     () => [
-      { title: 'UserName', field: 'username' },
-      { title: 'FirstName', field: 'firstName' },
-      { title: 'LastName', field: 'lastName' },
+      { title: 'User Name', field: 'username' },
+      { title: 'First Name', field: 'firstName' },
+      { title: 'Last Name', field: 'lastName' },
       { title: 'Email', field: 'email' },
-      { title: 'PhoneNumber', field: 'phoneNumber' },
+      { title: 'Phone Number', field: 'phoneNumber' },
       { title: 'Active', type: 'boolean', field: 'isActive' },
     ],
     [],

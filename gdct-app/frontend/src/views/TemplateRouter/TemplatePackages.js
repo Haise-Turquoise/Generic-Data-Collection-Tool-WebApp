@@ -82,13 +82,13 @@ const TemplatePackages = () => {
     () => [
       { title: 'Name', field: 'name' },
       {
-        title: 'SubmissionPeriodId',
+        title: 'Submission Period ID',
         field: 'submissionPeriodId',
         lookup: lookupSubmissionPeriods,
       },
       // { title: "TemplateIds", type: "boolean", field: "templateIds" },
       {
-        title: 'StatusId',
+        title: 'Status ID',
         field: 'statusId',
         lookup: lookupStatuses,
 

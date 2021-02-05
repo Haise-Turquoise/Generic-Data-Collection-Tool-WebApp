@@ -94,9 +94,9 @@ const COAsTable = () => {
 
   const columns = useMemo(
     () => [
-      { title: 'id', field: 'id' },
+      { title: 'ID', field: 'id' },
       { title: 'Name', field: 'name' },
-      { title: 'COA', field: 'COA' },
+      { title: 'OHFS Mapping', field: 'COA' },
     ],
     [],
   );

@@ -33,7 +33,7 @@ const HeaderActions = () => {
 const OrganizationHeader = () => {
   return (
     <Paper className="header">
-      <Typography variant="h5">Organizations</Typography>
+      <Typography variant="h5">Organization</Typography>
       <HeaderActions />
     </Paper>
   );

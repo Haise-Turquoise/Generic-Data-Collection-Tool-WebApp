@@ -21,7 +21,7 @@ import {calculateOptions} from '../../tools/misc'
 const StatusHeader = () => {
   return (
     <Paper className="header">
-      <Typography variant="h5">Statuses</Typography>
+      <Typography variant="h5">Status</Typography>
       {/* <HeaderActions/> */}
     </Paper>
   );
@@ -42,7 +42,7 @@ const StatusesTable = () => {
       { title: 'Name', field: 'name' },
       { title: 'Description', field: 'description' },
       { title: 'Active', type: 'boolean', field: 'isActive' },
-      { title: 'ForPackage', type: 'boolean', field: 'forPackage' },
+      { title: 'For Package', type: 'boolean', field: 'forPackage' },
     ],
     [],
   );

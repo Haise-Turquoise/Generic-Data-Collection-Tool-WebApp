@@ -92,11 +92,11 @@ const UsersTable = () => {
 
   const columns = useMemo(
     () => [
-      { title: 'UserName', field: 'username' },
-      { title: 'FirstName', field: 'firstName' },
-      { title: 'LastName', field: 'lastName' },
+      { title: 'User Name', field: 'username' },
+      { title: 'First Name', field: 'firstName' },
+      { title: 'Last Name', field: 'lastName' },
       { title: 'Email', field: 'email' },
-      { title: 'PhoneNumber', field: 'phoneNumber' },
+      { title: 'Phone Number', field: 'phoneNumber' },
       { title: 'Active', type: 'boolean', field: 'isActive' },
     ],
     [],
