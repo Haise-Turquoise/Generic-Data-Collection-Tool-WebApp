@@ -24,7 +24,7 @@ import { calculateOptions } from '../../tools/misc'
 const ColumnNameHeader = () => {
   return (
     <Paper className="header">
-      <Typography variant="h5">Column Names</Typography>
+      <Typography variant="h5">Attribute Management</Typography>
       {/* <HeaderActions/> */}
     </Paper>
   );
@@ -91,7 +91,7 @@ const ColumnNamesTable = () => {
 
   const columns = useMemo(
     () => [
-      { title: 'id', field: 'id' },
+      { title: 'ID', field: 'id' },
       { title: 'Name', field: 'name' },
       { title: 'Description', field: 'description' },
       { title: 'Active', type: 'boolean', field: 'isActive' },

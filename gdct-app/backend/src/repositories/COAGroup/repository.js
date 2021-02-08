@@ -34,7 +34,9 @@ export default class COAGroupRepository extends BaseRepository {
     );
   }
 
+
   async batchFind(query){
     return COAGroupModel.find({ _id: { "$in" : query }})
+
   }
 }

@@ -157,7 +157,7 @@ const EditSubmission = ({ history }) => {
 
   const backButtonAction = () => {
     history.push({
-
+      
       pathname: `/submission/dashboard`
     })
   }
@@ -165,6 +165,7 @@ const EditSubmission = ({ history }) => {
   const UserFeedback = feedback => {
     setUserFeedback(feedback);
   };
+
 
   const handleDownloadWorkbook = () => {
     setUserFeedback('Downloading !');
@@ -206,6 +207,8 @@ const EditSubmission = ({ history }) => {
   };
 
   return (
+
+
 
     <div className="submissions" style={{ cursor }}>
       <SubmissionHeader />
@@ -292,6 +295,8 @@ const EditSubmission = ({ history }) => {
             Change Notes
           </Button>
 
+
+
           <Button 
             size="large" 
             color="primary"
@@ -303,6 +308,7 @@ const EditSubmission = ({ history }) => {
           </Button>
 
           <div>{userFeedback}</div>
+
 
         </div>
       </Paper>

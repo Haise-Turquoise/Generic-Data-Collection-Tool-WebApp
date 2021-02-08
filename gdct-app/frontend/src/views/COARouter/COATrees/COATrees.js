@@ -21,8 +21,10 @@ import { selectFactoryRESTResponseTableValues } from '../../../store/common/REST
 import { selectSheetNamesStore } from '../../../store/SheetNamesStore/selectors';
 import { selectDetectEmptyTreeStore } from '../../../store/DetectEmptyTreeStore/selectors';
 import { ROUTE_CATEGORY_TREES } from '../../../constants/routes';
+
 import { calculateOptions } from '../../../tools/misc'
 import DetectEmptyTreeStore from '../../../store/DetectEmptyTreeStore/store';
+
 
 
 // import './COATrees.scss'
@@ -30,7 +32,7 @@ import DetectEmptyTreeStore from '../../../store/DetectEmptyTreeStore/store';
 const COATreesHeader = () => {
   return (
     <Paper className="header">
-      <Typography variant="h5">COA Trees</Typography>
+      <Typography variant="h5">Category Tree Management</Typography>
       {/* <HeaderActions/> */}
     </Paper>
   );
@@ -39,6 +41,7 @@ const COATreesHeader = () => {
 const COATreesTable = ({ history }) => {
   const dispatch = useDispatch();
   const [refresh, setRefresh] = useState(false);
+
   const[readRowNum, setRowNum] = useState(1);
   const { sheetNames } = useSelector(
     state => ({
@@ -77,6 +80,7 @@ const COATreesTable = ({ history }) => {
     dispatch(getSheetNamesRequest());
     dispatch(getDetectEmptyTree());
   }, [dispatch, refresh]);
+
 
 
   const editable = useMemo(

@@ -13,6 +13,7 @@ import GDCTMenu from './views/GDCTMenu';
 import Programs from './views/Programs';
 import Statuses from './views/Statuses';
 import ReportingPeriods from './views/ReportingPeriods';
+import AppConfigs from './views/AppConfigs';
 import SheetNames from './views/SheetNames';
 import UserRouter from './views/UserRouter';
 import ReportRouter from './views/ReportRouter';
@@ -45,7 +46,7 @@ const PrivateRouter = ({ setLoggedIn }) => {
       <Route path="/admin/submission" component={SubmissionRouter} />
       <Route path="/admin/role" component={RoleRouter} />
       <Route path={ROUTE_CATEGORY} component={COARouter} />
-      <Route exact path="/admin/configuration" component={null} />
+      <Route exact path="/admin/configuration" component={AppConfigs} />
       <Route exact path="/admin/business_rule_configure" component={null} />
       <Route path="/admin/user_management" component={UserRouter} />
       <Route exact path="/admin/program" component={Programs} />

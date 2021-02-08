@@ -26,7 +26,7 @@ import { calculateOptions } from '../../../tools/misc'
 const COAsHeader = () => {
   return (
     <Paper className="header">
-      <Typography variant="h5">COAs</Typography>
+      <Typography variant="h5">Category Management</Typography>
       {/* <HeaderActions/> */}
     </Paper>
   );
@@ -94,9 +94,9 @@ const COAsTable = () => {
 
   const columns = useMemo(
     () => [
-      { title: 'id', field: 'id' },
+      { title: 'ID', field: 'id' },
       { title: 'Name', field: 'name' },
-      { title: 'COA', field: 'COA' },
+      { title: 'OHFS Mapping', field: 'COA' },
     ],
     [],
   );

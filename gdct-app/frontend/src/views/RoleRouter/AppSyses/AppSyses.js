@@ -21,7 +21,7 @@ import { calculateOptions } from '../../../tools/misc'
 const AppSysesHeader = () => {
   return (
     <Paper className="header">
-      <Typography variant="h5">AppSyses</Typography>
+      <Typography variant="h5">Application System</Typography>
       {/* <HeaderActions/> */}
     </Paper>
   );
