@@ -64,6 +64,7 @@ export default class AuthService {
 
   logout(req, res, next) {
     try {
+      const { email } = req.user
       req.logout();
       req.session.user = null;
       req.session.token = null;
