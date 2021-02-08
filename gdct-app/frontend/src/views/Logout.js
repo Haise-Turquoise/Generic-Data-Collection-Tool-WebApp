@@ -2,12 +2,11 @@ import React, { useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 import AuthController from '../controllers/Auth';
 import AuditLogController from '../controllers/AuditLog'
-import AuthController from '../controllers/Auth';
 
 export default function Logout({ setLoggedIn }) {
   const history = useHistory();
 
-  var node = document.getElementById('MuiChip-root');
+  var node = document.getElementById('MuiChip-label');
   const email = node.textContent;
   useEffect(() => {
     AuthController.logout(email).then(res => {

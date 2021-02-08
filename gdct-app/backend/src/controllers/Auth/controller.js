@@ -10,7 +10,7 @@ const AuthController = Service([AuthService], service => {
     router.get('/auth/:method', service.authenticate);
     router.get('/auth/:method/callback', service.authenticateCallback);
     router.get('/profile', service.profile);
-    router.get('/logout', service.logout, service.profile);
+    router.get('/logout', service.logout);
     return router;
   })();
 });

@@ -134,7 +134,6 @@ export default function Login({ setLoggedIn, setCurrentUser }) {
               return false;
             }
             if (data.status === 'ok') {
-              console.log(data.data)
               // dispatch(UserStore.actions.SET_CURRENT_USER({currentUser:data.data.email}))
               localStorage.setItem('currentUser', data.data.email);
 
