@@ -140,11 +140,12 @@ export default function Login({ setLoggedIn, setCurrentUser }) {
 
               // Audit Log Below -----------------------------------------------------------------------------------------------------------------------------
               // Construct info required for this auditlogs
+              const IdentitiesWithNoRole = ["Business Admin", "Template Designer", "Template Approver"]
               const AuditLogInfo = {
                 user: {
                   _id: data.data._id,
                   email: data.data.email,
-                  orgId: data.data.sysRole[0].role !== "Business Admin" && data.data.sysRole[0].org.length > 0 ? data.data.sysRole[0].org[0].orgId : ""
+                  orgId: !(IdentitiesWithNoRole.includes(data.data.sysRole[0].role)) && data.data.sysRole[0].org.length > 0 ? data.data.sysRole[0].org[0].orgId : ""
                 },
                 activity: "Login",
                 moduleName: "Login",
