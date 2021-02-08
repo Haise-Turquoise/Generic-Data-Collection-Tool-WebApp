@@ -18,7 +18,7 @@ const SubmissionRouter = () => {
       <Route exact path="/submission/submission" component={Submission} />
       <Route exact path="/submission/dashboard" component={SubmissionDashboard} />
       <Route exact path="/submission/createSubmission/:id" component={CreateSubmission} />
-      <Route exact path="/submission/editSubmission/:id" component={EditSubmission} />
+      <Route exact path="/submission/dashboard/editSubmission/:id" component={EditSubmission} />
       <Route component={NotFound} />
     </Switch>
   );

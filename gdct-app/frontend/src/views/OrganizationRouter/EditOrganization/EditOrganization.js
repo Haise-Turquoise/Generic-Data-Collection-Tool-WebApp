@@ -59,13 +59,13 @@ const EditOrganization = ({
   return isOrgsCallInProgress || !object ? (
     <Loading />
   ) : (
-    <ModifyOrganization
-      title={'Edit Organization'}
-      object={object}
-      submit={submit}
-      cancel={cancel}
-    />
-  );
+      <ModifyOrganization
+        title={'Edit Organization'}
+        object={object}
+        submit={submit}
+        cancel={cancel}
+      />
+    );
 };
 
 EditOrganization.propTypes = {
