@@ -11,7 +11,7 @@ import AppRoleResources from './AppRoleResources';
 
 const TemplateRouter = () => (
   <Switch>
-    <Route exact path="/admin/role/appsys" component={AppSyses} />
+    <Route exact path="/admin/role/appsystem" component={AppSyses} />
     <Route exact path="/admin/role/appsysrole" component={AppSysRoles} />
     <Route exact path="/admin/role/approle" component={AppRoles} />
     <Route exact path="/admin/role/appresource" component={AppResources} />
