@@ -10,7 +10,7 @@ const OrgRouter = () => (
   <Switch>
     <Route exact path="/admin/organization/edit/:_id" component={EditOrganization} />
     <Route exact path="/admin/organization/create" component={CreateOrganization} />
-    <Route exact path="/admin/organization" component={Organizations} />
+    <Route exact path="/admin/organization/org" component={Organizations} />
     <Route component={NotFound} />
   </Switch>
 );

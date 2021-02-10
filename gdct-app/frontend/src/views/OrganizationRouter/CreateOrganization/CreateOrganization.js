@@ -17,8 +17,10 @@ const CreateOrganization = () => {
     expiryDate: null,
   });
 
+  //after successfully create the organization, the new info will be store to the database and push back to the main 
+  // page of organization with new data showing on page.
   const redirect = () => {
-    history.push('/admin/organization');
+    history.push('/admin/organization/org');
   };
 
   const accept = () => {
