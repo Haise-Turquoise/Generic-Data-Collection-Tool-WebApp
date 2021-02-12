@@ -43,16 +43,17 @@ const TemplateTypeTable = ({
     shallowEqual,
   );
 
-  const calculateOptions = (itemCount)=>{
+  const calculateOptions = (itemCount) => {
     let length = itemCount
     if (length > 100) length = 100;
     else if (length == 0) length = 1;
     return {
-      actionsColumnIndex: -1, 
-      search: false, 
+      actionsColumnIndex: -1,
+      search: false,
       showTitle: false,
-      maxBodyHeight:"400px",
-      pageSize:length
+      maxBodyHeight: "400px",
+      pageSize: length
+      // addRowPosition: "first"
     }
   }
 
@@ -84,7 +85,7 @@ const TemplateTypeTable = ({
     };
   }, [dispatch]);
 
-  useEffect(()=>{setRowNum(templateType.length)}, [templateType])
+  useEffect(() => { setRowNum(templateType.length) }, [templateType])
 
   return (
     <MaterialTable
@@ -137,13 +138,13 @@ const LinkProgramTable = ({
   return !templateType || isCallInProgress ? (
     <Loading />
   ) : (
-    <ProgramList
-      programIds={templateType.programIds}
-      isEditable={true}
-      onClickAdd={onClickAdd}
-      onClickDelete={onClickDelete}
-    />
-  );
+      <ProgramList
+        programIds={templateType.programIds}
+        isEditable={true}
+        onClickAdd={onClickAdd}
+        onClickDelete={onClickDelete}
+      />
+    );
 };
 
 const TemplateType = props => (

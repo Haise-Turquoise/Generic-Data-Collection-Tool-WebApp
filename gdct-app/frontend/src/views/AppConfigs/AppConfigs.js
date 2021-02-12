@@ -52,7 +52,7 @@ const AppConfigsTable = () => {
     [lookupSysRoles],
   );
 
-  const options = useMemo(() => ({ actionsColumnIndex: -1, search: false, showTitle: false }), []);
+  const options = useMemo(() => ({ actionsColumnIndex: -1, search: false, showTitle: false, addRowPosition: "first" }), []);
 
   const editable = useMemo(
     () => ({
@@ -76,18 +76,18 @@ const AppConfigsTable = () => {
     dispatch(getAppSysesRequest());
     dispatch(getAppConfigsRequest());
   }, [dispatch]);
- 
-//  Based on Appsys:  
-//    return () => {
-//      dispatch(WorkflowStoreActions.RESET());
-//      dispatch(AppConfigsStore.actions.RESET());
-//    };
-//  }, [dispatch]);
+
+  //  Based on Appsys:  
+  //    return () => {
+  //      dispatch(WorkflowStoreActions.RESET());
+  //      dispatch(AppConfigsStore.actions.RESET());
+  //    };
+  //  }, [dispatch]);
 
   return (
-    <MaterialTable 
+    <MaterialTable
       columns={columns}
-//      actions={actions}
+      //      actions={actions}
       data={appConfigs}
       editable={editable}
       options={options}

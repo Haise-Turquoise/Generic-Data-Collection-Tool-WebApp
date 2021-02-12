@@ -73,7 +73,7 @@ const ConfigurationTable = ({ history }) => {
     [history],
   );
 
-  const options = useMemo(() => ({ actionsColumnIndex: -1, search: true, showTitle: false }), []);
+  const options = useMemo(() => ({ actionsColumnIndex: -1, search: true, showTitle: false, addRowPosition: "first" }), []);
 
   const editable = useMemo(
     () => ({

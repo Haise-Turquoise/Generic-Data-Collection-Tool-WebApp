@@ -134,7 +134,7 @@ const TemplatesTable = ({ history }) => {
     };
   }, [dispatch]);
 
-  useEffect(()=>{setRowNum(templates.length)}, [templates])
+  useEffect(() => { setRowNum(templates.length) }, [templates])
 
   return (
     <MaterialTable

@@ -33,7 +33,7 @@ const COAGroupsHeader = () => {
 
 const COAGroupsTable = () => {
   const dispatch = useDispatch();
-  const[readRowNum, setRowNum] = useState(1);
+  const [readRowNum, setRowNum] = useState(1);
 
   const { COAGroups } = useSelector(
     state => ({
@@ -42,7 +42,7 @@ const COAGroupsTable = () => {
     shallowEqual,
   );
 
-  useEffect(()=>{setRowNum(COAGroups.length)},[COAGroups]);
+  useEffect(() => { setRowNum(COAGroups.length) }, [COAGroups]);
 
 
   const columns = useMemo(
@@ -84,7 +84,7 @@ const COAGroups = props => (
   <div className="COAGroups">
     <COAGroupsHeader />
     {/* <FileDropzone/> */}
-    <ErrorBanner title={"Cannot delete the selected category group since it is referenced in COA tree."} targetStore={selectCOAGroupsStore}/>
+    <ErrorBanner title={"Cannot delete the selected category group since it is referenced in COA tree."} targetStore={selectCOAGroupsStore} />
     <COAGroupsTable {...props} />
   </div>
 );
