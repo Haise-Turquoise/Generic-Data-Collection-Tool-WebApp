@@ -45,7 +45,7 @@ export default {
   Templates: <PhotoFilterIcon />,
   'Template Design': <FileCopyIcon style={{ fontSize: '1rem', marginLeft: '2.2rem' }} />,
   'Template Type': <ExtensionIcon style={{ fontSize: '1rem', marginLeft: '2.2rem' }} />,
-  'Template package': <SearchIcon style={{ fontSize: '1rem', marginLeft: '2.2rem' }} />,
+  'Template Package': <SearchIcon style={{ fontSize: '1rem', marginLeft: '2.2rem' }} />,
   Organization: <AccountBalance style={{ fontSize: '1.2rem', marginLeft: '1.2rem' }} />,
   Organizations: <AccountBalance style={{ fontSize: '1rem', marginLeft: '2.2rem' }} />,
   'Create Organization': <AddCircleOutlineIcon style={{ fontSize: '1rem', marginLeft: '2.2rem' }} />,

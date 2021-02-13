@@ -35,14 +35,11 @@ import GoogleApisController from './GoogleApis'
 import TransferStatusController from './TransferStatus'
 import TransferStatusService from '../services/TransferStatus'
 
-
-
-
 export const routerManager = app => {
   app.use('/', Container.get(AuthController));
   app.use('/', Container.get(MenuController));
   app.use('/', Container.get(MenuItemController));
-  app.use('/', Container.get(UsersController));
+  app.use('/admin/user_management', Container.get(UsersController));
   app.use('/', Container.get(ProgramController));
   app.use('/role_manager', Container.get(AppSysController));
   app.use('/org_manager', Container.get(OrgController));
@@ -87,8 +84,5 @@ export const routerManager = app => {
   
   app.use('/transferManager', authorized, Container.get(TransferStatusController));
 
-
-  
-  
 };
 

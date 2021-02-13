@@ -289,7 +289,7 @@ const MenuDrawer = ({ name, icon, children, level = 1 }) => {
 };
 
 const NavigationContent = ({ config }) => {
-  console.log('config', config);
+  // console.log('config', config);
   return config.map((item, index) => {
     let Component;
 

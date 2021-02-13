@@ -17,6 +17,7 @@ import { selectFactoryRESTResponseTableValues } from '../../../store/common/REST
 import { selectAppSysesStore } from '../../../store/AppSysesStore/selectors';
 import { calculateOptions } from '../../../tools/misc'
 
+import CreateAuditLog from '../../AuditLog_Global'
 
 const AppSysesHeader = () => {
   return (
@@ -52,14 +53,17 @@ const AppSysesTable = () => {
       onRowAdd: appSys =>
         new Promise((resolve, reject) => {
           dispatch(createAppSysRequest(appSys, resolve, reject));
+          CreateAuditLog(null, "Add AppSys", "AppSys", null, {}, appSys);
         }),
       onRowUpdate: appSys =>
         new Promise((resolve, reject) => {
           dispatch(updateAppSysRequest(appSys, resolve, reject));
+          CreateAuditLog(null, "Update AppSys", "AppSys", null, {}, appSys);
         }),
       onRowDelete: appSys =>
         new Promise((resolve, reject) => {
           dispatch(deleteAppSysRequest(appSys._id, resolve, reject));
+          CreateAuditLog(null, "Delete AppSys", "AppSys", null, appSys, {});
         }),
     }),
     [dispatch],
