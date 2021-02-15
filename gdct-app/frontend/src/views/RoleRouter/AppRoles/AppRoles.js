@@ -36,10 +36,18 @@ const AppRolesTable = () => {
     shallowEqual,
   );
 
+//  const timeOption = { year: 'numeric', month: 'numeric', day: 'numeric', hour:'numeric', minute:'numeric' };
+
   const columns = useMemo(
     () => [
       { title: 'Code', field: 'code' },
       { title: 'Name', field: 'name' },
+      { title: 'Modified On', field: 'timestamp', type: Date,
+        editComponent: props => {return <div></div>} },
+//      { title: 'Modified On', field: 'updatedDate', type: 'date',
+//      initialEditValue: Date.now,},
+      { title: 'Updated By', field: 'updatedBy', 
+        editComponent: props => {return <div></div>} },
     ],
     [],
   );
@@ -49,21 +57,32 @@ const AppRolesTable = () => {
   const editable = useMemo(
     () => ({
       onRowAdd: appRole =>
-        new Promise((resolve, reject) => {
+        new Promise((resolve, reject) => {console.log (appRole)
+          appRole.updatedBy=localStorage.getItem('currentUser')
           dispatch(createAppRoleRequest(appRole, resolve, reject));
         }),
       onRowUpdate: appRole =>
         new Promise((resolve, reject) => {
+          appRole.updatedBy=localStorage.getItem('currentUser')
           dispatch(updateAppRoleRequest(appRole, resolve, reject));
         }),
       onRowDelete: appRole =>
         new Promise((resolve, reject) => {
+          appRole.updatedBy=localStorage.getItem('currentUser')
           dispatch(deleteAppRoleRequest(appRole._id, resolve, reject));
         }),
     }),
     [dispatch],
   );
 
+    // Convert Date format
+    const timeOption = { year: 'numeric', month: 'numeric', day: 'numeric', hour:'numeric', minute:'numeric' };
+    appRoles.forEach(appRoles => {
+//        appRole.timestamp = new Date()
+      const logtime = new Date(appRoles.timestamp);
+      appRoles.timestamp = logtime.toLocaleDateString("en-CA", timeOption); 
+    })
+    console.log(appRoles)
   useEffect(() => {
     dispatch(getAppRolesRequest());
   }, [dispatch]);
