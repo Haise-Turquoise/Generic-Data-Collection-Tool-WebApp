@@ -75,12 +75,24 @@ const AppRolesTable = () => {
     [dispatch],
   );
 
+//  console.log(appRoles)
     // Convert Date format
     const timeOption = { year: 'numeric', month: 'numeric', day: 'numeric', hour:'numeric', minute:'numeric' };
     appRoles.forEach(appRoles => {
 //        appRole.timestamp = new Date()
-      const logtime = new Date(appRoles.timestamp);
-      appRoles.timestamp = logtime.toLocaleDateString("en-CA", timeOption); 
+//      var date = moment(appRoles.timestamp).toDate();
+      if(appRoles.timestamp!=null) {
+        const event = new Date(appRoles.timestamp.toString());
+        appRoles.timestamp = event.toLocaleString(); 
+      }
+      else{
+        const event = new Date("2021-02-16T03:59:32.015Z");
+        appRoles.timestamp = event.toLocaleString(); 
+      }
+      // const event = new Date(appRoles.timestamp.toString());
+      // console.log(appRoles.timestamp.toString());
+      // const logtime = new Date(appRoles.timestamp); 
+      // appRoles.timestamp = event.toLocaleDateString("en-CA", timeOption); 
     })
     console.log(appRoles)
   useEffect(() => {
@@ -95,7 +107,7 @@ const AppRolesTable = () => {
 const AppRoles = props => {
   console.log('why not: ', props);
   return (
-    <div className="AppSyses">
+    <div className="AppRoles">
       <AppRolesHeader />
       {/* <FileDropzone/> */}
       <AppRolesTable {...props} />
