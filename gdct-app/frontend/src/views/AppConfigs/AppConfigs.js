@@ -48,6 +48,12 @@ const AppConfigsTable = () => {
       { title: 'Key', field: 'key' },
       { title: 'Value', field: 'value' },
       { title: 'System', field: 'appSys', lookup: lookupSysRoles },
+      { title: 'Modified On', field: 'timestamp', type: Date,
+      editComponent: props => {return <div></div>} },
+//      { title: 'Modified On', field: 'updatedDate', type: 'date',
+//      initialEditValue: Date.now,},
+    { title: 'Updated By', field: 'updatedBy', 
+      editComponent: props => {return <div></div>} },
     ],
     [lookupSysRoles],
   );
@@ -58,19 +64,30 @@ const AppConfigsTable = () => {
     () => ({
       onRowAdd: appConfig =>
         new Promise((resolve, reject) => {
+          appConfig.updatedBy=localStorage.getItem('currentUser')
           dispatch(createAppConfigRequest(appConfig, resolve, reject));
         }),
       onRowUpdate: appConfig =>
         new Promise((resolve, reject) => {
+          appConfig.updatedBy=localStorage.getItem('currentUser')
           dispatch(updateAppConfigRequest(appConfig, resolve, reject));
         }),
       onRowDelete: appConfig =>
         new Promise((resolve, reject) => {
+          appConfig.updatedBy=localStorage.getItem('currentUser')
           dispatch(deleteAppConfigRequest(appConfig._id, resolve, reject));
         }),
     }),
     [dispatch],
   );
+
+    // Convert Date format
+    const timeOption = { year: 'numeric', month: 'numeric', day: 'numeric', hour:'numeric', minute:'numeric' };
+    appConfigs.forEach(appRoles => {
+//        appConfig.timestamp = new Date()
+      const logtime = new Date(appConfigs.timestamp);
+      appConfigs.timestamp = logtime.toLocaleDateString("en-CA", timeOption); 
+    })
 
   useEffect(() => {
     dispatch(getAppSysesRequest());
