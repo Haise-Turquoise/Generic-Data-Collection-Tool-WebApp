@@ -42,7 +42,7 @@ const AppRolesTable = () => {
     () => [
       { title: 'Code', field: 'code' },
       { title: 'Name', field: 'name' },
-      { title: 'Modified On', field: 'timestamp', type: Date,
+      { title: 'Modified On', field: 'timestamp',
         editComponent: props => {return <div></div>} },
 //      { title: 'Modified On', field: 'updatedDate', type: 'date',
 //      initialEditValue: Date.now,},
@@ -77,7 +77,7 @@ const AppRolesTable = () => {
 
 //  console.log(appRoles)
     // Convert Date format
-    const timeOption = { year: 'numeric', month: 'long', day: 'numeric', hour:'numeric', minute:'numeric' };
+    const timeOption = { year: 'numeric', month: 'numeric', day: 'numeric', hour:'numeric', minute:'numeric' };
     appRoles.forEach(appRoles => {
 //        appRole.timestamp = new Date()
 //      var date = moment(appRoles.timestamp).toDate();
