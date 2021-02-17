@@ -6,15 +6,15 @@ import React, { useEffect, useCallback, useState, useRef } from 'react';
 
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import { Button, Chip } from '@material-ui/core';
-import templateController from '../../../controllers/template'
-import XLSX from "xlsx";
+import Paper from '@material-ui/core/Paper';
+import Typography from '@material-ui/core/Typography';
+// import XLSX from "xlsx";
 
-import Spreadsheet from 'x-data-spreadsheet';
+import Spreadsheet from '../../spreadSheet';
 
 import Loading from '../../../components/Loading/Loading';
 
 import {
-  updateTemplateExcelRequest,
   getTemplateRequest,
   updateTemplateWorkflowProcess,
 } from '../../../store/thunks/template';
@@ -28,42 +28,6 @@ import TemplatesStore from '../../../store/TemplatesStore/store';
 
 //import Ssheet from "./SpreadSheet.js";
 // import Iframe from 'react-iframe'
-
-const sheetOption = {
-  mode: 'edit', // edit | read
-  showToolbar: true,
-  showGrid: true,
-  showContextmenu: true,
-  view: {
-    height: () => document.documentElement.clientHeight,
-    width: () => document.documentElement.clientWidth,
-  },
-  row: {
-    len: 100,
-    height: 25,
-  },
-  col: {
-    len: 26,
-    width: 100,
-    indexWidth: 60,
-    minWidth: 60,
-  },
-  style: {
-    bgcolor: '#ffffff',
-    align: 'left',
-    valign: 'middle',
-    textwrap: false,
-    strike: false,
-    underline: false,
-    color: '#0a0a0a',
-    font: {
-      name: 'Helvetica',
-      size: 10,
-      bold: false,
-      italic: false,
-    },
-  },
-}
 
 const TemplatePhases = ({ template }) => {
   const [workflowProcess, setWorkflowProcess] = useState();
@@ -83,36 +47,27 @@ const TemplatePhases = ({ template }) => {
   );
 
   return (
-    <div className="mb-3 d-flex justify-content-end">
-      <Chip className="rounded" color="primary" label="Phase Actions:" />
-      {workflowProcess && workflowProcess.to.length ? (
-        workflowProcess.to.map(outwardProcess => (
-          <Button key={outwardProcess._id} onClick={() => handleClickWorkflow(outwardProcess._id)}>
-            {outwardProcess.statusId.name}
-          </Button>
-        ))
-      ) : (
-        <Chip className="rounded" color="secondary" label="Finalized" />
-      )}
+    <div>
+      <Paper className="header">
+        
+        <Typography variant="h5">{template.name}</Typography>
+        <div className="mb-3 d-flex justify-content-end">
+          <Chip className="rounded" color="primary" label="Phase Actions:" />
+          {workflowProcess && workflowProcess.to.length ? (
+            workflowProcess.to.map(outwardProcess => (
+              <Button key={outwardProcess._id} onClick={() => handleClickWorkflow(outwardProcess._id)}>
+                {outwardProcess.statusId.name}
+              </Button>
+            ))
+          ) : (
+            <Chip className="rounded" color="secondary" label="Finalized" />
+          )}
+        </div>
+      </Paper>
     </div>
   );
 };
 
-const xlsxObjectToJson = (wb)=>{
-  let out = [];
-  wb.SheetNames.forEach(function(name) {
-    let o = {name:name, rows:{}};
-    let ws = wb.Sheets[name];
-    let aoa = XLSX.utils.sheet_to_json(ws, {raw: false, header:1});
-    aoa.forEach(function(r, i) {
-      let cells = {};
-      r.forEach(function(c, j) { cells[j] = ({ text: c }); });
-      o.rows[i] = { cells: cells };
-    })
-    out.push(o);
-  });
-  return out;
-}
 
 const Template = ({
   match: {
@@ -121,7 +76,6 @@ const Template = ({
 }) => {
   const dispatch = useDispatch();
   let sheet = undefined;
-  const sheetDiv = useRef(null);
 
   const { template } = useSelector(
     state => ({
@@ -131,14 +85,14 @@ const Template = ({
   );
   
   
-  useEffect(()=>{
+  // useEffect(()=>{
 
-    if(sheetDiv.current && sheet == undefined){
-      sheet = new Spreadsheet("#x-spreadsheet", sheetOption);
-      sheet.loadData(template.templateData).reRender();
-      window.addEventListener("beforeunload", saveTemplate);
-    }
-  });
+  //   if(sheetDiv.current && sheet == undefined){
+  //     sheet = new Spreadsheet("#x-spreadsheet", sheetOption);
+  //     sheet.loadData(template.templateData).reRender();
+  //     window.addEventListener("beforeunload", saveTemplate);
+  //   }
+  // });
   
 
   const handleSaveTemplate = useCallback(() => {
@@ -146,11 +100,6 @@ const Template = ({
     console.log(sheet.getData());
   }, []);
 
-  const saveTemplate = () =>{
-    const sheetData = sheet.getData();
-    console.log('template', sheet.getData())
-    templateController.sheetUpdate(_id, sheetData).then(res=>console.log(res));
-  }
 
   useEffect(() => {
     // If fetch fails, push back to /tempaltes
@@ -175,8 +124,7 @@ const Template = ({
         returnLink="/template_manager/templates"
         handleSave={handleSaveTemplate}
       /> */}
-      <div ref={sheetDiv} id="x-spreadsheet"></div>
-      <button onClick={saveTemplate}>Save</button>
+      <Spreadsheet sheetID={_id}/>
     </div>
   ) : (
     <Loading />

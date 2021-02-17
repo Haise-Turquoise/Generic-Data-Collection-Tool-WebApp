@@ -1,19 +1,88 @@
-import React, { useEffect, useRef } from 'react';
-import Spreadsheet from 'x-spreadsheet';
+import React, { Component } from "react";
+import Spreadsheet from 'x-data-spreadsheet';
+import templateController from '../controllers/template'
 
 
-const spreadSheetModule = (template)=>{
-    const spreadSheetDiv = useRef(null);
-    let sheet = null;
-    useEffect(()=>{
-        if (spreadSheetDiv.current){
-            sheet = new Spreadsheet("#x-spreadsheet");
-            sheet.loadData(template.templateData).reRender()
-        }
-    }, [spreadSheetDiv.current])
-    return (
-        <div>
-            <div ref={spreadSheetDiv} id="x-spreadsheet"></div>
-        </div>
-    )
+const sheetOption = {
+    mode: 'edit', // edit | read
+    showToolbar: true,
+    showGrid: true,
+    showContextmenu: true,
+    view: {
+      height: () => document.documentElement.clientHeight*0.7846,
+      width: () => document.documentElement.clientWidth*0.975,
+    },
+    row: {
+      len: 100,
+      height: 25,
+    },
+    col: {
+      len: 26,
+      width: 100,
+      indexWidth: 60,
+      minWidth: 60,
+    },
+    style: {
+      bgcolor: '#ffffff',
+      align: 'left',
+      valign: 'middle',
+      textwrap: false,
+      strike: false,
+      underline: false,
+      color: '#0a0a0a',
+      font: {
+        name: 'Helvetica',
+        size: 10,
+        bold: false,
+        italic: false,
+      },
+    },
+  }
+
+  // We use compoenent instead of hooks since hooks will cause undefined behavior
+class SpreadSheet extends Component{
+    constructor(props) {
+        super(props);
+        this.sheet = null;
+        this.id = this.props.sheetID;
+        this.saveTemplate = this.saveTemplate.bind(this);
+        this.handleSave = this.handleSave.bind(this);
+    }
+
+    // After component mount, initailize spreadsheet and load data from DB
+    componentDidMount(){
+        templateController.fetchTemplate(this.id).then(template=>{
+            const data = template.templateData;
+            this.sheet = new Spreadsheet("#x-spreadsheet", sheetOption).loadData(data).reRender();
+            // This event listner handles user close the tab without saving
+            window.addEventListener('beforeunload', this.handleSave);
+            console.log(document.documentElement.clientWidth)
+        });
+    }
+    
+    // This handles user navigate to different page without saving
+    componentWillUnmount(){
+        window.removeEventListener('beforeunload', this.handleSave);
+        this.saveTemplate();
+    }
+
+    handleSave(e){
+        e.preventDefault();
+        this.saveTemplate();
+    }
+
+    saveTemplate = () =>{
+        const sheetData = this.sheet.getData();
+        templateController.sheetUpdate(this.id, sheetData).then(res=>console.log(res));
+    }
+
+    render(){
+        return (
+            <div>
+                <div id="x-spreadsheet"></div>
+            </div>
+        )
+    }
 }
+
+export default SpreadSheet;
