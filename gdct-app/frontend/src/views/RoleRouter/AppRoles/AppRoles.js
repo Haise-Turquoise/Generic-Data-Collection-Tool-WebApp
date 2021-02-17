@@ -36,8 +36,6 @@ const AppRolesTable = () => {
     shallowEqual,
   );
 
-//  const timeOption = { year: 'numeric', month: 'numeric', day: 'numeric', hour:'numeric', minute:'numeric' };
-
   const columns = useMemo(
     () => [
       { title: 'Code', field: 'code' },
@@ -59,11 +57,15 @@ const AppRolesTable = () => {
       onRowAdd: appRole =>
         new Promise((resolve, reject) => {console.log (appRole)
           appRole.updatedBy=localStorage.getItem('currentUser')
+          const event = new Date();
+          appRole.timestamp = event.toLocaleString(); 
           dispatch(createAppRoleRequest(appRole, resolve, reject));
         }),
       onRowUpdate: appRole =>
         new Promise((resolve, reject) => {
           appRole.updatedBy=localStorage.getItem('currentUser')
+          const event = new Date();
+          appRole.timestamp = event.toLocaleString(); 
           dispatch(updateAppRoleRequest(appRole, resolve, reject));
         }),
       onRowDelete: appRole =>

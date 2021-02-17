@@ -331,8 +331,8 @@ const NavigationDrawer = ({ title, open, theme, config, classes, handleDrawerClo
 );
 
 const AuthPage = ({
-  headerTitle = 'MOHLTC - Generic Data Collection Tool',
-  drawerTitle = 'MOHLTC - GDCT',
+  headerTitle = 'MOH - OHFS Budgeting & Forecasting ',
+  drawerTitle = 'MOH - OHFS Budgeting & Forecasting ',
   // config = [navigationConfig],
   children,
 }) => {

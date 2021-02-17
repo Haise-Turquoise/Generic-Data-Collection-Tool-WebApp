@@ -83,7 +83,7 @@ const AppConfigsTable = () => {
 
     // Convert Date format
     const timeOption = { year: 'numeric', month: 'numeric', day: 'numeric', hour:'numeric', minute:'numeric' };
-    appConfigs.forEach(appRoles => {
+    appConfigs.forEach(appConfigs => {
 //        appConfig.timestamp = new Date()
       const logtime = new Date(appConfigs.timestamp);
       appConfigs.timestamp = logtime.toLocaleDateString("en-CA", timeOption); 
