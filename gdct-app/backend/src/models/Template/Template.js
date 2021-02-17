@@ -11,7 +11,7 @@ const TemplateModel = model(
       workflowId: { type: ObjectId, ref: 'Workflow' },
       workflowProcessId: { type: ObjectId, ref: 'WorkflowProcess' },
 
-      templateData: { type: Object },
+      templateData: { type: Array },
 
       templateTypeId: { type: ObjectId, ref: 'TemplateType' },
 

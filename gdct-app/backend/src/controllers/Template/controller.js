@@ -44,6 +44,16 @@ const TemplateController = Service([TemplateService], service => {
         .catch(next);
     });
 
+    router.put('/templates/sheetUpdate/:_id', (req, res, next) => {
+      const { _id } = req.params;
+      const { sheetData } = req.body;
+
+      service
+        .updateTemplateSheetData(_id, sheetData)
+        .then(() => res.end())
+        .catch(next);
+    });
+
     router.put('/templates/:_id/workflowProcess/:workflowProcessId', (req, res, next) => {
       const { _id, workflowProcessId } = req.params;
 

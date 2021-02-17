@@ -90,9 +90,9 @@ const TemplatesTable = ({ history }) => {
         icon: LaunchIcon,
         tooltip: 'Open Template',
         onClick: (_event, template) => {
-          //history.push(`/admin/template/design/${template._id}`);
+          history.push(`/admin/template/design/${template._id}`);
           //Creates a new spreadsheet in google and returns the id. 
-          openGoogleSheetRequest(template._id);
+          // openGoogleSheetRequest(template._id);
           // //After retrieving the id, open the link to the sheet on another tab. 
           // window.open("https://docs.google.com/spreadsheets/d/" + spreadsheetId);
         }

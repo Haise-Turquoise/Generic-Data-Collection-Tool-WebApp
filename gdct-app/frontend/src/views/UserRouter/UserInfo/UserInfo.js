@@ -26,8 +26,6 @@ import { selectTemplateTypesStore } from '../../../store/TemplateTypesStore/sele
 import { calculateOptions } from '../../../tools/misc'
 import Loading from '../../../components/Loading';
 
-import Button from '@material-ui/core/Button';
-import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 
 const HeaderActions = () => {
   return (
