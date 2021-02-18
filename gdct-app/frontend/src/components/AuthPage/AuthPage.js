@@ -163,7 +163,7 @@ const Header = ({
         <HeaderTitle title={title} />
       </Link>
       {isTopMenu && <TopItemList config={config} classes={classes} isMobile={isMobile} />}
-      <Chip label={localStorage.getItem('currentUser')} id='MuiChip-label' />
+      <Chip label={localStorage.getItem('currentUser')} id='MuiChip-label-Authpage' />
       <FormControlLabel
         className={classes.flexItem}
         control={
