@@ -42,38 +42,40 @@ const sheetOption = {
   // We use compoenent instead of hooks since hooks will cause undefined behavior
 class SpreadSheet extends Component{
     constructor(props) {
-        super(props);
-        this.sheet = null;
-        this.id = this.props.sheetID;
-        this.saveTemplate = this.saveTemplate.bind(this);
-        this.handleSave = this.handleSave.bind(this);
+      super(props);
+      this.sheet = null;
+      this.id = this.props.sheetID;
+      this.saveTemplate = this.saveTemplate.bind(this);
+      this.handleSave = this.handleSave.bind(this);
     }
 
     // After component mount, initailize spreadsheet and load data from DB
     componentDidMount(){
-        templateController.fetchTemplate(this.id).then(template=>{
-            const data = template.templateData;
-            this.sheet = new Spreadsheet("#x-spreadsheet", sheetOption).loadData(data).reRender();
-            // This event listner handles user close the tab without saving
-            window.addEventListener('beforeunload', this.handleSave);
-            console.log(document.documentElement.clientWidth)
-        });
+      templateController.fetchTemplate(this.id).then(template=>{
+        const data = template.templateData;
+        this.sheet = new Spreadsheet("#x-spreadsheet", sheetOption).loadData(data).reRender();
+        // This event listner handles user close the tab without saving
+        window.addEventListener('beforeunload', this.handleSave);
+        console.log(document.documentElement.clientWidth)
+      });
     }
     
     // This handles user navigate to different page without saving
     componentWillUnmount(){
-        window.removeEventListener('beforeunload', this.handleSave);
-        this.saveTemplate();
+      window.removeEventListener('beforeunload', this.handleSave);
+      this.saveTemplate();
     }
 
     handleSave(e){
-        e.preventDefault();
-        this.saveTemplate();
+      e.preventDefault();
+      this.saveTemplate();
     }
 
     saveTemplate = () =>{
+      if (this.sheet){
         const sheetData = this.sheet.getData();
         templateController.sheetUpdate(this.id, sheetData).then(res=>console.log(res));
+      }
     }
 
     render(){
