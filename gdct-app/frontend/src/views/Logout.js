@@ -6,7 +6,7 @@ import AuditLogController from '../controllers/AuditLog'
 export default function Logout({ setLoggedIn }) {
   const history = useHistory();
 
-  var node = document.getElementById('MuiChip-label');
+  var node = document.getElementById('MuiChip-label-Authpage');
   const email = node.textContent;
   useEffect(() => {
     AuthController.logout(email).then(res => {
