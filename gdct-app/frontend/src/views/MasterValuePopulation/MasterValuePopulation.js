@@ -11,10 +11,13 @@ import { makeStyles } from '@material-ui/core/styles';
 import ControlPoint from '@material-ui/icons/ControlPoint';
 import AddCircleIcon from '@material-ui/icons/AddCircle';
 import Button from '@material-ui/core/Button';
-
+import LinearProgress from '@material-ui/core/LinearProgress';
+import CheckIcon from '@material-ui/icons/Check';
+import Box from '@material-ui/core/Box';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import Typography from '@material-ui/core/Typography';
 import './MasterValuePopulation.scss';
-
+import cloneDeep from 'clone-deep';
 import axios from 'axios';
 
 import {
@@ -24,8 +27,9 @@ import {
 import { selectOrgsStore } from '../../store/OrganizationsStore/selectors';
 import { selectCOAsStore } from '../../store/COAsStore/selectors';
 import { selectColumnNamesStore } from '../../store/ColumnNamesStore/selectors';
+import {selectDataResumeStore}from '../../store/DataResumeStore/selector';
 import Loading from '../../components/Loading';
-
+import {getDataResume,updateDataResume} from '../../store/thunks/DataResume';
 import { getColumnNamesRequest } from '../../store/thunks/columnName';
 import { getCOAsRequest } from '../../store/thunks/COA';
 import { getOrgsRequest } from '../../store/thunks/organization';
@@ -34,6 +38,8 @@ import MasterValueController from '../../controllers/MasterValue';
 
 import { selectReportingPeriodsStore } from '../../store/ReportingPeriodsStore/selectors';
 import { getReportingPeriodsRequest } from '../../store/thunks/reportingPeriod';
+
+import DataResumeController from '../../controllers/DataResume'
 const REST_API = 'https://ohfsrest.azurewebsites.net';
 
 const TABLES = ['FCLTY_BSA_YTD_ACTL_FORCST_DETL', 'FCLTY_SECDY_YTD_ACTL_FORCST_DT'];
@@ -43,15 +49,35 @@ const isBalanceSheet = COA => {
   const idx = COA.indexOf('pa=');
   return idx != -1 && BSA.includes(COA[idx + 3]) ? 0 : 1;
 };
-
-const queryREST = ({ category, ap, hfk, attribute }) => {
+const addDocument = async masterValue => {
+  const newMasterValue = {
+    categoryId: masterValue.categoryId,
+    categoryName: masterValue.categoryName,
+    attributeId: masterValue.attributeId,
+    attributeName: masterValue.attributeName,
+    org: {
+      id: masterValue.org.id,
+      name: masterValue.org.name,
+    },
+    reportingPeriod: masterValue.reportingPeriod,
+    template: masterValue.template,
+    value: masterValue.value,
+  };
+  await MasterValueController.addDocument(newMasterValue).then(res => {
+    // setLoadCount(loadCount=>loadCount+1);
+    
+    console.log('add one successfully');
+    
+  })
+};
+const queryREST = async ({ category, ap, hfk, attribute },setGetCount, setGetTotal,getCount,getTotal,setResumeQueries,resumeQueries,setGetButtonDisabled) => {
   const queries = [];
 
   const upsList = [];
   const ye = ap.split('/')[0];
   const year = ye.slice(2, 4);
   const stage = ap.slice(8, 10);
-
+  setGetButtonDisabled(true)
 
   for (const c of category) {
     for (const h of hfk) {
@@ -81,14 +107,11 @@ const queryREST = ({ category, ap, hfk, attribute }) => {
       'Access-Control-Allow-Origin': '*',
     },
   };
+  
 
-  const results = queries.map(query => {
 
-    return axios.get(query);
-  });
-  console.log(queries);
 
-  const addDocument = masterValue => {
+  const addDocument = async masterValue => {
     const newMasterValue = {
       categoryId: masterValue.categoryId,
       categoryName: masterValue.categoryName,
@@ -102,62 +125,73 @@ const queryREST = ({ category, ap, hfk, attribute }) => {
       template: masterValue.template,
       value: masterValue.value,
     };
-    MasterValueController.addDocument(newMasterValue).then(res => {
-      console.log('hello');
-    });
+    await MasterValueController.addDocument(newMasterValue).then(res => {
+      // setLoadCount(loadCount=>loadCount+1);
+      
+      console.log('add one successfully');
+      
+    })
   };
 
-  Promise.all(results)
-    .then(res => {
-      const masterValueList = upsList;
 
-      const upd = [];
-      const idx = 0;
-      for (const idx in res) {
-        if (res[idx].data.length > 0) {
-          masterValueList[idx].value = res[idx].data[0][2];
-          upd.push(addDocument(masterValueList[idx]));
-        }
+  let failedQueries = [];
+  let failedMasterValues = [];
+  let results = [];
+  let masterValueList = upsList;
+  setGetTotal(queries.length);
+  let progressCount = 0;
+  for (let i = 0;i< queries.length; i++) {
+    console.log(`Iteration ${i} start`);
+    try {
+      // console.log(`Iteration ${i} try block`);
+      if(i%20 == 0&& i!=0){
+        throw `index ${i} can be divided by 20`;
       }
+      
+      await axios.get(queries[i]).then((result)=>{    
+        results.push(result);
+      })
+    } catch (e) {
+      console.log(e)
+      console.log(`Get Iteration ${i} catch block, corresponding url is ${queries[i]}`);
+      results.push([]);
+      const failObject = masterValueList[i];
+      failObject.value = [queries[i]];
+      failedQueries.push(failObject)
+      
+      continue;
+    }
 
-      // console.log(response)
-      // for (const c of category) {
-      //   for (const h of hfk) {
-      //     console.log(response)
-      //     const mastervalue = {
-      //       reportingPeriod: ap,
-      //       template: 'OHFS',
-      //       org: {
-      //         id: h.id,
-      //         name: h.name,
-      //       },
-      //       categoryId: c.id,
-      //       categoryName:c.name,
-      //       attributeId: attribute.id,
-      //       attributeName:attribute.name,
-      //       value: response.data[0] ? response.data[0][2] : '',
-      //     };
+    try{
+      if(results[i] ==[]){
+        throw `Get Iteration ${i} has already failed, corresponding url is ${queries[i]}`;
+      }
+      else if (results[i].data.length > 0) {
+        console.log(`index ${i} has data`)      
+        masterValueList[i].value = results[i].data[0][2];            
+        await addDocument(masterValueList[i]);
+        
+      }
+    } catch (e) {
+      console.log(e)
+      console.log(`Load Iteration ${i} catch block`);
+      continue;
+    }
 
-      //     if(mastervalue.value != ''|| mastervalue.value !=0 ){
-      //       console.log(mastervalue);
-      //       upd.push(addDocument(mastervalue));
-      //     }
-      //     // upd.push(addDocument(mastervalue));
-      //   }
-      // }
-
-      Promise.all(upd).then(() => {
-        console.log('Finished uploading.');
-        alert('Finished uploading');
-      });
-    })
-    .catch(error => {
-      // console.log('There was an error when querying REST service.');
-      console.log(error);
-    });
+    setGetCount(getCount=>getCount+1);
+    progressCount +=1;
+    
+    
+  }
+  console.log(results);
+  console.log(failedQueries);
+  const dataResume = {resumeArray:failedQueries, currentCount:progressCount, totalCount:queries.length}
+  setResumeQueries(failedQueries)
+  setGetButtonDisabled(false)
 };
 
-const DoRetrieval = ({ category, ap, hfk, col }) => {
+const DoRetrieval = ({ category, ap, hfk, col },setGetCount, setGetTotal,getCount,getTotal,setResumeQueries,resumeQueries,setGetSuccess,setGetButtonDisabled) => {
+  setGetSuccess(false)
   if (category && ap && hfk && category.length > 0 && hfk.length > 0 && ap.length > 0) {
     // console.log(ap)
     // const period = ap.split(' ')[0];
@@ -170,34 +204,167 @@ const DoRetrieval = ({ category, ap, hfk, col }) => {
       }
     }
     if (fnd) {
-      queryREST({ category, ap, hfk, attribute: fnd });
+      queryREST({ category, ap, hfk, attribute: fnd },setGetCount, setGetTotal,getCount,getTotal,setResumeQueries,resumeQueries,setGetButtonDisabled);
     } else alert("Attribute doesn't exist in database");
   } else alert('Missing one or more parameters.');
 };
+const  handleResume = async (setGetCount,setGetTotal,getCount,getTotal,setResumeQueries,resumeQueries,setResumeButtonDisabled)=>{
+  console.log(resumeQueries)
+  console.log(getCount,getTotal)
+  setResumeButtonDisabled(true)
+  let failedQueries = [];
+  let results = [];
+  for (let i = 0;i< resumeQueries.length; i++) {
+    console.log(`Iteration ${i} start`);
+    try {
 
+      // if(i%3 == 0 && i!=0){
+      //   throw `index ${i} can be divided by 3`;
+      // }
+
+
+      await axios.get(resumeQueries[i].value[0]).then((result)=>{ 
+        console.log(result)   
+        results.push(result)
+      })
+    } catch (e) {
+      console.log(e)
+      console.log(`Get Iteration ${i} catch block, corresponding url is ${resumeQueries[i].value[0]}`);
+      results.push([])
+      console.log(resumeQueries[i])
+      failedQueries.push(resumeQueries[i])
+      
+      continue;
+    }
+
+    try{
+      console.log(results);
+      if (results[i].data.length > 0) {
+        console.log(`index ${i} has data`)
+        const masterValue = cloneDeep(resumeQueries[i])      
+        masterValue.value = results[i].data[0][2];            
+        await addDocument(masterValue);
+        
+      }
+    } catch (e) {
+      console.log(e)
+      console.log(`Load Iteration ${i} catch block`);
+      continue;
+    }
+    setGetCount(getCount=>getCount+1);
+    
+  }
+  setResumeQueries(failedQueries);
+  setResumeButtonDisabled(false);
+}
 const HeaderActions = props => {
   return (
     <Paper className="header">
       <Typography variant="h5">Prepopulate from OHFS</Typography>
+      
       <Selection {...props} />
+      
     </Paper>
   );
 };
-
-const FooterActions = props => {
+function CircularProgressWithLabel(props) {
   return (
+    <Box padding = "0%" position="relative" display="inline-flex">
+      <CircularProgress variant="determinate" {...props} />
+      <Box
+        top={0}
+        left={0}
+        bottom={0}
+        right={0}
+        position="absolute"
+        display="flex"
+        
+        alignItems="center"
+        justifyContent="center"
+      >
+        <Typography variant="caption" component="div" color="textSecondary">{`${Math.round(
+          props.value,
+        )}%`}</Typography>
+      </Box>
+    </Box>
+  );
+}
+const  FooterActions =  props =>  {
+  console.log('getPopulateParameters()', props.getPopulateParameters())
+  const perCent = props.getPopulateParameters().currentCount/ props.getPopulateParameters().totalCount *100;
+  
+  const [getCount, setGetCount] = useState(props.getPopulateParameters().currentCount);
+  const [getTotal, setGetTotal] = useState(props.getPopulateParameters().totalCount);
+  const [getSuccess, setGetSuccess] = useState(false);
+  const [resumeQueries,setResumeQueries] = useState(props.getPopulateParameters().resumeArray);
+  const [getButtonDisabled,setGetButtonDisabled] = useState(false);
+  
+  const [resumeButtonDisabled,setResumeButtonDisabled] = useState(false);
+  const dispatch = useDispatch();
+  React.useEffect(() => {
+    if(getCount == getTotal && getCount>0){
+      setGetSuccess(true)
+    }
+  }, [getCount]);
+  useEffect(()=>{
+    console.log('upload to database')
+    console.log(getCount)
+    console.log(getTotal)
+    if(!(getCount == 0 && getTotal == 0)){
+      console.log('reach here 1')
+      if(getCount == getTotal){
+        console.log('finish')
+        setGetCount(0);
+        setGetTotal(0);
+        setResumeQueries([])
+        const dataResumeStatues = {resumeArray:[], currentCount:0, totalCount:0}
+        dispatch(updateDataResume(dataResumeStatues));
+      }
+      else{
+        console.log('some cases failed')
+        const dataResumeStatues = {resumeArray:resumeQueries, currentCount:getCount, totalCount:getTotal}
+        // console.log('dataResumeStatues', dataResumeStatues)
+        dispatch(updateDataResume(dataResumeStatues));
+      }
+      
+    }  
+  },[resumeQueries])
+  return (
+    
     <Paper className="footer">
       <div>
         <Button
+          disabled={getButtonDisabled}
           color="primary"
           variant="contained"
           size="large"
-          onClick={() => DoRetrieval(props.getPopulateParameters())}
+          onClick={() => DoRetrieval(props.getPopulateParameters(),setGetCount,setGetTotal,getCount,getTotal,setResumeQueries,resumeQueries,setGetSuccess,setGetButtonDisabled)}
         >
           Get Actuals from OHFS
         </Button>
+        
+        
       </div>
+      <div>
+        <Button
+          disabled={getButtonDisabled||resumeButtonDisabled}
+          color="primary"
+          variant="contained"
+          size="large"
+          onClick={() => handleResume(setGetCount,setGetTotal,getCount,getTotal,setResumeQueries,resumeQueries,setResumeButtonDisabled)}
+        >
+          Resume the progress
+        </Button>
+        
+        
+      </div>
+      <div className = "progressBar">Get From OHFS</div>
+      {getSuccess?<CheckIcon fontSize="large"/>:<CircularProgressWithLabel value={(getTotal == 0)?0:(getCount/getTotal*100)} />}
+      
+      
+      
     </Paper>
+    
   );
 };
 
@@ -234,15 +401,6 @@ const Selection = ({ val, data, name, handleChange }) => {
   );
 };
 
-// const getYears = () => {
-
-//   const ret = [];
-//   const cur = new Date().getFullYear();
-//   for (let i = 2010; i <= cur; i++) {
-//     ret.push(`${i}/${(i + 1) % 100}`);
-//   }
-//   return ret.reverse();
-// };
 
 const MasterValuePopulation = () => {
   const dispatch = useDispatch();
@@ -254,25 +412,24 @@ const MasterValuePopulation = () => {
     dispatch(getCOAsRequest());
     dispatch(getColumnNamesRequest());
     dispatch(getReportingPeriodsRequest());
+    dispatch(getDataResume());
   }, [dispatch, localStorage.getItem('dataLoadingFeedback')]);
 
-  // const yearList = useMemo(() => getYears(), []);
-  // console.log(yearList)
-  // const [hfkList, updateHfkList] = useState(
-  //     getRange(1, 999).map(id => ({ checked: false, id: `${id}` }))
-  // );
+
 
   const {
     db_categoryList,
     db_hfkList,
     db_columnNamesList,
     reportingPeriods,
+    dataResumeStatues,
     isCallInProgress,
   } = useSelector(state => ({
     db_categoryList: selectFactoryRESTResponseTableValues(selectCOAsStore)(state),
     db_hfkList: selectFactoryRESTResponseTableValues(selectOrgsStore)(state),
     db_columnNamesList: selectFactoryRESTResponseTableValues(selectColumnNamesStore)(state),
     reportingPeriods: selectFactoryRESTResponseTableValues(selectReportingPeriodsStore)(state),
+    dataResumeStatues:selectFactoryRESTResponseTableValues(selectDataResumeStore)(state),
     isCallInProgress:
       selectFactoryRESTIsCallInProgress(selectCOAsStore)(state) ||
       selectFactoryRESTIsCallInProgress(selectOrgsStore)(state) ||
@@ -285,23 +442,11 @@ const MasterValuePopulation = () => {
     db_hfkList,
     db_columnNamesList,
     reportingPeriods,
+    dataResumeStatues,
     isCallInProgress,
   });
 
-  // const getYears = reportingPeriods => {
-  //   console.log(reportingPeriods);
-  //   const yearList = [];
-  //   reportingPeriods.forEach(rp => {
-  //     yearList.push(rp.name);
-  //   });
-  //   const ret = [];
-  //   const cur = new Date().getFullYear();
-  //   for (let i = 2010; i <= cur; i++) {
-  //     ret.push(`${i}/${(i + 1) % 100}`);
-  //   }
-  //   return ret.reverse();
-  // };
-  // const yearList = useMemo(() => getYears(reportingPeriods), []);
+  
 
   const periodList = [];
   reportingPeriods.forEach(period => {
@@ -312,8 +457,21 @@ const MasterValuePopulation = () => {
   const [categoryList, updateCategoryList] = useState([]);
   const [userFeedBack, setUserFeedBack] = useState('');
   const [hfkList, updateHfkList] = useState([]);
+  const [currentCount, setCurrentCount] = useState(0);
+  const [totalCount, setTotalCount] = useState(0);
+  const [resumeArray, setResumeArray] = useState([]);
 
   useEffect(() => {
+    console.log('dataResumeStatues', dataResumeStatues)
+    if(dataResumeStatues.length !=0){
+      setCurrentCount(dataResumeStatues[0].currentCount);
+      setTotalCount(dataResumeStatues[0].totalCount);
+      setResumeArray(dataResumeStatues[0].resumeArray);
+    }
+    
+  }, [dataResumeStatues]);
+  useEffect(() => {
+    // console.log('db_categoryList changes', db_categoryList)
     updateCategoryList(() => db_categoryList.map(item => ({ ...item, checked: false })));
   }, [db_categoryList]);
 
@@ -354,6 +512,8 @@ const MasterValuePopulation = () => {
     () => ({
       actionsColumnIndex: -1,
       search: true,
+      maxBodyHeight:400,
+      minBodyHeight:400,
     }),
     [],
   );
@@ -435,6 +595,9 @@ const MasterValuePopulation = () => {
       ap,
       hfk,
       col: db_columnNamesList,
+      currentCount,
+      totalCount,
+      resumeArray,
     };
   };
 

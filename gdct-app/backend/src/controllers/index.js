@@ -30,12 +30,12 @@ import SubmissionNoteController from './SubmissionNote';
 import AuditLogController from './AuditLog';
 import { authorized } from '../middlewares/auth/auth';
 import MasterValueController from './MasterValue/controller';
-
+import DataResumeController from './DataResume/controller';
 import GoogleApisController from './GoogleApis'
 import TransferStatusController from './TransferStatus'
 import TransferStatusService from '../services/TransferStatus'
 
-import MasterValueController from './MasterValue/controller';
+
 
 
 export const routerManager = app => {
@@ -54,6 +54,7 @@ export const routerManager = app => {
 
   app.use('/', authorized, Container.get(ReportingPeriodController));
   app.use('/', authorized, Container.get(SheetNameController));
+  app.use('/', authorized, Container.get(DataResumeController));
   app.use('/', authorized, Container.get(ColumnNameController));
   app.use('/', authorized, Container.get(MasterValueController));
   app.use('/template_manager', authorized, Container.get(TemplateController));
