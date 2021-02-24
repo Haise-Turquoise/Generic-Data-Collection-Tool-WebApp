@@ -1,8 +1,9 @@
-import React, { Component } from "react";
+import React, { Component, useState } from "react";
 import Spreadsheet from 'x-data-spreadsheet';
 import templateController from '../controllers/template'
+import CategoryInsertMenu from'./CategoryInsertMenu'
 
-
+// Sheet Option
 const sheetOption = {
     mode: 'edit', // edit | read
     showToolbar: true,
@@ -47,6 +48,8 @@ class SpreadSheet extends Component{
       this.id = this.props.sheetID;
       this.saveTemplate = this.saveTemplate.bind(this);
       this.handleSave = this.handleSave.bind(this);
+      this.currentCoord = {}
+      this.state = {openStatus:false,}; 
     }
 
     // After component mount, initailize spreadsheet and load data from DB
@@ -56,6 +59,9 @@ class SpreadSheet extends Component{
         this.sheet = new Spreadsheet("#x-spreadsheet", sheetOption).loadData(data).reRender();
         // This event listner handles user close the tab without saving
         window.addEventListener('beforeunload', this.handleSave);
+        this.sheet.on('cell-selected',(cell, row, col)=>{
+          this.currentCoord = {row, col};
+        })
         console.log(document.documentElement.clientWidth)
       });
     }
@@ -81,6 +87,8 @@ class SpreadSheet extends Component{
     render(){
         return (
             <div>
+                <button onClick={()=>{this.setState({openStatus:true})}}>Insert Catagory</button>
+                <CategoryInsertMenu open={this.state.openStatus} />
                 <div id="x-spreadsheet"></div>
             </div>
         )

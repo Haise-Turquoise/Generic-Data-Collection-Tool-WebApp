@@ -77,7 +77,8 @@ export default class GoogleApisService {
     const deflatedData = pako.deflate(JSON.stringify(dataToSend), { to: 'string' });
     const wrappedData = {"data" : deflatedData};
 
-    return wrappedData;
+    // return wrappedData;
+    return dataToSend
   }
 
   // Updated on Nov 24, 2020
