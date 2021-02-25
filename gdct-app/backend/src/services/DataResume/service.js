@@ -2,7 +2,7 @@ import Container from 'typedi';
 import DataResumeRepository from '../../repositories/DataResume';
 
 // @Service()
-export default class SheetNameService {
+export default class DataResumeService {
   constructor() {
     this.dataResumeRepository = Container.get(DataResumeRepository);
   }
