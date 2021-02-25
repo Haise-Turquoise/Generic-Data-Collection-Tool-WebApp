@@ -27,6 +27,7 @@ import SubmissionWorkbookStore from './SubmissionWorkbookStore/store';
 import COATreeStore from './COATreeStore/store';
 import COATreesStore from './COATreesStore/store';
 import DetectEmptyTreeStore from './DetectEmptyTreeStore/store';
+import DataResumeStore from './DataResumeStore/store'
 import SheetNamesStore from './SheetNamesStore/store';
 import ColumnNamesStore from './ColumnNamesStore/store';
 import OrgsStore from './OrganizationsStore/store';
@@ -61,6 +62,7 @@ export const root = combineReducers({
 
   AppConfigsStore: AppConfigsStore.reducer,
   COATreeStore: COATreeStore.reducer,
+  DataResumeStore: DataResumeStore.reducer,
   DetectEmptyTreeStore: DetectEmptyTreeStore.reducer,
   SheetNamesStore: SheetNamesStore.reducer,
   SubmissionPeriodsStore: SubmissionPeriodsStore.reducer,

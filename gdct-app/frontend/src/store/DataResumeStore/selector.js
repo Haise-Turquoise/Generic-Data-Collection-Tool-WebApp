@@ -1,0 +1,1 @@
+export const selectDataResumeStore = state => state.DataResumeStore;
