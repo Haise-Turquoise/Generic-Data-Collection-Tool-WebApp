@@ -40,6 +40,19 @@ import { selectReportingPeriodsStore } from '../../store/ReportingPeriodsStore/s
 import { getReportingPeriodsRequest } from '../../store/thunks/reportingPeriod';
 
 import DataResumeController from '../../controllers/DataResume'
+
+
+import { withStyles } from '@material-ui/core/styles';
+import Dialog from '@material-ui/core/Dialog';
+import MuiDialogTitle from '@material-ui/core/DialogTitle';
+import MuiDialogContent from '@material-ui/core/DialogContent';
+import MuiDialogActions from '@material-ui/core/DialogActions';
+import IconButton from '@material-ui/core/IconButton';
+import CloseIcon from '@material-ui/icons/Close';
+
+
+
+
 const REST_API = 'https://ohfsrest.azurewebsites.net';
 
 const TABLES = ['FCLTY_BSA_YTD_ACTL_FORCST_DETL', 'FCLTY_SECDY_YTD_ACTL_FORCST_DT'];
@@ -143,9 +156,9 @@ const queryREST = async ({ category, ap, hfk, attribute },setGetCount, setGetTot
   for (let i = 0;i< queries.length; i++) {
     console.log(`Iteration ${i} start`);
     try {
-      // console.log(`Iteration ${i} try block`);
-      if(i%20 == 0&& i!=0){
-        throw `index ${i} can be divided by 20`;
+      
+      if(i%3 == 0&& i!=0){
+        throw `index ${i} can be divided by 3`;
       }
       
       await axios.get(queries[i]).then((result)=>{    
@@ -175,6 +188,9 @@ const queryREST = async ({ category, ap, hfk, attribute },setGetCount, setGetTot
     } catch (e) {
       console.log(e)
       console.log(`Load Iteration ${i} catch block`);
+      const failObject = masterValueList[i];
+      failObject.value = [queries[i]];
+      failedQueries.push(failObject);
       continue;
     }
 
@@ -289,10 +305,69 @@ function CircularProgressWithLabel(props) {
     </Box>
   );
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 const  FooterActions =  props =>  {
-  console.log('getPopulateParameters()', props.getPopulateParameters())
-  const perCent = props.getPopulateParameters().currentCount/ props.getPopulateParameters().totalCount *100;
-  
+
   const [getCount, setGetCount] = useState(props.getPopulateParameters().currentCount);
   const [getTotal, setGetTotal] = useState(props.getPopulateParameters().totalCount);
   const [getSuccess, setGetSuccess] = useState(false);
@@ -300,7 +375,114 @@ const  FooterActions =  props =>  {
   const [getButtonDisabled,setGetButtonDisabled] = useState(false);
   
   const [resumeButtonDisabled,setResumeButtonDisabled] = useState(false);
+  const [alertMessage, setAlertMessage] = useState('');
+  const [alertTitle, setAlertTitle] = useState('');
   const dispatch = useDispatch();
+
+  const [open, setOpen] = React.useState(false);
+  
+    const handleClickOpen = (alertMessage,alertTitle) => {
+      setAlertMessage(alertMessage);
+      setAlertTitle(alertTitle)
+      setOpen(true);
+    };
+    const handleClose = () => {
+      setAlertMessage('');
+      setAlertTitle('')
+      setOpen(false);
+  };
+
+
+
+
+
+
+
+  const dialogStyles = (theme) => ({
+    root: {
+      margin: 0,
+      padding: theme.spacing(2),
+    },
+    closeButton: {
+      position: 'absolute',
+      right: theme.spacing(1),
+      top: theme.spacing(1),
+      color: theme.palette.grey[500],
+    },
+  });
+  
+  const DialogTitle = withStyles(dialogStyles)((props) => {
+    const { children, classes, onClose, ...other } = props;
+    return (
+      <MuiDialogTitle disableTypography className={classes.root} {...other}>
+        <Typography variant="h6">{children}</Typography>
+        {onClose ? (
+          <IconButton aria-label="close" className={classes.closeButton} onClick={onClose}>
+            <CloseIcon />
+          </IconButton>
+        ) : null}
+      </MuiDialogTitle>
+    );
+  });
+  
+  const DialogContent = withStyles((theme) => ({
+    root: {
+      padding: theme.spacing(2),
+    },
+  }))(MuiDialogContent);
+  
+  const DialogActions = withStyles((theme) => ({
+    root: {
+      margin: 0,
+      padding: theme.spacing(1),
+    },
+  }))(MuiDialogActions);
+  
+  const  CustomizedDialogs = props=> {
+    
+  
+    return (
+      <div>
+        
+        <Dialog onClose={handleClose} aria-labelledby="customized-dialog-title" open={open}>
+          <DialogTitle id="customized-dialog-title" onClose={handleClose}>
+            {props.alertTitle}
+          </DialogTitle>
+          <DialogContent dividers>
+            <Typography gutterBottom>
+              {props.alertMessage}
+            </Typography>
+            
+          </DialogContent>
+          <DialogActions>
+            <Button autoFocus onClick={handleClose} color="primary">
+              Close the dialog
+            </Button>
+          </DialogActions>
+        </Dialog>
+      </div>
+    );
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   React.useEffect(() => {
     if(getCount == getTotal && getCount>0){
       setGetSuccess(true)
@@ -311,7 +493,7 @@ const  FooterActions =  props =>  {
     console.log(getCount)
     console.log(getTotal)
     if(!(getCount == 0 && getTotal == 0)){
-      console.log('reach here 1')
+      
       if(getCount == getTotal){
         console.log('finish')
         setGetCount(0);
@@ -319,12 +501,22 @@ const  FooterActions =  props =>  {
         setResumeQueries([])
         const dataResumeStatues = {resumeArray:[], currentCount:0, totalCount:0}
         dispatch(updateDataResume(dataResumeStatues));
+        setTimeout(function(){ handleClickOpen('finish progress successfully!','Result'); }, 500);
+        
       }
       else{
+        let alertMessage = ""
         console.log('some cases failed')
+        console.log(resumeQueries);
+        for (let i = 0;i< resumeQueries.length; i++) {
+          alertMessage += resumeQueries[i].value[0];
+          alertMessage += '\n';
+        }
         const dataResumeStatues = {resumeArray:resumeQueries, currentCount:getCount, totalCount:getTotal}
-        // console.log('dataResumeStatues', dataResumeStatues)
+        
         dispatch(updateDataResume(dataResumeStatues));
+        
+        handleClickOpen(alertMessage,'Some queries failed, they are :');
       }
       
     }  
@@ -332,8 +524,9 @@ const  FooterActions =  props =>  {
   return (
     
     <Paper className="footer">
-      <div>
+      <div className = "bottomEle">
         <Button
+          
           disabled={getButtonDisabled}
           color="primary"
           variant="contained"
@@ -345,8 +538,9 @@ const  FooterActions =  props =>  {
         
         
       </div>
-      <div>
+      <div className = "bottomEle">
         <Button
+          
           disabled={getButtonDisabled||resumeButtonDisabled}
           color="primary"
           variant="contained"
@@ -358,9 +552,9 @@ const  FooterActions =  props =>  {
         
         
       </div>
-      <div className = "progressBar">Get From OHFS</div>
+      <div className = "bottomEle">Get From OHFS</div>
       {getSuccess?<CheckIcon fontSize="large"/>:<CircularProgressWithLabel value={(getTotal == 0)?0:(getCount/getTotal*100)} />}
-      
+      <CustomizedDialogs alertMessage = {alertMessage} alertTitle = {alertTitle}/>
       
       
     </Paper>
@@ -628,6 +822,7 @@ const MasterValuePopulation = () => {
           />
         </div>
       </div>
+      <div className = "divider"> </div>
       <FooterActions getPopulateParameters={getPopulateParameters} />
       <div></div>
     </div>
