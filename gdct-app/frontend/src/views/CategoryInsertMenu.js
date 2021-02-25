@@ -29,7 +29,7 @@ class categoryInsertMenu extends React.Component{
   componentDidMount(){
     spreadSheetController.fetchCategoryAndAttribute().then(data=>{ 
       console.log(data);
-      this.updateCategory_Groups(data["Categories"]);
+      this.updateCategory_Groups(data["Categories"].filter(entry=> entry["sheetName"] === 'Balance Sheet'));
     })
   }
 

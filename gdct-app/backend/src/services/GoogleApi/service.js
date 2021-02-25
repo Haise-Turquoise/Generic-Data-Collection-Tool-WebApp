@@ -75,10 +75,9 @@ export default class GoogleApisService {
     await Promise.resolve(pushCategory(dataToSend.Categories, COATreeData, fullCategoryGroupList, fullCategoryList, fullSheetNamelist));
 
     const deflatedData = pako.deflate(JSON.stringify(dataToSend), { to: 'string' });
-    const wrappedData = {"data" : deflatedData};
+    const wrappedData = {"data" : dataToSend};
 
-    // return wrappedData;
-    return dataToSend
+    return dataToSend;
   }
 
   // Updated on Nov 24, 2020
@@ -247,13 +246,13 @@ async function pushCategory(dataToSend, COATreeData, fullCategoryGroupList, full
       let sheetName = {name: "Not Assigned"};
 
       for (let item in fullCategoryGroupList){
-        if (fullCategoryGroupList[item].id.toString() === id.toString()){
+        if (fullCategoryGroupList[item]._id.toString() === id.toString()){
           categoryGroup = fullCategoryGroupList[item]
         }
       }
       id = COATree.sheetNameId;
       for (let item in fullSheetNamelist){
-        if (id && fullSheetNamelist[item].id.toString() === id.toString()){
+        if (id && fullSheetNamelist[item]._id.toString() === id.toString()){
           sheetName = fullSheetNamelist[item]
         }
       }
@@ -261,7 +260,7 @@ async function pushCategory(dataToSend, COATreeData, fullCategoryGroupList, full
       let categories = [];
       for (let item in COATree.categoryId){
         for (let secondItem in fullCategoryList){
-          if (fullCategoryList[secondItem].id === COATree.categoryId[item]){
+          if (fullCategoryList[secondItem]._id === COATree.categoryId[item]){
             categories.push(fullCategoryList[secondItem])
           }
         }
@@ -280,6 +279,10 @@ async function pushCategory(dataToSend, COATreeData, fullCategoryGroupList, full
     }
   }
 }
+
+
+
+
 
 
 
