@@ -157,8 +157,8 @@ const queryREST = async ({ category, ap, hfk, attribute },setGetCount, setGetTot
     console.log(`Iteration ${i} start`);
     try {
       
-      if(i%3 == 0&& i!=0){
-        throw `index ${i} can be divided by 3`;
+      if(i%20 == 0&& i!=0){
+        throw `index ${i} can be divided by 20`;
       }
       
       await axios.get(queries[i]).then((result)=>{    
@@ -233,12 +233,7 @@ const  handleResume = async (setGetCount,setGetTotal,getCount,getTotal,setResume
   for (let i = 0;i< resumeQueries.length; i++) {
     console.log(`Iteration ${i} start`);
     try {
-
-      // if(i%3 == 0 && i!=0){
-      //   throw `index ${i} can be divided by 3`;
-      // }
-
-
+      
       await axios.get(resumeQueries[i].value[0]).then((result)=>{ 
         console.log(result)   
         results.push(result)
