@@ -23,7 +23,7 @@ const DataResumeController = Service([DataResumeService], service => {
 
     router.put('/dataResume/', (req, res, next) => {
     //   const { _id } = req.params;
-      console.log('reach backend put')
+      
       const { dataResume } = req.body;
       console.log(dataResume)
       service
