@@ -40,8 +40,8 @@ import { selectReportingPeriodsStore } from '../../store/ReportingPeriodsStore/s
 import { getReportingPeriodsRequest } from '../../store/thunks/reportingPeriod';
 
 import DataResumeController from '../../controllers/DataResume'
-
-
+import OrganizationController from '../../controllers/organization';
+import COAController from '../../controllers/COA';
 import { withStyles } from '@material-ui/core/styles';
 import Dialog from '@material-ui/core/Dialog';
 import MuiDialogTitle from '@material-ui/core/DialogTitle';
@@ -157,9 +157,9 @@ const queryREST = async ({ category, ap, hfk, attribute },setGetCount, setGetTot
     console.log(`Iteration ${i} start`);
     try {
       
-      if(i%20 == 0&& i!=0){
-        throw `index ${i} can be divided by 20`;
-      }
+      // if(i%20 == 0&& i!=0){
+      //   throw `index ${i} can be divided by 20`;
+      // }
       
       await axios.get(queries[i]).then((result)=>{    
         results.push(result);
@@ -230,12 +230,49 @@ const  handleResume = async (setGetCount,setGetTotal,getCount,getTotal,setResume
   setResumeButtonDisabled(true)
   let failedQueries = [];
   let results = [];
+  
+  
   for (let i = 0;i< resumeQueries.length; i++) {
+    let resumeQuery = '';
+    let org = undefined;
+    let coa = undefined;
     console.log(`Iteration ${i} start`);
     try {
+
       
-      await axios.get(resumeQueries[i].value[0]).then((result)=>{ 
-        console.log(result)   
+      console.log(resumeQueries[i].org.id)
+      console.log(resumeQueries[i].categoryId)
+      org = await OrganizationController.fetchById(resumeQueries[i].org.id)
+      coa = await COAController.fetchCOAbyId(resumeQueries[i].categoryId)
+      console.log(coa.COAs)
+      // if target organization has been deleted
+      if(org.organizations.length == 0){
+        setGetCount(getCount=>getCount+1);
+        throw `Can not find corresponding org using this id: ${resumeQueries[i].org.id}` 
+      }
+      // if target category has been deleted
+      if(coa.COAs.length == 0){
+        console.log('reach error part')
+        setGetCount(getCount=>getCount+1);
+        throw `Can not find corresponding coa using this id: ${resumeQueries[i].categoryId}` 
+      }
+      const idx = resumeQueries[i].value[0].indexOf('ID=');
+      resumeQuery += resumeQueries[i].value[0].substring(0,idx+3);
+      // if COA is empty
+      if(coa.COAs.COA.length == 0){
+        resumeQuery += '-1&pa=2*'
+      }
+      else{
+        resumeQuery += org.organizations.id;
+        resumeQuery += '&';
+        resumeQuery += coa.COAs.COA;
+      }
+      console.log(resumeQuery)
+      // console.log(resumeQueries[i].value[0])
+
+
+      await axios.get(resumeQuery).then((result)=>{ 
+        
         results.push(result)
       })
     } catch (e) {
@@ -243,13 +280,15 @@ const  handleResume = async (setGetCount,setGetTotal,getCount,getTotal,setResume
       console.log(`Get Iteration ${i} catch block, corresponding url is ${resumeQueries[i].value[0]}`);
       results.push([])
       console.log(resumeQueries[i])
-      failedQueries.push(resumeQueries[i])
+      const failedMasterValue = cloneDeep(resumeQueries[i])
+      failedMasterValue.value = [resumeQuery]
+      failedQueries.push(failedMasterValue)
       
       continue;
     }
 
     try{
-      console.log(results);
+      // console.log(results);
       if (results[i].data.length > 0) {
         console.log(`index ${i} has data`)
         const masterValue = cloneDeep(resumeQueries[i])      
@@ -260,6 +299,9 @@ const  handleResume = async (setGetCount,setGetTotal,getCount,getTotal,setResume
     } catch (e) {
       console.log(e)
       console.log(`Load Iteration ${i} catch block`);
+      const failedMasterValue = cloneDeep(resumeQueries[i])
+      failedMasterValue.value = [resumeQuery]
+      failedQueries.push(failedMasterValue)
       continue;
     }
     setGetCount(getCount=>getCount+1);
@@ -376,12 +418,12 @@ const  FooterActions =  props =>  {
 
   const [open, setOpen] = React.useState(false);
   
-    const handleClickOpen = (alertMessage,alertTitle) => {
+    const handleDialogOpen = (alertMessage,alertTitle) => {
       setAlertMessage(alertMessage);
       setAlertTitle(alertTitle)
       setOpen(true);
     };
-    const handleClose = () => {
+    const handleDialogClose = () => {
       setAlertMessage('');
       setAlertTitle('')
       setOpen(false);
@@ -439,8 +481,8 @@ const  FooterActions =  props =>  {
     return (
       <div>
         
-        <Dialog onClose={handleClose} aria-labelledby="customized-dialog-title" open={open}>
-          <DialogTitle id="customized-dialog-title" onClose={handleClose}>
+        <Dialog onClose={handleDialogClose} aria-labelledby="customized-dialog-title" open={open}>
+          <DialogTitle id="customized-dialog-title" onClose={handleDialogClose}>
             {props.alertTitle}
           </DialogTitle>
           <DialogContent dividers>
@@ -450,7 +492,7 @@ const  FooterActions =  props =>  {
             
           </DialogContent>
           <DialogActions>
-            <Button autoFocus onClick={handleClose} color="primary">
+            <Button autoFocus onClick={handleDialogClose} color="primary">
               Close the dialog
             </Button>
           </DialogActions>
@@ -496,7 +538,7 @@ const  FooterActions =  props =>  {
         setResumeQueries([])
         const dataResumeStatues = {resumeArray:[], currentCount:0, totalCount:0}
         dispatch(updateDataResume(dataResumeStatues));
-        setTimeout(function(){ handleClickOpen('finish progress successfully!','Result'); }, 500);
+        setTimeout(function(){ handleDialogOpen('finish progress successfully!','Result'); }, 500);
         
       }
       else{
@@ -504,6 +546,13 @@ const  FooterActions =  props =>  {
         console.log('some cases failed')
         console.log(resumeQueries);
         for (let i = 0;i< resumeQueries.length; i++) {
+          alertMessage += 'organization id : '
+          alertMessage += resumeQueries[i].org.id
+          alertMessage += ' ';
+          alertMessage += ', category id : ';
+          alertMessage += resumeQueries[i].categoryId;
+          alertMessage += '\n'
+          // alertMessage += ' url : '
           alertMessage += resumeQueries[i].value[0];
           alertMessage += '\n';
         }
@@ -511,7 +560,7 @@ const  FooterActions =  props =>  {
         
         dispatch(updateDataResume(dataResumeStatues));
         
-        handleClickOpen(alertMessage,'Some queries failed, they are :');
+        handleDialogOpen(alertMessage,'Some queries failed, they are :');
       }
       
     }  
