@@ -331,8 +331,8 @@ const NavigationDrawer = ({ title, open, theme, config, classes, handleDrawerClo
 );
 
 const AuthPage = ({
-  headerTitle = 'MOH - OHFS Budgeting & Forecasting ',
-  drawerTitle = 'MOH - OHFS Budgeting & Forecasting ',
+  headerTitle = 'MOH - OHFS Budgeting and Forecasting ',
+  drawerTitle = 'MOH - OHFS Budgeting and Forecasting ',
   // config = [navigationConfig],
   children,
 }) => {

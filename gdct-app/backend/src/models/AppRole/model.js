@@ -6,9 +6,9 @@ const AppRole = new Schema(
   {
     code: { type: String },
     name: { type: String },
-    timestamp: {type: Date, default: Date.now},
+    timestamp: { type: Date },
 //    updatedDate: { type: Date },
-    userCreatorId: { type: ObjectId, ref: 'User' },
+//    userCreatorId: { type: ObjectId, ref: 'User' },
     updatedBy: { type: String },
     isActive: {
       type: Boolean,
@@ -21,7 +21,7 @@ const AppRole = new Schema(
 
 AppRole.pre(/^find/, function (next) {
   this.find({ isActive: { $ne: false } });
-  next();
+  next(); 
 });
 
 const AppRoleModel = model('AppRole', AppRole, 'AppRole');

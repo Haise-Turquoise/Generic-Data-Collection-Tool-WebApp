@@ -97,6 +97,12 @@ const COAsTable = () => {
       { title: 'ID', field: 'id' },
       { title: 'Name', field: 'name' },
       { title: 'OHFS Mapping', field: 'COA' },
+      { title: 'Modified On', field: 'timestamp',
+      editComponent: props => {return <div></div>} },
+//      { title: 'Modified On', field: 'updatedDate', type: 'date',
+//      initialEditValue: Date.now,},
+    { title: 'Updated By', field: 'updatedBy', 
+      editComponent: props => {return <div></div>} },
     ],
     [],
   );
@@ -109,14 +115,29 @@ const COAsTable = () => {
     () => ({
       onRowAdd: COA =>
         new Promise((resolve, reject) => {
+          //get username and record in Modified By column
+          COA.updatedBy=localStorage.getItem('currentUser')
+          //record new date and time in Modified On column 
+          const event = new Date();
+          COA.timestamp = event.toLocaleString(); 
           dispatch(createCOARequest(COA, resolve, reject));
         }),
       onRowUpdate: COA =>
         new Promise((resolve, reject) => {
+          //get username and record in Modified By column
+          COA.updatedBy=localStorage.getItem('currentUser')
+          //record new date and time in Modified On column 
+          const event = new Date();
+          COA.timestamp = event.toLocaleString(); 
           dispatch(updateCOARequest(COA, resolve, reject));
         }),
       onRowDelete: COA => 
-        new Promise((resolve, reject) => {    
+        new Promise((resolve, reject) => {
+          //get username and record in Modified By column
+          COA.updatedBy=localStorage.getItem('currentUser')
+          //record new date and time in Modified On column 
+          const event = new Date();
+          COA.timestamp = event.toLocaleString();     
           dispatch(deleteCOARequest(COA._id, resolve, reject));
         }),
     }),
@@ -129,6 +150,36 @@ const COAsTable = () => {
     }),
     []
   )
+
+    // Convert Date format
+    const timeOption = { year: 'numeric', month: 'numeric', day: 'numeric', hour:'numeric', minute:'numeric' };
+    COAs.forEach(COAs => {
+//        appRole.timestamp = new Date()
+//      var date = moment(appRoles.timestamp).toDate();
+      if(COAs.timestamp!=null) {
+
+        // reformat date string to match ISO format of mongo db: 2021-02-16T03:59:32.015Z
+        // const temptime = new Date(appRoles.timestamp.toString().replace(/,/g,'').replace(/\./g,'')
+        // );
+        // const logtime = new Date(appRoles.timestamp);
+        // console.log(appRoles.timestamp.toString().replace(/,/g,'').replace(/\./g,''));
+        // appRoles.timestamp = logtime.toLocaleDateString("en-CA", timeOption);
+
+       const event = new Date(COAs.timestamp.toString());
+       COAs.timestamp = event.toLocaleString(); 
+      }
+      else{
+        // const logtime = new Date("2021-02-16T03:59:32.015Z");
+        // appRoles.timestamp = logtime.toLocaleDateString("en-CA", timeOption);
+
+       const event = new Date("2021-02-16T03:59:32.015Z");
+       COAs.timestamp = event.toLocaleString();
+      }
+      // const event = new Date(appRoles.timestamp.toString());
+      // console.log(appRoles.timestamp.toString());
+      // const logtime = new Date(appRoles.timestamp); 
+      // appRoles.timestamp = event.toLocaleDateString("en-CA", timeOption); 
+    })
 
   useEffect(() => {
     dispatch(getCOAsRequest());

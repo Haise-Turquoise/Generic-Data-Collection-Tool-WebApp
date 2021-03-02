@@ -56,7 +56,9 @@ const AppRolesTable = () => {
     () => ({
       onRowAdd: appRole =>
         new Promise((resolve, reject) => {console.log (appRole)
+          //get username and record in Modified By column
           appRole.updatedBy=localStorage.getItem('currentUser')
+          //record new date and time in Modified On column 
           const event = new Date();
           appRole.timestamp = event.toLocaleString(); 
           dispatch(createAppRoleRequest(appRole, resolve, reject));
@@ -71,6 +73,8 @@ const AppRolesTable = () => {
       onRowDelete: appRole =>
         new Promise((resolve, reject) => {
           appRole.updatedBy=localStorage.getItem('currentUser')
+          const event = new Date();
+          appRole.timestamp = event.toLocaleString(); 
           dispatch(deleteAppRoleRequest(appRole._id, resolve, reject));
         }),
     }),
@@ -100,7 +104,7 @@ const AppRolesTable = () => {
         // appRoles.timestamp = logtime.toLocaleDateString("en-CA", timeOption);
 
        const event = new Date("2021-02-16T03:59:32.015Z");
-       appRoles.timestamp = event.toLocaleString(); 
+       appRoles.timestamp = event.toLocaleString();
       }
       // const event = new Date(appRoles.timestamp.toString());
       // console.log(appRoles.timestamp.toString());
