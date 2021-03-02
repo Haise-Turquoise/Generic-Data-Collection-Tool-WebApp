@@ -27,18 +27,19 @@ export const memoizeFunction = f => {
   };
 };
 
-export const calculateOptions = (itemCount)=>{
+export const calculateOptions = (itemCount) => {
   let length = itemCount;
   if (length > 100) length = 100;
   else if (length == 0) length = 1;
-  const sizeOptions = [10,25,50,100, itemCount];
+  const sizeOptions = [10, 25, 50, 100, itemCount];
   sizeOptions.sort((a, b) => a - b);
   return {
-    actionsColumnIndex: -1, 
-    search: true, 
+    actionsColumnIndex: -1,
+    search: true,
     showTitle: false,
-    maxBodyHeight:"400px",
+    maxBodyHeight: "400px",
     pageSizeOptions: sizeOptions,
-    pageSize:length
+    pageSize: length,
+    addRowPosition: "first"
   };
 };

@@ -17,6 +17,10 @@ export default class COAService {
     return this.COARepository.find({ _id: id })
   }
 
+  async findCOAById(Id) {
+    return this.COARepository.findById(Id).then((COA)=>{return COA});
+  }
+
   async deleteCOA(id) {
     let res = await this.COARepository.findById(id);
     res = await this.masterValueRepository.findByCategoryId(res.id)

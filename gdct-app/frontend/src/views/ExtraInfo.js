@@ -160,6 +160,7 @@ export default function SignUp({ parentHandleChange, steps, activeStep, handleNe
             <Grid item xs={12}>
               <InputLabel id="demo-mutiple-chip-label">Sys Roles</InputLabel>
               <Select
+                fullWidth
                 labelId="demo-mutiple-chip-label"
                 id="demo-mutiple-chip"
                 multiple

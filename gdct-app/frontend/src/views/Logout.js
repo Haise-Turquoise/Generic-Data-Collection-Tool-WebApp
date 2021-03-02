@@ -6,6 +6,7 @@ import CreateAuditLog from './AuditLog_Global'
 export default function Logout({ setLoggedIn }) {
   const history = useHistory();
 
+
   // Get User Email
   var node = document.getElementById('MuiChip-label');
   const email = node.textContent;

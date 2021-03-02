@@ -163,7 +163,7 @@ const Header = ({
         <HeaderTitle title={title} />
       </Link>
       {isTopMenu && <TopItemList config={config} classes={classes} isMobile={isMobile} />}
-      <Chip label={localStorage.getItem('currentUser')} id='MuiChip-label' />
+      <Chip label={localStorage.getItem('currentUser')} id='MuiChip-label-Authpage' />
       <FormControlLabel
         className={classes.flexItem}
         control={
@@ -336,8 +336,9 @@ const NavigationDrawer = ({ title, open, theme, config, classes, handleDrawerClo
 );
 
 const AuthPage = ({
-  headerTitle = 'MOHLTC - Generic Data Collection Tool',
-  drawerTitle = 'MOHLTC - GDCT',
+  // headerTitle = 'MOHLTC - Generic Data Collection Tool',
+  headerTitle = 'MOH - OHFS Budgeting and Forecasting',
+  drawerTitle = 'MOH - OHFS Budgeting and Forecasting',
   // config = [navigationConfig],
   children,
 }) => {
