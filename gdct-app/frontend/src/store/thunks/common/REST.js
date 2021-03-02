@@ -40,7 +40,7 @@ export const createRequestFactory = (store, controller) => (
   controller[isPopulated ? 'createPopulated' : 'create'](value)
     .then(value => {
       dispatch(store.actions.CREATE(value));
-      if (resolve) resolve();
+      if (resolve) resolve(value);
     })
     .catch(error => {
       dispatch(store.actions.FAIL_REQUEST(error));

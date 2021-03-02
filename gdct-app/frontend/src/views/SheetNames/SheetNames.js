@@ -39,7 +39,7 @@ const SheetNamesTable = () => {
   const columns = useMemo(
     () => [
       { title: 'Name', field: 'name' },
-      { title: 'Active', type: 'boolean', field: 'isActive' },
+      { title: 'Active', field: 'isActive' },
     ],
     [],
   );

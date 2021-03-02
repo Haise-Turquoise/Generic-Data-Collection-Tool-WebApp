@@ -22,10 +22,15 @@
     ]
   },
   "dependencies": {
+    "moment": "^2.29.1",
+    "moment-timezone": "^0.5.33",
     "msql": "^1.0.3",
     "mssql": "^6.3.1",
     "passport-google-oauth": "^2.0.0",
-    "passport-remember-me": "^0.0.1"
+    "passport-remember-me": "^0.0.1",
+    "react": "^17.0.1",
+    "react-datepicker": "^3.6.0",
+    "react-dom": "^17.0.1"
   },
   "devDependencies": {
     "@babel/preset-env": "^7.12.1",

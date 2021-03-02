@@ -25,6 +25,10 @@ import EventIcon from '@material-ui/icons/Event';
 import ReportIcon from '@material-ui/icons/Report';
 import SearchIcon from '@material-ui/icons/Search';
 import TransitEnterexitIcon from '@material-ui/icons/TransitEnterexit';
+import SubjectIcon from '@material-ui/icons/Subject';
+import PeopleAltIcon from '@material-ui/icons/PeopleAlt';
+import GroupAddIcon from '@material-ui/icons/GroupAdd';
+import ListAltIcon from '@material-ui/icons/ListAlt';
 
 export default {
   Submission: <SendIcon />,
@@ -41,12 +45,10 @@ export default {
   Templates: <PhotoFilterIcon />,
   'Template Design': <FileCopyIcon style={{ fontSize: '1rem', marginLeft: '2.2rem' }} />,
   'Template Type': <ExtensionIcon style={{ fontSize: '1rem', marginLeft: '2.2rem' }} />,
-  'Template package': <SearchIcon style={{ fontSize: '1rem', marginLeft: '2.2rem' }} />,
+  'Template Package': <SearchIcon style={{ fontSize: '1rem', marginLeft: '2.2rem' }} />,
   Organization: <AccountBalance style={{ fontSize: '1.2rem', marginLeft: '1.2rem' }} />,
   Organizations: <AccountBalance style={{ fontSize: '1rem', marginLeft: '2.2rem' }} />,
-  'Create organization': (
-    <AddCircleOutlineIcon style={{ fontSize: '1rem', marginLeft: '2.2rem' }} />
-  ),
+  'Create Organization': <AddCircleOutlineIcon style={{ fontSize: '1rem', marginLeft: '2.2rem' }} />,
   'Submission-Lookup': <HourglassEmptyIcon style={{ fontSize: '1.2rem', marginLeft: '1.2rem' }} />,
   'Submission Type': <AccountCircleIcon style={{ fontSize: '1rem', marginLeft: '2.2rem' }} />,
   'Submission Period': <HourglassEmptyIcon style={{ fontSize: '1rem', marginLeft: '2.2rem' }} />,
@@ -66,14 +68,12 @@ export default {
   'Add workflow': <AddCircleOutlineIcon style={{ fontSize: '1rem', marginLeft: '2.2rem' }} />,
   Configuration: <BuildIcon style={{ fontSize: '1.2rem', marginLeft: '1.2rem' }} />,
   'Business rule configure': <ForumIcon style={{ fontSize: '1.2rem', marginLeft: '1.2rem' }} />,
-  'User management': <AccountCircleIcon style={{ fontSize: '1.2rem', marginLeft: '1.2rem' }} />,
-  'User Role Management': (
-    <AccountCircleIcon style={{ fontSize: '1.2rem', marginLeft: '1.2rem' }} />
-  ),
+  'User Management': <PeopleAltIcon style={{ fontSize: '1.2rem', marginLeft: '1.2rem' }} />,
+  'User Role Management': <GroupAddIcon style={{ fontSize: '1.2rem', marginLeft: '1.2rem' }} />,
   Program: <AccountCircleIcon style={{ fontSize: '1.2rem', marginLeft: '1.2rem' }} />,
   Status: <StorageIcon style={{ fontSize: '1.2rem', marginLeft: '1.2rem' }} />,
-  SheetName: <StorageIcon style={{ fontSize: '1.2rem', marginLeft: '1.2rem' }} />,
-  'Reporting period': <EventIcon style={{ fontSize: '1.2rem', marginLeft: '1.2rem' }} />,
-  AuditLog: <StorageIcon style={{ fontSize: '1.2rem', marginLeft: '1.2rem' }} />,
+  'Sheet Name': <ListAltIcon style={{ fontSize: '1.2rem', marginLeft: '1.2rem' }} />,
+  'Reporting Period': <EventIcon style={{ fontSize: '1.2rem', marginLeft: '1.2rem' }} />,
+  AuditLog: <SubjectIcon style={{ fontSize: '1.2rem', marginLeft: '1.2rem' }} />,
   'ETL Setting': <TransitEnterexitIcon style={{ fontSize: '1.2rem', marginLeft: '1.2rem' }}/>
 };
