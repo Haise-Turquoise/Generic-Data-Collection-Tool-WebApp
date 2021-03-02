@@ -14,6 +14,7 @@ export default function Logout({ setLoggedIn }) {
       if (res.status === 'ok') {
         // Audit Logout
         CreateAuditLog(email, 'Logout', 'Logout', null, {}, {});
+        // Set Status
         setLoggedIn(false);
         history.push('/');
       }

@@ -1,8 +1,6 @@
 import { Service } from 'typedi';
 import { Router } from 'express';
 import AuditLogService from '../../services/AuditLog';
-import AuditLogEntity from '../../entities/AuditLog';
-import { authorized } from '../../middlewares/auth/auth';
 
 const AuditLogController = Service([AuditLogService], service => {
   const router = Router();
@@ -13,7 +11,6 @@ const AuditLogController = Service([AuditLogService], service => {
       service
         .findAllAuditLog()
         .then(auditlogs => {
-          //console.log(auditlogs)
           return res.json(auditlogs)
         })
         .catch(next)

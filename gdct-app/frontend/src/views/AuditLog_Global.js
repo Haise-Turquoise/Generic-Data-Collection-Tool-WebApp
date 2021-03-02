@@ -1,34 +1,37 @@
 import usersController from '../controllers/Users'
 import AuditLogController from '../controllers/AuditLog'
 
-// A global function for (nearly) all views that may generate changes to the database.
+// A global function for all views that may generate changes to the database.
 const CreateAuditLog = (email, activity, moduleName, recordId, oldValue, newValue) => {
     // Get User Email for finding specific user
-    if (email === null) { // null means that the user is not currently logging in or out, which means Chip is available
-        var node = document.getElementById('MuiChip-label');
-        email = node.textContent;
-        console.log(email);
+    if (email === null) { // null means that the user is not currently logging in or out, which means email is in local storage
+        email = localStorage.getItem('currentUser');
     }
-    // Find User
+    // Prepare to find user
     async function getUserByUserEmail() {
         return usersController.fetchUserByUserEmail(email);
     };
     (async () => {
+        // Get the user
         const user = await getUserByUserEmail();
-        console.log(user)
+        const IdentitiesWithNoOrg = ["Business Admin", "Template Designer", "Template Approver"]
+        // No need for attributes: _id and __v in objects
+        console.log(oldValue)
+        const oldValue_trim = (({ _id, __v, ...o }) => o)(oldValue);
+        console.log(oldValue_trim)
+        const newValue_trim = (({ _id, __v, ...o }) => o)(newValue);
         // Construct info required for this auditlogs
-        const IdentitiesWithNoRole = ["Business Admin", "Template Designer", "Template Approver"]
         const AuditLogInfo = {
             user: {
                 _id: user._id,
                 email: user.email,
-                orgId: !(IdentitiesWithNoRole.includes(user.sysRole[0].role)) && user.sysRole[0].org.length > 0 ? user.data.sysRole[0].org[0].orgId : ""
+                orgId: !(IdentitiesWithNoOrg.includes(user.sysRole[0].role)) && user.sysRole[0].org.length > 0 ? user.data.sysRole[0].org[0].orgId : ""
             },
             activity: activity,
             moduleName: moduleName,
             recordId: recordId,
-            oldValue: oldValue,
-            newValue: newValue,
+            oldValue: oldValue_trim,
+            newValue: newValue_trim,
         };
         // Call AuditLog create service
         async function createAuditLog() {

@@ -2,9 +2,8 @@ import React, { useMemo, useEffect, useState } from 'react';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 
 import MaterialTable from 'material-table';
-import Paper from '@material-ui/core/Paper';
+import { Paper, Typography } from '@material-ui/core';
 
-import Typography from '@material-ui/core/Typography';
 import {
   getAppSysesRequest,
   createAppSysRequest,
@@ -12,10 +11,10 @@ import {
   updateAppSysRequest,
 } from '../../../store/thunks/AppSys';
 
-import './AppSyses.scss';
 import { selectFactoryRESTResponseTableValues } from '../../../store/common/REST/selectors';
 import { selectAppSysesStore } from '../../../store/AppSysesStore/selectors';
 import { calculateOptions } from '../../../tools/misc'
+import AppSysController from '../../../controllers/AppSys'
 
 import CreateAuditLog from '../../AuditLog_Global'
 
@@ -50,20 +49,30 @@ const AppSysesTable = () => {
 
   const editable = useMemo(
     () => ({
-      onRowAdd: appSys =>
+      onRowAdd: appSys => 
         new Promise((resolve, reject) => {
           dispatch(createAppSysRequest(appSys, resolve, reject));
-          CreateAuditLog(null, "Add AppSys", "AppSys", null, {}, appSys);
+        }).then(newAppSys => {
+          CreateAuditLog(null, "Add Application System", "AppSys", newAppSys._id, {}, newAppSys);
         }),
-      onRowUpdate: appSys =>
+      onRowUpdate: appSys => 
         new Promise((resolve, reject) => {
+          // Find the old value before updating
+          async function findAppSysById() {
+            return AppSysController.fetchAppSys(appSys._id);
+          }
+          (async () => {
+            const oldAppSys = await findAppSysById();
+            CreateAuditLog(null, "Update Application System", "AppSys", appSys._id, oldAppSys, appSys);
+          })();
           dispatch(updateAppSysRequest(appSys, resolve, reject));
-          CreateAuditLog(null, "Update AppSys", "AppSys", null, {}, appSys);
         }),
       onRowDelete: appSys =>
         new Promise((resolve, reject) => {
           dispatch(deleteAppSysRequest(appSys._id, resolve, reject));
-          CreateAuditLog(null, "Delete AppSys", "AppSys", null, appSys, {});
+          // onRowDelete will add a "tableData" attribute in the Object, which we don't need
+          const appSys_trim = (({ tableData, ...o }) => o)(appSys)
+          CreateAuditLog(null, "Delete Application System", "AppSys", appSys._id, appSys_trim, {});
         }),
     }),
     [dispatch],

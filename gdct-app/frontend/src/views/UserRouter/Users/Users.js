@@ -137,7 +137,7 @@ const UsersTable = () => {
     [dispatch],
   );
 
-  const actions = useMemo(() => [
+  const actions = [
     {
       icon: VisibilityIcon,
       tooltip: 'View User Information',
@@ -146,7 +146,7 @@ const UsersTable = () => {
         history.push(`/admin/user_management/${user._id}`);
       },
     },
-  ]);
+  ];
 
   useEffect(() => {
     dispatch(getUsersRequest());
