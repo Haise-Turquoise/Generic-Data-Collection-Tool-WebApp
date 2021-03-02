@@ -51,14 +51,14 @@ const SubmissionDashboard = ({ history }) => {
   // Set up the states that update the table row number
   const [readUnsubmittedLength, setUnsubmittedLength] = useState(1);
   const [readApprovedLength, setApprovedLength] = useState(1);
-  const [readRejectedLength, setRejectedLength] = useState(1); 
-  const [readExpiredLength, setExpiredLength] = useState(1); 
-  const [readSubmittedLength, setSubmittedLength] = useState(1); 
+  const [readRejectedLength, setRejectedLength] = useState(1);
+  const [readExpiredLength, setExpiredLength] = useState(1);
+  const [readSubmittedLength, setSubmittedLength] = useState(1);
 
   const [readFilterFrom, setFilterFrom] = useState('All');
   const [readFilterTo, setFilterTo] = useState('All');
 
-  const timeOption = { year: 'numeric', month: 'numeric', day: 'numeric', hour:'numeric', minute:'numeric' };
+  const timeOption = { year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric' };
   let { submissions } = useSelector(
     state => ({
       submissions: selectFactoryRESTResponseTableValues(selectSubmissionsStore)(state),
@@ -67,33 +67,33 @@ const SubmissionDashboard = ({ history }) => {
   )
   let submitterFlag = false;
 
-  if (!Array.isArray(submissions)){
+  if (!Array.isArray(submissions)) {
     submissions = [];
     dispatch(getSubmissionsRequest());
   }
-  if (submissions[0] !== undefined){
+  if (submissions[0] !== undefined) {
     submissions.forEach(submission => {
       const createdAt = new Date(submission.createdAt);
       const modifiedAt = new Date(submission.updatedAt);
       submission.createdAt = createdAt.toLocaleDateString("en-US", timeOption);
       submission.updatedAt = modifiedAt.toLocaleDateString("en-US", timeOption);
-      if (!submissionPeriod[submission.period]){
+      if (!submissionPeriod[submission.period]) {
         submissionPeriod[submission.period] = 1;
       }
       let filterFrom = submission.period.split(' ')[2];
       let filterTo = filterFrom;
 
-      if (readFilterFrom != 'All'){
+      if (readFilterFrom != 'All') {
         filterFrom = readFilterFrom.split(' ')[2];
       }
 
-      if(readFilterTo != 'All'){
+      if (readFilterTo != 'All') {
         filterTo = readFilterTo.split(' ')[2];
       }
 
-      if (submission !== undefined && 
+      if (submission !== undefined &&
         (submission.period.split(' ')[2] >= filterFrom && submission.period.split(' ')[2] <= filterTo)) {
-        
+
         if (
           submission.permission.find(
             permission => permission === 'Submitter' || permission === 'Inputter',
@@ -136,50 +136,50 @@ const SubmissionDashboard = ({ history }) => {
   useEffect(() => {
     setRejectedLength(rejectedSubmission.length)
   }, [rejectedSubmission])
-  
+
   useEffect(() => {
     setUnsubmittedLength(unsubmittedSubmission.length)
   }, [unsubmittedSubmission])
-  
+
   useEffect(() => {
     setApprovedLength(approvedSubmission.length)
   }, [approvedSubmission])
-  
 
-  const handleFilterFrom = (event)=>{
+
+  const handleFilterFrom = (event) => {
     setFilterFrom(event.target.value);
   }
 
-  const handleFilterTo = (event)=>{
+  const handleFilterTo = (event) => {
     setFilterTo(event.target.value);
   }
-    
- 
+
+
   const checkBoxColumns = useMemo(
     () => [
-      { title: 'Period', field: 'period', headerStyle:{ padding: styleFactor}, cellStyle:{ padding: styleFactor}},
-      { title: 'Submission', field: 'name', headerStyle:{ padding: styleFactor}, cellStyle:{ padding: styleFactor}},
-      { title: 'Program', field: 'programName', headerStyle:{ padding: styleFactor}, cellStyle:{ padding: styleFactor} },
+      { title: 'Period', field: 'period', headerStyle: { padding: styleFactor }, cellStyle: { padding: styleFactor } },
+      { title: 'Submission', field: 'name', headerStyle: { padding: styleFactor }, cellStyle: { padding: styleFactor } },
+      { title: 'Program', field: 'programName', headerStyle: { padding: styleFactor }, cellStyle: { padding: styleFactor } },
       { title: 'Approver', field: 'approver' },
-      { title: 'Health Service Provider', field: 'orgId', headerStyle:{ padding: styleFactor}, cellStyle:{ padding: styleFactor} },
-      { title: 'Template Package Name', field: 'templatePackageName', headerStyle:{ padding: styleFactor}, cellStyle:{ padding: styleFactor} },
-      { title: 'Status', field: 'phase', headerStyle:{ padding: styleFactor}, cellStyle:{ padding: styleFactor} },
-      { title: 'Created On', field: 'createdAt', headerStyle:{ padding: styleFactor}, cellStyle:{ padding: styleFactor} },
-      { title: 'Modified By', field: 'updatedBy', headerStyle:{ padding: styleFactor}, cellStyle:{ padding: styleFactor} },
-      { title: 'Modified on', field: 'updatedAt', headerStyle:{ padding: styleFactor}, cellStyle:{ padding: styleFactor} },
-      { title: 'version', field: 'version', headerStyle:{ padding: styleFactor}, cellStyle:{ padding: styleFactor} },
-      { title: 'Template Name', field: 'workbookData.name', headerStyle:{ padding: styleFactor}, cellStyle:{ padding: styleFactor} },
+      { title: 'Health Service Provider', field: 'orgId', headerStyle: { padding: styleFactor }, cellStyle: { padding: styleFactor } },
+      { title: 'Template Package Name', field: 'templatePackageName', headerStyle: { padding: styleFactor }, cellStyle: { padding: styleFactor } },
+      { title: 'Status', field: 'phase', headerStyle: { padding: styleFactor }, cellStyle: { padding: styleFactor } },
+      { title: 'Created On', field: 'createdAt', headerStyle: { padding: styleFactor }, cellStyle: { padding: styleFactor } },
+      { title: 'Modified By', field: 'updatedBy', headerStyle: { padding: styleFactor }, cellStyle: { padding: styleFactor } },
+      { title: 'Modified on', field: 'updatedAt', headerStyle: { padding: styleFactor }, cellStyle: { padding: styleFactor } },
+      { title: 'version', field: 'version', headerStyle: { padding: styleFactor }, cellStyle: { padding: styleFactor } },
+      { title: 'Template Name', field: 'workbookData.name', headerStyle: { padding: styleFactor }, cellStyle: { padding: styleFactor } },
     ],
     [],
   );
 
 
   // memfunction that generate options object
-  const unsubmittedOptions = useMemo(()=>calculateOptions(readUnsubmittedLength), [readUnsubmittedLength]);
-  const submittedOptions = useMemo(()=>calculateOptions(readSubmittedLength), [readSubmittedLength]);
-  const expiredOptions = useMemo(()=>calculateOptions(readExpiredLength), [readExpiredLength]);
-  const rejectedOptions = useMemo(()=>calculateOptions(readRejectedLength),[readRejectedLength]);
-  const approvedOptions = useMemo(()=>calculateOptions(readApprovedLength), [readApprovedLength]);
+  const unsubmittedOptions = useMemo(() => calculateOptions(readUnsubmittedLength), [readUnsubmittedLength]);
+  const submittedOptions = useMemo(() => calculateOptions(readSubmittedLength), [readSubmittedLength]);
+  const expiredOptions = useMemo(() => calculateOptions(readExpiredLength), [readExpiredLength]);
+  const rejectedOptions = useMemo(() => calculateOptions(readRejectedLength), [readRejectedLength]);
+  const approvedOptions = useMemo(() => calculateOptions(readApprovedLength), [readApprovedLength]);
 
 
   const notEditableActions = useMemo(
@@ -189,8 +189,8 @@ const SubmissionDashboard = ({ history }) => {
         tooltip: 'View/Edit Submission',
         onClick: (_event, submission) =>
           history.push({
-            pathname: `/submission/editSubmission/${submission._id}`,
-            state: { detail: submission, submissionList: submissions},
+            pathname: `/submission/dashboard/editSubmission/${submission._id}`,
+            state: { detail: submission, submissionList: submissions },
           }),
       },
     ],
@@ -203,7 +203,7 @@ const SubmissionDashboard = ({ history }) => {
         tooltip: 'Upload Submission',
         onClick: (_event, submission) =>
           history.push({
-            pathname: `/submission/createSubmission/${submission._id}`,
+            pathname: `/submission/dashboard/createSubmission/${submission._id}`,
             state: { detail: submission },
           }),
       },
@@ -212,7 +212,7 @@ const SubmissionDashboard = ({ history }) => {
         tooltip: 'View/Edit Submission',
         onClick: (_event, submission) =>
           history.push({
-            pathname: `/submission/editSubmission/${submission._id}`,
+            pathname: `/submission/dashboard/editSubmission/${submission._id}`,
             state: { detail: submission },
           }),
       },
@@ -236,8 +236,8 @@ const SubmissionDashboard = ({ history }) => {
           id="demo-controlled-open-select"
           onChange={handleFilterFrom}
         >
-        <MenuItem value='All'>All</MenuItem>
-          {Object.keys(submissionPeriod).map((element)=>{
+          <MenuItem value='All'>All</MenuItem>
+          {Object.keys(submissionPeriod).map((element) => {
             return <MenuItem value={element}>{element}</MenuItem>
           })}
         </Select>
@@ -250,8 +250,8 @@ const SubmissionDashboard = ({ history }) => {
           id="demo-controlled-open-select"
           onChange={handleFilterTo}
         >
-        <MenuItem value='All'>All</MenuItem>
-          {Object.keys(submissionPeriod).map((element)=>{
+          <MenuItem value='All'>All</MenuItem>
+          {Object.keys(submissionPeriod).map((element) => {
             return <MenuItem value={element}>{element}</MenuItem>
           })}
         </Select>
@@ -265,21 +265,21 @@ const SubmissionDashboard = ({ history }) => {
         >
           <Typography> To-do </Typography>
         </ExpansionPanelSummary>
-        
-          {/* We need to pass row number state to 
+
+        {/* We need to pass row number state to 
           "key" param to force an table update */}
-          <div className="MuiTableContainer">
-            <MaterialTable
-              key={readUnsubmittedLength}
-              columns={checkBoxColumns}
-              options={unsubmittedOptions}
-              data={unsubmittedSubmission}
-              actions={submitterFlag ? actions : notEditableActions}
-            />
-          </div>
-        
+        <div className="MuiTableContainer">
+          <MaterialTable
+            key={readUnsubmittedLength}
+            columns={checkBoxColumns}
+            options={unsubmittedOptions}
+            data={unsubmittedSubmission}
+            actions={submitterFlag ? actions : notEditableActions}
+          />
+        </div>
+
       </ExpansionPanel>
-      
+
       <ExpansionPanel>
         <ExpansionPanelSummary
           expandIcon={<ExpandMoreIcon />}
@@ -339,7 +339,7 @@ const SubmissionDashboard = ({ history }) => {
             data={expiredSubmission}
             actions={notEditableActions}
           />
-        {/* </ExpansionPanelDetails> */}
+          {/* </ExpansionPanelDetails> */}
         </div>
       </ExpansionPanel>
 

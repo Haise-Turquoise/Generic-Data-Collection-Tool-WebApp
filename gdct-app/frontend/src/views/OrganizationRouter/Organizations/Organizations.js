@@ -14,7 +14,7 @@ import EditIcon from '@material-ui/icons/Edit';
 import { selectFactoryRESTResponseTableValues } from '../../../store/common/REST/selectors';
 import { selectOrgsStore } from '../../../store/OrganizationsStore/selectors';
 import { getOrgsRequest } from '../../../store/thunks/organization';
-import {calculateOptions} from '../../../tools/misc'
+import { calculateOptions } from '../../../tools/misc'
 
 const HeaderActions = () => {
   const history = useHistory();
@@ -75,12 +75,12 @@ const Organizations = ({ history }) => {
     dispatch(getOrgsRequest());
   }, [dispatch]);
 
-  useEffect(()=>{setRowNum(Orgs.length)}, [Orgs])
+  useEffect(() => { setRowNum(Orgs.length) }, [Orgs])
 
   return (
     <div className="organizations">
       <OrganizationHeader />
-      <MaterialTable key={readRowNum} columns={columns} data={Orgs} actions={actions} options={options}/>
+      <MaterialTable key={readRowNum} columns={columns} data={Orgs} actions={actions} options={options} />
     </div>
   );
 };

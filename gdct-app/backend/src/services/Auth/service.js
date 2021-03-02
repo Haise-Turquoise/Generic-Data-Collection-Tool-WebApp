@@ -64,10 +64,16 @@ export default class AuthService {
 
   logout(req, res, next) {
     try {
+      const email = req.session.user
       req.logout();
       req.session.user = null;
       req.session.token = null;
-      returnNormalJson(res, 'logout successfully');
+      // For Audit Log
+      const authService = new AuthService();
+      authService.UserRepository.findByEmail(email)
+        .then(data => {
+          returnNormalJson(res, data)
+        })
     } catch (err) {
       next(err);
     }

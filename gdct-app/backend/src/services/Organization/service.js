@@ -27,6 +27,9 @@ class OrgService {
   async findOrgByOrgGroupId(OrgGroupId) {
     return this.OrgRepository.findByOrgGroupId(OrgGroupId);
   }
+  async findOrgById(Id) {
+    return this.OrgRepository.findById(Id);
+  }
 }
 
 export default OrgService;

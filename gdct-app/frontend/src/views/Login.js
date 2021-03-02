@@ -17,7 +17,7 @@ import MuiAlert from '@material-ui/lab/Alert';
 import { useSelector, shallowEqual, useDispatch, batch } from 'react-redux';
 import { host } from '../constants/domain';
 import AuthController from '../controllers/Auth';
-import AuditLogController from '../controllers/AuditLog'
+import CreateAuditLog from './AuditLog_Global'
 
 function Copyright() {
   return (
@@ -134,33 +134,10 @@ export default function Login({ setLoggedIn, setCurrentUser }) {
               return false;
             }
             if (data.status === 'ok') {
-              console.log(data.data)
               // dispatch(UserStore.actions.SET_CURRENT_USER({currentUser:data.data.email}))
               localStorage.setItem('currentUser', data.data.email);
-
-              // Audit Log Below -----------------------------------------------------------------------------------------------------------------------------
-              // Construct info required for this auditlogs
-              const AuditLogInfo = {
-                user: {
-                  _id: data.data._id,
-                  email: data.data.email,
-                  orgId: data.data.sysRole[0].role !== "Business Admin" && data.data.sysRole[0].org.length > 0 ? data.data.sysRole[0].org[0].orgId : ""
-                },
-                activity: "Login",
-                moduleName: "Login",
-                recordId: null,
-                oldValue: {},
-                newValue: {}
-              }
-              // Call AuditLog create service
-              async function createAuditLog() {
-                return await AuditLogController.create(AuditLogInfo)
-              }
-              (async () => {
-                await createAuditLog();
-              })()
-              // Audit Log Above -----------------------------------------------------------------------------------------------------------------------------
-
+              // Audit Login
+              CreateAuditLog(email, 'Login', 'Login', null, {}, {});
               // Set status
               setLoggedIn(true);
               return true;

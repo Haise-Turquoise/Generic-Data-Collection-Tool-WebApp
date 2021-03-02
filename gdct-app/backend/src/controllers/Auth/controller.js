@@ -5,12 +5,12 @@ import AuthService from '../../services/Auth';
 const AuthController = Service([AuthService], service => {
   const router = Router();
   return (() => {
-    router.get('/logout', service.logout);
+    router.post('/login', service.processPassport, service.profile);
+    router.post('/register', service.createUser);
     router.get('/auth/:method', service.authenticate);
     router.get('/auth/:method/callback', service.authenticateCallback);
-    router.post('/register', service.createUser);
-    router.post('/login', service.processPassport, service.profile);
     router.get('/profile', service.profile);
+    router.get('/logout', service.logout);
     return router;
   })();
 });

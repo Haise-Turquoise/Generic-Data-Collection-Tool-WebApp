@@ -157,7 +157,7 @@ const AppRoleResourcesTable = () => {
     dispatch(getAppResourcesRequest());
   }, [dispatch]);
 
-  useEffect(()=>{setRowNum(appRoleResources.length), [appRoleResources]})
+  useEffect(() => { setRowNum(appRoleResources.length), [appRoleResources] })
 
   return (
     <MaterialTable

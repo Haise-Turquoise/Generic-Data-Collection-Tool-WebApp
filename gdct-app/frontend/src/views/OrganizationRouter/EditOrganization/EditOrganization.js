@@ -32,7 +32,7 @@ const EditOrganization = ({
   }));
 
   const redirect = () => {
-    history.push('/admin/organization');
+    history.push('/admin/organization/org');
   };
 
   const accept = () => {
@@ -59,13 +59,13 @@ const EditOrganization = ({
   return isOrgsCallInProgress || !object ? (
     <Loading />
   ) : (
-    <ModifyOrganization
-      title={'Edit Organization'}
-      object={object}
-      submit={submit}
-      cancel={cancel}
-    />
-  );
+      <ModifyOrganization
+        title={'Edit Organization'}
+        object={object}
+        submit={submit}
+        cancel={cancel}
+      />
+    );
 };
 
 EditOrganization.propTypes = {

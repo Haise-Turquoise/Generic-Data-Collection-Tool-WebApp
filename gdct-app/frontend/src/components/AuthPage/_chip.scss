@@ -1,6 +1,13 @@
-.MuiChip-root {
+#MuiChip-label-Authpage.MuiChip-root {
     position: absolute;
-    //width:;
-    margin: 3%;
+    // width:;
+    margin-top:0%;
+    margin-bottom: 0%;
+    margin-right:6%;
+    margin-left: 3%;
+    // margin: 3%;
     right: 6%;
 }
+// Guanhan Chen: in the last version in Feb, 15th, 2021, the top text is .Muichip-root where it effect
+//      the styling in Role management page under Admin section, so what I did is
+//      create a new ID and target it with the format #(id).(class)
