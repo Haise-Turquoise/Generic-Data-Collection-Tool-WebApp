@@ -7,7 +7,6 @@ const AppRole = new Schema(
     code: { type: String },
     name: { type: String },
     timestamp: { type: Date },
-//    updatedDate: { type: Date },
 //    userCreatorId: { type: ObjectId, ref: 'User' },
     updatedBy: { type: String },
     isActive: {
