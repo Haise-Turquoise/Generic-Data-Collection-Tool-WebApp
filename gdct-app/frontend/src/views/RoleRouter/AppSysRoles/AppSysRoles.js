@@ -62,6 +62,10 @@ const AppSysRolesTable = props => {
         lookup: lookupSysRoles,
       },
       { title: 'Role', field: 'role', lookup: lookupAppRoles },
+      { title: 'Modified On', field: 'timestamp',
+      editComponent: props => {return <div></div>} },
+      { title: 'Updated By', field: 'updatedBy', 
+      editComponent: props => {return <div></div>} },
     ],
     [lookupSysRoles, lookupAppRoles],
   );
@@ -72,19 +76,64 @@ const AppSysRolesTable = props => {
     () => ({
       onRowAdd: appSysRole =>
         new Promise((resolve, reject) => {
+          //get username and record in Modified By column
+          appSysRole.updatedBy=localStorage.getItem('currentUser')
+          //record new date and time in Modified On column 
+          const event = new Date();
+          appSysRole.timestamp = event.toLocaleString(); 
           dispatch(createAppSysRoleRequest(appSysRole, resolve, reject));
         }),
       onRowUpdate: appSysRole =>
         new Promise((resolve, reject) => {
+          //get username and record in Modified By column
+          appSysRole.updatedBy=localStorage.getItem('currentUser')
+          //record new date and time in Modified On column 
+          const event = new Date();
+          appSysRole.timestamp = event.toLocaleString(); 
           dispatch(updateAppSysRoleRequest(appSysRole, resolve, reject));
         }),
       onRowDelete: appSysRole =>
         new Promise((resolve, reject) => {
+          //get username and record in Modified By column
+          appSysRole.updatedBy=localStorage.getItem('currentUser')
+          //record new date and time in Modified On column 
+          const event = new Date();
+          appSysRole.timestamp = event.toLocaleString(); 
           dispatch(deleteAppSysRoleRequest(appSysRole._id, resolve, reject));
         }),
     }),
     [dispatch],
   );
+
+    // Convert Date format
+    const timeOption = { year: 'numeric', month: 'numeric', day: 'numeric', hour:'numeric', minute:'numeric' };
+    appSysRoles.forEach(appSysRoles => {
+//        appRole.timestamp = new Date()
+//      var date = moment(appRoles.timestamp).toDate();
+      if(appSysRoles.timestamp!=null) {
+
+        // reformat date string to match ISO format of mongo db: 2021-02-16T03:59:32.015Z
+        // const temptime = new Date(appRoles.timestamp.toString().replace(/,/g,'').replace(/\./g,'')
+        // );
+        // const logtime = new Date(appRoles.timestamp);
+        // console.log(appRoles.timestamp.toString().replace(/,/g,'').replace(/\./g,''));
+        // appRoles.timestamp = logtime.toLocaleDateString("en-CA", timeOption);
+
+       const event = new Date(appSysRoles.timestamp.toString());
+       appSysRoles.timestamp = event.toLocaleString(); 
+      }
+      else{
+        // const logtime = new Date("2021-02-16T03:59:32.015Z");
+        // appRoles.timestamp = logtime.toLocaleDateString("en-CA", timeOption);
+
+       const event = new Date("2021-02-16T03:59:32.015Z");
+       appSysRoles.timestamp = event.toLocaleString();
+      }
+      // const event = new Date(appRoles.timestamp.toString());
+      // console.log(appRoles.timestamp.toString());
+      // const logtime = new Date(appRoles.timestamp); 
+      // appRoles.timestamp = event.toLocaleDateString("en-CA", timeOption); 
+    })
 
   useEffect(() => {
     dispatch(getAppRolesRequest());

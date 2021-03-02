@@ -95,6 +95,12 @@ const ColumnNamesTable = () => {
       { title: 'Name', field: 'name' },
       { title: 'Description', field: 'description' },
       { title: 'Active', type: 'boolean', field: 'isActive' },
+      { title: 'Modified On', field: 'timestamp',
+        editComponent: props => {return <div></div>} },
+//      { title: 'Modified On', field: 'updatedDate', type: 'date',
+//      initialEditValue: Date.now,},
+      { title: 'Updated By', field: 'updatedBy', 
+        editComponent: props => {return <div></div>} },
     ],
     [],
   );
@@ -106,14 +112,29 @@ const ColumnNamesTable = () => {
     () => ({
       onRowAdd: columnName =>
         new Promise((resolve, reject) => {
+          //get username and record in Modified By column
+          columnName.updatedBy=localStorage.getItem('currentUser')
+          //record new date and time in Modified On column 
+          const event = new Date();
+          columnName.timestamp = event.toLocaleString(); 
           dispatch(createColumnNameRequest(columnName, resolve, reject));
         }),
       onRowUpdate: columnName =>
         new Promise((resolve, reject) => {
+          //get username and record in Modified By column
+          columnName.updatedBy=localStorage.getItem('currentUser')
+          //record new date and time in Modified On column 
+          const event = new Date();
+          columnName.timestamp = event.toLocaleString(); 
           dispatch(updateColumnNameRequest(columnName, resolve, reject));
         }),
       onRowDelete: columnName =>
         new Promise((resolve, reject) => {
+          //get username and record in Modified By column
+          columnName.updatedBy=localStorage.getItem('currentUser')
+          //record new date and time in Modified On column 
+          const event = new Date();
+          columnName.timestamp = event.toLocaleString(); 
           dispatch(deleteColumnNameRequest(columnName._id, resolve, reject));
         }),
     }),
@@ -127,7 +148,37 @@ const ColumnNamesTable = () => {
     }),
     []
   )
-  
+
+    // Convert Date format
+    const timeOption = { year: 'numeric', month: 'numeric', day: 'numeric', hour:'numeric', minute:'numeric' };
+    columnNames.forEach(columnNames => {
+//        appRole.timestamp = new Date()
+//      var date = moment(appRoles.timestamp).toDate();
+      if(columnNames.timestamp!=null) {
+
+        // reformat date string to match ISO format of mongo db: 2021-02-16T03:59:32.015Z
+        // const temptime = new Date(appRoles.timestamp.toString().replace(/,/g,'').replace(/\./g,'')
+        // );
+        // const logtime = new Date(appRoles.timestamp);
+        // console.log(appRoles.timestamp.toString().replace(/,/g,'').replace(/\./g,''));
+        // appRoles.timestamp = logtime.toLocaleDateString("en-CA", timeOption);
+
+       const event = new Date(columnNames.timestamp.toString());
+       columnNames.timestamp = event.toLocaleString(); 
+      }
+      else{
+        // const logtime = new Date("2021-02-16T03:59:32.015Z");
+        // appRoles.timestamp = logtime.toLocaleDateString("en-CA", timeOption);
+
+       const event = new Date("2021-02-16T03:59:32.015Z");
+       appRoles.timestamp = event.toLocaleString();
+      }
+      // const event = new Date(appRoles.timestamp.toString());
+      // console.log(appRoles.timestamp.toString());
+      // const logtime = new Date(appRoles.timestamp); 
+      // appRoles.timestamp = event.toLocaleDateString("en-CA", timeOption); 
+    })
+
   useEffect(()=>{setRowNum(columnNames.length)}, [columnNames]);
 
   useEffect(() => {

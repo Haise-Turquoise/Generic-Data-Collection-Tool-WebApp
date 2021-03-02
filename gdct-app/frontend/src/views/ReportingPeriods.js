@@ -36,7 +36,18 @@ const ReportingPeriodsTable = () => {
     shallowEqual,
   );
 
-  const columns = useMemo(() => [{ title: 'Name', field: 'name' }], []);
+  const columns = useMemo(
+    () => [
+      { title: 'Name', field: 'name' },
+      { title: 'Modified On', field: 'timestamp',
+        editComponent: props => {return <div></div>} },
+//      { title: 'Modified On', field: 'updatedDate', type: 'date',
+//      initialEditValue: Date.now,},
+      { title: 'Updated By', field: 'updatedBy', 
+        editComponent: props => {return <div></div>} },
+    ], 
+    [],
+  );
 
   const options = useMemo(() => calculateOptions(readRowNum), [readRowNum]);
 
@@ -44,19 +55,64 @@ const ReportingPeriodsTable = () => {
     () => ({
       onRowAdd: reportingPeriod =>
         new Promise((resolve, reject) => {
+          //get username and record in Modified By column
+          reportingPeriod.updatedBy=localStorage.getItem('currentUser')
+          //record new date and time in Modified On column 
+          const event = new Date();
+          reportingPeriod.timestamp = event.toLocaleString(); 
           dispatch(createReportingPeriodRequest(reportingPeriod, resolve, reject));
         }),
       onRowUpdate: reportingPeriod =>
         new Promise((resolve, reject) => {
+          //get username and record in Modified By column
+          reportingPeriod.updatedBy=localStorage.getItem('currentUser')
+          //record new date and time in Modified On column 
+          const event = new Date();
+          reportingPeriod.timestamp = event.toLocaleString(); 
           dispatch(updateReportingPeriodRequest(reportingPeriod, resolve, reject));
         }),
       onRowDelete: reportingPeriod =>
         new Promise((resolve, reject) => {
+          //get username and record in Modified By column
+          reportingPeriod.updatedBy=localStorage.getItem('currentUser')
+          //record new date and time in Modified On column 
+          const event = new Date();
+          reportingPeriod.timestamp = event.toLocaleString(); 
           dispatch(deleteReportingPeriodRequest(reportingPeriod._id, resolve, reject));
         }),
     }),
     [dispatch],
   );
+
+    // Convert Date format
+    const timeOption = { year: 'numeric', month: 'numeric', day: 'numeric', hour:'numeric', minute:'numeric' };
+    reportingPeriods.forEach(reportingPeriods => {
+//        appRole.timestamp = new Date()
+//      var date = moment(appRoles.timestamp).toDate();
+      if(reportingPeriods.timestamp!=null) {
+
+        // reformat date string to match ISO format of mongo db: 2021-02-16T03:59:32.015Z
+        // const temptime = new Date(appRoles.timestamp.toString().replace(/,/g,'').replace(/\./g,'')
+        // );
+        // const logtime = new Date(appRoles.timestamp);
+        // console.log(appRoles.timestamp.toString().replace(/,/g,'').replace(/\./g,''));
+        // appRoles.timestamp = logtime.toLocaleDateString("en-CA", timeOption);
+
+       const event = new Date(reportingPeriods.timestamp.toString());
+       reportingPeriods.timestamp = event.toLocaleString(); 
+      }
+      else{
+        // const logtime = new Date("2021-02-16T03:59:32.015Z");
+        // appRoles.timestamp = logtime.toLocaleDateString("en-CA", timeOption);
+
+       const event = new Date("2021-02-16T03:59:32.015Z");
+       reportingPeriods.timestamp = event.toLocaleString();
+      }
+      // const event = new Date(appRoles.timestamp.toString());
+      // console.log(appRoles.timestamp.toString());
+      // const logtime = new Date(appRoles.timestamp); 
+      // appRoles.timestamp = event.toLocaleDateString("en-CA", timeOption); 
+    })
 
   useEffect(() => {
     dispatch(getReportingPeriodsRequest());

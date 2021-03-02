@@ -36,7 +36,7 @@ import { calculateOptions } from '../../tools/misc'
 const TemplatePackageHeader = () => {
   return (
     <Paper className="header">
-      <Typography variant="h5">Template Packages</Typography>
+      <Typography variant="h5">Template Package</Typography>
       {/* <HeaderActions/> */}
     </Paper>
   );
@@ -155,10 +155,12 @@ const TemplatePackages = () => {
       },
       {
         title: 'Creation Date',
-        field: 'creationDate',
-        type: 'date',
-        initialEditValue: Date.now,
+        field: 'timestamp',
       },
+      { title: 'Modified On', field: 'timestamp',
+      editComponent: props => {return <div></div>} },
+      { title: 'Updated By', field: 'updatedBy', 
+      editComponent: props => {return <div></div>} },
     ],
     [lookupStatuses, lookupSubmissionPeriods],
   );
@@ -172,21 +174,66 @@ const TemplatePackages = () => {
     () => ({
       onRowAdd: templatePackage =>
         new Promise((resolve, reject) => {
+          //get username and record in Modified By column
+          templatePackage.updatedBy=localStorage.getItem('currentUser')
+          //record new date and time in Modified On column 
+          const event = new Date();
+          templatePackage.timestamp = event.toLocaleString(); 
           templatePackage = { ...templatePackage, templateIds: [], programIds: [] };
           dispatch(createTemplatePackageRequest(templatePackage, resolve, reject));
         }),
       onRowUpdate: templatePackage =>
         new Promise((resolve, reject) => {
+          //get username and record in Modified By column
+          templatePackage.updatedBy=localStorage.getItem('currentUser')
+          //record new date and time in Modified On column 
+          const event = new Date();
+          templatePackage.timestamp = event.toLocaleString(); 
           // console.log(templatePackage);
           dispatch(updateTemplatePackageRequest(templatePackage, resolve, reject));
         }),
       onRowDelete: templatePackage =>
         new Promise((resolve, reject) => {
+          //get username and record in Modified By column
+          templatePackage.updatedBy=localStorage.getItem('currentUser')
+          //record new date and time in Modified On column 
+          const event = new Date();
+          templatePackage.timestamp = event.toLocaleString(); 
           dispatch(deleteTemplatePackageRequest(templatePackage._id, resolve, reject));
         }),
     }),
     [dispatch],
   );
+
+    // Convert Date format
+    const timeOption = { year: 'numeric', month: 'numeric', day: 'numeric', hour:'numeric', minute:'numeric' };
+    templatePackages.forEach(templatePackages => {
+//        appRole.timestamp = new Date()
+//      var date = moment(appRoles.timestamp).toDate();
+      if(templatePackages.timestamp!=null) {
+
+        // reformat date string to match ISO format of mongo db: 2021-02-16T03:59:32.015Z
+        // const temptime = new Date(appRoles.timestamp.toString().replace(/,/g,'').replace(/\./g,'')
+        // );
+        // const logtime = new Date(appRoles.timestamp);
+        // console.log(appRoles.timestamp.toString().replace(/,/g,'').replace(/\./g,''));
+        // appRoles.timestamp = logtime.toLocaleDateString("en-CA", timeOption);
+
+       const event = new Date(templatePackages.timestamp.toString());
+       templatePackages.timestamp = event.toLocaleString(); 
+      }
+      else{
+        // const logtime = new Date("2021-02-16T03:59:32.015Z");
+        // appRoles.timestamp = logtime.toLocaleDateString("en-CA", timeOption);
+
+       const event = new Date("2021-02-16T03:59:32.015Z");
+       templatePackages.timestamp = event.toLocaleString();
+      }
+      // const event = new Date(appRoles.timestamp.toString());
+      // console.log(appRoles.timestamp.toString());
+      // const logtime = new Date(appRoles.timestamp); 
+      // appRoles.timestamp = event.toLocaleDateString("en-CA", timeOption); 
+    })
 
   useEffect(() => {
     dispatch(getTemplatePackagesRequest());

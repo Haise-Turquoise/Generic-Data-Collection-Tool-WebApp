@@ -24,7 +24,7 @@ function Copyright() {
     <Typography variant="body2" color="textSecondary" align="center">
       {'Copyright © '}
       <Link color="inherit" href="#">
-        GDCT
+        MOH - OHFS Budgeting and Forecasting 
       </Link>{' '}
       {new Date().getFullYear()}
       {'.'}

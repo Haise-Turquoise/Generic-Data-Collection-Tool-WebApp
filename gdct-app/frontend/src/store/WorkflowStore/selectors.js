@@ -29,6 +29,16 @@ export const selectWorkflowId = createSelector(
   workflowStore => workflowStore._id,
 );
 
+export const selectWorkflowTimestamp = createSelector(
+  [selectWorkflowStore],
+  workflowStore => workflowStore.timestamp,
+);
+
+export const selectWorkflowUpdatedBy = createSelector(
+  [selectWorkflowStore],
+  workflowStore => workflowStore.updatedBy,
+);
+
 // CHART FILTER
 
 export const selectSelectedWorkflowNode = createSelector(

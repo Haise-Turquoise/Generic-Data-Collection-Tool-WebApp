@@ -9,7 +9,10 @@ const ReportingPeriodModel = model(
       endDate: { type: Date },
       application: { type: String },
       code: { type: String },
-      submissionClosed: { type: Boolean }
+      submissionClosed: { type: Boolean },
+      timestamp: { type: Date },
+      //    userCreatorId: { type: ObjectId, ref: 'User' },
+      updatedBy: { type: String },
     },
     { minimize: false },
   ),

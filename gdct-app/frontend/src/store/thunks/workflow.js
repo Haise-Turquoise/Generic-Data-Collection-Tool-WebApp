@@ -7,6 +7,8 @@ import {
   selectWorkflowNodes,
   selectWorkflowName,
   selectWorkflowId,
+  selectWorkflowTimestamp,
+  selectWorkflowUpdatedBy,
 } from '../WorkflowStore/selectors';
 import { WorkflowStoreActions, initialWorkflowState } from '../WorkflowStore/store';
 
@@ -26,6 +28,8 @@ const _createWorkflow = (dispatch, getState) => {
   const workflowLinks = selectWorkflowLinks(state);
   const workflowName = selectWorkflowName(state);
   const workflowId = selectWorkflowId(state);
+  const workflowTimestamp = selectWorkflowTimestamp(state);
+  const workflowUpdatedBy = selectWorkflowUpdatedBy(state);
 
   const linkMapSet = {};
   const endNodes = new Set();
@@ -80,7 +84,7 @@ const _createWorkflow = (dispatch, getState) => {
     );
 
   // Create the data structure of workflow process
-  const workflow = { name: workflowName, _id: workflowId };
+  const workflow = { name: workflowName, _id: workflowId, timestamp: workflowTimestamp, updatedBy: workflowUpdatedBy };
   const workflowProcessesData = [];
   const statusData = [];
 
@@ -107,6 +111,7 @@ const _createWorkflow = (dispatch, getState) => {
   return { workflow, workflowProcessesData, statusData };
 };
 
+// this is the same as submitWorkflow, see below
 export const updateWorkflow = () => (dispatch, getState) => {
   workflowController
     .update(_createWorkflow(dispatch, getState))
