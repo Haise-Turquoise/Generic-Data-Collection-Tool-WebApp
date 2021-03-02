@@ -18,7 +18,7 @@ export const initialWorkflowState = {
   name: '',
   error: null,
   _id: null,
-  timestamp: Date.now,
+  timestamp: new Date(),
   updatedBy: localStorage.getItem('currentUser'),
 };
 
