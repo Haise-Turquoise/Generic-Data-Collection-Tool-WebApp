@@ -13,7 +13,7 @@ import { useHistory } from 'react-router-dom';
 import EditIcon from '@material-ui/icons/Edit';
 import { selectFactoryRESTResponseTableValues } from '../../../store/common/REST/selectors';
 import { selectOrgsStore } from '../../../store/OrganizationsStore/selectors';
-import { getOrgsRequest } from '../../../store/thunks/organization';
+import { getOrgsRequest, updateOrgsRequest } from '../../../store/thunks/organization';
 import { calculateOptions } from '../../../tools/misc'
 
 const HeaderActions = () => {
@@ -54,6 +54,10 @@ const Organizations = ({ history }) => {
       { title: 'Organization ID', field: 'id' },
       { title: 'IFIS Number', field: 'IFISNum' },
       { title: 'Active', type: 'boolean', field: 'active' },
+            { title: 'Modified On', field: 'timestamp',
+      editComponent: props => {return <div></div>} },
+      { title: 'Updated By', field: 'updatedBy', 
+      editComponent: props => {return <div></div>} },
     ],
     [],
   );
@@ -70,6 +74,20 @@ const Organizations = ({ history }) => {
     ],
     [history],
   );
+
+  //*implement updateby and modified on columns
+  // const editable = useMemo(
+  //   () => ({
+  //     onClick: Orgs =>
+  //       new Promise((resolve, reject) => {
+  //         Orgs.updatedBy=localStorage.getItem('currentUser')
+  //         const event = new Date();
+  //         Orgs.timestamp = event.toLocaleString(); 
+  //         dispatch(updateOrgsRequest(Orgs, resolve, reject));
+  //       }),
+  //   }),
+  //   [dispatch],
+  // );
 
   useEffect(() => {
     dispatch(getOrgsRequest());

@@ -18,12 +18,6 @@ const AppConfigController = Service([AppConfigService], service => {
     //router.get('/appConfigs', (req, res, next) => {
       // Get query from middleware -- auth handler
 
-    //   service
-    //     .findAppConfig({})
-    //     .then(AppConfigs => res.json({ AppConfigs }))
-    //     .catch(next);
-    // });
-
     router.post('/appConfigs', authorized, (req, res, next) => {
       service
         .createAppConfig(req.body.AppConfig)

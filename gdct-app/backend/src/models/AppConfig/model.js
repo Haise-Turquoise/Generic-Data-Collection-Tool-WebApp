@@ -5,6 +5,10 @@ const AppConfig = new Schema(
     key: { type: String },
     value: { type: String },
     appSys: { type: String },
+    timestamp: {type: Date, default: Date.now},
+    //    updatedDate: { type: Date },
+//    userCreatorId: { type: ObjectId, ref: 'User' },
+    updatedBy: { type: String },
     isActive: {
       type: Boolean,
       default: true,

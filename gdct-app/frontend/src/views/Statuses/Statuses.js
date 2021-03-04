@@ -16,7 +16,8 @@ import './Statuses.scss';
 import { selectFactoryRESTResponseTableValues } from '../../store/common/REST/selectors';
 import { selectStatusesStore } from '../../store/StatusesStore/selectors';
 
-import {calculateOptions} from '../../tools/misc'
+import {calculateOptions} from '../../tools/misc';
+import moment from 'moment';
 
 const StatusHeader = () => {
   return (
@@ -43,6 +44,12 @@ const StatusesTable = () => {
       { title: 'Description', field: 'description' },
       { title: 'Active', type: 'boolean', field: 'isActive' },
       { title: 'For Package', type: 'boolean', field: 'forPackage' },
+      { title: 'Modified On', field: 'timestamp',
+        editComponent: props => {return <div></div>} },
+//      { title: 'Modified On', field: 'updatedDate', type: 'date',
+//      initialEditValue: Date.now,},
+      { title: 'Updated By', field: 'updatedBy', 
+        editComponent: props => {return <div></div>} },
     ],
     [],
   );
@@ -53,19 +60,40 @@ const StatusesTable = () => {
     () => ({
       onRowAdd: status =>
         new Promise((resolve, reject) => {
+          //get username and record in Modified By column
+          status.updatedBy=localStorage.getItem('currentUser')
+          //record new date and time in Modified On column 
+          const event = new Date();
+          status.timestamp = event.toLocaleString(); 
           dispatch(createStatusRequest(status, resolve, reject));
         }),
       onRowUpdate: status =>
         new Promise((resolve, reject) => {
+          //get username and record in Modified By column
+          status.updatedBy=localStorage.getItem('currentUser')
+          //record new date and time in Modified On column 
+          const event = new Date();
+          status.timestamp = event.toLocaleString(); 
           dispatch(updateStatusRequest(status, resolve, reject));
         }),
       onRowDelete: status =>
         new Promise((resolve, reject) => {
+          //get username and record in Modified By column
+          status.updatedBy=localStorage.getItem('currentUser')
+          //record new date and time in Modified On column 
+          const event = new Date();
+          status.timestamp = event.toLocaleString(); 
           dispatch(deleteStatusRequest(status._id, resolve, reject));
         }),
     }),
     [dispatch],
   );
+
+  // Convert Date format
+  statuses.forEach(status => {
+    const logtime = new Date(status.timestamp);
+    status.timestamp = moment(logtime).format("YYYY-MM-DD HH:mm:ss")
+  });
 
   useEffect(() => {
     dispatch(getStatusesRequest());

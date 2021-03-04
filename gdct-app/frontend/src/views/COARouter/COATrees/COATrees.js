@@ -57,7 +57,16 @@ const COATreesTable = ({ history }) => {
     shallowEqual,
   );
 
-  const columns = useMemo(() => [{ title: 'Sheet Name', field: 'name' }], []);
+  const columns = useMemo(
+    () => [
+      { title: 'Sheet Name', field: 'name' },
+      { title: 'Modified On', field: 'timestamp',
+      editComponent: props => {return <div></div>} },
+      { title: 'Updated By', field: 'updatedBy', 
+      editComponent: props => {return <div></div>} },
+    ], 
+    []
+  );
 
   const options = useMemo(() => calculateOptions(readRowNum), [readRowNum]);
 
@@ -95,6 +104,9 @@ const COATreesTable = ({ history }) => {
 
       onRowDelete: sheetName =>
         new Promise((resolve, reject) => {
+          sheetName.updatedBy=localStorage.getItem('currentUser')
+          const event = new Date();
+          sheetName.timestamp = event.toLocaleString(); 
           dispatch(deleteCOATreeBySheetName(sheetName, resolve, reject));
           setRefresh(true);
         }),

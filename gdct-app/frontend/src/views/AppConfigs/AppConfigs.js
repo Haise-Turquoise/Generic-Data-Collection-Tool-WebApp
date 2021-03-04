@@ -1,9 +1,10 @@
-import React, { useMemo, useEffect } from 'react';
+import React, { useMemo, useEffect, useState } from 'react';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 
 import MaterialTable from 'material-table';
 import Paper from '@material-ui/core/Paper';
 
+import moment from 'moment';
 import Typography from '@material-ui/core/Typography';
 import {
   getAppConfigsRequest,
@@ -30,6 +31,7 @@ const AppConfigsHeader = () => {
 
 const AppConfigsTable = () => {
   const dispatch = useDispatch();
+
   const { appConfigs, appSyses } = useSelector(
     state => ({
       appConfigs: selectFactoryRESTResponseTableValues(selectAppConfigsStore)(state),
@@ -37,6 +39,12 @@ const AppConfigsTable = () => {
     }),
     shallowEqual,
   );
+
+  // Convert Date format
+  appConfigs.forEach(appConfig => {
+    const logtime = new Date(appConfig.timestamp);
+    appConfig.timestamp = moment(logtime).format("YYYY-MM-DD HH:mm:ss")
+  });
 
   const lookupSysRoles = appSyses.reduce(function (acc, appSys) {
     acc[appSys.code] = appSys.name;
@@ -48,24 +56,51 @@ const AppConfigsTable = () => {
       { title: 'Key', field: 'key' },
       { title: 'Value', field: 'value' },
       { title: 'System', field: 'appSys', lookup: lookupSysRoles },
+      { title: 'Modified On', field: 'timestamp',
+      editComponent: props => {return <div></div>} },
+//      { title: 'Modified On', field: 'updatedDate', type: 'date',
+//      initialEditValue: Date.now,},
+      { title: 'Updated By', field: 'updatedBy', 
+      editComponent: props => {return <div></div>} },
     ],
     [lookupSysRoles],
   );
 
-  const options = useMemo(() => ({ actionsColumnIndex: -1, search: false, showTitle: false, addRowPosition: "first" }), []);
+  const options = useMemo(
+    () => (
+      {
+        actionsColumnIndex: -1,
+        search: true,
+        showTitle: false,
+        addRowPosition: "first",
+      }
+    ), 
+    []
+  );
 
   const editable = useMemo(
     () => ({
       onRowAdd: appConfig =>
         new Promise((resolve, reject) => {
+          //get username and record in Modified By column
+          appConfig.updatedBy=localStorage.getItem('currentUser')
+         //record new date and time in Modified On column 
+         const event = new Date();
+         appConfig.timestamp = event.toLocaleString(); 
           dispatch(createAppConfigRequest(appConfig, resolve, reject));
         }),
       onRowUpdate: appConfig =>
         new Promise((resolve, reject) => {
+          appConfig.updatedBy=localStorage.getItem('currentUser')
+         const event = new Date();
+         appConfig.timestamp = event.toLocaleString(); 
           dispatch(updateAppConfigRequest(appConfig, resolve, reject));
         }),
       onRowDelete: appConfig =>
         new Promise((resolve, reject) => {
+          appConfig.updatedBy=localStorage.getItem('currentUser')
+         const event = new Date();
+         appConfig.timestamp = event.toLocaleString(); 
           dispatch(deleteAppConfigRequest(appConfig._id, resolve, reject));
         }),
     }),
@@ -77,19 +112,13 @@ const AppConfigsTable = () => {
     dispatch(getAppConfigsRequest());
   }, [dispatch]);
 
-  //  Based on Appsys:  
-  //    return () => {
-  //      dispatch(WorkflowStoreActions.RESET());
-  //      dispatch(AppConfigsStore.actions.RESET());
-  //    };
-  //  }, [dispatch]);
-
   return (
     <MaterialTable
       columns={columns}
       //      actions={actions}
       data={appConfigs}
       editable={editable}
+      // @ts-ignore
       options={options}
     />
   );

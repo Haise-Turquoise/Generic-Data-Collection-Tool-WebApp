@@ -16,9 +16,7 @@ const CreateAuditLog = (email, activity, moduleName, recordId, oldValue, newValu
         const user = await getUserByUserEmail();
         const IdentitiesWithNoOrg = ["Business Admin", "Template Designer", "Template Approver"]
         // No need for attributes: _id and __v in objects
-        console.log(oldValue)
         const oldValue_trim = (({ _id, __v, ...o }) => o)(oldValue);
-        console.log(oldValue_trim)
         const newValue_trim = (({ _id, __v, ...o }) => o)(newValue);
         // Construct info required for this auditlogs
         const AuditLogInfo = {
