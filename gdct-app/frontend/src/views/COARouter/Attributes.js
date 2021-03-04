@@ -19,7 +19,8 @@ import {
 import { selectFactoryRESTResponseTableValues, selectFactoryRESTError } from '../../store/common/REST/selectors';
 import { selectColumnNamesStore } from '../../store/ColumnNamesStore/selectors';
 import { ColumnNamesActions } from '../../store/ColumnNamesStore/store';
-import { calculateOptions } from '../../tools/misc'
+import { calculateOptions } from '../../tools/misc';
+import moment from 'moment';
 
 const ColumnNameHeader = () => {
   return (
@@ -97,16 +98,23 @@ const ColumnNamesTable = () => {
       { title: 'Active', type: 'boolean', field: 'isActive' },
       { title: 'Modified On', field: 'timestamp',
         editComponent: props => {return <div></div>} },
-//      { title: 'Modified On', field: 'updatedDate', type: 'date',
-//      initialEditValue: Date.now,},
       { title: 'Updated By', field: 'updatedBy', 
         editComponent: props => {return <div></div>} },
     ],
     [],
   );
   
-
-  const options = useMemo(() => calculateOptions(readRowNum), [readRowNum]);
+  const options = useMemo(
+    () => (
+      {
+        actionsColumnIndex: -1,
+        search: true,
+        showTitle: false,
+        addRowPosition: "first",
+      }
+    ), 
+    []
+  );
 
   const editable = useMemo(
     () => ({
@@ -141,14 +149,6 @@ const ColumnNamesTable = () => {
     [dispatch],
   );
 
-  
-  const style = useMemo(
-    () => ({
-      "margin-top": "10px",
-    }),
-    []
-  )
-
     // Convert Date format
     const timeOption = { year: 'numeric', month: 'numeric', day: 'numeric', hour:'numeric', minute:'numeric' };
     columnNames.forEach(columnNames => {
@@ -163,15 +163,15 @@ const ColumnNamesTable = () => {
         // console.log(appRoles.timestamp.toString().replace(/,/g,'').replace(/\./g,''));
         // appRoles.timestamp = logtime.toLocaleDateString("en-CA", timeOption);
 
-       const event = new Date(columnNames.timestamp.toString());
-       columnNames.timestamp = event.toLocaleString(); 
+       const logtime = new Date(columnNames.timestamp);
+       columnNames.timestamp = moment(logtime).format("YYYY-MM-DD HH:mm:ss");
       }
       else{
         // const logtime = new Date("2021-02-16T03:59:32.015Z");
         // appRoles.timestamp = logtime.toLocaleDateString("en-CA", timeOption);
 
        const event = new Date("2021-02-16T03:59:32.015Z");
-       appRoles.timestamp = event.toLocaleString();
+       columnNames.timestamp = event.toLocaleString();
       }
       // const event = new Date(appRoles.timestamp.toString());
       // console.log(appRoles.timestamp.toString());
@@ -190,7 +190,8 @@ const ColumnNamesTable = () => {
   }, [dispatch]);
 
   return (
-    <MaterialTable key={readRowNum} style={style} columns={columns} data={columnNames} editable={editable} options={options} />
+    // @ts-ignore
+    <MaterialTable key={readRowNum} columns={columns} data={columnNames} editable={editable} options={options} />
   );
 };
 

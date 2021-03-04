@@ -6,6 +6,7 @@ import MaterialTable from 'material-table';
 import Paper from '@material-ui/core/Paper';
 
 import Typography from '@material-ui/core/Typography';
+import moment from 'moment';
 
 import './Users.scss';
 import { Button } from '@material-ui/core';
@@ -19,6 +20,7 @@ import {
   deleteUsersRequest,
   updateUsersRequest,
 } from '../../../store/thunks/users';
+
 
 const UsersHeader = () => {
   return (
@@ -92,6 +94,12 @@ const UsersTable = () => {
     users: selectFactoryRESTResponseTableValues(selectUsersStore)(state),
   }));
 
+  // Convert Date format
+  users.forEach(user => {
+    const logtime = new Date(user.timestamp);
+    user.timestamp = moment(logtime).format("YYYY-MM-DD HH:mm:ss")
+  });
+
   const columns = useMemo(
     () => [
       { title: 'User Name', field: 'username' },
@@ -100,6 +108,10 @@ const UsersTable = () => {
       { title: 'Email', field: 'email' },
       { title: 'Phone Number', field: 'phoneNumber' },
       { title: 'Active', type: 'boolean', field: 'isActive' },
+      { title: 'Modified On', field: 'timestamp',
+      editComponent: props => {return <div></div>} },
+      { title: 'Updated By', field: 'updatedBy', 
+      editComponent: props => {return <div></div>} },
     ],
     [],
   );
@@ -127,6 +139,9 @@ const UsersTable = () => {
       //   }),
       onRowUpdate: user =>
         new Promise((resolve, reject) => {
+          user.updatedBy=localStorage.getItem('currentUser')
+          const event = new Date();
+          user.timestamp = event.toLocaleString(); 
           dispatch(updateUsersRequest(user, resolve, reject));
         }),
       // onRowDelete: (user) =>

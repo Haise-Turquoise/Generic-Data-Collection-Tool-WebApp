@@ -15,6 +15,8 @@ export default class TemplateTypeEntity {
     isInputtable,
     isViewable,
     isReportable,
+    timestamp,
+    updatedBy,
     isActive,
   }) {
     this._id = _id;
@@ -29,6 +31,8 @@ export default class TemplateTypeEntity {
     this.isInputtable = isInputtable;
     this.isViewable = isViewable;
     this.isReportable = isReportable;
+    this.timestamp = timestamp;
+    this.updatedBy = updatedBy;
     this.isActive = isActive;
   }
 }

@@ -21,6 +21,10 @@ const User = new Schema(
 
     phoneNumber: { type: String, default: '' },
 
+    timestamp: { type: Date },
+    //    userCreatorId: { type: ObjectId, ref: 'User' },
+    updatedBy: { type: String },
+    
     password: String,
     sysRole: [
       {

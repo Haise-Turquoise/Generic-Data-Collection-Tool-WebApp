@@ -6,6 +6,7 @@ import LaunchIcon from '@material-ui/icons/Launch';
 
 import Typography from '@material-ui/core/Typography';
 import MaterialTable from 'material-table';
+import moment from 'moment';
 
 import { useHistory } from 'react-router-dom';
 import Select from 'react-select';
@@ -77,6 +78,13 @@ const TemplatePackages = () => {
     ],
     [dispatch],
   );
+
+  // Convert Date format
+  templatePackages.forEach(templatePackage => {
+    const logtime = new Date(templatePackage.timestamp);
+    templatePackage.timestamp = moment(logtime).format("YYYY-MM-DD HH:mm:ss")
+  });
+
 
   const columns = useMemo(
     () => [
@@ -204,36 +212,6 @@ const TemplatePackages = () => {
     }),
     [dispatch],
   );
-
-    // Convert Date format
-    const timeOption = { year: 'numeric', month: 'numeric', day: 'numeric', hour:'numeric', minute:'numeric' };
-    templatePackages.forEach(templatePackages => {
-//        appRole.timestamp = new Date()
-//      var date = moment(appRoles.timestamp).toDate();
-      if(templatePackages.timestamp!=null) {
-
-        // reformat date string to match ISO format of mongo db: 2021-02-16T03:59:32.015Z
-        // const temptime = new Date(appRoles.timestamp.toString().replace(/,/g,'').replace(/\./g,'')
-        // );
-        // const logtime = new Date(appRoles.timestamp);
-        // console.log(appRoles.timestamp.toString().replace(/,/g,'').replace(/\./g,''));
-        // appRoles.timestamp = logtime.toLocaleDateString("en-CA", timeOption);
-
-       const event = new Date(templatePackages.timestamp.toString());
-       templatePackages.timestamp = event.toLocaleString(); 
-      }
-      else{
-        // const logtime = new Date("2021-02-16T03:59:32.015Z");
-        // appRoles.timestamp = logtime.toLocaleDateString("en-CA", timeOption);
-
-       const event = new Date("2021-02-16T03:59:32.015Z");
-       templatePackages.timestamp = event.toLocaleString();
-      }
-      // const event = new Date(appRoles.timestamp.toString());
-      // console.log(appRoles.timestamp.toString());
-      // const logtime = new Date(appRoles.timestamp); 
-      // appRoles.timestamp = event.toLocaleDateString("en-CA", timeOption); 
-    })
 
   useEffect(() => {
     dispatch(getTemplatePackagesRequest());

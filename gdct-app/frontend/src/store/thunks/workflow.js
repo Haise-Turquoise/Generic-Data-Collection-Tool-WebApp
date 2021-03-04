@@ -118,6 +118,12 @@ export const updateWorkflow = () => (dispatch, getState) => {
     .catch(error => dispatch(WorkflowStoreActions.UPDATE_WORKFLOW_ERROR(error)));
 };
 
+export const submitWorkflow = () => (dispatch, getState) => {
+  workflowController
+    .create(_createWorkflow(dispatch, getState))
+    .catch(error => dispatch(WorkflowStoreActions.UPDATE_WORKFLOW_ERROR(error)));
+};
+
 export const loadWorkflow = workflowId => dispatch => {
   workflowController.fetchById(workflowId).then(({ workflow, workflowProcesses }) => {
     const workflowState = cloneDeep(initialWorkflowState);
@@ -187,12 +193,6 @@ const markVisitableNodes = (startingNode, linkMapSet, visited) => {
       if (!visited.has(adjacentNode)) markVisitableNodes(adjacentNode, linkMapSet, visited);
     });
   }
-};
-
-export const submitWorkflow = () => (dispatch, getState) => {
-  workflowController
-    .create(_createWorkflow(dispatch, getState))
-    .catch(error => dispatch(WorkflowStoreActions.UPDATE_WORKFLOW_ERROR(error)));
 };
 
 export const getWorkflowProcessesRequest = (
