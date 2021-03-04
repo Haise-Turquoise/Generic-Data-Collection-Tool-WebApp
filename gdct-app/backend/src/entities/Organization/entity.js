@@ -19,6 +19,8 @@ export default class OrgEntity {
     programId,
     effectiveDate,
     expiryDate,
+    timestamp,
+    updatedBy,
   } = {}) {
     this._id = _id;
     this.id = id;
@@ -39,5 +41,7 @@ export default class OrgEntity {
     this.programId = programId;
     this.effectiveDate = effectiveDate;
     this.expiryDate = expiryDate;
+    this.timestamp = timestamp;
+    this.updatedBy = updatedBy;
   }
 }

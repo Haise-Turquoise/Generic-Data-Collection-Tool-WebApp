@@ -8,8 +8,7 @@ export default function Logout({ setLoggedIn }) {
 
 
   // Get User Email
-  var node = document.getElementById('MuiChip-label');
-  const email = node.textContent;
+  const email = localStorage.getItem('currentUser');
   useEffect(() => {
     AuthController.logout(email).then(res => {
       if (res.status === 'ok') {

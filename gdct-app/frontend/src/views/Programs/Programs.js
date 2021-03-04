@@ -44,6 +44,12 @@ const ProgramsTable = () => {
     () => [
       { title: 'Name', field: 'name' },
       { title: 'Code', field: 'code' },
+      { title: 'Modified On', field: 'timestamp',
+        editComponent: props => {return <div></div>} },
+//      { title: 'Modified On', field: 'updatedDate', type: 'date',
+//      initialEditValue: Date.now,},
+      { title: 'Updated By', field: 'updatedBy', 
+        editComponent: props => {return <div></div>} },
       { title: 'Active', type: 'boolean', field: 'isActive' },
     ],
     [],
@@ -55,6 +61,11 @@ const ProgramsTable = () => {
     () => ({
       onRowAdd: program =>
         new Promise((resolve, reject) => {
+          //get username and record in Modified By column
+          program.updatedBy=localStorage.getItem('currentUser')
+          //record new date and time in Modified On column 
+          const event = new Date();
+          program.timestamp = event.toLocaleString(); 
           dispatch(createProgramsRequest(program, resolve, reject));
         }).then(newProgram => {
           CreateAuditLog(null, "Create Program", "Program", newProgram._id, {}, newProgram);
@@ -69,11 +80,21 @@ const ProgramsTable = () => {
             const oldProgram = await findProgramById();
             CreateAuditLog(null, "Update Program", "Program", oldProgram._id, oldProgram, program);
           })();
+          //get username and record in Modified By column
+          program.updatedBy=localStorage.getItem('currentUser')
+          //record new date and time in Modified On column 
+          const event = new Date();
+          program.timestamp = event.toLocaleString();
           // Do Update
           dispatch(updateProgramsRequest(program, resolve, reject));
         }),
       onRowDelete: program =>
         new Promise((resolve, reject) => {
+          //get username and record in Modified By column
+          program.updatedBy=localStorage.getItem('currentUser')
+          //record new date and time in Modified On column 
+          const event = new Date();
+          program.timestamp = event.toLocaleString(); 
           dispatch(deleteProgramsRequest(program._id, resolve, reject));
           // For Auditlog
           const program_trim = (({ tableData, ...o }) => o)(program);
@@ -82,6 +103,36 @@ const ProgramsTable = () => {
     }),
     [dispatch],
   );
+
+    // Convert Date format
+    const timeOption = { year: 'numeric', month: 'numeric', day: 'numeric', hour:'numeric', minute:'numeric' };
+    programs.forEach(programs => {
+//        appRole.timestamp = new Date()
+//      var date = moment(appRoles.timestamp).toDate();
+      if(programs.timestamp!=null) {
+
+        // reformat date string to match ISO format of mongo db: 2021-02-16T03:59:32.015Z
+        // const temptime = new Date(appRoles.timestamp.toString().replace(/,/g,'').replace(/\./g,'')
+        // );
+        // const logtime = new Date(appRoles.timestamp);
+        // console.log(appRoles.timestamp.toString().replace(/,/g,'').replace(/\./g,''));
+        // appRoles.timestamp = logtime.toLocaleDateString("en-CA", timeOption);
+
+       const event = new Date(programs.timestamp.toString());
+       programs.timestamp = event.toLocaleString(); 
+      }
+      else{
+        // const logtime = new Date("2021-02-16T03:59:32.015Z");
+        // appRoles.timestamp = logtime.toLocaleDateString("en-CA", timeOption);
+
+       const event = new Date("2021-02-16T03:59:32.015Z");
+       programs.timestamp = event.toLocaleString();
+      }
+      // const event = new Date(appRoles.timestamp.toString());
+      // console.log(appRoles.timestamp.toString());
+      // const logtime = new Date(appRoles.timestamp); 
+      // appRoles.timestamp = event.toLocaleDateString("en-CA", timeOption); 
+    })
 
   useEffect(() => {
     dispatch(getProgramsRequest());

@@ -169,7 +169,9 @@ const WorkflowHeaderActions = ({ type }) => {
   // submitWorkflow
 
   const handleSave = useCallback(() => {
-    dispatch(type === 'create' ? submitWorkflow() : updateWorkflow());
+// removed updateworkflow since it's never used
+   dispatch(type === 'create' ? submitWorkflow() : updateWorkflow());
+//   dispatch(submitWorkflow());
   }, [dispatch]);
 
   return (
