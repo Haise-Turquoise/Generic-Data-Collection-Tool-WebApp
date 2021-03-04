@@ -21,7 +21,8 @@ import { getWorkflowsRequest } from '../../../store/thunks/workflow';
 import { WorkflowStoreActions } from '../../../store/WorkflowStore/store';
 import TemplateTypesStore from '../../../store/TemplateTypesStore/store';
 import ErrorBanner from '../../ErrorBanner';
-import { calculateOptions } from '../../../tools/misc'
+import { calculateOptions } from '../../../tools/misc';
+import moment from 'moment';
 
 const TemplateTypeHeader = () => {
   return (
@@ -62,6 +63,10 @@ const TemplateTypesTable = ({ history }) => {
     // { title: 'Inputtable', type: 'boolean', field: 'isInputtable' },
     // { title: 'Viewable', type: 'boolean', field: 'isViewable' },
     // { title: 'Reportable', type: 'boolean', field: 'isReportable' },
+    { title: 'Modified On', field: 'timestamp',
+    editComponent: props => {return <div></div>} },
+    { title: 'Updated By', field: 'updatedBy', 
+    editComponent: props => {return <div></div>} },
     { title: 'Active', type: 'boolean', field: 'isActive' },
   ];
 
@@ -84,19 +89,60 @@ const TemplateTypesTable = ({ history }) => {
     () => ({
       onRowAdd: templateType =>
         new Promise((resolve, reject) => {
+          //get username and record in Modified By column
+          templateType.updatedBy=localStorage.getItem('currentUser')
+          //record new date and time in Modified On column 
+          const event = new Date();
+          templateType.timestamp = event.toLocaleString(); 
           dispatch(createTemplateTypeRequest(templateType, resolve, reject));
         }),
       onRowUpdate: templateType =>
         new Promise((resolve, reject) => {
+          templateType.updatedBy=localStorage.getItem('currentUser')
+          const event = new Date();
+          templateType.timestamp = event.toLocaleString(); 
           dispatch(updateTemplateTypeRequest(templateType, resolve, reject));
         }),
       onRowDelete: templateType =>
         new Promise((resolve, reject) => {
+          templateType.updatedBy=localStorage.getItem('currentUser')
+          const event = new Date();
+          templateType.timestamp = event.toLocaleString(); 
           dispatch(deleteTemplateTypeRequest(templateType._id, resolve, reject));
         }),
     }),
     [dispatch],
   );
+
+    // Convert Date format
+    const timeOption = { year: 'numeric', month: 'numeric', day: 'numeric', hour:'numeric', minute:'numeric' };
+    templateTypes.forEach(templateType => {
+//        appRole.timestamp = new Date()
+//      var date = moment(appRoles.timestamp).toDate();
+      if(templateType.timestamp!=null) {
+
+        // reformat date string to match ISO format of mongo db: 2021-02-16T03:59:32.015Z
+        // const temptime = new Date(appRoles.timestamp.toString().replace(/,/g,'').replace(/\./g,'')
+        // );
+        // const logtime = new Date(appRoles.timestamp);
+        // console.log(appRoles.timestamp.toString().replace(/,/g,'').replace(/\./g,''));
+        // appRoles.timestamp = logtime.toLocaleDateString("en-CA", timeOption);
+
+       const logtime = new Date(templateType.timestamp);
+       templateType.timestamp = moment(logtime).format("YYYY-MM-DD HH:mm:ss");
+      }
+      else{
+        // const logtime = new Date("2021-02-16T03:59:32.015Z");
+        // appRoles.timestamp = logtime.toLocaleDateString("en-CA", timeOption);
+
+       const event = new Date("2021-02-16T03:59:32.015Z");
+       templateType.timestamp = event.toLocaleString();
+      }
+      // const event = new Date(appRoles.timestamp.toString());
+      // console.log(appRoles.timestamp.toString());
+      // const logtime = new Date(appRoles.timestamp); 
+      // appRoles.timestamp = event.toLocaleDateString("en-CA", timeOption); 
+    });
 
   useEffect(() => {
     dispatch(getWorkflowsRequest());

@@ -19,7 +19,7 @@ import { selectFactoryRESTResponseTableValues } from '../../../store/common/REST
 import { selectCOAGroupsStore } from '../../../store/COAGroupsStore/selectors';
 
 import { calculateOptions } from '../../../tools/misc';
-
+import moment from 'moment'
 
 const COAGroupsHeader = () => {
   const { t, i18n } = useTranslation();
@@ -94,10 +94,17 @@ const COAGroupsTable = () => {
     [dispatch],
   );
 
+  // Convert Date format
+  COAGroups.forEach(COAGroup => {
+    const logtime = new Date(COAGroup.timestamp);
+    COAGroup.timestamp = moment(logtime).format("YYYY-MM-DD HH:mm:ss")
+  });
+  
   useEffect(() => {
     dispatch(getCOAGroupsRequest());
   }, [dispatch]);
 
+  // @ts-ignore
   return <MaterialTable key={readRowNum} columns={columns} data={COAGroups} editable={editable} options={options} />;
 };
 

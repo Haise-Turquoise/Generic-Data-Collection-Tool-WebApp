@@ -16,7 +16,8 @@ import './Statuses.scss';
 import { selectFactoryRESTResponseTableValues } from '../../store/common/REST/selectors';
 import { selectStatusesStore } from '../../store/StatusesStore/selectors';
 
-import {calculateOptions} from '../../tools/misc'
+import {calculateOptions} from '../../tools/misc';
+import moment from 'moment';
 
 const StatusHeader = () => {
   return (
@@ -88,35 +89,11 @@ const StatusesTable = () => {
     [dispatch],
   );
 
-    // Convert Date format
-    const timeOption = { year: 'numeric', month: 'numeric', day: 'numeric', hour:'numeric', minute:'numeric' };
-    statuses.forEach(statuses => {
-//        appRole.timestamp = new Date()
-//      var date = moment(appRoles.timestamp).toDate();
-      if(statuses.timestamp!=null) {
-
-        // reformat date string to match ISO format of mongo db: 2021-02-16T03:59:32.015Z
-        // const temptime = new Date(appRoles.timestamp.toString().replace(/,/g,'').replace(/\./g,'')
-        // );
-        // const logtime = new Date(appRoles.timestamp);
-        // console.log(appRoles.timestamp.toString().replace(/,/g,'').replace(/\./g,''));
-        // appRoles.timestamp = logtime.toLocaleDateString("en-CA", timeOption);
-
-       const event = new Date(statuses.timestamp.toString());
-       statuses.timestamp = event.toLocaleString(); 
-      }
-      else{
-        // const logtime = new Date("2021-02-16T03:59:32.015Z");
-        // appRoles.timestamp = logtime.toLocaleDateString("en-CA", timeOption);
-
-       const event = new Date("2021-02-16T03:59:32.015Z");
-       statuses.timestamp = event.toLocaleString();
-      }
-      // const event = new Date(appRoles.timestamp.toString());
-      // console.log(appRoles.timestamp.toString());
-      // const logtime = new Date(appRoles.timestamp); 
-      // appRoles.timestamp = event.toLocaleDateString("en-CA", timeOption); 
-    })
+  // Convert Date format
+  statuses.forEach(status => {
+    const logtime = new Date(status.timestamp);
+    status.timestamp = moment(logtime).format("YYYY-MM-DD HH:mm:ss")
+  });
 
   useEffect(() => {
     dispatch(getStatusesRequest());
