@@ -4,12 +4,12 @@ import Dialog from '@material-ui/core/Dialog';
 import spreadSheetController from '../../controllers/spreadSheet'
 import Button from '@material-ui/core/Button';
 import './CategoryInsertionMenu.scss';
+
+// This component responsible for category insertion dialog
 class categoryInsertMenu extends React.Component{
   constructor(props) {
     super(props);
     this.update_subform = this.update_subform.bind(this);
-    this.updateCategory_Groups = this.updateCategory_Groups.bind(this);
-    this.updateCategory = this.updateCategory.bind(this);
     this.insert = this.insert.bind(this);
     this.insertOptions = this.insertOptions.bind(this);
     this.deleteOption = this.deleteOption.bind(this);
@@ -20,20 +20,11 @@ class categoryInsertMenu extends React.Component{
     this.categoryRef = React.createRef();
     this.data = [];
   }
-  // const {open, callback} = props;
   
-
-  // let category = [];
-  // let InsertedID = {};
-  
-  // spreadSheetController.fetchCategoryAndAttribute().then(data=>{ console.log(data);updateCategory_Groups(data["Categories"]);})
-
-  // useLayoutEffect(()=>{
-  //     spreadSheetController.fetchCategoryAndAttribute().then(data=>{ console.log(data);updateCategory_Groups(data["Categories"]);})
-  // }, []);
+  // Get data from server and pass it into 
   componentDidMount(){
-    
     spreadSheetController.fetchCategoryAndAttribute().then(data=>{
+    // TODO: change the hard code for balance sheet to the current sheet in the next line.
     const unsortedData = data["Categories"].filter(entry=> entry["sheetName"] === 'Balance Sheet');
     this.data = unsortedData.sort((a, b) => a.categoryGroup.localeCompare(b.categoryGroup));
     this.category = this.data;
@@ -41,14 +32,16 @@ class categoryInsertMenu extends React.Component{
     })
   }
 
+  // Navigate to the next level of the Nested Json Array
   update_subform = (caller_layer)=>{
-    
     let formSection = document.getElementById('formSection');
     
     //onChange, remove every selection form after the target form
     let counter = 0
     const childs = formSection.childNodes
     let delIndex = Infinity;
+
+    // clear the layers below that level
     for(let i = 0; i < formSection.childNodes.length; i++){
       
       if(childs[i].nodeName == "FORM"){
@@ -67,12 +60,10 @@ class categoryInsertMenu extends React.Component{
     while (formSection.childNodes.length >= delIndex){
       formSection.removeChild(formSection.childNodes[formSection.childNodes.length - 1])
     }
-
-    
     
     const selectionList = [];
-    // Obtain selection path by navigating trhough the Json file
     
+    // Obtain selection path by navigating through the Json file
     for(let i = 0; i < formSection.childNodes.length; i++){
 
       let selection = formSection.childNodes[i]
@@ -85,21 +76,20 @@ class categoryInsertMenu extends React.Component{
             } 
         }
         selectionList.push(option[option.selectedIndex].text)
-      }
-          
+      }  
     }
-    
     
     let targetList = this.category
     let fullJsonLayer = {}
+
     // Navigate in the Json layer
-  
     for(let item of selectionList){
       fullJsonLayer = targetList.filter((element)=>{return element.categoryGroup == item})[0];
       targetList = fullJsonLayer.childCategory;
     }
-    // console.log(fullJsonLayer)
-    // Navigate set the target layer
+
+    // Navigate in the target layer
+    // If it does not have a sub category or children, 
     if(fullJsonLayer.categories.length == 0 && fullJsonLayer.childCategory.length == 0){
     
       const form = document.createElement('FORM');
@@ -108,7 +98,7 @@ class categoryInsertMenu extends React.Component{
       formSection.append(form);
       
     }else{
-      
+      // Else, populate the new selection box with child categories or categoies
       if(fullJsonLayer.childCategory.length > 0){
         const form = document.createElement('FORM');
         const select = document.createElement("SELECT");
@@ -140,7 +130,6 @@ class categoryInsertMenu extends React.Component{
         form.appendChild(select);
         formSection.append(form);
         
-        
       }else{
         const form = document.createElement('FORM');
         const select = document.createElement("SELECT");
@@ -165,43 +154,6 @@ class categoryInsertMenu extends React.Component{
       }
     }
     this.setState({update:!this.state.update});
-  }
-  
-    
-  updateCategory_Groups = (category_group)=> {
-    let property_name = this.categoryRef.current;
-    this.category = category_group;
-    this.InsertedID = {};
-    this.category.sort((a, b) => a.categoryGroup.localeCompare(b.categoryGroup));
-    this.category.forEach((input)=>{
-      let option = document.createElement("OPTION");
-      let text = input.categoryGroup;
-      let textnode = document.createTextNode(text);
-      option.appendChild(textnode);
-      property_name.appendChild(option);
-    });
-  }
-    
-  updateCategory = (e)=>{
-    const categoryGroupName = e.target.value
-    let input_fields = document.getElementById('CategoryOptions');
-    while(input_fields.childNodes.length != 0){
-      input_fields.removeChild(input_fields.childNodes[0]);
-    }
-    
-    let intro = document.createElement('OPTION');
-    let introtext = document.createTextNode('Please select a category');
-    intro.appendChild(introtext);
-    input_fields.appendChild(intro);
-    const categories = this.category.filter((group)=>group.categoryGroup == categoryGroupName)[0].categories
-    categories.sort((a, b) => a.name.localeCompare(b.name));
-    categories.forEach((category)=>{
-      let option = document.createElement('OPTION');
-      option.setAttribute("id", category.id)
-      let textnode = document.createTextNode(category.name);
-      option.appendChild(textnode);
-      input_fields.appendChild(option);
-    });
   }
     
   insert = ()=>{

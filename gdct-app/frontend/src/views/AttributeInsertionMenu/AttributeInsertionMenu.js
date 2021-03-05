@@ -4,7 +4,6 @@ import Dialog from '@material-ui/core/Dialog';
 import Button from '@material-ui/core/Button';
 import spreadSheetController from '../../controllers/spreadSheet'
 
-
 // This component is responsible for attribute insertion menu
 // Created by Sheldon Su on 2021/03/01
 class attributeInsertionMenu extends React.Component{
@@ -42,6 +41,7 @@ class attributeInsertionMenu extends React.Component{
     
     // Function that calls the insert function and pass the selected value for insert
     insert(){
+
         let input_fields = document.getElementById('AttributeGroup');
         // @ts-ignore
         if (input_fields.selectedIndex){

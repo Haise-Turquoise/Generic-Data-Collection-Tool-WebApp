@@ -60,6 +60,7 @@ class SpreadSheet extends Component{
       templateController.fetchTemplate(this.id).then(template=>{
         const data = template.templateData;
         this.sheet = new Spreadsheet("#x-spreadsheet", sheetOption).loadData(data).reRender();
+        
         // This event listner handles user close the tab without saving
         window.addEventListener('beforeunload', this.handleSave);
         this.sheet.on('cell-selected',(cell, row, col)=>{
