@@ -1,7 +1,8 @@
-import React, { Component, useState } from "react";
+import React, { Component } from "react";
 import Spreadsheet from 'x-data-spreadsheet';
 import templateController from '../controllers/template'
-import CategoryInsertMenu from'./CategoryInsertMenu'
+import CategoryInsertMenu from './CategoryInsertionMenu';
+import AttributeInsertMenu from './AttributeInsertionMenu';
 
 // Sheet Option
 const sheetOption = {
@@ -10,7 +11,7 @@ const sheetOption = {
     showGrid: true,
     showContextmenu: true,
     view: {
-      height: () => document.documentElement.clientHeight*0.7846,
+      height: () => document.documentElement.clientHeight*0.7488,
       width: () => document.documentElement.clientWidth*0.975,
     },
     row: {
@@ -48,8 +49,10 @@ class SpreadSheet extends Component{
       this.id = this.props.sheetID;
       this.saveTemplate = this.saveTemplate.bind(this);
       this.handleSave = this.handleSave.bind(this);
-      this.currentCoord = {}
-      this.state = {openStatus:false,}; 
+      this.insertCategory = this.insertCategory.bind(this);
+      this.insertAttribute = this.insertAttribute.bind(this);
+      this.currentCoord = {};
+      this.categoryAndAttribute = {};
     }
 
     // After component mount, initailize spreadsheet and load data from DB
@@ -84,13 +87,35 @@ class SpreadSheet extends Component{
       }
     }
 
+    insertCategory = (inputs, rowNum=null) =>{
+      const currentIndex = this.sheet.getCurrentSheetIndex();
+      const insertRow = rowNum? rowNum:this.currentCoord.row;
+      for (let key in inputs){
+        this.sheet.insertRowAt(insertRow);
+        this.sheet.cellText(insertRow, 0, key, currentIndex);
+        this.sheet.cellText(insertRow, 1, inputs[key], currentIndex);
+      }
+      this.sheet.reRender();
+    }
+
+    insertAttribute = (id, text)=>{
+      const currentIndex = this.sheet.getCurrentSheetIndex();
+      const insertCol = this.currentCoord.col;
+      this.sheet.insertColAt(insertCol);
+      this.sheet.cellText(0, insertCol, id, currentIndex);
+      this.sheet.cellText(9, insertCol, text, currentIndex);
+      this.sheet.reRender();
+    }
+
     render(){
         return (
-            <div>
-                <button onClick={()=>{this.setState({openStatus:true})}}>Insert Catagory</button>
-                <CategoryInsertMenu open={this.state.openStatus} />
-                <div id="x-spreadsheet"></div>
-            </div>
+          <div>
+              <div style={{display:'flex'}}>
+                <CategoryInsertMenu callback={this.insertCategory}/>
+                <AttributeInsertMenu callback={this.insertAttribute}/>
+              </div>
+              <div id="x-spreadsheet"></div>
+          </div>
         )
     }
 }
