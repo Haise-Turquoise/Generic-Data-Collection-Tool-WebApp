@@ -4,7 +4,7 @@ import templateController from '../controllers/template'
 import CategoryInsertMenu from './CategoryInsertionMenu';
 import AttributeInsertMenu from './AttributeInsertionMenu';
 
-// Sheet Option
+// Sheet style Option
 const sheetOption = {
     mode: 'edit', // edit | read
     showToolbar: true,
@@ -87,6 +87,7 @@ class SpreadSheet extends Component{
       }
     }
 
+    // This function is responsible for inserting category selections
     insertCategory = (inputs, rowNum=null) =>{
       const currentIndex = this.sheet.getCurrentSheetIndex();
       const insertRow = rowNum? rowNum:this.currentCoord.row;
@@ -98,10 +99,14 @@ class SpreadSheet extends Component{
       this.sheet.reRender();
     }
 
+    // This function is responsible for inserting atrributes
     insertAttribute = (id, text)=>{
+      // Get current index of the current sheet
       const currentIndex = this.sheet.getCurrentSheetIndex();
       const insertCol = this.currentCoord.col;
+      // Insert col at the specified index
       this.sheet.insertColAt(insertCol);
+      // Insert id and text to their rows
       this.sheet.cellText(0, insertCol, id, currentIndex);
       this.sheet.cellText(9, insertCol, text, currentIndex);
       this.sheet.reRender();
