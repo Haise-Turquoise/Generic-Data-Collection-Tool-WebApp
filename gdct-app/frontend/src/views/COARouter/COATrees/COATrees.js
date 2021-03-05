@@ -24,7 +24,7 @@ import { ROUTE_CATEGORY_TREES } from '../../../constants/routes';
 
 import { calculateOptions } from '../../../tools/misc'
 import DetectEmptyTreeStore from '../../../store/DetectEmptyTreeStore/store';
-
+import moment from 'moment';
 
 
 // import './COATrees.scss'
@@ -56,6 +56,12 @@ const COATreesTable = ({ history }) => {
     }),
     shallowEqual,
   );
+
+  // Convert Date format
+  detectEmptyTree.forEach(detectEmptyTree => {
+    const logtime = new Date(detectEmptyTree.timestamp);
+    detectEmptyTree.timestamp = moment(logtime).format("YYYY-MM-DD HH:mm:ss")
+  });
 
   const columns = useMemo(
     () => [

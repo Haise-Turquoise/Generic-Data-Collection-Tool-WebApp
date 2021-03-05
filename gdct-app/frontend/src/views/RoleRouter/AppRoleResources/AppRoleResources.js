@@ -20,8 +20,8 @@ import { selectFactoryRESTResponseTableValues } from '../../../store/common/REST
 import { selectAppRoleResourcesStore } from '../../../store/AppRoleResourcesStore/selectors';
 import { selectAppSysRolesStore } from '../../../store/AppSysRolesStore/selectors';
 import { selectAppResourcesStore } from '../../../store/AppResourcesStore/selectors';
-import { calculateOptions } from '../../../tools/misc'
-
+import { calculateOptions } from '../../../tools/misc';
+import moment from 'moment';
 
 const AppRoleResourcesHeader = () => {
   return (
@@ -54,6 +54,12 @@ const AppRoleResourcesTable = () => {
     return acc;
   }, {});
 
+  // Convert Date format
+  appRoleResources.forEach(appRoleResource => {
+    const logtime = new Date(appRoleResource.timestamp);
+    appRoleResource.timestamp = moment(logtime).format("YYYY-MM-DD HH:mm:ss")
+  });
+  
   const columns = useMemo(
     () => [
       { title: 'Application System Role', field: 'appSysRoleId', lookup: lookupSysRoles },
@@ -120,36 +126,6 @@ const AppRoleResourcesTable = () => {
     }),
     [dispatch],
   );
-
-    // Convert Date format
-    const timeOption = { year: 'numeric', month: 'numeric', day: 'numeric', hour:'numeric', minute:'numeric' };
-    appRoleResources.forEach(appRoleResources => {
-//        appRole.timestamp = new Date()
-//      var date = moment(appRoles.timestamp).toDate();
-      if(appRoleResources.timestamp!=null) {
-
-        // reformat date string to match ISO format of mongo db: 2021-02-16T03:59:32.015Z
-        // const temptime = new Date(appRoles.timestamp.toString().replace(/,/g,'').replace(/\./g,'')
-        // );
-        // const logtime = new Date(appRoles.timestamp);
-        // console.log(appRoles.timestamp.toString().replace(/,/g,'').replace(/\./g,''));
-        // appRoles.timestamp = logtime.toLocaleDateString("en-CA", timeOption);
-
-       const event = new Date(appRoleResources.timestamp.toString());
-       appRoleResources.timestamp = event.toLocaleString(); 
-      }
-      else{
-        // const logtime = new Date("2021-02-16T03:59:32.015Z");
-        // appRoles.timestamp = logtime.toLocaleDateString("en-CA", timeOption);
-
-       const event = new Date("2021-02-16T03:59:32.015Z");
-       appRoleResources.timestamp = event.toLocaleString();
-      }
-      // const event = new Date(appRoles.timestamp.toString());
-      // console.log(appRoles.timestamp.toString());
-      // const logtime = new Date(appRoles.timestamp); 
-      // appRoles.timestamp = event.toLocaleDateString("en-CA", timeOption); 
-    })
 
   useEffect(() => {
     dispatch(getAppRoleResourcesRequest());

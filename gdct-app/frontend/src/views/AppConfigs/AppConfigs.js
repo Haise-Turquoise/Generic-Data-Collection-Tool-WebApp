@@ -58,8 +58,6 @@ const AppConfigsTable = () => {
       { title: 'System', field: 'appSys', lookup: lookupSysRoles },
       { title: 'Modified On', field: 'timestamp',
       editComponent: props => {return <div></div>} },
-//      { title: 'Modified On', field: 'updatedDate', type: 'date',
-//      initialEditValue: Date.now,},
       { title: 'Updated By', field: 'updatedBy', 
       editComponent: props => {return <div></div>} },
     ],

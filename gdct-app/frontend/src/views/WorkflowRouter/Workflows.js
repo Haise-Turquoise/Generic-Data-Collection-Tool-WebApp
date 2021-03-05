@@ -15,6 +15,7 @@ import { ROUTE_WORKFLOW_CREATE, ROUTE_WORKFLOW } from '../../constants/routes';
 import { getWorkflowsRequest, deleteWorkflowRequest } from '../../store/thunks/workflow';
 import { calculateOptions } from '../../tools/misc'
 import ErrorBanner from '../ErrorBanner';
+import moment from 'moment';
 
 const WorkflowHeader = () => {
   const history = useHistory();
@@ -41,6 +42,12 @@ const Workflows = () => {
     }),
     shallowEqual,
   );
+
+  // Convert Date format
+  workflows.forEach(workflow => {
+    const logtime = new Date(workflow.timestamp);
+    workflow.timestamp = moment(logtime).format("YYYY-MM-DD HH:mm:ss")
+  });
 
   const columns = useMemo(
     () => [
@@ -82,36 +89,6 @@ const Workflows = () => {
     ],
     [history],
   );
-
-    // Convert Date format
-    const timeOption = { year: 'numeric', month: 'numeric', day: 'numeric', hour:'numeric', minute:'numeric' };
-    workflows.forEach(workflows => {
-//        appRole.timestamp = new Date()
-//      var date = moment(appRoles.timestamp).toDate();
-      if(workflows.timestamp!=null) {
-
-        // reformat date string to match ISO format of mongo db: 2021-02-16T03:59:32.015Z
-        // const temptime = new Date(appRoles.timestamp.toString().replace(/,/g,'').replace(/\./g,'')
-        // );
-        // const logtime = new Date(appRoles.timestamp);
-        // console.log(appRoles.timestamp.toString().replace(/,/g,'').replace(/\./g,''));
-        // appRoles.timestamp = logtime.toLocaleDateString("en-CA", timeOption);
-
-       const event = new Date(workflows.timestamp.toString());
-       workflows.timestamp = event.toLocaleString(); 
-      }
-      else{
-        // const logtime = new Date("2021-02-16T03:59:32.015Z");
-        // appRoles.timestamp = logtime.toLocaleDateString("en-CA", timeOption);
-
-       const event = new Date("2021-02-16T03:59:32.015Z");
-       workflows.timestamp = event.toLocaleString();
-      }
-      // const event = new Date(appRoles.timestamp.toString());
-      // console.log(appRoles.timestamp.toString());
-      // const logtime = new Date(appRoles.timestamp); 
-      // appRoles.timestamp = event.toLocaleDateString("en-CA", timeOption); 
-    })
 
   useEffect(() => {
     dispatch(getWorkflowsRequest());

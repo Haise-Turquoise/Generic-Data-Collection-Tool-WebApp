@@ -20,10 +20,6 @@ const User = new Schema(
     lastName: { type: String, default: '' },
 
     phoneNumber: { type: String, default: '' },
-
-    timestamp: { type: Date },
-    //    userCreatorId: { type: ObjectId, ref: 'User' },
-    updatedBy: { type: String },
     
     password: String,
     sysRole: [

@@ -39,7 +39,7 @@ const SheetNamesTable = () => {
   const columns = useMemo(
     () => [
       { title: 'Name', field: 'name' },
-      { title: 'Active', field: 'isActive' },
+      { title: 'Active', field: 'isActive', type: 'boolean' },
       { title: 'Modified On', field: 'timestamp',
         editComponent: props => {return <div></div>} },
 //      { title: 'Modified On', field: 'updatedDate', type: 'date',
