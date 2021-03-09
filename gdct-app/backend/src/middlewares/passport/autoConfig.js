@@ -10,10 +10,14 @@ module.exports = () => {
   passport.use(
     'auto',
     new CustomStrategy(function (req, done) {
+      
       process.nextTick(function () {
         const temp = mongoose.Types.ObjectId('5efb8b638464c20f646049a6');
+        console.log('reach auto strategy')
         const uname = os.userInfo().username;
+        console.log(uname)
         UserModel.find({ AppConfig: temp }, function (err, user1) {
+          console.log('reach auto model search result')
           user1.forEach(obj => {
             if (obj.username === uname) {
               req.session.user = obj.email;
