@@ -7,7 +7,6 @@ const StatusModel = model(
       name: { type: String, required: true },
       description: { type: String },
       timestamp: { type: Date },
-      //    userCreatorId: { type: ObjectId, ref: 'User' },
       updatedBy: { type: String },
       isActive: { type: Boolean },
       forPackage: { type: Boolean },

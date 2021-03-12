@@ -17,6 +17,7 @@ export default class AppConfigRepository extends BaseRepository {
 
   async create(AppConfig) {
     AppConfig.isActive = true;
+    // @ts-ignore
     return AppConfigModel.create(AppConfig).then(AppConfig => new AppConfigEntity(AppConfig.toObject()));
   }
 
@@ -30,6 +31,10 @@ export default class AppConfigRepository extends BaseRepository {
     return AppConfigModel.find(query).then(AppConfigs =>
       AppConfigs.map(AppConfig => new AppConfigEntity(AppConfig.toObject())),
     );
+  }
+
+  async findById(id) {
+    return AppConfigModel.findById(id);
   }
 
   async findAll() {

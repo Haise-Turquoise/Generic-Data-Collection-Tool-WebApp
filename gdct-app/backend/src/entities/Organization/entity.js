@@ -21,7 +21,7 @@ export default class OrgEntity {
     expiryDate,
     timestamp,
     updatedBy,
-  } = {}) {
+  }) {
     this._id = _id;
     this.id = id;
     this.IFISNum = IFISNum;
