@@ -33,4 +33,8 @@ export default class ProgramService {
   async findProgramByIds(ids) {
     return this.programRepository.findByIds(ids);
   }
+
+  async findProgramById(id) {
+    return this.programRepository.findById(id);
+  }
 }

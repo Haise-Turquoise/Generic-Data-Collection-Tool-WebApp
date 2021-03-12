@@ -2,9 +2,8 @@ import React, { useMemo, useEffect, useState } from 'react';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 
 import MaterialTable from 'material-table';
-import Paper from '@material-ui/core/Paper';
+import { Paper, Typography } from '@material-ui/core';
 
-import Typography from '@material-ui/core/Typography';
 import {
   getProgramsRequest,
   createProgramsRequest,
@@ -14,10 +13,12 @@ import {
 
 import ErrorBanner from '../ErrorBanner';
 
-import './Programs.scss';
 import { selectFactoryRESTResponseTableValues } from '../../store/common/REST/selectors';
 import { selectProgramsStore } from '../../store/ProgramsStore/selectors';
 import { calculateOptions } from '../../tools/misc'
+
+import ProgramController from '../../controllers/Programs'
+import CreateAuditLog from '../AuditLog_Global'
 
 const ProgramHeader = () => {
   return (
@@ -66,14 +67,25 @@ const ProgramsTable = () => {
           const event = new Date();
           program.timestamp = event.toLocaleString(); 
           dispatch(createProgramsRequest(program, resolve, reject));
+        }).then(newProgram => {
+          CreateAuditLog(null, "Create Program", "Program", newProgram._id, {}, newProgram);
         }),
       onRowUpdate: program =>
         new Promise((resolve, reject) => {
+          // Find the old value before updating in order to Auditlog
+          async function findProgramById() {
+            return ProgramController.fetchById(program._id);
+          }
+          (async () => {
+            const oldProgram = await findProgramById();
+            CreateAuditLog(null, "Update Program", "Program", oldProgram._id, oldProgram, program);
+          })();
           //get username and record in Modified By column
           program.updatedBy=localStorage.getItem('currentUser')
           //record new date and time in Modified On column 
           const event = new Date();
-          program.timestamp = event.toLocaleString(); 
+          program.timestamp = event.toLocaleString();
+          // Do Update
           dispatch(updateProgramsRequest(program, resolve, reject));
         }),
       onRowDelete: program =>
@@ -84,6 +96,9 @@ const ProgramsTable = () => {
           const event = new Date();
           program.timestamp = event.toLocaleString(); 
           dispatch(deleteProgramsRequest(program._id, resolve, reject));
+          // For Auditlog
+          const program_trim = (({ tableData, ...o }) => o)(program);
+          CreateAuditLog(null, "Delete Program", "Program", program._id, program_trim, {})
         }),
     }),
     [dispatch],
@@ -125,6 +140,7 @@ const ProgramsTable = () => {
 
   useEffect(()=>{setRowNum(programs.length)}, [programs])
 
+  // @ts-ignore
   return <MaterialTable key={readRowNum} columns={columns} data={programs} editable={editable} options={options} />;
 };
 

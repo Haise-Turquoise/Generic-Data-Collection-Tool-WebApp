@@ -8,11 +8,10 @@ const programController = (() => {
     withCredentials: true,
   });
   return {
-    fetchByIds: async ids =>
-      programAxios.post(`/searchPrograms`, { ids }).then(res => res.data.programs),
+    fetchByIds: async ids => programAxios.post(`/searchPrograms`, { ids }).then(res => res.data.programs),
+    fetchById: async _id => programAxios.get(`/searchProgram/${_id}`).then(res => res.data.program),
     fetch: async query => programAxios.get('/fetchPrograms').then(res => res.data.programs),
-    create: async program =>
-      programAxios.post('/createProgram', { program }).then(res => res.data.program),
+    create: async program => programAxios.post('/createProgram', { program }).then(res => res.data.program),
     delete: async _id => programAxios.delete(`/deleteProgram/${_id}`),
     update: async program => programAxios.put(`/updateProgram/${program._id}`, { program }),
   };
