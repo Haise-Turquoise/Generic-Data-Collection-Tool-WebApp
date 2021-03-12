@@ -1,23 +1,15 @@
+// ModifyOrganization is the parent page for CreateOrganization and EditOrganization
 import React, { useState } from 'react';
 import { selectOrgsStore } from '../../../store/OrganizationsStore/selectors';
 
-
 import PropTypes from 'prop-types';
+import moment from 'moment';
 
-import Paper from '@material-ui/core/Paper';
-import Button from '@material-ui/core/Button';
-import TextField from '@material-ui/core/TextField';
-import AppBar from '@material-ui/core/AppBar';
-import Tabs from '@material-ui/core/Tabs';
-import Tab from '@material-ui/core/Tab';
-import Checkbox from '@material-ui/core/Checkbox';
-
-import Typography from '@material-ui/core/Typography';
+import { Paper, Button, Typography, TextField, AppBar, Tabs, Tab, Checkbox} from '@material-ui/core';
 
 import './ModifyOrganization.scss';
 import ProgList from '../ProgramList';
 import ErrorBanner from '../../ErrorBanner'
-import { makeStyles } from '@material-ui/core/styles';
 
 const OrganizationHeader = ({ title }) => {
   return (
@@ -43,9 +35,12 @@ Label.propTypes = {
   text: PropTypes.string,
 };
 
+const currentTime = () => {
+  return moment().format();
+};
+
 const getValue = (object, attribute) => {
   let value;
-  let tmp;
   switch (typeof object[attribute]) {
     case 'undefined':
       value = '';
@@ -55,8 +50,7 @@ const getValue = (object, attribute) => {
   }
   switch (attribute) {
     case 'effectiveDate':
-      tmp = new Date(value);
-      value = tmp.toString();
+      value = currentTime();
   }
   return { value };
 };
@@ -133,7 +127,10 @@ NumberGroup.propTypes = {
 
 const OrgInfo = props => (
   <div>
-    <div align="right">
+    <div
+      // Align Expire Checkbox to the right side
+      // @ts-ignore 
+      align="right"> 
       <ButtonGroup {...props} attribute={'active'} text={'Expire Organization'} />
     </div>
 
@@ -216,12 +213,7 @@ const OrganizationForm = props => {
       props.object.programId.filter(elem => elem !== program._id),
     );
   };
-
-  const classes = makeStyles({
-    root: {
-      margin: '100px',
-    }
-  })
+  
   return (
     <Paper>
       <form onSubmit={() => false}>
@@ -288,14 +280,7 @@ OrganizationForm.propTypes = {
   submit: PropTypes.func,
 };
 
-const currentTime = () => {
-  const now = new Date();
-  return now.toISOString();
-};
-
 class ModifyOrganization extends React.Component {
-  // state = {};
-
   constructor(props) {
     super(props);
     const temp = { ...props.object };
@@ -344,6 +329,7 @@ class ModifyOrganization extends React.Component {
           object={this.state}
           submit={() => this.props.submit(this.state)}
           cancel={this.props.cancel}
+          // @ts-ignore
           handleChanges={this.handleChanges}
           updateState={this.updateState}
         />
@@ -360,4 +346,4 @@ ModifyOrganization.propTypes = {
   cancel: PropTypes.func,
 };
 
-export { currentTime, ModifyOrganization as default };
+export default ModifyOrganization;

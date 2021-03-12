@@ -14,6 +14,15 @@ const ReportingPeriodController = Service([ReportingPeriodService], service => {
         .catch(next);
     });
 
+    router.get('/reportingPeriods/:_id', (req, res, next) => {
+      const { _id } = req.params;
+
+      service
+        .findReportingPeriodById(_id)
+        .then(reportingPeriod => res.json({ reportingPeriod }))
+        .catch(next);
+    });
+
     router.post('/reportingPeriods', (req, res, next) => {
       service
         .createReportingPeriod(req.body.reportingPeriod)

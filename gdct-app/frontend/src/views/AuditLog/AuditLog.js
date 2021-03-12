@@ -69,6 +69,9 @@ const CustomDatePicker = (props) => {
 // Table contents
 const AuditLogTable = () => {
   const dispatch = useDispatch();
+
+  //==================================================================================================
+  
   // Prepare the table columns for MaterialTable
   const columns = useMemo(
     () => [
@@ -128,13 +131,15 @@ const AuditLogTable = () => {
   const handleClickOpen = (rowData) => {
     setOpen(true);
     setDetail(
-      `At ${rowData.timestamp},\n
-      User ${rowData.user.email}\n
-      did ${rowData.activity}\n
-      for document ${rowData.recordId}\n
-      in collection ${rowData.moduleName},\n
-      the previous value for the document was ${JSON.stringify(rowData.oldValue)},\n
-      now the new value for the document is ${JSON.stringify(rowData.newValue)}.`
+      `AT ${rowData.timestamp}
+      USER: ${rowData.user.email}
+      PERFORMED: ${rowData.activity}
+      FOR DOCUMENT: ${rowData.recordId}
+      IN COLLECTION: ${rowData.moduleName}
+      =========================================
+      the previous value for the document was: ${JSON.stringify(rowData.oldValue, null, "\t")}
+      =========================================
+      now the new value for the document is: ${JSON.stringify(rowData.newValue, null, "\t")}`
     )
   };
   const handleClose = () => {
@@ -169,10 +174,12 @@ const AuditLogTable = () => {
               onClose={handleClose}
               aria-labelledby="alert-dialog-title"
               aria-describedby="alert-dialog-description"
+              fullWidth
+              maxWidth={"sm"}
             >
               <DialogTitle id="alert-dialog-title">{"Detailed Audit Information:"}</DialogTitle>
               <DialogContent>
-                <DialogContentText style={{whiteSpace: 'pre-line'}}> 
+                <DialogContentText style={{whiteSpace: 'pre-wrap'}}> 
                   {detail}
                 </DialogContentText>
               </DialogContent>

@@ -15,8 +15,8 @@ import {
 import { selectFactoryRESTResponseTableValues } from '../../../store/common/REST/selectors';
 import { selectAppSysesStore } from '../../../store/AppSysesStore/selectors';
 import { calculateOptions } from '../../../tools/misc'
-import AppSysController from '../../../controllers/AppSys'
 
+import AppSysController from '../../../controllers/AppSys'
 import CreateAuditLog from '../../AuditLog_Global'
 
 const AppSysesHeader = () => {
@@ -48,51 +48,50 @@ const AppSysesTable = () => {
     () => [
       { title: 'Code', field: 'code' },
       { title: 'Name', field: 'name' },
-      { title: 'Modified On', field: 'timestamp',
-      editComponent: props => {return <div></div>} },
-      { title: 'Updated By', field: 'updatedBy', 
-      editComponent: props => {return <div></div>} },
+      { title: 'Modified On', field: 'timestamp', editComponent: () => {return <div></div>} },
+      { title: 'Updated By', field: 'updatedBy', editComponent: () => {return <div></div>} },
     ],
     [],
   );
   
   const options = useMemo(() => calculateOptions(readRowNum), [readRowNum]);
 
+  // Record who and when of the action
+  function recordUpdate(appSys) {
+    //get username and record in Modified By column
+    appSys.updatedBy = localStorage.getItem('currentUser');
+    //record new date and time in Modified On column 
+    appSys.timestamp = new Date().toLocaleString(); 
+  }
+  // Prepare the editing functionalities for the material table
   const editable = useMemo(
     () => ({
       onRowAdd: appSys => 
         new Promise((resolve, reject) => {
-          //get username and record in Modified By column
-          appSys.updatedBy=localStorage.getItem('currentUser')
-          //record new date and time in Modified On column 
-          const event = new Date();
-          appSys.timestamp = event.toLocaleString(); 
+          recordUpdate(appSys);
           dispatch(createAppSysRequest(appSys, resolve, reject));
         }).then(newAppSys => {
+          // For Auditlog
           CreateAuditLog(null, "Add Application System", "AppSys", newAppSys._id, {}, newAppSys);
         }),
+
       onRowUpdate: appSys => 
         new Promise((resolve, reject) => {
-          appSys.updatedBy=localStorage.getItem('currentUser')
-          const event = new Date();
-          appSys.timestamp = event.toLocaleString(); 
-          // Find the old value before updating
-          async function findAppSysById() {
-            return AppSysController.fetchAppSys(appSys._id);
-          }
+          recordUpdate(appSys); 
+          // Find the old value before updating for Auditlog
           (async () => {
-            const oldAppSys = await findAppSysById();
+            const oldAppSys = await AppSysController.fetchAppSys(appSys._id);
             CreateAuditLog(null, "Update Application System", "AppSys", appSys._id, oldAppSys, appSys);
           })();
+          // Do Update
           dispatch(updateAppSysRequest(appSys, resolve, reject));
         }),
+        
       onRowDelete: appSys =>
         new Promise((resolve, reject) => {
-          appSys.updatedBy=localStorage.getItem('currentUser')
-          const event = new Date();
-          appSys.timestamp = event.toLocaleString(); 
+          recordUpdate(appSys);
           dispatch(deleteAppSysRequest(appSys._id, resolve, reject));
-          // onRowDelete will add a "tableData" attribute in the Object, which we don't need
+          // onRowDelete will add a "tableData" attribute in the Object, which we don't need for Auditlog
           const appSys_trim = (({ tableData, ...o }) => o)(appSys)
           CreateAuditLog(null, "Delete Application System", "AppSys", appSys._id, appSys_trim, {});
         }),
@@ -106,6 +105,7 @@ const AppSysesTable = () => {
 
   useEffect(()=>{setRowNum(appSyses.length)}, [appSyses])
 
+  // @ts-ignore
   return <MaterialTable key={readRowNum} columns={columns} data={appSyses} editable={editable} options={options} />;
 };
 
