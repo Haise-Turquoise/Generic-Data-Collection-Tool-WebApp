@@ -12,9 +12,6 @@ export default class AppConfigService {
   }
 
   async deleteAppConfig(id) {
-    //if (await this.isRefered(id)) {
-    //  throw Error('existed appSysRole');
-    //}
     return this.AppConfigRepository.delete(id);
   }
 
@@ -26,14 +23,12 @@ export default class AppConfigService {
     return this.AppConfigRepository.find(AppConfig);
   }
 
+  async findAppConfigById(id) {
+    return this.AppConfigRepository.findById(id);
+  }
+
   async findAllAppConfig() {
     return this.AppConfigRepository.findAll();
   }
 
-//  async isRefered(id) {
-//    const appConfig = await this.AppConfigRepository.findById(id);
-//    console.log('code:', appConfig.code);
-//    const appSysRole = await this.AppConfigRoleRepository.find({ appConfig: appConfig.code });
-//    return appSysRole.length !== 0;
-//  }
 }

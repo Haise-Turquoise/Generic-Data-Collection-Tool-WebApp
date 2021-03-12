@@ -73,7 +73,7 @@ const validateForm = errors => {
   return valid;
 };
 
-export default function Login({ setLoggedIn, setCurrentUser }) {
+export default function Login({ setLoggedIn }) {
   const classes = useStyles();
   const dispatch = useDispatch();
   const [email, setEmail] = useState('');

@@ -10,16 +10,16 @@ const AuditLogController = Service([AuditLogService], service => {
     router.get('/fetchAllAuditLogs', (req, res, next) => {
       service
         .findAllAuditLog()
-        .then(auditlogs => {
-          return res.json(auditlogs)
-        })
+        .then(auditlogs => res.json(auditlogs))
         .catch(next)
     })
     
     // Create one Audit Log
     router.post(`/createAuditLog`, (req, res, next) => {
       const { AuditLogInfo } = req.body;
-      service.createAuditLog(AuditLogInfo).catch(next)
+      service
+        .createAuditLog(AuditLogInfo)
+        .catch(next)
     });
 
     return router;
