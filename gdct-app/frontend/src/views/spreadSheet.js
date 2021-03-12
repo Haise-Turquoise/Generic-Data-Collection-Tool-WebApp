@@ -3,6 +3,9 @@ import Spreadsheet from 'x-data-spreadsheet';
 import templateController from '../controllers/template'
 import CategoryInsertMenu from './CategoryInsertionMenu';
 import AttributeInsertMenu from './AttributeInsertionMenu';
+import spreadSheetController from '../controllers/spreadSheet';
+import PopulationSelectionMenu from './PopulationSelectionMenu';
+import Button from '@material-ui/core/Button';
 
 // Sheet style Option
 const sheetOption = {
@@ -51,14 +54,18 @@ class SpreadSheet extends Component{
       this.handleSave = this.handleSave.bind(this);
       this.insertCategory = this.insertCategory.bind(this);
       this.insertAttribute = this.insertAttribute.bind(this);
+      this.enablePreview = this.enablePreview.bind(this);
+      this.disablePreview = this.disablePreview.bind(this);
       this.currentCoord = {};
       this.categoryAndAttribute = {};
+      this.insertedPreview = [];
     }
 
     // After component mount, initailize spreadsheet and load data from DB
     componentDidMount(){
       templateController.fetchTemplate(this.id).then(template=>{
         const data = template.templateData;
+        // @ts-ignore
         this.sheet = new Spreadsheet("#x-spreadsheet", sheetOption).loadData(data).reRender();
         
         // This event listner handles user close the tab without saving
@@ -83,6 +90,7 @@ class SpreadSheet extends Component{
 
     saveTemplate = () =>{
       if (this.sheet){
+        this.disablePreview()
         const sheetData = this.sheet.getData();
         templateController.sheetUpdate(this.id, sheetData).then(res=>console.log(res));
       }
@@ -92,11 +100,53 @@ class SpreadSheet extends Component{
     insertCategory = (inputs, rowNum=null) =>{
       const currentIndex = this.sheet.getCurrentSheetIndex();
       const insertRow = rowNum? rowNum:this.currentCoord.row;
+      let unitCol = this.sheet.datas[currentIndex].findInputColOnRow(9, "Unit of Measure");
+      if (!unitCol){
+        unitCol = this.sheet.datas[currentIndex].findFirstNotNullColOnRow(1);
+        this.sheet.insertColAt(unitCol);
+      }
       for (let key in inputs){
+        let dataArr = inputs[key];
         this.sheet.insertRowAt(insertRow);
         this.sheet.cellText(insertRow, 0, key, currentIndex);
-        this.sheet.cellText(insertRow, 1, inputs[key], currentIndex);
+        this.sheet.cellText(insertRow, 1, dataArr[0], currentIndex);
+        this.sheet.cellText(insertRow, unitCol, dataArr[1], currentIndex);
       }
+      this.sheet.reRender();
+    }
+
+    enablePreview(orgID){
+      const currentSheetIndex = this.sheet.getCurrentSheetIndex();
+      const categoryMapping = this.sheet.datas[currentSheetIndex].rowLookUpTable(0);
+      const attributeMapping = this.sheet.datas[currentSheetIndex].colLookUpTable(0);
+      const categories = Object.keys(categoryMapping);
+      const attributes = Object.keys(attributeMapping);
+      spreadSheetController.fetchByOrgID(orgID, categories, attributes).then(data=>{
+        console.log(data);
+        data.forEach(element => {
+          const COAID = element["CategoryId"];
+          const attributeId = element["AttributeId"];
+          const value = element['value'];
+          this.sheet.cellText(categoryMapping[COAID], attributeMapping[attributeId], value, currentSheetIndex);
+          this.insertedPreview.push({COAID, attributeId, currentSheetIndex});
+        });
+        this.sheet.reRender();
+      });
+    }
+
+    disablePreview(){
+      const categoryMapping = [];
+      const attributeMapping = [];
+      this.sheet.datas.forEach(dataProxy => {
+        console.log(dataProxy)
+        categoryMapping.push(dataProxy.rowLookUpTable(0));
+        attributeMapping.push(dataProxy.colLookUpTable(0));
+      });
+      this.insertedPreview.forEach(coord=>{
+        let {COAID, attributeId, currentSheetIndex} = coord;
+        this.sheet.cellText(categoryMapping[currentSheetIndex][COAID], attributeMapping[currentSheetIndex][attributeId], '', currentSheetIndex);
+      })
+      this.insertedPreview = [];
       this.sheet.reRender();
     }
 
@@ -117,8 +167,13 @@ class SpreadSheet extends Component{
         return (
           <div>
               <div style={{display:'flex'}}>
+              <button onClick={this.saveTemplate}>Save</button>
                 <CategoryInsertMenu callback={this.insertCategory}/>
                 <AttributeInsertMenu callback={this.insertAttribute}/>
+                <PopulationSelectionMenu callback={this.enablePreview}/>
+                <Button variant="outlined" color="primary" onClick={()=>this.disablePreview()}>
+                  Disable preview
+                </Button>
               </div>
               <div id="x-spreadsheet"></div>
           </div>

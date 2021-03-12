@@ -65,7 +65,8 @@ export const getSubmissionRequest = _id => dispatch => {
   submissionController
     .fetchSubmission(_id)
     .then(submission => {
-      dispatch(setExcelData(convertStateToReactState(submission.workbookData)));
+      // dispatch(setExcelData(convertStateToReactState(submission.workbookData)));
+      dispatch(submission.workbookData);
       dispatch(SubmissionsStore.actions.RECEIVE([submission]));
       dispatch();
     })
@@ -122,8 +123,6 @@ export const updateSubmissionStatusRequest = (
   role,
   newProcessId,
 ) => async dispatch => {
-  console.log('button click');
-
   const newSubmission = {
     ...submission,
     //   name: present.name,

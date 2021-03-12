@@ -28,7 +28,6 @@ class categoryInsertMenu extends React.Component{
     const unsortedData = data["Categories"].filter(entry=> entry["sheetName"] === 'Balance Sheet');
     this.data = unsortedData.sort((a, b) => a.categoryGroup.localeCompare(b.categoryGroup));
     this.category = this.data;
-    console.log(data)
     })
   }
 
@@ -75,6 +74,7 @@ class categoryInsertMenu extends React.Component{
                 break;
             } 
         }
+        // @ts-ignore
         selectionList.push(option[option.selectedIndex].text)
       }  
     }
@@ -126,6 +126,7 @@ class categoryInsertMenu extends React.Component{
           select.appendChild(option);
         })
         
+        // @ts-ignore
         select.addEventListener('change',()=>{this.update_subform(caller_layer+1, this.category)})
         form.appendChild(select);
         formSection.append(form);
@@ -143,6 +144,7 @@ class categoryInsertMenu extends React.Component{
         fullJsonLayer.categories.forEach((element)=>{
           let option = document.createElement('OPTION');
           option.setAttribute('id', element.id);
+          option.setAttribute('class', element.unitOfMeasure);
           let textNode = document.createTextNode(String(element.id) + " " +element.name);
           option.appendChild(textNode);
           select.appendChild(option);
@@ -157,16 +159,22 @@ class categoryInsertMenu extends React.Component{
   }
     
   insert = ()=>{
+    // @ts-ignore
     let categories = {}
     let keys = Object.keys(this.InsertedID);
     keys.forEach((id)=>{
+      // @ts-ignore
       let text = this.InsertedID[id].innerHTML;
-      categories[id] = text.substring(6);
+      let unit = this.InsertedID[id].className;
+      console.log(unit);
+      categories[id] = [text.substring(6), unit];
     })
     
       
     if (keys.length > 0){
+      // @ts-ignore
       let input_row = document.getElementById('row_number').value;
+      // @ts-ignore
       let row_num = input_row&&input_row!='' ? Number.parseInt(input_row):undefined
       this.callback(categories, row_num);
     }
@@ -178,13 +186,19 @@ class categoryInsertMenu extends React.Component{
     
   insertOptions = ()=>{
     let input_fields = document.getElementById('FinalLayer');
-      if (input_fields){
+    if (input_fields){
+      // @ts-ignore
       if (input_fields.selectedIndex){
+        // @ts-ignore
         const text = input_fields[input_fields.selectedIndex].text;
-        const id = input_fields[input_fields.selectedIndex].id
+        // @ts-ignore
+        const id = input_fields[input_fields.selectedIndex].id;
+        // @ts-ignore
+        const className = input_fields[input_fields.selectedIndex].className;
         if (!this.InsertedID[id]){
           let pnode = document.createElement('P');
           pnode.setAttribute("id", id);
+          pnode.setAttribute("class", className);
           let textnode = document.createTextNode(text);
           pnode.appendChild(textnode);
           let selected = document.getElementById("SelectedOptions");
@@ -212,7 +226,9 @@ class categoryInsertMenu extends React.Component{
             <DialogTitle id="simple-dialog-title">Insert Category</DialogTitle>
             <div id="formSection" ref="formSection" >
                 <form>
-                    <select name="category_name" id="category_name" ref={this.categoryRef} onChange={()=>{console.log('onchange!'); this.update_subform(1, this.category)}}>
+                    <select name="category_name" id="category_name" ref={this.categoryRef} onChange={()=>{console.log('onchange!'); this.update_subform(1, 
+                    // @ts-ignore
+                    this.category)}}>
                       <option>Please select a Catagory</option>
                       {this.data.map(x=><option>{x.categoryGroup}</option>)}
                     </select>

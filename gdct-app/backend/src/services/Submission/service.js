@@ -19,6 +19,7 @@ import { saveGoogleSheetInSubmission }from '../../middlewares/googleapis/save'
 import ReportingPeriodRepository from '../../repositories/ReportingPeriod';
 import { mastervalueExtraction } from '../../utils/mastervalue/mastervalueExtraction';
 import { mastervaluePrepopulation } from '../../utils/mastervalue/mastervaluePrepopulation';
+import { mastervaluePrepopulationTest } from '../../utils/mastervalue/mastervaluePrepopulation';
 import {ObjectId} from 'mongodb';
 const mongoose = require('mongoose');
 mongoose.Promise = require('bluebird');
@@ -65,7 +66,7 @@ export default class SubmissionService {
     // Clone the tempalte's workbook data to be used by the user
     return this.programRepository.findById(submission.programId).then(program => {
       return this.templateRepository.findById(submission.templateId).then(template => {
-        return mastervaluePrepopulation(template.templateData).then(workbook => {
+        return mastervaluePrepopulationTest(template.templateData).then(workbook => {
           return this.templateTypeRepository.findById(template.templateTypeId).then(templateType => {
             return this.workflowProcessRepository
               .find({ workflowId: templateType.submissionWorkflowId })
@@ -473,8 +474,10 @@ export default class SubmissionService {
                             return this.programRepository
                               .findById(submission.programId)
                               .then(program => {
-                                const inflatedWorkbook = pako.inflate( submission._doc.workbookData.data, { to: 'string' });
-                                submission._doc.workbookData.data = JSON.parse(inflatedWorkbook);
+                                // const inflatedWorkbook = pako.inflate( submission._doc.workbookData.data, { to: 'string' });
+                                const inflatedWorkbook = submission._doc.workbookData;
+                                // submission._doc.workbookData.data = JSON.parse(inflatedWorkbook);
+                                submission._doc.workbookData = inflatedWorkbook;
                                 const changedSubmission = {
                                   ...submission._doc,
                                   programName: program.name,

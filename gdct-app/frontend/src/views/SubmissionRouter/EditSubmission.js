@@ -147,12 +147,12 @@ const EditSubmission = ({ history }) => {
 
 
   const handleOpenTemplate = () => {
-    // history.push({
-    //   pathname: `/submission/submissions/${submission._id}`,
-    //   state: { detail: location.state.detail },
-    // });
+    history.push({
+      pathname: `/submission/submissions/${submission._id}`,
+      state: { detail: location.state.detail },
+    });
     //Creates a new spreadsheet in google and returns the id. 
-    openGoogleSheetRequest(submission._id);
+    // openGoogleSheetRequest(submission._id);
   }
 
   const backButtonAction = () => {

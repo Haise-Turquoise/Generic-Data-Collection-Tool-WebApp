@@ -61,8 +61,8 @@ export async function mastervalueExtraction(
         // let res = await reportingPeriodRepository.findSubmissionClosed({code: currentPeriod})
         for (let item in openSubmissions){
             if (openSubmissions[item].code === currentPeriod){
-                currentYearAttributes.push(columnId);
-                break;
+              currentYearAttributes.push(columnId);
+              break;
             }
         }
         // if (!res[0].submissionClosed){
@@ -135,9 +135,6 @@ export async function mastervalueExtraction(
         categoryIdTable[entry.id] = entry.name;
       })
 
-      
-      const additionalAttributes = ["201799300", "202099300"];
-      const Name = ["2017/18 Actual", "2020/21 Actual"]
       for (const row in categories) {
         for (const column in attributes) {
           const cellData = getCellData(sheetData, +row, +column);
@@ -186,7 +183,7 @@ export async function mastervalueExtraction(
                         categoryId: categories[row],
                         COATreeId: COATreeId._id,
                         categoryGroup: string,
-                        value: Math.random()*100000, //change this line back
+                        value: cellData.value, //change this line back
                         categoryName:categoryIdTable[categories[row]],
                         attributeName:attributeIdTable[attributes[column]],
                       });
@@ -201,71 +198,6 @@ export async function mastervalueExtraction(
             }
           }
         }
-
-        //Please delete this line
-        for (let i = 0; i < additionalAttributes.length; i++) {
-          const cellData = null;
-          // Run if the cell is not empty
-          if (!(cellData && cellData.value)){
-            // For categoryTree 
-            let iteration = 0;
-            let string = ""
-            let COATreeId;
-            let found = false;
-            // Searching through the first layer of categoryTrees
-            for (let item in categoryTreeList[iteration]){
-              const categoryTree = categoryTreeList[iteration][item];
-              // Searching through the categoryId array in the categoryTree
-              if (found){
-                break;
-              }
-              for (let categoryId in categoryTree.categoryId){
-                const currentCategoryId = categoryTree.categoryId[categoryId]
-                if (found){
-                  break;
-                }
-                // Checks if the categoryId matches
-                if (currentCategoryId === categories[row]){
-                  COATreeId = categoryTree;
-                  // Looks through the categoryGroupList to find the matching categoryGroup
-                  for (let itemTwo in categoryGroupList){
-                    const categoryGroup = categoryGroupList[itemTwo]
-                    if (categoryGroup._id.toString() === categoryTree.categoryGroupId.toString()){
-                      string = string + categoryGroup.name + ', '
-                      if (categoryTree.parentId){
-                        const parentId = categoryTree.parentId.toString();
-                        string = recursiveString(parentId, categoryTreeList, categoryGroupList, string, iteration);
-                      }
-  
-  
-                      string = string.substring(0, string.length - 2)
-                      masterValues.push({
-                        submission: { _id: submission._id, name: submission.name },
-                        org,
-                        program,
-                        template,
-                        templateType,
-                        reportingPeriod: reportingPeriod.name,
-                        attributeId: additionalAttributes[i],
-                        categoryId: categories[row],
-                        COATreeId: COATreeId._id,
-                        categoryGroup: string,
-                        value: Math.random()*100000,
-                        categoryName:categoryIdTable[categories[row]],
-                        attributeName:Name[i],
-                      });
-  
-                      found = true;
-                      iteration = 0;
-                      break;
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-        //Delete this section
       }
       Promise.all(masterValues).then(() => {
         masterValueRepository.bulkUpdate(id, masterValues);

@@ -2,18 +2,18 @@ import React, { useCallback, useState } from 'react';
 import { shallowEqual, useDispatch, useSelector } from 'react-redux';
 import Typography from '@material-ui/core/Typography';
 import Paper from '@material-ui/core/Paper';
-import TransferStatusController from '../controllers/TransferStatus';
+import TransferStatusController from '../../controllers/TransferStatus';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
-import { selectFactoryRESTResponseTableValues } from '../store/common/REST/selectors';
-import { selectTransferStatusStore } from '../store/TransferStatusStore/selectors';
-import {startTransferRequest, stopTransferRequest} from '../store/thunks/TransferStatus'
+import { selectFactoryRESTResponseTableValues } from '../../store/common/REST/selectors';
+import { selectTransferStatusStore } from '../../store/TransferStatusStore/selectors';
+import {startTransferRequest, stopTransferRequest} from '../../store/thunks/TransferStatus'
 
 
 
 
 
-const ReportingPeriodHeader = () => {
+const TransferStatusHeader = () => {
   return (
     <Paper className="header">
       <Typography variant="h5">ETL Status</Typography>
@@ -57,7 +57,7 @@ const TransferStausPanel = ()=>{
   
   return (
     <div>
-      <ReportingPeriodHeader/>
+      <TransferStatusHeader/>
       <Paper className="header">
         <Typography variant="h6">Please enter the tranfer period you want</Typography>
         <TextField id="interval" label="Time in minutes" defaultValue="60" type='Number' inputProps={{ inputProps: { min: 1} }}/>

@@ -42,3 +42,19 @@ export const calculateOptions = (itemCount)=>{
     pageSize:length
   };
 };
+
+export const urlParser = (orgId, categories, attributes)=>{
+  let baseUrl = "https://gdctrest.azurewebsites.net/mastervalues/all?organization=";
+  let UrlWithOrg = baseUrl + orgId +"&categories=";
+  categories.forEach((entry)=>{
+    UrlWithOrg = UrlWithOrg + entry + ",";
+  });
+  
+  let UrlWithCategories = UrlWithOrg.slice(0, -1) + "&attributes=";
+  
+  attributes.forEach((entry)=>{
+    UrlWithCategories = UrlWithCategories + entry + ",";
+  });
+  console.log(UrlWithCategories.slice(0, -1));
+  return UrlWithCategories.slice(0, -1);
+}
