@@ -72,7 +72,10 @@ const AppRoleResourcesTable = () => {
               resourceId.map((e, i) => {
                 let data;
                 if (lookupResources[e]) {
-                  data = lookupResources[e].split('/')[2];
+                  // data = lookupResources[e].split('/')[2];
+                  data = lookupResources[e].split('/');
+                  // Use the last element of the resource string
+                  data = data[data.length-1];
                 }
                 return (
                   <span style={{ marginRight: '10px' }} key={i}>

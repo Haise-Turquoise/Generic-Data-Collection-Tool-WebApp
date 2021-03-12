@@ -180,10 +180,10 @@ export const updateCOATreesBySheetNameRequest = sheetNameId => (dispatch, getSta
   const normalizedTrees = normalizeTrees(treeCopy);
   //add timestamp and updatedBy attributes to normalizedTree obj 
   normalizedTrees.forEach(normalizedTree => {
-    normalizedTree["timestamp"] = new Date;
+    normalizedTree["timestamp"] = new Date();
     normalizedTree["updatedBy"] = localStorage.getItem('currentUser');
   });
-  // console.log(normalizedTrees);
+  console.log(normalizedTrees);
   COATreeController.updateBySheetName(normalizedTrees, sheetNameId)
     .then(_COATrees => {
       dispatch(COATreeStore.actions.UPDATE_ORIGINAL_COA_TREE_UI());
