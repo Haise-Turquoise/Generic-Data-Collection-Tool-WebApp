@@ -24,7 +24,7 @@ import { ROUTE_CATEGORY_TREES } from '../../../constants/routes';
 
 import { calculateOptions } from '../../../tools/misc'
 import DetectEmptyTreeStore from '../../../store/DetectEmptyTreeStore/store';
-
+import moment from 'moment';
 
 
 // import './COATrees.scss'
@@ -57,6 +57,13 @@ const COATreesTable = ({ history }) => {
     shallowEqual,
   );
 
+  // Convert Date format
+  console.log(detectEmptyTree);
+  detectEmptyTree.forEach(detectEmptyTree => {
+    const logtime = new Date(detectEmptyTree.timestamp);
+    detectEmptyTree.timestamp = moment(logtime).format("YYYY-MM-DD HH:mm:ss")
+  });
+
   const columns = useMemo(
     () => [
       { title: 'Sheet Name', field: 'name' },
@@ -83,15 +90,6 @@ const COATreesTable = ({ history }) => {
     [history],
   );
 
-
-  useEffect(() => {
-    // console.log('Page refresh');
-    dispatch(getSheetNamesRequest());
-    dispatch(getDetectEmptyTree());
-  }, [dispatch, refresh]);
-
-
-
   const editable = useMemo(
     () => ({
       isDeleteHidden: sheetName => {
@@ -113,12 +111,20 @@ const COATreesTable = ({ history }) => {
     }),
     [dispatch],
   );
+
+  useEffect(() => {
+    // console.log('Page refresh');
+    dispatch(getSheetNamesRequest());
+    dispatch(getDetectEmptyTree());
+  }, [dispatch, refresh]);
+
   return (
     <MaterialTable
       key={readRowNum}
       columns={columns}
       actions={actions}
       data={detectEmptyTree}
+      // @ts-ignore
       options={options}
       editable={editable}
     />

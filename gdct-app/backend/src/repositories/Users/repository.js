@@ -21,9 +21,18 @@ export default class UsersRepository extends BaseRepository {
     }).then(user => new UserEntity(user));
   }
 
-  async update(id, user) {
-    return UserModel.findByIdAndUpdate(id, user)
-    .then(user => new UserModel(user.toObject()));
+  async update(id, { username, firstName, lastName, email, phoneNumber, isActive }) {
+    return UserModel.findByIdAndUpdate(id, {
+      username,
+      firstName,
+      lastName,
+      email,
+      phoneNumber,
+      isActive,
+    }).then(user => new UserModel(user.toObject()));
+  // async update(id, user) {
+  //   return UserModel.findByIdAndUpdate(id, user)
+  //   .then(user => new UserModel(user.toObject()));
   }
 
   async find(query) {
@@ -56,14 +65,7 @@ export default class UsersRepository extends BaseRepository {
   }
 
   async findByEmail(email) {
-    return UserModel.findOne({ email })
-      .then(user => {
-        //console.log(user)
-        return new UserEntity(user.toObject());
-      })
-      .catch(err => {
-        console.log(err);
-      });
+    return UserModel.find({ email });
   }
 
   async delete(id) {
