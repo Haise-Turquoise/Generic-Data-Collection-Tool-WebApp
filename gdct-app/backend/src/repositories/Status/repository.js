@@ -23,8 +23,8 @@ export default class StatusRepository extends BaseRepository {
     return StatusModel.find({ name });
   }
 
-  async findById(query, field){
-    return StatusModel.findOne(query, field)
+  async findById(id){
+    return StatusModel.findById(id);
   }
 
   async find(query) {

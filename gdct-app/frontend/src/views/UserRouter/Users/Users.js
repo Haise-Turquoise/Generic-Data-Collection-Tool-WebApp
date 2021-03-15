@@ -6,6 +6,7 @@ import MaterialTable from 'material-table';
 import Paper from '@material-ui/core/Paper';
 
 import Typography from '@material-ui/core/Typography';
+import moment from 'moment';
 
 import './Users.scss';
 import { Button } from '@material-ui/core';
@@ -19,6 +20,7 @@ import {
   deleteUsersRequest,
   updateUsersRequest,
 } from '../../../store/thunks/users';
+
 
 const UsersHeader = () => {
   return (
@@ -100,9 +102,17 @@ const UsersTable = () => {
       { title: 'Email', field: 'email' },
       { title: 'Phone Number', field: 'phoneNumber' },
       { title: 'Active', type: 'boolean', field: 'isActive' },
+      { title: 'Modified On', field: 'timestamp', editComponent: props => {return <div></div>} },
+      { title: 'Updated By', field: 'updatedBy', editComponent: props => {return <div></div>} },
     ],
     [],
   );
+
+  // Convert Date format
+  users.forEach(user => {
+    const logtime = new Date(user.timestamp);
+    user.timestamp = moment(logtime).format("YYYY-MM-DD HH:mm:ss")
+  });
 
   const options = useMemo(
     () => calculateOptions(readRowNum),
@@ -119,25 +129,34 @@ const UsersTable = () => {
     [],
   );
 
+  // Record username and time when an action occurs 
+  function recordUpdate(user) {
+    user.updatedBy = localStorage.getItem('currentUser');
+    user.timestamp = new Date().toLocaleString(); 
+  }
+
   const editable = useMemo(
     () => ({
       // onRowAdd: (user) =>
       //   new Promise((resolve, reject) => {
+      //     recordUpdate(user); 
       //     dispatch(createUsersRequest(user, resolve, reject))
       //   }),
       onRowUpdate: user =>
         new Promise((resolve, reject) => {
+          recordUpdate(user);
           dispatch(updateUsersRequest(user, resolve, reject));
         }),
       // onRowDelete: (user) =>
       //   new Promise((resolve, reject) => {
+      //     recordUpdate(user);  
       //     dispatch(deleteUsersRequest(user._id, resolve, reject))
       //   }),
     }),
     [dispatch],
   );
 
-  const actions = useMemo(() => [
+  const actions = [
     {
       icon: VisibilityIcon,
       tooltip: 'View User Information',
@@ -146,7 +165,7 @@ const UsersTable = () => {
         history.push(`/admin/user_management/${user._id}`);
       },
     },
-  ]);
+  ];
 
   useEffect(() => {
     dispatch(getUsersRequest());

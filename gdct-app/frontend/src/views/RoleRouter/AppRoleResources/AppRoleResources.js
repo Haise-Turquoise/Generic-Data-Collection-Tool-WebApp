@@ -20,8 +20,8 @@ import { selectFactoryRESTResponseTableValues } from '../../../store/common/REST
 import { selectAppRoleResourcesStore } from '../../../store/AppRoleResourcesStore/selectors';
 import { selectAppSysRolesStore } from '../../../store/AppSysRolesStore/selectors';
 import { selectAppResourcesStore } from '../../../store/AppResourcesStore/selectors';
-import { calculateOptions } from '../../../tools/misc'
-
+import { calculateOptions } from '../../../tools/misc';
+import moment from 'moment';
 
 const AppRoleResourcesHeader = () => {
   return (
@@ -54,6 +54,12 @@ const AppRoleResourcesTable = () => {
     return acc;
   }, {});
 
+  // Convert Date format
+  appRoleResources.forEach(appRoleResource => {
+    const logtime = new Date(appRoleResource.timestamp);
+    appRoleResource.timestamp = moment(logtime).format("YYYY-MM-DD HH:mm:ss")
+  });
+  
   const columns = useMemo(
     () => [
       { title: 'Application System Role', field: 'appSysRoleId', lookup: lookupSysRoles },
@@ -66,7 +72,10 @@ const AppRoleResourcesTable = () => {
               resourceId.map((e, i) => {
                 let data;
                 if (lookupResources[e]) {
-                  data = lookupResources[e].split('/')[2];
+                  // data = lookupResources[e].split('/')[2];
+                  data = lookupResources[e].split('/');
+                  // Use the last element of the resource string
+                  data = data[data.length-1];
                 }
                 return (
                   <span style={{ marginRight: '10px' }} key={i}>
@@ -78,6 +87,10 @@ const AppRoleResourcesTable = () => {
         ),
         editable: 'never',
       },
+      { title: 'Modified On', field: 'timestamp',
+      editComponent: props => {return <div></div>} },
+      { title: 'Updated By', field: 'updatedBy', 
+      editComponent: props => {return <div></div>} },
     ],
     [lookupSysRoles, lookupResources],
   );
@@ -88,14 +101,29 @@ const AppRoleResourcesTable = () => {
     () => ({
       onRowAdd: appRoleResource =>
         new Promise((resolve, reject) => {
+          //get username and record in Modified By column
+          appRoleResource.updatedBy=localStorage.getItem('currentUser')
+          //record new date and time in Modified On column 
+          const event = new Date();
+          appRoleResource.timestamp = event.toLocaleString(); 
           dispatch(createAppRoleResourceRequest(appRoleResource, resolve, reject));
         }),
       onRowUpdate: appRoleResource =>
         new Promise((resolve, reject) => {
+          //get username and record in Modified By column
+          appRoleResource.updatedBy=localStorage.getItem('currentUser')
+          //record new date and time in Modified On column 
+          const event = new Date();
+          appRoleResource.timestamp = event.toLocaleString(); 
           dispatch(updateAppRoleResourceRequest(appRoleResource, resolve, reject));
         }),
       onRowDelete: appRoleResource =>
         new Promise((resolve, reject) => {
+          //get username and record in Modified By column
+          appRoleResource.updatedBy=localStorage.getItem('currentUser')
+          //record new date and time in Modified On column 
+          const event = new Date();
+          appRoleResource.timestamp = event.toLocaleString(); 
           dispatch(deleteAppRoleResourceRequest(appRoleResource._id, resolve, reject));
         }),
     }),

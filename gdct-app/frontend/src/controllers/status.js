@@ -9,6 +9,7 @@ const statusController = (() => {
   });
   return {
     fetch: async query => statusAxios.get('').then(res => res.data.statuses),
+    fetchStatus: async _id => statusAxios.get(`/${_id}`).then(res => res.data.status),
     create: async status => statusAxios.post('', { status }).then(res => res.data.status),
     delete: async _id => statusAxios.delete(`/${_id}`),
     update: async status => statusAxios.put(`/${status._id}`, { status }),

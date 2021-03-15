@@ -15,12 +15,13 @@ const AppSysController = Service([AppSysService], service => {
         .catch(next);
     });
 
-    router.get('/appSyses', (req, res, next) => {
+    router.get('/appSyses/:_id', (req, res, next) => {
       // Get query from middleware -- auth handler
-
+      const { _id } = req.params
+      
       service
-        .findAppSys({})
-        .then(AppSyses => res.json({ AppSyses }))
+        .findAppSys(_id)
+        .then(AppSys => res.json({ AppSys }))
         .catch(next);
     });
 

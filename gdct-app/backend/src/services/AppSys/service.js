@@ -26,8 +26,8 @@ export default class AppSysService {
     return this.AppSysRepository.update(id, AppSys);
   }
 
-  async findAppSys(AppSys) {
-    return this.AppSysRepository.find(AppSys);
+  async findAppSys(id) {
+    return this.AppSysRepository.findById(id);
   }
 
   async findAllAppSys() {

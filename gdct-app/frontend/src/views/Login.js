@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -17,14 +17,14 @@ import MuiAlert from '@material-ui/lab/Alert';
 import { useSelector, shallowEqual, useDispatch, batch } from 'react-redux';
 import { host } from '../constants/domain';
 import AuthController from '../controllers/Auth';
-import AuditLogController from '../controllers/AuditLog'
+import CreateAuditLog from './AuditLog_Global'
 
 function Copyright() {
   return (
     <Typography variant="body2" color="textSecondary" align="center">
       {'Copyright © '}
       <Link color="inherit" href="#">
-        GDCT
+        MOH - OHFS Budgeting and Forecasting 
       </Link>{' '}
       {new Date().getFullYear()}
       {'.'}
@@ -73,7 +73,7 @@ const validateForm = errors => {
   return valid;
 };
 
-export default function Login({ setLoggedIn, setCurrentUser }) {
+export default function Login({ setLoggedIn }) {
   const classes = useStyles();
   const dispatch = useDispatch();
   const [email, setEmail] = useState('');
@@ -136,31 +136,8 @@ export default function Login({ setLoggedIn, setCurrentUser }) {
             if (data.status === 'ok') {
               // dispatch(UserStore.actions.SET_CURRENT_USER({currentUser:data.data.email}))
               localStorage.setItem('currentUser', data.data.email);
-
-              // Audit Log Below -----------------------------------------------------------------------------------------------------------------------------
-              // Construct info required for this auditlogs
-              const IdentitiesWithNoRole = ["Business Admin", "Template Designer", "Template Approver"]
-              const AuditLogInfo = {
-                user: {
-                  _id: data.data._id,
-                  email: data.data.email,
-                  orgId: !(IdentitiesWithNoRole.includes(data.data.sysRole[0].role)) && data.data.sysRole[0].org.length > 0 ? data.data.sysRole[0].org[0].orgId : ""
-                },
-                activity: "Login",
-                moduleName: "Login",
-                recordId: null,
-                oldValue: {},
-                newValue: {}
-              }
-              // Call AuditLog create service
-              async function createAuditLog() {
-                return await AuditLogController.create(AuditLogInfo)
-              }
-              (async () => {
-                await createAuditLog();
-              })()
-              // Audit Log Above -----------------------------------------------------------------------------------------------------------------------------
-
+              // Audit Login
+              CreateAuditLog(email, 'Login', 'Login', null, {}, {});
               // Set status
               setLoggedIn(true);
               return true;

@@ -19,6 +19,14 @@ const OrgController = Service([OrgService], service => {
         res.json({ organizations });
       });
     });
+    
+    router.get(`/organizations/searchOrgByOrgId/:Id`, (req, res) => {
+      
+      const { Id } = req.params;
+      service.findOrgById(Id).then(organization => {
+        res.json(organization);
+      });
+    });
 
     router.post('/organizations/createOrganization', authorized, (req, res, next) => {
       service

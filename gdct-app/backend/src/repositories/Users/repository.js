@@ -30,6 +30,9 @@ export default class UsersRepository extends BaseRepository {
       phoneNumber,
       isActive,
     }).then(user => new UserModel(user.toObject()));
+  // async update(id, user) {
+  //   return UserModel.findByIdAndUpdate(id, user)
+  //   .then(user => new UserModel(user.toObject()));
   }
 
   async find(query) {

@@ -15,6 +15,8 @@ const orgController = (() => {
     update: async Org => orgAxios.put(`/updateOrganization/${Org._id}`, { Org }),
     fetchByOrgGroupId: async orgGroupId =>
       orgAxios.get(`/searchOrgByOrgGroupId/${orgGroupId}`).then(res => res.data.organizations),
+    fetchById: async Id =>
+      orgAxios.get(`/searchOrgByOrgId/${Id}`).then(res => { return res.data;}),
   };
 })();
 

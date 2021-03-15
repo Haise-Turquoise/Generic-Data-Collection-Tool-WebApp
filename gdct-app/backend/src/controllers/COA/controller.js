@@ -14,6 +14,20 @@ const COAController = Service([COAService], service => {
         .catch(next);
     });
 
+
+    router.get(`/COAs/fetchCOAById/:Id`, (req, res) => {
+      const { Id } = req.params;
+      service.findCOAById(Id).then(COAs => {
+        
+        res.json({ COAs });
+      });
+    });
+
+
+
+
+
+
     router.post('/COAs', (req, res, next) => {
       service
         .createCOA(req.body.COA)

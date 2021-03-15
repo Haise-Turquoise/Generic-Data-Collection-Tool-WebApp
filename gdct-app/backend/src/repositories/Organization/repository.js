@@ -34,6 +34,6 @@ export default class OrgRepository extends BaseRepository {
   }
 
   async findById(id) {
-    return OrgModel.find({ id });
+    return OrgModel.findOne({ id });
   }
 }

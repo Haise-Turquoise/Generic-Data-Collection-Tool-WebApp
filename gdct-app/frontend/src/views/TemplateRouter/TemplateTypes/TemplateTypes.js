@@ -21,7 +21,8 @@ import { getWorkflowsRequest } from '../../../store/thunks/workflow';
 import { WorkflowStoreActions } from '../../../store/WorkflowStore/store';
 import TemplateTypesStore from '../../../store/TemplateTypesStore/store';
 import ErrorBanner from '../../ErrorBanner';
-import { calculateOptions } from '../../../tools/misc'
+import { calculateOptions } from '../../../tools/misc';
+import moment from 'moment';
 
 const TemplateTypeHeader = () => {
   return (
@@ -62,8 +63,16 @@ const TemplateTypesTable = ({ history }) => {
     // { title: 'Inputtable', type: 'boolean', field: 'isInputtable' },
     // { title: 'Viewable', type: 'boolean', field: 'isViewable' },
     // { title: 'Reportable', type: 'boolean', field: 'isReportable' },
+    { title: 'Modified On', field: 'timestamp', editComponent: props => {return <div></div>} },
+    { title: 'Updated By', field: 'updatedBy', editComponent: props => {return <div></div>} },
     { title: 'Active', type: 'boolean', field: 'isActive' },
   ];
+
+  // Convert Date format
+  templateTypes.forEach(templateType => {
+    const logtime = new Date(templateType.timestamp);
+    templateType.timestamp = moment(logtime).format("YYYY-MM-DD HH:mm:ss")
+  });
 
   const actions = useMemo(
     () => [
@@ -80,18 +89,27 @@ const TemplateTypesTable = ({ history }) => {
 
   const options = useMemo(() => calculateOptions(readRowNum), [readRowNum]);
 
+  // Record user and time when an action occurs 
+  function recordUpdate(templateType) {
+    templateType.updatedBy = localStorage.getItem('currentUser');
+    templateType.timestamp = new Date().toLocaleString(); 
+  }
+
   const editable = useMemo(
     () => ({
       onRowAdd: templateType =>
         new Promise((resolve, reject) => {
+          recordUpdate(templateType);
           dispatch(createTemplateTypeRequest(templateType, resolve, reject));
         }),
       onRowUpdate: templateType =>
         new Promise((resolve, reject) => {
+          recordUpdate(templateType);
           dispatch(updateTemplateTypeRequest(templateType, resolve, reject));
         }),
       onRowDelete: templateType =>
         new Promise((resolve, reject) => {
+          recordUpdate(templateType);
           dispatch(deleteTemplateTypeRequest(templateType._id, resolve, reject));
         }),
     }),

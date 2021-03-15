@@ -34,7 +34,8 @@ export default class UserRepository extends BaseRepository {
   }
 
   async findByUserName(username) {
-    return UserModel.findOne({ username }).then(user => {
+    return UserModel.findOne({ username })
+      .then(user => {
       // console.log('user',user)
       // const feedbackUser = new UserEntity(user.toObject());
       // console.log('feedbackUser',feedbackUser)
@@ -48,8 +49,6 @@ export default class UserRepository extends BaseRepository {
   async findByEmail(email) {
     return UserModel.findOne({ email })
       .then(user => {
-        // console.log(user)
-
         return new UserEntity(user.toObject());
       })
       .catch(err => {

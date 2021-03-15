@@ -1,1 +1,1 @@
-export { currentTime, default } from './ModifyOrganization';
+export { default } from './ModifyOrganization';
