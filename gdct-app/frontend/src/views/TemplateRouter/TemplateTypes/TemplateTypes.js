@@ -63,12 +63,16 @@ const TemplateTypesTable = ({ history }) => {
     // { title: 'Inputtable', type: 'boolean', field: 'isInputtable' },
     // { title: 'Viewable', type: 'boolean', field: 'isViewable' },
     // { title: 'Reportable', type: 'boolean', field: 'isReportable' },
-    { title: 'Modified On', field: 'timestamp',
-    editComponent: props => {return <div></div>} },
-    { title: 'Updated By', field: 'updatedBy', 
-    editComponent: props => {return <div></div>} },
+    { title: 'Modified On', field: 'timestamp', editComponent: props => {return <div></div>} },
+    { title: 'Updated By', field: 'updatedBy', editComponent: props => {return <div></div>} },
     { title: 'Active', type: 'boolean', field: 'isActive' },
   ];
+
+  // Convert Date format
+  templateTypes.forEach(templateType => {
+    const logtime = new Date(templateType.timestamp);
+    templateType.timestamp = moment(logtime).format("YYYY-MM-DD HH:mm:ss")
+  });
 
   const actions = useMemo(
     () => [
@@ -85,64 +89,32 @@ const TemplateTypesTable = ({ history }) => {
 
   const options = useMemo(() => calculateOptions(readRowNum), [readRowNum]);
 
+  // Record user and time when an action occurs 
+  function recordUpdate(templateType) {
+    templateType.updatedBy = localStorage.getItem('currentUser');
+    templateType.timestamp = new Date().toLocaleString(); 
+  }
+
   const editable = useMemo(
     () => ({
       onRowAdd: templateType =>
         new Promise((resolve, reject) => {
-          //get username and record in Modified By column
-          templateType.updatedBy=localStorage.getItem('currentUser')
-          //record new date and time in Modified On column 
-          const event = new Date();
-          templateType.timestamp = event.toLocaleString(); 
+          recordUpdate(templateType);
           dispatch(createTemplateTypeRequest(templateType, resolve, reject));
         }),
       onRowUpdate: templateType =>
         new Promise((resolve, reject) => {
-          templateType.updatedBy=localStorage.getItem('currentUser')
-          const event = new Date();
-          templateType.timestamp = event.toLocaleString(); 
+          recordUpdate(templateType);
           dispatch(updateTemplateTypeRequest(templateType, resolve, reject));
         }),
       onRowDelete: templateType =>
         new Promise((resolve, reject) => {
-          templateType.updatedBy=localStorage.getItem('currentUser')
-          const event = new Date();
-          templateType.timestamp = event.toLocaleString(); 
+          recordUpdate(templateType);
           dispatch(deleteTemplateTypeRequest(templateType._id, resolve, reject));
         }),
     }),
     [dispatch],
   );
-
-    // Convert Date format
-    const timeOption = { year: 'numeric', month: 'numeric', day: 'numeric', hour:'numeric', minute:'numeric' };
-    templateTypes.forEach(templateType => {
-//        appRole.timestamp = new Date()
-//      var date = moment(appRoles.timestamp).toDate();
-      if(templateType.timestamp!=null) {
-
-        // reformat date string to match ISO format of mongo db: 2021-02-16T03:59:32.015Z
-        // const temptime = new Date(appRoles.timestamp.toString().replace(/,/g,'').replace(/\./g,'')
-        // );
-        // const logtime = new Date(appRoles.timestamp);
-        // console.log(appRoles.timestamp.toString().replace(/,/g,'').replace(/\./g,''));
-        // appRoles.timestamp = logtime.toLocaleDateString("en-CA", timeOption);
-
-       const logtime = new Date(templateType.timestamp);
-       templateType.timestamp = moment(logtime).format("YYYY-MM-DD HH:mm:ss");
-      }
-      else{
-        // const logtime = new Date("2021-02-16T03:59:32.015Z");
-        // appRoles.timestamp = logtime.toLocaleDateString("en-CA", timeOption);
-
-       const event = new Date("2021-02-16T03:59:32.015Z");
-       templateType.timestamp = event.toLocaleString();
-      }
-      // const event = new Date(appRoles.timestamp.toString());
-      // console.log(appRoles.timestamp.toString());
-      // const logtime = new Date(appRoles.timestamp); 
-      // appRoles.timestamp = event.toLocaleDateString("en-CA", timeOption); 
-    });
 
   useEffect(() => {
     dispatch(getWorkflowsRequest());

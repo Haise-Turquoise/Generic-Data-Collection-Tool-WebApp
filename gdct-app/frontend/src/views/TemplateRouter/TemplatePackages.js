@@ -68,6 +68,12 @@ const TemplatePackages = () => {
   // console.log('lookupStatuses', lookupStatuses)
   // console.log('lookupSubmissionPeriods', lookupSubmissionPeriods)
 
+  // Convert Date format
+  templatePackages.forEach(templatePackage => {
+    const logtime = new Date(templatePackage.timestamp);
+    templatePackage.timestamp = moment(logtime).format("YYYY-MM-DD HH:mm:ss")
+  });
+
   const actions = useMemo(
     () => [
       {
@@ -78,13 +84,6 @@ const TemplatePackages = () => {
     ],
     [dispatch],
   );
-
-  // Convert Date format
-  templatePackages.forEach(templatePackage => {
-    const logtime = new Date(templatePackage.timestamp);
-    templatePackage.timestamp = moment(logtime).format("YYYY-MM-DD HH:mm:ss")
-  });
-
 
   const columns = useMemo(
     () => [
@@ -165,10 +164,8 @@ const TemplatePackages = () => {
         title: 'Creation Date',
         field: 'timestamp',
       },
-      { title: 'Modified On', field: 'timestamp',
-      editComponent: props => {return <div></div>} },
-      { title: 'Updated By', field: 'updatedBy', 
-      editComponent: props => {return <div></div>} },
+      { title: 'Modified On', field: 'timestamp', editComponent: props => {return <div></div>} },
+      { title: 'Updated By', field: 'updatedBy', editComponent: props => {return <div></div>} },
     ],
     [lookupStatuses, lookupSubmissionPeriods],
   );
@@ -178,35 +175,29 @@ const TemplatePackages = () => {
     [readRowNum],
   );
 
+  // Record user and time when an action occurs 
+  function recordUpdate(templatePackage) {
+    templatePackage.updatedBy = localStorage.getItem('currentUser');
+    templatePackage.timestamp = new Date().toLocaleString(); 
+  }
+
   const editable = useMemo(
     () => ({
       onRowAdd: templatePackage =>
         new Promise((resolve, reject) => {
-          //get username and record in Modified By column
-          templatePackage.updatedBy=localStorage.getItem('currentUser')
-          //record new date and time in Modified On column 
-          const event = new Date();
-          templatePackage.timestamp = event.toLocaleString(); 
+          recordUpdate(templatePackage);
           templatePackage = { ...templatePackage, templateIds: [], programIds: [] };
           dispatch(createTemplatePackageRequest(templatePackage, resolve, reject));
         }),
       onRowUpdate: templatePackage =>
         new Promise((resolve, reject) => {
-          //get username and record in Modified By column
-          templatePackage.updatedBy=localStorage.getItem('currentUser')
-          //record new date and time in Modified On column 
-          const event = new Date();
-          templatePackage.timestamp = event.toLocaleString(); 
+          recordUpdate(templatePackage);
           // console.log(templatePackage);
           dispatch(updateTemplatePackageRequest(templatePackage, resolve, reject));
         }),
       onRowDelete: templatePackage =>
         new Promise((resolve, reject) => {
-          //get username and record in Modified By column
-          templatePackage.updatedBy=localStorage.getItem('currentUser')
-          //record new date and time in Modified On column 
-          const event = new Date();
-          templatePackage.timestamp = event.toLocaleString(); 
+          recordUpdate(templatePackage);
           dispatch(deleteTemplatePackageRequest(templatePackage._id, resolve, reject));
         }),
     }),
