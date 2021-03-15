@@ -1,11 +1,6 @@
 import React from 'react';
-import { withStyles } from '@material-ui/core/styles';
-import Button from '@material-ui/core/Button';
-import Menu from '@material-ui/core/Menu';
-import MenuItem from '@material-ui/core/MenuItem';
+import { withStyles, Button, Menu, MenuItem, ListItemText, ListItem } from '@material-ui/core';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
-import { ListItem } from '@material-ui/core';
 import { Link } from 'react-router-dom';
 import IconItem from '../IconItem/IconItem';
 

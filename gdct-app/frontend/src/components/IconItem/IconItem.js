@@ -1,6 +1,6 @@
 import React from 'react';
-import { Tooltip, ListItem, ListItemIcon, ListItemText } from '@material-ui/core';
 import { Link } from 'react-router-dom';
+import { Tooltip, ListItem, ListItemIcon, ListItemText } from '@material-ui/core';
 
 const renderItem = ({ name, icon, url, handleClick, option }) => {
   return option === 'main' ? (
