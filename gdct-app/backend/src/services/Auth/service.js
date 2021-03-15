@@ -86,6 +86,7 @@ export default class AuthService {
   }
 
   profile(req, res, next) {
+    
     try {
       if (req.user) {
         returnNormalJson(res, { email: req.user.email });
@@ -94,6 +95,7 @@ export default class AuthService {
         returnErrorJson(res, 'Not authenticated', 401);
       }
       // }, 10000)
+      next
     } catch (err) {
       next(err);
     }
@@ -198,6 +200,7 @@ export default class AuthService {
               req.session.isAdmin = true;
             }
           });
+          
           return next();
         }
         return returnErrorJson(res, 'Bad request');

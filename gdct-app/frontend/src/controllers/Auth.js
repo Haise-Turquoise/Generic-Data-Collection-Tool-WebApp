@@ -6,7 +6,7 @@ const AuthController = (() => {
   const AuthAxios = axios.create({
     baseURL: host,
     timeout: 5000, // 0 is default, which is no timeout
-    withCredentials: false,
+    withCredentials: true,
   });
   return {
     login: async data =>
