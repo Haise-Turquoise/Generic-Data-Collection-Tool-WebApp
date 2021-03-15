@@ -52,27 +52,25 @@ const Workflows = () => {
   const columns = useMemo(
     () => [
       { title: 'Name', field: 'name' },
-      { title: 'Modified On', field: 'timestamp',
-        editComponent: props => {return <div></div>} },
-//      { title: 'Modified On', field: 'updatedDate', type: 'date',
-//      initialEditValue: Date.now,},
-      { title: 'Updated By', field: 'updatedBy', 
-        editComponent: props => {return <div></div>} },
+      { title: 'Modified On', field: 'timestamp', editComponent: props => {return <div></div>} },
+      { title: 'Updated By', field: 'updatedBy', editComponent: props => {return <div></div>} },
     ],
     []
   );
 
   const options = useMemo(() => calculateOptions(readRowNum), [readRowNum]);
 
+  // Record user and time when an action occurs 
+  function recordUpdate(workflow) {
+    workflow.updatedBy = localStorage.getItem('currentUser');
+    workflow.timestamp = new Date().toLocaleString(); 
+  }
+
   const editable = useMemo(
     () => ({
       onRowDelete: workflow =>
         new Promise((resolve, reject) => {
-          //get username and record in Modified By column
-          workflow.updatedBy=localStorage.getItem('currentUser')
-          //record new date and time in Modified On column 
-          const event = new Date();
-          workflow.timestamp = event.toLocaleString(); 
+          recordUpdate(workflow);
           dispatch(deleteWorkflowRequest(workflow._id, resolve, reject));
         }),
     }),
