@@ -58,3 +58,16 @@ export const urlParser = (orgId, categories, attributes)=>{
   console.log(UrlWithCategories.slice(0, -1));
   return UrlWithCategories.slice(0, -1);
 }
+
+export const digitToAlpha = (num)=>{
+  let str="";
+  while (num > 0){
+    let m = num % 26;
+    if (m == 0){
+        m = 26;
+    }
+    str = String.fromCharCode(m + 64) + str;
+    num = (num - m) / 26;
+  }
+  return str;
+}

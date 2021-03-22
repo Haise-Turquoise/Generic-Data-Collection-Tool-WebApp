@@ -25,7 +25,8 @@
     "mssql": "^6.3.1",
     "passport-google-oauth": "^2.0.0",
     "passport-remember-me": "^0.0.1",
-    "x-data-spreadsheet": "git+https://github.com/Sheldonsu28/x-spreadsheet.git"
+    "x-data-spreadsheet": "git+https://github.com/Sheldonsu28/x-spreadsheet.git",
+    "xlsx": "^0.16.9"
   },
   "devDependencies": {
     "@babel/preset-env": "^7.12.1",

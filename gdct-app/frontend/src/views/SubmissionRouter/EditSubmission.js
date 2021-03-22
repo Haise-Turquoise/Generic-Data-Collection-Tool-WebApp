@@ -10,7 +10,7 @@ import { useLocation } from 'react-router-dom';
 import MaterialTable from 'material-table';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import { IconButton } from '@material-ui/core';
-import { convertExcelFileToState, convertStateToReactState } from '../../tools/excel';
+// import { convertExcelFileToState, convertStateToReactState } from '../../tools/excel';
 import { setExcelData } from '../../store/actions/ui/excel/commands';
 import { getSubmissionNoteRequest } from '../../store/thunks/submissionNote';
 import SubmissionNoteStore from '../../store/SubmissionNoteStore/store';
@@ -25,9 +25,8 @@ import { selectSubmissionNoteStore } from '../../store/SubmissionNoteStore/selec
 import {
   getSubmissionByIdRequest,
   updateSubmissionStatusRequest,
-  openGoogleSheetRequest,
 } from '../../store/thunks/submission';
-import DOWNLOAD from '../../store/reducers/ui/excel/commands/DOWNLOAD';
+// import DOWNLOAD from '../../store/reducers/ui/excel/commands/DOWNLOAD';
 import { selectSubmissionNoteHistoryStore } from '../../store/SubmissionNoteHistoryStore/selectors';
 import workflowController from '../../controllers/workflow';
 
@@ -169,7 +168,7 @@ const EditSubmission = ({ history }) => {
   const handleDownloadWorkbook = () => {
     setUserFeedback('Downloading !');
     setCursor('progress');
-    DOWNLOAD(convertStateToReactState(submission.workbookData), UserFeedback);
+    // DOWNLOAD(convertStateToReactState(submission.workbookData), UserFeedback);
 
     setTimeout(function () {
       UserFeedback('Download successfully !');

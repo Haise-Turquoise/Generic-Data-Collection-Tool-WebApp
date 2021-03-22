@@ -2,15 +2,14 @@
 //This file exports a page that users can go in to edit templatate spreadsheet files. 
 //Since the application is moving onto using google sheets by opening a new tab, this file is currently not being used.
 
-import React, { useEffect, useCallback, useState, useRef } from 'react';
+import React, { useEffect, useCallback, useState } from 'react';
 
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import { Button, Chip } from '@material-ui/core';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
-// import XLSX from "xlsx";
 
-import Spreadsheet from '../../spreadSheet';
+import Spreadsheet from './spreadSheet';
 
 import Loading from '../../../components/Loading/Loading';
 
@@ -18,7 +17,6 @@ import {
   getTemplateRequest,
   updateTemplateWorkflowProcess,
 } from '../../../store/thunks/template';
-// import { Excel } from '../../../components/Excel';
 
 import './Template.scss';
 import { selectTemplatesStore } from '../../../store/TemplatesStore/selectors';
@@ -26,8 +24,6 @@ import { selectFactoryValueById } from '../../../store/common/REST/selectors';
 import workflowController from '../../../controllers/workflow';
 import TemplatesStore from '../../../store/TemplatesStore/store';
 
-//import Ssheet from "./SpreadSheet.js";
-// import Iframe from 'react-iframe'
 
 const TemplatePhases = ({ template }) => {
   const [workflowProcess, setWorkflowProcess] = useState();
@@ -84,16 +80,6 @@ const Template = ({
     shallowEqual,
   );
   
-  
-  // useEffect(()=>{
-
-  //   if(sheetDiv.current && sheet == undefined){
-  //     sheet = new Spreadsheet("#x-spreadsheet", sheetOption);
-  //     sheet.loadData(template.templateData).reRender();
-  //     window.addEventListener("beforeunload", saveTemplate);
-  //   }
-  // });
-  
 
   const handleSaveTemplate = useCallback(() => {
     // dispatch(updateTemplateExcelRequest());
@@ -124,7 +110,7 @@ const Template = ({
         returnLink="/template_manager/templates"
         handleSave={handleSaveTemplate}
       /> */}
-      <Spreadsheet sheetID={_id}/>
+      <Spreadsheet sheetID={_id} name={template.name}/>
     </div>
   ) : (
     <Loading />

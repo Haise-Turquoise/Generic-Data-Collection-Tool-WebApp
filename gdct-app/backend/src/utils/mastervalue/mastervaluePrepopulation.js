@@ -54,7 +54,6 @@ export async function mastervaluePrepopulation(workbook) {
         }
       }
     }
-    console.log("Population Complete")
   }
   const title = workbook.properties.title;
   workbook = pako.deflate(JSON.stringify(workbook), { to: 'string' })
@@ -65,7 +64,7 @@ export async function mastervaluePrepopulation(workbook) {
   return workbook;
 }
 
-const extractAttributeIds1 = (sheet)=>{
+export const extractAttributeIds1 = (sheet)=>{
   const targetRow = sheet.rows[0];
   const attributeMap = {}
   if (targetRow){
@@ -80,9 +79,9 @@ const extractAttributeIds1 = (sheet)=>{
   return attributeMap
 }
 
-const extractCategoryIds1 = (sheet)=>{
+export const extractCategoryIds1 = (sheet)=>{
   // @ts-ignore
-  const maxRowNum = Math.max(...Object.keys(sheet.rows))
+  const maxRowNum = Math.max(...Object.keys(sheet.rows).slice(0, -1))
   const categoryMap = {};
 
   // Go though each row's first cell
@@ -98,24 +97,26 @@ const extractCategoryIds1 = (sheet)=>{
   return categoryMap;
 }
 
-export async function mastervaluePrepopulationTest(workbook){
-  for(let i = 0; i < workbook.lenght; i++){
+// Last Updated: 2021/03/15 by Sheldon Su
+// Insert a workbook, and it will populate the workbook with historical data from the database
+export async function mastervaluePrepopulationTest(workbook, orgId){
+  for(let i = 0; i < workbook.length; i++){
     let sheet = workbook[i];
-
     // Obtain the mapping for all the attribute and category id in the sheet 
-    const categoryMap = extractCategoryIds1(sheet);
-    const attributeMap = extractAttributeIds1(sheet);
+    let categoryMap = extractCategoryIds1(sheet);
+    let attributeMap = extractAttributeIds1(sheet);
 
     const categoryList = Object.keys(categoryMap);
     const attributeList = Object.keys(attributeMap);
 
-    // Find the corresponding attributes in the system
-    const res = categoryList.length > 0 && attributeList.length > 0 ? await masterValueRepository.batchFind(attributeList, categoryList) : {};
-    // populate the sheet with master values
+    // Find the corresponding attributes in the DB, any of the mapping is empty, skip the DB query
+    const res = categoryList.length > 0 && attributeList.length > 0 ? await masterValueRepository.batchFind(attributeList, categoryList, orgId) : [];
+
+    // populate the sheet with master values according to the mappings
     for (const item in res) {
       let masterValueItem = res[item];
-      let ri = categoryMap[masterValueItem.categoryId];
-      let ci = attributeMap[masterValueItem.attributeId];
+      let ri = categoryMap[masterValueItem.CategoryId];
+      let ci = attributeMap[masterValueItem.AttributeId];
       sheet.rows[ri].cells[ci].text = masterValueItem.value;
     }
   }

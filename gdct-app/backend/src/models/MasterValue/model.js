@@ -63,8 +63,8 @@ const MasterValueModel = model(
       },
 
       COATreeId: { type: ObjectId, ref: 'CategoryTree' },
-      categoryId: { type: String},
-      attributeId: { type: String },
+      CategoryId: { type: String},
+      AttributeId: { type: String },
       categoryGroup: { type: String },
 
       value: { type: Number },

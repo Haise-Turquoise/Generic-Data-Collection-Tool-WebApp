@@ -8,6 +8,7 @@ import COAGroupRepository from '../../repositories/COAGroup';
 import SheetNameRepository from '../../repositories/SheetName';
 import MasterValueRepository from '../../repositories/MasterValue';
 import { extractAttributeIds, extractCategoryData, getCellData } from './excel'
+import { extractAttributeIds1, extractCategoryIds1 } from './mastervaluePrepopulation';
 
 const reportingPeriodRepository = Container.get(ReportingPeriodRepository);
 const coaTreeRepository = Container.get(COATreeRepository);
@@ -28,169 +29,134 @@ export async function mastervalueExtraction(
     templateType,
     reportingPeriod,
   ){
-    let { workbookData } = submission;
+    const { workbookData } = submission;
 
-    const inflatedWorkbook = pako.inflate( workbookData.data, { to: 'string' });
-    workbookData = JSON.parse(inflatedWorkbook);
-  
-    // Iterate through each sheet in the workbook
-    for (const sheetName in workbookData.sheets){
-  
-      // Container for mastervalues to be populated
-      const masterValues = [];
-      // Current sheet
-      const sheetData = workbookData.sheets[sheetName];
-  
-      // Extract attribute and category Ids present in the sheet
-      const attributes = extractAttributeIds(sheetData);
-      const categories = extractCategoryData(sheetData);
-  
-      const categoryIds = [];
-      const currentYearAttributes = [];
-  
-      for (const row in categories) {
-        categoryIds.push(categories[row]);
-      }
-  
-      const openSubmissions = await reportingPeriodRepository.findSubmissionOpen();
+    // Iterate through the sheet
+    for (const sheet of workbookData){
 
-      for (const column in attributes){
-        const columnId = attributes[column].toString();
-        
-        const currentPeriod = columnId.slice(0,6);
-        // let res = await reportingPeriodRepository.findSubmissionClosed({code: currentPeriod})
-        for (let item in openSubmissions){
-            if (openSubmissions[item].code === currentPeriod){
-              currentYearAttributes.push(columnId);
-              break;
-            }
-        }
-        // if (!res[0].submissionClosed){
-        //   currentYearAttributes.push(columnId);
-        // }
-      }
-  
-      // Check if the attribute and category Ids are valid
-      const existingAttributes = await columNameRepository.batchFind(currentYearAttributes);
-      const existingCategories = await coaRepository.batchFind(categoryIds);
+      const attributeMap = extractAttributeIds1(sheet);
+      const categoryMap = extractCategoryIds1(sheet);
+      const categoryIDs = Object.keys(categoryMap);
+      const attributeIDs = Object.keys(attributeMap);
+      if (categoryIDs.length > 0 && attributeIDs.length > 0){
 
-  
-      // Insert the existing attributes and categories into a new array
-      const filteredAttributes = [];
-      const filteredCategories = [];
-  
-      for (let attribute in existingAttributes){
-        filteredAttributes.push(existingAttributes[attribute].id)
-      }
-  
-      for (let category in existingCategories){
-        filteredCategories.push(existingCategories[category].id)
-      }
-  
-      // Delete existing mastervalues from the database (Will be populated by new values)
-      await masterValueRepository.batchDelete(existingAttributes, existingCategories, org);
-  
-      
-      let query = []
-      // Delete attributes and categories that are not valid. This code is run because const categories and const attributes
-      // contain information for position of the Ids in the cell
-     for (const row in categories){
-        categories[row] = categories[row].toString()
-        if (!filteredCategories.includes(categories[row])){
-          delete categories[row]
-        } else {
-          query.push(categories[row])
-        }
-      }
-      // Delete all column
-      for (const col in attributes){
-        attributes[col] = attributes[col].toString()
-        if (!filteredAttributes.includes(attributes[col])){
-          delete attributes[col]
-        }
-      }
+        // Container for mastervalues to be populated
+        const masterValues = [];
+        const openSubmissions = await reportingPeriodRepository.findSubmissionOpen();
+        const currentYearAttributes = [];
 
-      // Get CategoryTree based on categoryId
-      const sheetTitle = sheetData.properties.title;
-      const sheetTitleId = await sheetNameRepository.findByName(sheetTitle)
-      const categoryTrees = await coaTreeRepository.batchFindByCategoryId(query, sheetTitleId[0]._id)
-  
-      let categoryTreeList = {};
-      const categoryGroupQuery = [];
-      // Search for all layers of categoryTree. Should run maximum of five times according to the requirement
-      await Promise.resolve(recursiveCategoryTreeSearch(categoryTrees, categoryTreeList, categoryGroupQuery, 0));
-      let categoryGroupList = await coaGroupRepository.batchFind(categoryGroupQuery)
+        // Find the current active attribute ID
+        for (const attributeId of attributeIDs){
+          const currentPeriod = attributeId.slice(0,6);
 
-      const attributeIDAndName = await columNameRepository.findAll({_id:0});
-      const categoryIDAndName = await coaRepository.batchFind(categoryIds, { _id: 0, COA: 0, __v: 0, unitOfMeassure: 0})
-      
-      const categoryIdTable = {};
-      const attributeIdTable = {};
-
-      attributeIDAndName.forEach(entry=>{
-        attributeIdTable[entry.id] = entry.name;
-      })
-
-      categoryIDAndName.forEach(entry=>{
-        categoryIdTable[entry.id] = entry.name;
-      })
-
-      for (const row in categories) {
-        for (const column in attributes) {
-          const cellData = getCellData(sheetData, +row, +column);
-          // Run if the cell is not empty
-          if (!(cellData && cellData.value)){ //change this line back
-            // For categoryTree 
-            let iteration = 0;
-            let string = ""
-            let COATreeId;
-            let found = false;
-            // Searching through the first layer of categoryTrees
-            for (let item in categoryTreeList[iteration]){
-              const categoryTree = categoryTreeList[iteration][item];
-              // Searching through the categoryId array in the categoryTree
-              if (found){
+          for (let item in openSubmissions){
+              if (openSubmissions[item].code === currentPeriod){
+                currentYearAttributes.push(attributeId);
                 break;
               }
-              for (let categoryId in categoryTree.categoryId){
-                const currentCategoryId = categoryTree.categoryId[categoryId]
+          }
+        }
+
+        // Check if the attribute and category Ids are valid
+        const existingAttributes = await columNameRepository.batchFind(currentYearAttributes);
+        const existingCategories = await coaRepository.batchFind(categoryIDs);
+
+        const filteredAttributes = existingAttributes.map(e=>e.id);
+        const filteredCategories = existingCategories.map(e=>e.id);
+
+        await masterValueRepository.batchDelete(filteredAttributes, filteredCategories, org);
+      
+        // Get CategoryTree based on categoryId
+        const sheetTitle = sheet.name;
+        const sheetTitleId = await sheetNameRepository.findByName(sheetTitle);
+        console.log('res', sheetTitleId)
+        const categoryTrees = await coaTreeRepository.batchFindByCategoryId(filteredCategories, sheetTitleId[0]._id);
+
+        let categoryTreeList = {};
+        const categoryGroupQuery = [];
+
+        // Search for all layers of categoryTree. Should run maximum of five times according to the requirement
+        await Promise.resolve(recursiveCategoryTreeSearch(categoryTrees, categoryTreeList, categoryGroupQuery, 0));
+        let categoryGroupList = await coaGroupRepository.batchFind(categoryGroupQuery);
+
+        const attributeIDAndName = await columNameRepository.findAll({_id:0});
+        const categoryIDAndName = await coaRepository.batchFind(categoryIDs, { _id: 0, COA: 0, __v: 0, unitOfMeassure: 0})
+
+        const categoryIdTable = {};
+        const attributeIdTable = {};
+
+        attributeIDAndName.forEach(entry=>{
+          attributeIdTable[entry.id] = entry.name;
+        })
+
+        categoryIDAndName.forEach(entry=>{
+          categoryIdTable[entry.id] = entry.name;
+        })
+        
+        for (const categoryID of filteredCategories){
+          for (const attributeID of filteredAttributes){
+            console.log('fill CID', categoryID)
+            console.log('fill AID', attributeID)
+            let ri = categoryMap[categoryID];
+            let ci = attributeMap[attributeID];
+            const targetCell = sheet.rows[ri].cells[ci];
+            console.log('cell', targetCell)
+            // Run if the cell is not empty
+            if (targetCell && targetCell.text !== '' && !isNaN(targetCell.text)){
+
+              // For categoryTree 
+              let iteration = 0;
+              let string = ""
+              let COATreeId;
+              let found = false;
+              
+              // Searching through the first layer of categoryTrees
+              for (let item in categoryTreeList[iteration]){
+                const categoryTree = categoryTreeList[iteration][item];
+                // Searching through the categoryId array in the categoryTree
                 if (found){
                   break;
                 }
-                // Checks if the categoryId matches
-                if (currentCategoryId === categories[row]){
-                  COATreeId = categoryTree;
-                  // Looks through the categoryGroupList to find the matching categoryGroup
-                  for (let itemTwo in categoryGroupList){
-                    const categoryGroup = categoryGroupList[itemTwo]
-                    if (categoryGroup._id.toString() === categoryTree.categoryGroupId.toString()){
-                      string = string + categoryGroup.name + ', '
-                      if (categoryTree.parentId){
-                        const parentId = categoryTree.parentId.toString();
-                        string = recursiveString(parentId, categoryTreeList, categoryGroupList, string, iteration);
+                for (let categoryId in categoryTree.categoryId){
+                  const currentCategoryId = categoryTree.categoryId[categoryId]
+                  if (found){
+                    break;
+                  }
+                  // Checks if the categoryId matches
+                  if (currentCategoryId === categoryID){
+                    COATreeId = categoryTree;
+                    // Looks through the categoryGroupList to find the matching categoryGroup
+                    for (let itemTwo in categoryGroupList){
+                      const categoryGroup = categoryGroupList[itemTwo]
+                      if (categoryGroup._id.toString() === categoryTree.categoryGroupId.toString()){
+                        string = string + categoryGroup.name + ', '
+                        if (categoryTree.parentId){
+                          const parentId = categoryTree.parentId.toString();
+                          string = recursiveString(parentId, categoryTreeList, categoryGroupList, string, iteration);
+                        }
+    
+    
+                        string = string.substring(0, string.length - 2)
+                        masterValues.push({
+                          submission: { _id: submission._id, name: submission.name },
+                          org,
+                          program,
+                          template,
+                          templateType,
+                          reportingPeriod: reportingPeriod.name,
+                          attributeId: attributeID,
+                          categoryId: categoryID,
+                          COATreeId: COATreeId._id,
+                          categoryGroup: string,
+                          value: targetCell.text, //change this line back
+                          categoryName:categoryIdTable[categoryID],
+                          attributeName:attributeIdTable[attributeID],
+                        });
+    
+                        found = true;
+                        iteration = 0;
+                        break;
                       }
-  
-  
-                      string = string.substring(0, string.length - 2)
-                      masterValues.push({
-                        submission: { _id: submission._id, name: submission.name },
-                        org,
-                        program,
-                        template,
-                        templateType,
-                        reportingPeriod: reportingPeriod.name,
-                        attributeId: attributes[column],
-                        categoryId: categories[row],
-                        COATreeId: COATreeId._id,
-                        categoryGroup: string,
-                        value: cellData.value, //change this line back
-                        categoryName:categoryIdTable[categories[row]],
-                        attributeName:attributeIdTable[attributes[column]],
-                      });
-  
-                      found = true;
-                      iteration = 0;
-                      break;
                     }
                   }
                 }
@@ -198,11 +164,185 @@ export async function mastervalueExtraction(
             }
           }
         }
+        console.log('master value', masterValues)
+        Promise.all(masterValues).then(() => {
+          masterValueRepository.bulkUpdate(id, masterValues);
+        });
       }
-      Promise.all(masterValues).then(() => {
-        masterValueRepository.bulkUpdate(id, masterValues);
-      });
     }
+
+  
+    // Iterate through each sheet in the workbook
+    // for (const sheetName in workbookData.sheets){
+  
+    //   // Container for mastervalues to be populated
+    //   const masterValues = [];
+    //   // Current sheet
+    //   const sheetData = workbookData.sheets[sheetName];
+  
+    //   // Extract attribute and category Ids present in the sheet
+    //   const attributes = extractAttributeIds(sheetData);
+    //   const categories = extractCategoryData(sheetData);
+  
+    //   const categoryIds = [];
+    //   const currentYearAttributes = [];
+  
+    //   for (const row in categories) {
+    //     categoryIds.push(categories[row]);
+    //   }
+  
+    //   const openSubmissions = await reportingPeriodRepository.findSubmissionOpen();
+
+    //   for (const column in attributes){
+    //     const columnId = attributes[column].toString();
+        
+    //     const currentPeriod = columnId.slice(0,6);
+    //     // let res = await reportingPeriodRepository.findSubmissionClosed({code: currentPeriod})
+    //     for (let item in openSubmissions){
+    //         if (openSubmissions[item].code === currentPeriod){
+    //           currentYearAttributes.push(columnId);
+    //           break;
+    //         }
+    //     }
+    //     // if (!res[0].submissionClosed){
+    //     //   currentYearAttributes.push(columnId);
+    //     // }
+    //   }
+  
+    //   // Check if the attribute and category Ids are valid
+    //   const existingAttributes = await columNameRepository.batchFind(currentYearAttributes);
+    //   const existingCategories = await coaRepository.batchFind(categoryIds);
+
+  
+    //   // Insert the existing attributes and categories into a new array
+    //   const filteredAttributes = [];
+    //   const filteredCategories = [];
+  
+    //   for (let attribute in existingAttributes){
+    //     filteredAttributes.push(existingAttributes[attribute].id)
+    //   }
+  
+    //   for (let category in existingCategories){
+    //     filteredCategories.push(existingCategories[category].id)
+    //   }
+  
+    //   // Delete existing mastervalues from the database (Will be populated by new values)
+    //   await masterValueRepository.batchDelete(existingAttributes, existingCategories, org);
+  
+      
+    //   let query = []
+
+    //   // Delete attributes and categories that are not valid. This code is run because const categories and const attributes
+    //   // contain information for position of the Ids in the cell
+    //  for (const row in categories){
+    //     categories[row] = categories[row].toString()
+    //     if (!filteredCategories.includes(categories[row])){
+    //       delete categories[row]
+    //     } else {
+    //       query.push(categories[row])
+    //     }
+    //   }
+    //   // Delete all column
+    //   for (const col in attributes){
+    //     attributes[col] = attributes[col].toString()
+    //     if (!filteredAttributes.includes(attributes[col])){
+    //       delete attributes[col]
+    //     }
+    //   }
+
+    //   // Get CategoryTree based on categoryId
+    //   const sheetTitle = sheetData.properties.title;
+    //   const sheetTitleId = await sheetNameRepository.findByName(sheetTitle)
+    //   const categoryTrees = await coaTreeRepository.batchFindByCategoryId(query, sheetTitleId[0]._id)
+  
+    //   let categoryTreeList = {};
+    //   const categoryGroupQuery = [];
+    //   // Search for all layers of categoryTree. Should run maximum of five times according to the requirement
+    //   await Promise.resolve(recursiveCategoryTreeSearch(categoryTrees, categoryTreeList, categoryGroupQuery, 0));
+    //   let categoryGroupList = await coaGroupRepository.batchFind(categoryGroupQuery)
+
+    //   const attributeIDAndName = await columNameRepository.findAll({_id:0});
+    //   const categoryIDAndName = await coaRepository.batchFind(categoryIds, { _id: 0, COA: 0, __v: 0, unitOfMeassure: 0})
+      
+    //   const categoryIdTable = {};
+    //   const attributeIdTable = {};
+
+    //   attributeIDAndName.forEach(entry=>{
+    //     attributeIdTable[entry.id] = entry.name;
+    //   })
+
+    //   categoryIDAndName.forEach(entry=>{
+    //     categoryIdTable[entry.id] = entry.name;
+    //   })
+
+    //   for (const row in categories) {
+    //     for (const column in attributes) {
+    //       const cellData = getCellData(sheetData, +row, +column);
+    //       // Run if the cell is not empty
+    //       if (!(cellData && cellData.value)){ //change this line back
+    //         // For categoryTree 
+    //         let iteration = 0;
+    //         let string = ""
+    //         let COATreeId;
+    //         let found = false;
+    //         // Searching through the first layer of categoryTrees
+    //         for (let item in categoryTreeList[iteration]){
+    //           const categoryTree = categoryTreeList[iteration][item];
+    //           // Searching through the categoryId array in the categoryTree
+    //           if (found){
+    //             break;
+    //           }
+    //           for (let categoryId in categoryTree.categoryId){
+    //             const currentCategoryId = categoryTree.categoryId[categoryId]
+    //             if (found){
+    //               break;
+    //             }
+    //             // Checks if the categoryId matches
+    //             if (currentCategoryId === categories[row]){
+    //               COATreeId = categoryTree;
+    //               // Looks through the categoryGroupList to find the matching categoryGroup
+    //               for (let itemTwo in categoryGroupList){
+    //                 const categoryGroup = categoryGroupList[itemTwo]
+    //                 if (categoryGroup._id.toString() === categoryTree.categoryGroupId.toString()){
+    //                   string = string + categoryGroup.name + ', '
+    //                   if (categoryTree.parentId){
+    //                     const parentId = categoryTree.parentId.toString();
+    //                     string = recursiveString(parentId, categoryTreeList, categoryGroupList, string, iteration);
+    //                   }
+  
+  
+    //                   string = string.substring(0, string.length - 2)
+    //                   masterValues.push({
+    //                     submission: { _id: submission._id, name: submission.name },
+    //                     org,
+    //                     program,
+    //                     template,
+    //                     templateType,
+    //                     reportingPeriod: reportingPeriod.name,
+    //                     attributeId: attributes[column],
+    //                     categoryId: categories[row],
+    //                     COATreeId: COATreeId._id,
+    //                     categoryGroup: string,
+    //                     value: cellData.value, //change this line back
+    //                     categoryName:categoryIdTable[categories[row]],
+    //                     attributeName:attributeIdTable[attributes[column]],
+    //                   });
+  
+    //                   found = true;
+    //                   iteration = 0;
+    //                   break;
+    //                 }
+    //               }
+    //             }
+    //           }
+    //         }
+    //       }
+    //     }
+    //   }
+    //   Promise.all(masterValues).then(() => {
+    //     masterValueRepository.bulkUpdate(id, masterValues);
+    //   });
+    // }
   }
   
   function recursiveString(parentId, categoryTreeList, categoryGroupList, string, iteration){

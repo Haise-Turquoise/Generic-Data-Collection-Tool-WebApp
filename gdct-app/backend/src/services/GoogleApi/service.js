@@ -74,9 +74,6 @@ export default class GoogleApisService {
     organizeCOATree(COATreeData)
     await Promise.resolve(pushCategory(dataToSend.Categories, COATreeData, fullCategoryGroupList, fullCategoryList, fullSheetNamelist));
 
-    const deflatedData = pako.deflate(JSON.stringify(dataToSend), { to: 'string' });
-    const wrappedData = {"data" : dataToSend};
-
     return dataToSend;
   }
 

@@ -1,11 +1,14 @@
 import React, { Component } from "react";
 import Spreadsheet from 'x-data-spreadsheet';
-import templateController from '../controllers/template'
-import CategoryInsertMenu from './CategoryInsertionMenu';
-import AttributeInsertMenu from './AttributeInsertionMenu';
-import spreadSheetController from '../controllers/spreadSheet';
-import PopulationSelectionMenu from './PopulationSelectionMenu';
+import templateController from '../../../controllers/template'
+import CategoryInsertMenu from '../../CategoryInsertionMenu';
+import AttributeInsertMenu from '../../AttributeInsertionMenu';
+import spreadSheetController from '../../../controllers/spreadSheet';
+import PopulationSelectionMenu from '../../PopulationSelectionMenu';
 import Button from '@material-ui/core/Button';
+import { digitToAlpha } from '../../../tools/misc';
+import { Input, InputLabel } from "@material-ui/core";
+import XLSX from "xlsx";
 
 // Sheet style Option
 const sheetOption = {
@@ -56,6 +59,9 @@ class SpreadSheet extends Component{
       this.insertAttribute = this.insertAttribute.bind(this);
       this.enablePreview = this.enablePreview.bind(this);
       this.disablePreview = this.disablePreview.bind(this);
+      this.fileImportHandler = this.fileImportHandler.bind(this);
+      this.downloadTemplate = this.downloadTemplate.bind(this);
+      this.workBookName = this.props.name;
       this.currentCoord = {};
       this.categoryAndAttribute = {};
       this.insertedPreview = [];
@@ -64,7 +70,7 @@ class SpreadSheet extends Component{
     // After component mount, initailize spreadsheet and load data from DB
     componentDidMount(){
       templateController.fetchTemplate(this.id).then(template=>{
-        const data = template.templateData;
+        const data = template.templateData?template.templateData:[];
         // @ts-ignore
         this.sheet = new Spreadsheet("#x-spreadsheet", sheetOption).loadData(data).reRender();
         
@@ -73,7 +79,6 @@ class SpreadSheet extends Component{
         this.sheet.on('cell-selected',(cell, row, col)=>{
           this.currentCoord = {row, col};
         })
-        console.log(document.documentElement.clientWidth)
       });
     }
     
@@ -113,6 +118,27 @@ class SpreadSheet extends Component{
         this.sheet.cellText(insertRow, unitCol, dataArr[1], currentIndex);
       }
       this.sheet.reRender();
+    }
+
+    downloadTemplate(sheetData){
+      let out = XLSX.utils.book_new();
+      sheetData.forEach((xws) => {
+        let aoa = [[]];
+        let rowobj = xws.rows;
+        for(let ri = 0; ri < rowobj.len; ++ri) {
+          let row = rowobj[ri];
+          if(!row) continue;
+          aoa[ri] = [];
+          Object.keys(row.cells).forEach(function(k) {
+            let idx = +k;
+            if(isNaN(idx)) return;
+            aoa[ri][idx] = row.cells[k].text;
+          });
+        }
+        let ws = XLSX.utils.aoa_to_sheet(aoa);
+        XLSX.utils.book_append_sheet(out, ws, xws.name);
+      });
+      XLSX.writeFile(out, this.workBookName + '.xlsx');
     }
 
     enablePreview(orgID){
@@ -163,16 +189,88 @@ class SpreadSheet extends Component{
       this.sheet.reRender();
     }
 
+    fileImportHandler(event) {
+      //set up a event listner
+      let reader = new FileReader();
+      
+      // Setting up a onload event handler, this event handler will only fire
+      // when it completed a sucessful read.
+      reader.onload = (event) => {
+        // Get the file data from event
+        const data = event.target.result;
+
+        // Read the data in binary
+        const wb = XLSX.read(data, { type: "binary" });
+        // Create a new list that is use for holding Json sheet object
+        let sheetList = [];
+  
+        // Iterate trough the sheet name
+        wb.SheetNames.forEach((name) => {
+          let currSheet = { name: name, rows: {} };
+  
+          // Get the sheet object by name
+          let targetSheet = wb.Sheets[name];
+          //convert it into json
+          let info = XLSX.utils.sheet_to_json(targetSheet, {
+            raw: false,
+            header: 1,
+          });
+          // fill up the newly converted json
+          info.forEach((r, i) => {
+            let cells = {};
+            r.forEach(function (c, j) {
+              console.log(wb)
+              let coord = digitToAlpha(j + 1) + (i + 1);
+              console.log('this', coord, wb.Sheets[name], name)
+              if (wb.Sheets[name][coord]) {
+                let formula = wb.Sheets[name][coord]["f"];
+                if (formula) {
+                  cells[j] = { text: "=" + formula };
+                } else {
+                  cells[j] = { text: c };
+                }
+              } else {
+                cells[j] = { text: c };
+              }
+            });
+            currSheet.rows[i] = { cells: cells };
+          });
+          // push the sheet json object into the list
+          sheetList.push(currSheet);
+        });
+  
+        // Rerender the file
+        this.sheet.loadData(sheetList).reRender();
+      };
+
+      const file = event.target.files[0];
+  
+      reader.readAsBinaryString(file);
+    }
+
     render(){
         return (
           <div>
               <div style={{display:'flex'}}>
-              <button onClick={this.saveTemplate}>Save</button>
+                <Button variant="outlined" color="primary" onClick={this.saveTemplate}>
+                  Save
+                </Button>
                 <CategoryInsertMenu callback={this.insertCategory}/>
                 <AttributeInsertMenu callback={this.insertAttribute}/>
                 <PopulationSelectionMenu callback={this.enablePreview}/>
                 <Button variant="outlined" color="primary" onClick={()=>this.disablePreview()}>
                   Disable preview
+                </Button>
+                <Button variant="outlined" color="primary" onClick={()=>this.disablePreview()}>
+                  Disable preview
+                </Button>
+                <input
+                  type="file"
+                  accept=".xlsx, .xlsm"
+                  onChange={(e) => this.fileImportHandler(e)}
+                />
+                <Button variant="outlined" color="primary" onClick={()=>this.downloadTemplate(this.sheet.getData())}>
+                  Download Template
                 </Button>
               </div>
               <div id="x-spreadsheet"></div>
