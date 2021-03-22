@@ -1033,30 +1033,30 @@ export const convertExcelFileToState = async excelFile => {
   };
 };
 
-export const convertStateToReactState = state => {
-  const { workbookData } = state;
+// export const convertStateToReactState = state => {
+//   const { workbookData } = state;
 
-  const data = {};
+//   const data = {};
 
-  for (const sheetName in workbookData)
-    data[sheetName] = JSON.parse(pako.inflate(workbookData[sheetName], { to: 'string' }));
+//   for (const sheetName in workbookData)
+//     data[sheetName] = JSON.parse(pako.inflate(workbookData[sheetName], { to: 'string' }));
 
-  const { activeSheetName } = state;
-  const activeSheetData = data[activeSheetName];
-  const {
-    activeCellPosition: { x, y },
-  } = activeSheetData;
+//   const { activeSheetName } = state;
+//   const activeSheetData = data[activeSheetName];
+//   const {
+//     activeCellPosition: { x, y },
+//   } = activeSheetData;
 
-  const activeCellInputData = getActiveCellInputData(activeSheetData.sheetCellData, y, x);
+//   const activeCellInputData = getActiveCellInputData(activeSheetData.sheetCellData, y, x);
 
-  return {
-    ...state,
-    ...activeSheetData,
-    activeCellInputData,
-    inactiveSheets: { ...data, [activeSheetName]: undefined },
-    workbookData: undefined,
-  };
-};
+//   return {
+//     ...state,
+//     ...activeSheetData,
+//     activeCellInputData,
+//     inactiveSheets: { ...data, [activeSheetName]: undefined },
+//     workbookData: undefined,
+//   };
+// };
 
 export const getWorkbookData = (activeSheetName, activeSheetData, inactiveSheets) => {
   const workbookData = {};
