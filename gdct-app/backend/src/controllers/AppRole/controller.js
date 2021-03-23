@@ -21,6 +21,7 @@ const AppRoleController = Service([AppRoleService], service => {
         .catch(next);
     });
 
+    //update function
     router.put('/appRoles/:_id', (req, res, next) => {
       const { _id } = req.params;
       const { AppRole } = req.body;

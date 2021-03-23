@@ -6,6 +6,7 @@ import LaunchIcon from '@material-ui/icons/Launch';
 
 import Typography from '@material-ui/core/Typography';
 import MaterialTable from 'material-table';
+import moment from 'moment';
 
 import { useHistory } from 'react-router-dom';
 import Select from 'react-select';
@@ -36,7 +37,7 @@ import { calculateOptions } from '../../tools/misc'
 const TemplatePackageHeader = () => {
   return (
     <Paper className="header">
-      <Typography variant="h5">Template Packages</Typography>
+      <Typography variant="h5">Template Package</Typography>
       {/* <HeaderActions/> */}
     </Paper>
   );
@@ -67,6 +68,12 @@ const TemplatePackages = () => {
   // console.log('lookupStatuses', lookupStatuses)
   // console.log('lookupSubmissionPeriods', lookupSubmissionPeriods)
 
+  // Convert Date format
+  templatePackages.forEach(templatePackage => {
+    const logtime = new Date(templatePackage.timestamp);
+    templatePackage.timestamp = moment(logtime).format("YYYY-MM-DD HH:mm:ss")
+  });
+
   const actions = useMemo(
     () => [
       {
@@ -82,13 +89,13 @@ const TemplatePackages = () => {
     () => [
       { title: 'Name', field: 'name' },
       {
-        title: 'SubmissionPeriodId',
+        title: 'Submission Period ID',
         field: 'submissionPeriodId',
         lookup: lookupSubmissionPeriods,
       },
       // { title: "TemplateIds", type: "boolean", field: "templateIds" },
       {
-        title: 'StatusId',
+        title: 'Status ID',
         field: 'statusId',
         lookup: lookupStatuses,
 
@@ -155,10 +162,10 @@ const TemplatePackages = () => {
       },
       {
         title: 'Creation Date',
-        field: 'creationDate',
-        type: 'date',
-        initialEditValue: Date.now,
+        field: 'timestamp',
       },
+      { title: 'Modified On', field: 'timestamp', editComponent: props => {return <div></div>} },
+      { title: 'Updated By', field: 'updatedBy', editComponent: props => {return <div></div>} },
     ],
     [lookupStatuses, lookupSubmissionPeriods],
   );
@@ -168,20 +175,29 @@ const TemplatePackages = () => {
     [readRowNum],
   );
 
+  // Record user and time when an action occurs 
+  function recordUpdate(templatePackage) {
+    templatePackage.updatedBy = localStorage.getItem('currentUser');
+    templatePackage.timestamp = new Date().toLocaleString(); 
+  }
+
   const editable = useMemo(
     () => ({
       onRowAdd: templatePackage =>
         new Promise((resolve, reject) => {
+          recordUpdate(templatePackage);
           templatePackage = { ...templatePackage, templateIds: [], programIds: [] };
           dispatch(createTemplatePackageRequest(templatePackage, resolve, reject));
         }),
       onRowUpdate: templatePackage =>
         new Promise((resolve, reject) => {
+          recordUpdate(templatePackage);
           // console.log(templatePackage);
           dispatch(updateTemplatePackageRequest(templatePackage, resolve, reject));
         }),
       onRowDelete: templatePackage =>
         new Promise((resolve, reject) => {
+          recordUpdate(templatePackage);
           dispatch(deleteTemplatePackageRequest(templatePackage._id, resolve, reject));
         }),
     }),

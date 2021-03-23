@@ -12,11 +12,11 @@ import Logout from './views/Logout';
 import GDCTMenu from './views/GDCTMenu';
 import Programs from './views/Programs';
 import Statuses from './views/Statuses';
-import ReportingPeriods from './views/ReportingPeriods';
+import ReportingPeriods from './views/ReportingPeriods/ReportingPeriods';
 import AppConfigs from './views/AppConfigs';
 import SheetNames from './views/SheetNames';
 import UserRouter from './views/UserRouter';
-import ReportRouter from './views/ReportRouter';
+import ReportRouter from './views/ReportingPeriods';
 import TemplateRouter from './views/TemplateRouter';
 import OrgRouter from './views/OrganizationRouter';
 import SubmissionRouter from './views/SubmissionRouter';
@@ -26,7 +26,7 @@ import WorkflowRouter from './views/WorkflowRouter';
 import Register from './views/UserRegistrationRouter';
 import MasterValuePopulation from './views/MasterValuePopulation';
 import AuditLog from './views/AuditLog';
-import TransferStatus from './views/TransferStatus'
+import TransferStatus from './views/TransferStatus/TransferStatus'
 import { ROUTE_WORKFLOW, ROUTE_TEMPLATE_PCKGS, ROUTE_CATEGORY } from './constants/routes';
 
 import './App.scss';
@@ -81,10 +81,11 @@ const PublicRouter = ({ setLoggedIn }) => {
 const App = () => {
   const [isLoggedIn, setLoggedIn] = useState(null);
 
-  console.log('cookie:', document.cookie);
+  // console.log('cookie:', document.cookie);
   useEffect(() => {
     AuthController.profile()
       .then(res => {
+        console.log(res)
         setLoggedIn(res.status === 'ok');
       })
       .catch(() => {
@@ -105,8 +106,8 @@ const App = () => {
           <PrivateRouter setLoggedIn={setLoggedIn} />
         </AuthPage>
       ) : (
-        <PublicRouter setLoggedIn={setLoggedIn} />
-      )}
+            <PublicRouter setLoggedIn={setLoggedIn} />
+          )}
     </div>
   );
 };

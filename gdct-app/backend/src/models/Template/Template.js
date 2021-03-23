@@ -11,7 +11,7 @@ const TemplateModel = model(
       workflowId: { type: ObjectId, ref: 'Workflow' },
       workflowProcessId: { type: ObjectId, ref: 'WorkflowProcess' },
 
-      templateData: { type: Object },
+      templateData: { type: Array },
 
       templateTypeId: { type: ObjectId, ref: 'TemplateType' },
 
@@ -20,6 +20,9 @@ const TemplateModel = model(
       expirationDate: { type: Date },
       statusId:{ type:ObjectId, ref:'Status'},
       googleSheetId: { type: ObjectId, ref: 'GoogleSheet' },
+      timestamp: { type: Date },
+      //    userCreatorId: { type: ObjectId, ref: 'User' },
+      updatedBy: { type: String },
     },
     { minimize: false, timestamps: true },
   ),

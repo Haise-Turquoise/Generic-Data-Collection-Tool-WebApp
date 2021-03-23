@@ -19,7 +19,8 @@ import {
 import { selectFactoryRESTResponseTableValues, selectFactoryRESTError } from '../../store/common/REST/selectors';
 import { selectColumnNamesStore } from '../../store/ColumnNamesStore/selectors';
 import { ColumnNamesActions } from '../../store/ColumnNamesStore/store';
-import { calculateOptions } from '../../tools/misc'
+import { calculateOptions } from '../../tools/misc';
+import moment from 'moment';
 
 const ColumnNameHeader = () => {
   return (
@@ -91,43 +92,93 @@ const ColumnNamesTable = () => {
 
   const columns = useMemo(
     () => [
-      { title: 'id', field: 'id' },
+      { title: 'ID', field: 'id' },
       { title: 'Name', field: 'name' },
       { title: 'Description', field: 'description' },
       { title: 'Active', type: 'boolean', field: 'isActive' },
+      { title: 'Modified On', field: 'timestamp',
+        editComponent: props => {return <div></div>} },
+      { title: 'Updated By', field: 'updatedBy', 
+        editComponent: props => {return <div></div>} },
     ],
     [],
   );
   
-
-  const options = useMemo(() => calculateOptions(readRowNum), [readRowNum]);
+  const options = useMemo(
+    () => (
+      {
+        actionsColumnIndex: -1,
+        search: true,
+        showTitle: false,
+        addRowPosition: "first",
+      }
+    ), 
+    []
+  );
 
   const editable = useMemo(
     () => ({
       onRowAdd: columnName =>
         new Promise((resolve, reject) => {
+          //get username and record in Modified By column
+          columnName.updatedBy=localStorage.getItem('currentUser')
+          //record new date and time in Modified On column 
+          const event = new Date();
+          columnName.timestamp = event.toLocaleString(); 
           dispatch(createColumnNameRequest(columnName, resolve, reject));
         }),
       onRowUpdate: columnName =>
         new Promise((resolve, reject) => {
+          //get username and record in Modified By column
+          columnName.updatedBy=localStorage.getItem('currentUser')
+          //record new date and time in Modified On column 
+          const event = new Date();
+          columnName.timestamp = event.toLocaleString(); 
           dispatch(updateColumnNameRequest(columnName, resolve, reject));
         }),
       onRowDelete: columnName =>
         new Promise((resolve, reject) => {
+          //get username and record in Modified By column
+          columnName.updatedBy=localStorage.getItem('currentUser')
+          //record new date and time in Modified On column 
+          const event = new Date();
+          columnName.timestamp = event.toLocaleString(); 
           dispatch(deleteColumnNameRequest(columnName._id, resolve, reject));
         }),
     }),
     [dispatch],
   );
 
-  
-  const style = useMemo(
-    () => ({
-      "margin-top": "10px",
-    }),
-    []
-  )
-  
+    // Convert Date format
+    const timeOption = { year: 'numeric', month: 'numeric', day: 'numeric', hour:'numeric', minute:'numeric' };
+    columnNames.forEach(columnNames => {
+//        appRole.timestamp = new Date()
+//      var date = moment(appRoles.timestamp).toDate();
+      if(columnNames.timestamp!=null) {
+
+        // reformat date string to match ISO format of mongo db: 2021-02-16T03:59:32.015Z
+        // const temptime = new Date(appRoles.timestamp.toString().replace(/,/g,'').replace(/\./g,'')
+        // );
+        // const logtime = new Date(appRoles.timestamp);
+        // console.log(appRoles.timestamp.toString().replace(/,/g,'').replace(/\./g,''));
+        // appRoles.timestamp = logtime.toLocaleDateString("en-CA", timeOption);
+
+       const logtime = new Date(columnNames.timestamp);
+       columnNames.timestamp = moment(logtime).format("YYYY-MM-DD HH:mm:ss");
+      }
+      else{
+        // const logtime = new Date("2021-02-16T03:59:32.015Z");
+        // appRoles.timestamp = logtime.toLocaleDateString("en-CA", timeOption);
+
+       const event = new Date("2021-02-16T03:59:32.015Z");
+       columnNames.timestamp = event.toLocaleString();
+      }
+      // const event = new Date(appRoles.timestamp.toString());
+      // console.log(appRoles.timestamp.toString());
+      // const logtime = new Date(appRoles.timestamp); 
+      // appRoles.timestamp = event.toLocaleDateString("en-CA", timeOption); 
+    })
+
   useEffect(()=>{setRowNum(columnNames.length)}, [columnNames]);
 
   useEffect(() => {
@@ -139,7 +190,8 @@ const ColumnNamesTable = () => {
   }, [dispatch]);
 
   return (
-    <MaterialTable key={readRowNum} style={style} columns={columns} data={columnNames} editable={editable} options={options} />
+    // @ts-ignore
+    <MaterialTable key={readRowNum} columns={columns} data={columnNames} editable={editable} options={options} />
   );
 };
 

@@ -19,7 +19,7 @@ import { selectFactoryRESTResponseTableValues } from '../../../store/common/REST
 import { selectCOAGroupsStore } from '../../../store/COAGroupsStore/selectors';
 
 import { calculateOptions } from '../../../tools/misc';
-
+import moment from 'moment'
 
 const COAGroupsHeader = () => {
   const { t, i18n } = useTranslation();
@@ -33,7 +33,7 @@ const COAGroupsHeader = () => {
 
 const COAGroupsTable = () => {
   const dispatch = useDispatch();
-  const[readRowNum, setRowNum] = useState(1);
+  const [readRowNum, setRowNum] = useState(1);
 
   const { COAGroups } = useSelector(
     state => ({
@@ -42,7 +42,7 @@ const COAGroupsTable = () => {
     shallowEqual,
   );
 
-  useEffect(()=>{setRowNum(COAGroups.length)},[COAGroups]);
+  useEffect(() => { setRowNum(COAGroups.length) }, [COAGroups]);
 
 
   const columns = useMemo(
@@ -50,6 +50,12 @@ const COAGroupsTable = () => {
       { title: 'Name', field: 'name' },
       { title: 'Code', field: 'code' },
       { title: 'Active', type: 'boolean', field: 'isActive' },
+      { title: 'Modified On', field: 'timestamp',
+        editComponent: props => {return <div></div>} },
+//      { title: 'Modified On', field: 'updatedDate', type: 'date',
+//      initialEditValue: Date.now,},
+      { title: 'Updated By', field: 'updatedBy', 
+        editComponent: props => {return <div></div>} },
     ],
     [],
   );
@@ -59,24 +65,46 @@ const COAGroupsTable = () => {
     () => ({
       onRowAdd: COAGroup =>
         new Promise((resolve, reject) => {
+          //get username and record in Modified By column
+          COAGroup.updatedBy=localStorage.getItem('currentUser')
+          //record new date and time in Modified On column 
+          const event = new Date();
+          COAGroup.timestamp = event.toLocaleString(); 
           dispatch(createCOAGroupRequest(COAGroup, resolve, reject));
         }),
       onRowUpdate: COAGroup =>
         new Promise((resolve, reject) => {
+          //get username and record in Modified By column
+          COAGroup.updatedBy=localStorage.getItem('currentUser')
+          //record new date and time in Modified On column 
+          const event = new Date();
+          COAGroup.timestamp = event.toLocaleString(); 
           dispatch(updateCOAGroupRequest(COAGroup, resolve, reject));
         }),
       onRowDelete: COAGroup =>
         new Promise((resolve, reject) => {
+          //get username and record in Modified By column
+          COAGroup.updatedBy=localStorage.getItem('currentUser')
+          //record new date and time in Modified On column 
+          const event = new Date();
+          COAGroup.timestamp = event.toLocaleString(); 
           dispatch(deleteCOAGroupRequest(COAGroup._id, resolve, reject));
         }),
     }),
     [dispatch],
   );
 
+  // Convert Date format
+  COAGroups.forEach(COAGroup => {
+    const logtime = new Date(COAGroup.timestamp);
+    COAGroup.timestamp = moment(logtime).format("YYYY-MM-DD HH:mm:ss")
+  });
+  
   useEffect(() => {
     dispatch(getCOAGroupsRequest());
   }, [dispatch]);
 
+  // @ts-ignore
   return <MaterialTable key={readRowNum} columns={columns} data={COAGroups} editable={editable} options={options} />;
 };
 
@@ -84,7 +112,7 @@ const COAGroups = props => (
   <div className="COAGroups">
     <COAGroupsHeader />
     {/* <FileDropzone/> */}
-    <ErrorBanner title={"Cannot delete the selected category group since it is referenced in COA tree."} targetStore={selectCOAGroupsStore}/>
+    <ErrorBanner title={"Cannot delete the selected category group since it is referenced in COA tree."} targetStore={selectCOAGroupsStore} />
     <COAGroupsTable {...props} />
   </div>
 );

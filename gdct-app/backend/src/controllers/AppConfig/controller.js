@@ -9,20 +9,18 @@ const AppConfigController = Service([AppConfigService], service => {
     router.get('/appConfigs/searchAllAppConfigs', authorized, (req, res, next) => {console.log ('reach here')
       service
         .findAllAppConfig()
-        .then(AppConfigs => {
-          res.json({ AppConfigs });
-        })
+        .then(AppConfigs => res.json({ AppConfigs }))
         .catch(next);
     });
 
-    //router.get('/appConfigs', (req, res, next) => {
-      // Get query from middleware -- auth handler
+    router.get('/appConfigs/:_id', (req, res, next) => {
+      const { _id } =req.params;
 
-    //   service
-    //     .findAppConfig({})
-    //     .then(AppConfigs => res.json({ AppConfigs }))
-    //     .catch(next);
-    // });
+      service
+        .findAppConfigById(_id)
+        .then(AppConfig => res.json({ AppConfig }))
+        .catch(next)
+    });
 
     router.post('/appConfigs', authorized, (req, res, next) => {
       service

@@ -6,15 +6,17 @@ import React, { useEffect, useCallback, useState } from 'react';
 
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import { Button, Chip } from '@material-ui/core';
+import Paper from '@material-ui/core/Paper';
+import Typography from '@material-ui/core/Typography';
+
+import Spreadsheet from './spreadSheet';
 
 import Loading from '../../../components/Loading/Loading';
 
 import {
-  updateTemplateExcelRequest,
   getTemplateRequest,
   updateTemplateWorkflowProcess,
 } from '../../../store/thunks/template';
-import { Excel } from '../../../components/Excel';
 
 import './Template.scss';
 import { selectTemplatesStore } from '../../../store/TemplatesStore/selectors';
@@ -22,8 +24,6 @@ import { selectFactoryValueById } from '../../../store/common/REST/selectors';
 import workflowController from '../../../controllers/workflow';
 import TemplatesStore from '../../../store/TemplatesStore/store';
 
-//import Ssheet from "./SpreadSheet.js";
-// import Iframe from 'react-iframe'
 
 const TemplatePhases = ({ template }) => {
   const [workflowProcess, setWorkflowProcess] = useState();
@@ -43,20 +43,27 @@ const TemplatePhases = ({ template }) => {
   );
 
   return (
-    <div className="mb-3 d-flex justify-content-end">
-      <Chip className="rounded" color="primary" label="Phase Actions:" />
-      {workflowProcess && workflowProcess.to.length ? (
-        workflowProcess.to.map(outwardProcess => (
-          <Button key={outwardProcess._id} onClick={() => handleClickWorkflow(outwardProcess._id)}>
-            {outwardProcess.statusId.name}
-          </Button>
-        ))
-      ) : (
-        <Chip className="rounded" color="secondary" label="Finalized" />
-      )}
+    <div>
+      <Paper className="header">
+        
+        <Typography variant="h5">{template.name}</Typography>
+        <div className="mb-3 d-flex justify-content-end">
+          <Chip className="rounded" color="primary" label="Phase Actions:" />
+          {workflowProcess && workflowProcess.to.length ? (
+            workflowProcess.to.map(outwardProcess => (
+              <Button key={outwardProcess._id} onClick={() => handleClickWorkflow(outwardProcess._id)}>
+                {outwardProcess.statusId.name}
+              </Button>
+            ))
+          ) : (
+            <Chip className="rounded" color="secondary" label="Finalized" />
+          )}
+        </div>
+      </Paper>
     </div>
   );
 };
+
 
 const Template = ({
   match: {
@@ -64,6 +71,7 @@ const Template = ({
   },
 }) => {
   const dispatch = useDispatch();
+  let sheet = undefined;
 
   const { template } = useSelector(
     state => ({
@@ -71,10 +79,13 @@ const Template = ({
     }),
     shallowEqual,
   );
+  
 
   const handleSaveTemplate = useCallback(() => {
-    dispatch(updateTemplateExcelRequest());
+    // dispatch(updateTemplateExcelRequest());
+    console.log(sheet.getData());
   }, []);
+
 
   useEffect(() => {
     // If fetch fails, push back to /tempaltes
@@ -94,6 +105,12 @@ const Template = ({
         className="w-100 d-flex justify-content-end"
         position="relative"
         /> */}
+      {/* <Excel
+        type="template"
+        returnLink="/template_manager/templates"
+        handleSave={handleSaveTemplate}
+      /> */}
+      <Spreadsheet sheetID={_id} name={template.name}/>
     </div>
   ) : (
     <Loading />

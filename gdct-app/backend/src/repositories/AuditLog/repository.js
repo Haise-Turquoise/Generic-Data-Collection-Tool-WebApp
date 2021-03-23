@@ -8,7 +8,9 @@ export default class AuditLogRepository extends BaseRepository {
   }
 
   async create(AuditLogInfo) {
-    return AuditLogModel.create(AuditLogInfo).then(AuditLog => new AuditLogEntity(AuditLogInfo.toObject()));
+    // @ts-ignore
+    return AuditLogModel.create(AuditLogInfo);
+    // .then(AuditLogInfo => new AuditLogEntity(AuditLogInfo.toObject()));
   }
 
   // async find(query) {

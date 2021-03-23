@@ -15,6 +15,7 @@ import { ROUTE_WORKFLOW_CREATE, ROUTE_WORKFLOW } from '../../constants/routes';
 import { getWorkflowsRequest, deleteWorkflowRequest } from '../../store/thunks/workflow';
 import { calculateOptions } from '../../tools/misc'
 import ErrorBanner from '../ErrorBanner';
+import moment from 'moment';
 
 const WorkflowHeader = () => {
   const history = useHistory();
@@ -22,7 +23,7 @@ const WorkflowHeader = () => {
 
   return (
     <Paper className="header">
-      <Typography variant="h5">Workflows</Typography>
+      <Typography variant="h5">Workflow</Typography>
       <Button variant="contained" color="primary" onClick={handleCreate}>
         Create
       </Button>
@@ -42,14 +43,34 @@ const Workflows = () => {
     shallowEqual,
   );
 
-  const columns = useMemo(() => [{ title: 'Name', field: 'name' }], []);
+  // Convert Date format
+  workflows.forEach(workflow => {
+    const logtime = new Date(workflow.timestamp);
+    workflow.timestamp = moment(logtime).format("YYYY-MM-DD HH:mm:ss")
+  });
+
+  const columns = useMemo(
+    () => [
+      { title: 'Name', field: 'name' },
+      { title: 'Modified On', field: 'timestamp', editComponent: props => {return <div></div>} },
+      { title: 'Updated By', field: 'updatedBy', editComponent: props => {return <div></div>} },
+    ],
+    []
+  );
 
   const options = useMemo(() => calculateOptions(readRowNum), [readRowNum]);
+
+  // Record user and time when an action occurs 
+  function recordUpdate(workflow) {
+    workflow.updatedBy = localStorage.getItem('currentUser');
+    workflow.timestamp = new Date().toLocaleString(); 
+  }
 
   const editable = useMemo(
     () => ({
       onRowDelete: workflow =>
         new Promise((resolve, reject) => {
+          recordUpdate(workflow);
           dispatch(deleteWorkflowRequest(workflow._id, resolve, reject));
         }),
     }),

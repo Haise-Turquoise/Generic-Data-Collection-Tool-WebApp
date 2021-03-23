@@ -11,6 +11,10 @@ export default class StatusRepository extends BaseRepository {
     return StatusModel.findByIdAndDelete(id).then(status => new StatusEntity(status));
   }
 
+  async queryWorkflow(workFlow){
+    return StatusModel.aggregate(workFlow);
+  }
+
   async create(status) {
     return StatusModel.create(status).then(status => new StatusEntity(status));
   }
@@ -23,8 +27,8 @@ export default class StatusRepository extends BaseRepository {
     return StatusModel.find({ name });
   }
 
-  async findById(query, field){
-    return StatusModel.findOne(query, field)
+  async findById(id){
+    return StatusModel.findById(id);
   }
 
   async find(query) {

@@ -8,6 +8,8 @@ export default class TemplatePackageEntity {
     creationDate,
     userCreatorId,
     programIds,
+    timestamp,
+    updatedBy,
   }) {
     this._id = _id;
     this.name = name;
@@ -17,5 +19,7 @@ export default class TemplatePackageEntity {
     this.creationDate = creationDate;
     this.userCreatorId = userCreatorId;
     this.programIds = programIds;
+    this.timestamp = timestamp;
+    this.updatedBy = updatedBy;
   }
 }

@@ -8,8 +8,7 @@ import Collapse from '@material-ui/core/Collapse';
 import CloseIcon from '@material-ui/icons/Close';
 import IconButton from '@material-ui/core/IconButton';
 
-
-
+import moment from 'moment';
 import Typography from '@material-ui/core/Typography';
 import {
   getCOAsRequest,
@@ -94,9 +93,15 @@ const COAsTable = () => {
 
   const columns = useMemo(
     () => [
-      { title: 'id', field: 'id' },
+      { title: 'ID', field: 'id' },
       { title: 'Name', field: 'name' },
-      { title: 'COA', field: 'COA' },
+      { title: 'OHFS Mapping', field: 'COA' },
+      { title: 'Modified On', field: 'timestamp',
+      editComponent: props => {return <div></div>} },
+//      { title: 'Modified On', field: 'updatedDate', type: 'date',
+//      initialEditValue: Date.now,},
+    { title: 'Updated By', field: 'updatedBy', 
+      editComponent: props => {return <div></div>} },
     ],
     [],
   );
@@ -109,14 +114,29 @@ const COAsTable = () => {
     () => ({
       onRowAdd: COA =>
         new Promise((resolve, reject) => {
+          //get username and record in Modified By column
+          COA.updatedBy=localStorage.getItem('currentUser')
+          //record new date and time in Modified On column 
+          const event = new Date();
+          COA.timestamp = event.toLocaleString(); 
           dispatch(createCOARequest(COA, resolve, reject));
         }),
       onRowUpdate: COA =>
         new Promise((resolve, reject) => {
+          //get username and record in Modified By column
+          COA.updatedBy=localStorage.getItem('currentUser')
+          //record new date and time in Modified On column 
+          const event = new Date();
+          COA.timestamp = event.toLocaleString(); 
           dispatch(updateCOARequest(COA, resolve, reject));
         }),
       onRowDelete: COA => 
-        new Promise((resolve, reject) => {    
+        new Promise((resolve, reject) => {
+          //get username and record in Modified By column
+          COA.updatedBy=localStorage.getItem('currentUser')
+          //record new date and time in Modified On column 
+          const event = new Date();
+          COA.timestamp = event.toLocaleString();     
           dispatch(deleteCOARequest(COA._id, resolve, reject));
         }),
     }),
@@ -129,6 +149,12 @@ const COAsTable = () => {
     }),
     []
   )
+
+  // Convert Date format
+  COAs.forEach(COA => {
+    const logtime = new Date(COA.timestamp);
+    COA.timestamp = moment(logtime).format("YYYY-MM-DD HH:mm:ss")
+  });
 
   useEffect(() => {
     dispatch(getCOAsRequest());

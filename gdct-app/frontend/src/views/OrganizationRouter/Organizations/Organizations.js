@@ -3,18 +3,14 @@ import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 
 import MaterialTable from 'material-table';
-import Paper from '@material-ui/core/Paper';
-import Button from '@material-ui/core/Button';
+import { Paper, Button, Typography }from '@material-ui/core';
 
-import Typography from '@material-ui/core/Typography';
-
-import './Organizations.scss';
 import { useHistory } from 'react-router-dom';
 import EditIcon from '@material-ui/icons/Edit';
 import { selectFactoryRESTResponseTableValues } from '../../../store/common/REST/selectors';
 import { selectOrgsStore } from '../../../store/OrganizationsStore/selectors';
 import { getOrgsRequest } from '../../../store/thunks/organization';
-import {calculateOptions} from '../../../tools/misc'
+import { calculateOptions } from '../../../tools/misc'
 
 const HeaderActions = () => {
   const history = useHistory();
@@ -33,7 +29,7 @@ const HeaderActions = () => {
 const OrganizationHeader = () => {
   return (
     <Paper className="header">
-      <Typography variant="h5">Organizations</Typography>
+      <Typography variant="h5">Organization</Typography>
       <HeaderActions />
     </Paper>
   );
@@ -43,10 +39,12 @@ const Organizations = ({ history }) => {
   const dispatch = useDispatch();
   const [readRowNum, setRowNum] = useState(1);
 
+  // Prepare the data for material table
   const { Orgs } = useSelector(state => ({
     Orgs: selectFactoryRESTResponseTableValues(selectOrgsStore)(state),
   }));
 
+  // Prepare the columns for material table
   const columns = useMemo(
     () => [
       { title: 'Name', field: 'name' },
@@ -54,12 +52,15 @@ const Organizations = ({ history }) => {
       { title: 'Organization ID', field: 'id' },
       { title: 'IFIS Number', field: 'IFISNum' },
       { title: 'Active', type: 'boolean', field: 'active' },
+      { title: 'Modified On', field: 'timestamp' },
+      { title: 'Updated By', field: 'updatedBy' },
     ],
     [],
   );
 
   const options = useMemo(() => calculateOptions(readRowNum), [readRowNum]);
 
+  // Prepare the actions for material table
   const actions = useMemo(
     () => [
       {
@@ -71,16 +72,30 @@ const Organizations = ({ history }) => {
     [history],
   );
 
+  //*implement updateby and modified on columns
+  // const editable = useMemo(
+  //   () => ({
+  //     onClick: Orgs =>
+  //       new Promise((resolve, reject) => {
+  //         Orgs.updatedBy=localStorage.getItem('currentUser')
+  //         const event = new Date();
+  //         Orgs.timestamp = event.toLocaleString(); 
+  //         dispatch(updateOrgsRequest(Orgs, resolve, reject));
+  //       }),
+  //   }),
+  //   [dispatch],
+  // );
+
   useEffect(() => {
     dispatch(getOrgsRequest());
   }, [dispatch]);
 
-  useEffect(()=>{setRowNum(Orgs.length)}, [Orgs])
-
+  useEffect(() => { setRowNum(Orgs.length) }, [Orgs])
+  
   return (
     <div className="organizations">
       <OrganizationHeader />
-      <MaterialTable key={readRowNum} columns={columns} data={Orgs} actions={actions} options={options}/>
+      <MaterialTable key={readRowNum} columns={columns} data={Orgs} actions={actions} options={options} />
     </div>
   );
 };

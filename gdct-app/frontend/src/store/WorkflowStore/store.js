@@ -18,6 +18,8 @@ export const initialWorkflowState = {
   name: '',
   error: null,
   _id: null,
+  timestamp: new Date(),
+  updatedBy: localStorage.getItem('currentUser'),
 };
 
 const UPDATE_WORKFLOW_CHART = (state, action) => {
@@ -43,6 +45,16 @@ const UPDATE_WORKFLOW_ERROR = (state, action) => {
   return state;
 };
 
+const UPDATE_WORKFLOW_TIMESTAMP = (state, action) => {
+  state.timestamp = action.payload;
+  return state;
+};
+
+const UPDATE_WORKFLOW_UPDATEDBY = (state, action) => {
+  state.updatedBy = action.payload;
+  return state;
+};
+
 const UPDATE = (_state, action) => action.payload;
 const RESET = () => initialWorkflowState;
 
@@ -51,6 +63,8 @@ const reducers = {
   UPDATE_WORKFLOW_FILTER,
   UPDATE_WORKFLOW_NAME,
   UPDATE_WORKFLOW_ERROR,
+  UPDATE_WORKFLOW_TIMESTAMP,
+  UPDATE_WORKFLOW_UPDATEDBY,  
   UPDATE,
   RESET,
 };

@@ -7,6 +7,9 @@ const ColumnNameModel = model(
     {
       name: { type: String, required: true },
       id: { type: String, required: true, unique: true },
+      timestamp: { type: Date },
+      //    userCreatorId: { type: ObjectId, ref: 'User' },
+      updatedBy: { type: String },
     },
     { minimize: false },
   ),

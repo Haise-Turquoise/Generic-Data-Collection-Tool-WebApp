@@ -21,9 +21,10 @@ import ExpandMore from '@material-ui/icons/ExpandMore';
 import ExpandLess from '@material-ui/icons/ExpandLess';
 import Switch from '@material-ui/core/Switch';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
-
+import './_chip.scss';
 import MenuItem from '@material-ui/core/MenuItem';
 import { Link } from 'react-router-dom';
+import './_listitem.scss';
 
 import { event } from 'jquery';
 import navigationConfig from './config';
@@ -162,7 +163,7 @@ const Header = ({
         <HeaderTitle title={title} />
       </Link>
       {isTopMenu && <TopItemList config={config} classes={classes} isMobile={isMobile} />}
-      <Chip label={localStorage.getItem('currentUser')} />
+      <Chip label={localStorage.getItem('currentUser')} id='MuiChip-label-Authpage' />
       <FormControlLabel
         className={classes.flexItem}
         control={
@@ -194,20 +195,24 @@ const DrawerHandle = ({ title, classes, handleDrawerClose, theme }) => (
 
 const MenuItemIcon = ({ icon }) => <ListItemIcon>{icon}</ListItemIcon>;
 
-const StyledMenuItem = withStyles(theme => ({
-  root: {
-    '&:focus': {
-      color: theme.palette.common.white,
-      backgroundColor: theme.palette.primary.main,
-      '& .MuiListItemIcon-root, & .MuiListItemText-primary': {
-        color: theme.palette.common.white,
-      },
-    },
-  },
-}))(MenuItem);
+// const StyledMenuItem = withStyles(theme => ({
+//   root: {
+//     '&:focus': {
+//       color: theme.palette.common.white,
+//       backgroundColor: theme.palette.primary.main,
+//       // '& .MuiListItemIcon-root, & .MuiListItemText-primary': {
+//       //   color: theme.palette.common.white,
+//       // },
+//     },
+//     // "#active": {
+//     //   color: theme.palette.common.white,
+//     //   backgroundColor: theme.palette.primary.main,
+//     // }
+//   },
+// }))(MenuItem);
 
 const MenuItemLink = ({ name, icon, url, level }) => (
-  <StyledMenuItem component={url && Link} button to={url}>
+  <ListItem component={url && Link} button to={url} id={window.location.pathname.includes(url) ? "active" : ""}>
     <MenuItemIcon icon={icon} />
     {level === '2' ? (
       <ListItemText
@@ -216,13 +221,13 @@ const MenuItemLink = ({ name, icon, url, level }) => (
         }
       />
     ) : (
-      <ListItemText
-        primary={
-          <Typography style={{ fontSize: '0.9rem', marginLeft: '1.2rem' }}>{name}</Typography>
-        }
-      />
-    )}
-  </StyledMenuItem>
+        <ListItemText
+          primary={
+            <Typography style={{ fontSize: '0.9rem', marginLeft: '1.2rem' }}>{name}</Typography>
+          }
+        />
+      )}
+  </ListItem>
 );
 
 const MenuItems = ({ menuItems, level }) => {
@@ -264,8 +269,8 @@ const MenuDrawerTitle = ({ button = true, name, icon, open, handleClick, level }
         }
       />
     ) : (
-      <ListItemText primary={name} />
-    )}
+        <ListItemText primary={name} />
+      )}
     {open ? <ExpandLess /> : <ExpandMore />}
   </ListItem>
 );
@@ -284,7 +289,7 @@ const MenuDrawer = ({ name, icon, children, level = 1 }) => {
 };
 
 const NavigationContent = ({ config }) => {
-  console.log('config', config);
+  // console.log('config', config);
   return config.map((item, index) => {
     let Component;
 
@@ -331,9 +336,11 @@ const NavigationDrawer = ({ title, open, theme, config, classes, handleDrawerClo
 );
 
 const AuthPage = ({
+
   // headerTitle = 'MOHLTC - Generic Data Collection Tool',
   headerTitle = 'MOH - OHFS Budgeting and Forecasting',
   drawerTitle = 'MOH - OHFS Budgeting and Forecasting',
+
   // config = [navigationConfig],
   children,
 }) => {

@@ -8,6 +8,7 @@ const usersController = (() => {
   });
   return {
     fetch: async query => usersAxios.get('/getUserInfo', query).then(res => res.data.users),
+    fetchUserByUserEmail: async userEmail => usersAxios.get(`/${userEmail}`).then(res => res.data.user),
     create: async user => usersAxios.post('', { user }).then(res => res.data.user),
     delete: async _id => usersAxios.delete(`/${_id}`),
     update: async user => usersAxios.put(`/updateUserInfo/${user._id}`, { user }),

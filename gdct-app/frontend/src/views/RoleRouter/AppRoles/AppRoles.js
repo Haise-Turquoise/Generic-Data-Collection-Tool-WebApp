@@ -20,7 +20,7 @@ import { calculateOptions } from '../../../tools/misc'
 const AppRolesHeader = () => {
   return (
     <Paper className="header">
-      <Typography variant="h5">AppRoles</Typography>
+      <Typography variant="h5">Application Role</Typography>
       {/* <HeaderActions/> */}
     </Paper>
   );
@@ -40,6 +40,12 @@ const AppRolesTable = () => {
     () => [
       { title: 'Code', field: 'code' },
       { title: 'Name', field: 'name' },
+      { title: 'Modified On', field: 'timestamp',
+        editComponent: props => {return <div></div>} },
+//      { title: 'Modified On', field: 'updatedDate', type: 'date',
+//      initialEditValue: Date.now,},
+      { title: 'Updated By', field: 'updatedBy', 
+        editComponent: props => {return <div></div>} },
     ],
     [],
   );
@@ -49,21 +55,63 @@ const AppRolesTable = () => {
   const editable = useMemo(
     () => ({
       onRowAdd: appRole =>
-        new Promise((resolve, reject) => {
+        new Promise((resolve, reject) => {console.log (appRole)
+          //get username and record in Modified By column
+          appRole.updatedBy=localStorage.getItem('currentUser')
+          //record new date and time in Modified On column 
+          const event = new Date();
+          appRole.timestamp = event.toLocaleString(); 
           dispatch(createAppRoleRequest(appRole, resolve, reject));
         }),
       onRowUpdate: appRole =>
         new Promise((resolve, reject) => {
+          appRole.updatedBy=localStorage.getItem('currentUser')
+          const event = new Date();
+          appRole.timestamp = event.toLocaleString(); 
           dispatch(updateAppRoleRequest(appRole, resolve, reject));
         }),
       onRowDelete: appRole =>
         new Promise((resolve, reject) => {
+          appRole.updatedBy=localStorage.getItem('currentUser')
+          const event = new Date();
+          appRole.timestamp = event.toLocaleString(); 
           dispatch(deleteAppRoleRequest(appRole._id, resolve, reject));
         }),
     }),
     [dispatch],
   );
 
+//  console.log(appRoles)
+    // Convert Date format
+    const timeOption = { year: 'numeric', month: 'numeric', day: 'numeric', hour:'numeric', minute:'numeric' };
+    appRoles.forEach(appRoles => {
+//        appRole.timestamp = new Date()
+//      var date = moment(appRoles.timestamp).toDate();
+      if(appRoles.timestamp!=null) {
+
+        // reformat date string to match ISO format of mongo db: 2021-02-16T03:59:32.015Z
+        // const temptime = new Date(appRoles.timestamp.toString().replace(/,/g,'').replace(/\./g,'')
+        // );
+        // const logtime = new Date(appRoles.timestamp);
+        // console.log(appRoles.timestamp.toString().replace(/,/g,'').replace(/\./g,''));
+        // appRoles.timestamp = logtime.toLocaleDateString("en-CA", timeOption);
+
+       const event = new Date(appRoles.timestamp.toString());
+       appRoles.timestamp = event.toLocaleString(); 
+      }
+      else{
+        // const logtime = new Date("2021-02-16T03:59:32.015Z");
+        // appRoles.timestamp = logtime.toLocaleDateString("en-CA", timeOption);
+
+       const event = new Date("2021-02-16T03:59:32.015Z");
+       appRoles.timestamp = event.toLocaleString();
+      }
+      // const event = new Date(appRoles.timestamp.toString());
+      // console.log(appRoles.timestamp.toString());
+      // const logtime = new Date(appRoles.timestamp); 
+      // appRoles.timestamp = event.toLocaleDateString("en-CA", timeOption); 
+    })
+    console.log(appRoles)
   useEffect(() => {
     dispatch(getAppRolesRequest());
   }, [dispatch]);
@@ -76,7 +124,7 @@ const AppRolesTable = () => {
 const AppRoles = props => {
   console.log('why not: ', props);
   return (
-    <div className="AppSyses">
+    <div className="AppRoles">
       <AppRolesHeader />
       {/* <FileDropzone/> */}
       <AppRolesTable {...props} />

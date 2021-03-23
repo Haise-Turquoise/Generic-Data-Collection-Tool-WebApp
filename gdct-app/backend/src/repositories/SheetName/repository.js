@@ -12,18 +12,14 @@ export default class SheetNameRepository extends BaseRepository {
     this.templateRepository = Container.get(TemplateRepository);
   }
 
-  async create({ name, isActive }) {
-    return SheetNameModel.create({
-      name,
-      isActive,
-    }).then(sheetName => new SheetNameEntity(sheetName));
+  async create(sheetName) {
+    return SheetNameModel.create(sheetName)
+      .then(sheetName => new SheetNameEntity(sheetName.toObject()));
   }
 
-  async update(id, { name, isActive }) {
-    return SheetNameModel.findByIdAndUpdate(id, {
-      name,
-      isActive,
-    }).then(sheetName => new SheetNameEntity(sheetName.toObject()));
+  async update(id, sheetName) {
+    return SheetNameModel.findByIdAndUpdate(id, sheetName)
+      .then(sheetName => new SheetNameEntity(sheetName.toObject()));
   }
 
   async find(query) {
