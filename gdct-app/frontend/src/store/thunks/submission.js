@@ -1,16 +1,12 @@
 import submissionController from '../../controllers/submission';
-import usersController from '../../controllers/Users';
 import AuthController from '../../controllers/Auth';
 import SubmissionsStore from '../SubmissionsStore/store';
 
 import {
-  getRequestFactory,
-  createRequestFactory,
   deleteRequestFactory,
   updateRequestFactory,
 } from './common/REST';
-import { convertStateToReactState, extractReactAndWorkbookState } from '../../tools/excel';
-import { setExcelData } from '../actions/ui/excel/commands';
+import { extractReactAndWorkbookState } from '../../tools/excel';
 
 export const getSubmissionsRequest = () => dispatch => {
   dispatch(SubmissionsStore.actions.REQUEST());
@@ -65,7 +61,8 @@ export const getSubmissionRequest = _id => dispatch => {
   submissionController
     .fetchSubmission(_id)
     .then(submission => {
-      dispatch(setExcelData(convertStateToReactState(submission.workbookData)));
+      // dispatch(setExcelData(convertStateToReactState(submission.workbookData)));
+      dispatch(submission.workbookData);
       dispatch(SubmissionsStore.actions.RECEIVE([submission]));
       dispatch();
     })
