@@ -22,4 +22,8 @@ export default class SheetNameService {
   async findSheetName(sheetName) {
     return this.sheetNameRepository.find(sheetName);
   }
+
+  async findById(id) {
+    return this.sheetNameRepository.findById(id);
+  }
 }

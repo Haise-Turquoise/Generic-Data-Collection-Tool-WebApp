@@ -1,17 +1,11 @@
 import React, { useEffect, useCallback, useMemo } from 'react';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
+import { useHistory } from 'react-router-dom';
 
 import { Formik, Form } from 'formik';
-import {
-  Button,
-  TextField,
-  Paper,
-  Typography,
-  List,
-  ListItem,
-  ListItemText,
-  ListItemSecondaryAction,
-} from '@material-ui/core';
+import { Button, TextField, Paper, Typography,
+         List, ListItem, ListItemText, ListItemSecondaryAction } from '@material-ui/core';
+
 import uniqid from 'uniqid';
 import { selectTemplatePackagesStore } from '../../store/TemplatePackagesStore/selectors';
 import { selectFactoryValueById } from '../../store/common/REST/selectors';
@@ -26,6 +20,8 @@ import TemplateDialog from '../../components/dialogs/TemplateDialog';
 import { DialogsStoreActions } from '../../store/DialogsStore/store';
 import { TemplatePackagesStoreActions } from '../../store/TemplatePackagesStore/store';
 import ProgramDialog from '../../components/dialogs/ProgramDialog';
+import CreateAuditLog from '../AuditLog_Global';
+import templatePackageController from '../../controllers/templatePackage';
 
 // ! CLEAN UP - program and template have similar structures.
 
@@ -43,14 +39,21 @@ const CustomButton = ({ text, handleClick }) => (
   </Button>
 );
 
-const Header = ({ handleSubmit }) => (
-  <div className="d-flex justify-content-between p-2 mb-3">
-    <Typography variant="h5">Template Package</Typography>
-    <Button onClick={handleSubmit} variant="contained" color="primary">
-      Save
-    </Button>
-  </div>
-);
+const Header = ({ handleSubmit }) => {
+  const history = useHistory();
+  const redirect = () => { history.push('/admin/template/package') };
+  return (
+    <div className="d-flex justify-content-between p-2 mb-3">
+      <Typography variant="h5">Template Package</Typography>
+      <Button onClick={redirect} variant="contained" color="primary" style={{marginLeft: '74%'}}>
+        Back
+      </Button>
+      <Button onClick={handleSubmit} variant="contained" color="primary" style={{marginLeft: '1%'}}>
+        Save
+      </Button>
+    </div>
+  );
+};
 
 const CustomField = ({ label, children, addButton = false, handleClick }) => (
   <div className="mb-2 mt-3">
@@ -248,6 +251,7 @@ const TemplatePackage = ({
   },
 }) => {
   const dispatch = useDispatch();
+  const history = useHistory();
 
   const { templatePackage } = useSelector(state => {
     const templatePackage = selectFactoryValueById(selectTemplatePackagesStore)(_id)(state);
@@ -259,7 +263,7 @@ const TemplatePackage = ({
 
   useEffect(() => {
     if (_id) {
-      dispatch(getTemplatePackagePopulatedRequest(_id, true));
+      dispatch(getTemplatePackagePopulatedRequest(_id));
     }
     return () => {
       dispatch(TemplatePackagesStoreActions.RESET());
@@ -279,9 +283,14 @@ const TemplatePackage = ({
         creationDate: populatedData.creationDate,
       };
 
-      dispatch(
-        updateTemplatePackageRequest(formattedTemplatePackage, null, null, true, populatedData),
-      );
+      // Find the old value before updating in order to Auditlog
+      (async () => { 
+        const oldTemplatePackage = await templatePackageController.fetchTemplatePackage(formattedTemplatePackage._id);
+        CreateAuditLog(null, "Update Template Package", "TemplatePackage", oldTemplatePackage._id, oldTemplatePackage, formattedTemplatePackage);
+      })();
+      // Do Update
+      const redirect = () => { history.push('/admin/template/package') };
+      dispatch(updateTemplatePackageRequest(formattedTemplatePackage, redirect, null, true, populatedData));
     },
     [dispatch, _id],
   );

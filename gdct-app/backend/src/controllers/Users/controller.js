@@ -8,19 +8,23 @@ const UsersController = Service([UserService], service => {
   return (() => {
     router.get('/getUserInfo', (req, res, next) => {
       // Get query from middleware -- auth handler
-      console.log(req.query);
       service
         .findUser(req.query)
-        // .findUser(req.params)
         .then(users => res.json({ users }))
         .catch(next);
     });
 
-    router.get('/:userEmail', (req, res, next) => {
-      const { userEmail } = req.params
+    router.get('/fetchByEmail', (req, res, next) => {
       service
-        .findUserByEmail(userEmail)
-        .then(user => res.json({ user }))
+        .findUserByEmail(req.query.email)
+        .then(user => res.json( user ))
+        .catch(next);
+    })
+
+    router.get('/fetchById', (req, res, next) => {
+      service
+        .findUserById(req.query._id)
+        .then(user => res.json( user ))
         .catch(next);
     })
 

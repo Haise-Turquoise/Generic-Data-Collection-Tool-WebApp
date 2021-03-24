@@ -32,7 +32,16 @@ const ProgList = ({ programIds, isEditable = true, onClickAdd, onClickDelete }) 
     []
   );
 
-  const options = useMemo(() => ({ actionsColumnIndex: -1, search: false, showTitle: true }), []);
+  const options = useMemo(() => (
+    { 
+      actionsColumnIndex: -1, 
+      search: false, 
+      showTitle: true,
+      maxBodyHeight: "400px",
+      minBodyHeight: "400px"
+    }),
+    []
+  );
 
   const left_actions = useMemo(() => [{ icon: DeleteIcon, tooltip: 'Remove from Organization', onClick: onClickDelete }], []);
 
@@ -40,7 +49,7 @@ const ProgList = ({ programIds, isEditable = true, onClickAdd, onClickDelete }) 
 
   return (
     <div className="tableContainer">
-      <div className="tableWrapper">
+      <div className="tableWrapper-linked">
         <MaterialTable
           title="Linked Programs"
           // @ts-ignore
@@ -50,7 +59,7 @@ const ProgList = ({ programIds, isEditable = true, onClickAdd, onClickDelete }) 
           actions={isEditable ? left_actions : null}
         />
       </div>
-      <div className="tableWrapper">
+      <div className="tableWrapper-other">
         <MaterialTable
           title="Other Programs"
           // @ts-ignore
