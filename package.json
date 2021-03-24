@@ -29,6 +29,9 @@
     "mssql": "^6.3.1",
     "passport-google-oauth": "^2.0.0",
     "passport-remember-me": "^0.0.1",
+    "react": "^17.0.2",
+    "react-datepicker": "^3.6.0",
+    "react-dom": "^17.0.2",
     "x-data-spreadsheet": "git+https://github.com/Sheldonsu28/x-spreadsheet.git",
     "xlsx": "^0.16.9"
   },
