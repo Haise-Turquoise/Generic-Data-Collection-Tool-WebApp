@@ -1,6 +1,5 @@
 import 'jest';
 import { request } from '../../config/HTTP';
-import TemplateType from '../../../entities/TemplateType';
 
 describe('Template type lifecycle', () => {
   let templateTypeCreated;

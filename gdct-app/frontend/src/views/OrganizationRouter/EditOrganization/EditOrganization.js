@@ -17,31 +17,24 @@ const EditOrganization = ({
   },
 }) => {
   const history = useHistory();
-
   const dispatch = useDispatch();
 
   useEffect(() => {
     dispatch(getOrgsRequest());
   }, [dispatch]);
 
+  // Prepare the data
   const { object } = useSelector(state => ({
     object: (selectFactoryRESTResponseTableValues(selectOrgsStore)(state).filter(
       elem => elem._id === _id,
     ) || [{}])[0],
   }));
 
-  const redirect = () => {
-    history.push('/admin/organization/org');
-  };
+  const redirect = () => { history.push('/admin/organization/org') };
 
-  const accept = () => {
-    redirect();
-  };
+  const accept = () => { redirect() };
 
-  const reject = () => {
-    // reflect error message on form somehow o.O
-    alert('Missing or invalid parameters');
-  };
+  const reject = () => { alert('Missing or invalid parameters') };
 
   const submit = newOrganization => { // This newOrgnization does not contain "_id" required for update (it does contain the artificial "id")
     (async () => {

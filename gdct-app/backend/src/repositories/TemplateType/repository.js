@@ -72,10 +72,6 @@ export default class TemplateTypeRepository extends BaseRepository {
     );
   }
 
-  async findById(id) {
-    return TemplateTypeModel.findById(id);
-  }
-
   async findOneByWorkFlowID(workflowID){
     const objectID = new ObjectId(workflowID);
     return TemplateTypeModel.findOne({

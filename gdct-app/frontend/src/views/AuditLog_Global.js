@@ -7,13 +7,9 @@ const CreateAuditLog = (email, activity, moduleName, recordId, oldValue, newValu
     if (email === null) { // null means that the user is not currently logging in or out, which means email is in local storage
         email = localStorage.getItem('currentUser');
     }
-    // Prepare to find user
-    async function getUserByUserEmail() {
-        return usersController.fetchUserByUserEmail(email);
-    };
     (async () => {
         // Get the user
-        const user = await getUserByUserEmail();
+        const user = await usersController.fetchByEmail({email});
         const IdentitiesWithNoOrg = ["Business Admin", "Template Designer", "Template Approver"]
         // No need for attributes: _id and __v in objects
         const oldValue_trim = (({ _id, __v, ...o }) => o)(oldValue);
@@ -31,13 +27,8 @@ const CreateAuditLog = (email, activity, moduleName, recordId, oldValue, newValu
             oldValue: oldValue_trim,
             newValue: newValue_trim,
         };
-        // Call AuditLog create service
-        async function createAuditLog() {
-            return await AuditLogController.create(AuditLogInfo)
-        };
-        (async () => {
-            await createAuditLog();
-        })();
+        // Create Auditlog
+        (async () => { await AuditLogController.create(AuditLogInfo) })();
     })();
 }
 
