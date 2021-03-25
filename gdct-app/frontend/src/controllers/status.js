@@ -12,6 +12,7 @@ const statusController = (() => {
     create: async status => statusAxios.post('', { status }).then(res => res.data.status),
     delete: async _id => statusAxios.delete(`/${_id}`),
     update: async status => statusAxios.put(`/${status._id}`, { status }),
+    findStatusByID: async id => statusAxios.get(`/${id}`).then(res => res.data)
   };
 })();
 

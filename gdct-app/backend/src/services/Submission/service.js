@@ -110,7 +110,7 @@ export default class SubmissionService {
   }
 
   async uploadSubmissionWorkbook(submission, workbookData, submissionNote) {
-    const currentStatus = await this.statusRepository.findById(submission.statusId);
+    const currentStatus = await this.statusRepository.findOneByID(submission.statusId);
     if (currentStatus.name == 'Approved' || currentStatus.name == 'Submitted') return;
 
     submission.workbookData = workbookData;
@@ -288,7 +288,6 @@ export default class SubmissionService {
         let duplicate = false;
         uniqueNewTemplatePackages.forEach(ele => {
           if (JSON.stringify(ele._id) == JSON.stringify(newTemplatePackage._id)) {
-            console.log('find');
             duplicate = true;
           }
         });
@@ -324,11 +323,6 @@ export default class SubmissionService {
     }
 
     return this.findTemplatePackage(programAndTempTypes).then(templatePackages => {
-      // const idMap = templatePackages.map(e=> e._id);
-      // const result = this.statusRepository.queryWorkflow([
-      //   {$match: { name:'Unsubmitted' } },
-      //   {$lookup:{ from:''}}
-      // ])
       const name = 'Unsubmitted';
       return this.statusRepository.findByName(name).then(status => {
         const promiseQuery1 = [];

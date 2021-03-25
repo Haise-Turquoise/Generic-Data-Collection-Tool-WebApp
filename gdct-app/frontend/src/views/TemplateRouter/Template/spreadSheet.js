@@ -7,7 +7,6 @@ import spreadSheetController from '../../../controllers/spreadSheet';
 import PopulationSelectionMenu from '../../PopulationSelectionMenu';
 import Button from '@material-ui/core/Button';
 import { digitToAlpha } from '../../../tools/misc';
-import { Input, InputLabel } from "@material-ui/core";
 import XLSX from "xlsx";
 
 // Sheet style Option
@@ -221,7 +220,6 @@ class SpreadSheet extends Component{
             r.forEach(function (c, j) {
               console.log(wb)
               let coord = digitToAlpha(j + 1) + (i + 1);
-              console.log('this', coord, wb.Sheets[name], name)
               if (wb.Sheets[name][coord]) {
                 let formula = wb.Sheets[name][coord]["f"];
                 if (formula) {
@@ -261,17 +259,14 @@ class SpreadSheet extends Component{
                 <Button variant="outlined" color="primary" onClick={()=>this.disablePreview()}>
                   Disable preview
                 </Button>
-                <Button variant="outlined" color="primary" onClick={()=>this.disablePreview()}>
-                  Disable preview
+                <Button variant="outlined" color="primary" onClick={()=>this.downloadTemplate(this.sheet.getData())}>
+                  Download Template
                 </Button>
                 <input
                   type="file"
                   accept=".xlsx, .xlsm"
                   onChange={(e) => this.fileImportHandler(e)}
                 />
-                <Button variant="outlined" color="primary" onClick={()=>this.downloadTemplate(this.sheet.getData())}>
-                  Download Template
-                </Button>
               </div>
               <div id="x-spreadsheet"></div>
           </div>

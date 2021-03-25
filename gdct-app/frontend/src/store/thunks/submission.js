@@ -1,16 +1,13 @@
 import submissionController from '../../controllers/submission';
-import usersController from '../../controllers/Users';
 import AuthController from '../../controllers/Auth';
 import SubmissionsStore from '../SubmissionsStore/store';
 
 import {
-  getRequestFactory,
-  createRequestFactory,
   deleteRequestFactory,
   updateRequestFactory,
 } from './common/REST';
-import { convertStateToReactState, extractReactAndWorkbookState } from '../../tools/excel';
-import { setExcelData } from '../actions/ui/excel/commands';
+import { extractReactAndWorkbookState } from '../../tools/excel';
+
 
 export const getSubmissionsRequest = () => dispatch => {
   dispatch(SubmissionsStore.actions.REQUEST());
@@ -142,15 +139,3 @@ export const updateSubmissionStatusRequest = (
   return true;
 };
 
-// Added on Nov 25, 2020
-export const openGoogleSheetRequest = _id => {
-  console.log("Hello2", _id)
-  submissionController
-    .openTemplate(_id) //Create a temporary google sheet located in google drive and open it
-    .then(spreadsheetId => {
-      window.open("https://docs.google.com/spreadsheets/d/" + spreadsheetId);
-    })
-    .catch(error => {
-      dispatch(SubmissionsStore.actions.FAIL_REQUEST(error));
-    });
-};

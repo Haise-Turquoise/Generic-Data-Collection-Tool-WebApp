@@ -75,7 +75,9 @@ const SubmissionDashboard = ({ history }) => {
     submissions.forEach(submission => {
       const createdAt = new Date(submission.createdAt);
       const modifiedAt = new Date(submission.updatedAt);
+      // @ts-ignore
       submission.createdAt = createdAt.toLocaleDateString("en-US", timeOption);
+      // @ts-ignore
       submission.updatedAt = modifiedAt.toLocaleDateString("en-US", timeOption);
       if (!submissionPeriod[submission.period]){
         submissionPeriod[submission.period] = 1;

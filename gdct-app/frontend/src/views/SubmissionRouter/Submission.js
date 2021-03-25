@@ -6,7 +6,6 @@ import Snackbar from '@material-ui/core/Snackbar';
 import Loading from '../../components/Loading/Loading';
 
 import { updateSubmissionExcelRequest, getSubmissionRequest } from '../../store/thunks/submission';
-import { Excel } from '../../components/Excel';
 import { selectFactoryRESTResponseTableValues } from '../../store/common/REST/selectors';
 
 import { selectSubmissionsStore } from '../../store/SubmissionsStore/selectors';
@@ -32,31 +31,18 @@ const Submission = ({
     setSnackBar(false);
   };
 
-  const { submission } = useSelector(
-    state => ({
-      submission: selectFactoryRESTResponseTableValues(selectSubmissionsStore)(state),
-    }),
-    shallowEqual,
-  );
-  const handleSaveSubmission = useCallback(submission => {
-    if (submission) {
-      console.log(submission);
-      dispatch(updateSubmissionExcelRequest());
-      // workflowController
-      //   .fetchProcess(submission[0].workflowProcessId)
-      //   .then((workflowProcess) => {
-      //     console.log(workflowProcess)
-      //     if (workflowProcess !== undefined)
-      //       workflowProcess.to.forEach((process) => {
-      //         if (process.statusId.name === 'Approved') {
-      //           console.log("123")
-      //           setSnackBar(true)
-      //         }
-      //         dispatch(updateSubmissionExcelRequest())
-      //       })
-      //   })
-    }
-  }, []);
+  // const { submission } = useSelector(
+  //   state => ({
+  //     submission: selectFactoryRESTResponseTableValues(selectSubmissionsStore)(state),
+  //   }),
+  //   shallowEqual,
+  // );
+  // const handleSaveSubmission = useCallback(submission => {
+  //   if (submission) {
+  //     console.log(submission);
+  //     dispatch(updateSubmissionExcelRequest());
+  //   }
+  // }, []);
 
   useEffect(() => {
     // If fetch fails, push back to /tempaltes
@@ -67,11 +53,6 @@ const Submission = ({
     <Loading />
   ) : (
     <div>
-      {/* <Excel
-        type="submission"
-        returnLink="/submission_manager/dashboard"
-        handleSave={() => handleSaveSubmission(submission)}
-      /> */}
       <SubmissionSpreadSheet sheetID= {_id}/>
       <Snackbar
         anchorOrigin={{
