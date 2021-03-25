@@ -1,11 +1,11 @@
 import React, { useMemo, useEffect, useState } from 'react';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 
-import Paper from '@material-ui/core/Paper';
+import { Paper, Typography } from '@material-ui/core';
 import LaunchIcon from '@material-ui/icons/Launch';
 
-import Typography from '@material-ui/core/Typography';
 import MaterialTable from 'material-table';
+import moment from 'moment';
 
 import { useHistory } from 'react-router-dom';
 import Select from 'react-select';
@@ -31,12 +31,14 @@ import { getSubmissionPeriodsRequest } from '../../store/thunks/submissionPeriod
 import StatusesStore from '../../store/StatusesStore/store';
 import SubmissionPeriodsStore from '../../store/SubmissionPeriodsStore/store';
 import ErrorBanner from '../ErrorBanner';
-import { calculateOptions } from '../../tools/misc'
+import { calculateOptions } from '../../tools/misc';
+import CreateAuditLog from '../AuditLog_Global';
+import templatePackageController from '../../controllers/templatePackage';
 
 const TemplatePackageHeader = () => {
   return (
     <Paper className="header">
-      <Typography variant="h5">Template Packages</Typography>
+      <Typography variant="h5">Template Package</Typography>
       {/* <HeaderActions/> */}
     </Paper>
   );
@@ -47,6 +49,7 @@ const TemplatePackages = () => {
   const history = useHistory();
   const [readRowNum, setRowNum] = useState(1);
 
+  // Prepare the data for material table
   const {
     templatePackages,
     lookupStatuses,
@@ -67,6 +70,15 @@ const TemplatePackages = () => {
   // console.log('lookupStatuses', lookupStatuses)
   // console.log('lookupSubmissionPeriods', lookupSubmissionPeriods)
 
+  // Convert Date format
+  templatePackages.forEach(templatePackage => {
+    const logtime = new Date(templatePackage.timestamp);
+    const creationDate = new Date(templatePackage.creationDate);
+    templatePackage.timestamp = moment(logtime).format("YYYY-MM-DD HH:mm:ss");
+    templatePackage.creationDate = moment(creationDate).format("YYYY-MM-DD HH:mm:ss");
+  });
+
+  // Prepare the actions for material table
   const actions = useMemo(
     () => [
       {
@@ -78,15 +90,11 @@ const TemplatePackages = () => {
     [dispatch],
   );
 
+  // Prepare the columns for material table
   const columns = useMemo(
     () => [
       { title: 'Name', field: 'name' },
-      {
-        title: 'Submission Period ID',
-        field: 'submissionPeriodId',
-        lookup: lookupSubmissionPeriods,
-      },
-      // { title: "TemplateIds", type: "boolean", field: "templateIds" },
+      { title: 'Submission Period ID', field: 'submissionPeriodId', lookup: lookupSubmissionPeriods },
       {
         title: 'Status ID',
         field: 'statusId',
@@ -153,36 +161,53 @@ const TemplatePackages = () => {
           // return <Select  options={optionList}/>
         },
       },
-      {
-        title: 'Creation Date',
-        field: 'creationDate',
-        type: 'date',
-        initialEditValue: Date.now,
-      },
+      { title: 'Creation Date', field: 'creationDate', editComponent: () => {return <div></div>} },
+      { title: 'Modified On', field: 'timestamp', editComponent: () => {return <div></div>} },
+      { title: 'Updated By', field: 'updatedBy', editComponent: () => {return <div></div>} },
     ],
     [lookupStatuses, lookupSubmissionPeriods],
   );
 
-  const options = useMemo(
-    () => calculateOptions(readRowNum),
-    [readRowNum],
-  );
+  const options = useMemo(() => calculateOptions(readRowNum), [readRowNum]);
 
+  // Record user and time when an action occurs 
+  function recordUpdate(templatePackage) {
+    templatePackage.updatedBy = localStorage.getItem('currentUser');
+    templatePackage.timestamp = new Date().toLocaleString(); 
+  }
+  // Prepare the editing functionalities for the material table
   const editable = useMemo(
     () => ({
       onRowAdd: templatePackage =>
         new Promise((resolve, reject) => {
+          recordUpdate(templatePackage);
           templatePackage = { ...templatePackage, templateIds: [], programIds: [] };
+          templatePackage.creationDate = moment().format();
           dispatch(createTemplatePackageRequest(templatePackage, resolve, reject));
+        }).then(newTemplatePackage => {
+          // For Auditlog
+          CreateAuditLog(null, "Create Template Package", "TemplatePackage", newTemplatePackage._id, {}, newTemplatePackage);
         }),
+
       onRowUpdate: templatePackage =>
         new Promise((resolve, reject) => {
-          // console.log(templatePackage);
+          recordUpdate(templatePackage);
+          // Find the old value before updating in order to Auditlog
+          (async () => { 
+            const oldTemplatePackage = await templatePackageController.fetchTemplatePackage(templatePackage._id);
+            CreateAuditLog(null, "Update Template Package", "TemplatePackage", oldTemplatePackage._id, oldTemplatePackage, templatePackage);
+          })();
+          // Do Update
           dispatch(updateTemplatePackageRequest(templatePackage, resolve, reject));
         }),
+        
       onRowDelete: templatePackage =>
         new Promise((resolve, reject) => {
+          recordUpdate(templatePackage);
           dispatch(deleteTemplatePackageRequest(templatePackage._id, resolve, reject));
+          // For Auditlog
+          const templatePackage_trim = (({ tableData, ...o }) => o)(templatePackage);
+          CreateAuditLog(null, "Delete Template Package", "TemplatePackage", templatePackage._id, templatePackage_trim, {});
         }),
     }),
     [dispatch],
@@ -211,6 +236,7 @@ const TemplatePackages = () => {
         columns={columns}
         data={templatePackages}
         editable={editable}
+        // @ts-ignore
         options={options}
         actions={actions}
       />

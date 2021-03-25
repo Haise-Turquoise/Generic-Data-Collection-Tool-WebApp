@@ -1,5 +1,10 @@
-node_modules
-gdct.log
+# ignore logs
+*.log
+
+# Ignore build from frontend
+build
+
+# Ignore node/npm/yarn related files
 yarn.lock
-package.json
+node_modules
 package-lock.json

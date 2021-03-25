@@ -9,8 +9,8 @@ const sheetNameController = (() => {
   });
   return {
     fetch: async query => sheetNameAxios.get('').then(res => res.data.sheetNames),
-    create: async sheetName =>
-      sheetNameAxios.post('', { sheetName }).then(res => res.data.sheetName),
+    fetchById: async _id => sheetNameAxios.get(`/${_id}`).then(res => res.data),
+    create: async sheetName => sheetNameAxios.post('', { sheetName }).then(res => res.data.sheetName),
     delete: async _id => sheetNameAxios.delete(`/${_id}`),
     update: async sheetName => sheetNameAxios.put(`/${sheetName._id}`, { sheetName }),
   };

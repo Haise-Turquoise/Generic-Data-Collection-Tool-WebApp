@@ -103,6 +103,10 @@ export default class TemplateRepository extends BaseRepository {
   async updateTemplate(_id, templateData){
     return TemplateModel.findByIdAndUpdate( _id, { templateData })
   }
+
+  async updateSheetData(_id, sheetData){
+    return TemplateModel.findByIdAndUpdate(_id, {$set:{templateData:sheetData}})
+  }
   
   async findTemplateIDByTypeID(typeID){
     return TemplateModel.find({templateTypeId:new ObjectId(typeID)}, {_id:1})

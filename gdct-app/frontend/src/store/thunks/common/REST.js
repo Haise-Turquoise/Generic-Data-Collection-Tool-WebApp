@@ -19,7 +19,7 @@ export const getRequestFactory = (store, controller) => (
 
   controller[isPopulated ? 'fetchPopulated' : 'fetch'](query)
     .then(values => {
-      console.log('values', values);
+      // console.log('values', values);
       dispatch(store.actions.RECEIVE(values));
       if (resolve) resolve();
     })
@@ -40,7 +40,7 @@ export const createRequestFactory = (store, controller) => (
   controller[isPopulated ? 'createPopulated' : 'create'](value)
     .then(value => {
       dispatch(store.actions.CREATE(value));
-      if (resolve) resolve();
+      if (resolve) resolve(value);
     })
     .catch(error => {
       dispatch(store.actions.FAIL_REQUEST(error));

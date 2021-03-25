@@ -5,7 +5,7 @@ import NotFound from '../../components/NotFound';
 import Users from './Users';
 import UserInfo from './UserInfo';
 
-const OrgRouter = () => (
+const UserRouter = () => (
   <Switch>
     <Route exact path="/admin/user_management/:_id" component={UserInfo} />
     <Route exact path="/admin/user_management/" component={Users} />
@@ -14,4 +14,4 @@ const OrgRouter = () => (
   </Switch>
 );
 
-export default OrgRouter;
+export default UserRouter;

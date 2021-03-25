@@ -55,7 +55,8 @@ export const getTemplateRequest = _id => dispatch => {
   templateController
     .fetchTemplate(_id)
     .then(template => {
-      dispatch(setExcelData(convertStateToReactState(template.templateData)));
+      // dispatch(setExcelData(convertStateToReactState(template.templateData)));
+      dispatch(setExcelData(template.templateData));
       dispatch(TemplatesStore.actions.RECEIVE([template]));
     })
     .catch(error => {

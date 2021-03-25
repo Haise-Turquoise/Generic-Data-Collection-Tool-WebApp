@@ -273,7 +273,7 @@ const MenuDrawer = ({ name, icon, children, level = 1 }) => {
 };
 
 const NavigationContent = ({ config }) => {
-  console.log('config', config);
+  // console.log('config', config);
   return config.map((item, index) => {
     let Component;
 
@@ -320,8 +320,11 @@ const NavigationDrawer = ({ title, open, theme, config, classes, handleDrawerClo
 );
 
 const AuthPage = ({
-  headerTitle = 'MOHLTC - Generic Data Collection Tool',
-  drawerTitle = 'MOHLTC - GDCT',
+
+  // headerTitle = 'MOHLTC - Generic Data Collection Tool',
+  headerTitle = 'MOH - OHFS Budgeting and Forecasting',
+  drawerTitle = 'MOH - OHFS Budgeting and Forecasting',
+
   // config = [navigationConfig],
   children,
 }) => {

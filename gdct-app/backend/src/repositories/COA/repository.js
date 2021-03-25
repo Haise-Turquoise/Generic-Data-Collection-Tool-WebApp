@@ -46,4 +46,18 @@ export default class COARepository extends BaseRepository {
   async batchFindFull(query){
     return COAModel.find({ id: { $in : query }});
   }
+
+  async findById(id) {
+    return COAModel.find({ id }).then((result)=>{
+      
+      if(result.length ==0 ){
+        
+        return [];
+      }
+      else{
+        return new COAEntity(result[0]);
+        
+      }
+    });
+  }
 }

@@ -20,7 +20,7 @@ const User = new Schema(
     lastName: { type: String, default: '' },
 
     phoneNumber: { type: String, default: '' },
-
+    
     password: String,
     sysRole: [
       {

@@ -41,16 +41,17 @@ export default class TemplateService {
         initialNode = node;
       }
     });
-    const templateProperties = {
-      properties: {title: template.name}
-    }
+    // const templateProperties = {
+    //   properties: {title: template.name}
+    // }
 
     // Compress the template
-    const deflatedTemplate = pako.deflate(JSON.stringify(templateProperties), { to: 'string' })
+    // const deflatedTemplate = pako.deflate(JSON.stringify(templateProperties), { to: 'string' })
 
     template.workflowProcessId = initialNode;
-    template.templateData = deflatedTemplate;
-    template.googleSheetId;
+    // template.templateData = deflatedTemplate;
+    template.templateData = [];
+    // template.googleSheetId;
     return this.templateRepository.create(template);
   }
 
@@ -60,6 +61,10 @@ export default class TemplateService {
 
   async updateTemplate(id, template) {
     return this.templateRepository.update(id, template);
+  }
+  
+  async updateTemplateSheetData(id, template) {
+    return this.templateRepository.updateSheetData(id, template);
   }
 
   async updateTemplateWorkflowProcess(id, workflowProcess) {

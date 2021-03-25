@@ -46,10 +46,17 @@ const ProgramController = Service([ProgramService], service => {
 
       service
         .findProgramByIds(ids)
-        .then(programs => {
-          res.json({ programs });
-        })
-        .catch(next);
+        .then(programs => res.json({ programs }))
+        .catch(next)
+    });
+
+    router.get('/programs/searchProgram/:_id', (req, res, next) => {
+      const { _id } = req.params;
+
+      service
+        .findProgramById(_id)
+        .then(program => res.json({ program }))
+        .catch(next)
     });
 
     return router;
