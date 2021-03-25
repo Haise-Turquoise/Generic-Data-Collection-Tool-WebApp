@@ -195,22 +195,6 @@ const DrawerHandle = ({ title, classes, handleDrawerClose, theme }) => (
 
 const MenuItemIcon = ({ icon }) => <ListItemIcon>{icon}</ListItemIcon>;
 
-// const StyledMenuItem = withStyles(theme => ({
-//   root: {
-//     '&:focus': {
-//       color: theme.palette.common.white,
-//       backgroundColor: theme.palette.primary.main,
-//       // '& .MuiListItemIcon-root, & .MuiListItemText-primary': {
-//       //   color: theme.palette.common.white,
-//       // },
-//     },
-//     // "#active": {
-//     //   color: theme.palette.common.white,
-//     //   backgroundColor: theme.palette.primary.main,
-//     // }
-//   },
-// }))(MenuItem);
-
 const MenuItemLink = ({ name, icon, url, level }) => (
   <ListItem component={url && Link} button to={url} id={window.location.pathname.includes(url) ? "active" : ""}>
     <MenuItemIcon icon={icon} />
@@ -221,12 +205,12 @@ const MenuItemLink = ({ name, icon, url, level }) => (
         }
       />
     ) : (
-        <ListItemText
-          primary={
-            <Typography style={{ fontSize: '0.9rem', marginLeft: '1.2rem' }}>{name}</Typography>
-          }
-        />
-      )}
+      <ListItemText
+        primary={
+          <Typography style={{ fontSize: '0.9rem', marginLeft: '1.2rem' }}>{name}</Typography>
+        }
+      />
+    )}
   </ListItem>
 );
 
@@ -269,8 +253,8 @@ const MenuDrawerTitle = ({ button = true, name, icon, open, handleClick, level }
         }
       />
     ) : (
-        <ListItemText primary={name} />
-      )}
+      <ListItemText primary={name} />
+    )}
     {open ? <ExpandLess /> : <ExpandMore />}
   </ListItem>
 );

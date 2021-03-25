@@ -19,6 +19,7 @@ import { calculateOptions } from '../../tools/misc'
 
 import './Users.scss';
 
+
 const UsersHeader = () => {
   return (
     <Paper className="header">
@@ -139,7 +140,7 @@ const UsersTable = () => {
     dispatch(getUsersRequest());
   }, [dispatch]);
 
-  useEffect(()=>{setRowNum(users.length)}, [users])
+  useEffect(() => { setRowNum(users.length) }, [users])
 
   return (
     <div>

@@ -14,7 +14,8 @@ import EditIcon from '@material-ui/icons/Edit';
 import { selectFactoryRESTResponseTableValues } from '../../../store/common/REST/selectors';
 import { selectOrgsStore } from '../../../store/OrganizationsStore/selectors';
 import { getOrgsRequest } from '../../../store/thunks/organization';
-import { calculateOptions } from '../../../tools/misc'
+import { calculateOptions } from '../../../tools/misc';
+import TimeoutModal from '../../Timeout'
 
 const HeaderActions = () => {
   const history = useHistory();

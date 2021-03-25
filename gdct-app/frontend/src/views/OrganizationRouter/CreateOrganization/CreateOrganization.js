@@ -39,7 +39,6 @@ const CreateOrganization = () => {
   const cancel = () => {
     redirect();
   };
-
   return (
     <div>
       <ModifyOrganization

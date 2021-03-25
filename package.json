@@ -25,7 +25,10 @@
     "msql": "^1.0.3",
     "mssql": "^6.3.1",
     "passport-google-oauth": "^2.0.0",
-    "passport-remember-me": "^0.0.1"
+    "passport-remember-me": "^0.0.1",
+    "react": "^17.0.1",
+    "react-dom": "^17.0.1",
+    "react-modal": "^3.12.1"
   },
   "devDependencies": {
     "@babel/preset-env": "^7.12.1",
