@@ -73,6 +73,7 @@ export default function SignUp({ parentHandleChange, steps, activeStep, handleNe
     }),
     shallowEqual,
   );
+
   const filteredSysRoles = appSysRoles.filter(role => {
     return (
       role.role === 'Business Admin' ||
@@ -80,6 +81,7 @@ export default function SignUp({ parentHandleChange, steps, activeStep, handleNe
       role.role === 'Template Approver'
     );
   });
+
   const classes = useStyles();
   const theme = useTheme();
   const [title, setTitle] = useState('');
