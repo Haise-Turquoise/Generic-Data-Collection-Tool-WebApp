@@ -2,8 +2,7 @@ import React, { useMemo, useEffect, useState } from 'react';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 
 import MaterialTable from 'material-table';
-import Paper from '@material-ui/core/Paper';
-import Typography from '@material-ui/core/Typography';
+import { Paper, Typography } from '@material-ui/core';
 import {
   getAppSysRolesRequest,
   createAppSysRoleRequest,
@@ -12,16 +11,16 @@ import {
 } from '../../../store/thunks/AppSysRole';
 
 import { getAppRolesRequest } from '../../../store/thunks/AppRole';
-
 import { getAppSysesRequest } from '../../../store/thunks/AppSys';
 
-import './AppSysRoles.scss';
 import { selectFactoryRESTResponseTableValues } from '../../../store/common/REST/selectors';
 import { selectAppSysRolesStore } from '../../../store/AppSysRolesStore/selectors';
 import { selectAppSysesStore } from '../../../store/AppSysesStore/selectors';
 import { selectAppRolesStore } from '../../../store/AppRolesStore/selectors';
 import { calculateOptions } from '../../../tools/misc';
 import moment from 'moment';
+import CreateAuditLog from '../../AuditLog_Global';
+import AppSysRoleController from '../../../controllers/AppSysRole';
 
 const AppSysRolesHeader = () => {
   return (
@@ -44,6 +43,11 @@ const AppSysRolesTable = props => {
     }),
     shallowEqual,
   );
+  // Convert Date format
+  appSysRoles.forEach(appSysRole => {
+    const logtime = new Date(appSysRole.timestamp);
+    appSysRole.timestamp = moment(logtime).format("YYYY-MM-DD HH:mm:ss")
+  });
   const lookupSysRoles = appSyses.reduce(function (acc, appSys) {
     acc[appSys.code] = appSys.name;
     return acc;
@@ -62,50 +66,50 @@ const AppSysRolesTable = props => {
         lookup: lookupSysRoles,
       },
       { title: 'Role', field: 'role', lookup: lookupAppRoles },
-      { title: 'Modified On', field: 'timestamp',
-      editComponent: props => {return <div></div>} },
-      { title: 'Updated By', field: 'updatedBy', 
-      editComponent: props => {return <div></div>} },
+      { title: 'Modified On', field: 'timestamp', editComponent: () => {return <div></div>} },
+      { title: 'Updated By', field: 'updatedBy', editComponent: () => {return <div></div>} },
     ],
     [lookupSysRoles, lookupAppRoles],
   );
 
-  // Convert Date format
-  appSyses.forEach(appSys => {
-    const logtime = new Date(appSys.timestamp);
-    appSys.timestamp = moment(logtime).format("YYYY-MM-DD HH:mm:ss")
-  });
-
   const options = useMemo(() => calculateOptions(readNumRow), [readNumRow]);
-
+  
+  // Record user and time when an action occurs 
+  function recordUpdate(appSysRole) {
+    appSysRole.updatedBy = localStorage.getItem('currentUser');
+    appSysRole.timestamp = new Date().toLocaleString(); 
+  }
   const editable = useMemo(
     () => ({
       onRowAdd: appSysRole =>
         new Promise((resolve, reject) => {
-          //get username and record in Modified By column
-          appSysRole.updatedBy=localStorage.getItem('currentUser')
-          //record new date and time in Modified On column 
-          const event = new Date();
-          appSysRole.timestamp = event.toLocaleString(); 
+          recordUpdate(appSysRole);
           dispatch(createAppSysRoleRequest(appSysRole, resolve, reject));
+        }).then(newAppSysRole => {
+          // For Auditlog
+          CreateAuditLog(null, "Create Application System Role", "AppSysRole", newAppSysRole._id, {}, newAppSysRole);
         }),
+
       onRowUpdate: appSysRole =>
         new Promise((resolve, reject) => {
-          //get username and record in Modified By column
-          appSysRole.updatedBy=localStorage.getItem('currentUser')
-          //record new date and time in Modified On column 
-          const event = new Date();
-          appSysRole.timestamp = event.toLocaleString(); 
+          recordUpdate(appSysRole);
+          // Find the old value before updating in order to Auditlog
+          (async () => { 
+            const oldAppSysRole = await AppSysRoleController.fetchAppSysRole(appSysRole._id);
+            console.log(oldAppSysRole)
+            CreateAuditLog(null, "Update Application System Role", "AppSysRole", oldAppSysRole._id, oldAppSysRole, appSysRole);
+          })();
+          // Do Update
           dispatch(updateAppSysRoleRequest(appSysRole, resolve, reject));
         }),
+
       onRowDelete: appSysRole =>
         new Promise((resolve, reject) => {
-          //get username and record in Modified By column
-          appSysRole.updatedBy=localStorage.getItem('currentUser')
-          //record new date and time in Modified On column 
-          const event = new Date();
-          appSysRole.timestamp = event.toLocaleString(); 
+          recordUpdate(appSysRole);
           dispatch(deleteAppSysRoleRequest(appSysRole._id, resolve, reject));
+          // For Auditlog
+          const appSysRole_trim = (({ tableData, ...o }) => o)(appSysRole);
+          CreateAuditLog(null, "Delete Application System Role", "AppSysRole", appSysRole._id, appSysRole_trim, {});
         }),
     }),
     [dispatch],
@@ -120,6 +124,7 @@ const AppSysRolesTable = props => {
   useEffect(()=>{setNumRow(appSysRoles.length)}, [appSysRoles])
 
   return (
+    // @ts-ignore
     <MaterialTable key={readNumRow} columns={columns} data={appSysRoles} editable={editable} options={options} />
   );
 };

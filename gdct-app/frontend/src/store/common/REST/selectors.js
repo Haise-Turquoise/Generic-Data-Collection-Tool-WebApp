@@ -30,7 +30,6 @@ export const selectFactoryValueById = storeSelector => _id => state =>
 export const selectFactoryRESTLookup = memoizeFunction((storeSelector, field = 'name') =>
   createSelector([selectFactoryRESTResponse(storeSelector)], response => {
     const values = cloneDeep(response.Values);
-    console.log('value', values);
 
     return values.reduce(function (acc, value) {
       acc[value._id] = `${value[field]}`;

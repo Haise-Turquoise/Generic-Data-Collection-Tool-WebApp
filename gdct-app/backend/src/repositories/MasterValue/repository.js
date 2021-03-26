@@ -26,11 +26,11 @@ export default class MasterValueRepository extends BaseRepository {
   }
 
   async findByCategoryId(id){
-    return MasterValueModel.find({categoryId: id});
+    return MasterValueModel.find({CategoryId: id});
   }
 
   async findByAttributeId(id){
-    return MasterValueModel.find({attributeId: id});
+    return MasterValueModel.find({AttributeId: id});
   }
 
   async findOneByProgramId(programId){
