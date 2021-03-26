@@ -18,13 +18,13 @@ export default class COAService {
   }
 
   async findCOAById(Id) {
-    return this.COARepository.findById(Id).then((COA)=>{return COA});
+    return this.COARepository.findById(Id);
   }
 
   async deleteCOA(id) {
     let res = await this.COARepository.findById(id);
-    res = await this.masterValueRepository.findByCategoryId(res.id)
-    if (!res.length){
+    res = await this.masterValueRepository.findByCategoryId(res.id);
+    if (!res.length) {
       return this.COARepository.delete(id);
     } else {
       throw new Error("COA exists in mastervalue");

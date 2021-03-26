@@ -2,10 +2,9 @@ import React, { useMemo, useEffect, useState } from 'react';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 
 import MaterialTable from 'material-table';
-import Paper from '@material-ui/core/Paper';
-
+import { Paper, Typography } from '@material-ui/core';
 import moment from 'moment';
-import Typography from '@material-ui/core/Typography';
+
 import {
   getAppResourcesRequest,
   createAppResourceRequest,
@@ -13,10 +12,11 @@ import {
   updateAppResourceRequest,
 } from '../../../store/thunks/AppResource';
 
-import './AppResources.scss';
 import { selectFactoryRESTResponseTableValues } from '../../../store/common/REST/selectors';
 import { selectAppResourcesStore } from '../../../store/AppResourcesStore/selectors';
 import { calculateOptions } from '../../../tools/misc'
+import CreateAuditLog from '../../AuditLog_Global';
+import AppResourceController from '../../../controllers/AppResource';
 
 const AppResourcesHeader = () => {
   return (
@@ -30,29 +30,28 @@ const AppResourcesHeader = () => {
 const AppResourcesTable = () => {
   const dispatch = useDispatch();
   const [readRowNum, setRowNum] = useState(1);
-
+  
+  // Prepare the data for material table
   const { appResources } = useSelector(
     state => ({
       appResources: selectFactoryRESTResponseTableValues(selectAppResourcesStore)(state),
     }),
     shallowEqual,
   );
-
   // Convert Date format
   appResources.forEach(appResource => {
     const logtime = new Date(appResource.timestamp);
     appResource.timestamp = moment(logtime).format("YYYY-MM-DD HH:mm:ss")
   });
-
+  
+  // Prepare the columns for material table
   const columns = useMemo(
     () => [
       { title: 'Resource Name', field: 'resourceName' },
       { title: 'Resource Path', field: 'resourcePath' },
       { title: 'Protection', field: 'isProtected' },
-      { title: 'Modified On', field: 'timestamp',
-      editComponent: props => {return <div></div>} },
-      { title: 'Updated By', field: 'updatedBy', 
-      editComponent: props => {return <div></div>} },
+      { title: 'Modified On', field: 'timestamp', editComponent: () => {return <div></div>} },
+      { title: 'Updated By', field: 'updatedBy', editComponent: () => {return <div></div>} },
     ],
     [],
   );
@@ -67,22 +66,35 @@ const AppResourcesTable = () => {
     const event = new Date();
     appResource.timestamp = event.toLocaleString();     
   }
-
   const editable = useMemo(
     () => ({
       onRowAdd: appResource =>
         new Promise((resolve, reject) => {
           recordUpdate(appResource);
           dispatch(createAppResourceRequest(appResource, resolve, reject));
+        }).then(newAppResource => {
+          // For Auditlog
+          CreateAuditLog(null, "Create Application Resource", "AppResource", newAppResource._id, {}, newAppResource);
         }),
+
       onRowUpdate: appResource =>
         new Promise((resolve, reject) => {
           recordUpdate(appResource);
+          // Find the old value before updating in order to Auditlog
+          (async () => { 
+            const oldAppResource = await AppResourceController.fetchAppResource(appResource._id);
+            CreateAuditLog(null, "Update Application Resource", "AppResource", oldAppResource._id, oldAppResource, appResource);
+          })();
+          // Do Update
           dispatch(updateAppResourceRequest(appResource, resolve, reject));
         }),
+
       onRowDelete: appResource =>
         new Promise((resolve, reject) => {
           recordUpdate(appResource);
+          // For Auditlog
+          const appResource_trim = (({ tableData, ...o }) => o)(appResource);
+          CreateAuditLog(null, "Delete Application Resource", "AppResource", appResource._id, appResource_trim, {});
           dispatch(deleteAppResourceRequest(appResource._id, resolve, reject));
         }),
     }),
@@ -96,12 +108,12 @@ const AppResourcesTable = () => {
   useEffect(()=>{setRowNum(appResources.length)}, [appResources]);
 
   return (
+    // @ts-ignore
     <MaterialTable key={readRowNum} columns={columns} data={appResources} editable={editable} options={options} />
   );
 };
 
 const AppResources = props => {
-  console.log('why not: ', props);
   return (
     <div className="AppResources">
       <AppResourcesHeader />

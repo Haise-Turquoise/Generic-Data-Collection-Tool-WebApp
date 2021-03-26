@@ -16,11 +16,11 @@ import MandatoryInfo from './MandatoryInfo';
 import ExtraInfo from './ExtraInfo';
 import Review from './Review';
 
-import { getAppSysRolesRequest } from '../store/thunks/AppSysRole';
-import { selectFactoryRESTResponseTableValues } from '../store/common/REST/selectors';
-import { selectAppSysRolesStore } from '../store/AppSysRolesStore/selectors';
+import { getAppSysRolesRequest } from '../../store/thunks/AppSysRole';
+import { selectFactoryRESTResponseTableValues } from '../../store/common/REST/selectors';
+import { selectAppSysRolesStore } from '../../store/AppSysRolesStore/selectors';
 
-import AuthController from '../controllers/Auth';
+import AuthController from '../../controllers/Auth';
 
 function Copyright() {
   return (

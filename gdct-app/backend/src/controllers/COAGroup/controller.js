@@ -14,6 +14,15 @@ const COAGroupController = Service([COAGroupService], service => {
         .catch(next);
     });
 
+    router.get('/COAGroups/:_id', (req, res, next) => {
+      const { _id } = req.params; 
+
+      service
+        .findById(_id)
+        .then(COAGroups => res.json( COAGroups ))
+        .catch(next);
+    });
+
     router.post('/COAGroups', (req, res, next) => {
       service
         .createCOAGroup(req.body.COAGroup)

@@ -5,27 +5,24 @@ import { useHistory } from 'react-router-dom';
 import MaterialTable from 'material-table';
 import { Paper, Typography, Button } from '@material-ui/core';
 import Loading from '../../components/Loading';
+import ArrowBackIcon from '@material-ui/icons/ArrowBack';
+
 import {
   getTemplateTypesRequest,
   updateTemplateTypeRequest,
 } from '../../store/thunks/templateType';
-import ProgramList from '../OrganizationRouter/ProgramList';
 
+import ProgramList from '../OrganizationRouter/ProgramList';
 import { selectFactoryRESTResponseTableValues } from '../../store/common/REST/selectors';
 import { selectTemplateTypesStore } from '../../store/TemplateTypesStore/selectors';
 import TemplateTypesStore from '../../store/TemplateTypesStore/store';
 import { calculateOptions } from '../../tools/misc';
 
 const TemplateTypeHeader = () => {
-  const history = useHistory();
-  const redirect = () => { history.push('/admin/template/type') };
   return (
     <Paper className="header">
       <Typography variant="h5">Template Type Viewer</Typography>
       {/* <HeaderActions/> */}
-      <Button onClick={redirect} variant="contained" color="primary">
-        Back
-      </Button>
     </Paper>
     
   );
@@ -140,8 +137,9 @@ const LinkProgramTable = ({
           onClick={redirect} 
           variant="contained" 
           color="primary"
-          style={{marginLeft: '95%', marginTop: '0.8%'}}
+          style={{marginTop: '0.8%'}}
         >
+          <ArrowBackIcon></ArrowBackIcon>
           Back
         </Button>
       </div>
