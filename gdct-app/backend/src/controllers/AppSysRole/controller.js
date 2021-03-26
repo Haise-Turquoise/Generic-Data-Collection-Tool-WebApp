@@ -14,6 +14,15 @@ const AppSysRoleController = Service([AppSysRoleService], service => {
         .catch(next);
     });
 
+    router.get('/appSysRoles/:_id', (req, res, next) => {
+      const { _id } = req.params;
+
+      service
+        .findById(_id)
+        .then(AppSysRoles => res.json( AppSysRoles ))
+        .catch(next);
+    });
+
     router.post('/appSysRoles', (req, res, next) => {
       service
         .createAppSysRole(req.body.AppSysRole)

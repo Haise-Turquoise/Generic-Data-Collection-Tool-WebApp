@@ -2,9 +2,9 @@ import React, { useMemo, useEffect, useState } from 'react';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 
 import MaterialTable from 'material-table';
-import Paper from '@material-ui/core/Paper';
+import { Paper, Typography } from '@material-ui/core';
+import moment from 'moment';
 
-import Typography from '@material-ui/core/Typography';
 import {
   getAppRolesRequest,
   createAppRoleRequest,
@@ -12,10 +12,11 @@ import {
   updateAppRoleRequest,
 } from '../../../store/thunks/AppRole';
 
-import './AppRoles.scss';
 import { selectFactoryRESTResponseTableValues } from '../../../store/common/REST/selectors';
 import { selectAppRolesStore } from '../../../store/AppRolesStore/selectors';
-import { calculateOptions } from '../../../tools/misc'
+import { calculateOptions } from '../../../tools/misc';
+import CreateAuditLog from '../../AuditLog_Global';
+import AppRoleController from '../../../controllers/AppRole';
 
 const AppRolesHeader = () => {
   return (
@@ -29,95 +30,80 @@ const AppRolesHeader = () => {
 const AppRolesTable = () => {
   const dispatch = useDispatch();
   const [readRowNum, setRowNum] = useState(1);
+  
+  // Prepare the data for material table
   const { appRoles } = useSelector(
     state => ({
       appRoles: selectFactoryRESTResponseTableValues(selectAppRolesStore)(state),
     }),
     shallowEqual,
   );
-
+  // Convert Date format
+  appRoles.forEach(appRole => {
+    const logtime = new Date(appRole.timestamp);
+    appRole.timestamp = moment(logtime).format("YYYY-MM-DD HH:mm:ss")
+  });
+  
+  // Prepare the columns for material table
   const columns = useMemo(
     () => [
       { title: 'Code', field: 'code' },
       { title: 'Name', field: 'name' },
-      { title: 'Modified On', field: 'timestamp',
-        editComponent: props => {return <div></div>} },
-//      { title: 'Modified On', field: 'updatedDate', type: 'date',
-//      initialEditValue: Date.now,},
-      { title: 'Updated By', field: 'updatedBy', 
-        editComponent: props => {return <div></div>} },
+      { title: 'Modified On', field: 'timestamp', editComponent: () => {return <div></div>} },
+      { title: 'Updated By', field: 'updatedBy', editComponent: () => {return <div></div>} },
     ],
     [],
   );
 
   const options = useMemo(() => calculateOptions(readRowNum), [readRowNum]);
 
+  // Record user and time when an action occurs 
+  function recordUpdate(appRole) {
+    appRole.updatedBy = localStorage.getItem('currentUser');
+    appRole.timestamp = new Date().toLocaleString(); 
+  }
   const editable = useMemo(
     () => ({
       onRowAdd: appRole =>
-        new Promise((resolve, reject) => {console.log (appRole)
-          //get username and record in Modified By column
-          appRole.updatedBy=localStorage.getItem('currentUser')
-          //record new date and time in Modified On column 
-          const event = new Date();
-          appRole.timestamp = event.toLocaleString(); 
+        new Promise((resolve, reject) => {
+          recordUpdate(appRole);
           dispatch(createAppRoleRequest(appRole, resolve, reject));
+        }).then(newAppRole => {
+          // For Auditlog
+          CreateAuditLog(null, "Create Application Role", "AppRole", newAppRole._id, {}, newAppRole);
         }),
+
       onRowUpdate: appRole =>
         new Promise((resolve, reject) => {
-          appRole.updatedBy=localStorage.getItem('currentUser')
-          const event = new Date();
-          appRole.timestamp = event.toLocaleString(); 
+          recordUpdate(appRole);
+          // Find the old value before updating in order to Auditlog
+          (async () => { 
+            const oldAppRole = await AppRoleController.fetchAppRole(appRole._id);
+            CreateAuditLog(null, "Update Application Role", "AppRole", oldAppRole._id, oldAppRole, appRole);
+          })();
+          // Do Update
           dispatch(updateAppRoleRequest(appRole, resolve, reject));
         }),
+
       onRowDelete: appRole =>
         new Promise((resolve, reject) => {
-          appRole.updatedBy=localStorage.getItem('currentUser')
-          const event = new Date();
-          appRole.timestamp = event.toLocaleString(); 
+          recordUpdate(appRole);
           dispatch(deleteAppRoleRequest(appRole._id, resolve, reject));
+          // For Auditlog
+          const appRole_trim = (({ tableData, ...o }) => o)(appRole);
+          CreateAuditLog(null, "Delete Application Role", "AppRole", appRole._id, appRole_trim, {});
         }),
     }),
     [dispatch],
   );
 
-//  console.log(appRoles)
-    // Convert Date format
-    const timeOption = { year: 'numeric', month: 'numeric', day: 'numeric', hour:'numeric', minute:'numeric' };
-    appRoles.forEach(appRoles => {
-//        appRole.timestamp = new Date()
-//      var date = moment(appRoles.timestamp).toDate();
-      if(appRoles.timestamp!=null) {
-
-        // reformat date string to match ISO format of mongo db: 2021-02-16T03:59:32.015Z
-        // const temptime = new Date(appRoles.timestamp.toString().replace(/,/g,'').replace(/\./g,'')
-        // );
-        // const logtime = new Date(appRoles.timestamp);
-        // console.log(appRoles.timestamp.toString().replace(/,/g,'').replace(/\./g,''));
-        // appRoles.timestamp = logtime.toLocaleDateString("en-CA", timeOption);
-
-       const event = new Date(appRoles.timestamp.toString());
-       appRoles.timestamp = event.toLocaleString(); 
-      }
-      else{
-        // const logtime = new Date("2021-02-16T03:59:32.015Z");
-        // appRoles.timestamp = logtime.toLocaleDateString("en-CA", timeOption);
-
-       const event = new Date("2021-02-16T03:59:32.015Z");
-       appRoles.timestamp = event.toLocaleString();
-      }
-      // const event = new Date(appRoles.timestamp.toString());
-      // console.log(appRoles.timestamp.toString());
-      // const logtime = new Date(appRoles.timestamp); 
-      // appRoles.timestamp = event.toLocaleDateString("en-CA", timeOption); 
-    })
-    console.log(appRoles)
   useEffect(() => {
     dispatch(getAppRolesRequest());
   }, [dispatch]);
 
   useEffect(()=>{setRowNum(appRoles.length)}, [appRoles])
 
+  // @ts-ignore
   return <MaterialTable key={readRowNum} columns={columns} data={appRoles} editable={editable} options={options} />;
 };
 

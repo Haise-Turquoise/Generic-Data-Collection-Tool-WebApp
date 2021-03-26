@@ -14,9 +14,9 @@ import { makeStyles, useTheme } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 
 import { Button } from '@material-ui/core';
-import { getAppSysRolesRequest } from '../store/thunks/AppSysRole';
-import { selectFactoryRESTResponseTableValues } from '../store/common/REST/selectors';
-import { selectAppSysRolesStore } from '../store/AppSysRolesStore/selectors';
+import { getAppSysRolesRequest } from '../../store/thunks/AppSysRole';
+import { selectFactoryRESTResponseTableValues } from '../../store/common/REST/selectors';
+import { selectAppSysRolesStore } from '../../store/AppSysRolesStore/selectors';
 
 const useStyles = makeStyles(theme => ({
   paper: {
