@@ -2,13 +2,11 @@ import React, { useMemo, useEffect, useState } from 'react';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 
 import MaterialTable from 'material-table';
-import Paper from '@material-ui/core/Paper';
+import { Paper, Typography, Collapse, IconButton } from '@material-ui/core';
 import Alert from '@material-ui/lab/Alert';
-import Collapse from '@material-ui/core/Collapse';
 import CloseIcon from '@material-ui/icons/Close';
-import IconButton from '@material-ui/core/IconButton';
+import moment from 'moment';
 
-import Typography from '@material-ui/core/Typography';
 import {
   getColumnNamesRequest,
   createColumnNameRequest,
@@ -19,8 +17,8 @@ import {
 import { selectFactoryRESTResponseTableValues, selectFactoryRESTError } from '../../store/common/REST/selectors';
 import { selectColumnNamesStore } from '../../store/ColumnNamesStore/selectors';
 import { ColumnNamesActions } from '../../store/ColumnNamesStore/store';
-import { calculateOptions } from '../../tools/misc';
-import moment from 'moment';
+import CreateAuditLog from '../AuditLog_Global';
+import columnNameController from '../../controllers/columnName';
 
 const ColumnNameHeader = () => {
   return (
@@ -31,6 +29,7 @@ const ColumnNameHeader = () => {
   );
 };
 
+// The Alert Sign
 const AlertSign = () => {
   let [showingAlert, setShowingAlert] = useState(false);
 
@@ -40,7 +39,6 @@ const AlertSign = () => {
     }),
     shallowEqual,
   );
-
   
   useEffect(() => {
     if (errors){
@@ -79,6 +77,7 @@ const AlertSign = () => {
   );
 };
 
+// The material table
 const ColumnNamesTable = () => {
   const dispatch = useDispatch();
   const [readRowNum, setRowNum] = useState(1);
@@ -89,17 +88,21 @@ const ColumnNamesTable = () => {
     }),
     shallowEqual,
   );
+  // Convert Date format
+  columnNames.forEach(columnName => {
+    const logtime = new Date(columnName.timestamp);
+    columnName.timestamp = moment(logtime).format("YYYY-MM-DD HH:mm:ss");
+  });
 
+  // Prepare the columns for material table
   const columns = useMemo(
     () => [
       { title: 'ID', field: 'id' },
       { title: 'Name', field: 'name' },
       { title: 'Description', field: 'description' },
       { title: 'Active', type: 'boolean', field: 'isActive' },
-      { title: 'Modified On', field: 'timestamp',
-        editComponent: props => {return <div></div>} },
-      { title: 'Updated By', field: 'updatedBy', 
-        editComponent: props => {return <div></div>} },
+      { title: 'Modified On', field: 'timestamp', editComponent: () => {return <div></div>} },
+      { title: 'Updated By', field: 'updatedBy', editComponent: () => {return <div></div>} },
     ],
     [],
   );
@@ -116,68 +119,46 @@ const ColumnNamesTable = () => {
     []
   );
 
+  // Record user and time when an action occurs 
+  function recordUpdate(columnName) {
+    columnName.updatedBy = localStorage.getItem('currentUser');
+    columnName.timestamp = new Date().toLocaleString(); 
+  }
   const editable = useMemo(
     () => ({
       onRowAdd: columnName =>
         new Promise((resolve, reject) => {
-          //get username and record in Modified By column
-          columnName.updatedBy=localStorage.getItem('currentUser')
-          //record new date and time in Modified On column 
-          const event = new Date();
-          columnName.timestamp = event.toLocaleString(); 
+          recordUpdate(columnName);
           dispatch(createColumnNameRequest(columnName, resolve, reject));
+        }).then(newColumnName => {
+          // For Auditlog
+          CreateAuditLog(null, "Create Attribute", "Attribute", newColumnName._id, {}, newColumnName);
         }),
+
       onRowUpdate: columnName =>
         new Promise((resolve, reject) => {
-          //get username and record in Modified By column
-          columnName.updatedBy=localStorage.getItem('currentUser')
-          //record new date and time in Modified On column 
-          const event = new Date();
-          columnName.timestamp = event.toLocaleString(); 
+          recordUpdate(columnName);
+          // Find the old value before updating in order to Auditlog
+          (async () => { 
+            const oldColumnName = await columnNameController.fetchAttribute(columnName._id);
+            // console.log(oldColumnName);
+            CreateAuditLog(null, "Update Attribute", "Attribute", oldColumnName._id, oldColumnName, columnName);
+          })();
+          // Do Update
           dispatch(updateColumnNameRequest(columnName, resolve, reject));
         }),
+
       onRowDelete: columnName =>
         new Promise((resolve, reject) => {
-          //get username and record in Modified By column
-          columnName.updatedBy=localStorage.getItem('currentUser')
-          //record new date and time in Modified On column 
-          const event = new Date();
-          columnName.timestamp = event.toLocaleString(); 
+          recordUpdate(columnName);
           dispatch(deleteColumnNameRequest(columnName._id, resolve, reject));
+          // For Auditlog
+          const columnName_trim = (({ tableData, ...o }) => o)(columnName);
+          CreateAuditLog(null, "Delete Attribute", "Attribute", columnName._id, columnName_trim, {});
         }),
     }),
     [dispatch],
   );
-
-    // Convert Date format
-    const timeOption = { year: 'numeric', month: 'numeric', day: 'numeric', hour:'numeric', minute:'numeric' };
-    columnNames.forEach(columnNames => {
-//        appRole.timestamp = new Date()
-//      var date = moment(appRoles.timestamp).toDate();
-      if(columnNames.timestamp!=null) {
-
-        // reformat date string to match ISO format of mongo db: 2021-02-16T03:59:32.015Z
-        // const temptime = new Date(appRoles.timestamp.toString().replace(/,/g,'').replace(/\./g,'')
-        // );
-        // const logtime = new Date(appRoles.timestamp);
-        // console.log(appRoles.timestamp.toString().replace(/,/g,'').replace(/\./g,''));
-        // appRoles.timestamp = logtime.toLocaleDateString("en-CA", timeOption);
-
-       const logtime = new Date(columnNames.timestamp);
-       columnNames.timestamp = moment(logtime).format("YYYY-MM-DD HH:mm:ss");
-      }
-      else{
-        // const logtime = new Date("2021-02-16T03:59:32.015Z");
-        // appRoles.timestamp = logtime.toLocaleDateString("en-CA", timeOption);
-
-       const event = new Date("2021-02-16T03:59:32.015Z");
-       columnNames.timestamp = event.toLocaleString();
-      }
-      // const event = new Date(appRoles.timestamp.toString());
-      // console.log(appRoles.timestamp.toString());
-      // const logtime = new Date(appRoles.timestamp); 
-      // appRoles.timestamp = event.toLocaleDateString("en-CA", timeOption); 
-    })
 
   useEffect(()=>{setRowNum(columnNames.length)}, [columnNames]);
 

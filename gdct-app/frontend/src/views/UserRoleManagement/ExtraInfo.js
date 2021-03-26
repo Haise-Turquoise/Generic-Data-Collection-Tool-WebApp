@@ -14,9 +14,9 @@ import { makeStyles, useTheme } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 
 import { Button } from '@material-ui/core';
-import { getAppSysRolesRequest } from '../store/thunks/AppSysRole';
-import { selectFactoryRESTResponseTableValues } from '../store/common/REST/selectors';
-import { selectAppSysRolesStore } from '../store/AppSysRolesStore/selectors';
+import { getAppSysRolesRequest } from '../../store/thunks/AppSysRole';
+import { selectFactoryRESTResponseTableValues } from '../../store/common/REST/selectors';
+import { selectAppSysRolesStore } from '../../store/AppSysRolesStore/selectors';
 
 const useStyles = makeStyles(theme => ({
   paper: {
@@ -73,6 +73,7 @@ export default function SignUp({ parentHandleChange, steps, activeStep, handleNe
     }),
     shallowEqual,
   );
+
   const filteredSysRoles = appSysRoles.filter(role => {
     return (
       role.role === 'Business Admin' ||
@@ -80,6 +81,7 @@ export default function SignUp({ parentHandleChange, steps, activeStep, handleNe
       role.role === 'Template Approver'
     );
   });
+
   const classes = useStyles();
   const theme = useTheme();
   const [title, setTitle] = useState('');

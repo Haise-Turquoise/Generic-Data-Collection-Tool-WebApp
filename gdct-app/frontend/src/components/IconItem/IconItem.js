@@ -1,9 +1,9 @@
 import React from 'react';
-import { Tooltip, ListItem, ListItemIcon, ListItemText } from '@material-ui/core';
 import { Link } from 'react-router-dom';
+import { Tooltip, ListItem, ListItemIcon, ListItemText } from '@material-ui/core';
 
-const renderItem = ({ name, icon, url, handleClick, option }) => {
-  return option === 'main' ? (
+const renderItem = ({ name, icon, url, handleClick, option, type }) => {
+  return option === 'main' || type === 'topmenu' ? (
     <Tooltip title={name} arrow>
       <ListItem component={url && Link} button to={url} style={{ display: 'block' }}>
         <div
@@ -29,16 +29,16 @@ const renderItem = ({ name, icon, url, handleClick, option }) => {
   );
 };
 
-const IconItem = ({ name, icon, url, handleClick, isSubMenu = false, option }) => {
+const IconItem = ({ name, icon, url, handleClick, isSubMenu = false, option, type }) => {
   const renderData = isSubMenu ? (
-    <>
-      <ListItem key={name} component={url && Link} button to={url} style={{ color: 'black' }}>
-        <ListItemIcon>{icon}</ListItemIcon>
-        <ListItemText primary={name} />
-      </ListItem>
-    </>
+    //<>
+    <ListItem key={name} component={url && Link} button to={url} style={{ color: 'black' }}>
+      <ListItemIcon>{icon}</ListItemIcon>
+      <ListItemText primary={name} />
+    </ListItem>
+    //</>
   ) : (
-    renderItem({ name, icon, url, handleClick, option })
+    renderItem({ name, icon, url, handleClick, option, type })
   );
   return renderData;
 };

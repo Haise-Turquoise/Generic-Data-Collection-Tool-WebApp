@@ -14,6 +14,15 @@ const ColumnNameController = Service([ColumnNameService], service => {
         .catch(next);
     });
 
+    router.get('/columnNames/:_id', (req, res, next) => {
+      const { _id } = req.params;
+
+      service
+        .findById(_id)
+        .then(columnName => res.json( columnName ))
+        .catch(next);
+    });
+
     router.post('/columnNames', (req, res, next) => {
       service
         .createColumnName(req.body.columnName)

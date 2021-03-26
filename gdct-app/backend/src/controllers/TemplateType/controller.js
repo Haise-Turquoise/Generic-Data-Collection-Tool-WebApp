@@ -15,6 +15,15 @@ const TemplateTypeController = Service([TemplateTypeService], service => {
         .catch(next);
     });
 
+    router.get('/templateTypes/:_id', (req, res, next) => {
+      const { _id } = req.params;
+
+      service
+        .findById(_id)
+        .then(templateType => res.json(templateType))
+        .catch(next)
+    })
+
     router.post('/templateTypes/createTemplateType', authorized, (req, res, next) => {
       service
         .createTemplateType(req.body.templateType)

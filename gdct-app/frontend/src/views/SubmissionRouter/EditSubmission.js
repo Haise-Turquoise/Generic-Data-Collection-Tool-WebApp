@@ -10,7 +10,7 @@ import { useLocation } from 'react-router-dom';
 import MaterialTable from 'material-table';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import { IconButton } from '@material-ui/core';
-import { convertExcelFileToState, convertStateToReactState } from '../../tools/excel';
+// import { convertExcelFileToState, convertStateToReactState } from '../../tools/excel';
 import { setExcelData } from '../../store/actions/ui/excel/commands';
 import { getSubmissionNoteRequest } from '../../store/thunks/submissionNote';
 import SubmissionNoteStore from '../../store/SubmissionNoteStore/store';
@@ -25,9 +25,8 @@ import { selectSubmissionNoteStore } from '../../store/SubmissionNoteStore/selec
 import {
   getSubmissionByIdRequest,
   updateSubmissionStatusRequest,
-  openGoogleSheetRequest,
 } from '../../store/thunks/submission';
-import DOWNLOAD from '../../store/reducers/ui/excel/commands/DOWNLOAD';
+// import DOWNLOAD from '../../store/reducers/ui/excel/commands/DOWNLOAD';
 import { selectSubmissionNoteHistoryStore } from '../../store/SubmissionNoteHistoryStore/selectors';
 import workflowController from '../../controllers/workflow';
 
@@ -147,17 +146,17 @@ const EditSubmission = ({ history }) => {
 
 
   const handleOpenTemplate = () => {
-    // history.push({
-    //   pathname: `/submission/submissions/${submission._id}`,
-    //   state: { detail: location.state.detail },
-    // });
+    history.push({
+      pathname: `/submission/submissions/${submission._id}`,
+      state: { detail: location.state.detail },
+    });
     //Creates a new spreadsheet in google and returns the id. 
-    openGoogleSheetRequest(submission._id);
+    // openGoogleSheetRequest(submission._id);
   }
 
   const backButtonAction = () => {
     history.push({
-      
+
       pathname: `/submission/dashboard`
     })
   }
@@ -170,7 +169,7 @@ const EditSubmission = ({ history }) => {
   const handleDownloadWorkbook = () => {
     setUserFeedback('Downloading !');
     setCursor('progress');
-    DOWNLOAD(convertStateToReactState(submission.workbookData), UserFeedback);
+    // DOWNLOAD(convertStateToReactState(submission.workbookData), UserFeedback);
 
     setTimeout(function () {
       UserFeedback('Download successfully !');
@@ -212,7 +211,7 @@ const EditSubmission = ({ history }) => {
 
     <div className="submissions" style={{ cursor }}>
       <SubmissionHeader />
-      
+
       <Paper className="pl-4 pr-4 pb-5 pt-4">
         <div className="submission__label">
           <Typography className="submission__inputTitle"> Note </Typography>
@@ -297,8 +296,8 @@ const EditSubmission = ({ history }) => {
 
 
 
-          <Button 
-            size="large" 
+          <Button
+            size="large"
             color="primary"
             variant="contained"
             onClick={backButtonAction}

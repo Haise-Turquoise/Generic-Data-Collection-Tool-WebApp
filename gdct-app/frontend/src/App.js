@@ -7,7 +7,7 @@ import AuthPage from './components/AuthPage';
 import Error from './views/authError';
 import AuthController from './controllers/Auth';
 import Login from './views/Login';
-import RoleManagement from './views/RoleManagement';
+import RoleManagement from './views/UserRoleManagement/UserRoleManagement';
 import Logout from './views/Logout';
 import GDCTMenu from './views/GDCTMenu';
 import Programs from './views/Programs';
@@ -26,7 +26,7 @@ import WorkflowRouter from './views/WorkflowRouter';
 import Register from './views/UserRegistrationRouter';
 import MasterValuePopulation from './views/MasterValuePopulation';
 import AuditLog from './views/AuditLog';
-import TransferStatus from './views/TransferStatus'
+import TransferStatus from './views/TransferStatus/TransferStatus'
 import { ROUTE_WORKFLOW, ROUTE_TEMPLATE_PCKGS, ROUTE_CATEGORY } from './constants/routes';
 
 import './App.scss';

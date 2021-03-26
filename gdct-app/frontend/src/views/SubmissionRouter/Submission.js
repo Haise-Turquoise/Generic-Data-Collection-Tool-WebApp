@@ -11,6 +11,7 @@ import { selectFactoryRESTResponseTableValues } from '../../store/common/REST/se
 
 import { selectSubmissionsStore } from '../../store/SubmissionsStore/selectors';
 import CustomSnackbarContent from '../../components/CustomSnackbarContent/CustomSnackbarContent';
+import SubmissionSpreadSheet from './SubmissionSpreadSheet'
 
 const Submission = ({
   match: {
@@ -66,11 +67,12 @@ const Submission = ({
     <Loading />
   ) : (
     <div>
-      <Excel
+      {/* <Excel
         type="submission"
         returnLink="/submission_manager/dashboard"
         handleSave={() => handleSaveSubmission(submission)}
-      />
+      /> */}
+      <SubmissionSpreadSheet sheetID= {_id}/>
       <Snackbar
         anchorOrigin={{
           vertical: 'bottom',

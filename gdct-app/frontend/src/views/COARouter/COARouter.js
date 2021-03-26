@@ -6,7 +6,7 @@ import NotFound from '../../components/NotFound';
 import COATrees from './COATrees';
 import COATree from './COATree';
 import COAGroups from './COAGroups';
-import COAs from './COAs';
+import COAs from './Categories';
 import Attributes from './Attributes';
 import {
   ROUTE_CATEGORY_CATEGORIES,

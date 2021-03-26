@@ -1,4 +1,4 @@
-export default class UserEntity {
+export default class UsersEntity {
   constructor({
     _id,
     username,

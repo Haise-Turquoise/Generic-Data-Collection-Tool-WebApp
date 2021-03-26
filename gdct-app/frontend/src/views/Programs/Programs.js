@@ -97,7 +97,7 @@ const ProgramsTable = () => {
           dispatch(deleteProgramsRequest(program._id, resolve, reject));
           // For Auditlog
           const program_trim = (({ tableData, ...o }) => o)(program);
-          CreateAuditLog(null, "Delete Program", "Program", program._id, program_trim, {})
+          CreateAuditLog(null, "Delete Program", "Program", program._id, program_trim, {});
         }),
     }),
     [dispatch],

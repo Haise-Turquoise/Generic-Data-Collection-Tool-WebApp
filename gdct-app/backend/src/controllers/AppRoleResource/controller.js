@@ -14,6 +14,15 @@ const AppRoleResourceController = Service([AppRoleResourceService], service => {
         .catch(next);
     });
 
+    router.get('/appRoleResources/:_id', (req, res, next) => {
+      const { _id } = req.params;
+
+      service
+        .findById(_id)
+        .then(AppRoleResources => res.json( AppRoleResources ))
+        .catch(next);
+    });
+
     router.post('/appRoleResources', (req, res, next) => {
       service
         .createAppRoleResource(req.body.AppRoleResource)
