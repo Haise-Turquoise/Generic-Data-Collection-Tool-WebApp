@@ -18,7 +18,7 @@ const MenuHeader = () => {
           const { type, name, icon, url } = item;
           return item.type !== 'drawer' ? (
             // @ts-ignore
-            <IconItem key={`${type}-${name}-${index}`} name={name} url={url} icon={icon} />
+            <IconItem key={`${type}-${name}-${index}`} name={name} url={url} icon={icon} type={type} />
           ) : (
             <DrawerItem key={`${type}-${name}-${index}`} {...item} option="main" />
           );

@@ -195,7 +195,7 @@ const DrawerHandle = ({ title, classes, handleDrawerClose, theme }) => (
 
 const MenuItemIcon = ({ icon }) => <ListItemIcon>{icon}</ListItemIcon>;
 
-const MenuItemLink = ({ name, icon, url, level }) => (
+const MenuItemLink = ({ name, icon, url, type, level }) => (
   <ListItem component={url && Link} button to={url} id={window.location.pathname.includes(url) ? "active" : ""}>
     <MenuItemIcon icon={icon} />
     {level === '2' ? (
@@ -204,13 +204,14 @@ const MenuItemLink = ({ name, icon, url, level }) => (
           <Typography style={{ fontSize: '0.8rem', marginLeft: '1.5rem' }}>{name}</Typography>
         }
       />
-    ) : (
-      <ListItemText
-        primary={
-          <Typography style={{ fontSize: '0.9rem', marginLeft: '1.2rem' }}>{name}</Typography>
-        }
-      />
-    )}
+    ) : type === 'topmenu' ? (<ListItemText primary={name} />)
+      : (
+        <ListItemText
+          primary={
+            <Typography style={{ fontSize: '0.9rem', marginLeft: '1.2rem' }}>{name}</Typography>
+          }
+        />
+      )}
   </ListItem>
 );
 
@@ -283,7 +284,6 @@ const NavigationContent = ({ config }) => {
       case 'drawer':
         Component = MenuDrawer;
         break;
-
       case 'divider':
         Component = Divider;
         break;
