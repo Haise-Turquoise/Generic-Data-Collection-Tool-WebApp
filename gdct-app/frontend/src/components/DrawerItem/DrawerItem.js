@@ -48,7 +48,14 @@ export default function DrawerItem(props) {
 
   return (
     <div>
-      <IconItem name={name} url={url} icon={icon} isSubMenu={isSubMenu} option={option} />
+      <Button
+        aria-controls="simple-menu"
+        aria-haspopup="true"
+        onClick={handleClick}
+        style={{ color: 'white', width: '100%', padding: '0' }}
+      >
+        <IconItem name={name} url={url} icon={icon} isSubMenu={isSubMenu} option={option} />
+      </Button>
       <StyledMenu
         id="customized-menu"
         anchorEl={anchorEl}
