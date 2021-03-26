@@ -32,27 +32,13 @@ const renderItem = ({ name, icon, url, handleClick, option, type }) => {
 const IconItem = ({ name, icon, url, handleClick, isSubMenu = false, option, type }) => {
   const renderData = isSubMenu ? (
     //<>
-    <Button
-      aria-controls="simple-menu"
-      aria-haspopup="true"
-      onClick={handleClick}
-      style={{ color: 'white', width: '100%', padding: '0' }}
-    >
-      <ListItem key={name} component={url && Link} button to={url} style={{ color: 'black' }}>
-        <ListItemIcon>{icon}</ListItemIcon>
-        <ListItemText primary={name} />
-      </ListItem>
-    </Button>
+    <ListItem key={name} component={url && Link} button to={url} style={{ color: 'black' }}>
+      <ListItemIcon>{icon}</ListItemIcon>
+      <ListItemText primary={name} />
+    </ListItem>
     //</>
   ) : (
-    <Button
-      aria-controls="simple-menu"
-      aria-haspopup="true"
-      onClick={handleClick}
-      style={{ color: 'white', width: '100%', padding: '0' }}
-    >
-      {renderItem({ name, icon, url, handleClick, option, type })}
-    </Button>
+    renderItem({ name, icon, url, handleClick, option, type })
   );
   return renderData;
 };
