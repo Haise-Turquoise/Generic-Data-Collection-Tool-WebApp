@@ -72,7 +72,7 @@ const Submission = ({
         returnLink="/submission_manager/dashboard"
         handleSave={() => handleSaveSubmission(submission)}
       /> */}
-      <SubmissionSpreadSheet sheetID= {_id}/>
+      <SubmissionSpreadSheet sheetID={_id} />
       <Snackbar
         anchorOrigin={{
           vertical: 'bottom',
