@@ -192,6 +192,7 @@ const TemplatePackages = () => {
       onRowUpdate: templatePackage =>
         new Promise((resolve, reject) => {
           recordUpdate(templatePackage);
+          console.log(templatePackage);
           // Find the old value before updating in order to Auditlog
           (async () => { 
             const oldTemplatePackage = await templatePackageController.fetchTemplatePackage(templatePackage._id);

@@ -31,6 +31,8 @@ export default class TemplatePackageRepository extends BaseRepository {
     creationDate,
     userCreatorId,
     programIds,
+    updatedBy,
+    timestamp,
   }) {
     return this.submissionPeriodRepository
       .validate(submissionPeriodId)
@@ -45,6 +47,8 @@ export default class TemplatePackageRepository extends BaseRepository {
           creationDate,
           userCreatorId,
           programIds,
+          updatedBy,
+          timestamp,
         }),
       )
       .then(templatePackage => new TemplatePackageEntity(templatePackage.toObject()));
@@ -52,7 +56,7 @@ export default class TemplatePackageRepository extends BaseRepository {
 
   async update(
     id,
-    { name, submissionPeriodId, templateIds, statusId, creationDate, userCreatorId, programIds },
+    { name, submissionPeriodId, templateIds, statusId, creationDate, userCreatorId, programIds, updatedBy, timestamp, },
     isPopulated,
   ) {
     return (statusId ? this.statusRepository.validate(statusId) : new Promise(resolve => resolve()))
@@ -73,6 +77,8 @@ export default class TemplatePackageRepository extends BaseRepository {
             creationDate,
             userCreatorId,
             programIds,
+            updatedBy,
+            timestamp,
           },
           { upsert: true, new: true },
         ).populate(isPopulated ? populatedParams : ''),
