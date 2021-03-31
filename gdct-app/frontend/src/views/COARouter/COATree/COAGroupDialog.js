@@ -9,7 +9,7 @@ import { createCOATreeRequest } from '../../../store/thunks/COATree';
 import SelectableTableDialog from '../../../components/dialogs/SelectableTableDialog';
 import DialogsStore from '../../../store/DialogsStore/store';
 
-const COAGroupDialog = ({ sheetNameId }) => {
+const COAGroupDialog = ({ sheetNameId, Auditlog_Operations }) => {
   const dispatch = useDispatch();
 
   const { isCOAGroupDialogOpen, COAGroups } = useSelector(
@@ -32,6 +32,7 @@ const COAGroupDialog = ({ sheetNameId }) => {
   const handleSelect = useCallback(
     COAGroup => {
       dispatch(createCOATreeRequest(COAGroup, sheetNameId, true));
+      Auditlog_Operations.push(`Added Group: ${COAGroup.name}`);
     },
     [dispatch],
   );

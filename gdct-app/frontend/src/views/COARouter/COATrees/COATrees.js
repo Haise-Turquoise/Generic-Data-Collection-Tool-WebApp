@@ -3,15 +3,10 @@ import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 
 import MaterialTable from 'material-table';
 import LaunchIcon from '@material-ui/icons/Launch';
-import Paper from '@material-ui/core/Paper';
-import Typography from '@material-ui/core/Typography';
+import { Paper, Typography } from '@material-ui/core';
 import COATreeController from '../../../controllers/COATree';
-import sheetNameController from '../../../controllers/sheetName';
 import {
   getSheetNamesRequest,
-  createSheetNameRequest,
-  deleteSheetNameRequest,
-  updateSheetNameRequest,
 } from '../../../store/thunks/sheetName';
 import {
   getDetectEmptyTree,
@@ -23,11 +18,8 @@ import { selectDetectEmptyTreeStore } from '../../../store/DetectEmptyTreeStore/
 import { ROUTE_CATEGORY_TREES } from '../../../constants/routes';
 
 import { calculateOptions } from '../../../tools/misc'
-import DetectEmptyTreeStore from '../../../store/DetectEmptyTreeStore/store';
 import moment from 'moment';
-
-
-// import './COATrees.scss'
+import CreateAuditLog from '../../AuditLog_Global';
 
 const COATreesHeader = () => {
   return (
@@ -58,7 +50,7 @@ const COATreesTable = ({ history }) => {
   );
 
   // Convert Date format
-  console.log(detectEmptyTree);
+  // console.log(detectEmptyTree);
   detectEmptyTree.forEach(detectEmptyTree => {
     const logtime = new Date(detectEmptyTree.timestamp);
     detectEmptyTree.timestamp = moment(logtime).format("YYYY-MM-DD HH:mm:ss")
@@ -67,10 +59,8 @@ const COATreesTable = ({ history }) => {
   const columns = useMemo(
     () => [
       { title: 'Sheet Name', field: 'name' },
-      { title: 'Modified On', field: 'timestamp',
-      editComponent: props => {return <div></div>} },
-      { title: 'Updated By', field: 'updatedBy', 
-      editComponent: props => {return <div></div>} },
+      { title: 'Modified On', field: 'timestamp', editComponent: () => {return <div></div>} },
+      { title: 'Updated By', field: 'updatedBy', editComponent: () => {return <div></div>} },
     ], 
     []
   );
@@ -96,17 +86,23 @@ const COATreesTable = ({ history }) => {
         if (sheetName.value.length == 0) {
           return true;
         }
-
         return false;
       },
 
       onRowDelete: sheetName =>
         new Promise((resolve, reject) => {
-          sheetName.updatedBy=localStorage.getItem('currentUser')
-          const event = new Date();
-          sheetName.timestamp = event.toLocaleString(); 
+          console.log(sheetName)
+          sheetName.updatedBy=localStorage.getItem('currentUser');
+          sheetName.timestamp = new Date().toLocaleString(); 
           dispatch(deleteCOATreeBySheetName(sheetName, resolve, reject));
           setRefresh(true);
+        }).then(() => {
+          (async () => {
+            const oldSheetName = await COATreeController.fetchBySheetName(sheetName._id);
+            if (oldSheetName.length === 0) {
+              CreateAuditLog(null, "Delete COA Tree", "CategoryTree", sheetName._id, sheetName, {});
+            }
+          })();
         }),
     }),
     [dispatch],

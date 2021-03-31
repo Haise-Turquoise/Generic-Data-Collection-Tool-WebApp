@@ -13,12 +13,8 @@ export default class COAService {
     return this.COARepository.create(COA);
   }
 
-  async findById(id){
-    return this.COARepository.find({ _id: id })
-  }
-
-  async findCOAById(Id) {
-    return this.COARepository.findById(Id);
+  async findCOAById(id) {
+    return this.COARepository.findById(id);
   }
 
   async deleteCOA(id) {

@@ -152,9 +152,15 @@ const ColumnNamesTable = () => {
         new Promise((resolve, reject) => {
           recordUpdate(columnName);
           dispatch(deleteColumnNameRequest(columnName._id, resolve, reject));
+        }).then(() => {
           // For Auditlog
-          const columnName_trim = (({ tableData, ...o }) => o)(columnName);
-          CreateAuditLog(null, "Delete Attribute", "Attribute", columnName._id, columnName_trim, {});
+          (async () => { 
+            const oldColumnName = await columnNameController.fetchAttribute(columnName._id);
+            // Actually Deleted (Attribute might not be deleted because it is referenced in master value table)
+            if (oldColumnName.length === 0) {
+              CreateAuditLog(null, "Delete Attribute", "Attribute", columnName._id, columnName, {});
+            }
+          })();
         }),
     }),
     [dispatch],
