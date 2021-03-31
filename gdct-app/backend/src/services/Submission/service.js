@@ -10,7 +10,7 @@ import MasterValueRepository from '../../repositories/MasterValue';
 import ProgramRepository from '../../repositories/Program';
 import OrgRepository from '../../repositories/Organization';
 import TemplateTypeRepository from '../../repositories/TemplateType';
-import WorkflowProcessRepository from '../../repositories/WorkflowProcess';
+import WorkflowProcessRepository from '../../repositories/WorkflowProcess/WorkflowProcess';
 import SubmissionPeriodRepository from '../../repositories/SubmissionPeriod';
 import UsersRepository from '../../repositories/Users';
 import GoogleSheetRepository from '../../repositories/GoogleSheet';

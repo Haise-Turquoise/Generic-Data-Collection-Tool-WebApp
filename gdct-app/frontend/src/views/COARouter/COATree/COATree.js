@@ -1,13 +1,10 @@
 import React, { useCallback, useEffect } from 'react';
+import { useHistory } from 'react-router-dom';
 
 import SortableTree, { toggleExpandedForAll } from 'react-sortable-tree';
 import { useSelector, shallowEqual, useDispatch, batch } from 'react-redux';
-import Paper from '@material-ui/core/Paper';
-import Typography from '@material-ui/core/Typography';
-import Button from '@material-ui/core/Button';
-import TextField from '@material-ui/core/TextField';
+import { Paper, Typography, Button, TextField, IconButton } from '@material-ui/core';
 
-import IconButton from '@material-ui/core/IconButton';
 import DeleteIcon from '@material-ui/icons/Delete';
 import AddIcon from '@material-ui/icons/Add';
 
@@ -26,6 +23,11 @@ import 'react-sortable-tree/style.css';
 import COATreeStore from '../../../store/COATreeStore/store';
 import DialogsStore from '../../../store/DialogsStore/store';
 
+import CreateAuditLog from '../../AuditLog_Global';
+import sheetNameController from '../../../controllers/sheetName';
+
+let Auditlog_Operations = [];
+
 const DeleteButton = ({ handleClick }) => (
   <IconButton aria-label="delete" onClick={handleClick}>
     <DeleteIcon />
@@ -40,25 +42,45 @@ const AddButton = ({ handleClick }) => (
 
 const COATreeActions = ({ sheetNameId }) => {
   const dispatch = useDispatch();
+  const history = useHistory();
+
   const handleOpenGroupDialog = useCallback(() => {
     dispatch(DialogsStore.actions.OPEN_COA_GROUP_DIALOG());
   }, [dispatch]);
 
   const handleSave = useCallback(
-    () => dispatch(updateCOATreesBySheetNameRequest(sheetNameId, true)),
+    () => {
+      dispatch(updateCOATreesBySheetNameRequest(sheetNameId));
+      (async () => {
+        const sheet = await sheetNameController.fetchById(sheetNameId);
+        // Auditlog (At least one change is made)
+        if (Auditlog_Operations.length > 0) {
+          CreateAuditLog(null, 
+                         "Update COA Tree", 
+                         "CategoryTree", 
+                         sheetNameId, 
+                         {"0":`Changes happened on Sheet: ${sheet.name}`}, 
+                         Auditlog_Operations
+                        );
+          Auditlog_Operations = [];
+        }
+      })();
+      // Redirect back
+      history.push('/admin/coa/tree');
+    },
     [dispatch],
   );
 
   return (
     <div className="header__actions">
       <TextField className="searchBar" variant="outlined" placeholder="Search node" />
-      <Button variant="contained" color="primary" onClick={handleOpenGroupDialog}>
+      <Button variant="contained" color="primary" onClick={handleOpenGroupDialog} >
         Add Group
       </Button>
-      <Button variant="contained" color="primary" onClick={handleSave}>
+      <Button variant="contained" color="primary" onClick={handleSave} >
         Save
       </Button>
-      <GroupDialog sheetNameId={sheetNameId} />
+      <GroupDialog sheetNameId={sheetNameId} Auditlog_Operations={Auditlog_Operations} />
     </div>
   );
 };
@@ -77,6 +99,7 @@ const COATreeTreeStructure = ({ sheetNameId }) => {
   const dispatch = useDispatch();
 
   const { localTree } = useSelector(
+    // @ts-ignore
     ({ COATreeStore: { localTree } }) => ({
       localTree,
     }),
@@ -89,12 +112,20 @@ const COATreeTreeStructure = ({ sheetNameId }) => {
 
   const nodeProps = useCallback(
     nodeProps => {
-      const handleDelete = () =>
+      const handleDelete = () => {
         dispatch(COATreeStore.actions.DELETE_COA_TREE_UI({ node: nodeProps }));
+        if (nodeProps.node.content) {
+          Auditlog_Operations.push(`Deleted Group: ${nodeProps.node.title}`);
+        }
+        else {
+          Auditlog_Operations.push(`Deleted Node: ${nodeProps.node.title} under ${nodeProps.parentNode.title}`);
+        }
+      }
       const handleOpenCOADialog = () => {
         batch(() => {
           dispatch(DialogsStore.actions.OPEN_COA_DIALOG());
           dispatch(COATreeStore.actions.UPDATE_SELECTED_NODE_COA_TREE_UI({ nodeProps }));
+          Auditlog_Operations.push(`↓↓↓  Adding Node(s) under Group: ${nodeProps.node.title}  ↓↓↓`);
         });
       };
       if (nodeProps.node.content) {
@@ -126,12 +157,13 @@ const COATreeTreeStructure = ({ sheetNameId }) => {
         onChange={handleChange}
         generateNodeProps={nodeProps}
       />
-      <COADialog />
+      <COADialog Auditlog_Operations={Auditlog_Operations} />
     </Paper>
   );
 };
 
 const COATree = () => {
+  // @ts-ignore
   const { _id: sheetNameId } = useParams();
 
   return (

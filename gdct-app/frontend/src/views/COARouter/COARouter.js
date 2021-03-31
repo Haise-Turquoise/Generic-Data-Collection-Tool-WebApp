@@ -15,7 +15,7 @@ import {
   ROUTE_CATEGORY_ATTRIBUTES,
 } from '../../constants/routes';
 
-const TemplateRouter = () => (
+const COARouter = () => (
   <Switch>
     <Route exact path={ROUTE_CATEGORY_GROUPS} component={COAGroups} />
     <Route exact path={ROUTE_CATEGORY_CATEGORIES} component={COAs} />
@@ -26,4 +26,4 @@ const TemplateRouter = () => (
   </Switch>
 );
 
-export default TemplateRouter;
+export default COARouter;

@@ -4,7 +4,7 @@ import TemplateModel from '../../models/Template';
 import UserRepository from '../User';
 import TemplateTypeRepository from '../TemplateType';
 import BaseRepository from '../repository';
-import WorkflowProcessRepository from '../WorkflowProcess';
+import WorkflowProcessRepository from '../WorkflowProcess/WorkflowProcess';
 import {ObjectId} from 'mongodb';
 
 // MongoDB implementation
