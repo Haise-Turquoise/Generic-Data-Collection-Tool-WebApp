@@ -12,6 +12,7 @@ import Logout from './views/Logout';
 import GDCTMenu from './views/GDCTMenu';
 import Programs from './views/Programs';
 import Statuses from './views/Statuses';
+import ModifyProfileRouter from './views/ModifyProfileRouter'
 import ReportingPeriods from './views/ReportingPeriods/ReportingPeriods';
 import AppConfigs from './views/AppConfigs';
 import SheetNames from './views/SheetNames';
@@ -51,6 +52,8 @@ const PrivateRouter = ({ setLoggedIn }) => {
       <Route path="/admin/user_management" component={UserRouter} />
       <Route exact path="/admin/program" component={Programs} />
       <Route exact path="/admin/status" component={Statuses} />
+      <Route exact path="/user/profile" component={Statuses} />
+      <Route path="/user/profile1" component={ModifyProfileRouter} />
       <Route exact path="/admin/reporting_period" component={ReportingPeriods} />
       <Route path={ROUTE_WORKFLOW} component={WorkflowRouter} />
       <Route exact path="/admin/roleManagement" component={RoleManagement} />

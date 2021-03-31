@@ -50,6 +50,10 @@ export default {
   // Main Menu User
   User: <AccountCircleIcon />,
   Profile: <AccountCircleIcon style={MenuItemStyle} />,
+  // Modify Profile Test icon
+  Profile1: <AccountCircleIcon style={MenuItemStyle} />,
+  'ModifyPermission': <AccountCircleIcon style={SubMenuItemStyle} />,
+  'ModifyUserInfo': <AccountCircleIcon style={SubMenuItemStyle} />,
   Logout: <ExitToAppIcon style={MenuItemStyle} />,
   // Main Menu Report
   Report: <ReportIcon />,
