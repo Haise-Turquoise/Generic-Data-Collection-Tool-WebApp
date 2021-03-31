@@ -7,5 +7,4 @@ build
 # Ignore node/npm/yarn related files
 yarn.lock
 node_modules
-package.json
 package-lock.json

@@ -26,4 +26,8 @@ export default class COAGroupService {
   async findCOAGroup(COAGroup) {
     return this.COAGroupRepository.find(COAGroup);
   }
+
+  async findById(id) {
+    return this.COAGroupRepository.findById(id);  
+  }
 }

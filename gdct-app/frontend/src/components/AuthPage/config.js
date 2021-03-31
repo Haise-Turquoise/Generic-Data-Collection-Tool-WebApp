@@ -8,6 +8,15 @@ const createUserNavigation = async () => {
   return menus
     .filter(e => !e.isSubMenu)
     .map(e => {
+      if (e.url !== undefined) {
+        return {
+          name: e.name,
+          url: e.url,
+          type: e.type,
+          icon: iconMap[e.name],
+          orderID: e.orderId,
+        }
+      }
       let children = e.items.map(item => {
         return {
           name: item.name,

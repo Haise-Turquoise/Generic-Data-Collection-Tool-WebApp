@@ -34,4 +34,8 @@ export default class AppRoleService {
     const appSysRole = await this.AppSysRoleRepository.find({ role: appRole.code });
     return appSysRole.length !== 0;
   }
+
+  async findById(id) {
+    return this.AppRoleRepository.findById(id);
+  }
 }

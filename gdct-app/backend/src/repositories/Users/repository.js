@@ -3,7 +3,7 @@ import i18n from 'i18n';
 import BaseRepository from '../repository';
 import UserModel from '../../models/User';
 import TemplateRepository from '../Template';
-import UserEntity from '../../entities/Users';
+import UsersEntity from '../../entities/Users';
 import AppError from '../../utils/AppError';
 
 // @Service()
@@ -18,10 +18,10 @@ export default class UsersRepository extends BaseRepository {
       firstName,
       lastName,
       isActive,
-    }).then(user => new UserEntity(user));
+    }).then(user => new UsersEntity(user));
   }
 
-  async update(id, { username, firstName, lastName, email, phoneNumber, isActive }) {
+  async update(id, { username, firstName, lastName, email, phoneNumber, isActive, timestamp, updatedBy, }) {
     return UserModel.findByIdAndUpdate(id, {
       username,
       firstName,
@@ -29,10 +29,9 @@ export default class UsersRepository extends BaseRepository {
       email,
       phoneNumber,
       isActive,
+      timestamp,
+      updatedBy,
     }).then(user => new UserModel(user.toObject()));
-  // async update(id, user) {
-  //   return UserModel.findByIdAndUpdate(id, user)
-  //   .then(user => new UserModel(user.toObject()));
   }
 
   async find(query) {
@@ -55,7 +54,7 @@ export default class UsersRepository extends BaseRepository {
         })
       : '';
 
-    return UserModel.find(realQuery).then(users => users.map(user => new UserEntity(user)));
+    return UserModel.find(realQuery).then(users => users.map(user => new UsersEntity(user)));
   }
 
   findOne(id) {
@@ -64,11 +63,11 @@ export default class UsersRepository extends BaseRepository {
     throw new AppError(message, 400);
   }
 
-  async findByEmail(email) {
-    return UserModel.find({ email });
+  async delete(id) {
+    return UserModel.findByIdAndDelete(id).then(user => new UsersEntity(user));
   }
 
-  async delete(id) {
-    return UserModel.findByIdAndDelete(id).then(user => new UserEntity(user));
+  async findByEmail(email) {
+    return UserModel.findOne({ email });
   }
 }

@@ -52,7 +52,7 @@ export default class AuthService {
       })(req, res, async () => {
         console.log(res.headers)
         const { email } = req.user;
-        const user = await this.UserRepostory.findByEmail(email);
+        const user = await this.UserRepository.findByEmail(email);
         if (user) {
           req.session.isAdmin = Boolean(user.sysRole.find(e => e.role === 'Business Admin'));
           req.session.resources = [];
@@ -81,12 +81,9 @@ export default class AuthService {
       req.logout();
       req.session.user = null;
       req.session.token = null;
-      // For Audit Log
+      //For Audit Log
       const authService = new AuthService();
-      authService.UserRepository.findByEmail(email)
-        .then(data => {
-          returnNormalJson(res, data)
-        })
+      authService.UserRepository.findByEmail(email).then(data => { returnNormalJson(res, data) })
     } catch (err) {
       next(err);
     }
@@ -99,7 +96,6 @@ export default class AuthService {
         const authService = new AuthService();
         authService.UserRepository.findByEmail(req.user.email)
           .then(data => {
-              //console.log(data)
               returnNormalJson(res, data);
           })
       } else {

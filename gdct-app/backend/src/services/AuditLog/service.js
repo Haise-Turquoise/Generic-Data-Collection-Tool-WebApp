@@ -11,10 +11,6 @@ export default class AuditLogService {
     return this.AuditLogRepository.create(AuditLogInfo);
   }
 
-  // async findAuditLog(AuditLog) {
-  //   return this.AuditLogRepository.find(AuditLog);
-  // }
-
   async findAllAuditLog() {
     return this.AuditLogRepository.findAll();
   }

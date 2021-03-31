@@ -136,9 +136,9 @@ const AuditLogTable = () => {
       PERFORMED: ${rowData.activity}
       FOR DOCUMENT: ${rowData.recordId}
       IN COLLECTION: ${rowData.moduleName}
-      =========================================
+      ==============================================
       the previous value for the document was: ${JSON.stringify(rowData.oldValue, null, "\t")}
-      =========================================
+      ==============================================
       now the new value for the document is: ${JSON.stringify(rowData.newValue, null, "\t")}`
     )
   };
@@ -175,7 +175,7 @@ const AuditLogTable = () => {
               aria-labelledby="alert-dialog-title"
               aria-describedby="alert-dialog-description"
               fullWidth
-              maxWidth={"sm"}
+              maxWidth={"md"}
             >
               <DialogTitle id="alert-dialog-title">{"Detailed Audit Information:"}</DialogTitle>
               <DialogContent>

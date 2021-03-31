@@ -3,24 +3,21 @@ import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 
 import MaterialTable from 'material-table';
-import Paper from '@material-ui/core/Paper';
+import { Paper, Typography } from '@material-ui/core';
 
-import Typography from '@material-ui/core/Typography';
 import moment from 'moment';
 
-import './Users.scss';
-import { Button } from '@material-ui/core';
 import VisibilityIcon from '@material-ui/icons/Visibility';
 import { selectFactoryRESTResponseTableValues } from '../../../store/common/REST/selectors';
 import { selectUsersStore } from '../../../store/UsersStore/selectors';
 import { calculateOptions } from '../../../tools/misc'
 import {
   getUsersRequest,
-  createUsersRequest,
-  deleteUsersRequest,
   updateUsersRequest,
 } from '../../../store/thunks/users';
 
+import usersController from '../../../controllers/Users';
+import CreateAuditLog from '../../AuditLog_Global';
 
 const UsersHeader = () => {
   return (
@@ -31,24 +28,11 @@ const UsersHeader = () => {
   );
 };
 
-/*
-const TestButton2 = () => {
-  const dispatch = useDispatch()
-  //const handleClick = () => dispatch(getUsersRequest({params: {'lastName': 'Hu'}}))
-  const handleClick = () => dispatch(getUsersRequest({params: {'sysRole.org.orgId': '8'}}))
-  return (
-    <Paper className="header">
-    <button onClick={handleClick}>
-      TEST BUTTON TO RETURN OrgID = 8
-    </button>
-    </Paper>
-  )
-}
-*/
 const UsersTable = () => {
   const dispatch = useDispatch();
   const history = useHistory();
 
+  // For Custom Filter Header
   const [userName, setUserName] = useState('');
   const [lastName, setLastName] = useState('');
   const [firstName, setFirstName] = useState('');
@@ -90,10 +74,17 @@ const UsersTable = () => {
     );
   };
 
+  // Prepare the data for material table
   const { users } = useSelector(state => ({
     users: selectFactoryRESTResponseTableValues(selectUsersStore)(state),
   }));
+  // Convert Date format
+  users.forEach(user => {
+    const logtime = new Date(user.timestamp);
+    user.timestamp = moment(logtime).format("YYYY-MM-DD HH:mm:ss")
+  });
 
+  // Prepare the columns for material table
   const columns = useMemo(
     () => [
       { title: 'User Name', field: 'username' },
@@ -102,23 +93,15 @@ const UsersTable = () => {
       { title: 'Email', field: 'email' },
       { title: 'Phone Number', field: 'phoneNumber' },
       { title: 'Active', type: 'boolean', field: 'isActive' },
-      { title: 'Modified On', field: 'timestamp', editComponent: props => {return <div></div>} },
-      { title: 'Updated By', field: 'updatedBy', editComponent: props => {return <div></div>} },
+      { title: 'Modified On', field: 'timestamp', editComponent: () => {return <div></div>} },
+      { title: 'Updated By', field: 'updatedBy', editComponent: () => {return <div></div>} },
     ],
     [],
   );
 
-  // Convert Date format
-  users.forEach(user => {
-    const logtime = new Date(user.timestamp);
-    user.timestamp = moment(logtime).format("YYYY-MM-DD HH:mm:ss")
-  });
+  const options = useMemo(() => calculateOptions(readRowNum),[readRowNum]);
 
-  const options = useMemo(
-    () => calculateOptions(readRowNum),
-    [readRowNum],
-  );
-
+  // Customization for search bar
   const localization = useMemo(
     () => ({
       toolbar: {
@@ -129,39 +112,39 @@ const UsersTable = () => {
     [],
   );
 
+
   // Record username and time when an action occurs 
   function recordUpdate(user) {
     user.updatedBy = localStorage.getItem('currentUser');
     user.timestamp = new Date().toLocaleString(); 
   }
-
+  // Prepare the editing functionalities for the material table
   const editable = useMemo(
     () => ({
-      // onRowAdd: (user) =>
-      //   new Promise((resolve, reject) => {
-      //     recordUpdate(user); 
-      //     dispatch(createUsersRequest(user, resolve, reject))
-      //   }),
       onRowUpdate: user =>
         new Promise((resolve, reject) => {
           recordUpdate(user);
+          console.log(user);
+          // Find the old value before updating in order to Auditlog
+          (async () => {
+            // seems redundant, but we cannot put user._id directly into an object
+            const _id = user._id;
+            const oldUser = await usersController.fetchById({ _id });
+            CreateAuditLog(null, "Update User", "User", oldUser._id, oldUser, user);
+          })();
+          // Do Update
           dispatch(updateUsersRequest(user, resolve, reject));
-        }),
-      // onRowDelete: (user) =>
-      //   new Promise((resolve, reject) => {
-      //     recordUpdate(user);  
-      //     dispatch(deleteUsersRequest(user._id, resolve, reject))
-      //   }),
+        })
     }),
     [dispatch],
   );
 
+  // Prepare the actions for material table
   const actions = [
     {
       icon: VisibilityIcon,
       tooltip: 'View User Information',
       onClick: (_event, user) => {
-        console.log(`/admin/user_management/${user._id}`);
         history.push(`/admin/user_management/${user._id}`);
       },
     },
@@ -171,7 +154,7 @@ const UsersTable = () => {
     dispatch(getUsersRequest());
   }, [dispatch]);
 
-  useEffect(()=>{setRowNum(users.length)}, [users])
+  useEffect(() => {setRowNum(users.length)}, [users])
 
   return (
     <div>
@@ -202,15 +185,7 @@ const UsersTable = () => {
           <button onClick={handleClear}>Clear</button>
         </div>
       </Paper>
-      <MaterialTable
-        key={readRowNum}
-        columns={columns}
-        data={users}
-        editable={editable}
-        options={options}
-        actions={actions}
-        localization={localization}
-      />
+      <MaterialTable key={readRowNum} columns={columns} data={users} editable={editable} options={options} actions={actions} localization={localization} />
     </div>
   );
 };

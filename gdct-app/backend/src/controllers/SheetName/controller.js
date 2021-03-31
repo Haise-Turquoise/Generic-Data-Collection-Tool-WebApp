@@ -14,6 +14,15 @@ const SheetNameController = Service([SheetNameService], service => {
         .catch(next);
     });
 
+    router.get('/sheetNames/:_id', (req, res, next) => {
+      const { _id } = req.params;
+
+      service
+        .findById(_id)
+        .then(sheetName => res.json( sheetName ))
+        .catch(next);
+    })
+
     router.post('/sheetNames', (req, res, next) => {
       service
         .createSheetName(req.body.sheetName)

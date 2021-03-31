@@ -21,6 +21,7 @@ const MenuSchema = new Schema(
       select: false,
     },
     orderId: Number,
+    url: { type: String }
   },
   { minimize: false, timestamps: true },
 );

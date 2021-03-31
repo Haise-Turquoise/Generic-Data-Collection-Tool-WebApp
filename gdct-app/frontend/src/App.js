@@ -7,7 +7,7 @@ import AuthPage from './components/AuthPage';
 import Error from './views/authError';
 import AuthController from './controllers/Auth';
 import Login from './views/Login';
-import RoleManagement from './views/RoleManagement';
+import RoleManagement from './views/UserRoleManagement/UserRoleManagement';
 import Logout from './views/Logout';
 import GDCTMenu from './views/GDCTMenu';
 import Programs from './views/Programs';
