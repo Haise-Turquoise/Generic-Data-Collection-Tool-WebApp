@@ -21,7 +21,7 @@ export default class UsersRepository extends BaseRepository {
     }).then(user => new UsersEntity(user));
   }
 
-  async update(id, { username, firstName, lastName, email, phoneNumber, isActive }) {
+  async update(id, { username, firstName, lastName, email, phoneNumber, isActive, timestamp, updatedBy, }) {
     return UserModel.findByIdAndUpdate(id, {
       username,
       firstName,
@@ -29,6 +29,8 @@ export default class UsersRepository extends BaseRepository {
       email,
       phoneNumber,
       isActive,
+      timestamp,
+      updatedBy,
     }).then(user => new UserModel(user.toObject()));
   }
 

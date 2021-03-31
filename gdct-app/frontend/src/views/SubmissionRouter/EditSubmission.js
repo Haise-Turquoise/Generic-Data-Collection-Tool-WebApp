@@ -156,7 +156,7 @@ const EditSubmission = ({ history }) => {
 
   const backButtonAction = () => {
     history.push({
-      
+
       pathname: `/submission/dashboard`
     })
   }
@@ -211,7 +211,7 @@ const EditSubmission = ({ history }) => {
 
     <div className="submissions" style={{ cursor }}>
       <SubmissionHeader />
-      
+
       <Paper className="pl-4 pr-4 pb-5 pt-4">
         <div className="submission__label">
           <Typography className="submission__inputTitle"> Note </Typography>
@@ -296,8 +296,8 @@ const EditSubmission = ({ history }) => {
 
 
 
-          <Button 
-            size="large" 
+          <Button
+            size="large"
             color="primary"
             variant="contained"
             onClick={backButtonAction}
