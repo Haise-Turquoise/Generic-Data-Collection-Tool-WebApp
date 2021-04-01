@@ -8,6 +8,7 @@ import organizationGroupController from '../../controllers/organizationGroup';
 import programController from '../../controllers/programs';
 import templateTypeController from '../../controllers/templateType';
 import userController from '../../controllers/user';
+import usersController from '../../controllers/Users'
 import userRegistrationStore from '../UserRegistrationStore/store';
 import { getUsersRequest } from './users';
 
@@ -359,6 +360,22 @@ export const searchOrganization = () => (dispatch, getState) => {
   const orgOptions = searchOrg(searchKey, reference, organizationOptions);
   dispatch(userRegistrationStore.actions.setOrganizationOptions(orgOptions));
 };
+
+export const loadModifyPermissionPage = ()=>(dispatch,getState)=>{
+  //get the current user email
+  const email = localStorage.getItem('currentUser');
+  //get the current user info from database
+  usersController.fetchByEmail({email}).then(user=>{console.log(user)})
+  getAppSys().then(appSys => {
+    dispatch(userRegistrationStore.actions.setAppSysOptions(appSys));
+    getOrgGroup().then(orgGroupOptions => {
+      dispatch(userRegistrationStore.actions.setOrganizationGroupOptions(orgGroupOptions));
+    });
+    dispatch(userRegistrationStore.actions.setActiveStep(1));
+  });
+
+};
+
 
 export const stepNext = values => (dispatch, getState) => {
   dispatch(userRegistrationStore.actions.setRegistrationData(values));

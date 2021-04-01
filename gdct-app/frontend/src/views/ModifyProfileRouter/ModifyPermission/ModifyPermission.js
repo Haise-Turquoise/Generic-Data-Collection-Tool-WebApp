@@ -14,7 +14,15 @@ import StepLabel from '@material-ui/core/StepLabel';
 import Typography from '@material-ui/core/Typography';
 import Checkbox from '@material-ui/core/Checkbox';
 import FilteredMultiSelect from 'react-filtered-multiselect';
+
+
+import * as yup from 'yup';
+import MaterialTable from 'material-table';
+
+
+
 import { useTranslation } from 'react-i18next';
+import userRegistrationStore from '../../../store/UserRegistrationStore/store'
 import {
     orgGroupChange,
     snackbarClose,
@@ -29,7 +37,15 @@ import {
     searchOrganization,
     searchKeyChange,
     referenceChange,
+    loadModifyPermissionPage,
   } from '../../../store/thunks/userRegistration.js';
+
+
+  function getSteps() {
+    return ['Step1', 'Step2'];
+  }
+  const steps = getSteps();
+
 
 // Column for permission table.
 const columns = [
@@ -457,7 +473,7 @@ const Register_container = props => {
     const handleChangePermission = useCallback((rowData, permission) => {
       dispatch(changePermission(rowData, permission));
     }, []);
-  
+    
     let {
       snackbarMessage,
       activeStep,
@@ -573,6 +589,15 @@ const Register_container = props => {
 const Register = () => {
   const handleSubmit = () => {};
   const dispatch = useDispatch();
+
+
+  useEffect(() => {
+    console.log('hello world')
+    dispatch(loadModifyPermissionPage());
+  }, [])
+
+
+
   const { registrationData } = useSelector(
     ({ UserRegistrationStore: { registrationData } }) => ({
       registrationData,
@@ -587,7 +612,7 @@ const Register = () => {
         <br />
         <Paper className="register__container">
           <Formik
-            validationSchema={registerSchema}
+            
             initialValues={registrationData}
             onSubmit={handleSubmit}
             render={formikProps => <Register_container {...formikProps} />}
@@ -599,9 +624,3 @@ const Register = () => {
 };
 export default Register;
 
-// const NotFound = () => {
-//     console.log('Hello world');
-//     return (<div>Page not found</div>)
-// };
-
-// export default NotFound;
