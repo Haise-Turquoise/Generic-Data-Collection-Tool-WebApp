@@ -26,6 +26,7 @@ export default class StatusService {
 
   async findStatusById(id) {
     return this.statusRepository.findById(id);
+  }
 
   async findByID(id){
     return this.statusRepository.findOneByID(new ObjectId(id));
