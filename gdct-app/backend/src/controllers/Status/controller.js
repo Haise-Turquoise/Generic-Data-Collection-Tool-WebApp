@@ -50,6 +50,12 @@ const StatusController = Service([StatusService], service => {
         .catch(next);
     });
 
+    router.get('/statuses/:_id', (req, res, next) => {
+      const { _id } = req.params;
+
+      service.findByID(_id).then(data=> res.json(data))
+    });
+
     return router;
   })();
 });
