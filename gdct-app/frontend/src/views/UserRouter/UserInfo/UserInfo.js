@@ -155,8 +155,9 @@ const UserInfo = ({
   ) : (
     <div className="userInfo">
       <HeaderActions />
-
+    
       <MaterialTable key={readRowNum} components={components} columns={columns} data={data} options={options} />
+
 
       <Button
         type="button"

@@ -14,6 +14,15 @@ const AppRoleController = Service([AppRoleService], service => {
         .catch(next);
     });
 
+    router.get('/appRoles/:_id', (req, res, next) => {
+      const { _id } = req.params;
+
+      service
+        .findById(_id)
+        .then(AppRoles => res.json( AppRoles ))
+        .catch(next);
+    });
+
     router.post('/appRoles', (req, res, next) => {
       service
         .createAppRole(req.body.AppRole)
@@ -21,6 +30,7 @@ const AppRoleController = Service([AppRoleService], service => {
         .catch(next);
     });
 
+    //update function
     router.put('/appRoles/:_id', (req, res, next) => {
       const { _id } = req.params;
       const { AppRole } = req.body;

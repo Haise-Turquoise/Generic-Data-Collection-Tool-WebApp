@@ -12,9 +12,11 @@ import AppResourcesStore from './AppResourcesStore/store';
 import AppRoleResourcesStore from './AppRoleResourcesStore/store';
 import AppSysesStore from './AppSysesStore/store';
 import AppSysRolesStore from './AppSysRolesStore/store';
+import AuditLogStore from './AuditLogStore/store';
 import DialogsStore from './DialogsStore/store';
 import ReportingPeriodsStore from './ReportingPeriodsStore/store';
 
+import AppConfigsStore from './AppConfigsStore/store';
 import StatusesStore from './StatusesStore/store';
 import SubmissionPeriodsStore from './SubmissionPeriodsStore/store';
 import ProgramsStore from './ProgramsStore/store';
@@ -25,6 +27,7 @@ import SubmissionWorkbookStore from './SubmissionWorkbookStore/store';
 import COATreeStore from './COATreeStore/store';
 import COATreesStore from './COATreesStore/store';
 import DetectEmptyTreeStore from './DetectEmptyTreeStore/store';
+import DataResumeStore from './DataResumeStore/store'
 import SheetNamesStore from './SheetNamesStore/store';
 import ColumnNamesStore from './ColumnNamesStore/store';
 import OrgsStore from './OrganizationsStore/store';
@@ -51,12 +54,15 @@ export const root = combineReducers({
   AppRoleResourcesStore: AppRoleResourcesStore.reducer,
   AppSysesStore: AppSysesStore.reducer,
   AppSysRolesStore: AppSysRolesStore.reducer,
+  AuditLogStore: AuditLogStore.reducer,
   DialogsStore: DialogsStore.reducer,
   ReportingPeriodsStore: ReportingPeriodsStore.reducer,
   OrgsStore: OrgsStore.reducer,
   UsersStore: UsersStore.reducer,
 
+  AppConfigsStore: AppConfigsStore.reducer,
   COATreeStore: COATreeStore.reducer,
+  DataResumeStore: DataResumeStore.reducer,
   DetectEmptyTreeStore: DetectEmptyTreeStore.reducer,
   SheetNamesStore: SheetNamesStore.reducer,
   SubmissionPeriodsStore: SubmissionPeriodsStore.reducer,

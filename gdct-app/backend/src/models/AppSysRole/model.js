@@ -4,6 +4,10 @@ const AppSysRole = new Schema(
   {
     appSys: { type: String },
     role: { type: String },
+    timestamp: { type: Date },
+    //    updatedDate: { type: Date },
+    //    userCreatorId: { type: ObjectId, ref: 'User' },
+    updatedBy: { type: String },
     isActive: { type: Boolean },
   },
   { minimize: false },

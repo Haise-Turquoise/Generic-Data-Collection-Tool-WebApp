@@ -15,6 +15,15 @@ const StatusController = Service([StatusService], service => {
         .catch(next);
     });
 
+    router.get('/statuses/:_id', (req, res, next) => {
+      const { _id } = req.params;
+      
+      service
+        .findStatusById(_id)
+        .then(status => res.json({ status }))
+        .catch(next);
+    });
+
     router.post('/statuses', (req, res, next) => {
       service
         .createStatus(req.body.status)

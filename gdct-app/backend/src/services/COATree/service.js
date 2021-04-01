@@ -24,6 +24,7 @@ export default class COATreeService {
   }
 
   async findCOATree(COATree) {
+    // console.log(COATree)
     return this.COATreeRepository.find(COATree);
   }
 }

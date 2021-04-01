@@ -14,6 +14,8 @@ const TemplatePackageModel = model(
       userCreatorId: { type: ObjectId, ref: 'User' },
       programIds: [{ type: ObjectId, ref: 'Program' }],
       forPackage: { type: Boolean, ref: 'ForPackage' },
+      timestamp: { type: Date },
+      updatedBy: { type: String },
     },
     { minimize: false, autoIndex: true },
   ),

@@ -20,7 +20,7 @@ const User = new Schema(
     lastName: { type: String, default: '' },
 
     phoneNumber: { type: String, default: '' },
-
+    
     password: String,
     sysRole: [
       {
@@ -70,6 +70,9 @@ const User = new Schema(
 
     startDate: { type: Date },
     endDate: { type: Date },
+
+    timestamp: { type: Date },
+    updatedBy: { type: String },
   },
   { timestamp: true, minimize: false },
 );

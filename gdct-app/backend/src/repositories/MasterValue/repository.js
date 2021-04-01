@@ -13,7 +13,6 @@ export default class MasterValueRepository extends BaseRepository {
     );
   }
 
-
   async batchFind(attributeIds, categoryIds, orgId) {
     return MasterValueModel.find({ AttributeId: { $in : attributeIds }, CategoryId: {$in : categoryIds }, 'org.id':orgId}).then(values => {return values});
   }
@@ -27,11 +26,11 @@ export default class MasterValueRepository extends BaseRepository {
   }
 
   async findByCategoryId(id){
-    return MasterValueModel.find({categoryId: id});
+    return MasterValueModel.find({CategoryId: id});
   }
 
   async findByAttributeId(id){
-    return MasterValueModel.find({attributeId: id});
+    return MasterValueModel.find({AttributeId: id});
   }
 
   async findOneByProgramId(programId){
@@ -46,8 +45,8 @@ export default class MasterValueRepository extends BaseRepository {
   async addDocument(masterValue) {
     // console.log('masterValue at Repository', masterValue)
     const key = {
-      CategoryId: masterValue.CategoryId,
-      AttributeId: masterValue.AttributeId,
+      categoryId: masterValue.categoryId,
+      attributeId: masterValue.attributeId,
       org: {
         id: masterValue.org.id,
         name: masterValue.org.name,
@@ -62,5 +61,6 @@ export default class MasterValueRepository extends BaseRepository {
       return MasterValueModel.create(masterValue);
     });
   }
+
 }
 

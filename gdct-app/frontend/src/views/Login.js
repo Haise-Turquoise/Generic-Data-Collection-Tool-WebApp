@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -17,13 +17,14 @@ import MuiAlert from '@material-ui/lab/Alert';
 import { useSelector, shallowEqual, useDispatch, batch } from 'react-redux';
 import { host } from '../constants/domain';
 import AuthController from '../controllers/Auth';
+import CreateAuditLog from './AuditLog_Global'
 
 function Copyright() {
   return (
     <Typography variant="body2" color="textSecondary" align="center">
       {'Copyright © '}
       <Link color="inherit" href="#">
-        GDCT
+        MOH - OHFS Budgeting and Forecasting 
       </Link>{' '}
       {new Date().getFullYear()}
       {'.'}
@@ -72,7 +73,7 @@ const validateForm = errors => {
   return valid;
 };
 
-export default function Login({ setLoggedIn, setCurrentUser }) {
+export default function Login({ setLoggedIn }) {
   const classes = useStyles();
   const dispatch = useDispatch();
   const [email, setEmail] = useState('');
@@ -127,19 +128,17 @@ export default function Login({ setLoggedIn, setCurrentUser }) {
         // window.location.replace(
         //   `http://localhost:3000/auth/local?email=${email}&password=${password}`
         // )
-
         checkLogin = await AuthController.login({ email, password })
           .then(data => {
-            // console.log(data);
             if (data === undefined) {
               return false;
             }
             if (data.status === 'ok') {
-              // console.log('ok');
-              // console.log(data.data.email)
               // dispatch(UserStore.actions.SET_CURRENT_USER({currentUser:data.data.email}))
               localStorage.setItem('currentUser', data.data.email);
-
+              // Audit Login
+              CreateAuditLog(email, 'Login', 'Login', null, {}, {});
+              // Set status
               setLoggedIn(true);
               return true;
             }

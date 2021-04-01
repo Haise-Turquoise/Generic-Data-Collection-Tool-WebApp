@@ -18,8 +18,11 @@ const TemplateModel = model(
       userCreatorId: { type: ObjectId, ref: 'User' },
       creationDate: { type: Date },
       expirationDate: { type: Date },
-
+      statusId:{ type:ObjectId, ref:'Status'},
       googleSheetId: { type: ObjectId, ref: 'GoogleSheet' },
+      timestamp: { type: Date },
+      //    userCreatorId: { type: ObjectId, ref: 'User' },
+      updatedBy: { type: String },
     },
     { minimize: false, timestamps: true },
   ),

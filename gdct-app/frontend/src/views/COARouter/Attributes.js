@@ -2,13 +2,11 @@ import React, { useMemo, useEffect, useState } from 'react';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 
 import MaterialTable from 'material-table';
-import Paper from '@material-ui/core/Paper';
+import { Paper, Typography, Collapse, IconButton } from '@material-ui/core';
 import Alert from '@material-ui/lab/Alert';
-import Collapse from '@material-ui/core/Collapse';
 import CloseIcon from '@material-ui/icons/Close';
-import IconButton from '@material-ui/core/IconButton';
+import moment from 'moment';
 
-import Typography from '@material-ui/core/Typography';
 import {
   getColumnNamesRequest,
   createColumnNameRequest,
@@ -19,17 +17,19 @@ import {
 import { selectFactoryRESTResponseTableValues, selectFactoryRESTError } from '../../store/common/REST/selectors';
 import { selectColumnNamesStore } from '../../store/ColumnNamesStore/selectors';
 import { ColumnNamesActions } from '../../store/ColumnNamesStore/store';
-import { calculateOptions } from '../../tools/misc'
+import CreateAuditLog from '../AuditLog_Global';
+import columnNameController from '../../controllers/columnName';
 
 const ColumnNameHeader = () => {
   return (
     <Paper className="header">
-      <Typography variant="h5">Column Names</Typography>
+      <Typography variant="h5">Attribute Management</Typography>
       {/* <HeaderActions/> */}
     </Paper>
   );
 };
 
+// The Alert Sign
 const AlertSign = () => {
   let [showingAlert, setShowingAlert] = useState(false);
 
@@ -39,7 +39,6 @@ const AlertSign = () => {
     }),
     shallowEqual,
   );
-
   
   useEffect(() => {
     if (errors){
@@ -78,6 +77,7 @@ const AlertSign = () => {
   );
 };
 
+// The material table
 const ColumnNamesTable = () => {
   const dispatch = useDispatch();
   const [readRowNum, setRowNum] = useState(1);
@@ -88,46 +88,84 @@ const ColumnNamesTable = () => {
     }),
     shallowEqual,
   );
+  // Convert Date format
+  columnNames.forEach(columnName => {
+    const logtime = new Date(columnName.timestamp);
+    columnName.timestamp = moment(logtime).format("YYYY-MM-DD HH:mm:ss");
+  });
 
+  // Prepare the columns for material table
   const columns = useMemo(
     () => [
-      { title: 'id', field: 'id' },
+      { title: 'ID', field: 'id' },
       { title: 'Name', field: 'name' },
       { title: 'Description', field: 'description' },
       { title: 'Active', type: 'boolean', field: 'isActive' },
+      { title: 'Modified On', field: 'timestamp', editComponent: () => {return <div></div>} },
+      { title: 'Updated By', field: 'updatedBy', editComponent: () => {return <div></div>} },
     ],
     [],
   );
   
+  const options = useMemo(
+    () => (
+      {
+        actionsColumnIndex: -1,
+        search: true,
+        showTitle: false,
+        addRowPosition: "first",
+      }
+    ), 
+    []
+  );
 
-  const options = useMemo(() => calculateOptions(readRowNum), [readRowNum]);
-
+  // Record user and time when an action occurs 
+  function recordUpdate(columnName) {
+    columnName.updatedBy = localStorage.getItem('currentUser');
+    columnName.timestamp = new Date().toLocaleString(); 
+  }
   const editable = useMemo(
     () => ({
       onRowAdd: columnName =>
         new Promise((resolve, reject) => {
+          recordUpdate(columnName);
           dispatch(createColumnNameRequest(columnName, resolve, reject));
+        }).then(newColumnName => {
+          // For Auditlog
+          CreateAuditLog(null, "Create Attribute", "Attribute", newColumnName._id, {}, newColumnName);
         }),
+
       onRowUpdate: columnName =>
         new Promise((resolve, reject) => {
+          recordUpdate(columnName);
+          // Find the old value before updating in order to Auditlog
+          (async () => { 
+            const oldColumnName = await columnNameController.fetchAttribute(columnName._id);
+            // console.log(oldColumnName);
+            CreateAuditLog(null, "Update Attribute", "Attribute", oldColumnName._id, oldColumnName, columnName);
+          })();
+          // Do Update
           dispatch(updateColumnNameRequest(columnName, resolve, reject));
         }),
+
       onRowDelete: columnName =>
         new Promise((resolve, reject) => {
+          recordUpdate(columnName);
           dispatch(deleteColumnNameRequest(columnName._id, resolve, reject));
+        }).then(() => {
+          // For Auditlog
+          (async () => { 
+            const oldColumnName = await columnNameController.fetchAttribute(columnName._id);
+            // Actually Deleted (Attribute might not be deleted because it is referenced in master value table)
+            if (oldColumnName.length === 0) {
+              CreateAuditLog(null, "Delete Attribute", "Attribute", columnName._id, columnName, {});
+            }
+          })();
         }),
     }),
     [dispatch],
   );
 
-  
-  const style = useMemo(
-    () => ({
-      "margin-top": "10px",
-    }),
-    []
-  )
-  
   useEffect(()=>{setRowNum(columnNames.length)}, [columnNames]);
 
   useEffect(() => {
@@ -139,7 +177,8 @@ const ColumnNamesTable = () => {
   }, [dispatch]);
 
   return (
-    <MaterialTable key={readRowNum} style={style} columns={columns} data={columnNames} editable={editable} options={options} />
+    // @ts-ignore
+    <MaterialTable key={readRowNum} columns={columns} data={columnNames} editable={editable} options={options} />
   );
 };
 

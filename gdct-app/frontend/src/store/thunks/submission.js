@@ -8,7 +8,6 @@ import {
 } from './common/REST';
 import { extractReactAndWorkbookState } from '../../tools/excel';
 
-
 export const getSubmissionsRequest = () => dispatch => {
   dispatch(SubmissionsStore.actions.REQUEST());
 
@@ -120,6 +119,9 @@ export const updateSubmissionStatusRequest = (
   role,
   newProcessId,
 ) => async dispatch => {
+
+  const updatedBy = localStorage.getItem('currentUser');
+
   const newSubmission = {
     ...submission,
     //   name: present.name,
@@ -127,7 +129,8 @@ export const updateSubmissionStatusRequest = (
   };
 
   await submissionController
-    .updateStatus(submission, submissionNote, role, newProcessId)
+
+    .updateStatus(submission, submissionNote, role, newProcessId, updatedBy)
     .then(() => {
       // console.log(submission);
 

@@ -29,10 +29,10 @@ const SubmissionController = Service([SubmissionService], service => {
 
     router.put('/submissions/updateSubmissionStatus', authorized, (req, res, next) => {
       // Get query from middleware -- auth handler
-      const { submission, submissionNote, role, nextProcessId } = req.body;
+      const { submission, submissionNote, role, nextProcessId, updatedBy } = req.body;
 
       service
-        .updateStatus(submission, submissionNote, role, nextProcessId)
+        .updateStatus(submission, submissionNote, role, nextProcessId, updatedBy)
         .then(() => res.end())
         .catch(next);
     });
@@ -93,6 +93,7 @@ const SubmissionController = Service([SubmissionService], service => {
     // Creates new google sheet and returns its spreadsheetID
     // It was developed to redirect the workflow from an embedded spreadsheet to Google Sheet
     router.get('/submissions/openTemplate/:_id', (req, res, next) => {
+      console.log('Here')
       service
         .openTemplate(req.params._id, req.user.email)
         .then(spreadsheetId => { res.json({ spreadsheetId }) })

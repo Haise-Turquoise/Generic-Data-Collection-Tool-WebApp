@@ -49,6 +49,7 @@ const TransferStausPanel = ()=>{
     dispatch(startTransferRequest(time));
     writeState(!readState);
   }, [])
+  
   const StopTransfer = useCallback(()=>{
     dispatch(stopTransferRequest());
     writeState(!readState);

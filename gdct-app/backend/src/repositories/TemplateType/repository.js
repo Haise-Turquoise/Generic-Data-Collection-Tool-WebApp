@@ -53,42 +53,10 @@ export default class TemplateTypeRepository extends BaseRepository {
     return TemplateTypeModel.find({ programIds: { $in: programIds } });
   }
 
-  async update(
-    id,
-    {
-      name,
-      description,
-      templateWorkflowId,
-      submissionWorkflowId,
-      programIds,
-      isApprovable,
-      isReviewable,
-      isSubmittable,
-      isInputtable,
-      isViewable,
-      isReportable,
-      isActive,
-    },
-  ) {
+  async update(id, templateType) {
     return this.programRepository
-      .validateMany(programIds)
-      .then(() =>
-        TemplateTypeModel.findByIdAndUpdate(id, {
-          name,
-          description,
-          templateWorkflowId,
-          submissionWorkflowId,
-          programIds,
-
-          isApprovable,
-          isReviewable,
-          isSubmittable,
-          isInputtable,
-          isViewable,
-          isReportable,
-          isActive,
-        }),
-      )
+      .validateMany(templateType.programIds)
+      .then(() => TemplateTypeModel.findByIdAndUpdate(id, templateType))
       .then(templateType => new TemplateTypeEntity(templateType.toObject()));
   }
 
@@ -102,10 +70,6 @@ export default class TemplateTypeRepository extends BaseRepository {
     return TemplateTypeModel.find(realQuery).then(templateTypes =>
       templateTypes.map(templateType => new TemplateTypeEntity(templateType)),
     );
-  }
-
-  async findById(id) {
-    return TemplateTypeModel.findById(id);
   }
 
   async findOneByWorkFlowID(workflowID){

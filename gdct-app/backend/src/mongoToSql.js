@@ -32,7 +32,7 @@ const config = {
 const orgTransfer = async(conn)=>{
 
   // Send a request that delete everything in the organization table
-  await conn.query`DELETE FROM dbo.organizationDemo`
+  await conn.query`DELETE FROM dbo.organization`
 
   const organizationModel = Container.get(organizationRepository)
   console.log('\n\n');
@@ -46,7 +46,7 @@ const orgTransfer = async(conn)=>{
 
   console.time('mongo to SQL reformat time')
   // Create a table instantance for bulk update
-  const table = new sql.Table('dbo.organizationDemo');
+  const table = new sql.Table('dbo.organization');
 
   // Set this to true if the table does not exist in Azure
   table.create = true;
@@ -490,14 +490,14 @@ const transfer = async ()=>{
     try{
       const pool = new sql.ConnectionPool(config);
       await pool.connect();
-      // await orgTransfer(pool);
+      await orgTransfer(pool);
       await categoryGroupTransfer(pool);
-      // await AttributeTransfer(pool);npm 
-      // await COATransfer(pool);
-      // await ReportingPeriodTransfer(pool);
-      // await MasterValueTransfer(pool);
-      // await programTransfer(pool);
-      // await TemplateTypeTransfer(pool);
+      await AttributeTransfer(pool);
+      await COATransfer(pool);
+      await ReportingPeriodTransfer(pool);
+      await MasterValueTransfer(pool);
+      await programTransfer(pool);
+      await TemplateTypeTransfer(pool);
       await pool.close()
     }catch(err){
       console.log(err)

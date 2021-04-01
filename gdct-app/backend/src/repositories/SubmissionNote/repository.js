@@ -8,6 +8,7 @@ export default class SubmissionNoteRepository extends BaseRepository {
   }
 
   async create(submissionNote) {
+    console.log(submissionNote);
     return SubmissionNoteModel.create(submissionNote);
   }
 

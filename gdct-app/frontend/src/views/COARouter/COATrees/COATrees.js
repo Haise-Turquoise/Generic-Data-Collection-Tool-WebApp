@@ -3,15 +3,10 @@ import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 
 import MaterialTable from 'material-table';
 import LaunchIcon from '@material-ui/icons/Launch';
-import Paper from '@material-ui/core/Paper';
-import Typography from '@material-ui/core/Typography';
+import { Paper, Typography } from '@material-ui/core';
 import COATreeController from '../../../controllers/COATree';
-import sheetNameController from '../../../controllers/sheetName';
 import {
   getSheetNamesRequest,
-  createSheetNameRequest,
-  deleteSheetNameRequest,
-  updateSheetNameRequest,
 } from '../../../store/thunks/sheetName';
 import {
   getDetectEmptyTree,
@@ -21,16 +16,15 @@ import { selectFactoryRESTResponseTableValues } from '../../../store/common/REST
 import { selectSheetNamesStore } from '../../../store/SheetNamesStore/selectors';
 import { selectDetectEmptyTreeStore } from '../../../store/DetectEmptyTreeStore/selectors';
 import { ROUTE_CATEGORY_TREES } from '../../../constants/routes';
+
 import { calculateOptions } from '../../../tools/misc'
-import DetectEmptyTreeStore from '../../../store/DetectEmptyTreeStore/store';
-
-
-// import './COATrees.scss'
+import moment from 'moment';
+import CreateAuditLog from '../../AuditLog_Global';
 
 const COATreesHeader = () => {
   return (
     <Paper className="header">
-      <Typography variant="h5">COA Trees</Typography>
+      <Typography variant="h5">Category Tree Management</Typography>
       {/* <HeaderActions/> */}
     </Paper>
   );
@@ -39,6 +33,8 @@ const COATreesHeader = () => {
 const COATreesTable = ({ history }) => {
   const dispatch = useDispatch();
   const [refresh, setRefresh] = useState(false);
+
+  const[readRowNum, setRowNum] = useState(1);
   const { sheetNames } = useSelector(
     state => ({
       sheetNames: selectFactoryRESTResponseTableValues(selectSheetNamesStore)(state),
@@ -53,7 +49,25 @@ const COATreesTable = ({ history }) => {
     shallowEqual,
   );
 
-  const columns = useMemo(() => [{ title: 'Sheet Name', field: 'name' }], []);
+  // Convert Date format
+  // console.log(detectEmptyTree);
+  detectEmptyTree.forEach(detectEmptyTree => {
+    const logtime = new Date(detectEmptyTree.timestamp);
+    detectEmptyTree.timestamp = moment(logtime).format("YYYY-MM-DD HH:mm:ss")
+  });
+
+  const columns = useMemo(
+    () => [
+      { title: 'Sheet Name', field: 'name' },
+      { title: 'Modified On', field: 'timestamp', editComponent: () => {return <div></div>} },
+      { title: 'Updated By', field: 'updatedBy', editComponent: () => {return <div></div>} },
+    ], 
+    []
+  );
+
+  const options = useMemo(() => calculateOptions(readRowNum), [readRowNum]);
+
+  useEffect(()=>{setRowNum(sheetNames.length)},[sheetNames]);
 
   const actions = useMemo(
     () => [
@@ -66,6 +80,33 @@ const COATreesTable = ({ history }) => {
     [history],
   );
 
+  const editable = useMemo(
+    () => ({
+      isDeleteHidden: sheetName => {
+        if (sheetName.value.length == 0) {
+          return true;
+        }
+        return false;
+      },
+
+      onRowDelete: sheetName =>
+        new Promise((resolve, reject) => {
+          console.log(sheetName)
+          sheetName.updatedBy=localStorage.getItem('currentUser');
+          sheetName.timestamp = new Date().toLocaleString(); 
+          dispatch(deleteCOATreeBySheetName(sheetName, resolve, reject));
+          setRefresh(true);
+        }).then(() => {
+          (async () => {
+            const oldSheetName = await COATreeController.fetchBySheetName(sheetName._id);
+            if (oldSheetName.length === 0) {
+              CreateAuditLog(null, "Delete COA Tree", "CategoryTree", sheetName._id, sheetName, {});
+            }
+          })();
+        }),
+    }),
+    [dispatch],
+  );
 
   useEffect(() => {
     // console.log('Page refresh');
@@ -73,30 +114,13 @@ const COATreesTable = ({ history }) => {
     dispatch(getDetectEmptyTree());
   }, [dispatch, refresh]);
 
-
-  const editable = useMemo(
-    () => ({
-      isDeleteHidden: sheetName => {
-        if (sheetName.value.length == 0) {
-          return true;
-        }
-
-        return false;
-      },
-
-      onRowDelete: sheetName =>
-        new Promise((resolve, reject) => {
-          dispatch(deleteCOATreeBySheetName(sheetName, resolve, reject));
-          setRefresh(true);
-        }),
-    }),
-    [dispatch],
-  );
   return (
     <MaterialTable
+      key={readRowNum}
       columns={columns}
       actions={actions}
       data={detectEmptyTree}
+      // @ts-ignore
       options={options}
       editable={editable}
     />

@@ -1,10 +1,35 @@
 .tableContainer {
     display: flex;
     justify-content: space-between;
+    width:100%;
+    
+    
 }
 
 .tableWrapper {
     width: 50%;
     padding-left: 0.5%;
     padding-right: 0.5%;
+    bottom: 10%;
+    
+}
+.footer {
+    width:99%;
+    margin-left: 0.5%;
+    top:20%;
+    display: inline-flex;
+}
+.divider{
+    height: 30px;
+    width:99%;
+    margin-left: 0.5%;
+    
+}
+
+.header{
+    width:99%;
+    margin-left: 0.5%;
+}
+.bottomEle{
+    margin-right: 1%;
 }

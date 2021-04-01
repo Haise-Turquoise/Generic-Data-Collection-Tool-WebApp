@@ -147,6 +147,7 @@ const EditSubmission = ({ history }) => {
     setUserFeedback(feedback);
   };
 
+
   const handleDownloadWorkbook = () => {
     setUserFeedback('Downloading !');
     setCursor('progress');
@@ -188,9 +189,11 @@ const EditSubmission = ({ history }) => {
 
   return (
 
+
+
     <div className="submissions" style={{ cursor }}>
       <SubmissionHeader />
-      
+
       <Paper className="pl-4 pr-4 pb-5 pt-4">
         <div className="submission__label">
           <Typography className="submission__inputTitle"> Note </Typography>
@@ -273,8 +276,10 @@ const EditSubmission = ({ history }) => {
             Change Notes
           </Button>
 
-          <Button 
-            size="large" 
+
+
+          <Button
+            size="large"
             color="primary"
             variant="contained"
             onClick={backButtonAction}
@@ -284,6 +289,7 @@ const EditSubmission = ({ history }) => {
           </Button>
 
           <div>{userFeedback}</div>
+
 
         </div>
       </Paper>

@@ -1,5 +1,4 @@
 import Container from 'typedi';
-import pako from 'pako'
 import COARepository from '../../repositories/COA';
 import ColumnNameRepository from '../../repositories/ColumnName';
 import ReportingPeriodRepository from '../../repositories/ReportingPeriod';

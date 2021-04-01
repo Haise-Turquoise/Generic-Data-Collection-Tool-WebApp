@@ -1,17 +1,12 @@
 import React, { useEffect, useCallback, useMemo } from 'react';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
+import { useHistory } from 'react-router-dom';
 
 import { Formik, Form } from 'formik';
-import {
-  Button,
-  TextField,
-  Paper,
-  Typography,
-  List,
-  ListItem,
-  ListItemText,
-  ListItemSecondaryAction,
-} from '@material-ui/core';
+import { Button, TextField, Paper, Typography,
+         List, ListItem, ListItemText, ListItemSecondaryAction } from '@material-ui/core';
+import ArrowBackIcon from '@material-ui/icons/ArrowBack';
+
 import uniqid from 'uniqid';
 import { selectTemplatePackagesStore } from '../../store/TemplatePackagesStore/selectors';
 import { selectFactoryValueById } from '../../store/common/REST/selectors';
@@ -26,6 +21,8 @@ import TemplateDialog from '../../components/dialogs/TemplateDialog';
 import { DialogsStoreActions } from '../../store/DialogsStore/store';
 import { TemplatePackagesStoreActions } from '../../store/TemplatePackagesStore/store';
 import ProgramDialog from '../../components/dialogs/ProgramDialog';
+import CreateAuditLog from '../AuditLog_Global';
+import templatePackageController from '../../controllers/templatePackage';
 
 // ! CLEAN UP - program and template have similar structures.
 
@@ -43,14 +40,13 @@ const CustomButton = ({ text, handleClick }) => (
   </Button>
 );
 
-const Header = ({ handleSubmit }) => (
-  <div className="d-flex justify-content-between p-2 mb-3">
-    <Typography variant="h5">Template Packages</Typography>
-    <Button onClick={handleSubmit} variant="contained" color="primary">
-      Save
-    </Button>
-  </div>
-);
+const Header = ({ handleSubmit }) => {
+  return (
+    <div className="d-flex justify-content-between p-2 mb-3">
+      <Typography variant="h5">Template Package</Typography>
+    </div>
+  );
+};
 
 const CustomField = ({ label, children, addButton = false, handleClick }) => (
   <div className="mb-2 mt-3">
@@ -248,50 +244,61 @@ const TemplatePackage = ({
   },
 }) => {
   const dispatch = useDispatch();
+  const history = useHistory();
 
+  // Prepare the data for the component
   const { templatePackage } = useSelector(state => {
     const templatePackage = selectFactoryValueById(selectTemplatePackagesStore)(_id)(state);
-    // console.log(templatePackage);
     return {
       templatePackage: templatePackage || init,
     };
   }, shallowEqual);
-
+  // Reformat data
+  const formattedTemplatePackage = {
+    _id,
+    name: templatePackage.name,
+    statusId: templatePackage.statusId._id,
+    submissionPeriodId: templatePackage.submissionPeriodId._id,
+    templateIds: templatePackage.templateIds.map(({ _id }) => _id),
+    programIds: templatePackage.programIds.map(({ _id }) => _id),
+    creationDate: templatePackage.creationDate,
+  };
+  
   useEffect(() => {
     if (_id) {
-      dispatch(getTemplatePackagePopulatedRequest(_id, true));
+      dispatch(getTemplatePackagePopulatedRequest(_id));
     }
     return () => {
       dispatch(TemplatePackagesStoreActions.RESET());
     };
   }, [dispatch, _id]);
 
-  const handleSubmit = useCallback(
-    populatedData => {
-      // console.log('populatedData', populatedData);
-      const formattedTemplatePackage = {
-        _id,
-        name: populatedData.name,
-        statusId: populatedData.statusId._id,
-        submissionPeriodId: populatedData.submissionPeriodId._id,
-        templateIds: populatedData.templateIds.map(({ _id }) => _id),
-        programIds: populatedData.programIds.map(({ _id }) => _id),
-        creationDate: populatedData.creationDate,
-      };
+  const redirect = () => { history.push('/admin/template/package') };
 
-      dispatch(
-        updateTemplatePackageRequest(formattedTemplatePackage, null, null, true, populatedData),
-      );
-    },
-    [dispatch, _id],
-  );
-
+  // Save Button Logic
+  const handleSubmit = () => {
+    // Find the old value before updating in order to Auditlog
+    (async () => { 
+      const oldTemplatePackage = await templatePackageController.fetchTemplatePackage(formattedTemplatePackage._id);
+      CreateAuditLog(null, "Update Template Package", "TemplatePackage", oldTemplatePackage._id, oldTemplatePackage, formattedTemplatePackage);
+    })();
+    // Do Update
+    dispatch(updateTemplatePackageRequest(formattedTemplatePackage, redirect, null, true, templatePackage));
+  };
+  
   return (
     <Formik enableReinitialize initialValues={templatePackage} onSubmit={handleSubmit}>
       {props => (
         <Form>
           <Header {...props} />
           <Content {...props} />
+          <Button onClick={redirect} variant="contained" color="primary" style={{marginTop: '0.8%'}}>
+            <ArrowBackIcon></ArrowBackIcon>
+            Back
+          </Button>
+          <Button onClick={handleSubmit} variant="contained" color="primary" style={{marginLeft: '1%', marginTop: '0.8%'}}>
+            Save
+          </Button>
         </Form>
       )}
     </Formik>

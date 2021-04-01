@@ -7,15 +7,16 @@ import AuthPage from './components/AuthPage';
 import Error from './views/authError';
 import AuthController from './controllers/Auth';
 import Login from './views/Login';
-import RoleManagement from './views/RoleManagement';
+import RoleManagement from './views/UserRoleManagement/UserRoleManagement';
 import Logout from './views/Logout';
 import GDCTMenu from './views/GDCTMenu';
 import Programs from './views/Programs';
 import Statuses from './views/Statuses';
-import ReportingPeriods from './views/ReportingPeriods';
+import ReportingPeriods from './views/ReportingPeriods/ReportingPeriods';
+import AppConfigs from './views/AppConfigs';
 import SheetNames from './views/SheetNames';
 import UserRouter from './views/UserRouter';
-import ReportRouter from './views/ReportRouter';
+import ReportRouter from './views/ReportingPeriods';
 import TemplateRouter from './views/TemplateRouter';
 import OrgRouter from './views/OrganizationRouter';
 import SubmissionRouter from './views/SubmissionRouter';
@@ -24,6 +25,7 @@ import COARouter from './views/COARouter';
 import WorkflowRouter from './views/WorkflowRouter';
 import Register from './views/UserRegistrationRouter';
 import MasterValuePopulation from './views/MasterValuePopulation';
+import AuditLog from './views/AuditLog';
 import TransferStatus from './views/TransferStatus/TransferStatus'
 import { ROUTE_WORKFLOW, ROUTE_TEMPLATE_PCKGS, ROUTE_CATEGORY } from './constants/routes';
 
@@ -38,12 +40,13 @@ const PrivateRouter = ({ setLoggedIn }) => {
       <Route path="/report" component={ReportRouter} />
       <Route path="/submission" component={SubmissionRouter} />
       <Route path={ROUTE_TEMPLATE_PCKGS} component={TemplateRouter} />
+      <Route path="/admin/auditlog" component={AuditLog} />
       <Route path="/admin/populate" component={MasterValuePopulation} />
       <Route path="/admin/organization" component={OrgRouter} />
       <Route path="/admin/submission" component={SubmissionRouter} />
       <Route path="/admin/role" component={RoleRouter} />
       <Route path={ROUTE_CATEGORY} component={COARouter} />
-      <Route exact path="/admin/configuration" component={null} />
+      <Route exact path="/admin/configuration" component={AppConfigs} />
       <Route exact path="/admin/business_rule_configure" component={null} />
       <Route path="/admin/user_management" component={UserRouter} />
       <Route exact path="/admin/program" component={Programs} />
@@ -78,10 +81,11 @@ const PublicRouter = ({ setLoggedIn }) => {
 const App = () => {
   const [isLoggedIn, setLoggedIn] = useState(null);
 
-  console.log('cookie:', document.cookie);
+  // console.log('cookie:', document.cookie);
   useEffect(() => {
     AuthController.profile()
       .then(res => {
+        console.log(res)
         setLoggedIn(res.status === 'ok');
       })
       .catch(() => {
@@ -102,8 +106,8 @@ const App = () => {
           <PrivateRouter setLoggedIn={setLoggedIn} />
         </AuthPage>
       ) : (
-        <PublicRouter setLoggedIn={setLoggedIn} />
-      )}
+            <PublicRouter setLoggedIn={setLoggedIn} />
+          )}
     </div>
   );
 };

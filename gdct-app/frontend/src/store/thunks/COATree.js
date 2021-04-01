@@ -8,6 +8,7 @@ import COATreesStore from '../COATreesStore/store';
 import COATreeStore from '../COATreeStore/store';
 import DialogsStore from '../DialogsStore/store';
 import { deleteRequestFactory, updateRequestFactory, getRequestFactory } from './common/REST';
+import moment from 'moment';
 
 const normalizeTrees = denormalizedCOATrees => {
   const stack = [...denormalizedCOATrees];
@@ -177,7 +178,11 @@ export const updateCOATreesBySheetNameRequest = sheetNameId => (dispatch, getSta
   dispatch(COATreesStore.actions.REQUEST());
 
   const normalizedTrees = normalizeTrees(treeCopy);
-  // console.log(normalizedTrees);
+  //add timestamp and updatedBy attributes to normalizedTree obj 
+  normalizedTrees.forEach(normalizedTree => {
+    normalizedTree["timestamp"] = new Date();
+    normalizedTree["updatedBy"] = localStorage.getItem('currentUser');
+  });
   COATreeController.updateBySheetName(normalizedTrees, sheetNameId)
     .then(_COATrees => {
       dispatch(COATreeStore.actions.UPDATE_ORIGINAL_COA_TREE_UI());

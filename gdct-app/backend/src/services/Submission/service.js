@@ -10,7 +10,7 @@ import MasterValueRepository from '../../repositories/MasterValue';
 import ProgramRepository from '../../repositories/Program';
 import OrgRepository from '../../repositories/Organization';
 import TemplateTypeRepository from '../../repositories/TemplateType';
-import WorkflowProcessRepository from '../../repositories/WorkflowProcess';
+import WorkflowProcessRepository from '../../repositories/WorkflowProcess/WorkflowProcess';
 import SubmissionPeriodRepository from '../../repositories/SubmissionPeriod';
 import UsersRepository from '../../repositories/Users';
 import GoogleSheetRepository from '../../repositories/GoogleSheet';
@@ -186,17 +186,22 @@ export default class SubmissionService {
     });
   }
 
-  async updateStatus(submission, submissionNote, role, nextProcessId) {
+
+  
+  async updateStatus(submission, submissionNote, role, nextProcessId,updatedBy) {
     const newSubmission = await this.submissionRepository.findById(submission._id);
+    
     if (newSubmission.googleSheetId){
+      console.log('is using googleSheet')
       await Promise.resolve(saveGoogleSheetInSubmission(newSubmission.googleSheetId));
       submission = await this.submissionRepository.findById(submission._id);
     }
-
+    
     const submissionNotes = {
       note: submissionNote,
       submissionId: submission.parentId ? submission.parentId : submission._id,
       updatedDate: new Date(),
+      updatedBy,
       role,
     };
 
@@ -317,11 +322,12 @@ export default class SubmissionService {
         });
       });
 
+
     }else{
       const programID = await this.programRepository.find({})
       programID.forEach(element=>{programIds.push(element._id)})
     }
-
+    
     return this.findTemplatePackage(programAndTempTypes).then(templatePackages => {
       const name = 'Unsubmitted';
       return this.statusRepository.findByName(name).then(status => {
@@ -355,6 +361,7 @@ export default class SubmissionService {
                               );
                             }
                           });
+
                         });
                       }
                     });

@@ -22,16 +22,23 @@
     ]
   },
   "dependencies": {
+    "cors": "^2.8.5",
+    "moment": "^2.29.1",
     "exceljs": "^4.2.1",
     "mssql": "^6.3.1",
     "passport-google-oauth": "^2.0.0",
     "passport-remember-me": "^0.0.1",
+    "react": "^17.0.2",
+    "react-modal": "^3.12.1",
+    "react-datepicker": "^3.6.0",
+    "react-dom": "^17.0.2",
     "x-data-spreadsheet": "git+https://github.com/Sheldonsu28/x-spreadsheet.git",
     "xlsx": "^0.16.9"
   },
   "devDependencies": {
     "@babel/preset-env": "^7.12.1",
     "babel-jest": "^26.6.0",
+    "eslint-plugin-react": "^7.22.0",
     "husky": "^4.3.0",
     "jest": "^26.6.0",
     "less": "^3.8.1",

@@ -54,6 +54,7 @@ const Submission = ({
   ) : (
     <div>
       <SubmissionSpreadSheet sheetID= {_id}/>
+
       <Snackbar
         anchorOrigin={{
           vertical: 'bottom',

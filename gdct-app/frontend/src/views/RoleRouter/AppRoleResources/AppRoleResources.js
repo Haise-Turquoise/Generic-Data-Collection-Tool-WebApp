@@ -2,8 +2,9 @@ import React, { useMemo, useEffect, useState } from 'react';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 
 import MaterialTable from 'material-table';
-import Paper from '@material-ui/core/Paper';
-import Typography from '@material-ui/core/Typography';
+import { Paper, Typography } from '@material-ui/core';
+import moment from 'moment';
+
 import {
   getAppRoleResourcesRequest,
   createAppRoleResourceRequest,
@@ -12,21 +13,20 @@ import {
 } from '../../../store/thunks/AppRoleResource';
 
 import { getAppSysRolesRequest } from '../../../store/thunks/AppSysRole';
-
 import { getAppResourcesRequest } from '../../../store/thunks/AppResource';
 
-import './AppRoleResources.scss';
 import { selectFactoryRESTResponseTableValues } from '../../../store/common/REST/selectors';
 import { selectAppRoleResourcesStore } from '../../../store/AppRoleResourcesStore/selectors';
 import { selectAppSysRolesStore } from '../../../store/AppSysRolesStore/selectors';
 import { selectAppResourcesStore } from '../../../store/AppResourcesStore/selectors';
-import { calculateOptions } from '../../../tools/misc'
-
+import { calculateOptions } from '../../../tools/misc';
+import CreateAuditLog from '../../AuditLog_Global';
+import AppRoleResourceController from '../../../controllers/AppRoleResource';
 
 const AppRoleResourcesHeader = () => {
   return (
     <Paper className="header">
-      <Typography variant="h5">AppRoleResources</Typography>
+      <Typography variant="h5">Application Role Resource</Typography>
       {/* <HeaderActions/> */}
     </Paper>
   );
@@ -35,6 +35,8 @@ const AppRoleResourcesHeader = () => {
 const AppRoleResourcesTable = () => {
   const dispatch = useDispatch();
   const [readRowNum, setRowNum] = useState(1);
+  
+  // Prepare the data for material table
   const { appRoleResources, appSysRoles, appResources } = useSelector(
     state => ({
       appRoleResources: selectFactoryRESTResponseTableValues(selectAppRoleResourcesStore)(state),
@@ -43,6 +45,11 @@ const AppRoleResourcesTable = () => {
     }),
     shallowEqual,
   );
+  // Convert Date format
+  appRoleResources.forEach(appRoleResource => {
+    const logtime = new Date(appRoleResource.timestamp);
+    appRoleResource.timestamp = moment(logtime).format("YYYY-MM-DD HH:mm:ss")
+  });
 
   const lookupSysRoles = appSysRoles.reduce(function (acc, sysRoles) {
     acc[sysRoles._id] = `${sysRoles.appSys} - ${sysRoles.role}`;
@@ -53,10 +60,11 @@ const AppRoleResourcesTable = () => {
     acc[resource._id] = resource.resourcePath;
     return acc;
   }, {});
-
+  
+  // Prepare the columns for material table
   const columns = useMemo(
     () => [
-      { title: 'AppSysRole', field: 'appSysRoleId', lookup: lookupSysRoles },
+      { title: 'Application System Role', field: 'appSysRoleId', lookup: lookupSysRoles },
       {
         title: 'Resource',
         field: 'resourceId',
@@ -66,7 +74,10 @@ const AppRoleResourcesTable = () => {
               resourceId.map((e, i) => {
                 let data;
                 if (lookupResources[e]) {
-                  data = lookupResources[e].split('/')[2];
+                  // data = lookupResources[e].split('/')[2];
+                  data = lookupResources[e].split('/');
+                  // Use the last element of the resource string
+                  data = data[data.length-1];
                 }
                 return (
                   <span style={{ marginRight: '10px' }} key={i}>
@@ -78,25 +89,49 @@ const AppRoleResourcesTable = () => {
         ),
         editable: 'never',
       },
+      { title: 'Modified On', field: 'timestamp', editComponent: () => {return <div></div>} },
+      { title: 'Updated By', field: 'updatedBy', editComponent: () => {return <div></div>} },
     ],
     [lookupSysRoles, lookupResources],
   );
 
   const options = useMemo(() => calculateOptions(readRowNum), [readRowNum]);
-
+  
+  // Record user and time when an action occurs 
+  function recordUpdate(appRoleResource) {
+    appRoleResource.updatedBy = localStorage.getItem('currentUser');
+    appRoleResource.timestamp = new Date().toLocaleString(); 
+  }
   const editable = useMemo(
     () => ({
       onRowAdd: appRoleResource =>
         new Promise((resolve, reject) => {
+          recordUpdate(appRoleResource);
           dispatch(createAppRoleResourceRequest(appRoleResource, resolve, reject));
+        }).then(newAppRoleResource => {
+          // For Auditlog
+          CreateAuditLog(null, "Create Application Role Resource", "AppRoleResource", newAppRoleResource._id, {}, newAppRoleResource);
         }),
+
       onRowUpdate: appRoleResource =>
         new Promise((resolve, reject) => {
+          recordUpdate(appRoleResource);
+          // Find the old value before updating in order to Auditlog
+          (async () => { 
+            const oldAppRoleResource = await AppRoleResourceController.fetchAppRoleResource(appRoleResource._id);
+            CreateAuditLog(null, "Update Application Role Resource", "AppRoleResource", oldAppRoleResource._id, oldAppRoleResource, appRoleResource);
+          })();
+          // Do Update
           dispatch(updateAppRoleResourceRequest(appRoleResource, resolve, reject));
         }),
+
       onRowDelete: appRoleResource =>
         new Promise((resolve, reject) => {
+          recordUpdate(appRoleResource);
           dispatch(deleteAppRoleResourceRequest(appRoleResource._id, resolve, reject));
+          // For Auditlog
+          const appRoleResource_trim = (({ tableData, ...o }) => o)(appRoleResource);
+          CreateAuditLog(null, "Delete Application Role Resource", "AppRoleResource", appRoleResource._id, appRoleResource_trim, {});
         }),
     }),
     [dispatch],
@@ -108,21 +143,15 @@ const AppRoleResourcesTable = () => {
     dispatch(getAppResourcesRequest());
   }, [dispatch]);
 
-  useEffect(()=>{setRowNum(appRoleResources.length), [appRoleResources]})
+  useEffect(() => { setRowNum(appRoleResources.length), [appRoleResources] })
 
   return (
-    <MaterialTable
-      key={readRowNum}
-      columns={columns}
-      data={appRoleResources}
-      editable={editable}
-      options={options}
-    />
+    // @ts-ignore
+    <MaterialTable key={readRowNum} columns={columns} data={appRoleResources} editable={editable} options={options}/>
   );
 };
 
 const AppRoleResources = props => {
-  console.log('why not: ', props);
   return (
     <div className="AppRoleResources">
       <AppRoleResourcesHeader />
