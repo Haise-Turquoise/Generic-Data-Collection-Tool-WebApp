@@ -6,8 +6,9 @@ import AttributeInsertMenu from '../../AttributeInsertionMenu';
 import spreadSheetController from '../../../controllers/spreadSheet';
 import PopulationSelectionMenu from '../../PopulationSelectionMenu';
 import Button from '@material-ui/core/Button';
-import { digitToAlpha } from '../../../tools/misc';
-import XLSX from "xlsx";
+import { excelJsStyle2Xspreadsheet, isObjectEmpty, 
+  calculateMergeArray, digitToAlpha, Xspreadsheet2ExcelStyle} from '../../../tools/misc';
+import Excel from 'exceljs';
 
 // Sheet style Option
 const sheetOption = {
@@ -38,8 +39,8 @@ const sheetOption = {
       underline: false,
       color: '#0a0a0a',
       font: {
-        name: 'Helvetica',
-        size: 10,
+        name: 'Calibri',
+        size: 11,
         bold: false,
         italic: false,
       },
@@ -96,7 +97,8 @@ class SpreadSheet extends Component{
       if (this.sheet){
         this.disablePreview()
         const sheetData = this.sheet.getData();
-        templateController.sheetUpdate(this.id, sheetData).then(res=>console.log(res));
+        console.log(sheetData);
+        // templateController.sheetUpdate(this.id, sheetData);
       }
     }
 
@@ -120,24 +122,91 @@ class SpreadSheet extends Component{
     }
 
     downloadTemplate(sheetData){
-      let out = XLSX.utils.book_new();
-      sheetData.forEach((xws) => {
-        let aoa = [[]];
-        let rowobj = xws.rows;
-        for(let ri = 0; ri < rowobj.len; ++ri) {
-          let row = rowobj[ri];
-          if(!row) continue;
-          aoa[ri] = [];
-          Object.keys(row.cells).forEach(function(k) {
-            let idx = +k;
-            if(isNaN(idx)) return;
-            aoa[ri][idx] = row.cells[k].text;
-          });
+
+      let workbook = new Excel.Workbook();
+      workbook.modified = new Date();
+
+      // Force full calculation on load
+      workbook.calcProperties.fullCalcOnLoad = true;
+
+      sheetData.forEach(sheet=>{
+        const currSheet = workbook.addWorksheet(sheet.name);
+        const styleArray = sheet.styles;
+        const rows = Object.keys(sheet.rows).slice(0, -1);
+        const maxRow = Number(rows[rows.length - 1]);
+        for (let rowNum = 0; rowNum <= maxRow; rowNum++){
+          const row = sheet.rows[String(rowNum)]
+          const rowData = []
+
+          // Create Array for formulas 
+          const formulaArray = []
+          if (row){
+            const cols = Object.keys(row.cells)
+            // Iterate through the cols
+            for (const index of cols){
+              // check if cell is empty
+              if (!isObjectEmpty(row.cells[index])){
+                const col = Number(index) + 1;
+                if (row.cells[index].text){
+                  // Check for formulas
+                  const text = row.cells[index].text;
+                  const fValue = row.cells[index].formulaValue;
+                  console.log(fValue)
+                  if (text[0] !== '=' && !fValue){
+                    rowData[col] = isNaN(text) ? text : Number(text);
+                  }else{
+                    const result = row.cells[index].formulaValue;
+                    formulaArray.push({col, text, result});
+                  }
+                };
+              }
+            };
+          }
+          const newRow = currSheet.addRow(rowData);
+          formulaArray.forEach(formula=>{
+            console.log(formula);
+            // @ts-ignore
+            newRow.getCell(formula.col).value = {formula: formula.text.slice(1), result: formula.result};
+          })
+
+          if (row && row.height) newRow.height = row.height;
+        };
+
+        // Iterate the sheet to add styles
+        const rowArray = Object.keys(sheet.rows).slice(0, -1);
+        for (const rowNum of rowArray){
+          const colArray = Object.keys(sheet.rows[rowNum].cells);
+          for (const colNum of colArray){
+            const targetCell = sheet.rows[rowNum].cells[colNum];
+            if (targetCell.style){
+              
+              const coord = digitToAlpha(Number(colNum) + 1) + (Number(rowNum)+1);
+              // console.log('digit','|',coord, '|',colNum,'|', rowNum)
+              const cell = currSheet.getCell(coord);
+              Xspreadsheet2ExcelStyle(cell, styleArray[targetCell.style]);
+            }
+          }
         }
-        let ws = XLSX.utils.aoa_to_sheet(aoa);
-        XLSX.utils.book_append_sheet(out, ws, xws.name);
+        // adjust col width
+        const colNums = Object.keys(sheet.cols).slice(0, -1)
+        for (const keys of colNums){
+          const colNum = Number(keys);
+          const targetCol = currSheet.getColumn(colNum + 1)
+          targetCol.width = sheet.cols[keys].width/9
+        }
+
+        // create merge cells
+        for (const merges of sheet.merges){
+          currSheet.mergeCells(merges);
+        }
       });
-      XLSX.writeFile(out, this.workBookName + '.xlsx');
+
+      workbook.xlsx.writeBuffer().then(wbData=>{
+        let blob = new Blob([wbData], {type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"});
+        // saveAs(blob, this.workBookName + '.xlsx')
+        var link=window.URL.createObjectURL(blob);
+        window.location = link;
+      })
     }
 
     enablePreview(orgID){
@@ -147,7 +216,7 @@ class SpreadSheet extends Component{
       const categories = Object.keys(categoryMapping);
       const attributes = Object.keys(attributeMapping);
       spreadSheetController.fetchByOrgID(orgID, categories, attributes).then(data=>{
-        console.log(data);
+        
         data.forEach(element => {
           const COAID = element["CategoryId"];
           const attributeId = element["AttributeId"];
@@ -163,7 +232,7 @@ class SpreadSheet extends Component{
       const categoryMapping = [];
       const attributeMapping = [];
       this.sheet.datas.forEach(dataProxy => {
-        console.log(dataProxy)
+        
         categoryMapping.push(dataProxy.rowLookUpTable(0));
         attributeMapping.push(dataProxy.colLookUpTable(0));
       });
@@ -191,59 +260,100 @@ class SpreadSheet extends Component{
     fileImportHandler(event) {
       //set up a event listner
       let reader = new FileReader();
-      
-      // Setting up a onload event handler, this event handler will only fire
-      // when it completed a sucessful read.
-      reader.onload = (event) => {
-        // Get the file data from event
-        const data = event.target.result;
-
-        // Read the data in binary
-        const wb = XLSX.read(data, { type: "binary" });
-        // Create a new list that is use for holding Json sheet object
-        let sheetList = [];
-  
-        // Iterate trough the sheet name
-        wb.SheetNames.forEach((name) => {
-          let currSheet = { name: name, rows: {} };
-  
-          // Get the sheet object by name
-          let targetSheet = wb.Sheets[name];
-          //convert it into json
-          let info = XLSX.utils.sheet_to_json(targetSheet, {
-            raw: false,
-            header: 1,
-          });
-          // fill up the newly converted json
-          info.forEach((r, i) => {
-            let cells = {};
-            r.forEach(function (c, j) {
-              console.log(wb)
-              let coord = digitToAlpha(j + 1) + (i + 1);
-              if (wb.Sheets[name][coord]) {
-                let formula = wb.Sheets[name][coord]["f"];
-                if (formula) {
-                  cells[j] = { text: "=" + formula };
-                } else {
-                  cells[j] = { text: c };
-                }
-              } else {
-                cells[j] = { text: c };
-              }
-            });
-            currSheet.rows[i] = { cells: cells };
-          });
-          // push the sheet json object into the list
-          sheetList.push(currSheet);
-        });
-  
-        // Rerender the file
-        this.sheet.loadData(sheetList).reRender();
-      };
 
       const file = event.target.files[0];
   
-      reader.readAsBinaryString(file);
+      reader.readAsArrayBuffer(file);
+      
+      // Setting up a onload event handler, this event handler will only fire
+      // when it completed a sucessful read.
+      reader.onload = async () => {
+        // Get the file data from event
+        const data = reader.result;
+
+        const dataArr = [];
+        const workBook = new Excel.Workbook();
+        // @ts-ignore
+        await workBook.xlsx.load(data)
+
+        // Iterate over sheets
+        workBook.eachSheet((targetSheet, sheetId)=>{
+
+          const styleMap = new Map();
+          const mergeMap = new Map();
+
+          // @ts-ignore
+          const merges = targetSheet._merges
+
+          let sheetData = { name: targetSheet.name, rows: {}, cols: {}, styles:[], merges:[]};
+
+          // convert merged cells
+          Object.keys(merges).forEach(mergeObject=>{
+            sheetData.merges.push(merges[mergeObject].range);
+            const merge = merges[mergeObject].range.split(':');
+            mergeMap.set(merge[0], merge[1]);
+          });
+
+          // Iterate through each row
+          targetSheet.eachRow({ includeEmpty: true }, (targetRow, rowNum)=>{
+            let currRow = { cells: {}};
+
+            // Check and fill the height parameter
+            if (targetRow.height) currRow.height = targetRow.height;
+
+            // Iterate through each cell in a row
+            targetRow.eachCell({ includeEmpty: true }, (targetCell, colNum)=>{
+              let currCell = {};
+              // @ts-ignore
+              if (!(targetCell.isMerged && targetCell._mergeCount === 0)){
+
+                const endCoord = mergeMap.get(targetCell.address)
+                if(endCoord) currCell.merge = calculateMergeArray(targetCell.address, endCoord);
+
+                // Check if there are formulas and copy the value of the cell
+                if (targetCell.formula){
+                  currCell.text = '=' + targetCell.formula;
+                }else{
+                  if(targetCell.value)currCell.text = String(targetCell.value);
+                }
+
+                const currCellStyle = targetCell.style;
+                // Check if there is style related to this cell.
+                if (!isObjectEmpty(currCellStyle)){
+            
+                  const currStyle = excelJsStyle2Xspreadsheet(currCellStyle);
+
+                  // Compare object using Json
+                  let jsonReference = JSON.stringify(currStyle);
+
+                  if (styleMap.has(jsonReference)){
+                    currCell.style = styleMap.get(jsonReference);
+                    
+                  }else{
+                    styleMap.set(jsonReference, sheetData.styles.length);
+                    sheetData.styles.push(currStyle);
+                    currCell.style = currCell.style = styleMap.get(jsonReference);
+                  }
+                }
+              }
+              currRow.cells[colNum - 1] = currCell;
+            });
+            sheetData.rows[rowNum - 1] = currRow;
+          });
+          
+          // Read Column width
+          for(let i = 1; i <= targetSheet.columnCount; i++){
+            let targetCol = targetSheet.getColumn(i);
+            if(targetCol.width){
+              sheetData.cols[i - 1] = { width: targetCol.width * 9}
+            }
+          }
+          dataArr.push(sheetData);
+        });
+  
+        // Rerender the file
+        this.sheet.loadData(dataArr).reRender();
+      };
     }
 
     render(){
