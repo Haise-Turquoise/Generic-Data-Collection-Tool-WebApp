@@ -315,7 +315,7 @@ export default class SubmissionService {
     const programAndTempTypes = [];
     const programIds = [];
     if (orgId){
-      userInfo[0].sysRole.forEach(sysRole => {
+      userInfo.sysRole.forEach(sysRole => {
         sysRole.org[0].program.forEach(program => {
           programAndTempTypes.push({ program: program.programId, templateTypes: program.template });
           programIds.push(program.programId);
