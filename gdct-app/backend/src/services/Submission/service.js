@@ -45,7 +45,7 @@ export default class SubmissionService {
   }
 
   checkUserRole(userInfo, submission, permission) {
-    userInfo[0].sysRole.forEach(sysRole => {
+    userInfo.sysRole.forEach(sysRole => {
     if (sysRole.org[0]){
         sysRole.org[0].program.forEach(program => {
           if (
@@ -309,13 +309,13 @@ export default class SubmissionService {
   async findSubmission(email) {
     const count = 0;
     const userInfo = await this.usersRepository.findByEmail(email);
-    const org = userInfo[0].sysRole[0].org[0];
+    const org = userInfo.sysRole[0].org[0];
     // Update By Sheldon Su in Jan to make it work for admins
     const orgId = org? org.orgId: undefined;
     const programAndTempTypes = [];
     const programIds = [];
     if (orgId){
-      userInfo[0].sysRole.forEach(sysRole => {
+      userInfo.sysRole.forEach(sysRole => {
         sysRole.org[0].program.forEach(program => {
           programAndTempTypes.push({ program: program.programId, templateTypes: program.template });
           programIds.push(program.programId);

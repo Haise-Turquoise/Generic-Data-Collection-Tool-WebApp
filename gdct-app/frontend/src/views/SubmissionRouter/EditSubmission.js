@@ -129,7 +129,7 @@ const EditSubmission = ({ history }) => {
 
   const handleOpenTemplate = () => {
     history.push({
-      pathname: `/submission/submissions/${submission._id}`,
+      pathname: `/admin/submission/submissions/${submission._id}`,  
       state: { detail: location.state.detail },
     });
     //Creates a new spreadsheet in google and returns the id. 
