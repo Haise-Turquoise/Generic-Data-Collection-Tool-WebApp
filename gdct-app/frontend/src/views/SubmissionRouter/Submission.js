@@ -19,6 +19,7 @@ const Submission = ({
   const [snackBar, setSnackBar] = useState(false);
 
   const isCallInProgress = useSelector(
+    // @ts-ignore
     ({ SubmissionsStore: { isCallInProgress } }) => isCallInProgress,
   );
 
@@ -36,6 +37,7 @@ const Submission = ({
   }, []);
 
   return isCallInProgress ? (
+    // @ts-ignore
     <Loading />
   ) : (
     <div>

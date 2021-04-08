@@ -53,7 +53,6 @@ export const urlParser = (orgId, categories, attributes)=>{
   attributes.forEach((entry)=>{
     UrlWithCategories = UrlWithCategories + entry + ",";
   });
-  console.log(UrlWithCategories.slice(0, -1));
   return UrlWithCategories.slice(0, -1);
 }
 
@@ -185,3 +184,113 @@ export const calculateMergeArray = (startCoord, endCoord)=>{
   return [Number(endRow - startRow), endCol - startCol];
 }
 
+// This function is use to compare new data and edited data in excel sheet
+// This function assumes that sheet structures did not change, only the value had changed
+// Return old value and new value
+export const compareSheet = (oldWorkBook, newNewWorkBook) => {
+  const oldValues = [];
+  const newValues = [];
+  const sheetLen = oldWorkBook.length
+  for(let i = 0; i < sheetLen; i++){
+    const oldSheet = oldWorkBook[i];
+    const newSheet = newNewWorkBook[i];
+    const sheetName = oldSheet.name;
+    const rows = Object.keys(oldSheet.rows).slice(0, -1);
+    const maxRow = Number(rows[rows.length - 1]);
+    for (let rowNum = 0; rowNum <= maxRow; rowNum++){
+      const oldRow = oldSheet.rows[String(rowNum)];
+      const newRow = newSheet.rows[String(rowNum)];
+
+      if (oldRow && newRow){
+        const oldCols = Object.keys(oldRow.cells);
+        // Iterate through the cols
+        for (const index of oldCols){
+          // check if cell is empty
+          const oldCell = oldRow.cells[index];
+          const newCell = newRow.cells[index];
+          if (oldCell && newCell){
+            if (oldCell.text && newCell.text){
+              if (oldCell.text != newCell.text){
+                oldValues.push({ sheetName: sheetName, row:rowNum + 1, col:index, value: oldCell.text });
+                newValues.push({ sheetName: sheetName, row:rowNum + 1, col:index, value: newCell.text });
+              };
+            } else if (oldCell.text){
+              oldValues.push({ sheetName: sheetName, row:rowNum + 1, col:index, value: oldCell.text });
+              newValues.push({ sheetName: sheetName, row:rowNum + 1, col:index, value: 'empty' });
+            } else if (newCell.text) {
+              oldValues.push({ sheetName: sheetName, row:rowNum + 1, col:index, value: 'empty' });
+              newValues.push({ sheetName: sheetName, row:rowNum + 1, col:index, value: newCell.text });
+            };
+          };
+        };
+      };
+    };
+  };
+  return {oldValues, newValues}
+}
+
+// Generate category ID to row mapping
+export const generateCategoryMap = (sheet)=>{
+  // @ts-ignore
+  const maxRowNum = Math.max(...Object.keys(sheet.rows._).slice(0, -1))
+  const categoryMap = {};
+
+  // Go though each row's first cell
+  for (let ri = 0; ri <= maxRowNum; ri++){
+    const targetRow = sheet.rows._[ri];
+    if (targetRow){
+      const targetCells = targetRow.cells[0];
+      if (targetCells && !isNaN(targetCells.text) && targetCells.text !== ""){
+        categoryMap[targetCells.text] = ri;
+      }
+    }
+  }
+  return categoryMap;
+}
+
+// Generate attribute ID to Column mapping
+export const generateAttributeMap = (sheet)=>{
+  const targetRow = sheet.rows._[0];
+  const attributeMap = {}
+  if (targetRow){
+    const attributeRow = targetRow.cells;
+    const attributeKeys = Object.keys(attributeRow);
+    for (const key in attributeKeys){
+      // Record the col if entry in cell is a number
+      if (attributeRow[key] && !isNaN(attributeRow[key].text)){
+        attributeMap[attributeRow[key].text] = key;
+      }
+    }
+  }
+  return attributeMap;
+}
+
+export const findLastAttributeCol = (sheet)=>{
+  const targetRow = sheet.rows._[0];
+  let col = -1;
+  if (targetRow){
+    const attributeRow = targetRow.cells;
+    const attributeKeys = Object.keys(attributeRow);
+    for (const key of attributeKeys){
+      // Record the col if entry in cell is a number
+      if (attributeRow[key] && !isNaN(attributeRow[key].text)){
+        col = Number(key);
+      }
+    }
+  }
+  return col;
+}
+
+export const findWordInRow = (sheet, row, text)=>{
+  const targetRow = sheet.rows._[row];
+  if (targetRow){
+    const attributeRow = targetRow.cells;
+    const attributeKeys = Object.keys(attributeRow);
+    for (const key of attributeKeys){
+      if (attributeRow[key] && attributeRow[key].text == text){
+        return key;
+      }
+    }
+  }
+  return -1;
+}
