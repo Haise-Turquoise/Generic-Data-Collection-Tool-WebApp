@@ -2,6 +2,8 @@ import React, { Component } from "react";
 import Spreadsheet from 'x-data-spreadsheet';
 import submissionController from '../../controllers/submission';
 import statusController from '../../controllers/status';
+import { compareSheet } from '../../tools/misc';
+import CreateAuditLog from '../AuditLog_Global';
 import Button from '@material-ui/core/Button';
 
 
@@ -53,6 +55,7 @@ class SubmissionSpreadSheet extends Component{
       this.insertedPreview = [];
       this.submissionObject = {};
       this.edit = true;
+      this.orginalValue = null;
     }
 
     // After component mount, initailize spreadsheet and load data from DB
@@ -67,6 +70,7 @@ class SubmissionSpreadSheet extends Component{
   
             this.submissionObject = submission;
             // @ts-ignore
+            this.orginalValue = JSON.parse(JSON.stringify(submission.workbookData));
             this.sheet = new Spreadsheet("#x-spreadsheet", sheetOption).loadData(submission.workbookData).reRender();
             this.sheet.on('cell-selected',(cell, row, col)=>{
               this.currentCoord = {row, col};
@@ -98,8 +102,13 @@ class SubmissionSpreadSheet extends Component{
 
     saveTemplate = () =>{
       if (this.sheet && this.edit){
-        this.submissionObject.workbookData = this.sheet.getData();
-        submissionController.updateWorkbook(this.submissionObject)
+        const newData = this.sheet.getData();
+        this.submissionObject.workbookData = newData;
+        submissionController.updateWorkbook(this.submissionObject).then(res=>{
+          const difference = compareSheet(this.orginalValue, newData);
+          CreateAuditLog(null, "Edit Submission workbook", "Submisson", this.submissionObject._id, difference.oldValues, difference.newValues);
+        });
+
       }
     }
 

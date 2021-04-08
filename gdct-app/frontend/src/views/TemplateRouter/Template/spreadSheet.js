@@ -5,9 +5,11 @@ import CategoryInsertMenu from '../../CategoryInsertionMenu';
 import AttributeInsertMenu from '../../AttributeInsertionMenu';
 import spreadSheetController from '../../../controllers/spreadSheet';
 import PopulationSelectionMenu from '../../PopulationSelectionMenu';
+import VarianceInsertionMenu from '../../InsertVarianceMenu'
 import Button from '@material-ui/core/Button';
 import { excelJsStyle2Xspreadsheet, isObjectEmpty, 
-  calculateMergeArray, digitToAlpha, Xspreadsheet2ExcelStyle} from '../../../tools/misc';
+  calculateMergeArray, digitToAlpha, Xspreadsheet2ExcelStyle,
+  generateCategoryMap, generateAttributeMap, findWordInRow, findLastAttributeCol} from '../../../tools/misc';
 import Excel from 'exceljs';
 
 // Sheet style Option
@@ -61,7 +63,10 @@ class SpreadSheet extends Component{
       this.disablePreview = this.disablePreview.bind(this);
       this.fileImportHandler = this.fileImportHandler.bind(this);
       this.downloadTemplate = this.downloadTemplate.bind(this);
+      this.insertVariance = this.insertVariance.bind(this);
+      this.getCurrentSheet = this.getCurrentSheet.bind(this);
       this.workBookName = this.props.name;
+      this.modifiedCells = new Map();
       this.currentCoord = {};
       this.categoryAndAttribute = {};
       this.insertedPreview = [];
@@ -88,17 +93,18 @@ class SpreadSheet extends Component{
       this.saveTemplate();
     }
 
+    // Prevent default action when save
     handleSave(e){
       e.preventDefault();
       this.saveTemplate();
     }
 
+    // Save function
     saveTemplate = () =>{
       if (this.sheet){
         this.disablePreview()
         const sheetData = this.sheet.getData();
-        console.log(sheetData);
-        // templateController.sheetUpdate(this.id, sheetData);
+        templateController.sheetUpdate(this.id, sheetData);
       }
     }
 
@@ -121,6 +127,46 @@ class SpreadSheet extends Component{
       this.sheet.reRender();
     }
 
+    // Callback funtion for variance insertion
+    insertVariance = (varianceSelection) => {
+
+      const currSheetIndex = this.sheet.getCurrentSheetIndex();
+
+      // split the attribute id pairs
+      const selection = varianceSelection.split(' ');
+      const currSheet = this.sheet.datas[currSheetIndex];
+      
+      // Generate Mappings
+      const categoryMap = generateCategoryMap(currSheet);
+      const attributeMap = generateAttributeMap(currSheet);
+
+      // Identify the col alphabit assignment
+      const startCol = digitToAlpha(Number(attributeMap[selection[0]]) + 1);
+      const endCol = digitToAlpha(Number(attributeMap[selection[1]]) + 1);
+
+      // Search if the variance column exist
+      const findResult = findWordInRow(currSheet, 9, 'Variance');
+      let targetCol =  findResult > 0 ? findResult: findLastAttributeCol(currSheet) + 1;
+
+      // Insert the variance column if it does not exist
+      if (findResult < 0){
+        this.sheet.insertColAt(targetCol);
+        this.sheet.cellText(9, targetCol, 'Variance', currSheetIndex);
+      }
+
+      const keys = Object.keys(categoryMap);
+
+      // Insert the variance formula for each of the cells
+      // e.g: =(A1-A2)/A2
+      for (const attributeID of keys){
+        const rowNum = Number(categoryMap[attributeID]) + 1;
+        const text = '=' + '(' + startCol + rowNum + '-' + endCol + rowNum + ')/' + startCol + rowNum;
+        this.sheet.cellText(rowNum - 1, targetCol, text, currSheetIndex);
+      }
+
+      this.sheet.reRender()
+    }
+
     downloadTemplate(sheetData){
 
       let workbook = new Excel.Workbook();
@@ -136,7 +182,7 @@ class SpreadSheet extends Component{
         const maxRow = Number(rows[rows.length - 1]);
         for (let rowNum = 0; rowNum <= maxRow; rowNum++){
           const row = sheet.rows[String(rowNum)]
-          const rowData = []
+          const rowData = [];
 
           // Create Array for formulas 
           const formulaArray = []
@@ -151,7 +197,6 @@ class SpreadSheet extends Component{
                   // Check for formulas
                   const text = row.cells[index].text;
                   const fValue = row.cells[index].formulaValue;
-                  console.log(fValue)
                   if (text[0] !== '=' && !fValue){
                     rowData[col] = isNaN(text) ? text : Number(text);
                   }else{
@@ -162,9 +207,11 @@ class SpreadSheet extends Component{
               }
             };
           }
+
           const newRow = currSheet.addRow(rowData);
+
+          // handle formulas
           formulaArray.forEach(formula=>{
-            console.log(formula);
             // @ts-ignore
             newRow.getCell(formula.col).value = {formula: formula.text.slice(1), result: formula.result};
           })
@@ -178,15 +225,14 @@ class SpreadSheet extends Component{
           const colArray = Object.keys(sheet.rows[rowNum].cells);
           for (const colNum of colArray){
             const targetCell = sheet.rows[rowNum].cells[colNum];
-            if (targetCell.style){
-              
+            if (targetCell.style){ 
               const coord = digitToAlpha(Number(colNum) + 1) + (Number(rowNum)+1);
-              // console.log('digit','|',coord, '|',colNum,'|', rowNum)
               const cell = currSheet.getCell(coord);
               Xspreadsheet2ExcelStyle(cell, styleArray[targetCell.style]);
             }
           }
         }
+
         // adjust col width
         const colNums = Object.keys(sheet.cols).slice(0, -1)
         for (const keys of colNums){
@@ -201,22 +247,32 @@ class SpreadSheet extends Component{
         }
       });
 
+      //Generate download file
       workbook.xlsx.writeBuffer().then(wbData=>{
         let blob = new Blob([wbData], {type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"});
-        // saveAs(blob, this.workBookName + '.xlsx')
-        var link=window.URL.createObjectURL(blob);
-        window.location = link;
+        let link = window.URL.createObjectURL(blob);
+        let targetEle = document.getElementById('download');
+        
+        // @ts-ignore
+        targetEle.href = link;
+        // @ts-ignore
+        targetEle.download = this.workBookName;
+        targetEle.click();
       })
     }
 
     enablePreview(orgID){
       const currentSheetIndex = this.sheet.getCurrentSheetIndex();
+
+      // Generate mappings
       const categoryMapping = this.sheet.datas[currentSheetIndex].rowLookUpTable(0);
       const attributeMapping = this.sheet.datas[currentSheetIndex].colLookUpTable(0);
+
       const categories = Object.keys(categoryMapping);
       const attributes = Object.keys(attributeMapping);
+
+      // Get the master values from DB
       spreadSheetController.fetchByOrgID(orgID, categories, attributes).then(data=>{
-        
         data.forEach(element => {
           const COAID = element["CategoryId"];
           const attributeId = element["AttributeId"];
@@ -228,18 +284,26 @@ class SpreadSheet extends Component{
       });
     }
 
+    getCurrentSheet(){
+      return this.sheet.datas[this.sheet.getCurrentSheetIndex()];
+    }
+
     disablePreview(){
       const categoryMapping = [];
       const attributeMapping = [];
+
+      // Generate look up table for all the sheets 
       this.sheet.datas.forEach(dataProxy => {
-        
         categoryMapping.push(dataProxy.rowLookUpTable(0));
         attributeMapping.push(dataProxy.colLookUpTable(0));
       });
+
+      // delete the previews for all the sheets
       this.insertedPreview.forEach(coord=>{
         let {COAID, attributeId, currentSheetIndex} = coord;
         this.sheet.cellText(categoryMapping[currentSheetIndex][COAID], attributeMapping[currentSheetIndex][attributeId], '', currentSheetIndex);
-      })
+      });
+
       this.insertedPreview = [];
       this.sheet.reRender();
     }
@@ -284,7 +348,6 @@ class SpreadSheet extends Component{
 
           // @ts-ignore
           const merges = targetSheet._merges
-
           let sheetData = { name: targetSheet.name, rows: {}, cols: {}, styles:[], merges:[]};
 
           // convert merged cells
@@ -345,12 +408,12 @@ class SpreadSheet extends Component{
           for(let i = 1; i <= targetSheet.columnCount; i++){
             let targetCol = targetSheet.getColumn(i);
             if(targetCol.width){
-              sheetData.cols[i - 1] = { width: targetCol.width * 9}
+              sheetData.cols[i - 1] = { width: targetCol.width * 9 }
             }
           }
           dataArr.push(sheetData);
         });
-  
+        
         // Rerender the file
         this.sheet.loadData(dataArr).reRender();
       };
@@ -366,6 +429,7 @@ class SpreadSheet extends Component{
                 <CategoryInsertMenu callback={this.insertCategory}/>
                 <AttributeInsertMenu callback={this.insertAttribute}/>
                 <PopulationSelectionMenu callback={this.enablePreview}/>
+                <VarianceInsertionMenu callback={this.insertVariance} getSheet={this.getCurrentSheet}/>
                 <Button variant="outlined" color="primary" onClick={()=>this.disablePreview()}>
                   Disable preview
                 </Button>
@@ -379,6 +443,7 @@ class SpreadSheet extends Component{
                 />
               </div>
               <div id="x-spreadsheet"></div>
+              <a id="download" style={{display:'none'}}></a>
           </div>
         )
     }

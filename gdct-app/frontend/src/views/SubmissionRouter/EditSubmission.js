@@ -77,20 +77,24 @@ const EditSubmission = ({ history }) => {
     shallowEqual,
   );
   useEffect(() => {
+    // @ts-ignore
     if (location.state.detail) {
       if (
+        // @ts-ignore
         location.state.detail.permission.find(
           permission => permission === 'Submitter' || permission === 'Inputter',
         ) !== undefined
       )
         setIsSubmitterOrInputter(true);
       if (
+        // @ts-ignore
         location.state.detail.permission.find(
           permission => permission === 'Reviewer' || permission === 'Submission Approver',
         ) !== undefined
       )
         setIsReviewerOrApprover(true);
       workflowController
+        // @ts-ignore
         .fetchProcess(location.state.detail.workflowProcessId)
         .then(workflowProcess => {
           if (workflowProcess !== undefined)
@@ -116,7 +120,9 @@ const EditSubmission = ({ history }) => {
         });
     }
     dispatch(SubmissionNoteStore.actions.RECEIVE(''));
+    // @ts-ignore
     dispatch(getSubmissionByIdRequest(location.state.detail._id));
+    // @ts-ignore
     dispatch(getSubmissionNoteRequest(location.state.detail.parentId));
   }, [location, dispatch, refresh]);
 
@@ -130,6 +136,7 @@ const EditSubmission = ({ history }) => {
   const handleOpenTemplate = () => {
     history.push({
       pathname: `/admin/submission/submissions/${submission._id}`,  
+      // @ts-ignore
       state: { detail: location.state.detail },
     });
     //Creates a new spreadsheet in google and returns the id. 
