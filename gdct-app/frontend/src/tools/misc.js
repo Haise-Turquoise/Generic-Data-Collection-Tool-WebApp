@@ -267,7 +267,7 @@ export const generateAttributeMap = (sheet)=>{
 
 export const findLastAttributeCol = (sheet)=>{
   const targetRow = sheet.rows._[0];
-  let col = -1
+  let col = -1;
   if (targetRow){
     const attributeRow = targetRow.cells;
     const attributeKeys = Object.keys(attributeRow);
