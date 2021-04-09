@@ -32,8 +32,8 @@
     "react-datepicker": "^3.6.0",
     "react-dom": "^17.0.2",
     "react-modal": "^3.12.1",
-    "x-data-spreadsheet": "git+https://github.com/Sheldonsu28/x-spreadsheet.git",
-    "xlsx": "^0.16.9"
+    "xlsx": "^0.16.9",
+    "x-data-spreadsheet": "git+https://github.com/Sheldonsu28/x-spreadsheet.git"
   },
   "devDependencies": {
     "@babel/preset-env": "^7.12.1",
