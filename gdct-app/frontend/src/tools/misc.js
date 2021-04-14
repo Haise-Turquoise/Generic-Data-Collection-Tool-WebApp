@@ -68,6 +68,7 @@ export const digitToAlpha = (num)=>{
   }
   return str;
 }
+
 export const Xspreadsheet2ExcelStyle = (cell, style)=>{
 
   // add font
@@ -102,6 +103,7 @@ export const Xspreadsheet2ExcelStyle = (cell, style)=>{
     cell.border = border
   }
 }
+
 // Created by Sheldon Su on 2021/03/25
 export const excelJsStyle2Xspreadsheet = (style)=>{
   const result = {};
@@ -255,7 +257,7 @@ export const generateAttributeMap = (sheet)=>{
   if (targetRow){
     const attributeRow = targetRow.cells;
     const attributeKeys = Object.keys(attributeRow);
-    for (const key in attributeKeys){
+    for (const key of attributeKeys){
       // Record the col if entry in cell is a number
       if (attributeRow[key] && !isNaN(attributeRow[key].text)){
         attributeMap[attributeRow[key].text] = key;
