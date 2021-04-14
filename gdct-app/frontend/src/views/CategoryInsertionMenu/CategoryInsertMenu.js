@@ -107,6 +107,7 @@ class categoryInsertMenu extends React.Component{
         let textNode = document.createTextNode('please select an option');
         option.appendChild(textNode);
         select.appendChild(option)
+        // Sort the data in place
         fullJsonLayer.childCategory.sort((a, b) => a.categoryGroup.localeCompare(b.categoryGroup));
         fullJsonLayer.childCategory.forEach((element)=>{
           let option = document.createElement('OPTION');
@@ -127,11 +128,13 @@ class categoryInsertMenu extends React.Component{
         })
         
         // @ts-ignore
+        // Add change handler
         select.addEventListener('change',()=>{this.update_subform(caller_layer+1, this.category)})
         form.appendChild(select);
         formSection.append(form);
         
       }else{
+        // Genereate the final selection layer
         const form = document.createElement('FORM');
         const select = document.createElement("SELECT");
         select.setAttribute("id", 'FinalLayer');

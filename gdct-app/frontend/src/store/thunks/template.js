@@ -3,9 +3,7 @@ import { setExcelData } from '../actions/ui/excel/commands';
 
 import templateController from '../../controllers/template';
 import {
-  convertStateToReactState,
   extractReactAndWorkbookState,
-  createBlankReactState,
 } from '../../tools/excel';
 import TemplatesStore from '../TemplatesStore/store';
 
@@ -32,19 +30,6 @@ export const createTemplateRequest = (template, resolve, reject) => dispatch => 
     .catch(error => {
       dispatch(TemplatesStore.actions.FAIL_REQUEST(error));
       reject();
-    });
-};
-
-// Oct 26, 2020
-// Requests for template by opening a new tab on google sheet
-export const openGoogleSheetRequest = _id => {
-  templateController
-    .openTemplate(_id) //Create a temporary google sheet located in google drive and open it
-    .then(spreadsheetID => {
-      window.open("https://docs.google.com/spreadsheets/d/" + spreadsheetID);
-    })
-    .catch(error => {
-      dispatch(TemplatesStore.actions.FAIL_REQUEST(error));
     });
 };
 

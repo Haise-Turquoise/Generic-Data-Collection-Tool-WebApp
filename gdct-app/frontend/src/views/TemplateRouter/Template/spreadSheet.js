@@ -14,47 +14,47 @@ import Excel from 'exceljs';
 
 // Sheet style Option
 const sheetOption = {
-    mode: 'edit', // edit | read
-    showToolbar: true,
-    showGrid: true,
-    showContextmenu: true,
-    view: {
-      height: () => document.documentElement.clientHeight*0.7488,
-      width: () => document.documentElement.clientWidth*0.975,
+  mode: 'edit', // edit | read
+  showToolbar: true,
+  showGrid: true,
+  showContextmenu: true,
+  view: {
+    height: () => document.documentElement.clientHeight*0.7488,
+    width: () => document.documentElement.clientWidth*0.975,
+  },
+  row: {
+    len: 100,
+    height: 25,
+  },
+  col: {
+    len: 26,
+    width: 100,
+    indexWidth: 60,
+    minWidth: 60,
+  },
+  style: {
+    bgcolor: '#ffffff',
+    align: 'left',
+    valign: 'middle',
+    textwrap: false,
+    strike: false,
+    underline: false,
+    color: '#0a0a0a',
+    font: {
+      name: 'Calibri',
+      size: 11,
+      bold: false,
+      italic: false,
     },
-    row: {
-      len: 100,
-      height: 25,
-    },
-    col: {
-      len: 26,
-      width: 100,
-      indexWidth: 60,
-      minWidth: 60,
-    },
-    style: {
-      bgcolor: '#ffffff',
-      align: 'left',
-      valign: 'middle',
-      textwrap: false,
-      strike: false,
-      underline: false,
-      color: '#0a0a0a',
-      font: {
-        name: 'Calibri',
-        size: 11,
-        bold: false,
-        italic: false,
-      },
-    },
-  }
+  },
+}
 
-  // We use compoenent instead of hooks since hooks will cause undefined behavior
+// We use compoenent instead of hooks since hooks will cause undefined behavior
 class SpreadSheet extends Component{
     constructor(props) {
       super(props);
       this.sheet = null;
-      this.id = this.props.sheetID;
+      this.id = this.props.templateID;
       this.saveTemplate = this.saveTemplate.bind(this);
       this.handleSave = this.handleSave.bind(this);
       this.insertCategory = this.insertCategory.bind(this);
@@ -66,7 +66,6 @@ class SpreadSheet extends Component{
       this.insertVariance = this.insertVariance.bind(this);
       this.getCurrentSheet = this.getCurrentSheet.bind(this);
       this.workBookName = this.props.name;
-      this.modifiedCells = new Map();
       this.currentCoord = {};
       this.categoryAndAttribute = {};
       this.insertedPreview = [];
@@ -103,31 +102,31 @@ class SpreadSheet extends Component{
     saveTemplate = () =>{
       if (this.sheet){
         this.disablePreview()
-        const sheetData = this.sheet.getData();
-        templateController.sheetUpdate(this.id, sheetData);
+        const workBookData = this.sheet.getData();
+        templateController.sheetUpdate(this.id, workBookData);
       }
     }
 
     // This function is responsible for inserting category selections
     insertCategory = (inputs, rowNum=null) =>{
       const currentIndex = this.sheet.getCurrentSheetIndex();
-      const insertRow = rowNum? rowNum:this.currentCoord.row;
+      const insertRow = rowNum? rowNum - 1:this.currentCoord.row;
       let unitCol = this.sheet.datas[currentIndex].findInputColOnRow(9, "Unit of Measure");
-      if (!unitCol){
-        unitCol = this.sheet.datas[currentIndex].findFirstNotNullColOnRow(1);
-        this.sheet.insertColAt(unitCol);
-      }
+
+      // Key is category ID, currentIndex is the index of the current sheet
       for (let key in inputs){
         let dataArr = inputs[key];
         this.sheet.insertRowAt(insertRow);
         this.sheet.cellText(insertRow, 0, key, currentIndex);
         this.sheet.cellText(insertRow, 1, dataArr[0], currentIndex);
-        this.sheet.cellText(insertRow, unitCol, dataArr[1], currentIndex);
+        if (unitCol) this.sheet.cellText(insertRow, unitCol, dataArr[1], currentIndex);
       }
+
       this.sheet.reRender();
     }
-
+    
     // Callback funtion for variance insertion
+    // the input of this function will be two attribute ids seperate by a space
     insertVariance = (varianceSelection) => {
 
       const currSheetIndex = this.sheet.getCurrentSheetIndex();
@@ -167,6 +166,8 @@ class SpreadSheet extends Component{
       this.sheet.reRender()
     }
 
+    // This function handles download template feature, it convert Json array
+    // from x-data-spreadsheet to xlsx
     downloadTemplate(sheetData){
 
       let workbook = new Excel.Workbook();
@@ -261,6 +262,7 @@ class SpreadSheet extends Component{
       })
     }
 
+    // This function handles enable preview feature
     enablePreview(orgID){
       const currentSheetIndex = this.sheet.getCurrentSheetIndex();
 
@@ -273,6 +275,7 @@ class SpreadSheet extends Component{
 
       // Get the master values from DB
       spreadSheetController.fetchByOrgID(orgID, categories, attributes).then(data=>{
+        console.log(data)
         data.forEach(element => {
           const COAID = element["CategoryId"];
           const attributeId = element["AttributeId"];
@@ -287,7 +290,8 @@ class SpreadSheet extends Component{
     getCurrentSheet(){
       return this.sheet.datas[this.sheet.getCurrentSheetIndex()];
     }
-
+    
+    // This function handles disable preview feature
     disablePreview(){
       const categoryMapping = [];
       const attributeMapping = [];
@@ -299,6 +303,7 @@ class SpreadSheet extends Component{
       });
 
       // delete the previews for all the sheets
+      // Coord is the object in the inserted preview array
       this.insertedPreview.forEach(coord=>{
         let {COAID, attributeId, currentSheetIndex} = coord;
         this.sheet.cellText(categoryMapping[currentSheetIndex][COAID], attributeMapping[currentSheetIndex][attributeId], '', currentSheetIndex);
@@ -313,14 +318,20 @@ class SpreadSheet extends Component{
       // Get current index of the current sheet
       const currentIndex = this.sheet.getCurrentSheetIndex();
       const insertCol = this.currentCoord.col;
+
       // Insert col at the specified index
       this.sheet.insertColAt(insertCol);
+
       // Insert id and text to their rows
       this.sheet.cellText(0, insertCol, id, currentIndex);
       this.sheet.cellText(9, insertCol, text, currentIndex);
       this.sheet.reRender();
     }
 
+    // This is the function for handling the import
+    // It reads the file from client's computer and converts it into Json array that
+    // x-data-spreadsheet can understand. At the end we are saving this Json array 
+    // to our DB.
     fileImportHandler(event) {
       //set up a event listner
       let reader = new FileReader();
