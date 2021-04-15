@@ -65,9 +65,9 @@ export default class AuthService {
   logout(req, res, next) {
     try {
       const email = req.session.user
+      // If anyone knows what req.logout does, please contact David Yang
       req.logout();
-      req.session.user = null;
-      req.session.token = null;
+      req.session.destroy();
       //For Audit Log
       const authService = new AuthService();
       authService.UserRepository.findByEmail(email).then(data => { returnNormalJson(res, data) })

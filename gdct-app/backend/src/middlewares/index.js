@@ -32,15 +32,19 @@ export const middlewares = app => {
   app.use(customLogger);
 
   const CookieStore = mongoStore(session);
+  
   app.use(
     session({
       secret: process.env.COOKIE_SECRET,
-      resave: true,
+      resave: false,
+      // saveUninitialized can only be false in here!
       saveUninitialized: false,
-      cookie: { maxAge: 30 * 60 * 1000 },
+      rolling: true,
+      cookie: { maxAge: 70 * 1000 },
       store: new CookieStore({ mongooseConnection: mongoose.connection }),
     }),
   );
+  
   app.use(passport.initialize());
   app.use(passport.session());
 

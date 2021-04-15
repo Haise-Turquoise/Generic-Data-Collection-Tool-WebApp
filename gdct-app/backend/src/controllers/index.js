@@ -31,9 +31,9 @@ import AuditLogController from './AuditLog';
 import { authorized } from '../middlewares/auth/auth';
 import MasterValueController from './MasterValue/controller';
 import DataResumeController from './DataResume/controller';
-import GoogleApisController from './GoogleApis'
-import TransferStatusController from './TransferStatus'
-import TransferStatusService from '../services/TransferStatus'
+import GoogleApisController from './GoogleApis';
+import TransferStatusController from './TransferStatus';
+import SessionController from '../controllers/Session/Session';
 
 export const routerManager = app => {
   app.use('/', Container.get(AuthController));
@@ -48,6 +48,7 @@ export const routerManager = app => {
   app.use('/template_manager', Container.get(TemplateTypeController));
   app.use('/role_manager', authorized, Container.get(AppConfigController));
   app.use('/AuditLog', Container.get(AuditLogController));
+  app.use('/Session', Container.get(SessionController));
 
   app.use('/', authorized, Container.get(ReportingPeriodController));
   app.use('/', authorized, Container.get(SheetNameController));
