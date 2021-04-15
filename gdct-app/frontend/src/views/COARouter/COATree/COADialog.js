@@ -16,7 +16,7 @@ import { selectFactoryRESTResponseValues } from '../../../store/common/REST/sele
 import { selectCOAsStore } from '../../../store/COAsStore/selectors';
 import { selectIsCOADialogOpen } from '../../../store/DialogsStore/selectors';
 
-const COADialog = () => {
+const COADialog = ({ Auditlog_Operations }) => {
   const dispatch = useDispatch();
 
   const { COAs, selectedCOAIds, isCOADialogOpen, COATreeId } = useSelector(
@@ -30,10 +30,10 @@ const COADialog = () => {
   );
 
   const getKey = useCallback(item => item._id, []);
-
   const handleSelect = useCallback(
     item => {
       dispatch(COATreeStore.actions.SELECT_COA_COA_TREE_UI({ item }));
+      Auditlog_Operations.push(`        Added Node: ${item.name}`)
     },
     [dispatch],
   );

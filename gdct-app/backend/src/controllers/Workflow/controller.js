@@ -1,6 +1,6 @@
 import { Service } from 'typedi';
 import { Router } from 'express';
-import WorkflowService from '../services/Workflow';
+import WorkflowService from '../../services/Workflow/Workflow';
 
 const WorkflowController = Service([WorkflowService], service => {
   const router = Router();
@@ -63,6 +63,15 @@ const WorkflowController = Service([WorkflowService], service => {
         .then(workflowProcess => res.json({ data: workflowProcess }))
         .catch(next);
     });
+
+    router.get('/workflows/workflow/:_id', (req, res, next) => {
+      const { _id } = req.params;
+
+      service
+        .findOnlyWorkflowById(_id)
+        .then(workflow => res.json(workflow))
+        .catch(next);
+    })
 
     return router;
   })();

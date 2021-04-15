@@ -83,7 +83,6 @@ const Template = ({
 
   const handleSaveTemplate = useCallback(() => {
     // dispatch(updateTemplateExcelRequest());
-    console.log(sheet.getData());
   }, []);
 
 
@@ -99,18 +98,8 @@ const Template = ({
   return template && template.templateData ? (
     <div>
       <TemplatePhases template={template} />
-      {/* <Iframe url="https://docs.google.com/spreadsheets/d/1ej_7DQP6EfZ4UcQM2V5tptaTQkDm_jHWKv3yLDyjRAM/edit#gid=0"
-        height="580px"
-        title="Google Sheet"
-        className="w-100 d-flex justify-content-end"
-        position="relative"
-        /> */}
-      {/* <Excel
-        type="template"
-        returnLink="/template_manager/templates"
-        handleSave={handleSaveTemplate}
-      /> */}
-      <Spreadsheet sheetID={_id} name={template.name}/>
+     
+      <Spreadsheet templateID={_id} name={template.name}/>
     </div>
   ) : (
     <Loading />

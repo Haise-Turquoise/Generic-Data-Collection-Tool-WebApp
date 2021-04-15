@@ -47,16 +47,14 @@ export default class COARepository extends BaseRepository {
     return COAModel.find({ id: { $in : query }});
   }
 
-  // async findById(id) {
-  //   return COAModel.find({ id }).then((result)=>{
-      
-  //     if (result.length == 0){
-  //       return [];
-  //     }
-  //     else {
-  //       return new COAEntity(result[0]);
-        
-  //     }
-  //   });
-  // }
+  async findById(id) {
+    return COAModel.find({ _id: id }).then((result)=>{
+      if (result.length == 0){
+        return [];
+      }
+      else {
+        return new COAEntity(result[0]);
+      }
+    });
+  }
 }

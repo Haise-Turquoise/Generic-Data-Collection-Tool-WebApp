@@ -1,6 +1,6 @@
-import WorkflowEntity from '../entities/Workflow';
-import BaseRepository from './repository';
-import WorkflowModel from '../models/Workflow';
+import WorkflowEntity from '../../entities/Workflow/Workflow';
+import BaseRepository from '../repository';
+import WorkflowModel from '../../models/Workflow/Workflow';
 
 export default class WorkflowRepository extends BaseRepository {
   constructor() {

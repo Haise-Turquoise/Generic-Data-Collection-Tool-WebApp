@@ -131,7 +131,6 @@ const COAsTable = () => {
           // Find the old value before updating in order to Auditlog
           (async () => { 
             const oldCOA = await COAController.fetchCOAbyId(COA._id);
-            // console.log(oldCOA.COAs);
             CreateAuditLog(null, "Update Category", "Category", oldCOA.COAs._id, oldCOA.COAs, COA);
           })();
           // Do Update
@@ -142,9 +141,15 @@ const COAsTable = () => {
         new Promise((resolve, reject) => {
           recordUpdate(COA);  
           dispatch(deleteCOARequest(COA._id, resolve, reject));
+        }).then(() => {
           // For Auditlog
-          const COA_trim = (({ tableData, ...o }) => o)(COA);
-          CreateAuditLog(null, "Delete Category", "Category", COA._id, COA_trim, {});
+          (async () => {
+            const oldCOA = await COAController.fetchCOAbyId(COA._id);
+            // Actually Deleted (Category might not be deleted because it is referenced in master value table)
+            if (oldCOA.COAs.length === 0) {
+              CreateAuditLog(null, "Delete Category", "Category", COA._id, COA, {});
+            }
+          })();
         }),
     }),
     [dispatch],

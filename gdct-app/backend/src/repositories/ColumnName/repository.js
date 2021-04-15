@@ -1,4 +1,4 @@
-import ColumnNameEntity from '../../entities/ColumnName';
+import ColumnNameEntity from '../../entities/ColumnName/ColumnName';
 import BaseRepository from '../repository';
 import ColumnNameModel from '../../models/ColumnName';
 
@@ -53,5 +53,16 @@ export default class ColumnNameRepository extends BaseRepository {
         fetchedColumnName => fetchedColumnName.id
       ),
     );
+  }
+
+  async findById(id) {
+    return ColumnNameModel.find({ _id: id }).then((result) => {
+      if (result.length == 0) {
+        return [];
+      }
+      else {
+        return new ColumnNameEntity(result[0]);
+      }
+    })
   }
 }

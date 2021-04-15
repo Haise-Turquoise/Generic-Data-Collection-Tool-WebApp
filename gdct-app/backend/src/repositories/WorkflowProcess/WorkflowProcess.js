@@ -1,8 +1,8 @@
 import Container from 'typedi';
-import WorkflowProcessEntity from '../entities/WorkflowProcess';
-import BaseRepository from './repository';
-import WorkflowProcessModel from '../models/WorkflowProcess';
-import StatusRepository from './Status';
+import WorkflowProcessEntity from '../../entities/WorkflowProcess/WorkflowProcess';
+import BaseRepository from '../repository';
+import WorkflowProcessModel from '../../models/WorkflowProcess/WorkflowProcess';
+import StatusRepository from '../Status';
 
 const populateStatusId = {
   path: 'statusId',
