@@ -1,8 +1,8 @@
 import mongoose from 'mongoose';
 import Container from 'typedi';
-import WorkflowRepository from '../repositories/Workflow';
-import WorkflowProcessRepository from '../repositories/WorkflowProcess';
-import TemplateTypeRepository from '../repositories/TemplateType';
+import WorkflowRepository from '../../repositories/Workflow/Workflow';
+import WorkflowProcessRepository from '../../repositories/WorkflowProcess/WorkflowProcess';
+import TemplateTypeRepository from '../../repositories/TemplateType';
 
 const objectId = mongoose.Types.ObjectId;
 
@@ -64,6 +64,10 @@ export default class WorkflowService {
     return this.workflowRepository
       .create(workflowData.workflow)
       .then(() => this.workflowProcessesRepository.createMany(workflowProcesses));
+  }
+
+  async findOnlyWorkflowById(id) {
+    return this.workflowRepository.find({ _id: id });
   }
 
   async findWorkflowById(id) {

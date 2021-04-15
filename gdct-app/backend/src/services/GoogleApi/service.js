@@ -73,7 +73,6 @@ export default class GoogleApisService {
     // This function moves child COATrees into a childCategory array
     organizeCOATree(COATreeData)
     await Promise.resolve(pushCategory(dataToSend.Categories, COATreeData, fullCategoryGroupList, fullCategoryList, fullSheetNamelist));
-
     return dataToSend;
   }
 

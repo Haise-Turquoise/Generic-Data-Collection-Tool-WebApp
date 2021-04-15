@@ -183,7 +183,6 @@ export const updateCOATreesBySheetNameRequest = sheetNameId => (dispatch, getSta
     normalizedTree["timestamp"] = new Date();
     normalizedTree["updatedBy"] = localStorage.getItem('currentUser');
   });
-  console.log(normalizedTrees);
   COATreeController.updateBySheetName(normalizedTrees, sheetNameId)
     .then(_COATrees => {
       dispatch(COATreeStore.actions.UPDATE_ORIGINAL_COA_TREE_UI());

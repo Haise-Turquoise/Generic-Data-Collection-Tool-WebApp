@@ -1,7 +1,5 @@
 import { shallowEqual, useDispatch, useSelector } from 'react-redux';
-import { Link } from "react-router-dom";
-import React, { useCallback, useMemo, useEffect, useState } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
+import React, { useMemo, useEffect, useState } from 'react';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
@@ -9,15 +7,11 @@ import Paper from '@material-ui/core/Paper';
 import { useLocation } from 'react-router-dom';
 import MaterialTable from 'material-table';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
-import { IconButton } from '@material-ui/core';
 // import { convertExcelFileToState, convertStateToReactState } from '../../tools/excel';
-import { setExcelData } from '../../store/actions/ui/excel/commands';
+
 import { getSubmissionNoteRequest } from '../../store/thunks/submissionNote';
 import SubmissionNoteStore from '../../store/SubmissionNoteStore/store';
-import SubmissionWorkbookStore from '../../store/SubmissionWorkbookStore/store';
-
 import {
-  selectFactoryRESTResponse,
   selectFactoryRESTResponseTableValues,
 } from '../../store/common/REST/selectors';
 import { selectSubmissionsStore } from '../../store/SubmissionsStore/selectors';
@@ -30,13 +24,7 @@ import {
 import { selectSubmissionNoteHistoryStore } from '../../store/SubmissionNoteHistoryStore/selectors';
 import workflowController from '../../controllers/workflow';
 
-const useStyles = makeStyles(theme => ({
-  root: {
-    width: '100%',
-    maxWidth: 360,
-    backgroundColor: theme.palette.background.paper,
-  },
-}));
+const timeOption = { year: 'numeric', month: 'numeric', day: 'numeric', hour:'numeric', minute:'numeric' };
 
 const EditSubmission = ({ history }) => {
   const dispatch = useDispatch();
@@ -89,25 +77,28 @@ const EditSubmission = ({ history }) => {
     shallowEqual,
   );
   useEffect(() => {
+    // @ts-ignore
     if (location.state.detail) {
       if (
+        // @ts-ignore
         location.state.detail.permission.find(
           permission => permission === 'Submitter' || permission === 'Inputter',
         ) !== undefined
       )
         setIsSubmitterOrInputter(true);
       if (
+        // @ts-ignore
         location.state.detail.permission.find(
           permission => permission === 'Reviewer' || permission === 'Submission Approver',
         ) !== undefined
       )
         setIsReviewerOrApprover(true);
       workflowController
+        // @ts-ignore
         .fetchProcess(location.state.detail.workflowProcessId)
         .then(workflowProcess => {
           if (workflowProcess !== undefined)
             workflowProcess.to.forEach(process => {
-              // console.log(process.statusId.name);
               switch (process.statusId.name) {
                 case 'Submitted': {
                   setSubmitUnavailable(false);
@@ -129,25 +120,23 @@ const EditSubmission = ({ history }) => {
         });
     }
     dispatch(SubmissionNoteStore.actions.RECEIVE(''));
+    // @ts-ignore
     dispatch(getSubmissionByIdRequest(location.state.detail._id));
+    // @ts-ignore
     dispatch(getSubmissionNoteRequest(location.state.detail.parentId));
   }, [location, dispatch, refresh]);
 
-  if (submissionNoteHistory[0] !== undefined) {
-    if (submissionNoteHistory[0].note !== undefined) {
-      submissionNotes = submissionNoteHistory;
-    }
-  }
 
-  console.log(isSubmitterOrInputter);
-  console.log(isReviewerOrApprover);
-  // console.log(submitUnavailable);
-
+ 
+  submissionNotes = submissionNoteHistory.filter(note=>note.note !== undefined)
+  // @ts-ignore
+  submissionNotes.forEach(note => note.updatedDate = new Date(note.updatedDate).toLocaleDateString("en-US", timeOption));
 
 
   const handleOpenTemplate = () => {
     history.push({
-      pathname: `/submission/submissions/${submission._id}`,
+      pathname: `/admin/submission/submissions/${submission._id}`,  
+      // @ts-ignore
       state: { detail: location.state.detail },
     });
     //Creates a new spreadsheet in google and returns the id. 

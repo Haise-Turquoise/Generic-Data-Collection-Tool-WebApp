@@ -4,7 +4,7 @@ import TemplateModel from '../../models/Template';
 import UserRepository from '../User';
 import TemplateTypeRepository from '../TemplateType';
 import BaseRepository from '../repository';
-import WorkflowProcessRepository from '../WorkflowProcess';
+import WorkflowProcessRepository from '../WorkflowProcess/WorkflowProcess';
 import {ObjectId} from 'mongodb';
 
 // MongoDB implementation
@@ -41,6 +41,7 @@ export default class TemplateRepository extends BaseRepository {
           workflowProcessId,
           googleSheetId,
         }),
+      // @ts-ignore
       ).then(template => new TemplateEntity(template.toObject()));
   }
 
@@ -67,8 +68,29 @@ export default class TemplateRepository extends BaseRepository {
 
     if (templateData) formattedTemplate.templateData = templateData;
 
-    return TemplateModel.findByIdAndUpdate(id, formattedTemplate).then(
-      template => new TemplateEntity(template.toObject()),
+    const oldValue = await TemplateModel.findById(id);
+    if (oldValue.templateTypeId != formattedTemplate.templateTypeId){
+      const templateWorkFlow = await this.templateTypeRepository.findById(formattedTemplate.templateTypeId);
+      const workFlowItems = await this.workflowProcessRepository.find({ workflowId: templateWorkFlow.templateWorkflowId });
+      const referencedIds = [];
+      workFlowItems.forEach(e => {
+        e.to.forEach(element =>{
+          referencedIds.push(element)
+        })
+      });
+      const itemIds = workFlowItems.map(e=>e._id);
+      const diff = itemIds.filter(item=>{
+        for (const ids of referencedIds){
+          if (item.equals(ids)) return false;
+        }
+        return true;
+      });
+      if (diff.length == 0) throw new Error('Workflow head not found.');
+      formattedTemplate.workflowProcessId = diff[0];
+    }
+
+    return TemplateModel.findByIdAndUpdate(id, formattedTemplate, {new: true}).then(
+      template => { console.log(template); return new TemplateEntity(template.toObject())}
     );
   }
 

@@ -10,7 +10,7 @@ import MasterValueRepository from '../../repositories/MasterValue';
 import ProgramRepository from '../../repositories/Program';
 import OrgRepository from '../../repositories/Organization';
 import TemplateTypeRepository from '../../repositories/TemplateType';
-import WorkflowProcessRepository from '../../repositories/WorkflowProcess';
+import WorkflowProcessRepository from '../../repositories/WorkflowProcess/WorkflowProcess';
 import SubmissionPeriodRepository from '../../repositories/SubmissionPeriod';
 import UsersRepository from '../../repositories/Users';
 import GoogleSheetRepository from '../../repositories/GoogleSheet';
@@ -45,7 +45,7 @@ export default class SubmissionService {
   }
 
   checkUserRole(userInfo, submission, permission) {
-    userInfo[0].sysRole.forEach(sysRole => {
+    userInfo.sysRole.forEach(sysRole => {
     if (sysRole.org[0]){
         sysRole.org[0].program.forEach(program => {
           if (
@@ -110,7 +110,7 @@ export default class SubmissionService {
   }
 
   async uploadSubmissionWorkbook(submission, workbookData, submissionNote) {
-    const currentStatus = await this.statusRepository.findById(submission.statusId);
+    const currentStatus = await this.statusRepository.findOneByID(submission.statusId);
     if (currentStatus.name == 'Approved' || currentStatus.name == 'Submitted') return;
 
     submission.workbookData = workbookData;
@@ -293,7 +293,6 @@ export default class SubmissionService {
         let duplicate = false;
         uniqueNewTemplatePackages.forEach(ele => {
           if (JSON.stringify(ele._id) == JSON.stringify(newTemplatePackage._id)) {
-            console.log('find');
             duplicate = true;
           }
         });
@@ -310,13 +309,13 @@ export default class SubmissionService {
   async findSubmission(email) {
     const count = 0;
     const userInfo = await this.usersRepository.findByEmail(email);
-    const org = userInfo[0].sysRole[0].org[0];
+    const org = userInfo.sysRole[0].org[0];
     // Update By Sheldon Su in Jan to make it work for admins
     const orgId = org? org.orgId: undefined;
     const programAndTempTypes = [];
     const programIds = [];
     if (orgId){
-      userInfo[0].sysRole.forEach(sysRole => {
+      userInfo.sysRole.forEach(sysRole => {
         sysRole.org[0].program.forEach(program => {
           programAndTempTypes.push({ program: program.programId, templateTypes: program.template });
           programIds.push(program.programId);
@@ -330,11 +329,6 @@ export default class SubmissionService {
     }
     
     return this.findTemplatePackage(programAndTempTypes).then(templatePackages => {
-      // const idMap = templatePackages.map(e=> e._id);
-      // const result = this.statusRepository.queryWorkflow([
-      //   {$match: { name:'Unsubmitted' } },
-      //   {$lookup:{ from:''}}
-      // ])
       const name = 'Unsubmitted';
       return this.statusRepository.findByName(name).then(status => {
         const promiseQuery1 = [];

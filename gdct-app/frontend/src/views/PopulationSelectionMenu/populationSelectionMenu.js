@@ -47,7 +47,7 @@ class populationSelectionMenu extends Component{
               })}
             </select>
           </form>
-          <button onClick={this.notifySelection}>Comfirm</button>
+          <button onClick={this.notifySelection}>Confirm</button>
         </Dialog>
       
       </div>

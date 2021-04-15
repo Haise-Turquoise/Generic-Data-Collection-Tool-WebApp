@@ -95,7 +95,6 @@ export async function mastervalueExtraction(
             let ri = categoryMap[categoryID];
             let ci = attributeMap[attributeID];
             const targetCell = sheet.rows[ri].cells[ci];
-            console.log('cell', targetCell)
             // Run if the cell is not empty
             if (targetCell && targetCell.text !== '' && !isNaN(targetCell.text)){
 
@@ -139,8 +138,8 @@ export async function mastervalueExtraction(
                           template,
                           templateType,
                           reportingPeriod: reportingPeriod.name,
-                          attributeId: attributeID,
-                          categoryId: categoryID,
+                          AttributeId: attributeID,
+                          CategoryId: categoryID,
                           COATreeId: COATreeId._id,
                           categoryGroup: string,
                           value: targetCell.text, //change this line back
