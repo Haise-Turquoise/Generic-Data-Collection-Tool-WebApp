@@ -40,7 +40,7 @@ export const middlewares = app => {
       // saveUninitialized can only be false in here!
       saveUninitialized: false,
       rolling: true,
-      cookie: { maxAge: 70 * 1000 },
+      cookie: { maxAge: 30 * 60 * 60 * 1000 },
       store: new CookieStore({ mongooseConnection: mongoose.connection }),
     }),
   );
