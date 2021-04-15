@@ -30,9 +30,11 @@
     "passport-google-oauth": "^2.0.0",
     "passport-remember-me": "^0.0.1",
     "react": "^17.0.2",
-    "react-modal": "^3.12.1",
     "react-datepicker": "^3.6.0",
     "react-dom": "^17.0.2",
+    "react-modal": "^3.12.1",
+    "socket.io": "^4.0.1",
+    "socket.io-client": "^4.0.1",
     "x-data-spreadsheet": "git+https://github.com/Sheldonsu28/x-spreadsheet.git",
     "xlsx": "^0.16.9"
   },

@@ -37,7 +37,8 @@ export const middlewares = app => {
       secret: process.env.COOKIE_SECRET,
       resave: true,
       saveUninitialized: false,
-      cookie: { maxAge: 30 * 60 * 1000 },
+      rolling: true,
+      cookie: { maxAge: 8 * 3600 * 1000 },
       store: new CookieStore({ mongooseConnection: mongoose.connection }),
     }),
   );
@@ -51,6 +52,5 @@ export const middlewares = app => {
     const currentLocale = i18n.getLocales();
     return next();
   });
-
   dbUtil.connect();
 };
