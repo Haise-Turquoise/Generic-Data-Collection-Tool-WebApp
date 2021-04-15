@@ -102,6 +102,7 @@ export const extractCategoryIds1 = (sheet)=>{
 export async function mastervaluePrepopulationTest(workbook, orgId){
   for(let i = 0; i < workbook.length; i++){
     let sheet = workbook[i];
+    
     // Obtain the mapping for all the attribute and category id in the sheet 
     let categoryMap = extractCategoryIds1(sheet);
     let attributeMap = extractAttributeIds1(sheet);

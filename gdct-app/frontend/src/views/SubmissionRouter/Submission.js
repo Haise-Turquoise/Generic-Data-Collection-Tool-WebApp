@@ -1,15 +1,12 @@
-import React, { useEffect, useCallback, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
-import { shallowEqual, useDispatch, useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 import Snackbar from '@material-ui/core/Snackbar';
 import Loading from '../../components/Loading/Loading';
 
-import { updateSubmissionExcelRequest, getSubmissionRequest } from '../../store/thunks/submission';
-import { Excel } from '../../components/Excel';
-import { selectFactoryRESTResponseTableValues } from '../../store/common/REST/selectors';
+import { getSubmissionRequest } from '../../store/thunks/submission';
 
-import { selectSubmissionsStore } from '../../store/SubmissionsStore/selectors';
 import CustomSnackbarContent from '../../components/CustomSnackbarContent/CustomSnackbarContent';
 import SubmissionSpreadSheet from './SubmissionSpreadSheet'
 
@@ -22,6 +19,7 @@ const Submission = ({
   const [snackBar, setSnackBar] = useState(false);
 
   const isCallInProgress = useSelector(
+    // @ts-ignore
     ({ SubmissionsStore: { isCallInProgress } }) => isCallInProgress,
   );
 
@@ -32,31 +30,6 @@ const Submission = ({
     setSnackBar(false);
   };
 
-  const { submission } = useSelector(
-    state => ({
-      submission: selectFactoryRESTResponseTableValues(selectSubmissionsStore)(state),
-    }),
-    shallowEqual,
-  );
-  const handleSaveSubmission = useCallback(submission => {
-    if (submission) {
-      console.log(submission);
-      dispatch(updateSubmissionExcelRequest());
-      // workflowController
-      //   .fetchProcess(submission[0].workflowProcessId)
-      //   .then((workflowProcess) => {
-      //     console.log(workflowProcess)
-      //     if (workflowProcess !== undefined)
-      //       workflowProcess.to.forEach((process) => {
-      //         if (process.statusId.name === 'Approved') {
-      //           console.log("123")
-      //           setSnackBar(true)
-      //         }
-      //         dispatch(updateSubmissionExcelRequest())
-      //       })
-      //   })
-    }
-  }, []);
 
   useEffect(() => {
     // If fetch fails, push back to /tempaltes
@@ -64,15 +37,12 @@ const Submission = ({
   }, []);
 
   return isCallInProgress ? (
+    // @ts-ignore
     <Loading />
   ) : (
     <div>
-      {/* <Excel
-        type="submission"
-        returnLink="/submission_manager/dashboard"
-        handleSave={() => handleSaveSubmission(submission)}
-      /> */}
-      <SubmissionSpreadSheet sheetID={_id} />
+      <SubmissionSpreadSheet sheetID= {_id}/>
+
       <Snackbar
         anchorOrigin={{
           vertical: 'bottom',

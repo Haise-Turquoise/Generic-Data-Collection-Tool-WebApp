@@ -31,6 +31,10 @@ export default class StatusRepository extends BaseRepository {
     return StatusModel.findById(id);
   }
 
+  async findOneByID(id){
+    return StatusModel.findById(id);
+  }
+
   async find(query) {
     const realQuery = {};
 
