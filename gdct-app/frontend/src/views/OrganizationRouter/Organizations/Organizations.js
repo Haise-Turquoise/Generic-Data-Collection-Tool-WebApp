@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 
 import MaterialTable from 'material-table';
-import { Paper, Button, Typography }from '@material-ui/core';
+import { Paper, Button, Typography } from '@material-ui/core';
 
 import { useHistory } from 'react-router-dom';
 import EditIcon from '@material-ui/icons/Edit';
@@ -11,7 +11,7 @@ import { selectFactoryRESTResponseTableValues } from '../../../store/common/REST
 import { selectOrgsStore } from '../../../store/OrganizationsStore/selectors';
 import { getOrgsRequest } from '../../../store/thunks/organization';
 import { calculateOptions } from '../../../tools/misc';
-import TimeoutModal from '../../Timeout'
+
 
 const HeaderActions = () => {
   const history = useHistory();
@@ -92,7 +92,7 @@ const Organizations = ({ history }) => {
   }, [dispatch]);
 
   useEffect(() => { setRowNum(Orgs.length) }, [Orgs])
-  
+
   return (
     <div className="organizations">
       <OrganizationHeader />
