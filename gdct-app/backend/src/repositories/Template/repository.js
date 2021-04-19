@@ -27,6 +27,8 @@ export default class TemplateRepository extends BaseRepository {
     expirationDate,
     workflowProcessId,
     googleSheetId,
+    updatedBy,
+    timestamp,
   }) {
     return this.templateTypeRepository
       .validate(templateTypeId)
@@ -40,6 +42,8 @@ export default class TemplateRepository extends BaseRepository {
           expirationDate,
           workflowProcessId,
           googleSheetId,
+          updatedBy,
+          timestamp,
         }),
       ).then(template => new TemplateEntity(template.toObject()));
   }
@@ -54,6 +58,8 @@ export default class TemplateRepository extends BaseRepository {
       creationDate,
       expirationDate,
       workflowProcessId,
+      updatedBy,
+      timestamp,
     },
   ) {
     const formattedTemplate = {
@@ -63,6 +69,8 @@ export default class TemplateRepository extends BaseRepository {
       creationDate,
       expirationDate,
       workflowProcessId,
+      updatedBy,
+      timestamp,
     };
 
     if (templateData) formattedTemplate.templateData = templateData;

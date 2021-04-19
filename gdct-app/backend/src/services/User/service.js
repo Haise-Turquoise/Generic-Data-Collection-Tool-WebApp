@@ -139,6 +139,10 @@ export default class UserService {
     return this.UserRepository.findById(id);
   }
 
+  async modifyUserInfo(userData) {
+    return this.UserRepository.modifyUserInfo(userData);
+  }
+
   async fetchUserByUserName(username) {
     // const fetchUser = await this.UserRepository.findByUserName(username);
     // console.log('fetchUser', fetchUser)

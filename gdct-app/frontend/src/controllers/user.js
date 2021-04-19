@@ -14,7 +14,10 @@ const userController = (() => {
       userAxios.get(`/${username}`).then(res => {
         return res.data;
       }),
+    modifyUserInfo: async userData =>
+    userAxios.post('/users/modifyUserInfo', { userData }).then(res => res.data),
   };
 })();
 
 export default userController;
+
