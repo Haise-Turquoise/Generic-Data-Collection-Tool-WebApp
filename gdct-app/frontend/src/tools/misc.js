@@ -234,7 +234,8 @@ export const compareSheet = (oldWorkBook, newNewWorkBook) => {
 // Generate category ID to row mapping
 export const generateCategoryMap = (sheet)=>{
   // @ts-ignore
-  const maxRowNum = Math.max(...Object.keys(sheet.rows._).slice(0, -1))
+  const maxRowNum = Math.max(...Object.keys(sheet.rows._))
+  console.log('rowNums', sheet.rows._)
   const categoryMap = {};
 
   // Go though each row's first cell
