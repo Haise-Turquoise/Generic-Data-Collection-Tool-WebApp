@@ -169,7 +169,6 @@ class categoryInsertMenu extends React.Component{
       // @ts-ignore
       let text = this.InsertedID[id].innerHTML;
       let unit = this.InsertedID[id].className;
-      console.log(unit);
       categories[id] = [text.substring(6), unit];
     })
     
@@ -184,6 +183,7 @@ class categoryInsertMenu extends React.Component{
     keys.forEach((id)=>{
       this.deleteOption(id);
     })
+    this.InsertedID = {};
     this.setState({open:false});
   }
     
@@ -215,8 +215,8 @@ class categoryInsertMenu extends React.Component{
 
   deleteOption = (id)=>{
     let selected_field = document.getElementById('SelectedOptions');
-    selected_field.removeChild(this.InsertedID[id])
-    delete this.InsertedID[id];
+    selected_field.removeChild(this.InsertedID[id]);
+    delete this.InsertedID[id];;
   }
 
   render(){

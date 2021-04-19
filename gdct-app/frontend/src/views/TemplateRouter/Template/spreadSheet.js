@@ -157,6 +157,7 @@ class SpreadSheet extends Component{
 
       // Insert the variance formula for each of the cells
       // e.g: =(A1-A2)/A2
+      console.log(categoryMap)
       for (const attributeID of keys){
         const rowNum = Number(categoryMap[attributeID]) + 1;
         const text = '=' + '(' + startCol + rowNum + '-' + endCol + rowNum + ')/' + startCol + rowNum;
