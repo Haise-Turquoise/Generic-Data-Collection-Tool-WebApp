@@ -59,6 +59,7 @@ export default class TemplatePackageRepository extends BaseRepository {
     { name, submissionPeriodId, templateIds, statusId, creationDate, userCreatorId, programIds, updatedBy, timestamp, },
     isPopulated,
   ) {
+    // console.log('programIds', programIds)
     return (statusId ? this.statusRepository.validate(statusId) : new Promise(resolve => resolve()))
       .then(() => {
         if (templateIds) return this.templateRepository.validateMany(templateIds);
@@ -67,6 +68,7 @@ export default class TemplatePackageRepository extends BaseRepository {
         if (submissionPeriodId) return this.submissionPeriodRepository.validate(submissionPeriodId);
       })
       .then(() =>
+        
         TemplatePackageModel.findByIdAndUpdate(
           id,
           {

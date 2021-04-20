@@ -14,7 +14,7 @@ import StepLabel from '@material-ui/core/StepLabel';
 import Typography from '@material-ui/core/Typography';
 import Checkbox from '@material-ui/core/Checkbox';
 import FilteredMultiSelect from 'react-filtered-multiselect';
-
+import './ModifyPermission.scss';
 
 import * as yup from 'yup';
 import MaterialTable from 'material-table';
@@ -29,10 +29,11 @@ import {
     stepBack,
     stepNext,
     submit,
+    updatePermission,
     appSysChange,
     orgChange,
     programChange,
-    changeSubmission,
+    changeSubmissionInModifyPermission,
     changePermission,
     searchOrganization,
     searchKeyChange,
@@ -53,6 +54,7 @@ const columns = [
     { title: 'Program', field: 'program.code' },
     { title: 'Submission', field: 'submission.name' },
     { title: 'Permission', field: 'permission' },
+    { title: 'Pending', field: 'pending' },
     {
       title: 'Authoritative Person Name',
       field: 'organization.authorizedPerson.name',
@@ -93,15 +95,7 @@ const ButtonBox = ({
         Cancel
       </Button>
   
-      <Button
-        disabled={activeStep == 1 || !isValid}
-        variant="outlined"
-        color="primary"
-        className="modifyPermission__button"
-        onClick={() => handleNext(values)}
-      >
-        Next
-      </Button>
+      
   
       <Button
         disabled={!ableToComplete || activeStep !== 1}
@@ -110,12 +104,9 @@ const ButtonBox = ({
         className="modifyPermission__button"
         onClick={handleSubmit}
       >
-        COMPLETE REGISTRATION
+        UPDATE PERMISSION
       </Button>
-      <Typography className="modifyPermission__inputTitle">
-        To navigate from one page to the next for registration, please use the button provided on the
-        page. Do not use your browsers's Back and Forward buttons.
-      </Typography>
+      
     </Box>
   );
 
@@ -354,7 +345,7 @@ const selectOrgProgram = (
         const submissionList = cloneDeep(userSubmissions);
         const permissionList = cloneDeep(userPermissions);
         return (
-          <div className="register__form">
+          <div className="modifyPermission__form">
             {selectOrgProgram(
               searchKey,
               reference,
@@ -369,9 +360,9 @@ const selectOrgProgram = (
               handleProgramChange,
             )}
   
-            <div className="register__tableContainer">
+            <div className="modifyPermission__tableContainer">
               <MaterialTable
-                className="register__table"
+                className="modifyPermission__table"
                 key={userSubmissionsLength}
                 columns={checkBoxColumns}
                 // options={{
@@ -395,14 +386,14 @@ const selectOrgProgram = (
             <Button
               variant="outlined"
               color="primary"
-              className="register__step3Button"
+              className="modifyPermission__step3Button"
               onClick={handleChangeSubmission}
             >
               Add Submission
             </Button>
-            <div className="register__tableContainer">
+            <div className="modifyPermission__tableContainer">
               <MaterialTable
-                className="register__table"
+                className="modifyPermission__table"
                 key={userPermissionsLength}
                 columns={columns}
                 // options={{
@@ -441,7 +432,7 @@ const selectOrgProgram = (
 
 
 // Get the state and shown it on the website
-const Register_container = props => {
+const ModifyPermission_container = props => {
     const dispatch = useDispatch();
     const handleOrgGroupChange = useCallback(event => {
       dispatch(orgGroupChange(event));
@@ -456,7 +447,7 @@ const Register_container = props => {
       dispatch(stepNext(values));
     }, []);
     const handleSubmit = useCallback(() => {
-      dispatch(submit());
+      dispatch(updatePermission());
     }, []);
     const handleAppSysChange = useCallback(event => {
       dispatch(appSysChange(event));
@@ -468,7 +459,7 @@ const Register_container = props => {
       dispatch(programChange(selectedPrograms));
     }, []);
     const handleChangeSubmission = useCallback(() => {
-      dispatch(changeSubmission());
+      dispatch(changeSubmissionInModifyPermission());
     }, []);
     const handleChangePermission = useCallback((rowData, permission) => {
       dispatch(changePermission(rowData, permission));
@@ -529,18 +520,14 @@ const Register_container = props => {
       shallowEqual,
     );
     activeStep = 1
-    console.log(activeStep)
+    // console.log(activeStep)
+    const organizationOptionsCopy = cloneDeep(organizationOptions)
+    organizationOptionsCopy.sort(function(a,b) {return a.value - b.value})
+    //.sort((a, b) => +(a.attr > b.attr) || -(a.attr < b.attr))
+    console.log('organizationOptionsCopy', organizationOptionsCopy)
     return (
       <div>
-        <Stepper className="register__stepper" activeStep={activeStep}>
-          {steps.map((label, index) => {
-            return (
-              <Step key={label}>
-                <StepLabel>{label}</StepLabel>
-              </Step>
-            );
-          })}
-        </Stepper>
+
         <div>
           {activeStep === steps.length ? (
             <div>
@@ -561,7 +548,7 @@ const Register_container = props => {
                 userPermissions,
                 appSysOptions,
                 organizationGroupOptions,
-                organizationOptions,
+                organizationOptionsCopy,
                 programOptions,
                 ableToComplete,
                 handleOrgGroupChange,
@@ -586,13 +573,13 @@ const Register_container = props => {
 
 
 // Main function to export
-const Register = () => {
+const ModifyPermission = () => {
   const handleSubmit = () => {};
   const dispatch = useDispatch();
 
 
   useEffect(() => {
-    console.log('hello world')
+    
     dispatch(loadModifyPermissionPage());
   }, [])
 
@@ -608,19 +595,19 @@ const Register = () => {
   return (
     <>
       {/* <SRIHeader/> */}
-      <div className="register">
+      <div className="modifyPermission">
         <br />
-        <Paper className="register__container">
+        <Paper className="modifyPermission__container">
           <Formik
             
             initialValues={registrationData}
             onSubmit={handleSubmit}
-            render={formikProps => <Register_container {...formikProps} />}
+            render={formikProps => <ModifyPermission_container {...formikProps} />}
           />
         </Paper>
       </div>
     </>
   );
 };
-export default Register;
+export default ModifyPermission;
 

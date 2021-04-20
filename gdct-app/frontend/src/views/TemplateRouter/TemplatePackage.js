@@ -140,9 +140,12 @@ const Sections = ({
 );
 
 const Content = ({ setFieldValue, handleChange, values }) => {
+  // console.log(setFieldValue)
   const handleChangeField = useCallback(
     field => data => {
+      console.log(values)
       setFieldValue(field, data);
+      console.log(values)
     },
     [setFieldValue, values],
   );
@@ -174,7 +177,7 @@ const Content = ({ setFieldValue, handleChange, values }) => {
 
       if (newTemplates.length === values.templateIds.length)
         newTemplates = [...values.templateIds, template];
-
+      
       handleChangeTemplates(newTemplates);
     },
     [values, handleChangeTemplates],
@@ -186,7 +189,7 @@ const Content = ({ setFieldValue, handleChange, values }) => {
 
       if (newPrograms.length === values.programIds.length)
         newPrograms = [...values.programIds, program];
-
+      console.log(newPrograms)
       handleChangePrograms(newPrograms);
     },
     [values, handleChangePrograms],
@@ -283,13 +286,16 @@ const TemplatePackage = ({
       CreateAuditLog(null, "Update Template Package", "TemplatePackage", oldTemplatePackage._id, oldTemplatePackage, formattedTemplatePackage);
     })();
     // Do Update
+    console.log('formattedTemplatePackage',formattedTemplatePackage)
+    console.log('templatePackage', templatePackage)
     dispatch(updateTemplatePackageRequest(formattedTemplatePackage, redirect, null, true, templatePackage));
   };
   
   return (
     <Formik enableReinitialize initialValues={templatePackage} onSubmit={handleSubmit}>
-      {props => (
-        <Form>
+      {props => {
+        console.log('props', props)
+        return (<Form>
           <Header {...props} />
           <Content {...props} />
           <Button onClick={redirect} variant="contained" color="primary" style={{marginTop: '0.8%'}}>
@@ -299,8 +305,8 @@ const TemplatePackage = ({
           <Button onClick={handleSubmit} variant="contained" color="primary" style={{marginLeft: '1%', marginTop: '0.8%'}}>
             Save
           </Button>
-        </Form>
-      )}
+        </Form>)
+      }}
     </Formik>
   );
 };

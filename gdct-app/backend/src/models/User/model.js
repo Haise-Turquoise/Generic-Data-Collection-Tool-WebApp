@@ -18,7 +18,9 @@ const User = new Schema(
     ext: { type: String, default: '' },
     firstName: { type: String, default: '' },
     lastName: { type: String, default: '' },
-
+    newPermissionPending:{type: Boolean,default:false},
+    tempSysRole:[],
+    newTemplates:[],
     phoneNumber: { type: String, default: '' },
     
     password: String,
@@ -40,6 +42,7 @@ const User = new Schema(
                   {
                     templateTypeId: { type: ObjectId, ref: 'templateType' },
                     templateCode: { type: String, default: '' },
+                    pending:{type:Boolean, default:true},
                   },
                 ],
               },
@@ -58,6 +61,7 @@ const User = new Schema(
       token: String,
       name: String,
     },
+    
     isActive: {
       type: Boolean,
       default: false,

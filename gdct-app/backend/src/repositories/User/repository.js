@@ -5,7 +5,8 @@ import UserEntity from '../../entities/User';
 import BaseRepository from '../repository';
 import UserModel from '../../models/User';
 import AppError from '../../utils/AppError';
-
+const _ = require('lodash'); 
+import {sendPermissionChangeUserVerficationEmail,sendPermissionChangeAdminVerficationEmail} from '../../middlewares/mail/mail'
 export default class UserRepository extends BaseRepository {
   constructor() {
     super(UserModel);
@@ -57,7 +58,21 @@ export default class UserRepository extends BaseRepository {
   }
 
   async updateSysRole(_id, sysRole) {
-    return UserModel.findOneAndUpdate({ _id }, { sysRole });
+    return UserModel.findOneAndUpdate({ _id }, { sysRole});
+  }
+  async updateSysRoleFromTempSysRole(_id, sysRole) {
+    
+    // walk through the whole sysRole, make sure each pending state for templates is false
+    sysRole.forEach((sys)=>{
+      sys.org.forEach((orgList)=>{
+        orgList.program.forEach((program)=>{
+          program.template.forEach((template)=>{
+            template.pending = false
+          })
+        })
+      })
+    })
+    return UserModel.findOneAndUpdate({ _id }, { sysRole:sysRole,newPermissionPending:false,tempSysRole:[], newTemplates:[]});
   }
 
   async activeUser(_id) {
@@ -66,5 +81,37 @@ export default class UserRepository extends BaseRepository {
 
   async update(_id, user) {
     return UserModel.findOneAndUpdate({ _id }, { user });
+  }
+
+  async updatePermissionByUserEmail(email,permissionData,orgList) {
+    const sysRole = permissionData.sysRole;
+    const newTemplates = permissionData.newTemplates
+    console.log(sysRole)
+    return UserModel.findOne({email}).then(user=>{
+      sendPermissionChangeUserVerficationEmail(user.username, user.email)
+      const hashedUsername = user.hashedUsername;
+      const userId = user._id;
+      const username = user.username;
+      
+      orgList.forEach(orgInfo => {
+        sendPermissionChangeAdminVerficationEmail(orgInfo, hashedUsername, userId, username);
+      });
+      return user;
+    }).then(user=>{
+      const email = user.email;
+      const sysRole = permissionData.sysRole;
+      const newTemplates = permissionData.newTemplates;
+      // return UserModel.findOneAndUpdate({ email }, { sysRole });
+      return UserModel.findOneAndUpdate({ email }, { tempSysRole:sysRole,newPermissionPending:true,newTemplates:newTemplates });
+
+    })
+
+
+
+
+
+
+      
+
   }
 }
