@@ -69,6 +69,7 @@ class SpreadSheet extends Component{
       this.currentCoord = {};
       this.categoryAndAttribute = {};
       this.insertedPreview = [];
+      this.prevVarianceSelection = null;
     }
 
     // After component mount, initailize spreadsheet and load data from DB
@@ -112,6 +113,7 @@ class SpreadSheet extends Component{
       const currentIndex = this.sheet.getCurrentSheetIndex();
       const insertRow = rowNum? rowNum - 1:this.currentCoord.row;
       let unitCol = this.sheet.datas[currentIndex].findInputColOnRow(9, "Unit of Measure");
+      let varianceCol = this.sheet.datas[currentIndex].findInputColOnRow(9, "Variance");
 
       // Key is category ID, currentIndex is the index of the current sheet
       for (let key in inputs){
@@ -120,6 +122,9 @@ class SpreadSheet extends Component{
         this.sheet.cellText(insertRow, 0, key, currentIndex);
         this.sheet.cellText(insertRow, 1, dataArr[0], currentIndex);
         if (unitCol) this.sheet.cellText(insertRow, unitCol, dataArr[1], currentIndex);
+      }
+
+      if (varianceCol && this.prevVarianceSelection) {
       }
 
       this.sheet.reRender();
@@ -157,13 +162,14 @@ class SpreadSheet extends Component{
 
       // Insert the variance formula for each of the cells
       // e.g: =(A1-A2)/A2
-      console.log(categoryMap)
       for (const attributeID of keys){
         const rowNum = Number(categoryMap[attributeID]) + 1;
         const text = '=' + '(' + startCol + rowNum + '-' + endCol + rowNum + ')/' + startCol + rowNum;
         this.sheet.cellText(rowNum - 1, targetCol, text, currSheetIndex);
       }
 
+      // keep the previous varaince selection to incase user insert a new attribute
+      this.prevVarianceSelection = varianceSelection;
       this.sheet.reRender()
     }
 
