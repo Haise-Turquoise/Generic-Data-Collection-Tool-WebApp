@@ -9,8 +9,6 @@ const COAModel = model(
       COA: { type: String },
       unitOfMeassure : {type: String},
       timestamp: { type: Date },
-      //    updatedDate: { type: Date },
-      //    userCreatorId: { type: ObjectId, ref: 'User' },
       updatedBy: { type: String },
     },
     { minimize: false },

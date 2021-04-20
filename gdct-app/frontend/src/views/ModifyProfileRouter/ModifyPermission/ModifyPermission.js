@@ -1,0 +1,606 @@
+import React, { lazy, useCallback, useMemo, useEffect, useState } from 'react';
+import { useDispatch, useSelector, shallowEqual } from 'react-redux';
+import { Formik } from 'formik';
+import cloneDeep from 'clone-deep';
+import Box from '@material-ui/core/Box';
+import Paper from '@material-ui/core/Paper';
+import TextField from '@material-ui/core/TextField';
+import Button from '@material-ui/core/Button';
+import Select from 'react-select';
+import Stepper from '@material-ui/core/Stepper';
+import Step from '@material-ui/core/Step';
+import StepLabel from '@material-ui/core/StepLabel';
+import Typography from '@material-ui/core/Typography';
+import Checkbox from '@material-ui/core/Checkbox';
+import FilteredMultiSelect from 'react-filtered-multiselect';
+import { useTranslation } from 'react-i18next';
+import {
+    orgGroupChange,
+    snackbarClose,
+    stepBack,
+    stepNext,
+    submit,
+    appSysChange,
+    orgChange,
+    programChange,
+    changeSubmission,
+    changePermission,
+    searchOrganization,
+    searchKeyChange,
+    referenceChange,
+  } from '../../../store/thunks/userRegistration.js';
+
+// Column for permission table.
+const columns = [
+    { title: 'Organization', field: 'organization.name' },
+    { title: 'Program', field: 'program.code' },
+    { title: 'Submission', field: 'submission.name' },
+    { title: 'Permission', field: 'permission' },
+    {
+      title: 'Authoritative Person Name',
+      field: 'organization.authorizedPerson.name',
+    },
+    {
+      title: "Authoritative Person's Phone Number",
+      field: 'organization.authorizedPerson.phone',
+    },
+    {
+      title: "Authoritative Person's Email",
+      field: 'organization.authorizedPerson.email',
+    },
+  ];
+
+
+  // Button on the bottom of page
+const ButtonBox = ({
+    activeStep,
+    ableToComplete,
+    values,
+    isValid,
+    handleBack,
+    handleNext,
+    handleSubmit,
+  }) => (
+    <Box border={1} color="primary" className="modifyPermission__buttonBox" justifyContent="center">
+      <Button
+        disabled={activeStep === 0}
+        variant="outlined"
+        color="primary"
+        className="modifyPermission__buttonBack"
+        onClick={handleBack}
+      >
+        Back
+      </Button>
+
+      <Button variant="outlined" color="primary" className="modifyPermission__button" href="/login">
+        Cancel
+      </Button>
+
+      <Button
+        disabled={activeStep == 1 || !isValid}
+        variant="outlined"
+        color="primary"
+        className="modifyPermission__button"
+        onClick={() => handleNext(values)}
+      >
+        Next
+      </Button>
+
+      <Button
+        disabled={!ableToComplete || activeStep !== 1}
+        variant="outlined"
+        color="primary"
+        className="modifyPermission__button"
+        onClick={handleSubmit}
+      >
+        COMPLETE REGISTRATION
+      </Button>
+      <Typography className="modifyPermission__inputTitle">
+        To navigate from one page to the next for registration, please use the button provided on the
+        page. Do not use your browsers's Back and Forward buttons.
+      </Typography>
+    </Box>
+  );
+
+
+// Read the information user select and ask controller to send request to backend
+// After responsed from backend, page will be refreshed.
+const selectOrgProgram = (
+    searchKey,
+    reference,
+    organizationGroup,
+    organizationOptions,
+    organizationGroupOptions,
+    appSysOptions,
+    programOptions,
+    handleAppSysChange,
+    handleOrgGroupChange,
+    handleOrgChange,
+    handleProgramChange,
+  ) => {
+    //  if (organizationGroup !== "Health Service Providers") {
+    const selectedPrograms = [];
+    const selectedOrganizations = [];
+    return (
+      <>
+        <div className="modifyPermission__selectField">
+          <Typography className="modifyPermission__inputTitle"> *Application </Typography>
+          <Select
+            name="appSys"
+            options={appSysOptions}
+            onChange={handleAppSysChange}
+            className="modifyPermission__select"
+          />
+        </div>
+        <div className="modifyPermission__selectField">
+          <Typography className="modifyPermission__inputTitle">*Organization Groups</Typography>
+          <Select
+            name="organizations"
+            options={organizationGroupOptions}
+            onChange={handleOrgGroupChange}
+            className="modifyPermission__select"
+          />
+        </div>
+
+        <br />
+
+        <div className="modifyPermission__multiSelectField">
+          <Typography className="modifyPermission__inputTitle"> *Organizations </Typography>
+          <FilteredMultiSelect
+            onChange={handleOrgChange}
+            options={organizationOptions}
+            selectedOptions={selectedOrganizations}
+            textProp="label"
+            valueProp="value"
+            buttonText="Add Organization"
+            className="modifyPermission__filteredMultiSelect"
+            showFilter={false}
+            classNames={{
+              button: 'modifyPermission__step3Button',
+              select: 'modifyPermission__multiSelect',
+            }}
+          />
+        </div>
+
+        <div className="modifyPermission__multiSelectField">
+          <Typography className="modifyPermission__inputTitle"> *Program</Typography>
+          <FilteredMultiSelect
+            onChange={handleProgramChange}
+            options={programOptions}
+            selectedOptions={selectedPrograms}
+            textProp="label"
+            valueProp="value"
+            buttonText="Add Program"
+            className="modifyPermission__filteredMultiSelect"
+            showFilter={false}
+            classNames={{
+              button: 'modifyPermission__step3Button',
+              select: 'modifyPermission__multiSelect',
+            }}
+          />
+        </div>
+      </>
+    );
+  };
+
+
+
+
+
+
+
+
+  // Have the detail UI page for each step
+  const getStepContent = (
+    snackbarMessage,
+    activeStep,
+    searchKey,
+    reference,
+    organizationGroup,
+    isSnackbarOpen,
+    userOrganizations,
+    userPrograms,
+    userSubmissions,
+    userPermissions,
+    appSysOptions,
+    organizationGroupOptions,
+    organizationOptions,
+    programOptions,
+    ableToComplete,
+    handleOrgGroupChange,
+    handleBack,
+    handleNext,
+    handleSubmit,
+    handleAppSysChange,
+    handleOrgChange,
+    handleProgramChange,
+    handleChangeSubmission,
+    handleChangePermission,
+    props,
+  ) => {
+    const { values, handleChange, touched, handleBlur, errors, isValid } = props;
+    const [userSubmissionsLength, setSubmissionsLength] = useState(1);
+    const [userPermissionsLength, setPermissionsLength] = useState(1);
+    const [maxPhoneLength, setMaxPhoneLength] = useState(10);
+
+    useEffect(() => {
+      setSubmissionsLength(userSubmissions.length);
+    }, [userSubmissions]);
+
+    useEffect(() => {
+      setPermissionsLength(userPermissions.length);
+    }, [userPermissions]);
+
+    const calculateOptions = itemCount => {
+      let length = itemCount;
+      if (length > 100) length = 100;
+      else if (length == 0) length = 1;
+      return {
+        actionsColumnIndex: -1,
+        search: false,
+        showTitle: false,
+        maxBodyHeight: '400px',
+        pageSize: length,
+      };
+    };
+
+    const userSubmissionsOptions = useMemo(() => calculateOptions(userSubmissionsLength), [
+      userSubmissionsLength,
+    ]);
+    const userPermissionsOptions = useMemo(() => calculateOptions(userPermissionsLength), [
+      userPermissionsLength,
+    ]);
+
+
+    const { t, i18n } = useTranslation();
+    const checkBoxColumns = [
+      { title: 'Organization', field: 'organization.name' },
+      { title: 'Program', field: 'program.code' },
+      { title: 'Submission', field: 'submission.name' },
+      {
+        title: 'Approve*',
+        field: 'approve',
+        render: rowData => (
+          <Checkbox
+            checked={rowData.approve}
+            disabled={!rowData.approveAvailable}
+            onChange={handleChangePermission.bind(this, rowData, 'approve')}
+            color="primary"
+          />
+        ),
+      },
+      {
+        title: 'Review**',
+        field: 'review',
+        render: rowData => (
+          <Checkbox
+            checked={rowData.review}
+            disabled={!rowData.reviewAvailable}
+            onChange={handleChangePermission.bind(this, rowData, 'review')}
+            color="primary"
+          />
+        ),
+      },
+      {
+        title: 'Submit***',
+        field: 'submit',
+        render: rowData => (
+          <Checkbox
+            checked={rowData.submit}
+            disabled={!rowData.submitAvailable}
+            onChange={handleChangePermission.bind(this, rowData, 'submit')}
+            color="primary"
+          />
+        ),
+      },
+      {
+        title: 'Input****',
+        field: 'input',
+        render: rowData => (
+          <Checkbox
+            checked={rowData.input}
+            disabled={!rowData.inputAvailable}
+            onChange={handleChangePermission.bind(this, rowData, 'input')}
+            color="primary"
+          />
+        ),
+      },
+      {
+        title: 'View*****',
+        field: 'view',
+        render: rowData => (
+          <Checkbox
+            checked={rowData.view}
+            disabled={!rowData.viewAvailable}
+            onChange={handleChangePermission.bind(this, rowData, 'view')}
+            color="primary"
+          />
+        ),
+      },
+      {
+        title: 'View Cognos******',
+        field: 'viewCognos',
+        render: rowData => (
+          <Checkbox
+            checked={rowData.Reporter}
+            disabled={!rowData.viewCognosAvailable}
+            onChange={handleChangePermission.bind(this, rowData, 'viewCognos')}
+            color="primary"
+          />
+        ),
+      },
+    ];
+
+    switch (activeStep) {
+
+      case 1:
+        const submissionList = cloneDeep(userSubmissions);
+        const permissionList = cloneDeep(userPermissions);
+        return (
+          <div className="register__form">
+            {selectOrgProgram(
+              searchKey,
+              reference,
+              organizationGroup,
+              organizationOptions,
+              organizationGroupOptions,
+              appSysOptions,
+              programOptions,
+              handleAppSysChange,
+              handleOrgGroupChange,
+              handleOrgChange,
+              handleProgramChange,
+            )}
+
+            <div className="register__tableContainer">
+              <MaterialTable
+                className="register__table"
+                key={userSubmissionsLength}
+                columns={checkBoxColumns}
+                // options={{
+                //   toolbar: false,
+                //   showTitle: false,
+
+                //   headerStyle: {
+                //     backgroundColor: '#f2f5f7',
+                //   },
+                // }}
+                options={userSubmissionsOptions}
+                style={{
+                  backgroundColor: '#f2f5f7',
+                }}
+                data={submissionList}
+
+                // editable={editable} options={options}
+              />
+            </div>
+
+            <Button
+              variant="outlined"
+              color="primary"
+              className="register__step3Button"
+              onClick={handleChangeSubmission}
+            >
+              Add Submission
+            </Button>
+            <div className="register__tableContainer">
+              <MaterialTable
+                className="register__table"
+                key={userPermissionsLength}
+                columns={columns}
+                // options={{
+                //   toolbar: false,
+                //   showTitle: false,
+
+                //   headerStyle: {
+                //     backgroundColor: '#f2f5f7',
+                //   },
+                // }}
+                options={userPermissionsOptions}
+                style={{
+                  backgroundColor: '#f2f5f7',
+                }}
+                data={permissionList}
+              />
+              <ButtonBox
+                activeStep={activeStep}
+                handleBack={handleBack}
+                handleNext={handleNext}
+                ableToComplete={ableToComplete}
+                handleSubmit={handleSubmit}
+                values={values}
+                isValid={isValid}
+              />
+            </div>
+          </div>
+        );
+      default:
+        return <Typography>Select campaign settings...</Typography>;
+    }
+  };
+
+
+
+
+
+// Get the state and shown it on the website
+const Register_container = props => {
+    const dispatch = useDispatch();
+    const handleOrgGroupChange = useCallback(event => {
+      dispatch(orgGroupChange(event));
+    }, []);
+    const handleSnackbarClose = useCallback(() => {
+      dispatch(snackbarClose());
+    }, []);
+    const handleBack = useCallback(() => {
+      dispatch(stepBack());
+    }, []);
+    const handleNext = useCallback(values => {
+      dispatch(stepNext(values));
+    }, []);
+    const handleSubmit = useCallback(() => {
+      dispatch(submit());
+    }, []);
+    const handleAppSysChange = useCallback(event => {
+      dispatch(appSysChange(event));
+    }, []);
+    const handleOrgChange = useCallback(selectedOrganization => {
+      dispatch(orgChange(selectedOrganization));
+    }, []);
+    const handleProgramChange = useCallback(selectedPrograms => {
+      dispatch(programChange(selectedPrograms));
+    }, []);
+    const handleChangeSubmission = useCallback(() => {
+      dispatch(changeSubmission());
+    }, []);
+    const handleChangePermission = useCallback((rowData, permission) => {
+      dispatch(changePermission(rowData, permission));
+    }, []);
+
+    let {
+      snackbarMessage,
+      activeStep,
+      searchKey,
+      reference,
+      organizationGroup,
+      isSnackbarOpen,
+      userOrganizations,
+      userPrograms,
+      userSubmissions,
+      userPermissions,
+      appSysOptions,
+      organizationGroupOptions,
+      organizationOptions,
+      programOptions,
+      ableToComplete,
+    } = useSelector(
+      ({
+        UserRegistrationStore: {
+          snackbarMessage,
+          activeStep,
+          searchKey,
+          reference,
+          organizationGroup,
+          isSnackbarOpen,
+          userOrganizations,
+          userPrograms,
+          userSubmissions,
+          userPermissions,
+          appSysOptions,
+          organizationGroupOptions,
+          organizationOptions,
+          programOptions,
+          ableToComplete,
+        },
+      }) => ({
+        snackbarMessage,
+        activeStep,
+        searchKey,
+        reference,
+        organizationGroup,
+        isSnackbarOpen,
+        userOrganizations,
+        userPrograms,
+        userSubmissions,
+        userPermissions,
+        appSysOptions,
+        organizationGroupOptions,
+        organizationOptions,
+        programOptions,
+        ableToComplete,
+      }),
+      shallowEqual,
+    );
+    activeStep = 1
+    console.log(activeStep)
+    return (
+      <div>
+        <Stepper className="register__stepper" activeStep={activeStep}>
+          {steps.map((label, index) => {
+            return (
+              <Step key={label}>
+                <StepLabel>{label}</StepLabel>
+              </Step>
+            );
+          })}
+        </Stepper>
+        <div>
+          {activeStep === steps.length ? (
+            <div>
+              <Typography>All steps completed - you&apos;re finished</Typography>
+            </div>
+          ) : (
+            <div>
+              {getStepContent(
+                snackbarMessage,
+                activeStep,
+                searchKey,
+                reference,
+                organizationGroup,
+                isSnackbarOpen,
+                userOrganizations,
+                userPrograms,
+                userSubmissions,
+                userPermissions,
+                appSysOptions,
+                organizationGroupOptions,
+                organizationOptions,
+                programOptions,
+                ableToComplete,
+                handleOrgGroupChange,
+                handleBack,
+                handleNext,
+                handleSubmit,
+                handleAppSysChange,
+                handleOrgChange,
+                handleProgramChange,
+                handleChangeSubmission,
+                handleChangePermission,
+                props,
+              )}
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  };
+
+
+
+
+// Main function to export
+const Register = () => {
+  const handleSubmit = () => {};
+  const dispatch = useDispatch();
+  const { registrationData } = useSelector(
+    ({ UserRegistrationStore: { registrationData } }) => ({
+      registrationData,
+    }),
+    shallowEqual,
+  );
+
+  return (
+    <>
+      {/* <SRIHeader/> */}
+      <div className="register">
+        <br />
+        <Paper className="register__container">
+          <Formik
+            validationSchema={registerSchema}
+            initialValues={registrationData}
+            onSubmit={handleSubmit}
+            render={formikProps => <Register_container {...formikProps} />}
+          />
+        </Paper>
+      </div>
+    </>
+  );
+};
+export default Register;
+
+// const NotFound = () => {
+//     console.log('Hello world');
+//     return (<div>Page not found</div>)
+// };
+
+// export default NotFound; 

@@ -67,4 +67,18 @@ export default class UserRepository extends BaseRepository {
   async update(_id, user) {
     return UserModel.findOneAndUpdate({ _id }, { user });
   }
+
+  async modifyUserInfo(userData) {
+    console.log(userData)
+    userData.email = "test8@test.com";
+    console.log( "test" + userData.email)
+    return UserModel.findOneAndUpdate({ email: userData.email }, { title: userData.title, 
+                                                                   firstName: userData.firstName, 
+                                                                   lastName: userData.lastName, 
+                                                                   email: userData.email, 
+                                                                   username: userData.username,
+                                                                   phoneNumber: userData.phoneNumber,
+                                                                   ext: userData.ext});
+  }
+
 }

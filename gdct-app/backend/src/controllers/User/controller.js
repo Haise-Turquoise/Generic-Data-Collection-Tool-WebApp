@@ -40,6 +40,15 @@ const UserController = Service([UserService], service => {
         .catch(next);
     });
 
+    // User Profile Update
+    router.post(`/users/modifyUserInfo`, (req, res, next) => {
+      const { userData } = req.body;
+      // console.log(userData)
+      service
+        .modifyUserInfo(userData)
+        .catch(next);
+    });
+
     return router;
   })();
 });
