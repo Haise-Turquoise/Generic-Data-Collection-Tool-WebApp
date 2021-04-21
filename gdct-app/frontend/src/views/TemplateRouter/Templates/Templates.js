@@ -15,7 +15,6 @@ import {
   createTemplateRequest,
   deleteTemplateRequest,
   updateTemplateRequest,
-  openGoogleSheetRequest,
 } from '../../../store/thunks/template';
 
 import './Templates.scss';
@@ -57,7 +56,6 @@ const TemplatesTable = ({ history }) => {
     }),
     shallowEqual,
   );
-  console.log('templates', templates);
   const lookupProcesses = workflowProcesses.reduce((acc, value) => {
     acc[value._id] = value.statusId.name;
     return acc;
@@ -79,7 +77,7 @@ const TemplatesTable = ({ history }) => {
         // initialEditValue: new Date(),
       },
       { title: 'Expiration Date', type: 'date', field: 'expirationDate' },
-      { title: 'Workflow', field: 'workflowProcessId', lookup: lookupProcesses, editable: 'never' },
+      { title: 'Workflow', field: 'workflowProcessId', lookup: lookupProcesses, editable: 'never'},
       { title: 'Modified On', field: 'timestamp',
         editComponent: props => {return <div></div>} },
 //      { title: 'Modified On', field: 'updatedDate', type: 'date',
@@ -97,10 +95,6 @@ const TemplatesTable = ({ history }) => {
         tooltip: 'Open Template',
         onClick: (_event, template) => {
           history.push(`/admin/template/design/${template._id}`);
-          //Creates a new spreadsheet in google and returns the id. 
-          // openGoogleSheetRequest(template._id);
-          // //After retrieving the id, open the link to the sheet on another tab. 
-          // window.open("https://docs.google.com/spreadsheets/d/" + spreadsheetId);
         }
       },
     ],
@@ -144,33 +138,15 @@ const TemplatesTable = ({ history }) => {
   );
 
     // Convert Date format
-    const timeOption = { year: 'numeric', month: 'numeric', day: 'numeric', hour:'numeric', minute:'numeric' };
     templates.forEach(templates => {
-//        appRole.timestamp = new Date()
-//      var date = moment(appRoles.timestamp).toDate();
+
       if(templates.timestamp!=null) {
-
-        // reformat date string to match ISO format of mongo db: 2021-02-16T03:59:32.015Z
-        // const temptime = new Date(appRoles.timestamp.toString().replace(/,/g,'').replace(/\./g,'')
-        // );
-        // const logtime = new Date(appRoles.timestamp);
-        // console.log(appRoles.timestamp.toString().replace(/,/g,'').replace(/\./g,''));
-        // appRoles.timestamp = logtime.toLocaleDateString("en-CA", timeOption);
-
        const event = new Date(templates.timestamp.toString());
        templates.timestamp = event.toLocaleString(); 
-      }
-      else{
-        // const logtime = new Date("2021-02-16T03:59:32.015Z");
-        // appRoles.timestamp = logtime.toLocaleDateString("en-CA", timeOption);
-
+      }else{
        const event = new Date("2021-02-16T03:59:32.015Z");
        templates.timestamp = event.toLocaleString();
-      }
-      // const event = new Date(appRoles.timestamp.toString());
-      // console.log(appRoles.timestamp.toString());
-      // const logtime = new Date(appRoles.timestamp); 
-      // appRoles.timestamp = event.toLocaleDateString("en-CA", timeOption); 
+      } 
     })
 
   useEffect(() => {

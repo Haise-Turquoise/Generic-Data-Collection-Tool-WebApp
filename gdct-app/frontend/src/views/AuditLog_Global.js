@@ -9,7 +9,7 @@ const CreateAuditLog = (email, activity, moduleName, recordId, oldValue, newValu
     }
     (async () => {
         // Get the user
-        const user = await usersController.fetchByEmail({email});
+        const user = await usersController.fetchByEmail(email);
         const IdentitiesWithNoOrg = ["Business Admin", "Template Designer", "Template Approver"]
         // No need for attributes: _id and __v in objects
         const oldValue_trim = (({ _id, __v, ...o }) => o)(oldValue);

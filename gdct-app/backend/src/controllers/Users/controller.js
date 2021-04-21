@@ -14,9 +14,11 @@ const UsersController = Service([UserService], service => {
         .catch(next);
     });
 
-    router.get('/fetchByEmail', (req, res, next) => {
+    router.get('/fetchByEmail/:email', (req, res, next) => {
+      const { email } = req.params;
+
       service
-        .findUserByEmail(req.query.email)
+        .findUserByEmail(email)
         .then(user => res.json( user ))
         .catch(next);
     })

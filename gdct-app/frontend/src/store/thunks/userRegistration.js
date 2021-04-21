@@ -18,7 +18,7 @@ import UsersStore from '../UsersStore/store';
 export const getUserInfo = () => (dispatch, getState) =>{
 
   const email = localStorage.getItem('currentUser');
-    usersController.fetchByEmail ({email}).then(users => {console.log(users)
+    usersController.fetchByEmail(email).then(users => {console.log(users)
       
       const userInfo = {
         title: '',

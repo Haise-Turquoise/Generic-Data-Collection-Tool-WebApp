@@ -1,5 +1,6 @@
 import Container from 'typedi';
 import StatusRepository from '../../repositories/Status';
+import {ObjectId} from 'mongodb';
 
 export default class StatusService {
   constructor() {
@@ -22,7 +23,13 @@ export default class StatusService {
     return this.statusRepository.find(status);
   }
 
+
   async findStatusById(id) {
     return this.statusRepository.findById(id);
+  }
+
+  async findByID(id){
+    return this.statusRepository.findOneByID(new ObjectId(id));
+
   }
 }

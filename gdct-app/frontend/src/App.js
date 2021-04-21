@@ -31,7 +31,7 @@ import TransferStatus from './views/TransferStatus/TransferStatus'
 import { ROUTE_WORKFLOW, ROUTE_TEMPLATE_PCKGS, ROUTE_CATEGORY } from './constants/routes';
 
 import './App.scss';
-// import './i18n'
+// import './i18n';
 
 const PrivateRouter = ({ setLoggedIn }) => {
   return (
@@ -83,18 +83,16 @@ const PublicRouter = ({ setLoggedIn }) => {
 const App = () => {
   const [isLoggedIn, setLoggedIn] = useState(null);
 
-  // console.log('cookie:', document.cookie);
   useEffect(() => {
     AuthController.profile()
       .then(res => {
-        console.log(res)
         setLoggedIn(res.status === 'ok');
       })
       .catch(() => {
         setLoggedIn(false);
       });
   }, []);
-
+  
   return (
     <div className="appContainer">
       {isLoggedIn === null ? (
@@ -104,9 +102,9 @@ const App = () => {
           </Grid>
         </Grid>
       ) : isLoggedIn ? (
-        <AuthPage>
-          <PrivateRouter setLoggedIn={setLoggedIn} />
-        </AuthPage>
+          <AuthPage>
+            <PrivateRouter setLoggedIn={setLoggedIn} />
+          </AuthPage>
       ) : (
             <PublicRouter setLoggedIn={setLoggedIn} />
           )}

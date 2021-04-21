@@ -24,15 +24,12 @@ import ProgramDialog from '../../components/dialogs/ProgramDialog';
 import CreateAuditLog from '../AuditLog_Global';
 import templatePackageController from '../../controllers/templatePackage';
 
-// ! CLEAN UP - program and template have similar structures.
-
-const init = {
-  name: '',
-  submissionPeriodId: {},
-  templateIds: [],
-  statusId: {},
-  programIds: [],
-};
+// The header or the title of this page
+const Header = () => (
+  <div className="d-flex justify-content-between p-2 mb-3">
+    <Typography variant="h5">Template Packages</Typography>
+  </div>
+);
 
 const CustomButton = ({ text, handleClick }) => (
   <Button onClick={handleClick} size="small" className="p-0" variant="contained" color="primary">
@@ -40,15 +37,8 @@ const CustomButton = ({ text, handleClick }) => (
   </Button>
 );
 
-const Header = ({ handleSubmit }) => {
-  return (
-    <div className="d-flex justify-content-between p-2 mb-3">
-      <Typography variant="h5">Template Package</Typography>
-    </div>
-  );
-};
-
-const CustomField = ({ label, children, addButton = false, handleClick }) => (
+// children is a built in property, so even without passing in, it still exists
+const CustomField = ({ label, children, addButton = false, handleClick = null }) => (
   <div className="mb-2 mt-3">
     <div className="d-flex justify-content-between">
       <span className={`align-baseline ${addButton ? 'mr-5' : ''}`}>{label}</span>
@@ -58,21 +48,25 @@ const CustomField = ({ label, children, addButton = false, handleClick }) => (
   </div>
 );
 
+// For showing Status and Submission Period on the left side
 const FirstSection = ({ values, handleChangeStatus, handleChangeSubmissionPeriod }) => (
   <div>
     <CustomField label="Status">
-      <StatusIdButton value={values.statusId.name} onChange={handleChangeStatus} isPopulated />
+      <StatusIdButton 
+        value={values.statusId.name} 
+        onChange={handleChangeStatus} isPopulated 
+      />
     </CustomField>
     <CustomField label="Submission Period">
       <SubmissionPeriodIdButton
         value={values.submissionPeriodId.name}
         onChange={handleChangeSubmissionPeriod}
-        isPopulated
       />
     </CustomField>
   </div>
 );
 
+// For showing templates in the middle
 const SecondSection = ({ values, handleRemoveTemplate }) => {
   const dispatch = useDispatch();
 
@@ -98,6 +92,7 @@ const SecondSection = ({ values, handleRemoveTemplate }) => {
   );
 };
 
+// For showing the programs on the right side
 const ThirdSection = ({ values, handleRemoveProgram }) => {
   const dispatch = useDispatch();
 
@@ -121,6 +116,7 @@ const ThirdSection = ({ values, handleRemoveProgram }) => {
   );
 };
 
+// Combine all sections of Content
 const Sections = ({
   values,
   handleRemoveTemplate,
@@ -139,6 +135,7 @@ const Sections = ({
   </div>
 );
 
+// For handling changes in each section, and popups for template and program addition
 const Content = ({ setFieldValue, handleChange, values }) => {
   const handleChangeField = useCallback(
     field => data => {
@@ -238,6 +235,32 @@ const Content = ({ setFieldValue, handleChange, values }) => {
   );
 };
 
+// Save and Back buttons at the bottom of the page
+const Buttons = ({ handleSubmit }) => {
+  // Redirect to the list of template packages page
+  const history = useHistory();
+  const redirect = () => { history.push('/admin/template/package') };
+  return (
+    <div>
+      <Button onClick={redirect} variant="contained" color="primary" style={{marginTop: '0.8%'}}>
+        <ArrowBackIcon></ArrowBackIcon>
+        Back
+      </Button>
+      <Button onClick={handleSubmit} variant="contained" color="primary" style={{marginLeft: '1%', marginTop: '0.8%'}}>
+        Save
+      </Button>
+    </div>
+  )
+};
+
+const init = {
+  name: '',
+  submissionPeriodId: {},
+  templateIds: [],
+  statusId: {},
+  programIds: [],
+};
+
 const TemplatePackage = ({
   match: {
     params: { _id },
@@ -246,24 +269,13 @@ const TemplatePackage = ({
   const dispatch = useDispatch();
   const history = useHistory();
 
-  // Prepare the data for the component
   const { templatePackage } = useSelector(state => {
     const templatePackage = selectFactoryValueById(selectTemplatePackagesStore)(_id)(state);
     return {
       templatePackage: templatePackage || init,
     };
   }, shallowEqual);
-  // Reformat data
-  const formattedTemplatePackage = {
-    _id,
-    name: templatePackage.name,
-    statusId: templatePackage.statusId._id,
-    submissionPeriodId: templatePackage.submissionPeriodId._id,
-    templateIds: templatePackage.templateIds.map(({ _id }) => _id),
-    programIds: templatePackage.programIds.map(({ _id }) => _id),
-    creationDate: templatePackage.creationDate,
-  };
-  
+
   useEffect(() => {
     if (_id) {
       dispatch(getTemplatePackagePopulatedRequest(_id));
@@ -273,34 +285,43 @@ const TemplatePackage = ({
     };
   }, [dispatch, _id]);
 
-  const redirect = () => { history.push('/admin/template/package') };
+  const handleSubmit = useCallback(populatedData => {
+    // Reformat data based on the callback of dispatch below
+    const formattedTemplatePackage = {
+      _id,
+      name: populatedData.name,
+      statusId: populatedData.statusId._id,
+      submissionPeriodId: populatedData.submissionPeriodId._id,
+      templateIds: populatedData.templateIds.map(({ _id }) => _id),
+      programIds: populatedData.programIds.map(({ _id }) => _id),
+      timestamp: new Date(),
+      updatedBy: localStorage.getItem('currentUser'),
+    };
 
-  // Save Button Logic
-  const handleSubmit = () => {
     // Find the old value before updating in order to Auditlog
     (async () => { 
       const oldTemplatePackage = await templatePackageController.fetchTemplatePackage(formattedTemplatePackage._id);
       CreateAuditLog(null, "Update Template Package", "TemplatePackage", oldTemplatePackage._id, oldTemplatePackage, formattedTemplatePackage);
     })();
+
     // Do Update
-    dispatch(updateTemplatePackageRequest(formattedTemplatePackage, redirect, null, true, templatePackage));
-  };
-  
+    const redirect = () => { history.push('/admin/template/package') };
+    dispatch(updateTemplatePackageRequest(formattedTemplatePackage, redirect, null, true, populatedData));
+  }, [dispatch, _id]);
+
   return (
     <Formik enableReinitialize initialValues={templatePackage} onSubmit={handleSubmit}>
-      {props => (
-        <Form>
-          <Header {...props} />
-          <Content {...props} />
-          <Button onClick={redirect} variant="contained" color="primary" style={{marginTop: '0.8%'}}>
-            <ArrowBackIcon></ArrowBackIcon>
-            Back
-          </Button>
-          <Button onClick={handleSubmit} variant="contained" color="primary" style={{marginLeft: '1%', marginTop: '0.8%'}}>
-            Save
-          </Button>
-        </Form>
-      )}
+      {props => {
+        // if you wonder why handleSubmit is only passed in Formik, DON'T
+        // everything is in props, components just take a portion of props that they need
+        return (
+          <Form>
+            <Header />
+            <Content {...props} />
+            <Buttons {...props} />
+          </Form>
+        )
+      }}
     </Formik>
   );
 };
