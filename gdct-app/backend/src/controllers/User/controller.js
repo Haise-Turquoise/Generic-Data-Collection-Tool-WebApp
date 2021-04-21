@@ -41,11 +41,12 @@ const UserController = Service([UserService], service => {
     });
 
     // User Profile Update
-    router.post(`/users/modifyUserInfo`, (req, res, next) => {
+    router.put(`/:_id`, (req, res, next) => {
+      const { _id } = req.params;
       const { userData } = req.body;
-      // console.log(userData)
+      
       service
-        .modifyUserInfo(userData)
+        .modifyUserInfo(_id, userData)
         .catch(next);
     });
 

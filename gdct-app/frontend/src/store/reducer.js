@@ -5,6 +5,7 @@ import ui from './reducers/ui';
 import TemplatesStore from './TemplatesStore/store';
 import TemplateTypesStore from './TemplateTypesStore/store';
 import TemplatePackagesStore from './TemplatePackagesStore/store';
+import ModifyUserInfoStore from './ModifyUserInfo/store';
 import COAGroupsStore from './COAGroupsStore/store';
 import COAsStore from './COAsStore/store';
 import AppRolesStore from './AppRolesStore/store';
@@ -46,6 +47,7 @@ export const root = combineReducers({
   TemplatesStore: TemplatesStore.reducer,
   TemplateTypesStore: TemplateTypesStore.reducer,
   TemplatePackagesStore: TemplatePackagesStore.reducer,
+  ModifyUserInfoStore: ModifyUserInfoStore.reducer,
   COATreesStore: COATreesStore.reducer,
   COAGroupsStore: COAGroupsStore.reducer,
   COAsStore: COAsStore.reducer,

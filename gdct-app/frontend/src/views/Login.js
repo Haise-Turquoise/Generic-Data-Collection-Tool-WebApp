@@ -141,6 +141,7 @@ export default function Login({ setLoggedIn }) {
             if (data.status === 'ok') {
               // dispatch(UserStore.actions.SET_CURRENT_USER({currentUser:data.data.email}))
               localStorage.setItem('currentUser', data.data.email);
+              localStorage.setItem('currentUserID', data.data._id);
               // Audit Login
               CreateAuditLog(email, 'Login', 'Login', null, {}, {});
               // Set status
@@ -252,7 +253,7 @@ export default function Login({ setLoggedIn }) {
         <Typography component="h1" variant="h5">
           Sign in
         </Typography>
-        <form onSubmit={handleSubmit} onClick={Timer} className={classes.form} noValidate>
+        <form onSubmit={handleSubmit} className={classes.form} noValidate>
           <TextField
             variant="outlined"
             margin="normal"

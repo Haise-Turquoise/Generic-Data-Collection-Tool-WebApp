@@ -139,8 +139,8 @@ export default class UserService {
     return this.UserRepository.findById(id);
   }
 
-  async modifyUserInfo(userData) {
-    return this.UserRepository.modifyUserInfo(userData);
+  async modifyUserInfo(_id, userData) {
+    return this.UserRepository.modifyUserInfo(_id, userData);
   }
 
   async fetchUserByUserName(username) {
