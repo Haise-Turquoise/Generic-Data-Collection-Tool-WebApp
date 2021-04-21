@@ -8,13 +8,11 @@ const userController = (() => {
     withCredentials: true,
   });
   return {
-    create: async userData =>
-      userAxios.post('/users/registerUser', { userData }).then(res => res.data),
-    fetchUserByUserName: async username =>
-      userAxios.get(`/${username}`).then(res => {
-        return res.data;
-      }),
+    create: async userData => userAxios.post('/users/registerUser', { userData }).then(res => res.data),
+    updatePopulated: async userData => userAxios.put(`/${userData._id}`, { userData }).then(res => res.data),
+    fetchUserByUserName: async username => userAxios.get(`/${username}`).then(res => res.data),
   };
 })();
 
 export default userController;
+

@@ -10,6 +10,7 @@ import Login from './views/Login';
 import RoleManagement from './views/UserRoleManagement/UserRoleManagement';
 import Logout from './views/Logout';
 import GDCTMenu from './views/GDCTMenu';
+import ModifyProfileRouter from './views/ModifyProfileRouter/ModifyUserInfo';
 import Programs from './views/Programs';
 import Statuses from './views/Statuses';
 import ReportingPeriods from './views/ReportingPeriods/ReportingPeriods';
@@ -30,7 +31,7 @@ import TransferStatus from './views/TransferStatus/TransferStatus'
 import { ROUTE_WORKFLOW, ROUTE_TEMPLATE_PCKGS, ROUTE_CATEGORY } from './constants/routes';
 
 import './App.scss';
-// import './i18n'
+// import './i18n';
 
 const PrivateRouter = ({ setLoggedIn }) => {
   return (
@@ -51,6 +52,7 @@ const PrivateRouter = ({ setLoggedIn }) => {
       <Route path="/admin/user_management" component={UserRouter} />
       <Route exact path="/admin/program" component={Programs} />
       <Route exact path="/admin/status" component={Statuses} />
+      <Route exact path="/user/profile" component={ModifyProfileRouter} />
       <Route exact path="/admin/reporting_period" component={ReportingPeriods} />
       <Route path={ROUTE_WORKFLOW} component={WorkflowRouter} />
       <Route exact path="/admin/roleManagement" component={RoleManagement} />
@@ -81,18 +83,16 @@ const PublicRouter = ({ setLoggedIn }) => {
 const App = () => {
   const [isLoggedIn, setLoggedIn] = useState(null);
 
-  // console.log('cookie:', document.cookie);
   useEffect(() => {
     AuthController.profile()
       .then(res => {
-        console.log(res)
         setLoggedIn(res.status === 'ok');
       })
       .catch(() => {
         setLoggedIn(false);
       });
   }, []);
-
+  
   return (
     <div className="appContainer">
       {isLoggedIn === null ? (
@@ -102,9 +102,9 @@ const App = () => {
           </Grid>
         </Grid>
       ) : isLoggedIn ? (
-        <AuthPage>
-          <PrivateRouter setLoggedIn={setLoggedIn} />
-        </AuthPage>
+          <AuthPage>
+            <PrivateRouter setLoggedIn={setLoggedIn} />
+          </AuthPage>
       ) : (
             <PublicRouter setLoggedIn={setLoggedIn} />
           )}

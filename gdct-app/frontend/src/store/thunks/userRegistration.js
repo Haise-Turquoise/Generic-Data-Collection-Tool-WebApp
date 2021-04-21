@@ -8,10 +8,51 @@ import organizationGroupController from '../../controllers/organizationGroup';
 import programController from '../../controllers/programs';
 import templateTypeController from '../../controllers/templateType';
 import userController from '../../controllers/user';
+import usersController from '../../controllers/Users';
 import userRegistrationStore from '../UserRegistrationStore/store';
 import { getUsersRequest } from './users';
 
 import UsersStore from '../UsersStore/store';
+
+// Loading Update Profile Page
+export const getUserInfo = () => (dispatch, getState) =>{
+
+  const email = localStorage.getItem('currentUser');
+    usersController.fetchByEmail(email).then(users => {console.log(users)
+      
+      const userInfo = {
+        title: '',
+        username: '',
+        email: '',
+        firstName: '',
+        lastName: '',
+        phoneNumber: '',
+        // password: '',
+        // passwordConfirm: '',
+        ext: '',
+        // IsActive: false,
+        // startDate: new Date(),
+        // endDate: new Date(),
+        // sysRole: [],
+      }
+        userInfo.title = users.title;
+        userInfo.username = users.username;
+        userInfo.email = users.email;
+        userInfo.firstName = users.firstName;
+        userInfo.lastName = users.lastName;
+        userInfo.phoneNumber = users.phoneNumber;
+        // userInfo.password = users.password;
+        userInfo.ext = users.ext;
+        // userInfo.IsActive = users.IsActive;
+        // userInfo.startDate = users.startDate;
+        // userInfo.endDate = users.endDate;
+        // userInfo.sysRole = users.sysRole;
+
+        dispatch(userRegistrationStore.actions.setRegistrationData(userInfo));
+        console.log(userInfo)
+          // dispatch(userRegistrationStore.actions.setActiveStep(0));
+    });
+}
 
 const handleInputTemplate = (templateSet, submission) => {
   const templateType = {
@@ -396,6 +437,44 @@ export const snackbarClose = () => dispatch => {
 
 export const stepBack = () => dispatch => {
   dispatch(userRegistrationStore.actions.setActiveStep(0));
+};
+
+// Profile Update Button
+export const stepUpdate = values => (dispatch, getState) => {
+  dispatch(userRegistrationStore.actions.setRegistrationData(values));
+
+  const {
+    UserRegistrationStore: { registrationData },
+  } = getState();
+  const userData = cloneDeep(registrationData);
+  console.log(userData)
+
+  // const sendRegistrationData = registerData => {
+    return userController.modifyUserInfo(userData).then((res) =>{
+      console.log(res)
+    }).catch(error => console.error(error));
+  // };
+
+    // const {
+    //   UsersStore: { response },
+    // } = getState();
+    // const users = response.Values;
+    // console.log(users);
+    // console.log(values);
+    // let duplicate = false;
+    // users.forEach(user => {
+    //   if (user.username == values.username) {
+    //     console.log('find duplicate');
+    //     duplicate = true;
+    //   }
+    // });
+    // if (duplicate) {
+    //   alert('The username has already existed');
+    // }
+    // if (!duplicate) {
+    //   dispatch(userRegistrationStore.actions.setActiveStep(0));
+    // }
+    dispatch(userRegistrationStore.actions.setActiveStep(0));
 };
 
 export const submit = () => (dispatch, getState) => {
