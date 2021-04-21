@@ -285,32 +285,29 @@ const TemplatePackage = ({
     };
   }, [dispatch, _id]);
 
-  const handleSubmit = useCallback(
-    populatedData => {
-      // Reformat data based on the callback of dispatch below
-      const formattedTemplatePackage = {
-        _id,
-        name: populatedData.name,
-        statusId: populatedData.statusId._id,
-        submissionPeriodId: populatedData.submissionPeriodId._id,
-        templateIds: populatedData.templateIds.map(({ _id }) => _id),
-        programIds: populatedData.programIds.map(({ _id }) => _id),
-        timestamp: new Date(),
-        updatedBy: localStorage.getItem('currentUser'),
-      };
+  const handleSubmit = useCallback(populatedData => {
+    // Reformat data based on the callback of dispatch below
+    const formattedTemplatePackage = {
+      _id,
+      name: populatedData.name,
+      statusId: populatedData.statusId._id,
+      submissionPeriodId: populatedData.submissionPeriodId._id,
+      templateIds: populatedData.templateIds.map(({ _id }) => _id),
+      programIds: populatedData.programIds.map(({ _id }) => _id),
+      timestamp: new Date(),
+      updatedBy: localStorage.getItem('currentUser'),
+    };
 
-      // Find the old value before updating in order to Auditlog
-      (async () => { 
-        const oldTemplatePackage = await templatePackageController.fetchTemplatePackage(formattedTemplatePackage._id);
-        CreateAuditLog(null, "Update Template Package", "TemplatePackage", oldTemplatePackage._id, oldTemplatePackage, formattedTemplatePackage);
-      })();
+    // Find the old value before updating in order to Auditlog
+    (async () => { 
+      const oldTemplatePackage = await templatePackageController.fetchTemplatePackage(formattedTemplatePackage._id);
+      CreateAuditLog(null, "Update Template Package", "TemplatePackage", oldTemplatePackage._id, oldTemplatePackage, formattedTemplatePackage);
+    })();
 
-      // Do Update
-      const redirect = () => { history.push('/admin/template/package') };
-      dispatch(updateTemplatePackageRequest(formattedTemplatePackage, redirect, null, true, populatedData));
-    },
-    [dispatch, _id],
-  );
+    // Do Update
+    const redirect = () => { history.push('/admin/template/package') };
+    dispatch(updateTemplatePackageRequest(formattedTemplatePackage, redirect, null, true, populatedData));
+  }, [dispatch, _id]);
 
   return (
     <Formik enableReinitialize initialValues={templatePackage} onSubmit={handleSubmit}>

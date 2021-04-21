@@ -40,6 +40,16 @@ const UserController = Service([UserService], service => {
         .catch(next);
     });
 
+    // User Profile Update
+    router.put(`/:_id`, (req, res, next) => {
+      const { _id } = req.params;
+      const { userData } = req.body;
+      
+      service
+        .modifyUserInfo(_id, userData)
+        .catch(next);
+    });
+
     return router;
   })();
 });
