@@ -7,7 +7,7 @@ import Paper from '@material-ui/core/Paper';
 import { useLocation } from 'react-router-dom';
 import MaterialTable from 'material-table';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
-// import { convertExcelFileToState, convertStateToReactState } from '../../tools/excel';
+import { excelImportHandler, templateDownloader } from '../../tools/misc';
 
 import { getSubmissionNoteRequest } from '../../store/thunks/submissionNote';
 import SubmissionNoteStore from '../../store/SubmissionNoteStore/store';
@@ -239,7 +239,7 @@ const EditSubmission = ({ history }) => {
             variant="contained"
             style={{ cursor }}
             size="large"
-            onClick={handleDownloadWorkbook}
+            onClick={()=>templateDownloader(submission.name, submission.workbookData)}
           >
             Download
           </Button>
