@@ -233,6 +233,7 @@ export const compareSheet = (oldWorkBook, newNewWorkBook) => {
   return {oldValues, newValues}
 }
 
+// Created by Sheldon Su on 2021/04/1
 // Generate category ID to row mapping
 export const generateCategoryMap = (sheet)=>{
   // @ts-ignore
@@ -253,6 +254,7 @@ export const generateCategoryMap = (sheet)=>{
   return categoryMap;
 }
 
+// Created by Sheldon Su on 2021/04/12
 // Generate attribute ID to Column mapping
 export const generateAttributeMap = (sheet)=>{
   const targetRow = sheet.rows._[0];
@@ -270,6 +272,8 @@ export const generateAttributeMap = (sheet)=>{
   return attributeMap;
 }
 
+// Created by Sheldon Su on 2021/04/10
+// find the last Attribute Col in a sheet
 export const findLastAttributeCol = (sheet)=>{
   const targetRow = sheet.rows._[0];
   let col = -1;
@@ -286,6 +290,8 @@ export const findLastAttributeCol = (sheet)=>{
   return col;
 }
 
+// Created by Sheldon Su on 2021/04/10
+// find the index of a given word in a row, if not found, return -1
 export const findWordInRow = (sheet, row, text)=>{
   const targetRow = sheet.rows._[row];
   if (targetRow){
@@ -300,9 +306,11 @@ export const findWordInRow = (sheet, row, text)=>{
   return -1;
 }
 
+// Create by Sheldon Su 2021/04/21
 // This function handles download template feature, it convert Json array
 // from x-data-spreadsheet to xlsx
 export const templateDownloader = (workBookName, sheetData)=>{
+  console.log(workBookName, sheetData)
 
   let workbook = new Excel.Workbook();
   workbook.modified = new Date();
@@ -396,11 +404,14 @@ export const templateDownloader = (workBookName, sheetData)=>{
   })
 }
 
+// Create by Sheldon Su 2021/04/21
 // This is the function for handling the import
 // It reads the file from client's computer and converts it into Json array that
 // x-data-spreadsheet can understand. At the end we are saving this Json array 
 // to our DB.
-export const excelImportHandler = (event) => {
+// Note that since reader.onload is async, you have to pass in a data handler function to
+// retreive your data.
+export const excelImportHandler = (event, dataHandler) => {
   //set up a event listner
   let reader = new FileReader();
 
@@ -494,6 +505,6 @@ export const excelImportHandler = (event) => {
     });
     
     // return the formatted workbook
-    return dataArr;
+    dataHandler(dataArr);
   };
 }
