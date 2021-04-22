@@ -28,6 +28,7 @@ import MasterValuePopulation from './views/MasterValuePopulation';
 import AuditLog from './views/AuditLog';
 import TransferStatus from './views/TransferStatus/TransferStatus'
 import { ROUTE_WORKFLOW, ROUTE_TEMPLATE_PCKGS, ROUTE_CATEGORY } from './constants/routes';
+import Layout from './components/Timeout/IdleTimer';
 
 import './App.scss';
 // import './i18n';
@@ -90,7 +91,7 @@ const App = () => {
         setLoggedIn(false);
       });
   }, []);
-  
+
   return (
     <div className="appContainer">
       {isLoggedIn === null ? (
@@ -100,9 +101,10 @@ const App = () => {
           </Grid>
         </Grid>
       ) : isLoggedIn ? (
-          <AuthPage>
-            <PrivateRouter setLoggedIn={setLoggedIn} />
-          </AuthPage>
+        <AuthPage>
+          <PrivateRouter setLoggedIn={setLoggedIn} />
+          <Layout />
+        </AuthPage>
       ) : (
         <PublicRouter setLoggedIn={setLoggedIn} />
       )}

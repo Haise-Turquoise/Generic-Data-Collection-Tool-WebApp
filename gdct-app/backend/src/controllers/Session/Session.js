@@ -36,6 +36,10 @@ const SessionController = Service([SessionService], service => {
         .then(session => res.json(session))
         .catch(next);
     })
+    router.get('touch', (req, res, next) => {
+      console.log(req.session);
+      console.log('touch command has been sent')
+    });
     return router;
   })();
 });
