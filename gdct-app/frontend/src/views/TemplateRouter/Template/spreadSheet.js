@@ -127,9 +127,11 @@ class SpreadSheet extends Component{
       }
 
       if (varianceCol && this.prevVarianceSelection) {
+        console.log(this.prevVarianceSelection)
+        this.insertVariance(this.prevVarianceSelection);
       }
 
-      this.sheet.reRender();
+      // this.sheet.reRender();
     }
     
     // Callback funtion for variance insertion
