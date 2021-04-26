@@ -10,9 +10,9 @@ import Button from '@material-ui/core/Button';
 // Sheet style Option
 const sheetOption = {
     mode: 'edit', // edit | read
-    showToolbar: true,
+    showToolbar: false,
     showGrid: true,
-    showContextmenu: true,
+    showContextmenu: false,
     view: {
       height: () => document.documentElement.clientHeight*0.86,
       width: () => document.documentElement.clientWidth*0.975,
@@ -56,6 +56,7 @@ class SubmissionSpreadSheet extends Component{
       this.submissionObject = {};
       this.edit = true;
       this.orginalValue = null;
+      this.clearComponentChild = this.clearComponentChild.bind(this);
     }
 
     // After component mount, initailize spreadsheet and load data from DB
@@ -69,6 +70,7 @@ class SubmissionSpreadSheet extends Component{
             }
   
             this.submissionObject = submission;
+            this.clearComponentChild();
             // @ts-ignore
             this.orginalValue = JSON.parse(JSON.stringify(submission.workbookData));
             this.sheet = new Spreadsheet("#x-spreadsheet", sheetOption).loadData(submission.workbookData).reRender();
@@ -80,15 +82,26 @@ class SubmissionSpreadSheet extends Component{
       }else{
         submissionController.fetchSubmission(this.id).then(submission=>{
           this.submissionObject = submission;
-            // @ts-ignore
-            this.sheet = new Spreadsheet("#x-spreadsheet", sheetOption).loadData(submission.workbookData).reRender();
-            this.sheet.on('cell-selected',(cell, row, col)=>{
-              this.currentCoord = {row, col};
-            })
+          this.clearComponentChild()
+          // @ts-ignore
+          this.sheet = new Spreadsheet("#x-spreadsheet", sheetOption).loadData(submission.workbookData).reRender();
+          this.sheet.on('cell-selected',(cell, row, col)=>{
+            this.currentCoord = {row, col};
+          })
         })
       }
     }
 
+    // Clear the x-data-spreadsheet, or else ther is going to have duplicate sheet,
+    // Don't ask me why, I have no idea =_=.
+    clearComponentChild(){
+      const ele = document.getElementById('x-spreadsheet');
+      if (ele){
+        while(ele.childNodes[0]) {
+          ele.removeChild(ele.childNodes[0]);
+        };
+      }
+    }
     componentWillUnmount(){
       
       window.removeEventListener('beforeunload', this.handleSave);
