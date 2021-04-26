@@ -18,7 +18,7 @@ import UsersStore from '../UsersStore/store';
 export const getUserInfo = () => (dispatch, getState) =>{
 
   const email = localStorage.getItem('currentUser');
-    usersController.fetchByEmail(email).then(users => {console.log(users)
+    usersController.fetchByEmail(email).then(users => {
       
       const userInfo = {
         title: '',
@@ -49,7 +49,7 @@ export const getUserInfo = () => (dispatch, getState) =>{
         // userInfo.sysRole = users.sysRole;
 
         dispatch(userRegistrationStore.actions.setRegistrationData(userInfo));
-        console.log(userInfo)
+        
           // dispatch(userRegistrationStore.actions.setActiveStep(0));
     });
 }
@@ -541,13 +541,14 @@ export const loadModifyPermissionPage =  ()=> async (dispatch,getState)=>{
   const email = localStorage.getItem('currentUser');
   //get the current user info from database
   // let userSubmissionsL = []
+  
   const {
     UserRegistrationStore: { tempUserSubmissions },
   } = getState()
   
-  const user = await usersController.fetchByEmail({email});
+  const user = await usersController.fetchByEmail(email);
   //
-  console.log(user) 
+   
   if(user.sysRole && tempUserSubmissions.length == 0){
       let UserSysRole = []
       // if there is no pending templates in the database
@@ -725,11 +726,11 @@ export const stepUpdate = values => (dispatch, getState) => {
     UserRegistrationStore: { registrationData },
   } = getState();
   const userData = cloneDeep(registrationData);
-  console.log(userData)
+  
 
   // const sendRegistrationData = registerData => {
     return userController.modifyUserInfo(userData).then((res) =>{
-      console.log(res)
+      
     }).catch(error => console.error(error));
   // };
 
