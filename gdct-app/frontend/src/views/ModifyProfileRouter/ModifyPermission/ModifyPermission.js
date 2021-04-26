@@ -41,20 +41,13 @@ import {
     loadModifyPermissionPage,
   } from '../../../store/thunks/userRegistration.js';
 
-
-  function getSteps() {
-    return ['Step1', 'Step2'];
-  }
-  const steps = getSteps();
-
-
 // Column for permission table.
 const columns = [
     { title: 'Organization', field: 'organization.name' },
     { title: 'Program', field: 'program.code' },
     { title: 'Submission', field: 'submission.name' },
     { title: 'Permission', field: 'permission' },
-    { title: 'Pending', field: 'pending' },
+    { title: 'Status', field: 'status' },
     {
       title: 'Authoritative Person Name',
       field: 'organization.authorizedPerson.name',
@@ -77,7 +70,6 @@ const ButtonBox = ({
     values,
     isValid,
     handleBack,
-    handleNext,
     handleSubmit,
   }) => (
     <Box border={1} color="primary" className="modifyPermission__buttonBox" justifyContent="center">
@@ -126,7 +118,7 @@ const selectOrgProgram = (
     handleOrgChange,
     handleProgramChange,
   ) => {
-    //  if (organizationGroup !== "Health Service Providers") {
+    
     const selectedPrograms = [];
     const selectedOrganizations = [];
     return (
@@ -193,11 +185,6 @@ const selectOrgProgram = (
 
 
 
-
-
-
-
-
   // Have the detail UI page for each step
   const getStepContent = (
     snackbarMessage,
@@ -226,10 +213,10 @@ const selectOrgProgram = (
     handleChangePermission,
     props,
   ) => {
-    const { values, handleChange, touched, handleBlur, errors, isValid } = props;
+    const { values,  isValid } = props;
     const [userSubmissionsLength, setSubmissionsLength] = useState(1);
     const [userPermissionsLength, setPermissionsLength] = useState(1);
-    const [maxPhoneLength, setMaxPhoneLength] = useState(10);
+   
   
     useEffect(() => {
       setSubmissionsLength(userSubmissions.length);
@@ -339,9 +326,7 @@ const selectOrgProgram = (
       },
     ];
   
-    switch (activeStep) {
-      
-      case 1:
+
         const submissionList = cloneDeep(userSubmissions);
         const permissionList = cloneDeep(userPermissions);
         return (
@@ -422,9 +407,8 @@ const selectOrgProgram = (
             </div>
           </div>
         );
-      default:
-        return <Typography>Select campaign settings...</Typography>;
-    }
+
+    
   };
 
 
@@ -437,9 +421,7 @@ const ModifyPermission_container = props => {
     const handleOrgGroupChange = useCallback(event => {
       dispatch(orgGroupChange(event));
     }, []);
-    const handleSnackbarClose = useCallback(() => {
-      dispatch(snackbarClose());
-    }, []);
+
     const handleBack = useCallback(() => {
       dispatch(stepBack());
     }, []);
@@ -520,20 +502,11 @@ const ModifyPermission_container = props => {
       shallowEqual,
     );
     activeStep = 1
-    // console.log(activeStep)
     const organizationOptionsCopy = cloneDeep(organizationOptions)
     organizationOptionsCopy.sort(function(a,b) {return a.value - b.value})
-    //.sort((a, b) => +(a.attr > b.attr) || -(a.attr < b.attr))
-    console.log('organizationOptionsCopy', organizationOptionsCopy)
+    
     return (
-      <div>
 
-        <div>
-          {activeStep === steps.length ? (
-            <div>
-              <Typography>All steps completed - you&apos;re finished</Typography>
-            </div>
-          ) : (
             <div>
               {getStepContent(
                 snackbarMessage,
@@ -563,9 +536,7 @@ const ModifyPermission_container = props => {
                 props,
               )}
             </div>
-          )}
-        </div>
-      </div>
+
     );
   };
 

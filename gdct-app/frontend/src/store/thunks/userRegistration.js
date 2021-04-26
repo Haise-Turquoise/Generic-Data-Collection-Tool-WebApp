@@ -17,7 +17,7 @@ const ModifyPermissionHandleInputTemplate = (templateSet, submission) => {
   const templateType = {
     templateTypeId: '',
     templateCode: '',
-    pending:undefined,
+    status:undefined,
   };
   let templateSelected = templateSet.find(element => {
     return element.templateTypeId == submission.submission._id;
@@ -26,12 +26,12 @@ const ModifyPermissionHandleInputTemplate = (templateSet, submission) => {
   if (templateSelected == undefined) {
     templateType.templateCode = submission.submission.name;
     templateType.templateTypeId = submission.submission._id;
-    if(submission.submission.pending==undefined){
-      templateType.pending = submission.submission.pending;
-      templateType.pending = true;
+    if(submission.submission.status==undefined){
+      // templateType.pending = submission.submission.pending;
+      templateType.status = 'pending';
     }
     else{
-      templateType.pending = submission.submission.pending;
+      templateType.status = submission.submission.status;
     }
     templateSelected = templateType;
     templateSet.push(templateSelected);
@@ -328,7 +328,7 @@ const submissionChange = userSubmissions => {
         view: submission.view,
         viewCognos: submission.viewCognos,
         input: submission.input,
-        pending:submission.submission.pending==undefined?true:submission.submission.pending,
+        status:submission.submission.status==undefined?'pending':submission.submission.status,
       });
     });
   });
@@ -506,11 +506,12 @@ export const loadModifyPermissionPage =  ()=> async (dispatch,getState)=>{
   } = getState()
   
   const user = await usersController.fetchByEmail({email});
-  // 
+  //
+  console.log(user) 
   if(user.sysRole && tempUserSubmissions.length == 0){
       let UserSysRole = []
       // if there is no pending templates in the database
-      if(user.tempSysRole.length == 0){
+      if(user.tempSysRole.length == 0||user.tempSysRole==undefined){
         UserSysRole = user.sysRole
       }
       // there exist some pending templates
@@ -588,7 +589,7 @@ export const loadModifyPermissionPage =  ()=> async (dispatch,getState)=>{
                 userSubmission.submission = {
                   name: template.templateCode,
                   _id: template.templateTypeId,
-                  pending:template.pending,
+                  status:template.status,
                 }
                 let userSubmissionCopy = cloneDeep(userSubmission)
                 // get specific template information 

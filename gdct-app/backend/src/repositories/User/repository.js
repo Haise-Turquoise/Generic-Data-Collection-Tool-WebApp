@@ -67,7 +67,7 @@ export default class UserRepository extends BaseRepository {
       sys.org.forEach((orgList)=>{
         orgList.program.forEach((program)=>{
           program.template.forEach((template)=>{
-            template.pending = false
+            template.status = 'approved'
           })
         })
       })

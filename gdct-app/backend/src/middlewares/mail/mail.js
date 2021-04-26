@@ -12,8 +12,8 @@ import nodemailer from 'nodemailer';
 const mailConfig = {
   service:"hotmail",
   auth: {
-    user: 'yangjie.yang@mail.utoronto.ca',
-    pass: 'Yangjie961109',
+    user: 'ohfstest@outlook.com',
+    pass: 'Gdct1234',
   },
 };
 
@@ -24,8 +24,8 @@ const transporter = nodemailer.createTransport(mailConfig);
 export const sendPermissionChangeUserVerficationEmail = (username,email) => {
   // const { username, email } = registerData;
   const message = {
-    from: 'yangjie.yang@mail.utoronto.ca',
-    to: 'ohfstest@gmail.com',
+    from: 'ohfstest@outlook.com',
+    to: email,
     subject: 'Web-prototype User Email Verification',
     // text: `Hello ${username}! Activate your account here by going to this url: ${FRONTEND_SERVER}/verification/${id}`,
     html: `<p><b>Hello ${username}</b> 
@@ -45,8 +45,8 @@ export const sendPermissionChangeUserVerficationEmail = (username,email) => {
 export const sendUserVerficationEmail = registerData => {
   const { username, email } = registerData;
   const message = {
-    from: 'yangjie.yang@mail.utoronto.ca',
-    to: 'ohfstest@gmail.com',
+    from: 'ohfstest@outlook.com',
+    to: email,
     subject: 'Web-prototype User Email Verification',
     // text: `Hello ${username}! Activate your account here by going to this url: ${FRONTEND_SERVER}/verification/${id}`,
     html: `<p><b>Hello ${username}</b> 
@@ -72,8 +72,8 @@ export const sendAdminVerficationEmail = (orgInfo, hashedUsername, userId, usern
   });
   stringList.join('<br/>');
   const message = {
-    from: 'yangjie.yang@mail.utoronto.ca',
-    to: 'ohfstest@gmail.com',
+    from: 'ohfstest@outlook.com',
+    to: email,
     subject: 'Web-prototype Admin Email Verification',
     // text: `Hello ${username}! Activate your account here by going to this url: ${FRONTEND_SERVER}/verification/${id}`,
     html: `<p><b>Hello ${name}</b> 
@@ -110,8 +110,8 @@ export const sendPermissionChangeAdminVerficationEmail = (orgInfo, hashedUsernam
   });
   stringList.join('<br/>');
   const message = {
-    from: 'yangjie.yang@mail.utoronto.ca',
-    to: 'ohfstest@gmail.com',
+    from: 'ohfstest@outlook.com',
+    to: email,
     subject: 'Web-prototype Admin Email Verification',
     // text: `Hello ${username}! Activate your account here by going to this url: ${FRONTEND_SERVER}/verification/${id}`,
     html: `<p><b>Hello ${name}</b> 
@@ -144,7 +144,7 @@ export const sendPermissionChangeAdminVerficationEmail = (orgInfo, hashedUsernam
 export const sendUserActiveEmail = user => {
   const { username, hashedUsername, _id, email } = user;
   const message = {
-    from: 'yangjie.yang@mail.utoronto.ca',
+    from: 'ohfstest@outlook.com',
     to: 'ohfstest@gmail.com',
     subject: 'Web-prototype User Email Verification',
     // text: `Hello ${username}! Activate your account here by going to this url: ${FRONTEND_SERVER}/verification/${id}`,
@@ -163,7 +163,7 @@ export const sendUserActiveEmail = user => {
 export const sendUserRejectEmail = user => {
   const { username, email } = user;
   const message = {
-    from: 'yangjie.yang@mail.utoronto.ca',
+    from: 'ohfstest@outlook.com',
     to: 'ohfstest@gmail.com',
     subject: 'Web-prototype User Email Verification',
     // text: `Hello ${username}! Activate your account here by going to this url: ${FRONTEND_SERVER}/verification/${id}`,

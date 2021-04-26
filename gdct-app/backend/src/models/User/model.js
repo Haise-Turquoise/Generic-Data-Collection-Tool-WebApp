@@ -42,7 +42,7 @@ const User = new Schema(
                   {
                     templateTypeId: { type: ObjectId, ref: 'templateType' },
                     templateCode: { type: String, default: '' },
-                    pending:{type:Boolean, default:true},
+                    status:{type:String, default:'approved'},
                   },
                 ],
               },

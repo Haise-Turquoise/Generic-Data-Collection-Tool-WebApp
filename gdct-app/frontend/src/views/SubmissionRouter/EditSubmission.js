@@ -15,7 +15,7 @@ import { setExcelData } from '../../store/actions/ui/excel/commands';
 import { getSubmissionNoteRequest } from '../../store/thunks/submissionNote';
 import SubmissionNoteStore from '../../store/SubmissionNoteStore/store';
 import SubmissionWorkbookStore from '../../store/SubmissionWorkbookStore/store';
-
+import SubmissionController from '../../controllers/submission'
 import {
   selectFactoryRESTResponse,
   selectFactoryRESTResponseTableValues,
@@ -29,7 +29,7 @@ import {
 // import DOWNLOAD from '../../store/reducers/ui/excel/commands/DOWNLOAD';
 import { selectSubmissionNoteHistoryStore } from '../../store/SubmissionNoteHistoryStore/selectors';
 import workflowController from '../../controllers/workflow';
-
+import statusController from '../../controllers/status';
 const useStyles = makeStyles(theme => ({
   root: {
     width: '100%',
@@ -45,7 +45,8 @@ const EditSubmission = ({ history }) => {
   const [rejectUnavailable, setRejectUnavailable] = useState(true);
   const [isSubmitterOrInputter, setIsSubmitterOrInputter] = useState(false);
   const [isReviewerOrApprover, setIsReviewerOrApprover] = useState(false);
-
+  const [hasBeenSubmitted, setHasBeenSubmitted] = useState(false);
+  const [hasBeenApproved, setHasBeenApproved] = useState(false);
   const [submitId, setSubmitId] = useState('');
   const [approveId, setApproveId] = useState('');
   const [rejectId, setRejectId] = useState('');
@@ -89,25 +90,52 @@ const EditSubmission = ({ history }) => {
     shallowEqual,
   );
   useEffect(() => {
+    console.log('location.state.detail', location.state.detail)
+    
     if (location.state.detail) {
       if (
         location.state.detail.permission.find(
-          permission => permission === 'Submitter' || permission === 'Inputter',
+          permission => permission === 'Submitter' || permission === 'Inputter'|| permission == "Business Admin",
         ) !== undefined
       )
         setIsSubmitterOrInputter(true);
       if (
         location.state.detail.permission.find(
-          permission => permission === 'Reviewer' || permission === 'Submission Approver',
+          permission => permission === 'Reviewer' || permission === 'Submission Approver'||permission == "Business Admin",
         ) !== undefined
       )
         setIsReviewerOrApprover(true);
+        // check has the to-do object has been submitted at this moment
+        SubmissionController.fetchSubmissionByParentId(location.state.detail._id).then(childrenSubmissions=>{
+          
+          if(childrenSubmissions.length > 0){
+            let submitted = false;
+            childrenSubmissions.forEach(childrenSubmission=>{
+              statusController.fetchStatus(childrenSubmission.statusId).then(status=>{
+                if(status.name == 'Submitted'){
+                  setHasBeenSubmitted(true)
+                }
+              })
+            })
+          }
+          
+        })
+        // check has the submitted object has been approved at this moment
+        SubmissionController.fetchSubmission(location.state.detail._id).then(submission=>{
+          statusController.fetchStatus(submission.statusId).then(status=>{
+            if(status.name == 'Approved'){
+              setHasBeenApproved(true)
+            }
+          })
+        })
       workflowController
         .fetchProcess(location.state.detail.workflowProcessId)
         .then(workflowProcess => {
           if (workflowProcess !== undefined)
+            
             workflowProcess.to.forEach(process => {
               // console.log(process.statusId.name);
+              console.log('process.statusId.name', process.statusId.name)
               switch (process.statusId.name) {
                 case 'Submitted': {
                   setSubmitUnavailable(false);
@@ -169,7 +197,7 @@ const EditSubmission = ({ history }) => {
   const handleDownloadWorkbook = () => {
     setUserFeedback('Downloading !');
     setCursor('progress');
-    // DOWNLOAD(convertStateToReactState(submission.workbookData), UserFeedback);
+    DOWNLOAD(convertStateToReactState(submission.workbookData), UserFeedback);
 
     setTimeout(function () {
       UserFeedback('Download successfully !');
@@ -189,6 +217,7 @@ const EditSubmission = ({ history }) => {
     );
     // console.log('result', result)
     if (result) {
+      console.log('result')
       if (!role) {
         role = 'ChangeNote';
       }
@@ -259,7 +288,7 @@ const EditSubmission = ({ history }) => {
             variant="contained"
             size="large"
             style={{ cursor }}
-            disabled={approveUnavailable || !isReviewerOrApprover}
+            disabled={approveUnavailable || !isReviewerOrApprover || hasBeenApproved}
             onClick={() => handleChangeStatus(submission, submissionNote, 'Approved', approveId)}
           >
             Approve
@@ -269,8 +298,11 @@ const EditSubmission = ({ history }) => {
             variant="contained"
             size="large"
             style={{ cursor }}
-            disabled={rejectUnavailable || !isReviewerOrApprover}
-            onClick={() => handleChangeStatus(submission, submissionNote, 'Rejected', rejectId)}
+            disabled={rejectUnavailable || !isReviewerOrApprover|| hasBeenApproved}
+            onClick={() => {
+              backButtonAction();
+              handleChangeStatus(submission, submissionNote, 'Rejected', rejectId)
+            }}
           >
             Reject
           </Button>
@@ -279,8 +311,11 @@ const EditSubmission = ({ history }) => {
             variant="contained"
             size="large"
             style={{ cursor }}
-            disabled={submitUnavailable || !isSubmitterOrInputter}
-            onClick={() => handleChangeStatus(submission, submissionNote, 'Submitted', submitId)}
+            disabled={submitUnavailable || !isSubmitterOrInputter||hasBeenSubmitted}
+            onClick={() => {
+              
+              handleChangeStatus(submission, submissionNote, 'Submitted', submitId)
+            }}
           >
             Submit
           </Button>
