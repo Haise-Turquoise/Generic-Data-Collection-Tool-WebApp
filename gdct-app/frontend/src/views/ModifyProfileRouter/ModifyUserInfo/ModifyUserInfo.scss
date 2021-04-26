@@ -1,5 +1,50 @@
+.title {
+    position: absolute;
+    margin-top: 1%;
+    // margin-bottom: 50%;
+    margin-left: 0%;
+}
+
+.lastName {
+    position: absolute;
+    margin-top: 1%;
+    margin-left: 20%;
+}
+
+.firstName {
+    position: absolute;
+    margin-top: 1%;
+    margin-left: 40%;
+}
+
 .phoneNumber {
     position: absolute;
-    margin-top: 4%;
-    margin-left: 40%;
+    margin-top: 10%;
+    margin-left: 0%;
+}
+
+.ext {
+    position: absolute;
+    margin-top: 10%;
+    margin-left: 20%;
+}
+
+.email {
+    position: absolute;
+    margin-top: 28%;
+    margin-left: 0%;
+}
+
+.username {
+    position: absolute;
+    margin-top: 19%;
+    margin-left: 0%;
+}
+
+.modifyUserInfo {
+    &__buttonBox {
+        position: relative;
+        margin-top: 40%;
+        margin-left: 0%;
+    }  
 }
