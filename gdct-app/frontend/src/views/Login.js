@@ -88,6 +88,7 @@ export default function Login({ setLoggedIn }) {
 
   // useEffect(() => {
   //   AuthController.auto().then(auto => {
+  //     console.log(auto)
   //     if (auto.data === true) {
   //       setLoggedIn(true);
   //     }

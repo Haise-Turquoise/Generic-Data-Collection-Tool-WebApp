@@ -19,7 +19,6 @@ import {
 
 const ModifyProfileRouter = () => (
     <Switch>
-
       <Route exact path={ROUTE_MODIFY_PROFILE_USER_PERMISSION} component={ModifyPermission} />
       <Route exact path={ROUTE_MODIFY_PROFILE_USER_INFO} component={ModifyUserInfo} />
       <Route component={NotFound} />

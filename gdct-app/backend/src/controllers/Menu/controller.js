@@ -6,6 +6,7 @@ const MenuController = Service([MenuService], service => {
   const router = Router();
   return (() => {
     router.get('/menus', (req, res, next) => {
+      
       service
         .getAuthroizedMenus(req.session.roles)
         .then(res => {

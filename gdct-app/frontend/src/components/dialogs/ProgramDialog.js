@@ -28,6 +28,7 @@ const ProgramDialog = ({ selectedPrograms, handleChange, shouldClose = true }) =
   const handleSelect = useCallback(
     data => {
       handleChange(data);
+      console.log('data changes')
       if (shouldClose) handleClose();
     },
     [dispatch, shouldClose, handleChange],

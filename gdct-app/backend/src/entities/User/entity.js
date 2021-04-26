@@ -18,6 +18,8 @@ export default class UserEntity {
     ext,
     timestamp,
     updatedBy,
+    newPermissionPending,
+    tempSysRole,
   }) {
     this._id = _id;
     this.username = username;
@@ -37,5 +39,7 @@ export default class UserEntity {
     this.ext = ext;
     this.timestamp = timestamp;
     this.updatedBy = updatedBy;
+    this.newPermissionPending = newPermissionPending;
+    this.tempSysRole = tempSysRole;
   }
 }

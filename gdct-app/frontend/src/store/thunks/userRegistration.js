@@ -53,7 +53,30 @@ export const getUserInfo = () => (dispatch, getState) =>{
           // dispatch(userRegistrationStore.actions.setActiveStep(0));
     });
 }
+const ModifyPermissionHandleInputTemplate = (templateSet, submission) => {
+  const templateType = {
+    templateTypeId: '',
+    templateCode: '',
+    status:undefined,
+  };
+  let templateSelected = templateSet.find(element => {
+    return element.templateTypeId == submission.submission._id;
+  });
 
+  if (templateSelected == undefined) {
+    templateType.templateCode = submission.submission.name;
+    templateType.templateTypeId = submission.submission._id;
+    if(submission.submission.status==undefined){
+      // templateType.pending = submission.submission.pending;
+      templateType.status = 'pending';
+    }
+    else{
+      templateType.status = submission.submission.status;
+    }
+    templateSelected = templateType;
+    templateSet.push(templateSelected);
+  }
+};
 const handleInputTemplate = (templateSet, submission) => {
   const templateType = {
     templateTypeId: '',
@@ -91,6 +114,27 @@ const handleInputProgram = (programSet, submission) => {
   handleInputTemplate(programSelected.template, submission);
 };
 
+
+const ModifyPermissionHandleInputProgram = (programSet, submission) => {
+  const program = {
+    programId: '',
+    programCode: '',
+    template: [],
+  };
+  let programSelected = programSet.find(function (element) {
+    return element.programId === submission.program._id;
+  });
+
+  if (programSelected === undefined) {
+    program.programCode = submission.program.code;
+    program.programId = submission.program._id;
+    programSelected = program;
+    programSet.push(programSelected);
+  }
+
+  ModifyPermissionHandleInputTemplate(programSelected.template, submission);
+};
+
 const handleInputOrg = (organization, submission) => {
   const org = {
     orgId: '',
@@ -111,6 +155,36 @@ const handleInputOrg = (organization, submission) => {
   }
 
   handleInputProgram(organizationSelected.program, submission);
+};
+
+const ModifyPermissionHandleInputOrg = (organization, submission) => {
+  const org = {
+    orgId: '',
+    program: [],
+  };
+
+  let organizationSelected = organization.find(function (element) {
+    return element.orgId === submission.organization.id;
+  });
+  if (organizationSelected === undefined) {
+    if(submission.organization.IsActive == undefined){
+      org.IsActive = false;
+    }
+    else{
+      org.IsActive = submission.organization.IsActive;
+    }
+    
+    org.orgId = submission.organization.id;
+    org.name = submission.organization.name;
+    org.authorizedPerson = submission.organization.authorizedPerson;
+    organizationSelected = org;
+
+    organization.push(organizationSelected);
+  }
+  if(submission.organization.IsActive == undefined){
+    organizationSelected.IsActive = false;
+  }
+  ModifyPermissionHandleInputProgram(organizationSelected.program, submission);
 };
 
 const checkPerission = submission => {
@@ -271,11 +345,17 @@ const getTemplateType = userPrograms => {
 const sendRegistrationData = registerData => {
   return userController.create(registerData).catch(error => console.error(error));
 };
+const updatePermissionData = (email,permissionData) => {
+  
+  return userController.updatePermissionByUserEmail(email,permissionData).catch(error => console.error(error));
+};
 
 const submissionChange = userSubmissions => {
   const permissionList = [];
   userSubmissions.forEach(submission => {
+
     const permission = checkPerission(submission);
+
     permission.forEach(permission => {
       permissionList.push({
         organization: submission.organization,
@@ -288,6 +368,7 @@ const submissionChange = userSubmissions => {
         view: submission.view,
         viewCognos: submission.viewCognos,
         input: submission.input,
+        status:submission.submission.status==undefined?'pending':submission.submission.status,
       });
     });
   });
@@ -300,11 +381,10 @@ const handleInputSysRole = (data, permission, submission, userAppSys) => {
     role: '',
     org: [],
   };
-  console.log(data);
-  console.log(submission);
+
   if (submission[permission]) {
     let sysRoleSelected = data.sysRole.find(element => {
-      return element.role == permission;
+      return element.role == permission && element.appSys == userAppSys;
     });
     if (sysRoleSelected == undefined) {
       sysRoleSelected = sysRole;
@@ -313,6 +393,28 @@ const handleInputSysRole = (data, permission, submission, userAppSys) => {
       data.sysRole.push(sysRoleSelected);
     }
     handleInputOrg(sysRoleSelected.org, submission);
+  }
+};
+
+
+const ModifyPermissionHandleInputSysRole = (data, permission, submission, userAppSys) => {
+  const sysRole = {
+    appSys: '',
+    role: '',
+    org: [],
+  };
+
+  if (submission[permission]) {
+    let sysRoleSelected = data.sysRole.find(element => {
+      return element.role == permission && element.appSys == userAppSys;
+    });
+    if (sysRoleSelected == undefined) {
+      sysRoleSelected = sysRole;
+      sysRoleSelected.role = permission;
+      sysRoleSelected.appSys = userAppSys;
+      data.sysRole.push(sysRoleSelected);
+    }
+    ModifyPermissionHandleInputOrg(sysRoleSelected.org, submission);
   }
 };
 
@@ -339,6 +441,7 @@ export const orgChange = selectedOrganization => dispatch => {
 };
 
 export const programChange = selectedPrograms => dispatch => {
+  
   const userPrograms = [];
   selectedPrograms.forEach(program => {
     userPrograms.push(program.information);
@@ -349,6 +452,32 @@ export const programChange = selectedPrograms => dispatch => {
     dispatch(userRegistrationStore.actions.setUserSubmissionList(templateTypeList));
   });
 };
+
+export const changeSubmissionInModifyPermission = () => (dispatch, getState) => {
+  const {
+    UserRegistrationStore: { userSubmissions },
+  } = getState();
+  dispatch(userRegistrationStore.actions.setAbleToComplete(true));
+  const permissionList = submissionChange(userSubmissions);
+  const {
+    UserRegistrationStore: { userPermissions },
+  } = getState();
+  const userPermissionsCopy = cloneDeep(userPermissions);
+  permissionList.forEach(permission=>{
+    userPermissionsCopy.push(permission)
+  })
+  
+
+  dispatch(userRegistrationStore.actions.setUserPermissionList(userPermissionsCopy));
+};
+
+
+
+
+
+
+
+
 
 export const changeSubmission = () => (dispatch, getState) => {
   const {
@@ -401,8 +530,157 @@ export const searchOrganization = () => (dispatch, getState) => {
   dispatch(userRegistrationStore.actions.setOrganizationOptions(orgOptions));
 };
 
+
+
+
+
+
+
+export const loadModifyPermissionPage =  ()=> async (dispatch,getState)=>{
+  //get the current user email
+  const email = localStorage.getItem('currentUser');
+  //get the current user info from database
+  // let userSubmissionsL = []
+  const {
+    UserRegistrationStore: { tempUserSubmissions },
+  } = getState()
+  
+  const user = await usersController.fetchByEmail({email});
+  //
+  console.log(user) 
+  if(user.sysRole && tempUserSubmissions.length == 0){
+      let UserSysRole = []
+      // if there is no pending templates in the database
+      if(user.tempSysRole.length == 0||user.tempSysRole==undefined){
+        UserSysRole = user.sysRole
+      }
+      // there exist some pending templates
+      else{
+        UserSysRole = user.tempSysRole
+      }
+      
+      UserSysRole.forEach(sysRole=>{
+          let userSubmission = {
+          organization:null,
+          program:null,
+          submission:null,
+          approve:false,
+          review:false,
+          submit:false,
+          input:false,
+          view:false,
+          viewCognos:false,
+          approveAvailable:true,
+          reviewAvailable:true,
+          submitAvailable:true,
+          inputAvailable:true,
+          viewAvailable:true,
+          viewCognosAvailable:true,
+          appSys:null,
+          
+  
+          }
+          // assign appSys for each userSubmission
+          userSubmission.appSys = sysRole.appSys;
+          // set each boolean represent of role for each userSubmission
+          if(sysRole.role == 'Submitter'){
+                  
+                  userSubmission.submit = true;
+            }
+          else if(sysRole.role == 'Submission Approver'){
+                  
+                  userSubmission.approve = true;
+            }
+          else if(sysRole.role == 'Reviewer'){
+                  userSubmission.review = true;
+            }
+          else if(sysRole.role == 'Inputter'){
+                  userSubmission.input = true;
+            }
+          else if(sysRole.role == 'Viewer'){
+                  userSubmission.view = true;
+            }
+          else if(sysRole.role == 'Reporter'){
+                  userSubmission.viewCognos = true;
+            }
+          
+          // loop through each each organization
+          sysRole.org.forEach(async org=>{
+            // get the authorizedPerson Info
+            const orgInfo = await organizationController.fetchById(org.orgId)
+            userSubmission.organization = {
+              name:orgInfo.name,
+              id:orgInfo.id,
+              authorizedPerson:orgInfo.authorizedPerson,
+              IsActive : org.IsActive,
+              
+              }
+            // loop through each program
+            org.program.forEach(async program=>{
+              // get specific program information 
+              const programInfo = await programController.fetchById(program.programId)
+              userSubmission.program =  {
+                name:programInfo.name,
+                code:programInfo.code,
+                _id:programInfo._id,
+                }
+              // loop through each template
+              program.template.forEach(async template=>{
+                userSubmission.submission = {
+                  name: template.templateCode,
+                  _id: template.templateTypeId,
+                  status:template.status,
+                }
+                let userSubmissionCopy = cloneDeep(userSubmission)
+                // get specific template information 
+                const templateTypeInfo = await templateTypeController.fetchById(template.templateTypeId)
+                
+                userSubmissionCopy.approveAvailable = templateTypeInfo.isApprovable;
+                userSubmissionCopy.reviewAvailable = templateTypeInfo.isReviewable;
+                userSubmissionCopy.submitAvailable = templateTypeInfo.isSubmittable;
+                userSubmissionCopy.inputAvailable = templateTypeInfo.isInputtable;
+                userSubmissionCopy.viewAvailable = templateTypeInfo.isViewable;
+                userSubmissionCopy.viewCognosAvailable = templateTypeInfo.isReportable;
+                
+                
+                const {
+                  UserRegistrationStore: { tempUserSubmissions },
+                } = getState();
+                const userSubmissionsCopy = cloneDeep(tempUserSubmissions)
+                userSubmissionCopy.index = userSubmissionsCopy.length
+                
+                userSubmissionsCopy.push(userSubmissionCopy)
+                
+                dispatch(userRegistrationStore.actions.setTempUserSubmissionList(userSubmissionsCopy))
+
+                const permissionList = submissionChange(userSubmissionsCopy);
+                dispatch(userRegistrationStore.actions.setUserPermissionList(permissionList));
+                                
+              })
+            })
+          })
+      })
+
+  }
+
+
+  getAppSys().then(appSys => {
+    dispatch(userRegistrationStore.actions.setAppSysOptions(appSys));
+    getOrgGroup().then(orgGroupOptions => {
+      dispatch(userRegistrationStore.actions.setOrganizationGroupOptions(orgGroupOptions));
+    });
+    dispatch(userRegistrationStore.actions.setActiveStep(1));
+  });
+
+};
+
+
 export const stepNext = values => (dispatch, getState) => {
   dispatch(userRegistrationStore.actions.setRegistrationData(values));
+
+
+
+
   getAppSys().then(appSys => {
     dispatch(userRegistrationStore.actions.setAppSysOptions(appSys));
     getOrgGroup().then(orgGroupOptions => {
@@ -495,6 +773,39 @@ export const submit = () => (dispatch, getState) => {
     handleInputSysRole(userData, 'view', submission, userAppSys);
     handleInputSysRole(userData, 'viewCognos', submission, userAppSys);
   });
-  console.log('ready to send data');
+
   sendRegistrationData(userData);
 };
+
+
+
+
+export const updatePermission = () =>(dispatch, getState)=>{
+  const {
+    UserRegistrationStore: { userSubmissions, registrationData, userAppSys,tempUserSubmissions },
+  } = getState();
+  const userData = cloneDeep(registrationData);
+
+
+  tempUserSubmissions.forEach(tempSubmission=>{
+    ModifyPermissionHandleInputSysRole(userData, 'approve', tempSubmission, tempSubmission.appSys);
+    ModifyPermissionHandleInputSysRole(userData, 'review', tempSubmission, tempSubmission.appSys);
+    ModifyPermissionHandleInputSysRole(userData, 'input', tempSubmission, tempSubmission.appSys);
+    ModifyPermissionHandleInputSysRole(userData, 'submit', tempSubmission, tempSubmission.appSys);
+    ModifyPermissionHandleInputSysRole(userData, 'view', tempSubmission, tempSubmission.appSys);
+    ModifyPermissionHandleInputSysRole(userData, 'viewCognos', tempSubmission, tempSubmission.appSys);
+  })
+  userSubmissions.forEach(submission => {
+    ModifyPermissionHandleInputSysRole(userData, 'approve', submission, userAppSys);
+    ModifyPermissionHandleInputSysRole(userData, 'review', submission, userAppSys);
+    ModifyPermissionHandleInputSysRole(userData, 'input', submission, userAppSys);
+    ModifyPermissionHandleInputSysRole(userData, 'submit', submission, userAppSys);
+    ModifyPermissionHandleInputSysRole(userData, 'view', submission, userAppSys);
+    ModifyPermissionHandleInputSysRole(userData, 'viewCognos', submission, userAppSys);
+  });
+  const email = localStorage.getItem('currentUser');
+
+  userData.newTemplates = submissionChange(userSubmissions);
+  updatePermissionData(email,userData);
+}
+

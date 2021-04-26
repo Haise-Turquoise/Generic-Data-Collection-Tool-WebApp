@@ -13,6 +13,7 @@ import GDCTMenu from './views/GDCTMenu';
 import ModifyProfileRouter from './views/ModifyProfileRouter';
 import Programs from './views/Programs';
 import Statuses from './views/Statuses';
+import ModifyProfileRouter from './views/ModifyProfileRouter'
 import ReportingPeriods from './views/ReportingPeriods/ReportingPeriods';
 import AppConfigs from './views/AppConfigs';
 import SheetNames from './views/SheetNames';
