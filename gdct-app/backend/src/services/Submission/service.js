@@ -19,7 +19,6 @@ import { saveGoogleSheetInSubmission }from '../../middlewares/googleapis/save'
 import ReportingPeriodRepository from '../../repositories/ReportingPeriod';
 import { mastervalueExtraction } from '../../utils/mastervalue/mastervalueExtraction';
 import { mastervaluePrepopulation } from '../../utils/mastervalue/mastervaluePrepopulation';
-import { mastervaluePrepopulationTest } from '../../utils/mastervalue/mastervaluePrepopulation';
 import {ObjectId} from 'mongodb';
 const mongoose = require('mongoose');
 mongoose.Promise = require('bluebird');
@@ -64,10 +63,9 @@ export default class SubmissionService {
 
   async createSubmissionBaseOnTemplatePackage(submission) {
     // Clone the tempalte's workbook data to be used by the user
-    console.log('createSubmissionBaseoN')
     return this.programRepository.findById(submission.programId).then(program => {
       return this.templateRepository.findById(submission.templateId).then(template => {
-        return mastervaluePrepopulationTest(template.templateData, submission.orgId).then(workbook => {
+        return mastervaluePrepopulation(template.templateData, submission.orgId).then(workbook => {
           return this.templateTypeRepository.findById(template.templateTypeId).then(templateType => {
             return this.workflowProcessRepository
               .find({ workflowId: templateType.submissionWorkflowId })
@@ -112,8 +110,7 @@ export default class SubmissionService {
   async uploadSubmissionWorkbook(submission, workbookData, submissionNote) {
     const currentStatus = await this.statusRepository.findOneByID(submission.statusId);
     if (currentStatus.name == 'Approved' || currentStatus.name == 'Submitted') return;
-
-    submission.workbookData = workbookData;
+    submission.workbookData = await mastervaluePrepopulation(workbookData, submission.orgId);
     submission.updatedDate = new Date();
     submission.parentId = submission.parentId ? submission.parentId : submission._id;
 
@@ -192,7 +189,6 @@ export default class SubmissionService {
     const newSubmission = await this.submissionRepository.findById(submission._id);
     
     if (newSubmission.googleSheetId){
-      console.log('is using googleSheet')
       await Promise.resolve(saveGoogleSheetInSubmission(newSubmission.googleSheetId));
       submission = await this.submissionRepository.findById(submission._id);
     }

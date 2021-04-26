@@ -127,9 +127,11 @@ class SpreadSheet extends Component{
       }
 
       if (varianceCol && this.prevVarianceSelection) {
+        console.log(this.prevVarianceSelection)
+        this.insertVariance(this.prevVarianceSelection);
       }
 
-      this.sheet.reRender();
+      // this.sheet.reRender();
     }
     
     // Callback funtion for variance insertion
@@ -252,9 +254,10 @@ class SpreadSheet extends Component{
     // x-data-spreadsheet can understand. At the end we are saving this Json array 
     // to our DB.
     fileImportHandler(event) {
-      const wbData = excelImportHandler(event);
+      excelImportHandler(event, (data)=>{this.sheet.loadData(data).reRender()});
       // Rerender the file
-      this.sheet.loadData(wbData).reRender();
+      
+      // this.sheet.loadData(wbData).reRender();
     }
 
     render(){

@@ -6,7 +6,7 @@ import COATreeRepository from '../../repositories/COATree';
 import COAGroupRepository from '../../repositories/COAGroup';
 import SheetNameRepository from '../../repositories/SheetName';
 import MasterValueRepository from '../../repositories/MasterValue';
-import { extractAttributeIds1, extractCategoryIds1 } from './mastervaluePrepopulation';
+import { extractAttributeIds, extractCategoryIds } from './mastervaluePrepopulation';
 
 const reportingPeriodRepository = Container.get(ReportingPeriodRepository);
 const coaTreeRepository = Container.get(COATreeRepository);
@@ -32,8 +32,8 @@ export async function mastervalueExtraction(
     // Iterate through the sheet
     for (const sheet of workbookData){
 
-      const attributeMap = extractAttributeIds1(sheet);
-      const categoryMap = extractCategoryIds1(sheet);
+      const attributeMap = extractAttributeIds(sheet);
+      const categoryMap = extractCategoryIds(sheet);
       const categoryIDs = Object.keys(categoryMap);
       const attributeIDs = Object.keys(attributeMap);
       if (categoryIDs.length > 0 && attributeIDs.length > 0){
@@ -158,7 +158,6 @@ export async function mastervalueExtraction(
             }
           }
         }
-        console.log('master value', masterValues)
         Promise.all(masterValues).then(() => {
           masterValueRepository.bulkUpdate(id, masterValues);
         });

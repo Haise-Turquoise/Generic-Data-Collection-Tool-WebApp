@@ -205,7 +205,7 @@ const SubmissionDashboard = ({ history }) => {
         tooltip: 'Upload Submission',
         onClick: (_event, submission) =>
           history.push({
-            pathname: `/submission/dashboard/createSubmission/${submission._id}`,
+            pathname: `/submission/createSubmission/${submission._id}`,
             state: { detail: submission },
           }),
       },

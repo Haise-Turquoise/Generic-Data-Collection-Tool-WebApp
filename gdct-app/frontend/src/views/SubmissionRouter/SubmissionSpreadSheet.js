@@ -10,9 +10,9 @@ import Button from '@material-ui/core/Button';
 // Sheet style Option
 const sheetOption = {
     mode: 'edit', // edit | read
-    showToolbar: true,
+    showToolbar: false,
     showGrid: true,
-    showContextmenu: true,
+    showContextmenu: false,
     view: {
       height: () => document.documentElement.clientHeight*0.86,
       width: () => document.documentElement.clientWidth*0.975,

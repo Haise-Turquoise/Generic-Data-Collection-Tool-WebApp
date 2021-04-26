@@ -300,6 +300,7 @@ const EditSubmission = ({ history }) => {
 
         </div>
       </Paper>
+      <a id="download" style={{display:'none'}}></a>
     </div>
   );
 };
