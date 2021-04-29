@@ -19,7 +19,7 @@ const CreateAuditLog = (email, activity, moduleName, recordId, oldValue, newValu
             user: {
                 _id: user._id,
                 email: user.email,
-                orgId: !(IdentitiesWithNoOrg.includes(user.sysRole[0].role)) && user.sysRole[0].org.length > 0 ? user.data.sysRole[0].org[0].orgId : ""
+                orgId: !(IdentitiesWithNoOrg.includes(user.sysRole[0].role)) && user.sysRole[0].org.length > 0 ? user.sysRole[0].org[0].orgId : ""
             },
             activity: activity,
             moduleName: moduleName,
