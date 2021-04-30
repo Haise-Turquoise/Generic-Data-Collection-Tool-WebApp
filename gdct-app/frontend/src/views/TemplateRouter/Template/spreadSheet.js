@@ -7,12 +7,10 @@ import spreadSheetController from '../../../controllers/spreadSheet';
 import PopulationSelectionMenu from '../../PopulationSelectionMenu';
 import VarianceInsertionMenu from '../../InsertVarianceMenu'
 import Button from '@material-ui/core/Button';
-import { excelJsStyle2Xspreadsheet, isObjectEmpty, 
-  calculateMergeArray, digitToAlpha,
+import { digitToAlpha,
   generateCategoryMap, generateAttributeMap, 
   findWordInRow, findLastAttributeCol, 
   templateDownloader, excelImportHandler} from '../../../tools/misc';
-import Excel from 'exceljs';
 
 // Sheet style Option
 const sheetOption = {
@@ -107,6 +105,7 @@ class SpreadSheet extends Component{
         this.disablePreview()
         const workBookData = this.sheet.getData();
         templateController.sheetUpdate(this.id, workBookData);
+        console.log(workBookData)
       }
     }
 
@@ -127,11 +126,11 @@ class SpreadSheet extends Component{
       }
 
       if (varianceCol && this.prevVarianceSelection) {
-        console.log(this.prevVarianceSelection)
         this.insertVariance(this.prevVarianceSelection);
+      }else{
+        this.sheet.reRender();
       }
 
-      // this.sheet.reRender();
     }
     
     // Callback funtion for variance insertion
@@ -196,7 +195,6 @@ class SpreadSheet extends Component{
 
       // Get the master values from DB
       spreadSheetController.fetchByOrgID(orgID, categories, attributes).then(data=>{
-        console.log(data)
         data.forEach(element => {
           const COAID = element["CategoryId"];
           const attributeId = element["AttributeId"];

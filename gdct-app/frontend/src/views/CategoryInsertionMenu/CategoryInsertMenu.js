@@ -167,7 +167,7 @@ class categoryInsertMenu extends React.Component{
     let keys = Object.keys(this.InsertedID);
     keys.forEach((id)=>{
       // @ts-ignore
-      let text = this.InsertedID[id].innerHTML;
+      let text = this.InsertedID[id].innerText;
       let unit = this.InsertedID[id].className;
       categories[id] = [text.substring(6), unit];
     })
@@ -229,7 +229,7 @@ class categoryInsertMenu extends React.Component{
             <DialogTitle id="simple-dialog-title">Insert Category</DialogTitle>
             <div id="formSection" ref="formSection" >
                 <form>
-                    <select name="category_name" id="category_name" ref={this.categoryRef} onChange={()=>{console.log('onchange!'); this.update_subform(1, 
+                    <select name="category_name" id="category_name" ref={this.categoryRef} onChange={()=>{ this.update_subform(1, 
                     // @ts-ignore
                     this.category)}}>
                       <option>Please select a Catagory</option>

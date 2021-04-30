@@ -19,7 +19,10 @@ class attributeInsertionMenu extends React.Component{
 
     // Retreve information from the server
     componentDidMount(){
-        spreadSheetController.fetchCategoryAndAttribute().then(data=>this.data = data['Attributes']);
+        spreadSheetController.fetchCategoryAndAttribute().then(data=>{
+            this.data = data['Attributes'];
+            this.data.sort((a, b) => -1 *a.name.localeCompare(b.name));
+        });
     }
 
     // Deconstruct the information and but them in the option menu
