@@ -30,6 +30,7 @@ const initialState = {
   userOrganizations: [],
   userPrograms: [],
   userSubmissions: [],
+  tempUserSubmissions:[],
   userPermissions: [],
   ableToComplete: false,
   searchKey: '',
@@ -87,6 +88,10 @@ const setUserSubmissionList = (state, { payload }) => ({
   ...state,
   userSubmissions: payload,
 });
+const setTempUserSubmissionList = (state, { payload }) => ({
+  ...state,
+  tempUserSubmissions: payload,
+});
 const setUserPermissionList = (state, { payload }) => ({
   ...state,
   userPermissions: payload,
@@ -127,6 +132,7 @@ const reducers = {
   setUserOrganizations,
   setUserPrograms,
   setUserSubmissionList,
+  setTempUserSubmissionList,
   setUserPermissionList,
   setAbleToComplete,
   setSearchKey,

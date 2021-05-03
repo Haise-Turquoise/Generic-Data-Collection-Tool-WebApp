@@ -11,6 +11,14 @@ const UserController = Service([UserService], service => {
       // console.log(userData)
       service.register(userData).catch(next);
     });
+
+    router.post(`/users/updatePermission/:email`, (req, res, next) => {
+ 
+      const permissionData = req.body;
+      const email = req.params;
+      
+      service.updatePermissionByUserEmail(email,permissionData).catch(next);
+    });
     router.get(`/:username`, (req, res, next) => {
       // console.log('reach backend controller')
       const { username } = req.params;
@@ -31,6 +39,15 @@ const UserController = Service([UserService], service => {
         .then(res.json({ message: 'You have processed the email' }))
         .catch(next);
     });
+
+    router.get(`/users/verifyNewUserPermission`, (req, res, next) => {
+      const { approve, _id, hashedUsername, orgId } = req.query;
+      service
+        .sendUserPermissionActiveEmail(approve, _id, orgId)
+        .then(res.json({ message: 'You have processed the email' }))
+        .catch(next);
+    });
+
 
     router.get(`/users/activeUser`, (req, res, next) => {
       const { _id, hashedUsername } = req.query;

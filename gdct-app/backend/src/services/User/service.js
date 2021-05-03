@@ -3,6 +3,7 @@ import UserRepository from '../../repositories/User';
 import AppSysRoleRepository from '../../repositories/AppSysRole';
 import {
   sendUserVerficationEmail,
+  sendPermissionChangeUserVerficationEmail,
   sendAdminVerficationEmail,
   sendUserActiveEmail,
   sendUserRejectEmail,
@@ -124,6 +125,32 @@ export default class UserService {
     });
   }
 
+
+
+  async sendUserPermissionActiveEmail(approve, _id, orgId) {
+    // need to finish the logic, replace appSys with tempAppSys, clean the tempAppSys, newTemplates. Set the newPermissionPending to false
+    let checkActive = true;
+    this.UserRepository.findById(_id).then(user => {
+      if (approve == 'true') {
+        // user.sysRole.forEach(sysRole => {
+        //   sysRole.org.forEach(org => {
+        //     if (org.orgId == orgId) org.IsActive = true;
+        //     checkActive = checkActive && org.IsActive;
+        //   });
+        // });
+        if (checkActive) {
+          sendUserActiveEmail(user);
+        }
+        
+        this.UserRepository.updateSysRoleFromTempSysRole(_id, user.tempSysRole);
+        return 'You have approved the user. The user will active the account by email.';
+      }
+      sendUserRejectEmail(user);
+      return 'You have rejected the user. The user will be notified by email.';
+    });
+  }
+
+
   async activeUser(_id) {
     this.UserRepository.findById({ _id }).then(model => {
       console.log(model);
@@ -144,8 +171,79 @@ export default class UserService {
   }
 
   async fetchUserByUserName(username) {
-    // const fetchUser = await this.UserRepository.findByUserName(username);
-    // console.log('fetchUser', fetchUser)
+
     return this.UserRepository.findByUserName(username);
+  }
+
+  async updatePermissionByUserEmail(email,permissionData){
+
+
+    let registerData = permissionData.permissionData;
+    
+    const promiseQuery = [];
+    registerData.sysRole.forEach(sysRole => {
+ 
+      switch (sysRole.role) {
+        case 'approve': {
+          sysRole.role = 'Submission Approver';
+          break;
+        }
+        case 'review': {
+          sysRole.role = 'Reviewer';
+          break;
+        }
+        case 'input': {
+          sysRole.role = 'Inputter';
+          break;
+        }
+        case 'view': {
+          sysRole.role = 'Viewer';
+          break;
+        }
+        case 'submit': {
+          sysRole.role = 'Submitter';
+          break;
+        }
+        case 'viewCognos': {
+          sysRole.role = 'Reporter';
+          break;
+        }
+        default:
+          break;
+      }
+      promiseQuery.push(
+        this.AppSysRoleReposiotry.findAndCreateAppSysRole(sysRole.appSys, sysRole.role).then(
+          appSysRole => {
+            sysRole.appSysRoleId = appSysRole._id;
+            sysRole._id = appSysRole._id;
+          },
+        ),
+      );
+    });
+    await Promise.all(promiseQuery);
+    const orgList = [];
+    const newTemplates = permissionData.permissionData.newTemplates;
+    newTemplates.forEach(template=>{
+      let orgInfo = orgList.find(function(element){
+        return element.orgId == template.organization.id;
+      })
+      if(orgInfo == undefined){
+        const orgData = {
+          authorizedPerson:template.organization.authorizedPerson,
+          name:template.organization.name,
+          orgId:template.organization.id,
+          permission:[],
+        }
+        orgInfo = orgData;
+        orgList.push(orgInfo);
+        orgInfo.permission.push({
+          template: template.submission.name,
+          role: template.permission,
+          programName:template.program.name,
+          programCode:template.program.code,
+        })
+      }
+    })
+    return this.UserRepository.updatePermissionByUserEmail(email.email,permissionData.permissionData,orgList)
   }
 }
