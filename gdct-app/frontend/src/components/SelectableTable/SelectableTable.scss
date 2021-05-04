@@ -3,11 +3,17 @@
     cursor: pointer;
 
     &--selected {
-      background-color: rgb(238, 238, 238);
+      background-color: #3f51b5;
+      color: aqua;
     }
 
     &:hover {
-      background-color: lightgray;
+      background-color:lightgray;
     }
+
   }
 }
+// #active{
+//   color: white;
+//   background-color: #3f51b5;
+// }
