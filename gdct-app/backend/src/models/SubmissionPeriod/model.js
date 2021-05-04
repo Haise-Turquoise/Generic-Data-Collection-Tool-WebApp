@@ -11,6 +11,8 @@ const SubmissionPeriodModel = model(
       name: { type: String },
       startDate: { type: Date },
       endDate: { type: Date },
+      timestamp: { type: Date },
+      updatedBy: { type: String },
     },
     { minimize: false, autoIndex: true },
   ),

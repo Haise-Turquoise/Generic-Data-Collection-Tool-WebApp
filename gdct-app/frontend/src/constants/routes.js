@@ -17,5 +17,5 @@ export const ROUTE_CATEGORY_ATTRIBUTES = `${ROUTE_CATEGORY}/attribute`;
 export const ROUTE_CATEGORY_GROUPS = `${ROUTE_CATEGORY}/group`;
 
 export const ROUTE_MODIFY_PROFILE = '/user/profile';
-export const ROUTE_MODIFY_PROFILE_USER_INFO = `${ROUTE_MODIFY_PROFILE}/modifyuserInfo`;
-export const ROUTE_MODIFY_PROFILE_USER_PERMISSION = `${ROUTE_MODIFY_PROFILE}/modifypermission`;
+export const ROUTE_MODIFY_PROFILE_USER_INFO = `${ROUTE_MODIFY_PROFILE}/personaldetails`;
+export const ROUTE_MODIFY_PROFILE_USER_PERMISSION = `${ROUTE_MODIFY_PROFILE}/submissionpermissions`;
