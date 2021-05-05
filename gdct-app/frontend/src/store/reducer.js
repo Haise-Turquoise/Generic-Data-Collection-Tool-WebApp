@@ -40,7 +40,7 @@ import UserRegistrationStore from './UserRegistrationStore/store';
 import WorkflowProcessesStore from './WorkflowProcessesStore/store';
 import TransferStatusStore from './TransferStatusStore/store';
 
-export const appReducer = combineReducers({
+export const root = combineReducers({
   UserStore: UserStore.reducer,
   StatusesStore: StatusesStore.reducer,
   ProgramsStore: ProgramsStore.reducer,
@@ -83,12 +83,5 @@ export const appReducer = combineReducers({
 
   ui,
 });
-const rootReducer = (state, action) => {
-  // console.log('action', action)
-  if (action.type === 'USER/LOGOUT') {
-    state = undefined
-  }
 
-  return appReducer(state, action)
-}
-export default rootReducer;
+export default root;

@@ -134,8 +134,7 @@ class SubmissionSpreadSheet extends Component{
     }
 
     insertOrg = (orgId) => {
-      if (this.edit){
-        orgController.fetchById(Number(orgId)).then(org=>{
+      orgController.fetchById(Number(orgId)).then(org=>{
         const data = this.sheet.getData()
         for (let i = 1; i < data.length; i++){
           const currSheet = data[i];
@@ -151,7 +150,6 @@ class SubmissionSpreadSheet extends Component{
         }
         this.sheet.reRender();
       })
-      }
     }
 
     render(){

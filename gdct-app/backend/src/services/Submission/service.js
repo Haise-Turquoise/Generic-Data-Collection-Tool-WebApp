@@ -98,7 +98,7 @@ export default class SubmissionService {
                 submission.workbookData = template.templateData;
 
                 submission.workflowId = templateType.submissionWorkflowId;
-                console.log('create submission')
+                
                 return this.submissionRepository.create(submission);
               });
           });
@@ -306,7 +306,6 @@ export default class SubmissionService {
 
   // This is specified one user can only belongs to organization
   async findSubmission(email) {
-    console.log('email', email)
     const count = 0;
     const userInfo = await this.usersRepository.findByEmail(email);
     
@@ -322,16 +321,14 @@ export default class SubmissionService {
           programIds.push(program.programId);
         });
       });
-      
+
 
     }else{
-      console.log('reach here')
       const programID = await this.programRepository.find({})
       programID.forEach(element=>{programIds.push(element._id)})
     }
-    console.log('programAndTempTypes',programAndTempTypes)
+    
     return this.findTemplatePackage(programAndTempTypes).then(templatePackages => {
-      console.log('templatePackages', templatePackages)
       const name = 'Unsubmitted';
       return this.statusRepository.findByName(name).then(status => {
         const promiseQuery1 = [];
@@ -342,7 +339,6 @@ export default class SubmissionService {
               .then(submissions => {
                 // console.log('submissions',submissions)
                 if (!submissions[0]) {
-                  console.log('first time?')
                   const { templateIds } = templatePackage;
                   const promiseQuery3 = [];
                   if (templateIds !== undefined) {

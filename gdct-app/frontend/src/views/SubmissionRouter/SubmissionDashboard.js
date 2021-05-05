@@ -128,7 +128,6 @@ const SubmissionDashboard = ({ history }) => {
 
   // Set the length state after array change, cause a refresh for the page
   useEffect(() => {
-    console.log('submittedSubmission')
     setSubmittedLength(submittedSubmission.length)
   }, [submittedSubmission])
 
@@ -141,7 +140,6 @@ const SubmissionDashboard = ({ history }) => {
   }, [rejectedSubmission])
 
   useEffect(() => {
-    console.log('setUnsubmittedLength')
     setUnsubmittedLength(unsubmittedSubmission.length)
   }, [unsubmittedSubmission])
 
@@ -225,7 +223,6 @@ const SubmissionDashboard = ({ history }) => {
   );
 
   useEffect(() => {
-    console.log('loading')
     dispatch(getSubmissionsRequest());
   }, [dispatch]);
 
