@@ -86,13 +86,6 @@ export default function Login({ setLoggedIn }) {
   const [checkLogin, setCheckLogin] = useState('false');
   const [open, setOpen] = React.useState(false);
 
-  // useEffect(() => {
-  //   AuthController.auto().then(auto => {
-  //     if (auto.data === true) {
-  //       setLoggedIn(true);
-  //     }
-  //   });
-  // }, []);
   const displayUserFeedback = () => {
     setOpen(true);
   };

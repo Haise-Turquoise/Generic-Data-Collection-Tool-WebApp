@@ -5,17 +5,15 @@ import AppSysRoleService from '../../services/AppSysRole';
 const AppSysRoleController = Service([AppSysRoleService], service => {
   const router = Router();
   return (() => {
-    router.get('/appSysRoles', (req, res, next) => {
-      // Get query from middleware -- auth handler
-
+    router.get('/appSysRoles/fetch', (req, res, next) => {
       service
         .findAppSysRole({})
-        .then(AppSysRoles => res.json({ AppSysRoles }))
+        .then(AppSysRoles => res.json( AppSysRoles ))
         .catch(next);
     });
 
-    router.get('/appSysRoles/:_id', (req, res, next) => {
-      const { _id } = req.params;
+    router.post('/appSysRoles/fetchAppSysRole', (req, res, next) => {
+      const { _id } = req.body;
 
       service
         .findById(_id)
@@ -23,16 +21,16 @@ const AppSysRoleController = Service([AppSysRoleService], service => {
         .catch(next);
     });
 
-    router.post('/appSysRoles', (req, res, next) => {
+    router.post('/appSysRoles/create', (req, res, next) => {
       service
         .createAppSysRole(req.body.AppSysRole)
         .then(AppSysRole => res.json({ AppSysRole }))
         .catch(next);
     });
 
-    router.put('/appSysRoles/:_id', (req, res, next) => {
-      const { _id } = req.params;
+    router.put('/appSysRoles/update', (req, res, next) => {
       const { AppSysRole } = req.body;
+      const _id = AppSysRole._id;
 
       service
         .updateAppSysRole(_id, AppSysRole)
@@ -40,8 +38,8 @@ const AppSysRoleController = Service([AppSysRoleService], service => {
         .catch(next);
     });
 
-    router.delete('/appSysRoles/:_id', (req, res, next) => {
-      const { _id } = req.params;
+    router.post('/appSysRoles/delete', (req, res, next) => {
+      const { _id } = req.body;
 
       service
         .deleteAppSysRole(_id)

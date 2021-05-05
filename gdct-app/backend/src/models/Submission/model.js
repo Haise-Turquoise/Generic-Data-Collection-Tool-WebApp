@@ -9,18 +9,13 @@ const SubmissionModel = model(
       id: { type: Number },
       templateId: { type: ObjectId, ref: 'Template' },
       templatePackageId: { type: ObjectId, ref: 'TemplatePackage' },
-
       name: { type: String },
-
       orgId: { type: Number, ref: 'Organization' },
       programId: { type: ObjectId, ref: 'Program' },
-
       submittedDate: { type: Date, default: Date.now },
-
       workbookData: { type: Object },
       workflowProcessId: { type: ObjectId },
       workflowId: { type: ObjectId },
-      // phase: { type: String, default: 'edit' },
       statusId: { type: ObjectId, ref: 'Status' },
       year: { type: String },
       submissionPeriodId: { type: ObjectId },

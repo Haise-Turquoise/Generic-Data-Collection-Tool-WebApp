@@ -65,10 +65,6 @@ const TemplatePackages = () => {
     }),
     shallowEqual,
   );
-  // console.log('templatespackages', templatePackages);
-  // console.log('WholeLookupStatuses', WholeLookupStatuses);
-  // console.log('lookupStatuses', lookupStatuses)
-  // console.log('lookupSubmissionPeriods', lookupSubmissionPeriods)
 
   // Convert Date format
   templatePackages.forEach(templatePackage => {

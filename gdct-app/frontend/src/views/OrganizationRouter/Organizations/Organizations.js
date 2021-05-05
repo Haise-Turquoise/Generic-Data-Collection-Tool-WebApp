@@ -11,7 +11,6 @@ import { selectFactoryRESTResponseTableValues } from '../../../store/common/REST
 import { selectOrgsStore } from '../../../store/OrganizationsStore/selectors';
 import { getOrgsRequest } from '../../../store/thunks/organization';
 import { calculateOptions } from '../../../tools/misc';
-import TimeoutModal from '../../Timeout'
 
 const HeaderActions = () => {
   const history = useHistory();
@@ -72,20 +71,6 @@ const Organizations = ({ history }) => {
     ],
     [history],
   );
-
-  //*implement updateby and modified on columns
-  // const editable = useMemo(
-  //   () => ({
-  //     onClick: Orgs =>
-  //       new Promise((resolve, reject) => {
-  //         Orgs.updatedBy=localStorage.getItem('currentUser')
-  //         const event = new Date();
-  //         Orgs.timestamp = event.toLocaleString(); 
-  //         dispatch(updateOrgsRequest(Orgs, resolve, reject));
-  //       }),
-  //   }),
-  //   [dispatch],
-  // );
 
   useEffect(() => {
     dispatch(getOrgsRequest());

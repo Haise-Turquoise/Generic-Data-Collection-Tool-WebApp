@@ -428,34 +428,4 @@ export default class SubmissionService {
       });
     });
   }
-
-  async openTemplate(submissionId, userEmail){
-    // Temporary email
-    userEmail = 'test34973737@gmail.com';
-    //Retrieves template JSON from database
-    const submission = await this.submissionRepository.findById(submissionId); 
-    //Runs if there is already an existing google sheet 
-    if (submission.googleSheetId){
-      const res = await this.googleSheetRepository.findById(submission.googleSheetId);
-      await Promise.resolve(addEditor(res.googleSheetId, userEmail));
-      return res.googleSheetId;
-    }
-
-    let openPeriods = await this.reportingPeriodRepository.findSubmissionOpen();
-    // Sends in the data from google sheet API and retrieves spreadsheetID
-    let res = await Promise.resolve(createSpreadsheet(submission.workbookData.data, userEmail, true, openPeriods)); 
-    const { userSpreadsheetId, duplicateSpreadsheetId, triggerId } = res;
-    // Store Google Sheet Model to the database
-    const googleSheetModel = {
-      submissionId: submissionId,
-      googleSheetId: userSpreadsheetId,
-      duplicateId: duplicateSpreadsheetId,
-      triggerId: triggerId,
-    }
-    res = await this.googleSheetRepository.create(googleSheetModel);
-    // Update googleSheetId on templateModel
-    this.submissionRepository.updateGoogleSheetId(submissionId, res._id);
-    // createSheet(template.templateData.sheets, spreadsheetId);   
-    return userSpreadsheetId;
-  }
 }

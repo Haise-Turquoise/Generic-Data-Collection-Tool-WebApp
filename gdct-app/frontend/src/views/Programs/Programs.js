@@ -17,7 +17,7 @@ import { selectProgramsStore } from '../../store/ProgramsStore/selectors';
 import { calculateOptions } from '../../tools/misc'
 
 import ErrorBanner from '../ErrorBanner';
-import ProgramController from '../../controllers/programs'
+import ProgramController from '../../controllers/Program'
 import CreateAuditLog from '../AuditLog_Global'
 
 const ProgramHeader = () => {

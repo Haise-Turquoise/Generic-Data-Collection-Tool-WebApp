@@ -17,6 +17,7 @@ const AuditLogController = Service([AuditLogService], service => {
     // Create one Audit Log
     router.post(`/createAuditLog`, (req, res, next) => {
       const { AuditLogInfo } = req.body;
+
       service
         .createAuditLog(AuditLogInfo)
         .catch(next)

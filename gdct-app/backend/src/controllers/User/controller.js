@@ -8,19 +8,25 @@ const UserController = Service([UserService], service => {
   return (function () {
     router.post(`/users/registerUser`, (req, res, next) => {
       const { userData } = req.body;
-      // console.log(userData)
       service.register(userData).catch(next);
     });
-    router.get(`/:username`, (req, res, next) => {
-      // console.log('reach backend controller')
-      const { username } = req.params;
-      // console.log(username)
-      // return service.fetchUserByUserName(username)
+
+    // User Profile Update
+    router.put(`/updatePopulatedUser`, (req, res, next) => {
+      const { userData } = req.body;
+      const { _id } = userData._id;
+      
+      service
+        .modifyUserInfo(_id, userData)
+        .catch(next);
+    });
+
+    router.get(`/fetchUserByUserName`, (req, res, next) => {
+      const { username } = req.body;
+
       service
         .fetchUserByUserName(username)
-        .then(user => {
-          return res.json({ user });
-        })
+        .then(user => res.json({ user }))
         .catch(next);
     });
 
@@ -37,16 +43,6 @@ const UserController = Service([UserService], service => {
       service
         .activeUser(_id)
         .then(res.json({ message: 'You have activated the account' }))
-        .catch(next);
-    });
-
-    // User Profile Update
-    router.put(`/:_id`, (req, res, next) => {
-      const { _id } = req.params;
-      const { userData } = req.body;
-      
-      service
-        .modifyUserInfo(_id, userData)
         .catch(next);
     });
 

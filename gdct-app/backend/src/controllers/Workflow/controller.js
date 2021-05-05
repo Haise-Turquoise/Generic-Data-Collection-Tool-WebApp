@@ -5,42 +5,32 @@ import WorkflowService from '../../services/Workflow/Workflow';
 const WorkflowController = Service([WorkflowService], service => {
   const router = Router();
   return (() => {
-    router.get('/workflows', (req, res, next) => {
-      // Get query from middleware -- auth handler
-
+    router.get('/workflows/fetch', (req, res, next) => {
       service
         .findWorkflow({})
-        .then(workflows => res.json({ data: workflows }))
+        .then(workflows => res.json( workflows ))
         .catch(next);
     });
 
-    router.get('/workflows/:_id', (req, res, next) => {
-      const { _id } = req.params;
-
+    router.post('/workflows/create', (req, res, next) => {
       service
-        .findWorkflowById(_id)
-        .then(workflow => res.json({ data: workflow }))
-        .catch(next);
-    });
-
-    router.post('/workflows', (req, res, next) => {
-      service
-        .createWorkflow(req.body.data)
+        .createWorkflow(req.body.workflowData)
         .then(workflow => res.json({ workflow }))
         .catch(next);
     });
 
-    router.put('/workflows/:_id', (req, res, next) => {
-      const { _id } = req.params;
+    router.put('/workflows/update', (req, res, next) => {
+      const { workflowData } = req.body; 
+      const _id = workflowData.workflow._id;
 
       service
-        .updateWorkflow(_id, req.body.data)
+        .updateWorkflow(_id, workflowData)
         .then(() => res.end())
         .catch(next);
     });
 
-    router.delete('/workflows/:_id', (req, res, next) => {
-      const { _id } = req.params;
+    router.post('/workflows/delete', (req, res, next) => {
+      const { _id } = req.body;
 
       service
         .deleteWorkflow(_id)
@@ -48,8 +38,26 @@ const WorkflowController = Service([WorkflowService], service => {
         .catch(next);
     });
 
-    router.get('/workflows/workflowProcessId/:_id', (req, res, next) => {
-      const { _id } = req.params;
+    router.post('/workflows/fetchById', (req, res, next) => {
+      const { _id } = req.body;
+
+      service
+        .findWorkflowById(_id)
+        .then(workflow => res.json({ data: workflow }))
+        .catch(next);
+    });
+
+    router.post('/workflows/fetchOnlyWorkflowById', (req, res, next) => {
+      const { _id } = req.body;
+
+      service
+        .findOnlyWorkflowById(_id)
+        .then(workflow => res.json(workflow))
+        .catch(next);
+    })
+
+    router.post('/workflows/fetchProcess', (req, res, next) => {
+      const { _id } = req.body;
 
       service
         .findOutwardProcessesPopulated(_id)
@@ -63,15 +71,6 @@ const WorkflowController = Service([WorkflowService], service => {
         .then(workflowProcess => res.json({ data: workflowProcess }))
         .catch(next);
     });
-
-    router.get('/workflows/workflow/:_id', (req, res, next) => {
-      const { _id } = req.params;
-
-      service
-        .findOnlyWorkflowById(_id)
-        .then(workflow => res.json(workflow))
-        .catch(next);
-    })
 
     return router;
   })();

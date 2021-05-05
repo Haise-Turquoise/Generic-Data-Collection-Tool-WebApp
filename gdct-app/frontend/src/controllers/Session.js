@@ -8,9 +8,9 @@ const sessionController = (() => {
     // withCredentials: true,
   });
   return {
-    fetch: async () => sessionAxios.get('').then(res => res.data),
-    fetchById: async _id => sessionAxios.get(`${_id}`).then(res => res.data),
-    updateExpiration: async _id => sessionAxios.put(`${_id}`).then(res => res.data)
+    fetch: async () => sessionAxios.get('/fetch').then(res => res.data),
+    fetchById: async _id => sessionAxios.post('/fetchById', { _id }).then(res => res.data),
+    updateExpiration: async _id => sessionAxios.put('/updateExpiration', { _id }).then(res => res.data)
   };
 })();
 

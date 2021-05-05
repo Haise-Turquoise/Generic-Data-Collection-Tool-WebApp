@@ -6,17 +6,15 @@ const StatusController = Service([StatusService], service => {
   const router = Router();
 
   return (() => {
-    router.get('/statuses', (req, res, next) => {
-      // Get query from middleware -- auth handler
-
+    router.get('/statuses/fetch', (req, res, next) => {
       service
         .findStatus({})
-        .then(statuses => res.json({ statuses }))
+        .then(statuses => res.json( statuses ))
         .catch(next);
     });
 
-    router.get('/statuses/:_id', (req, res, next) => {
-      const { _id } = req.params;
+    router.post('/statuses/fetchStatus', (req, res, next) => {
+      const { _id } = req.body;
       
       service
         .findStatusById(_id)
@@ -24,16 +22,16 @@ const StatusController = Service([StatusService], service => {
         .catch(next);
     });
 
-    router.post('/statuses', (req, res, next) => {
+    router.post('/statuses/create', (req, res, next) => {
       service
         .createStatus(req.body.status)
         .then(status => res.json({ status }))
         .catch(next);
     });
 
-    router.put('/statuses/:_id', (req, res, next) => {
-      const { _id } = req.params;
+    router.put('/statuses/update', (req, res, next) => {
       const { status } = req.body;
+      const _id = status._id;
 
       service
         .updateStatus(_id, status)
@@ -41,8 +39,8 @@ const StatusController = Service([StatusService], service => {
         .catch(next);
     });
 
-    router.delete('/statuses/:_id', (req, res, next) => {
-      const { _id } = req.params;
+    router.post('/statuses/delete', (req, res, next) => {
+      const { _id } = req.body;
 
       service
         .deleteStatus(_id)
@@ -50,10 +48,13 @@ const StatusController = Service([StatusService], service => {
         .catch(next);
     });
 
-    router.get('/statuses/:_id', (req, res, next) => {
-      const { _id } = req.params;
+    router.post('/statuses/findStatusByID', (req, res, next) => {
+      const { _id } = req.body;
 
-      service.findByID(_id).then(data=> res.json(data))
+      service
+        .findByID(_id)
+        .then(data => res.json(data))
+        .catch(next);
     });
 
     return router;

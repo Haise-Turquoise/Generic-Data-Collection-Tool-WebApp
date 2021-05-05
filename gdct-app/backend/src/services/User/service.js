@@ -144,8 +144,6 @@ export default class UserService {
   }
 
   async fetchUserByUserName(username) {
-    // const fetchUser = await this.UserRepository.findByUserName(username);
-    // console.log('fetchUser', fetchUser)
     return this.UserRepository.findByUserName(username);
   }
 }
