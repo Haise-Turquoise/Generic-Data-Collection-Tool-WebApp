@@ -95,6 +95,9 @@ export default class TemplatePackageRepository extends BaseRepository {
   async findByName(name) {
     return TemplatePackageModel.find({ name });
   }
+  async findByUpdateBy(updatedBy) {
+    return TemplatePackageModel.find({ updatedBy });
+  }
 
   async find(query, isPopulated) {
     const realQuery = {};
