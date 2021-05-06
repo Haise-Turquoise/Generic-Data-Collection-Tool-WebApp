@@ -86,6 +86,7 @@ export const Xspreadsheet2ExcelStyle = (cell, style)=>{
   }
 
   // add fill
+  console.log(cell.fill, style);
   if (style.bgcolor){
     cell.fill = {
       type: 'pattern',
@@ -238,7 +239,6 @@ export const compareSheet = (oldWorkBook, newNewWorkBook) => {
 export const generateCategoryMap = (sheet)=>{
   // @ts-ignore
   const maxRowNum = Math.max(...Object.keys(sheet.rows._))
-  console.log('rowNums', sheet.rows._)
   const categoryMap = {};
 
   // Go though each row's first cell
@@ -368,7 +368,7 @@ export const templateDownloader = (workBookName, sheetData)=>{
       const colArray = Object.keys(sheet.rows[rowNum].cells);
       for (const colNum of colArray){
         const targetCell = sheet.rows[rowNum].cells[colNum];
-        if (targetCell.style){ 
+        if (targetCell.style !== undefined){ 
           const coord = digitToAlpha(Number(colNum) + 1) + (Number(rowNum)+1);
           const cell = currSheet.getCell(coord);
           Xspreadsheet2ExcelStyle(cell, styleArray[targetCell.style]);

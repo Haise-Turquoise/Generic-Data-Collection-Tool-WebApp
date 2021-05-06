@@ -22,4 +22,8 @@ export default class SubmissionPeriodService {
   async findSubmissionPeriod(submissionPeriod) {
     return this.submissionPeriodRepository.find(submissionPeriod);
   }
+
+   async findSubmissionPeriodById(id) {
+    return this.submissionPeriodRepository.findById(id);
+  }
 }

@@ -17,6 +17,17 @@ const SubmissionController = Service([SubmissionService], service => {
         .catch(next);
     });
 
+    router.get('/submissions/findReportingPeriod/:_id', (req, res, next) => {
+      // Get query from middleware -- auth handler
+      const { _id } = req.params;
+      service
+        .findReportingPeriod(_id)
+        .then(reportingPeriod => {
+          res.json({ reportingPeriod });
+        })
+        .catch(next);
+    })
+
     router.put('/submissions/updateSubmission', authorized, (req, res, next) => {
       // Get query from middleware -- auth handler
       const { submission } = req.body;

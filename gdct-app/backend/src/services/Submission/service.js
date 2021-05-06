@@ -61,6 +61,12 @@ export default class SubmissionService {
     });
   }
 
+  async findReportingPeriod(_id){
+    const submission = await this.submissionRepository.findById(_id);
+    const submissionPeriod = await this.submissionPeriodRepository.findById(submission.submissionPeriodId);
+    return this.reportingPeriodRepository.findById(submissionPeriod.reportingPeriodId);
+  }
+
   async createSubmissionBaseOnTemplatePackage(submission) {
     // Clone the tempalte's workbook data to be used by the user
     return this.programRepository.findById(submission.programId).then(program => {
