@@ -31,7 +31,7 @@ import AuditLogController from './AuditLog';
 import { authorized } from '../middlewares/auth/auth';
 import MasterValueController from './MasterValue/controller';
 import DataResumeController from './DataResume/controller';
-import GoogleApisController from './GoogleApis';
+import SpreadsheetApisController from './GoogleApis';
 import TransferStatusController from './TransferStatus';
 import SessionController from '../controllers/Session/Session';
 
@@ -79,7 +79,7 @@ export const routerManager = app => {
 
   // Oct 26, 2020
   // Used to handle requests from google
-  app.use('/googleapis_manager', authorized, Container.get(GoogleApisController));
+  app.use('/googleapis_manager', authorized, Container.get(SpreadsheetApisController));
 
   // Jan 22, 2021
   // Use to handle transfer control

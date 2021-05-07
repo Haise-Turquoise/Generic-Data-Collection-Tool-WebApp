@@ -1,11 +1,11 @@
 import React, { Component } from "react";
 import Spreadsheet from 'x-data-spreadsheet';
 import templateController from '../../../controllers/template'
-import CategoryInsertMenu from '../../CategoryInsertionMenu';
-import AttributeInsertMenu from '../../AttributeInsertionMenu';
+import CategoryInsertMenu from './CategoryInsertionMenu';
+import AttributeInsertMenu from './AttributeInsertionMenu';
 import spreadSheetController from '../../../controllers/spreadSheet';
-import PopulationSelectionMenu from '../../PopulationSelectionMenu';
-import VarianceInsertionMenu from '../../InsertVarianceMenu'
+import PopulationSelectionMenu from './PopulationSelectionMenu';
+import VarianceInsertionMenu from './InsertVarianceMenu'
 import Button from '@material-ui/core/Button';
 import { digitToAlpha,
   generateCategoryMap, generateAttributeMap, 
@@ -65,6 +65,7 @@ class SpreadSheet extends Component{
       this.downloadTemplate = this.downloadTemplate.bind(this);
       this.insertVariance = this.insertVariance.bind(this);
       this.getCurrentSheet = this.getCurrentSheet.bind(this);
+      this.lineNumberInsertion = this.lineNumberInsertion.bind(this);
       this.workBookName = this.props.name;
       this.currentCoord = {};
       this.categoryAndAttribute = {};
@@ -124,7 +125,7 @@ class SpreadSheet extends Component{
         this.sheet.cellText(insertRow, 1, dataArr[0], currentIndex);
         if (unitCol) this.sheet.cellText(insertRow, unitCol, dataArr[1], currentIndex);
       }
-
+      this.lineNumberInsertion();
       if (varianceCol && this.prevVarianceSelection) {
         this.insertVariance(this.prevVarianceSelection);
       }else{
@@ -232,6 +233,20 @@ class SpreadSheet extends Component{
       this.sheet.reRender();
     }
 
+    lineNumberInsertion(){
+      const currSheetIndex = this.sheet.getCurrentSheetIndex();
+      const currSheet = this.sheet.datas[currSheetIndex];
+
+      const categoryMap = generateCategoryMap(currSheet);
+      let categoryIDs = Object.keys(categoryMap).sort((id1, id2)=>{
+        return categoryMap[id1] - categoryMap[id2];
+      });
+
+      for (let i = 0; i < categoryIDs.length; i++){
+        this.sheet.cellText(categoryMap[categoryIDs[i]], 2, i + 1, currSheetIndex);
+      }
+    }
+
     // This function is responsible for inserting atrributes
     insertAttribute = (id, text)=>{
       // Get current index of the current sheet
@@ -253,9 +268,6 @@ class SpreadSheet extends Component{
     // to our DB.
     fileImportHandler(event) {
       excelImportHandler(event, (data)=>{this.sheet.loadData(data).reRender()});
-      // Rerender the file
-      
-      // this.sheet.loadData(wbData).reRender();
     }
 
     render(){

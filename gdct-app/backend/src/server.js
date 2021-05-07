@@ -2,9 +2,6 @@ import i18n from 'i18n';
 import app from './app';
 import { log } from './utils/log/winston';
 
-import polling from './polling';
-
-
 app.set('port', process.env.PORT);
 const port = app.get('port');
 

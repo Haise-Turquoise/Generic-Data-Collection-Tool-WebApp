@@ -27,8 +27,13 @@ const submissionController = (() => {
       }),
     fetchSubmission: async _id =>
       submissionAxios.get(`/findSubmission/${_id}`).then(res => res.data.submission),
+
+    fetchSubmissionReportingPeriod: async _id =>
+      submissionAxios.get(`/findReportingPeriod/${_id}`).then(res => res.data.reportingPeriod),
+
     fetchSubmissionByParentId: async parentId =>
       submissionAxios.get(`/findSubmissionByParentId/${parentId}`).then(res => res.data.submission),
+
     fetch: async query => submissionAxios.get('').then(res => res.data.submissions),
 
     delete: async _id => submissionAxios.delete(`/${_id}`),
