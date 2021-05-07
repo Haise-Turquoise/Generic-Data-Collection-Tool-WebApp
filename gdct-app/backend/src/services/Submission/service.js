@@ -130,6 +130,9 @@ export default class SubmissionService {
   async findSubmissionById(id) {
     return this.submissionRepository.findById(id);
   }
+  async findSubmissionByParentId(parentId) {
+    return this.submissionRepository.findByParentId(parentId);
+  }
 
   async findProgramById(id) {
     return this.programRepository.findById(id);
@@ -300,6 +303,7 @@ export default class SubmissionService {
   async findSubmission(email) {
     const count = 0;
     const userInfo = await this.usersRepository.findByEmail(email);
+    
     const org = userInfo.sysRole[0].org[0];
     // Update By Sheldon Su in Jan to make it work for admins
     const orgId = org? org.orgId: undefined;

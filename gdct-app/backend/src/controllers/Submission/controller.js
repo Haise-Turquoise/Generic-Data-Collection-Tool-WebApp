@@ -74,6 +74,17 @@ const SubmissionController = Service([SubmissionService], service => {
         .catch(next);
     });
 
+
+
+    router.get('/submissions/findSubmissionByParentId/:parentId', (req, res, next) => {
+      const { parentId } = req.params;
+
+      service
+        .findSubmissionByParentId(parentId)
+        .then(submission => res.json({ submission }))
+        .catch(next);
+    });
+
     router.post('/submissions', (req, res, next) => {
       service
         .createSubmission(req.body.submission)

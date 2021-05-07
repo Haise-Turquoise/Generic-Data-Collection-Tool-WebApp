@@ -20,6 +20,7 @@ export default class TemplatePackageService {
   }
 
   async updateTemplatePackage(id, templatePackage, isPopulated = false) {
+    
     return this.templatePackageRepository.update(id, templatePackage, isPopulated);
   }
 

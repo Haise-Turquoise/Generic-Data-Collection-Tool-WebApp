@@ -150,6 +150,7 @@ class SubmissionSpreadSheet extends Component{
     }
 
 
+
     insertOrg = async (orgId) => {
       if (this.edit){
 
@@ -177,6 +178,7 @@ class SubmissionSpreadSheet extends Component{
           }
         }
         this.sheet.reRender();
+
       }
     }
 

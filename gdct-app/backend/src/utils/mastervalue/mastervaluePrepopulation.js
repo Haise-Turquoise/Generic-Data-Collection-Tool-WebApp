@@ -54,7 +54,6 @@ export async function mastervaluePrepopulation(workbook, orgId){
 
     // Find the corresponding attributes in the DB, any of the mapping is empty, skip the DB query
     const res = categoryList.length > 0 && attributeList.length > 0 ? await masterValueRepository.batchFind(attributeList, categoryList, orgId) : [];
-    
     // populate the sheet with master values according to the mappings
     const colMap = new Map();
     const colList = []
@@ -62,9 +61,6 @@ export async function mastervaluePrepopulation(workbook, orgId){
       let masterValueItem = res[item];
       let ri = categoryMap[masterValueItem.CategoryId];
       let ci = attributeMap[masterValueItem.AttributeId];
-
-      if (!sheet.rows[ri].cells[ci]) sheet.rows[ri].cells[ci] = {};
-
       sheet.rows[ri].cells[ci].text = masterValueItem.value;
       sheet.rows[ri].cells[ci].editable = false;
 
@@ -77,7 +73,7 @@ export async function mastervaluePrepopulation(workbook, orgId){
     const firstAttributeCol = findFirstAttributeCol(sheet);
     for (let i = 0; i < firstAttributeCol; i++) colList.push(i);
     if (colList.length > 0) colList.push(1);
-    lockSheet(colList, colList.length > 0 ? [9, 0]: [], sheet);
+    lockSheet(colList, colList.length > 0 ? [9]: [], sheet);
   }
 
   return workbook;

@@ -15,6 +15,7 @@ const SubmissionPeriodController = Service([SubmissionPeriodService], service =>
     });
 
     router.post('/submissionPeriods', (req, res, next) => {
+      // console.log("test", req.body.submissionPeriod)
       service
         .createSubmissionPeriod(req.body.submissionPeriod)
         .then(submissionPeriod => res.json({ submissionPeriod }))
@@ -24,7 +25,7 @@ const SubmissionPeriodController = Service([SubmissionPeriodService], service =>
     router.put('/submissionPeriods/:_id', (req, res, next) => {
       const { _id } = req.params;
       const { submissionPeriod } = req.body;
-
+      // console.log(_id)
       service
         .updateSubmissionPeriod(_id, submissionPeriod)
         .then(() => res.end())
