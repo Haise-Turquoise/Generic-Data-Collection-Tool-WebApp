@@ -14,7 +14,4 @@ routerManager(app);
 
 app.use(errorHandlerController);
 
-// const cors = require('cors');
-// app.use(cors({ credentials: true }));
-
 export default app;

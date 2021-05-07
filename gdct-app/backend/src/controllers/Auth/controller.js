@@ -7,7 +7,6 @@ const AuthController = Service([AuthService], service => {
   return (() => {
     router.post('/login', service.processPassport, service.profile);
     router.post('/register', service.createUser);
-    // router.get('/auth/:method', service.authenticate);
     router.get('/profile', service.profile);
     router.get('/logout', service.logout);
     return router;

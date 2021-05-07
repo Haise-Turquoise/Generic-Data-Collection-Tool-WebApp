@@ -8,7 +8,7 @@ const AuthController = (() => {
     withCredentials: true,
   });
   return {
-    login: async data => AuthAxios.post('/login', data).then(res => { return res.data; }),
+    login: async data => AuthAxios.post('/login', data).then(res => res.data),
     register: async data => AuthAxios.post('/register', data).then(res => res.data),
     profile: async () => AuthAxios.get('/profile').then(res => res.data),
     logout: async data => AuthAxios.get('/logout', data).then(res => res.data),
