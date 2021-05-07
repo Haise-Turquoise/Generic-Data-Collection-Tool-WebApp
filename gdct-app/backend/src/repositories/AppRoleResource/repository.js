@@ -8,11 +8,7 @@ export default class AppRoleResourceRepository extends BaseRepository {
   }
 
   async delete(id) {
-    const appRoleResource = await AppRoleResourceModel.findById(id);
-    if (appRoleResource) {
-      appRoleResource.isActive = false;
-    }
-    return this.update(id, appRoleResource);
+    return AppRoleResourceModel.findByIdAndDelete(id);
   }
 
   async create(appRoleResource) {

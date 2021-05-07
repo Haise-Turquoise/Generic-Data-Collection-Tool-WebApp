@@ -1,3 +1,4 @@
+import { unauthorized_dialog } from '../../components/Unauthorized_Dialog/Unauthorized_Dialog';
 import templatePackageController from '../../controllers/templatePackage';
 import {
   TemplatePackagesStore,
@@ -22,7 +23,11 @@ export const getTemplatePackagePopulatedRequest = _id => dispatch => {
   templatePackageController
     .fetchPopulated(_id)
     .then(templatePackage => {
-      dispatch(TemplatePackagesStoreActions.RECEIVE([templatePackage]));
+      if (templatePackage === "UNAUTHORIZED ACCESS") {
+        unauthorized_dialog();
+        dispatch(TemplatePackagesStoreActions.FAIL_REQUEST());
+      }
+      else dispatch(TemplatePackagesStoreActions.RECEIVE([templatePackage]));
     })
     .catch(error => {
       dispatch(TemplatePackagesStoreActions.FAIL_REQUEST(error));

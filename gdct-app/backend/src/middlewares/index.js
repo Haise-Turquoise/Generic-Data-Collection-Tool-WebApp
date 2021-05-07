@@ -40,7 +40,7 @@ export const middlewares = app => {
       // saveUninitialized can only be false in here!
       saveUninitialized: false,
       rolling: true,
-      cookie: { maxAge: 30 * 60 * 60 * 1000 },
+      cookie: { maxAge: 70 * 1000 },
       store: new CookieStore({ mongooseConnection: mongoose.connection }),
     }),
   );
@@ -54,6 +54,60 @@ export const middlewares = app => {
     res.locals.__ = res.__;
     const currentLocale = i18n.getLocales();
     return next();
+  });
+
+  let isAdmin = false;
+  app.use('/', (req, res, next) => {
+    console.log()
+    // Check whether user is admin type
+    if (req.session.isAdmin !== undefined) {
+      isAdmin = req.session.isAdmin;
+      console.log(isAdmin);
+    }
+
+    const requestUrl = req.originalUrl;
+    console.log(requestUrl);
+    if (!isAdmin) {
+      // NOTE: these urls are not webpage urls, they are request urls sent by controllers
+      // const AdminUrls = AppResources.find(resourcePath) where (isProtected === true)
+      
+      // Check illegal access
+      const AdminUrls = [
+        '/admin',
+        '/template_manager',
+        '/workflow_manager',
+        '/COA_manager',
+        '/designer/statuses',
+        '/org_manager',
+        '/programs',
+        '/reportingPeriods',
+        '/role_manager',
+        '/dataResume',
+        '/sheetNames',
+        '/AuditLog',
+        '/masterValue'
+      ];
+      if (!requestUrl.includes('/admin/user_management/fetchByEmail')) {
+        for (let i = 0; i < AdminUrls.length; i++) {
+          if (requestUrl.includes(AdminUrls[i])) {
+            console.log("SHOULD REDIRECT");
+            return res.send("UNAUTHORIZED ACCESS");
+          }
+        }
+      }
+      
+      // Check Role specific access
+
+
+    }
+    // MAYBE NOT IN USE, BUT DO NOT DELETE
+    // VALUABLE SECTION HERE: One way of getting current session/cookie id stored both on the webpage and in the database(in collection: sessions)
+    // if (req.headers.cookie) {
+    //   const startOfCookieID = req.headers.cookie.indexOf('connect.sid=') + ('connect.sid=').length + 4;
+    //   const cookieID = req.headers.cookie.slice(startOfCookieID, startOfCookieID + 32);
+    //   console.log(cookieID);
+    // }
+    next();
   });
 
   dbUtil.connect();

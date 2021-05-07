@@ -17,9 +17,7 @@ export default class AppResourceRepository extends BaseRepository {
 
   async create(appResource) {
     appResource.isActive = true;
-    return AppResourceModel.create(appResource).then(
-      appResource => new AppResouceEntity(appResource.toObject()),
-    );
+    return AppResourceModel.create(appResource);
   }
 
   async update(id, appResource) {

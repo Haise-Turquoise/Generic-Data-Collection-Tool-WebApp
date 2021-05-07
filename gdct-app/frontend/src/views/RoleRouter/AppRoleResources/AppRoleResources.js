@@ -155,7 +155,6 @@ const AppRoleResources = props => {
   return (
     <div className="AppRoleResources">
       <AppRoleResourcesHeader />
-      {/* <FileDropzone/> */}
       <AppRoleResourcesTable {...props} />
     </div>
   );

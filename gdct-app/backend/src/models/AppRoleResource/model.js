@@ -9,8 +9,6 @@ const AppRoleResourceModel = model(
       appResourceId: { type: ObjectId, ref: 'AppResource' },
       appSysRoleId: [{ type: ObjectId, ref: 'AppSysRole' }],
       timestamp: { type: Date },
-      //    updatedDate: { type: Date },
-      //    userCreatorId: { type: ObjectId, ref: 'User' },
       updatedBy: { type: String },
     },
     { minimize: false },

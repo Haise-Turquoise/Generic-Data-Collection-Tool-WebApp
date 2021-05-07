@@ -5,17 +5,15 @@ import COAService from '../../services/COA';
 const COAController = Service([COAService], service => {
   const router = Router();
   return (() => {
-    router.get('/COAs', (req, res, next) => {
-      // Get query from middleware -- auth handler
-
+    router.get('/COAs/fetch', (req, res, next) => {
       service
         .findCOA({})
-        .then(COAs => res.json({ COAs }))
+        .then(COAs => res.json( COAs ))
         .catch(next);
     });
 
-    router.get(`/COAs/fetchCOAById/:_id`, (req, res, next) => {
-      const { _id } = req.params;
+    router.post(`/COAs/fetchCOAById`, (req, res, next) => {
+      const { _id } = req.body;
 
       service
         .findCOAById(_id)
@@ -23,16 +21,16 @@ const COAController = Service([COAService], service => {
         .catch(next);
     });
 
-    router.post('/COAs', (req, res, next) => {
+    router.post('/COAs/create', (req, res, next) => {
       service
         .createCOA(req.body.COA)
         .then(COA => res.json({ COA }))
         .catch(next);
     });
 
-    router.put('/COAs/:_id', (req, res, next) => {
-      const { _id } = req.params;
+    router.put('/COAs/update', (req, res, next) => {
       const { COA } = req.body;
+      const _id = COA._id;
 
       service
         .updateCOA(_id, COA)
@@ -40,8 +38,8 @@ const COAController = Service([COAService], service => {
         .catch(next);
     });
 
-    router.delete('/COAs/:_id', (req, res, next) => {
-      const { _id } = req.params;
+    router.post('/COAs/delete', (req, res, next) => {
+      const { _id } = req.body;
 
       service
         .deleteCOA(_id)

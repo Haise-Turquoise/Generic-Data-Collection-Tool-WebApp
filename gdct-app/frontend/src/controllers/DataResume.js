@@ -7,13 +7,10 @@ const dataResumeController = (() => {
       withCredentials: true,
     });
     return {
-      fetch: async query => dataResumeAxios.get('').then(res => res.data.dataResume),
-      create: async dataResume =>
-      dataResumeAxios.post('', { dataResume }).then(res => res.data.dataResume),
-      delete: async _id => dataResumeAxios.delete(`/${_id}`),
-      update: async dataResume => dataResumeAxios.put(``, { dataResume }),
-    //   addDocument: async dataResume =>
-    //     masterValueAxios.post('/addDocument', { masterValue }).then(res => res.data.masterValue),
+      fetch: async _ => dataResumeAxios.get('/fetch').then(res => res.data.dataResume),
+      create: async dataResume => dataResumeAxios.post('/create', { dataResume }).then(res => res.data.dataResume),
+      update: async dataResume => dataResumeAxios.put('/update', { dataResume }),
+      delete: async _id => dataResumeAxios.post('/delete', { _id }),
     };
   })();
   

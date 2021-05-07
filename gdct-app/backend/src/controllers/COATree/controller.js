@@ -6,9 +6,27 @@ import COATreeEntity from '../../entities/COATree';
 const COATreeController = Service([COATreeService], service => {
   const router = Router();
   return (() => {
-    router.get('/COATrees', (req, res, next) => {
-      // Get query from middleware -- auth
+    router.post('/COATrees/fetchCOATree', (req, res, next) => {
+      const { sheetNameId } = req.body;
 
+      service
+        .findCOATree(new COATreeEntity({ sheetNameId }))
+        .then(([COATree]) => res.json({ COATree }))
+        .catch(next);
+    });
+
+    router.post('/COATrees/sheetName/fetchBySheetName', (req, res, next) => {
+      const { sheetNameId } = req.body;
+
+      service
+        .findCOATree(new COATreeEntity({ sheetNameId }))
+        .then(COATrees =>
+          res.json({ COATrees: COATrees.map(COATree => ({ ...COATree, COATreeData: undefined })) }),
+        )
+        .catch(next);
+    });
+
+    router.get('/COATrees/fetch', (req, res, next) => {
       service
         .findCOATree(new COATreeEntity(req.body))
         .then(COATrees =>
@@ -17,38 +35,16 @@ const COATreeController = Service([COATreeService], service => {
         .catch(next);
     });
 
-    router.get('/COATrees/sheetName/:_id', (req, res, next) => {
-      // Get query from middleware -- auth
-      const { _id: sheetNameId } = req.params;
-      // console.log('backend controller works');
-      service
-        .findCOATree(new COATreeEntity({ sheetNameId }))
-        .then(COATrees =>
-          res.json({ COATrees: COATrees.map(COATree => ({ ...COATree, COATreeData: undefined })) }),
-        )
-        .catch(next);
-    });
-
-    router.get('/COATrees/:_id', (req, res, next) => {
-      // Get query from middleware -- auth handler
-      const sheetNameId = req.params._id;
-
-      service
-        .findCOATree(new COATreeEntity({ sheetNameId }))
-        .then(([COATree]) => res.json({ COATree }))
-        .catch(next);
-    });
-
-    router.post('/COATrees', (req, res, next) => {
+    router.post('/COATrees/create', (req, res, next) => {
       service
         .createCOATree(req.body.COATree)
         .then(COATree => res.json({ COATree }))
         .catch(next);
     });
 
-    router.put('/COATrees/:_id', (req, res, next) => {
-      const { _id } = req.params;
+    router.put('/COATrees/update', (req, res, next) => {
       const { COATree } = req.body;
+      const _id = COATree._id;
 
       service
         .updateCOATree(_id, COATree)
@@ -56,24 +52,22 @@ const COATreeController = Service([COATreeService], service => {
         .catch(next);
     });
 
-    router.put('/COATrees/sheetName/:_id', (req, res, next) => {
-      const { _id: sheetNameId } = req.params;
-      const { COATrees } = req.body;
-      // console.log(COATrees)
+    router.post('/COATrees/delete', (req, res, next) => {
+      const { _id } = req.body;
+
+      service
+        .deleteCOATree(_id)
+        .then(() => res.end())
+        .catch(next);
+    });
+
+    router.put('/COATrees/sheetName/updateBySheetName', (req, res, next) => {
+      const { sheetNameId, COATrees } = req.body;
 
       service
         .updateSheetCOATrees(sheetNameId, COATrees)
         .then(() => res.end())
         .catch(error => console.error(error))
-        .catch(next);
-    });
-
-    router.delete('/COATrees/:_id', (req, res, next) => {
-      const { _id } = req.params;
-
-      service
-        .deleteCOATree(_id)
-        .then(() => res.end())
         .catch(next);
     });
 

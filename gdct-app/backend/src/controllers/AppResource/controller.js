@@ -5,15 +5,8 @@ import AppResourceService from '../../services/AppResource';
 const AppResourceController = Service([AppResourceService], service => {
   const router = Router();
   return (() => {
-    router.get('/appResources', (req, res, next) => {
-      service
-        .findAppResource({})
-        .then(AppResources => res.json({ AppResources }))
-        .catch(next);
-    });
-
-    router.get('/appResources/:_id', (req, res, next) => {
-      const { _id } = req.params;
+    router.post('/appResources/fetchAppResource', (req, res, next) => {
+      const { _id } = req.body;
 
       service
         .findById(_id)
@@ -21,28 +14,35 @@ const AppResourceController = Service([AppResourceService], service => {
         .catch(next);
     });
 
-    router.post('/appResources', (req, res, next) => {
+    router.get('/appResources/fetch', (req, res, next) => {
+      service
+        .findAppResource({})
+        .then(AppResources => res.json( AppResources ))
+        .catch(next);
+    });
+
+    router.post('/appResources/create', (req, res, next) => {
       service
         .createAppResource(req.body.AppResource)
         .then(AppResource => res.json({ AppResource }))
         .catch(next);
     });
 
-    router.put('/appResources/:_id', (req, res, next) => {
-      const { _id } = req.params;
-      const { AppResource } = req.body;
+    router.post('/appResources/delete', (req, res, next) => {
+      const { _id } = req.body;
 
       service
-        .updateAppResource(_id, AppResource)
+        .deleteAppResource(_id)
         .then(() => res.end())
         .catch(next);
     });
 
-    router.delete('/appResources/:_id', (req, res, next) => {
-      const { _id } = req.params;
+    router.put('/appResources/update', (req, res, next) => {
+      const { AppResource } = req.body;
+      const _id = AppResource._id;
 
       service
-        .deleteAppResource(_id)
+        .updateAppResource(_id, AppResource)
         .then(() => res.end())
         .catch(next);
     });

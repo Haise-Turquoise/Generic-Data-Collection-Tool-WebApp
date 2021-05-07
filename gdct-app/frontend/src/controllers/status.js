@@ -8,12 +8,12 @@ const statusController = (() => {
     withCredentials: true,
   });
   return {
-    fetch: async query => statusAxios.get('').then(res => res.data.statuses),
-    fetchStatus: async _id => statusAxios.get(`/${_id}`).then(res => res.data.status),
-    create: async status => statusAxios.post('', { status }).then(res => res.data.status),
-    delete: async _id => statusAxios.delete(`/${_id}`),
-    update: async status => statusAxios.put(`/${status._id}`, { status }),
-    findStatusByID: async id => statusAxios.get(`/${id}`).then(res => res.data)
+    fetch: async _ => statusAxios.get('/fetch').then(res => res.data),
+    fetchStatus: async _id => statusAxios.post('/fetchStatus', { _id }).then(res => res.data.status),
+    create: async status => statusAxios.post('/create', { status }).then(res => res.data.status),
+    update: async status => statusAxios.put('/update', { status }),
+    delete: async _id => statusAxios.post('/delete', { _id }),
+    findStatusByID: async id => statusAxios.post('/findStatusByID', { id }).then(res => res.data)
   };
 })();
 

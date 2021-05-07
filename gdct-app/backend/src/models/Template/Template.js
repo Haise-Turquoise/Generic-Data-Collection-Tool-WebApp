@@ -21,7 +21,6 @@ const TemplateModel = model(
       statusId:{ type:ObjectId, ref:'Status'},
       googleSheetId: { type: ObjectId, ref: 'GoogleSheet' },
       timestamp: { type: Date },
-      //    userCreatorId: { type: ObjectId, ref: 'User' },
       updatedBy: { type: String },
     },
     { minimize: false, timestamps: true },
