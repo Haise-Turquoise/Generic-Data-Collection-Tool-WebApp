@@ -38,6 +38,15 @@ const UserController = Service([UserService], service => {
         .catch(next);
     });
 
+    router.get(`/users/verifyNewUserPermission`, (req, res, next) => {
+      const { approve, _id, hashedUsername, orgId } = req.query;
+      service
+        .sendUserPermissionActiveEmail(approve, _id, orgId)
+        .then(res.json({ message: 'You have processed the email' }))
+        .catch(next);
+    });
+
+
     router.get(`/users/activeUser`, (req, res, next) => {
       const { _id, hashedUsername } = req.query;
       service

@@ -2,7 +2,7 @@ import React from "react";
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Dialog from '@material-ui/core/Dialog';
 import Button from '@material-ui/core/Button';
-import { generateAttributeMap } from '../../tools/misc';
+import { generateAttributeMap } from '../../../../tools/misc';
 
 
 // This component is responsible for attribute insertion menu

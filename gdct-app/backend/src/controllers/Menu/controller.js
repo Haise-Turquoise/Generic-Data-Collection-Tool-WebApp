@@ -5,6 +5,7 @@ import MenuService from '../../services/Menu';
 const MenuController = Service([MenuService], service => {
   const router = Router();
   return (() => {
+
     router.get('/Menus', (req, res, next) => {
       service
         // @ts-ignore

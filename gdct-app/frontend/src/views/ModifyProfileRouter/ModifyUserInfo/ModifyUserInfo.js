@@ -30,7 +30,7 @@ const Header = () => (
 );
 
 // The schema to validate user input
-const ProfileSchema = () =>
+const ProfileSchema = (originalUsername) =>
   yup.object().shape({
     title: yup.string().required('Please enter your title'),
     username: yup
@@ -40,8 +40,8 @@ const ProfileSchema = () =>
       .test('Unique Username', 'Username has already been used', 
         async function (value) {
           const fetchData = await UserController.fetchUserByUserName(value);
-          if (Object.keys(fetchData.user).length === 0 && fetchData.user.constructor === Object) return true;
-          return false;
+          // users can only do 1: not change the username, or 2: change the username to something new
+          return fetchData.user.username === originalUsername || fetchData.user.username === undefined;
         })
       .required('Please enter a username'),
     firstName: yup
@@ -92,6 +92,7 @@ const CustomTextField = ({ values, label, labelText, handleChange, touched, hand
       </div>
       <div className="modifyUserInfo__informationField">
         <TextField
+          name={label}
           variant="outlined"
           className="modifyUserInfo__field"
           type="text"
@@ -150,6 +151,8 @@ const ModifyUserInfo = () => {
     const user = selectFactoryValueById(selectModifyUserInfoStore)(userID)(state);
     return { user: user || init }
   }, shallowEqual);
+  
+  const originalUsername = user.username;
 
   useEffect(() => {
     if (email) {
@@ -197,7 +200,7 @@ const ModifyUserInfo = () => {
   }, [dispatch]);
 
   return (
-    <Formik enableReinitialize validationSchema={ProfileSchema} initialValues={user} onSubmit={handleSubmit}>
+    <Formik enableReinitialize validationSchema={ProfileSchema(originalUsername)} initialValues={user} onSubmit={handleSubmit}>
       {props => {
         return (
           <div>

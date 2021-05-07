@@ -1,5 +1,4 @@
 import Container from 'typedi';
-import pako from 'pako'
 import cloneDeep from 'clone-deep';
 import SubmissionRepository from '../../repositories/Submission';
 import SubmissionNoteRepository from '../../repositories/SubmissionNote';
@@ -13,13 +12,9 @@ import TemplateTypeRepository from '../../repositories/TemplateType';
 import WorkflowProcessRepository from '../../repositories/WorkflowProcess/WorkflowProcess';
 import SubmissionPeriodRepository from '../../repositories/SubmissionPeriod';
 import UsersRepository from '../../repositories/Users';
-import GoogleSheetRepository from '../../repositories/GoogleSheet';
-import { createSpreadsheet, addEditor } from '../../middlewares/googleapis/request'
-import { saveGoogleSheetInSubmission }from '../../middlewares/googleapis/save'
 import ReportingPeriodRepository from '../../repositories/ReportingPeriod';
 import { mastervalueExtraction } from '../../utils/mastervalue/mastervalueExtraction';
 import { mastervaluePrepopulation } from '../../utils/mastervalue/mastervaluePrepopulation';
-import { mastervaluePrepopulationTest } from '../../utils/mastervalue/mastervaluePrepopulation';
 import {ObjectId} from 'mongodb';
 const mongoose = require('mongoose');
 mongoose.Promise = require('bluebird');
@@ -39,7 +34,6 @@ export default class SubmissionService {
     this.workflowProcessRepository = Container.get(WorkflowProcessRepository);
     this.submissionPeriodRepository = Container.get(SubmissionPeriodRepository);
     this.usersRepository = Container.get(UsersRepository);
-    this.googleSheetRepository = Container.get(GoogleSheetRepository)
     this.reportingPeriodRepository = Container.get(ReportingPeriodRepository);
     this.submissionPeriodRepository = Container.get(SubmissionPeriodRepository);
   }
@@ -62,12 +56,17 @@ export default class SubmissionService {
     });
   }
 
+  async findReportingPeriod(_id){
+    const submission = await this.submissionRepository.findById(_id);
+    const submissionPeriod = await this.submissionPeriodRepository.findById(submission.submissionPeriodId);
+    return this.reportingPeriodRepository.findById(submissionPeriod.reportingPeriodId);
+  }
+
   async createSubmissionBaseOnTemplatePackage(submission) {
     // Clone the tempalte's workbook data to be used by the user
-    console.log('createSubmissionBaseoN')
     return this.programRepository.findById(submission.programId).then(program => {
       return this.templateRepository.findById(submission.templateId).then(template => {
-        return mastervaluePrepopulationTest(template.templateData, submission.orgId).then(workbook => {
+        return mastervaluePrepopulation(template.templateData, submission.orgId).then(workbook => {
           return this.templateTypeRepository.findById(template.templateTypeId).then(templateType => {
             return this.workflowProcessRepository
               .find({ workflowId: templateType.submissionWorkflowId })
@@ -112,8 +111,7 @@ export default class SubmissionService {
   async uploadSubmissionWorkbook(submission, workbookData, submissionNote) {
     const currentStatus = await this.statusRepository.findOneByID(submission.statusId);
     if (currentStatus.name == 'Approved' || currentStatus.name == 'Submitted') return;
-
-    submission.workbookData = workbookData;
+    submission.workbookData = await mastervaluePrepopulation(workbookData, submission.orgId);
     submission.updatedDate = new Date();
     submission.parentId = submission.parentId ? submission.parentId : submission._id;
 
@@ -131,6 +129,9 @@ export default class SubmissionService {
 
   async findSubmissionById(id) {
     return this.submissionRepository.findById(id);
+  }
+  async findSubmissionByParentId(parentId) {
+    return this.submissionRepository.findByParentId(parentId);
   }
 
   async findProgramById(id) {
@@ -167,7 +168,7 @@ export default class SubmissionService {
                       templateTypeConst,
                       reportingPeriodConst,
                     );
-                  })
+                  }) 
                 })
               });
           });
@@ -189,13 +190,6 @@ export default class SubmissionService {
 
   
   async updateStatus(submission, submissionNote, role, nextProcessId,updatedBy) {
-    const newSubmission = await this.submissionRepository.findById(submission._id);
-    
-    if (newSubmission.googleSheetId){
-      console.log('is using googleSheet')
-      await Promise.resolve(saveGoogleSheetInSubmission(newSubmission.googleSheetId));
-      submission = await this.submissionRepository.findById(submission._id);
-    }
     
     const submissionNotes = {
       note: submissionNote,
@@ -309,6 +303,7 @@ export default class SubmissionService {
   async findSubmission(email) {
     const count = 0;
     const userInfo = await this.usersRepository.findByEmail(email);
+    
     const org = userInfo.sysRole[0].org[0];
     // Update By Sheldon Su in Jan to make it work for admins
     const orgId = org? org.orgId: undefined;

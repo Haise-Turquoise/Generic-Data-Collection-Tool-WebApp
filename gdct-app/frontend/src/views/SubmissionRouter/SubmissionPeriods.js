@@ -1,8 +1,10 @@
+// @ts-nocheck
 import React, { useMemo, useEffect, useState } from 'react';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 
 import MaterialTable from 'material-table';
 import Paper from '@material-ui/core/Paper';
+import moment from 'moment';
 
 import Typography from '@material-ui/core/Typography';
 import {
@@ -41,6 +43,12 @@ const SubmissionPeriod = () => {
     shallowEqual,
   );
 
+  // Convert Date format
+  submissionPeriods.forEach(submissionPeriod => {
+    const logtime = new Date(submissionPeriod.timestamp);
+    submissionPeriod.timestamp = moment(logtime).format("YYYY-MM-DD HH:mm:ss")
+  });
+
   const columns = useMemo(
     () => [
       { title: 'Name', field: 'name' },
@@ -51,9 +59,19 @@ const SubmissionPeriod = () => {
         field: 'reportingPeriodId',
         lookup: lookupReportingPeriods,
       },
+      { title: 'Modified On', field: 'timestamp', editComponent: () => {return <div></div>} },
+      { title: 'Updated By', field: 'updatedBy', editComponent: () => {return <div></div>} },
     ],
     [lookupReportingPeriods],
   );
+
+  // Record who and when of the action
+  function recordUpdate(submissionPeriod) {
+    //get username and record in Modified By column
+    submissionPeriod.updatedBy = localStorage.getItem('currentUser');
+    //record new date and time in Modified On column 
+    submissionPeriod.timestamp = new Date().toLocaleString(); 
+  }
 
   const options = useMemo(() => calculateOptions(readRowNum), [readRowNum]);
 
@@ -61,14 +79,17 @@ const SubmissionPeriod = () => {
     () => ({
       onRowAdd: submissionPeriod =>
         new Promise((resolve, reject) => {
+          recordUpdate(submissionPeriod);
           dispatch(createSubmissionPeriodRequest(submissionPeriod, resolve, reject));
         }),
       onRowUpdate: submissionPeriod =>
         new Promise((resolve, reject) => {
+          recordUpdate(submissionPeriod);
           dispatch(updateSubmissionPeriodRequest(submissionPeriod, resolve, reject));
         }),
       onRowDelete: submissionPeriod =>
         new Promise((resolve, reject) => {
+          recordUpdate(submissionPeriod);
           dispatch(deleteSubmissionPeriodRequest(submissionPeriod._id, resolve, reject));
         }),
     }),

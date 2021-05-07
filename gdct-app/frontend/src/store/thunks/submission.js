@@ -30,7 +30,6 @@ export const updateWorkbookRequest = (
   submission,
   submitId,
 ) => dispatch => {
-  console.log(submitId);
   dispatch(SubmissionsStore.actions.REQUEST());
   const newSubmission = {
     ...submission,

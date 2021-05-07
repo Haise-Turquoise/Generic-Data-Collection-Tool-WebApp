@@ -29,11 +29,24 @@ export default class AuthService {
   authenticateCallback(req, res, next) {
     try {
       const { method } = req.params;
-      res.setHeader('Access-Control-Allow-Origin', process.env.CLIENT_SERVER);
+      console.log(method)
+      
+      // res.setHeader('Access-Control-Allow-Origin', process.env.CLIENT_SERVER);
+      res.setHeader('Access-Control-Allow-Origin', '*');
+      
+      // res.header("Access-Control-Allow-Origin", req.header('Origin'));
+      // res.header("Access-Control-Allow-Credentials", true);
+      // res.header(
+      // "Access-Control-Allow-Headers",
+      // "Origin, X-Requested-With, Content-Type, Accept"
+      // );
+      // res.header("Access-Control-Allow-Methods", "GET, POST, OPTIONS, PUT, DELETE");
+
       passport.authenticate(method, {
         successRedirect: process.env.CLIENT_SERVER, // redirect to home page
         failureRedirect: `${process.env.CLIENT_SERVER}/auth/error`, // redirect to error page
       })(req, res, async () => {
+        console.log(res.headers)
         const { email } = req.user;
         const user = await this.UserRepository.findByEmail(email);
         if (user) {
@@ -73,6 +86,7 @@ export default class AuthService {
   }
 
   profile(req, res, next) {
+    
     try {
       if (req.user) {
         const authService = new AuthService();
@@ -190,6 +204,7 @@ export default class AuthService {
               req.session.isAdmin = true;
             }
           });
+          
           return next();
         }
         return returnErrorJson(res, 'Bad request');

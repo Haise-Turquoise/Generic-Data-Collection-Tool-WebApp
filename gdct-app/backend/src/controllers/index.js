@@ -29,7 +29,7 @@ import SubmissionNoteController from './SubmissionNote';
 import AuditLogController from './AuditLog';
 import MasterValueController from './MasterValue/controller';
 import DataResumeController from './DataResume/controller';
-import GoogleApisController from './GoogleApis';
+import SpreadsheetApisController from './GoogleApis';
 import TransferStatusController from './TransferStatus';
 import SessionController from '../controllers/Session/Session';
 

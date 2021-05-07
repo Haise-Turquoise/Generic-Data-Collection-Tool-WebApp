@@ -50,13 +50,8 @@ export default {
   // Main Menu User
   User: <AccountCircleIcon />,
   Profile: <AccountCircleIcon style={MenuItemStyle} />,
-  'Modify Permission': <AccountCircleIcon style={SubMenuItemStyle} />,
-  'Modify User Info': <AccountCircleIcon style={SubMenuItemStyle} />,
-
-  // // Modify Profile Test icon
-  // Profile1: <AccountCircleIcon style={MenuItemStyle} />,
-  // 'Modify Permission': <AccountCircleIcon style={SubMenuItemStyle} />,
-  // 'Modify User Info': <AccountCircleIcon style={SubMenuItemStyle} />,
+  'Submission Permissions': <AccountCircleIcon style={SubMenuItemStyle} />,
+  'Personal Details': <AccountCircleIcon style={SubMenuItemStyle} />,
 
   Logout: <ExitToAppIcon style={MenuItemStyle} />,
   // Main Menu Report

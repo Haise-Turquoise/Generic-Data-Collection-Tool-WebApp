@@ -1,20 +1,18 @@
 import { shallowEqual, useDispatch, useSelector } from 'react-redux';
-import React, { useCallback, useMemo, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import { useLocation } from 'react-router-dom';
 import Paper from '@material-ui/core/Paper/Paper';
-import { convertExcelFileToState, convertStateToReactState } from '../../tools/excel';
-import { setExcelData } from '../../store/actions/ui/excel/commands';
-import SubmissionsStore from '../../store/SubmissionsStore/store';
+import { excelImportHandler } from '../../tools/misc';
 import SubmissionNoteStore from '../../store/SubmissionNoteStore/store';
 import SubmissionWorkbookStore from '../../store/SubmissionWorkbookStore/store';
 import { selectFactoryRESTResponseTableValues } from '../../store/common/REST/selectors';
 import { selectSubmissionNoteStore } from '../../store/SubmissionNoteStore/selectors';
 import { selectSubmissionWorkbookStore } from '../../store/SubmissionWorkbookStore/selectors';
 import { updateWorkbookRequest } from '../../store/thunks/submission';
-import workflowController from '../../controllers/workflow';
+import DoneIcon from '@material-ui/icons/Done';
 
 const SubmissionHeader = () => (
   <Paper className="header">
@@ -25,19 +23,10 @@ const SubmissionHeader = () => (
 const FileUpload = () => {
   const dispatch = useDispatch();
   const handleChange = useCallback(
-    async ({ target }) => {
-      const fileData = target.files[0];
-
-      const { name } = fileData;
-
-      const extension = name.split('.').pop();
-
-      if (extension === 'xlsx') {
-        // !unoptimized function... since straight conversion to react state doesn't exist at the moment.
-        // ! TODO: implement straight conversion from file to react state
-        const fileStates = await convertExcelFileToState(fileData);
-        dispatch(SubmissionWorkbookStore.actions.RECEIVE(fileStates));
-      }
+    async (event) => {
+      excelImportHandler(event, (workBookData)=>{
+        dispatch(SubmissionWorkbookStore.actions.RECEIVE(workBookData)); 
+      });
     },
     [dispatch],
   );
@@ -52,6 +41,9 @@ const FileUpload = () => {
 const CreateSubmission = props => {
   //  const [workflowProcess, setWorkflowProcess] = useState()
   const dispatch = useDispatch();
+  const [showSave, setSave] = useState('hidden');
+  const [message, setMessage] = useState('hidden');
+  const [messageColour, setMessageColour] = useState('green');
 
   const handleNoteChange = event => {
     dispatch(SubmissionNoteStore.actions.RECEIVE(event.target.value));
@@ -78,7 +70,6 @@ const CreateSubmission = props => {
       dispatch(updateWorkbookRequest(submissionNote, submissionWorkbook, location.state.detail)),
     [dispatch],
   );
-  console.log(location.state.detail);
 
   return (
     <div className="submissions">
@@ -100,7 +91,7 @@ const CreateSubmission = props => {
           />
         </div>
 
-        <div>
+        <div style={{display:'flex', verticalAlign:'middle'}}>
           <Button
             color="primary"
             variant="contained"
@@ -109,10 +100,27 @@ const CreateSubmission = props => {
               location.state.detail.phase === 'Submitted' ||
               location.state.detail.phase === 'Approved'
             }
-            onClick={() => handleCreateSubmission(submissionNote, submissionWorkbook)}
+            onClick={() => {
+              try{
+                handleCreateSubmission(submissionNote, submissionWorkbook);
+                setSave('visible');
+                setMessage('Sucessfully Saved!');
+                setMessageColour('green');
+              }catch(e){
+                setSave('visible');
+                setMessage('Fail to save workbook');
+                setMessageColour('red')
+              }
+            }}
           >
             Upload
           </Button>
+          
+          <div style={{visibility:showSave, color:messageColour, fontSize:16}}>
+            <DoneIcon/>
+            <text>{message}</text>
+          </div>
+
         </div>
       </Paper>
     </div>

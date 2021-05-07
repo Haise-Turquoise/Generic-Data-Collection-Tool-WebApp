@@ -1,3 +1,4 @@
+
 import React, { lazy, useCallback, useMemo, useEffect, useState } from 'react';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import { Formik } from 'formik';
@@ -13,21 +14,31 @@ import StepLabel from '@material-ui/core/StepLabel';
 import Typography from '@material-ui/core/Typography';
 import Checkbox from '@material-ui/core/Checkbox';
 import FilteredMultiSelect from 'react-filtered-multiselect';
+import './ModifyPermission.scss';
+
+import * as yup from 'yup';
+import MaterialTable from 'material-table';
+
+
+
 import { useTranslation } from 'react-i18next';
+import userRegistrationStore from '../../../store/UserRegistrationStore/store'
 import {
     orgGroupChange,
     snackbarClose,
     stepBack,
     stepNext,
     submit,
+    updatePermission,
     appSysChange,
     orgChange,
     programChange,
-    changeSubmission,
+    changeSubmissionInModifyPermission,
     changePermission,
     searchOrganization,
     searchKeyChange,
     referenceChange,
+    loadModifyPermissionPage,
   } from '../../../store/thunks/userRegistration.js';
 
 // Column for permission table.
@@ -36,6 +47,7 @@ const columns = [
     { title: 'Program', field: 'program.code' },
     { title: 'Submission', field: 'submission.name' },
     { title: 'Permission', field: 'permission' },
+    { title: 'Status', field: 'status' },
     {
       title: 'Authoritative Person Name',
       field: 'organization.authorizedPerson.name',
@@ -58,7 +70,6 @@ const ButtonBox = ({
     values,
     isValid,
     handleBack,
-    handleNext,
     handleSubmit,
   }) => (
     <Box border={1} color="primary" className="modifyPermission__buttonBox" justifyContent="center">
@@ -71,21 +82,13 @@ const ButtonBox = ({
       >
         Back
       </Button>
-
+  
       <Button variant="outlined" color="primary" className="modifyPermission__button" href="/login">
         Cancel
       </Button>
-
-      <Button
-        disabled={activeStep == 1 || !isValid}
-        variant="outlined"
-        color="primary"
-        className="modifyPermission__button"
-        onClick={() => handleNext(values)}
-      >
-        Next
-      </Button>
-
+  
+      
+  
       <Button
         disabled={!ableToComplete || activeStep !== 1}
         variant="outlined"
@@ -93,12 +96,9 @@ const ButtonBox = ({
         className="modifyPermission__button"
         onClick={handleSubmit}
       >
-        COMPLETE REGISTRATION
+        UPDATE PERMISSION
       </Button>
-      <Typography className="modifyPermission__inputTitle">
-        To navigate from one page to the next for registration, please use the button provided on the
-        page. Do not use your browsers's Back and Forward buttons.
-      </Typography>
+      
     </Box>
   );
 
@@ -118,7 +118,7 @@ const selectOrgProgram = (
     handleOrgChange,
     handleProgramChange,
   ) => {
-    //  if (organizationGroup !== "Health Service Providers") {
+    
     const selectedPrograms = [];
     const selectedOrganizations = [];
     return (
@@ -141,9 +141,9 @@ const selectOrgProgram = (
             className="modifyPermission__select"
           />
         </div>
-
+  
         <br />
-
+  
         <div className="modifyPermission__multiSelectField">
           <Typography className="modifyPermission__inputTitle"> *Organizations </Typography>
           <FilteredMultiSelect
@@ -161,7 +161,7 @@ const selectOrgProgram = (
             }}
           />
         </div>
-
+  
         <div className="modifyPermission__multiSelectField">
           <Typography className="modifyPermission__inputTitle"> *Program</Typography>
           <FilteredMultiSelect
@@ -182,11 +182,6 @@ const selectOrgProgram = (
       </>
     );
   };
-
-
-
-
-
 
 
 
@@ -218,19 +213,19 @@ const selectOrgProgram = (
     handleChangePermission,
     props,
   ) => {
-    const { values, handleChange, touched, handleBlur, errors, isValid } = props;
+    const { values,  isValid } = props;
     const [userSubmissionsLength, setSubmissionsLength] = useState(1);
     const [userPermissionsLength, setPermissionsLength] = useState(1);
-    const [maxPhoneLength, setMaxPhoneLength] = useState(10);
-
+   
+  
     useEffect(() => {
       setSubmissionsLength(userSubmissions.length);
     }, [userSubmissions]);
-
+  
     useEffect(() => {
       setPermissionsLength(userPermissions.length);
     }, [userPermissions]);
-
+  
     const calculateOptions = itemCount => {
       let length = itemCount;
       if (length > 100) length = 100;
@@ -243,15 +238,15 @@ const selectOrgProgram = (
         pageSize: length,
       };
     };
-
+  
     const userSubmissionsOptions = useMemo(() => calculateOptions(userSubmissionsLength), [
       userSubmissionsLength,
     ]);
     const userPermissionsOptions = useMemo(() => calculateOptions(userPermissionsLength), [
       userPermissionsLength,
     ]);
-
-
+    
+  
     const { t, i18n } = useTranslation();
     const checkBoxColumns = [
       { title: 'Organization', field: 'organization.name' },
@@ -330,14 +325,12 @@ const selectOrgProgram = (
         ),
       },
     ];
+  
 
-    switch (activeStep) {
-
-      case 1:
         const submissionList = cloneDeep(userSubmissions);
         const permissionList = cloneDeep(userPermissions);
         return (
-          <div className="register__form">
+          <div className="modifyPermission__form">
             {selectOrgProgram(
               searchKey,
               reference,
@@ -351,16 +344,16 @@ const selectOrgProgram = (
               handleOrgChange,
               handleProgramChange,
             )}
-
-            <div className="register__tableContainer">
+  
+            <div className="modifyPermission__tableContainer">
               <MaterialTable
-                className="register__table"
+                className="modifyPermission__table"
                 key={userSubmissionsLength}
                 columns={checkBoxColumns}
                 // options={{
                 //   toolbar: false,
                 //   showTitle: false,
-
+  
                 //   headerStyle: {
                 //     backgroundColor: '#f2f5f7',
                 //   },
@@ -370,28 +363,28 @@ const selectOrgProgram = (
                   backgroundColor: '#f2f5f7',
                 }}
                 data={submissionList}
-
+  
                 // editable={editable} options={options}
               />
             </div>
-
+  
             <Button
               variant="outlined"
               color="primary"
-              className="register__step3Button"
+              className="modifyPermission__step3Button"
               onClick={handleChangeSubmission}
             >
               Add Submission
             </Button>
-            <div className="register__tableContainer">
+            <div className="modifyPermission__tableContainer">
               <MaterialTable
-                className="register__table"
+                className="modifyPermission__table"
                 key={userPermissionsLength}
                 columns={columns}
                 // options={{
                 //   toolbar: false,
                 //   showTitle: false,
-
+  
                 //   headerStyle: {
                 //     backgroundColor: '#f2f5f7',
                 //   },
@@ -414,9 +407,8 @@ const selectOrgProgram = (
             </div>
           </div>
         );
-      default:
-        return <Typography>Select campaign settings...</Typography>;
-    }
+
+    
   };
 
 
@@ -424,14 +416,12 @@ const selectOrgProgram = (
 
 
 // Get the state and shown it on the website
-const Register_container = props => {
+const ModifyPermission_container = props => {
     const dispatch = useDispatch();
     const handleOrgGroupChange = useCallback(event => {
       dispatch(orgGroupChange(event));
     }, []);
-    const handleSnackbarClose = useCallback(() => {
-      dispatch(snackbarClose());
-    }, []);
+
     const handleBack = useCallback(() => {
       dispatch(stepBack());
     }, []);
@@ -439,7 +429,7 @@ const Register_container = props => {
       dispatch(stepNext(values));
     }, []);
     const handleSubmit = useCallback(() => {
-      dispatch(submit());
+      dispatch(updatePermission());
     }, []);
     const handleAppSysChange = useCallback(event => {
       dispatch(appSysChange(event));
@@ -451,12 +441,12 @@ const Register_container = props => {
       dispatch(programChange(selectedPrograms));
     }, []);
     const handleChangeSubmission = useCallback(() => {
-      dispatch(changeSubmission());
+      dispatch(changeSubmissionInModifyPermission());
     }, []);
     const handleChangePermission = useCallback((rowData, permission) => {
       dispatch(changePermission(rowData, permission));
     }, []);
-
+    
     let {
       snackbarMessage,
       activeStep,
@@ -512,24 +502,11 @@ const Register_container = props => {
       shallowEqual,
     );
     activeStep = 1
-    console.log(activeStep)
+    const organizationOptionsCopy = cloneDeep(organizationOptions)
+    organizationOptionsCopy.sort(function(a,b) {return a.value - b.value})
+    
     return (
-      <div>
-        <Stepper className="register__stepper" activeStep={activeStep}>
-          {steps.map((label, index) => {
-            return (
-              <Step key={label}>
-                <StepLabel>{label}</StepLabel>
-              </Step>
-            );
-          })}
-        </Stepper>
-        <div>
-          {activeStep === steps.length ? (
-            <div>
-              <Typography>All steps completed - you&apos;re finished</Typography>
-            </div>
-          ) : (
+
             <div>
               {getStepContent(
                 snackbarMessage,
@@ -544,7 +521,7 @@ const Register_container = props => {
                 userPermissions,
                 appSysOptions,
                 organizationGroupOptions,
-                organizationOptions,
+                organizationOptionsCopy,
                 programOptions,
                 ableToComplete,
                 handleOrgGroupChange,
@@ -559,9 +536,7 @@ const Register_container = props => {
                 props,
               )}
             </div>
-          )}
-        </div>
-      </div>
+
     );
   };
 
@@ -569,9 +544,18 @@ const Register_container = props => {
 
 
 // Main function to export
-const Register = () => {
+const ModifyPermission = () => {
   const handleSubmit = () => {};
   const dispatch = useDispatch();
+
+
+  useEffect(() => {
+    
+    dispatch(loadModifyPermissionPage());
+  }, [])
+
+
+
   const { registrationData } = useSelector(
     ({ UserRegistrationStore: { registrationData } }) => ({
       registrationData,
@@ -582,25 +566,19 @@ const Register = () => {
   return (
     <>
       {/* <SRIHeader/> */}
-      <div className="register">
+      <div className="modifyPermission">
         <br />
-        <Paper className="register__container">
+        <Paper className="modifyPermission__container">
           <Formik
-            validationSchema={registerSchema}
+            
             initialValues={registrationData}
             onSubmit={handleSubmit}
-            render={formikProps => <Register_container {...formikProps} />}
+            render={formikProps => <ModifyPermission_container {...formikProps} />}
           />
         </Paper>
       </div>
     </>
   );
 };
-export default Register;
+export default ModifyPermission;
 
-// const NotFound = () => {
-//     console.log('Hello world');
-//     return (<div>Page not found</div>)
-// };
-
-// export default NotFound; 
