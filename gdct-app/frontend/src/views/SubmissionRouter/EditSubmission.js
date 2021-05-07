@@ -97,6 +97,7 @@ const EditSubmission = ({ history }) => {
         // @ts-ignore
         .fetchProcess(location.state.detail.workflowProcessId)
         .then(workflowProcess => {
+          console.log(workflowProcess)
           if (workflowProcess !== undefined)
             workflowProcess.to.forEach(process => {
               switch (process.statusId.name) {
@@ -139,8 +140,6 @@ const EditSubmission = ({ history }) => {
       // @ts-ignore
       state: { detail: location.state.detail },
     });
-    //Creates a new spreadsheet in google and returns the id. 
-    // openGoogleSheetRequest(submission._id);
   }
 
   const backButtonAction = () => {

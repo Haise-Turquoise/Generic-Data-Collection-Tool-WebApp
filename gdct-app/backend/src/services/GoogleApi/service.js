@@ -7,23 +7,18 @@ import COATreeRepository from '../../repositories/COATree';
 import COAGroupRepository from '../../repositories/COAGroup';
 import COARepository from '../../repositories/COA';
 import ColumnNameRepository from '../../repositories/ColumnName';
-import GoogleSheetRepository from '../../repositories/GoogleSheet';
 import MasterValueRepository from '../../repositories/MasterValue'
 import SheetNameRepository from '../../repositories/SheetName'
-import { getSpreadsheet, deleteGoogleSheet } from '../../middlewares/googleapis/request'
-import {saveGoogleSheetInTemplate, saveGoogleSheetInSubmission} from '../../middlewares/googleapis/save'
-import pako from 'pako'
-import fs from 'fs'
+
 
 // @Service()
-export default class GoogleApisService {
+export default class SpreadsheetApisService {
   constructor() {
     this.templateRepository = Container.get(TemplateRepository);
     this.COATreeRepository = Container.get(COATreeRepository);
     this.COAGroupRepository = Container.get(COAGroupRepository);
     this.COARepository = Container.get(COARepository);
     this.ColumnNameRepository = Container.get(ColumnNameRepository);
-    this.googleSheetRepository = Container.get(GoogleSheetRepository)
     this.masterValueRepository = Container.get(MasterValueRepository);
     this.sheetNameRepository = Container.get(SheetNameRepository);
   }
@@ -76,48 +71,6 @@ export default class GoogleApisService {
     return dataToSend;
   }
 
-  // Updated on Nov 24, 2020
-  // Real time update of Google Sheet input
-  async updateSpreadsheet(spreadsheetData){
-    const { spreadsheetId, row, column, sheet, value } = JSON.parse(spreadsheetData.data);
-    // Retrive the template from database
-    const googleSheet = await this.googleSheetRepository.find({ googleSheetId: spreadsheetId })
-    const templateId = googleSheet[0].templateId;
-    let template = await this.templateRepository.findById(templateId);
-
-    const inflatedTemplateData = pako.inflate( template.templateData, { to: 'string' });
-    template.templateData = JSON.parse(inflatedTemplateData);
-    // If the templateData is empty or the sheet is not present
-    if (!template.templateData.sheets || !template.templateData.sheets[sheet]){
-      const res = await Promise.resolve(getSpreadsheet(spreadsheetId));
-
-      let newTemplate = res
-      delete newTemplate.spreadsheetUrl;
-      delete newTemplate.spreadsheetId;
-      newTemplate = pako.deflate(JSON.stringify(newTemplate), { to: 'string' })
-      this.templateRepository.updateTemplate(templateId, newTemplate);
-    } else {
-      // If the length of row in the spreadsheet is not large enough
-      const spreadsheetRow = template.templateData.sheets[sheet].data[0].rowData;
-      while (!spreadsheetRow[row]){
-        spreadsheetRow.push({});
-      }
-      if (!spreadsheetRow[row].values){
-        spreadsheetRow[row] = {
-          values: [],
-        }
-      }
-
-      // If the length of the column in the spreadsheet is not large enough
-      const spreadsheetColumn = spreadsheetRow[row].values
-      while (!spreadsheetColumn[column]){
-        spreadsheetColumn.push({});
-      }
-      spreadsheetColumn[column] = value;
-
-      this.templateRepository.updateTemplate(templateId, template.templateData)
-      }
-  }
 
   async findOrgWithMasterValueEntries(){
     return this.masterValueRepository.findAll().then(entries=>{
@@ -134,51 +87,7 @@ export default class GoogleApisService {
     })
   }
   
-  async updatePreview(request){
-    request = JSON.parse(request).data
-    const id = request[0].id;
-    const coordinate = [];
-    
-    for (let item in request){
-      coordinate.push(request[item].coordinate);
-    }
-    let filter = {
-      googleSheetId: id,
-    }
 
-    let update = {
-      previewCoord: coordinate ,
-    }
-    this.googleSheetRepository.findOneAndUpdate(filter, update);
-  }
-
-  async getPreview(spreadsheetId){
-    const res = await this.googleSheetRepository.findPreview(spreadsheetId);
-    let filter = {
-      googleSheetId: spreadsheetId,
-    }
-    let update = {
-      previewCoord: [],
-    }
-    this.googleSheetRepository.findOneAndUpdate(filter, update);
-    return res[0].previewCoord;
-  }
-
-  async save(spreadsheetId){
-    const res = await this.googleSheetRepository.find({googleSheetId: spreadsheetId});
-    if (res[0].templateId){
-      await Promise.resolve(saveGoogleSheetInTemplate(res[0]));
-
-      // deleteGoogleSheet(res[0].googleSheetId, res[0].duplicateId /*, openGoogleSheets[i].triggerId*/);
-      // // Delete the GoogleSheet Collection object
-      // const googleSheetRepository = Container.get(GoogleSheetRepository);
-      // googleSheetRepository.delete(res[0]._id);
-
-    } else if (res[0].submissionId){
-      saveGoogleSheetInSubmission(res[0]._id)
-    }
-
-  }
 }
 
 // Insert all the Attributes to the JSON Object
@@ -243,14 +152,12 @@ async function pushCategory(dataToSend, COATreeData, fullCategoryGroupList, full
 
       for (let item in fullCategoryGroupList){
         if (fullCategoryGroupList[item]._id.toString() === id.toString()){
-          console.log('run 1')
           categoryGroup = fullCategoryGroupList[item]
         }
       }
       id = COATree.sheetNameId;
       for (let item in fullSheetNamelist){
         if (id && fullSheetNamelist[item]._id.toString() === id.toString()){
-          console.log('run 2')
           sheetName = fullSheetNamelist[item]
         }
       }
@@ -259,7 +166,6 @@ async function pushCategory(dataToSend, COATreeData, fullCategoryGroupList, full
       for (let item in COATree.categoryId){
         for (let secondItem in fullCategoryList){
           if (fullCategoryList[secondItem].id === COATree.categoryId[item]){
-            console.log('run 3')
             categories.push(fullCategoryList[secondItem])
           }
         }

@@ -4,7 +4,6 @@ import submissionController from '../../controllers/submission';
 import usersController from '../../controllers/Users';
 import statusController from '../../controllers/status';
 import OrgselectionMenu from './OrgSelectionMenu';
-import reportingPeriodController from '../../controllers/reportingPeriod'
 import orgController from '../../controllers/organization';
 import { compareSheet } from '../../tools/misc';
 import CreateAuditLog from '../AuditLog_Global';
@@ -71,7 +70,7 @@ class SubmissionSpreadSheet extends Component{
       if(this.sheet == null){
         submissionController.fetchSubmission(this.id).then(submission=>{
           statusController.findStatusByID(submission.statusId).then((status)=>{
-            if (status && (status.name === 'Approved')){
+            if (status && (status.status.name === 'Approved')){
               sheetOption.mode = 'read';
               this.edit = false;
             }

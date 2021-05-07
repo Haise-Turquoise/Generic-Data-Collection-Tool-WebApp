@@ -3,9 +3,9 @@
 
 import { Service } from 'typedi';
 import { Router } from 'express';
-import GoogleApisService from '../../services/GoogleApi';
+import SpreadsheetApisService from '../../services/GoogleApi';
 // Used to handle API requests from google
-const GoogleApisController = Service([GoogleApisService], service => {
+const SpreadsheetApisController = Service([SpreadsheetApisService], service => {
   const router = Router();
   return (() => {
     // Last Updated: Nov 27, 2020
@@ -17,47 +17,14 @@ const GoogleApisController = Service([GoogleApisService], service => {
         .catch(next);
     });
 
-    // Last Updated: Nov 27, 2020
-    // Receives update from Google whenever a change is made in a cell. Comes with cell coordinate and value
-    // It was developed for proof of concept
-    router.post('/updateSpreadsheet/', (req, res, next) => {
-      service
-        .updateSpreadsheet(req.body)
-        .then()
-        .catch(next);
-    });
-
     router.post('/orgWithMasterValueEntry', (req, res, next)=>{
       service.findOrgWithMasterValueEntries().then(data=>{
         res.send(JSON.stringify({"orgs":data}))
       }).catch(next);
-    });
-
-    router.post('/updatePreview/', (req, res, next) => {
-      service
-        .updatePreview(req.body.data)
-        .then(answer => res.send())
-        .catch(next);
-    });
-
-    router.post('/getPreview/', (req, res, next) => {
-      service
-        .getPreview(req.body.data)
-        .then(preview => 
-          {console.log(preview); res.send({data: preview} )})
-        .catch(next);
-    });
-
-    router.post('/closeEvent/', (req, res, next) => {
-      service
-        .save(req.body.id)
-        .then(preview => res.send({data: preview} ))
-        .catch(next);
-    });
-
+    }); 
 
     return router;
   })();
 });
 
-export default GoogleApisController;
+export default SpreadsheetApisController;

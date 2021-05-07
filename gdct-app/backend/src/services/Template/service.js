@@ -1,10 +1,7 @@
 import Container from 'typedi';
-import pako from 'pako'
 import TemplateRepository from '../../repositories/Template';
 import TemplateTypeRepository from '../../repositories/TemplateType';
 import WorkflowProcessRepository from '../../repositories/WorkflowProcess/WorkflowProcess';
-import GoogleSheetRepository from '../../repositories/GoogleSheet';
-import { createSpreadsheet, addEditor} from '../../middlewares/googleapis/request'
 
 // @Service()
 export default class TemplateService {
@@ -12,7 +9,6 @@ export default class TemplateService {
     this.templateRepository = Container.get(TemplateRepository);
     this.templateTypeRepository = Container.get(TemplateTypeRepository);
     this.workflowProcessRepository = Container.get(WorkflowProcessRepository);
-    this.googleSheetRepository = Container.get(GoogleSheetRepository);
   }
 
   async createTemplate(template) {
