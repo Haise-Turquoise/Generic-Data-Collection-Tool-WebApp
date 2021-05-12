@@ -15,7 +15,6 @@ import ListIcon from '@material-ui/icons/List';
 import GroupIcon from '@material-ui/icons/Group';
 import BuildIcon from '@material-ui/icons/Build';
 import FileCopyIcon from '@material-ui/icons/FileCopy';
-import LoopIcon from '@material-ui/icons/Loop';
 import ForumIcon from '@material-ui/icons/Forum';
 import StorageIcon from '@material-ui/icons/Storage';
 import EventIcon from '@material-ui/icons/Event';
@@ -35,6 +34,8 @@ import CallSplitIcon from '@material-ui/icons/CallSplit';
 import InboxIcon from '@material-ui/icons/Inbox';
 import DnsIcon from '@material-ui/icons/Dns';
 import ScatterPlotIcon from '@material-ui/icons/ScatterPlot';
+import EnhancedEncryptionIcon from '@material-ui/icons/EnhancedEncryption';
+import SettingsApplicationsIcon from '@material-ui/icons/SettingsApplications';
 
 // Universal Style
 const MenuItemStyle = { fontSize: '1.2rem', marginLeft: '1.2rem' };
@@ -50,8 +51,8 @@ export default {
   // Main Menu User
   User: <AccountCircleIcon />,
   Profile: <AccountCircleIcon style={MenuItemStyle} />,
-  'Submission Permissions': <AccountCircleIcon style={SubMenuItemStyle} />,
-  'Personal Details': <AccountCircleIcon style={SubMenuItemStyle} />,
+  'Submission Permissions': <EnhancedEncryptionIcon style={MenuItemStyle} />,
+  'Personal Details': <SettingsApplicationsIcon style={MenuItemStyle} />,
 
   Logout: <ExitToAppIcon style={MenuItemStyle} />,
   // Main Menu Report
