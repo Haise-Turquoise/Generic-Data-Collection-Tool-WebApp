@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
-import { Avatar, Button, Box, CssBaseline, Checkbox, Container, 
-         FormControlLabel, Grid, Link, Snackbar, TextField, Typography } from '@material-ui/core';
+import React, { useState, useEffect } from 'react';
+import { Avatar, Button, Box, CssBaseline, Checkbox, Container, MenuItem, FormControl, InputLabel,
+         FormControlLabel, Grid, Link, Snackbar, TextField, Typography, Select } from '@material-ui/core';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import { makeStyles } from '@material-ui/core/styles';
 import MuiAlert from '@material-ui/lab/Alert';
@@ -11,6 +11,8 @@ import AuthController from '../controllers/Auth';
 
 import CreateAuditLog from './AuditLog_Global';
 import SessionController from '../controllers/Session';
+
+import usersController from '../controllers/Users'
 
 import moment from 'moment';
 import Swal from 'sweetalert2';
@@ -43,6 +45,13 @@ const useStyles = makeStyles(theme => ({
   form: {
     width: '100%', // Fix IE 11 issue.
     marginTop: theme.spacing(1),
+  },
+  select: {
+    marginTop: theme.spacing(2),
+    minWidth: '120px'
+  },
+  selectLabel: {
+    padding: theme.spacing(0, 1)
   },
   submit: {
     margin: theme.spacing(3, 0, 2),
@@ -77,6 +86,8 @@ export default function Login({ setLoggedIn }) {
   const [userFeedback, setUserFeedback] = useState('');
   const [checkLogin, setCheckLogin] = useState('false');
   const [open, setOpen] = React.useState(false);
+  const [selectedRole, setSelectedRole] = useState('')
+  const [roles, setRoles] = useState([])
 
   const displayUserFeedback = () => {
     setOpen(true);
@@ -104,6 +115,9 @@ export default function Login({ setLoggedIn }) {
         setEmail(value);
         setErrors(updatedErrors);
         break;
+      case 'role':
+        setSelectedRole(value.toString())
+        break
       default:
     }
   };
@@ -116,14 +130,28 @@ export default function Login({ setLoggedIn }) {
     let checkLogin;
     try {
       if (email && validateForm(errors)) {
-        checkLogin = await AuthController.login({ email, password })
+        // logic to verify validity of submitter role
+        const { sysRole } = await usersController.fetchByEmail(email)
+        const possibleRoles = sysRole.reduce((acc, curr) => acc.concat(curr.role), [])
+        let currentRole = selectedRole
+        if (possibleRoles.length < 2) {
+          currentRole = sysRole[0].role
+        } else if (!possibleRoles.includes(currentRole)) {
+          handleUpdateRoles()
+          setLoggedIn(false)
+          return
+        }
+
+        checkLogin = await AuthController.login({ email, password, selectedRole })
           .then(data => {
             if (data === undefined) {
               return false;
             }
             if (data.status === 'ok') {
+              // picks first role if signing in with autofill
               localStorage.setItem('currentUser', data.data.email);
               localStorage.setItem('currentUserID', data.data._id);
+              localStorage.setItem('currentRole', currentRole)
               sessionID = data.data.sessionID;
               // Audit Login
               CreateAuditLog(email, 'Login', 'Login', null, {}, {});
@@ -146,6 +174,18 @@ export default function Login({ setLoggedIn }) {
       setLoggedIn(false);
     }
   };
+
+  const handleUpdateRoles = () => {
+    usersController.fetchByEmail(email)
+    .then(data => {
+      setRoles(data.sysRole.map(role => role.role))
+      // set selected role manually if only one available
+      if (data.sysRole.length >= 1) {
+        setSelectedRole(data.sysRole[0].role)
+      }
+    })
+    .catch(() => setRoles([]))
+  }
 
   // Session Timer
   const Timer = () => {
@@ -238,6 +278,7 @@ export default function Login({ setLoggedIn }) {
             autoComplete="email"
             autoFocus
             onChange={handleChange}
+            onBlur={handleUpdateRoles}
           />
           <TextField
             variant="outlined"
@@ -252,6 +293,20 @@ export default function Login({ setLoggedIn }) {
             autoComplete="password"
             onChange={handleChange}
           />
+          {/* show role selector only if > 1 roles to choose from */}
+          {roles.length > 1 && <FormControl fullWidth variant='outlined' className={classes.select}>
+            <InputLabel id='role-selector-label' required>Role</InputLabel>
+            <Select
+              labelWidth={40}
+              labelId='role-selector-label'
+              id='role-selector'
+              name='role'
+              value={selectedRole}
+              onChange={(e) => setSelectedRole(e.target.value.toString())} // toString for consistent types
+            >
+              {roles.map((role, index) => <MenuItem value={role} key={index}>{role}</MenuItem>)}
+            </Select>
+          </FormControl>}
           <FormControlLabel
             control={<Checkbox value="remember" color="primary" />}
             label="Remember me"
