@@ -11,6 +11,7 @@ import AuthController from '../controllers/Auth';
 
 import CreateAuditLog from './AuditLog_Global';
 import SessionController from '../controllers/Session';
+import AppConfigController from '../controllers/AppConfig';
 
 import moment from 'moment';
 import Swal from 'sweetalert2';
@@ -149,70 +150,73 @@ export default function Login({ setLoggedIn }) {
 
   // Session Timer
   const Timer = () => {
-    let i = 0;
-    while (i < 60) {
-      (function(i) {
-        setTimeout(function() {
-          console.log(sessionID);
-          SessionController.fetchById(sessionID)
-            .then(session => {
-              const expirationTime = session.expires;
-              const currentTime = moment();
-              const remainingMinutes = moment(expirationTime).diff(currentTime, 'minutes');
-              const remainingSeconds = moment(expirationTime).diff(currentTime, 'seconds');
-              console.log(`${remainingMinutes}  ${remainingSeconds}`);
+    (async () => {
+      const sessionCheckingPeriod = await AppConfigController.fetchSessionCheckingPeriod();
+      let i = 0;
+      while (i < 60) {
+        (function(i) {
+          setTimeout(function() {
+            SessionController.fetchById(sessionID).then(session => {
+              if (session !== null) {
+                const expirationTime = session.expires;
+                const currentTime = moment();
+                const remainingMinutes = moment(expirationTime).diff(currentTime, 'minutes');
+                const remainingSeconds = moment(expirationTime).diff(currentTime, 'seconds');
+                console.log(`${remainingMinutes}  ${remainingSeconds}`);
 
-              // Session only has at most 5 minutes
-              if (remainingMinutes === 5 || remainingMinutes === 1) {
-                const swalWithBootstrapButtons = Swal.mixin({
-                  customClass: {
-                    confirmButton: 'btn btn-success',
-                    cancelButton: 'btn btn-danger'
-                  },
-                })
-                swalWithBootstrapButtons.fire({
-                  title: `Session expiring in ${remainingMinutes} minutes`,
-                  text: "Unsaved process maybe lost if session expires",
-                  icon: 'warning',
-                  showCancelButton: true,
-                  confirmButtonText: 'Reset it',
-                  cancelButtonText: 'Cancel',
-                  reverseButtons: true
-                }).then((result) => {
-                  if (result.isConfirmed) {
-                    SessionController.updateExpiration(sessionID);
-                    swalWithBootstrapButtons.fire(
-                      'Reset!',
-                      'Your session has been reset',
-                      'success'
-                    )
-                  } else if (result.dismiss === Swal.DismissReason.cancel) {
-                    swalWithBootstrapButtons.fire(
-                      'Cancelled',
-                      'Session expiring...',
-                      'error'
-                    )
-                  }
-                })
-              }
-              // Session has expired
-              else if (remainingMinutes === 0 && remainingSeconds <= 0) {
-                Swal.fire({
-                  title: 'Session has expired!',
-                  text: "You will be redirected to the login page",
-                  icon: 'warning',
-                  confirmButtonColor: '#3085d6',
-                  confirmButtonText: 'OK'
-                }).then((result) => {
-                  if (result.isConfirmed) {
-                    window.location.reload();
-                  }
-                })
+                // Session only has at most 5 minutes
+                if (remainingMinutes === 5 || remainingMinutes === 1) {
+                  const swalWithBootstrapButtons = Swal.mixin({
+                    customClass: {
+                      confirmButton: 'btn btn-success',
+                      cancelButton: 'btn btn-danger'
+                    },
+                  })
+                  swalWithBootstrapButtons.fire({
+                    title: `Session expiring in ${remainingMinutes} minutes`,
+                    text: "Unsaved process maybe lost if session expires",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Reset it',
+                    cancelButtonText: 'Cancel',
+                    reverseButtons: true
+                  }).then((result) => {
+                    if (result.isConfirmed) {
+                      SessionController.updateExpiration(sessionID);
+                      swalWithBootstrapButtons.fire(
+                        'Reset!',
+                        'Your session has been reset',
+                        'success'
+                      )
+                    } else if (result.dismiss === Swal.DismissReason.cancel) {
+                      swalWithBootstrapButtons.fire(
+                        'Cancelled',
+                        'Session expiring...',
+                        'error'
+                      )
+                    }
+                  })
+                }
+                // Session has expired
+                else if (remainingMinutes === 0 && remainingSeconds <= 0) {
+                  Swal.fire({
+                    title: 'Session has expired!',
+                    text: "You will be redirected to the login page",
+                    icon: 'warning',
+                    confirmButtonColor: '#3085d6',
+                    confirmButtonText: 'OK'
+                  }).then((result) => {
+                    if (result.isConfirmed) {
+                      window.location.reload();
+                    }
+                  })
+                }
               }
             })
-        }, 10 * 1000 * i)
-      })(i++)
-    };
+          }, sessionCheckingPeriod.value * 60 * 1000 * i)
+        })(i++)
+      };
+    })();
   };
 
   return (

@@ -15,7 +15,7 @@ const renderItem = ({ name, icon, url, handleClick, option, type }) => {
           <ListItemIcon onClick={handleClick}>{icon}</ListItemIcon>
           <ListItemText primary={name} style={{ color: '#838383' }} />
         </div>
-        <ListItemText secondary={'Simple description can be here about the menu'} />
+        <ListItemText secondary={`CLICK HERE TO GO TO FEATURE: ${name}`} />
       </ListItem>
     </Tooltip>
   ) : (
@@ -31,12 +31,10 @@ const renderItem = ({ name, icon, url, handleClick, option, type }) => {
 
 const IconItem = ({ name, icon, url, handleClick, isSubMenu = false, option, type }) => {
   const renderData = isSubMenu ? (
-    //<>
     <ListItem key={name} component={url && Link} button to={url} style={{ color: 'black' }}>
       <ListItemIcon>{icon}</ListItemIcon>
       <ListItemText primary={name} />
     </ListItem>
-    //</>
   ) : (
     renderItem({ name, icon, url, handleClick, option, type })
   );
