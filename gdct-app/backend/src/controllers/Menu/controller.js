@@ -9,7 +9,7 @@ const MenuController = Service([MenuService], service => {
     router.get('/Menus', (req, res, next) => {
       service
         // @ts-ignore
-        .getAuthroizedMenus(req.session.roles)
+        .getAuthroizedMenus(req.session.role)
         .then(res => {
           res.sort((a, b) => a.orderId - b.orderId);
           return res;

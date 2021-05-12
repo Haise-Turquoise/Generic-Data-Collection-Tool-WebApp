@@ -195,15 +195,11 @@ export default class AuthService {
         const { email } = req.user;
         const user = await authService.UserRepository.findByEmail(email);
 
-        req.session.roles = [];
         req.session.isAdmin = false;
         if (user) {
           const selectedRole = req.body.selectedRole || user.sysRole[0].role
           req.session.role = selectedRole
           req.session.isAdmin = (selectedRole === 'Business Admin')
-
-          // to delete -- needs to be in array to render menu
-          req.session.roles = [selectedRole]
           
           return next();
         }

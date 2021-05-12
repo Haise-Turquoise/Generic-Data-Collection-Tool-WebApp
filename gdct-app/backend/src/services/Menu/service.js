@@ -38,9 +38,8 @@ export default class MenuService {
     return menu.items.length === 0;
   }
 
-  getAuthroizedMenus(roles) {
-    
-    if (!roles) {
+  getAuthroizedMenus(role) {
+    if (!role) {
       throw new AppError(i18n.__('Auth.service.profile.NotAuthenticated'), 400);
     }
     return this.findMenu({}).then(menus => {
@@ -49,9 +48,9 @@ export default class MenuService {
         const menuItems = menu.items;
         menu.items = new Set();
         for (const menuItem of menuItems) {
-          for (const role of menuItem.role) {
-            const myRole = role.split('-')[1].toLowerCase();
-            if (roles.find(e => e.toLowerCase() === myRole)) {
+          for (const itemRole of menuItem.role) {
+            const myRole = itemRole.split('-')[1].toLowerCase();
+            if (role.toLowerCase() === myRole) {
               menu.items.add(menuItem);
             }
           }
