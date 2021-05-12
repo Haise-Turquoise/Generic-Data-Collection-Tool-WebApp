@@ -195,15 +195,11 @@ export default class AuthService {
         const { email } = req.user;
         const user = await authService.UserRepository.findByEmail(email);
 
-        req.session.roles = [];
         req.session.isAdmin = false;
         if (user) {
-          user.sysRole.forEach(e => {
-            req.session.roles.push(e.role);
-            if (e.role === 'Business Admin') {
-              req.session.isAdmin = true;
-            }
-          });
+          const selectedRole = req.body.selectedRole || user.sysRole[0].role
+          req.session.role = selectedRole
+          req.session.isAdmin = (selectedRole === 'Business Admin')
           
           return next();
         }

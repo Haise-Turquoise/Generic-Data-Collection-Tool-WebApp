@@ -96,6 +96,17 @@ const useStyles = makeStyles(theme => ({
       textDecoration: 'none',
     },
   },
+  chip: {
+    padding: '20px 15px',
+    textAlign: 'center'
+  },
+  chipTitle: {
+    fontSize: '0.9rem'
+  },
+  chipSubtitle: {
+    fontSize: '0.75rem',
+    color: 'gray'
+  }
 }));
 
 const HeaderHandle = ({ open, classes, handleDrawerOpen, isTopMenu }) => {
@@ -119,6 +130,11 @@ const HeaderTitle = ({ title }) => (
     {title}
   </Typography>
 );
+
+const checkRole = () => {
+  const currRole = localStorage.getItem('currentRole')
+  return currRole && currRole !== 'undefined' && currRole !== 'null'
+}
 
 const Header = ({
   title,
@@ -148,7 +164,16 @@ const Header = ({
         <HeaderTitle title={title} />
       </Link>
       {isTopMenu && <TopItemList config={config} classes={classes} isMobile={isMobile} />}
-      <Chip label={localStorage.getItem('currentUser')} id='MuiChip-label-Authpage' />
+      <Chip label={
+          <span>
+            <span className={classes.chipTitle}>{localStorage.getItem('currentUser')}</span><br/>
+            {/* subtitle to show if user has a roles */}
+            {
+              checkRole() && 
+              <span className={classes.chipSubtitle}>{localStorage.getItem('currentRole')}</span>
+            }
+          </span>
+        } id='MuiChip-label-Authpage' className={classes.chip} />
       <FormControlLabel
         className={classes.flexItem}
         control={
