@@ -1,5 +1,10 @@
 import nodemailer from 'nodemailer';
 
+
+
+
+
+
 // const mailConfig = {
 //   host: 'smtp.ethereal.email',
 //   port: 587,
@@ -9,13 +14,25 @@ import nodemailer from 'nodemailer';
 //   },
 // };
 
+
 const mailConfig = {
+  
   service:"hotmail",
+  
   auth: {
     user: 'ohfstest@outlook.com',
     pass: 'Gdct1234',
   },
 };
+// const mailConfig = {
+  
+//   service:"hotmail",
+  
+//   auth: {
+//     user: 'yangjie.yang@mail.utoronto.ca',
+//     pass: 'Yangjie961109',
+//   },
+// };
 
 // Check your messages at https://ethereal.email/ on the test email account
 // Credentials are present on mailConfig
@@ -25,7 +42,7 @@ export const sendPermissionChangeUserVerficationEmail = (username,email) => {
   // const { username, email } = registerData;
   const message = {
     from: 'ohfstest@outlook.com',
-    to: email,
+    to: 'ohfstest@gmail.com',
     subject: 'Web-prototype User Email Verification',
     // text: `Hello ${username}! Activate your account here by going to this url: ${FRONTEND_SERVER}/verification/${id}`,
     html: `<p><b>Hello ${username}</b> 
@@ -103,15 +120,16 @@ export const sendPermissionChangeAdminVerficationEmail = (orgInfo, hashedUsernam
   const { authorizedPerson, orgId, permission } = orgInfo;
   const orgName = orgInfo.name;
   const { name, telephone, email } = authorizedPerson;
-
+  
   const stringList = [];
   permission.forEach(e => {
     stringList.push(JSON.stringify(e));
   });
   stringList.join('<br/>');
+  console.log(stringList)
   const message = {
     from: 'ohfstest@outlook.com',
-    to: email,
+    to: 'ohfstest@gmail.com',
     subject: 'Web-prototype Admin Email Verification',
     // text: `Hello ${username}! Activate your account here by going to this url: ${FRONTEND_SERVER}/verification/${id}`,
     html: `<p><b>Hello ${name}</b> 
