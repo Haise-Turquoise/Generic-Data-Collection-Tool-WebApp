@@ -236,11 +236,11 @@ class SpreadSheet extends Component{
     lineNumberInsertion(){
       const currSheetIndex = this.sheet.getCurrentSheetIndex();
       const currSheet = this.sheet.datas[currSheetIndex];
-
       const categoryMap = generateCategoryMap(currSheet);
-      let categoryIDs = Object.keys(categoryMap).sort((id1, id2)=>{
-        return categoryMap[id1] - categoryMap[id2];
-      });
+
+      let categoryIDs = Object.keys(categoryMap).sort((id1, id2)=>
+        categoryMap[id1] - categoryMap[id2]
+      );
 
       for (let i = 0; i < categoryIDs.length; i++){
         this.sheet.cellText(categoryMap[categoryIDs[i]], 2, i + 1, currSheetIndex);
@@ -283,6 +283,9 @@ class SpreadSheet extends Component{
                 <VarianceInsertionMenu callback={this.insertVariance} getSheet={this.getCurrentSheet}/>
                 <Button variant="outlined" color="primary" onClick={()=>this.disablePreview()}>
                   Disable preview
+                </Button>
+                <Button variant="outlined" color="primary" onClick={()=>this.lineNumberInsertion()}>
+                  Organize line numbers
                 </Button>
                 <Button variant="outlined" color="primary" onClick={()=>this.downloadTemplate(this.sheet.getData())}>
                   Download Template

@@ -85,18 +85,18 @@ class SubmissionSpreadSheet extends Component{
               this.currentCoord = {row, col};
             })
 
-            // Get user data from server, handle auto population
-            const currentUser = localStorage.getItem('currentUser');
-            usersController.fetchByEmail(currentUser).then(data=>{
-              let orgArr = []
-              data.sysRole.forEach(element => {
-                element.org.forEach(org => {
-                  const {orgId} = org;
-                  orgArr.push(orgId);
-                });
-              });
-              if (orgArr.length == 1) this.insertOrg(orgArr[0]);
-            });
+            // // Get user data from server, handle auto population
+            // const currentUser = localStorage.getItem('currentUser');
+            // usersController.fetchByEmail(currentUser).then(data=>{
+            //   let orgArr = []
+            //   data.sysRole.forEach(element => {
+            //     element.org.forEach(org => {
+            //       const {orgId} = org;
+            //       orgArr.push(orgId);
+            //     });
+            //   });
+            //   if (orgArr.length == 1) this.insertOrg(orgArr[0]);
+            // });
   
           });
         });
@@ -139,17 +139,13 @@ class SubmissionSpreadSheet extends Component{
     saveTemplate = () =>{
       if (this.sheet && this.edit){
         const newData = this.sheet.getData();
-        console.log(newData)
         this.submissionObject.workbookData = newData;
         submissionController.updateWorkbook(this.submissionObject).then(res=>{
           const difference = compareSheet(this.orginalValue, newData);
           CreateAuditLog(null, "Update Submission workbook", "Submisson", this.submissionObject._id, difference.oldValues, difference.newValues);
         });
-
       }
     }
-
-
 
     insertOrg = async (orgId) => {
       if (this.edit){

@@ -46,9 +46,9 @@ export default class SubmissionRepository extends BaseRepository {
     return SubmissionModel.find({ isLatest: true });
   }
 
-  async findByOrgIdAndProgramId(orgId, programIds) {
-    if (!orgId) return SubmissionModel.find({ programId: { $in: programIds }, isLatest: true });
-    return SubmissionModel.find({ orgId, programId: { $in: programIds }, isLatest: true });
+  async findByOrgIdAndProgramId(orgIds, programIds) {
+    if (orgIds.length == 0) return SubmissionModel.find({ programId: { $in: programIds }, isLatest: true });
+    return SubmissionModel.find({ orgId: {$in: orgIds}, programId: { $in: programIds }, isLatest: true });
   }
 
   // Created on Nov 26, 2020

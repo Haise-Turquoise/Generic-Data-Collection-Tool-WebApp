@@ -16,6 +16,7 @@ import ReportingPeriodRepository from '../../repositories/ReportingPeriod';
 import { mastervalueExtraction } from '../../utils/mastervalue/mastervalueExtraction';
 import { mastervaluePrepopulation } from '../../utils/mastervalue/mastervaluePrepopulation';
 import {ObjectId} from 'mongodb';
+import Organization from '../../entities/Organization';
 const mongoose = require('mongoose');
 mongoose.Promise = require('bluebird');
 
@@ -66,7 +67,7 @@ export default class SubmissionService {
     // Clone the tempalte's workbook data to be used by the user
     return this.programRepository.findById(submission.programId).then(program => {
       return this.templateRepository.findById(submission.templateId).then(template => {
-        return mastervaluePrepopulation(template.templateData, submission.orgId).then(workbook => {
+        return mastervaluePrepopulation(template.templateData, submission).then(workbook => {
           return this.templateTypeRepository.findById(template.templateTypeId).then(templateType => {
             return this.workflowProcessRepository
               .find({ workflowId: templateType.submissionWorkflowId })
@@ -111,7 +112,7 @@ export default class SubmissionService {
   async uploadSubmissionWorkbook(submission, workbookData, submissionNote) {
     const currentStatus = await this.statusRepository.findOneByID(submission.statusId);
     if (currentStatus.name == 'Approved' || currentStatus.name == 'Submitted') return;
-    submission.workbookData = await mastervaluePrepopulation(workbookData, submission.orgId);
+    submission.workbookData = await mastervaluePrepopulation(workbookData, submission);
     submission.updatedDate = new Date();
     submission.parentId = submission.parentId ? submission.parentId : submission._id;
 
@@ -301,7 +302,6 @@ export default class SubmissionService {
 
   // This is specified one user can only belongs to organization
   async findSubmission(email) {
-    const count = 0;
     const userInfo = await this.usersRepository.findByEmail(email);
     
     const org = userInfo.sysRole[0].org[0];
@@ -309,11 +309,18 @@ export default class SubmissionService {
     const orgId = org? org.orgId: undefined;
     const programAndTempTypes = [];
     const programIds = [];
+    const orgMapping = {};
     if (orgId){
       userInfo.sysRole.forEach(sysRole => {
-        sysRole.org[0].program.forEach(program => {
-          programAndTempTypes.push({ program: program.programId, templateTypes: program.template });
-          programIds.push(program.programId);
+        sysRole.org.forEach(organization => {
+          orgMapping[organization.orgId] = [];
+          organization.program.forEach(program => {
+            orgMapping[organization.orgId].push(program.programId);
+            if (!programIds.includes(program.programId)){
+              programAndTempTypes.push({ program: program.programId, templateTypes: program.template });
+              programIds.push(program.programId);
+            }
+          });
         });
       });
 
@@ -342,21 +349,25 @@ export default class SubmissionService {
                         templatePackage.programIds.forEach(programId => {
                           programAndTempTypes.forEach(element => {
                             if (element.program.toString() == programId.toString()) {
-                              promiseQuery3.push(
-                                this.createSubmissionBaseOnTemplatePackage({
-                                  orgId,
-                                  templateId,
-                                  templatePackageId: templatePackage._id,
-                                  submissionPeriodId: templatePackage.submissionPeriodId,
-                                  programId,
-                                  statusId: status[0]._id,
-                                  version: 0,
-                                  isLatest: true,
-                                }),
-                              );
+                             Object.keys(orgMapping).forEach(organizationId=>{
+                               if (orgMapping[organizationId].includes(element.program)){
+                                 const orgId = organizationId;
+                                  promiseQuery3.push(
+                                  this.createSubmissionBaseOnTemplatePackage({
+                                    orgId,
+                                    templateId,
+                                    templatePackageId: templatePackage._id,
+                                    submissionPeriodId: templatePackage.submissionPeriodId,
+                                    programId,
+                                    statusId: status[0]._id,
+                                    version: 0,
+                                    isLatest: true,
+                                  }),
+                                );
+                               }
+                             });
                             }
                           });
-
                         });
                       }
                     });
@@ -373,7 +384,7 @@ export default class SubmissionService {
         return Promise.all(promiseQuery1).then(() => {
           const changedSubmissions = [];
           return this.submissionRepository
-            .findByOrgIdAndProgramId(orgId, programIds)
+            .findByOrgIdAndProgramId(Object.keys(orgMapping), programIds)
             .then(submissions => {
               const promiseQuery2 = [];
               submissions.forEach(submission => {
