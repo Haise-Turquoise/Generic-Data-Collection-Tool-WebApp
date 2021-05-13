@@ -197,9 +197,9 @@ export default class AuthService {
 
         req.session.isAdmin = false;
         if (user) {
-          const selectedRole = req.body.selectedRole || user.sysRole[0].role
-          req.session.role = selectedRole
-          req.session.isAdmin = (selectedRole === 'Business Admin')
+          const selectedRole = req.body.selectedRole || user.sysRole[0].role;
+          req.session.role = selectedRole;
+          req.session.isAdmin = (selectedRole === 'Business Admin');
           
           return next();
         }
