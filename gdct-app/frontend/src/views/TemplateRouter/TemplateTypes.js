@@ -83,6 +83,7 @@ const TemplateTypesTable = ({ history }) => {
         icon: LaunchIcon,
         tooltip: 'View Programs',
         onClick: (_event, templateType) => {
+          
           history.push(`/admin/template/type/${templateType._id}`);
         },
       },

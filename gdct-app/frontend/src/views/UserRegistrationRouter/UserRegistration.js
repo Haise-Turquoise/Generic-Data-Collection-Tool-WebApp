@@ -227,7 +227,7 @@ const selectOrgProgram = (
           valueProp="value"
           buttonText="Add Organization"
           className="register__filteredMultiSelect"
-          showFilter={false}
+          showFilter={true}
           classNames={{
             button: 'register__step3Button',
             select: 'register__multiSelect',
@@ -245,7 +245,7 @@ const selectOrgProgram = (
           valueProp="value"
           buttonText="Add Program"
           className="register__filteredMultiSelect"
-          showFilter={false}
+          showFilter={true}
           classNames={{
             button: 'register__step3Button',
             select: 'register__multiSelect',
@@ -759,6 +759,7 @@ const Register_container = props => {
     dispatch(orgChange(selectedOrganization));
   }, []);
   const handleProgramChange = useCallback(selectedPrograms => {
+    console.log(selectedPrograms)
     dispatch(programChange(selectedPrograms));
   }, []);
   const handleChangeSubmission = useCallback(() => {
@@ -822,7 +823,23 @@ const Register_container = props => {
     }),
     shallowEqual,
   );
-
+  const organizationOptionsCopy = cloneDeep(organizationOptions)
+  organizationOptionsCopy.sort(function(a,b){
+    const compareArray = [a.value.toString(),b.value.toString()]
+    compareArray.sort()
+    return compareArray[0] == a.value.toString()? -1 : 1
+  })
+    // console.log('organizationOptionsCopy', organizationOptionsCopy)
+    // organizationOptionsCopy.sort(function(a,b) {
+    //   const LabelAStart = a.label.indexOf(")")+1
+    //   const LabelBStart = b.label.indexOf(")")+1
+    //   const LabelA = a.label.substring(LabelAStart,a.label.length).toLowerCase()
+    //   const LabelB = b.label.substring(LabelBStart,b.label.length).toLowerCase()
+    //   // console.log(LabelA,LabelB)
+    //   const compareArray = [LabelA,LabelB]
+    //   compareArray.sort();
+    //   return compareArray[0] == LabelA? -1 : 1
+    // })
   return (
     <div>
       <Stepper className="register__stepper" activeStep={activeStep}>
@@ -854,7 +871,7 @@ const Register_container = props => {
               userPermissions,
               appSysOptions,
               organizationGroupOptions,
-              organizationOptions,
+              organizationOptionsCopy,
               programOptions,
               ableToComplete,
               handleOrgGroupChange,

@@ -35,6 +35,7 @@ export const createRequestFactory = (store, controller) => (
   reject,
   isPopulated = false,
 ) => dispatch => {
+  console.log(value)
   dispatch(store.actions.REQUEST());
 
   controller[isPopulated ? 'createPopulated' : 'create'](value)

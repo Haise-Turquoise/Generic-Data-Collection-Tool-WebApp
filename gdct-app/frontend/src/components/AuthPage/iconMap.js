@@ -92,6 +92,7 @@ export default {
   'Application System Role': <GroupWorkIcon style={SubMenuItemStyle} />,
   'Application Resource': <GroupWorkIcon style={SubMenuItemStyle} />,
   'Application Role Resource': <GroupWorkIcon style={SubMenuItemStyle} />,
+  'Application Role Resource Management': <GroupWorkIcon style={SubMenuItemStyle} />,
 
   // Admin Configuration
   Configuration: <BuildIcon style={MenuItemStyle} />,

@@ -33,7 +33,6 @@ const AppRoleResourceController = Service([AppRoleResourceService], service => {
     router.put('/appRoleResources/:_id', (req, res, next) => {
       const { _id } = req.params;
       const { AppRoleResource } = req.body;
-
       service
         .updateAppRoleResource(_id, AppRoleResource)
         .then(() => res.end())

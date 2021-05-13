@@ -6,9 +6,11 @@ const AppRoleResourceModel = model(
   'AppRoleResource',
   new Schema(
     {
-      appResourceId: { type: ObjectId, ref: 'AppResource' },
-      appSysRoleId: [{ type: ObjectId, ref: 'AppSysRole' }],
+      appResourceId: { type: Object, ref: 'AppResource' },
+      appSysRoleId: { type: Object, ref: 'AppSysRole' ,roleId:{type:ObjectId}, roleName:{type:String}},
       timestamp: { type: Date },
+      resourceId:{type: Array, default:[]},
+      // isActive:{type: Boolean},
       //    updatedDate: { type: Date },
       //    userCreatorId: { type: ObjectId, ref: 'User' },
       updatedBy: { type: String },
