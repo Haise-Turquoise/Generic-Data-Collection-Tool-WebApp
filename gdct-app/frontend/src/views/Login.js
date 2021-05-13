@@ -133,6 +133,7 @@ export default function Login({ setLoggedIn }) {
       if (email && validateForm(errors)) {
         // logic to verify validity of submitter role
         const { sysRole } = await usersController.fetchByEmail(email)
+        
         const possibleRoles = sysRole.reduce((acc, curr) => acc.concat(curr.role), [])
         let currentRole = selectedRole
         if (possibleRoles.length < 2) {

@@ -1,5 +1,6 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo,useState } from 'react';
 import { Table, TableBody, TableCell, TableHead, TableRow } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
 import uniqid from 'uniqid';
 import './SelectableTable.scss';
 
@@ -18,7 +19,8 @@ const CustomTableCells = ({ columns, item, props }) =>
 
 const CustomListItems = ({ columns, data, selectedKeys, getKey, handleSelect }) =>
   data.map(item => {
-    const handleClick = useCallback(() => handleSelect(item), [handleSelect]);
+    const [done,setDone] = useState(false);   
+    const handleClick = useCallback((e) => {setDone(true); handleSelect(item)}, [handleSelect]);
 
     const isSelected = useMemo(() => getKey && selectedKeys[getKey(item)], [selectedKeys, getKey]);
 
@@ -27,7 +29,7 @@ const CustomListItems = ({ columns, data, selectedKeys, getKey, handleSelect }) 
     return (
       <TableRow
         key={key}
-        className={`list__item ${isSelected ? 'list__item--selected' : ''}`}
+        className={`list__item ${done ? 'list__item--selected' : ''}`}
         onClick={handleClick}
       >
         <CustomTableCells columns={columns} item={item} />
