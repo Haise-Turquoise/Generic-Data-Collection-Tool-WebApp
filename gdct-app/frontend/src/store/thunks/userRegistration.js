@@ -5,7 +5,7 @@ import { fromAddress } from 'xlsx-populate/lib/addressConverter';
 import organizationController from '../../controllers/organization';
 import AppSysController from '../../controllers/AppSys';
 import organizationGroupController from '../../controllers/organizationGroup';
-import programController from '../../controllers/programs';
+import programController from '../../controllers/Program';
 import templateTypeController from '../../controllers/templateType';
 import userController from '../../controllers/user';
 import usersController from '../../controllers/Users';

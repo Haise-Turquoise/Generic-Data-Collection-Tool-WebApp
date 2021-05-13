@@ -8,16 +8,13 @@ const COATreeController = (() => {
     withCredentials: true,
   });
   return {
-    fetchCOATree: async _id => COATreeAxios.get(`/${_id}`).then(res => res.data.COATree),
-    fetchBySheetName: async _id =>
-      COATreeAxios.get(`/sheetName/${_id}`).then(res => res.data.COATrees),
-    fetchAllTree: async () => COATreeAxios.get(`/sheetName`).then(res => res.data.COATrees),
-    fetch: async query => COATreeAxios.get('').then(res => res.data.COATrees),
-    create: async COATree => COATreeAxios.post('', { COATree }).then(res => res.data.COATree),
-    delete: async _id => COATreeAxios.delete(`/${_id}`),
-    update: async COATree => COATreeAxios.put(`/${COATree._id}`, { COATree }),
-    updateBySheetName: async (COATrees, sheetNameId) =>
-      COATreeAxios.put(`/sheetName/${sheetNameId}`, { COATrees }),
+    fetchCOATree: async _id => COATreeAxios.post('/fetchCOATree', { _id }).then(res => res.data.COATree),
+    fetchBySheetName: async _id => COATreeAxios.post(`/sheetName/fetchBySheetName`, { _id }).then(res => res.data.COATrees),
+    fetch: async query => COATreeAxios.get('/fetch').then(res => res.data.COATrees),
+    create: async COATree => COATreeAxios.post('/create', { COATree }).then(res => res.data.COATree),
+    update: async COATree => COATreeAxios.put('/update', { COATree }),
+    delete: async _id => COATreeAxios.post('/delete', { _id }),
+    updateBySheetName: async (COATrees, sheetNameId) => COATreeAxios.put(`/sheetName/updateBySheetName`, { sheetNameId, COATrees }),
   };
 })();
 

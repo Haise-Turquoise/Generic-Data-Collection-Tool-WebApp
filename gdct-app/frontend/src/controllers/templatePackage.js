@@ -8,17 +8,21 @@ const templatePackageController = (() => {
     withCredentials: true,
   });
   return {
-    fetchPopulated: async _id => templatePackageAxios.get(`/populated/${_id}`).then(res => res.data.templatePackage),
-    fetchTemplatePackage: async _id => templatePackageAxios.get(`/${_id}`).then(res => res.data.templatePackage),
-    fetch: async _ => templatePackageAxios.get('').then(res => res.data.templatePackages),
-    create: async templatePackage => templatePackageAxios.post('', { templatePackage }).then(res => res.data.templatePackage),
-    delete: async _id => templatePackageAxios.delete(`/${_id}`),
-    update: async templatePackage => templatePackageAxios.put(`/${templatePackage._id}`, { templatePackage }),
-    updatePopulated: async templatePackage => templatePackageAxios
-      .put(`/populated/${templatePackage._id}`, { templatePackage })
-      .then(res => {
-        return [res.data.templatePackage];
-      }),
+    fetch: async _ => 
+      templatePackageAxios.get('/fetch').then(res => res.data),
+    fetchTemplatePackage: async _id => 
+      templatePackageAxios.post('/fetchTemplatePackage', { _id }).then(res => res.data),
+    create: async templatePackage => 
+      templatePackageAxios.post('create', { templatePackage }).then(res => res.data.templatePackage),
+    update: async templatePackage => 
+      templatePackageAxios.put('/update', { templatePackage }),
+    delete: async _id => 
+      templatePackageAxios.post('/delete', { _id }),
+    fetchPopulated: async _id => 
+      templatePackageAxios.post('/fetchPopulated', { _id }).then(res => res.data),
+    updatePopulated: async templatePackage => 
+      templatePackageAxios.put('/updatePopulated', { templatePackage })
+      .then(res => [res.data.templatePackage]),
   };
 })();
 

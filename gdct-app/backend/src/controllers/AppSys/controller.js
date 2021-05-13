@@ -1,7 +1,6 @@
 import { Service } from 'typedi';
 import { Router } from 'express';
 import AppSysService from '../../services/AppSys';
-//import { authorized } from '../../middlewares/auth/auth';
 
 const AppSysController = Service([AppSysService], service => {
   const router = Router();
@@ -9,15 +8,12 @@ const AppSysController = Service([AppSysService], service => {
     router.get('/appSyses/searchAllAppSyses', (req, res, next) => {
       service
         .findAllAppSys()
-        .then(AppSyses => {
-          res.json({ AppSyses });
-        })
+        .then(AppSyses => res.json( AppSyses ))
         .catch(next);
     });
 
-    router.get('/appSyses/:_id', (req, res, next) => {
-      // Get query from middleware -- auth handler
-      const { _id } = req.params
+    router.post('/appSyses/fetchAppSys', (req, res, next) => {
+      const { _id } = req.body;
       
       service
         .findAppSys(_id)
@@ -25,28 +21,28 @@ const AppSysController = Service([AppSysService], service => {
         .catch(next);
     });
 
-    router.post('/appSyses', (req, res, next) => {
+    router.post('/appSyses/create', (req, res, next) => {
       service
         .createAppSys(req.body.AppSys)
         .then(AppSys => res.json({ AppSys }))
         .catch(next);
     });
 
-    router.put('/appSyses/:_id', (req, res, next) => {
-      const { _id } = req.params;
-      const { AppSys } = req.body;
+    router.post('/appSyses/delete', (req, res, next) => {
+      const { _id } = req.body;
 
       service
-        .updateAppSys(_id, AppSys)
+        .deleteAppSys(_id)
         .then(() => res.end())
         .catch(next);
     });
 
-    router.delete('/appSyses/:_id', (req, res, next) => {
-      const { _id } = req.params;
+    router.put('/appSyses/update', (req, res, next) => {
+      const { AppSys } = req.body;
+      const _id = AppSys._id;
 
       service
-        .deleteAppSys(_id)
+        .updateAppSys(_id, AppSys)
         .then(() => res.end())
         .catch(next);
     });

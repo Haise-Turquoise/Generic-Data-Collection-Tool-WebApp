@@ -49,7 +49,6 @@ export const UPDATE = (state, { payload }) => ({
   error: null,
 });
 
-
 export const REST_REDUCERS = {
   CREATE,
   DELETE,
@@ -58,5 +57,4 @@ export const REST_REDUCERS = {
   REQUEST,
   RESET,
   UPDATE,
-  
 };

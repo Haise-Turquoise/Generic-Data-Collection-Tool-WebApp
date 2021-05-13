@@ -1,5 +1,4 @@
 import Container from 'typedi';
-import pako from 'pako'
 import cloneDeep from 'clone-deep';
 import SubmissionRepository from '../../repositories/Submission';
 import SubmissionNoteRepository from '../../repositories/SubmissionNote';
@@ -13,9 +12,6 @@ import TemplateTypeRepository from '../../repositories/TemplateType';
 import WorkflowProcessRepository from '../../repositories/WorkflowProcess/WorkflowProcess';
 import SubmissionPeriodRepository from '../../repositories/SubmissionPeriod';
 import UsersRepository from '../../repositories/Users';
-import GoogleSheetRepository from '../../repositories/GoogleSheet';
-import { createSpreadsheet, addEditor } from '../../middlewares/googleapis/request'
-import { saveGoogleSheetInSubmission }from '../../middlewares/googleapis/save'
 import ReportingPeriodRepository from '../../repositories/ReportingPeriod';
 import { mastervalueExtraction } from '../../utils/mastervalue/mastervalueExtraction';
 import { mastervaluePrepopulation } from '../../utils/mastervalue/mastervaluePrepopulation';
@@ -38,7 +34,6 @@ export default class SubmissionService {
     this.workflowProcessRepository = Container.get(WorkflowProcessRepository);
     this.submissionPeriodRepository = Container.get(SubmissionPeriodRepository);
     this.usersRepository = Container.get(UsersRepository);
-    this.googleSheetRepository = Container.get(GoogleSheetRepository)
     this.reportingPeriodRepository = Container.get(ReportingPeriodRepository);
     this.submissionPeriodRepository = Container.get(SubmissionPeriodRepository);
   }
@@ -59,6 +54,12 @@ export default class SubmissionService {
       permission.push(sysRole.role);
     }
     });
+  }
+
+  async findReportingPeriod(_id){
+    const submission = await this.submissionRepository.findById(_id);
+    const submissionPeriod = await this.submissionPeriodRepository.findById(submission.submissionPeriodId);
+    return this.reportingPeriodRepository.findById(submissionPeriod.reportingPeriodId);
   }
 
   async createSubmissionBaseOnTemplatePackage(submission) {
@@ -98,7 +99,7 @@ export default class SubmissionService {
                 submission.workbookData = template.templateData;
 
                 submission.workflowId = templateType.submissionWorkflowId;
-                console.log('create submission')
+                
                 return this.submissionRepository.create(submission);
               });
           });
@@ -167,7 +168,7 @@ export default class SubmissionService {
                       templateTypeConst,
                       reportingPeriodConst,
                     );
-                  })
+                  }) 
                 })
               });
           });
@@ -189,12 +190,6 @@ export default class SubmissionService {
 
   
   async updateStatus(submission, submissionNote, role, nextProcessId,updatedBy) {
-    const newSubmission = await this.submissionRepository.findById(submission._id);
-    
-    if (newSubmission.googleSheetId){
-      await Promise.resolve(saveGoogleSheetInSubmission(newSubmission.googleSheetId));
-      submission = await this.submissionRepository.findById(submission._id);
-    }
     
     const submissionNotes = {
       note: submissionNote,
@@ -306,7 +301,6 @@ export default class SubmissionService {
 
   // This is specified one user can only belongs to organization
   async findSubmission(email) {
-    console.log('email', email)
     const count = 0;
     const userInfo = await this.usersRepository.findByEmail(email);
     
@@ -322,16 +316,14 @@ export default class SubmissionService {
           programIds.push(program.programId);
         });
       });
-      
+
 
     }else{
-      console.log('reach here')
       const programID = await this.programRepository.find({})
       programID.forEach(element=>{programIds.push(element._id)})
     }
-    console.log('programAndTempTypes',programAndTempTypes)
+    
     return this.findTemplatePackage(programAndTempTypes).then(templatePackages => {
-      console.log('templatePackages', templatePackages)
       const name = 'Unsubmitted';
       return this.statusRepository.findByName(name).then(status => {
         const promiseQuery1 = [];
@@ -342,7 +334,6 @@ export default class SubmissionService {
               .then(submissions => {
                 // console.log('submissions',submissions)
                 if (!submissions[0]) {
-                  console.log('first time?')
                   const { templateIds } = templatePackage;
                   const promiseQuery3 = [];
                   if (templateIds !== undefined) {
@@ -431,35 +422,5 @@ export default class SubmissionService {
         });
       });
     });
-  }
-
-  async openTemplate(submissionId, userEmail){
-    // Temporary email
-    userEmail = 'test34973737@gmail.com';
-    //Retrieves template JSON from database
-    const submission = await this.submissionRepository.findById(submissionId); 
-    //Runs if there is already an existing google sheet 
-    if (submission.googleSheetId){
-      const res = await this.googleSheetRepository.findById(submission.googleSheetId);
-      await Promise.resolve(addEditor(res.googleSheetId, userEmail));
-      return res.googleSheetId;
-    }
-
-    let openPeriods = await this.reportingPeriodRepository.findSubmissionOpen();
-    // Sends in the data from google sheet API and retrieves spreadsheetID
-    let res = await Promise.resolve(createSpreadsheet(submission.workbookData.data, userEmail, true, openPeriods)); 
-    const { userSpreadsheetId, duplicateSpreadsheetId, triggerId } = res;
-    // Store Google Sheet Model to the database
-    const googleSheetModel = {
-      submissionId: submissionId,
-      googleSheetId: userSpreadsheetId,
-      duplicateId: duplicateSpreadsheetId,
-      triggerId: triggerId,
-    }
-    res = await this.googleSheetRepository.create(googleSheetModel);
-    // Update googleSheetId on templateModel
-    this.submissionRepository.updateGoogleSheetId(submissionId, res._id);
-    // createSheet(template.templateData.sheets, spreadsheetId);   
-    return userSpreadsheetId;
   }
 }

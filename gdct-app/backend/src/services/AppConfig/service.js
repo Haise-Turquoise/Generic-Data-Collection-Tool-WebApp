@@ -31,4 +31,7 @@ export default class AppConfigService {
     return this.AppConfigRepository.findAll();
   }
 
+  async findSessionCheckingPeriod() {
+    return this.AppConfigRepository.findSessionCheckingPeriod();
+  }
 }

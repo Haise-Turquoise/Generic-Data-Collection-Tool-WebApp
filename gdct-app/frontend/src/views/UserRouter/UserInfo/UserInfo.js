@@ -166,6 +166,7 @@ const UserInfo = ({
         variant="contained"
         size="large"
         onClick={backButtonAction}
+        style={{ marginTop: '0.8%' }}
         >
 
         <ArrowBackIcon></ArrowBackIcon>

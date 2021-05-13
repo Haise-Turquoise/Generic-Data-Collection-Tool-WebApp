@@ -10,6 +10,7 @@ import TemplatesStore from '../TemplatesStore/store';
 import { getRequestFactory, deleteRequestFactory, updateRequestFactory } from './common/REST';
 import { selectFactoryValueById } from '../common/REST/selectors';
 import { selectTemplatesStore } from '../TemplatesStore/selectors';
+import { unauthorized_dialog } from '../../components/Unauthorized_Dialog/Unauthorized_Dialog';
 
 export const getTemplatesRequest = getRequestFactory(TemplatesStore, templateController);
 export const deleteTemplateRequest = deleteRequestFactory(TemplatesStore, templateController);
@@ -40,6 +41,10 @@ export const getTemplateRequest = _id => dispatch => {
   templateController
     .fetchTemplate(_id)
     .then(template => {
+      if (template === "UNAUTHORIZED ACCESS") {
+        unauthorized_dialog();
+        dispatch(TemplatesStore.actions.FAIL_REQUEST());
+      }
       // dispatch(setExcelData(convertStateToReactState(template.templateData)));
       dispatch(setExcelData(template.templateData));
       dispatch(TemplatesStore.actions.RECEIVE([template]));

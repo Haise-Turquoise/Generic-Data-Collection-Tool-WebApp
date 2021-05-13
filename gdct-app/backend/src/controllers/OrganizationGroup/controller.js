@@ -8,9 +8,7 @@ const OrgGroupController = Service([OrgGroupService], service => {
     router.get('/orgGroups/searchOrganizationGroup', (req, res, next) => {
       service
         .findAllOrgGroup()
-        .then(orgGroups => {
-          res.json({ orgGroups });
-        })
+        .then(orgGroups => res.json({ orgGroups }))
         .catch(next);
     });
 

@@ -9,11 +9,11 @@ const COAController = (() => {
   });
 
   return {
-    fetchCOAbyId: async _id => COAAxios.get(`/fetchCOAById/${_id}`).then(res => res.data),
-    fetch: async () => COAAxios.get('').then(res => res.data.COAs),
-    create: async COA => COAAxios.post('', { COA }).then(res => res.data.COA),
-    delete: async _id => COAAxios.delete(`/${_id}`).then(res => res.data.COA),
-    update: async COA => COAAxios.put(`/${COA._id}`, { COA }),
+    fetch: async () => COAAxios.get('/fetch').then(res => res.data),
+    fetchCOAbyId: async _id => COAAxios.post('/fetchCOAById', { _id }).then(res => res.data),
+    create: async COA => COAAxios.post('/create', { COA }).then(res => res.data.COA),
+    update: async COA => COAAxios.put('/update', { COA }),
+    delete: async _id => COAAxios.post('/delete', { _id }).then(res => res.data.COA),
   };
 })();
 

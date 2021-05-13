@@ -6,40 +6,41 @@ import UserService from '../../services/Users';
 const UsersController = Service([UserService], service => {
   const router = Router();
   return (() => {
-    router.get('/getUserInfo', (req, res, next) => {
-      // Get query from middleware -- auth handler
+    router.get('/fetch', (req, res, next) => {
       service
         .findUser(req.query)
-        .then(users => res.json({ users }))
+        .then(users => res.json( users ))
         .catch(next);
     });
 
-    router.get('/fetchByEmail/:email', (req, res, next) => {
-      const { email } = req.params;
+    router.post('/fetchById', (req, res, next) => {
+      const { _id } = req.body;
 
       service
-        .findUserByEmail(email)
+        .findUserById(_id)
         .then(user => res.json( user ))
         .catch(next);
-    })
+    });
 
-    router.get('/fetchById', (req, res, next) => {
+    router.post('/fetchByEmail', (req, res, next) => {
+      const { userEmail } = req.body;
+
       service
-        .findUserById(req.query._id)
+        .findUserByEmail(userEmail)
         .then(user => res.json( user ))
         .catch(next);
-    })
+    });
 
-    router.post('', (req, res, next) => {
+    router.post('/create', (req, res, next) => {
       service
         .createUser(req.body.user)
         .then(user => res.json({ user }))
         .catch(next);
     });
 
-    router.put('/updateUserInfo/:_id', (req, res, next) => {
-      const { _id } = req.params;
+    router.put('/update', (req, res, next) => {
       const { user } = req.body;
+      const _id = user._id;
 
       service
         .updateUser(_id, user)
@@ -47,8 +48,8 @@ const UsersController = Service([UserService], service => {
         .catch(next);
     });
 
-    router.delete('/:_id', (req, res, next) => {
-      const { _id } = req.params;
+    router.post('/delete', (req, res, next) => {
+      const { _id } = req.body;
 
       service
         .deleteUser(_id)

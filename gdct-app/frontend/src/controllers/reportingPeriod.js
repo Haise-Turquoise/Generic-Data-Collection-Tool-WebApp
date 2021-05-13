@@ -8,11 +8,11 @@ const reportingPeriodController = (() => {
     withCredentials: true,
   });
   return {
-    fetch: async query => reportingPeriodAxios.get('').then(res => res.data.reportingPeriods),
-    fetchReportingPeriod: async _id => reportingPeriodAxios.get(`/${_id}`).then(res => res.data.reportingPeriod),
-    create: async reportingPeriod => reportingPeriodAxios.post('', { reportingPeriod }).then(res => res.data.reportingPeriod),
-    delete: async _id => reportingPeriodAxios.delete(`/${_id}`),
-    update: async reportingPeriod => reportingPeriodAxios.put(`/${reportingPeriod._id}`, { reportingPeriod }),
+    fetch: async query => reportingPeriodAxios.get('/fetch').then(res => res.data),
+    fetchReportingPeriod: async _id => reportingPeriodAxios.post('/fetchReportingPeriod', { _id }).then(res => res.data.reportingPeriod),
+    create: async reportingPeriod => reportingPeriodAxios.post('/create', { reportingPeriod }).then(res => res.data.reportingPeriod),
+    update: async reportingPeriod => reportingPeriodAxios.put('/update', { reportingPeriod }),
+    delete: async _id => reportingPeriodAxios.post('/delete', { _id }),
   };
 })();
 

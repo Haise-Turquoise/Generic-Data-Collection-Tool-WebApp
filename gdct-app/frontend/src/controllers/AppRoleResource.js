@@ -8,11 +8,11 @@ const AppRoleResourceController = (() => {
     withCredentials: true,
   });
   return {
-    fetchAppRoleResource: async _id => AppRoleResourceAxios.get(`/${_id}`).then(res => res.data),
-    fetch: async _ => AppRoleResourceAxios.get('').then(res => res.data.AppRoleResources),
-    create: async AppRoleResource => AppRoleResourceAxios.post('', { AppRoleResource }).then(res => res.data.AppRoleResource),
-    delete: async _id => AppRoleResourceAxios.delete(`/${_id}`),
-    update: async AppRoleResource => AppRoleResourceAxios.put(`/${AppRoleResource._id}`, { AppRoleResource }),
+    fetch: async _ => AppRoleResourceAxios.get('/fetch').then(res => res.data),
+    fetchAppRoleResource: async _id => AppRoleResourceAxios.post('/fetchAppRoleResource', { _id }).then(res => res.data),
+    create: async AppRoleResource => AppRoleResourceAxios.post('/create', { AppRoleResource }).then(res => res.data.AppRoleResource),
+    update: async AppRoleResource => AppRoleResourceAxios.put('/update', { AppRoleResource }),
+    delete: async _id => AppRoleResourceAxios.post('/delete', { _id }),
   };
 })();
 

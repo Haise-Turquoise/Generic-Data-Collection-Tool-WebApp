@@ -42,12 +42,6 @@ export const UserStore = createSlice({
         isLoggedIn: payload.isLoggedIn,
       },
     }),
-    LOGOUT: (state, { payload }) => ({
-      response: {
-        ...state,
-        isLoggedIn: payload.isLoggedIn,
-      },
-    }),
   },
 });
 

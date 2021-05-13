@@ -1,19 +1,21 @@
 import { Schema, model } from 'mongoose';
 
-const ProgramModel = model(
-  'Program',
-  new Schema(
-    {
-      name: { type: String, required: true },
-      code: { type: String, required: true, unique: true },
-      timestamp: { type: Date },
-      //    userCreatorId: { type: ObjectId, ref: 'User' },
-      updatedBy: { type: String },
-      isActive: { type: Boolean },
-    },
-    { minimize: false, timestamps: true },
-  ),
-  'Program',
-);
+const Program = new Schema(
+  {
+    name: { type: String, required: true },
+    code: { type: String, required: true, unique: true },
+    timestamp: { type: Date },
+    updatedBy: { type: String },
+    isActive: { type: Boolean },
+  },
+  { minimize: false, timestamps: true },
+)
+
+Program.pre(/^find/, function (next) {
+  this.find({ isActive: { $ne: false } });
+  next();
+});
+
+const ProgramModel = model('Program', Program, 'Program');
 
 export default ProgramModel;

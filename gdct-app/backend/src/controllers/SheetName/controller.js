@@ -5,17 +5,15 @@ import SheetNameService from '../../services/SheetName';
 const SheetNameController = Service([SheetNameService], service => {
   const router = Router();
   return (() => {
-    router.get('/sheetNames', (req, res, next) => {
-      // Get query from middleware -- auth handler
-
+    router.get('/sheetNames/fetch', (req, res, next) => {
       service
         .findSheetName({})
-        .then(sheetNames => res.json({ sheetNames }))
+        .then(sheetNames => res.json( sheetNames ))
         .catch(next);
     });
 
-    router.get('/sheetNames/:_id', (req, res, next) => {
-      const { _id } = req.params;
+    router.post('/sheetNames/fetchById', (req, res, next) => {
+      const { _id } = req.body;
 
       service
         .findById(_id)
@@ -23,16 +21,16 @@ const SheetNameController = Service([SheetNameService], service => {
         .catch(next);
     })
 
-    router.post('/sheetNames', (req, res, next) => {
+    router.post('/sheetNames/create', (req, res, next) => {
       service
         .createSheetName(req.body.sheetName)
         .then(sheetName => res.json({ sheetName }))
         .catch(next);
     });
 
-    router.put('/sheetNames/:_id', (req, res, next) => {
-      const { _id } = req.params;
+    router.put('/sheetNames/update', (req, res, next) => {
       const { sheetName } = req.body;
+      const _id = sheetName._id;
 
       service
         .updateSheetName(_id, sheetName)
@@ -40,8 +38,8 @@ const SheetNameController = Service([SheetNameService], service => {
         .catch(next);
     });
 
-    router.delete('/sheetNames/:_id', (req, res, next) => {
-      const { _id } = req.params;
+    router.post('/sheetNames/delete', (req, res, next) => {
+      const { _id } = req.body;
 
       service
         .deleteSheetName(_id)

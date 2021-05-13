@@ -5,17 +5,15 @@ import ReportingPeriodService from '../../services/ReportingPeriod';
 const ReportingPeriodController = Service([ReportingPeriodService], service => {
   const router = Router();
   return (() => {
-    router.get('/reportingPeriods', (req, res, next) => {
-      // Get query from middleware -- auth handler
-
+    router.get('/reportingPeriods/fetch', (req, res, next) => {
       service
         .findReportingPeriod({})
-        .then(reportingPeriods => res.json({ reportingPeriods }))
+        .then(reportingPeriods => res.json( reportingPeriods ))
         .catch(next);
     });
 
-    router.get('/reportingPeriods/:_id', (req, res, next) => {
-      const { _id } = req.params;
+    router.post('/reportingPeriods/fetchReportingPeriod', (req, res, next) => {
+      const { _id } = req.body;
 
       service
         .findReportingPeriodById(_id)
@@ -23,16 +21,16 @@ const ReportingPeriodController = Service([ReportingPeriodService], service => {
         .catch(next);
     });
 
-    router.post('/reportingPeriods', (req, res, next) => {
+    router.post('/reportingPeriods/create', (req, res, next) => {
       service
         .createReportingPeriod(req.body.reportingPeriod)
         .then(reportingPeriod => res.json({ reportingPeriod }))
         .catch(next);
     });
 
-    router.put('/reportingPeriods/:_id', (req, res, next) => {
-      const { _id } = req.params;
+    router.put('/reportingPeriods/update', (req, res, next) => {
       const { reportingPeriod } = req.body;
+      const _id = reportingPeriod._id;
 
       service
         .updateReportingPeriod(_id, reportingPeriod)
@@ -40,8 +38,8 @@ const ReportingPeriodController = Service([ReportingPeriodService], service => {
         .catch(next);
     });
 
-    router.delete('/reportingPeriods/:_id', (req, res, next) => {
-      const { _id } = req.params;
+    router.post('/reportingPeriods/delete', (req, res, next) => {
+      const { _id } = req.body;
 
       service
         .deleteReportingPeriod(_id)

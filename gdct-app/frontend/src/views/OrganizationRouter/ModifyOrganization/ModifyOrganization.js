@@ -1,5 +1,5 @@
 // ModifyOrganization is the parent page for CreateOrganization and EditOrganization
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { selectOrgsStore } from '../../../store/OrganizationsStore/selectors';
 
 import PropTypes from 'prop-types';
@@ -201,17 +201,18 @@ makeIdentifier.propTypes = {
 
 const OrganizationForm = props => {
   const [current, setCurrent] = useState(0);
+  const [programIds, setProgramIds] = useState(props.object.programId)
   const handleChange = (event, value) => setCurrent(value);
+  useEffect(() => {
+    props.updateState('programId', programIds)
+  }, [programIds])
 
   const onClickAdd = (_event, program) => {
-    props.updateState('programId', props.object.programId.concat(program._id));
+    setProgramIds(prevIds => prevIds.concat(program._id));
   };
 
   const onClickDelete = (_event, program) => {
-    props.updateState(
-      'programId',
-      props.object.programId.filter(elem => elem !== program._id),
-    );
+    setProgramIds(prevIds => prevIds.filter(elem => elem !== program._id))
   };
   
   return (
@@ -239,7 +240,7 @@ const OrganizationForm = props => {
           </TabPanel>
           <TabPanel value={current} index={1}>
             <ProgList
-              programIds={props.object.programId}
+              programIds={programIds}
               isEditable={props.object.active}
               onClickAdd={onClickAdd}
               onClickDelete={onClickDelete}

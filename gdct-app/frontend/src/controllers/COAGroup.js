@@ -8,11 +8,11 @@ const COAGroupController = (() => {
     withCredentials: true,
   });
   return {
-    fetch: async _ => COAGroupAxios.get('').then(res => res.data.COAGroups),
-    fetchCOAGroup: async _id => COAGroupAxios.get(`${_id}`).then(res => res.data),
-    create: async COAGroup => COAGroupAxios.post('', { COAGroup }).then(res => res.data.COAGroup),
-    delete: async _id => COAGroupAxios.delete(`/${_id}`),
-    update: async COAGroup => COAGroupAxios.put(`/${COAGroup._id}`, { COAGroup }),
+    fetch: async _ => COAGroupAxios.get('/fetch').then(res => res.data),
+    fetchCOAGroup: async _id => COAGroupAxios.post('/fetchCOAGroup', { _id }).then(res => res.data),
+    create: async COAGroup => COAGroupAxios.post('/create', { COAGroup }).then(res => res.data.COAGroup),
+    update: async COAGroup => COAGroupAxios.put('update', { COAGroup }),
+    delete: async _id => COAGroupAxios.post('/delete', { _id }),
   };
 })();
 
