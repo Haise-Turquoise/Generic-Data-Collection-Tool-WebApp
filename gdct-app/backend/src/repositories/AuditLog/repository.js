@@ -6,12 +6,12 @@ export default class AuditLogRepository extends BaseRepository {
     super(AuditLogModel);
   }
 
+  async findAll() {
+    return AuditLogModel.find();
+  }
+
   async create(AuditLogInfo) {
     // @ts-ignore
     return AuditLogModel.create(AuditLogInfo);
-  }
-
-  async findAll() {
-    return AuditLogModel.find();
   }
 }

@@ -63,8 +63,7 @@ export const middlewares = app => {
   let isLoggedIn = false;
   app.use('/', async (req, res, next) => {
     const requestUrl = req.originalUrl;
-    // console.log("Currently trying to access url: " + requestUrl);
-    // Allow all requests for completing logging in processes
+    // Allow all requests before completing login
     if (!isLoggedIn && requestUrl !== '/login') return next();
 
     // During the logging in process, fetch all allowed requestUrls for this user
@@ -72,27 +71,31 @@ export const middlewares = app => {
       // Fetching
       const user = await UserModel.findOne({ email: req.body.email });
       const loggedInSysRole = user.sysRole.find(sysRole => sysRole.role === req.body.selectedRole);
-      const loggedInAs = loggedInSysRole.role !== 'Business Admin' ? 
-                         loggedInSysRole.appSys + ' ' + loggedInSysRole.role : loggedInSysRole.role;
+      const loggedInAs = loggedInSysRole.appSys + ' ' + loggedInSysRole.role;
       const allowedRoleResource = await AppRoleResourceModel.findOne({ 'appSysRoleId.roleName': loggedInAs });
       const allowedResources = allowedRoleResource.toObject().resourceId;
       const promise = allowedResources.map(async allowedResource => {
-        const resource = await AppResourceModel.findById({ _id: allowedResource.id })
+        const resource = await AppResourceModel.findById({ _id: allowedResource.id });
         return resource.resourcePath;
       })
       Promise.all(promise).then(result => allowedUrls = result);
       // The user is logged in
       isLoggedIn = true;
-    }
+    };
+
     // Check whether a logged in user is allowed to access requestUrls
-    else if (isLoggedIn && requestUrl !== '/login') {
+    if (isLoggedIn && requestUrl !== '/login') {
       if (allowedUrls.includes(requestUrl)) {
         console.log("ALLOWED");
+        // return next();
       } else {
         console.log("NOT ALLOWED");
         return res.send("UNAUTHORIZED ACCESS");
       }
-    }
+    };
+
+    // Clear all stored data for completing logout
+    if (isLoggedIn && requestUrl === '/logout') { allowedUrls = []; isLoggedIn = false };
     
     // MAYBE NOT IN USE, BUT DO NOT DELETE
     // VALUABLE SECTION HERE: One way of getting current session/cookie id stored both on the webpage and in the database(in collection: sessions)
