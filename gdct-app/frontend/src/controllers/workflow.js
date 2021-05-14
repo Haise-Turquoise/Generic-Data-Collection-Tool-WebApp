@@ -8,15 +8,13 @@ const workflowController = (() => {
     withCredentials: true,
   });
   return {
-    // fetchWorkflows: async (query) =>
-    //   workflowAxios.get('').then((res) => res.data.workflows),
-    create: async workflowData => workflowAxios.post('', { data: workflowData }).then(res => res.data.workflow),
-    delete: async _id => workflowAxios.delete(`/${_id}`),
-    update: async workflowData => workflowAxios.put(`/${workflowData.workflow._id}`, { data: workflowData }),
-    fetch: async () => workflowAxios.get('').then(res => res.data.data),
-    fetchById: async workflowId => workflowAxios.get(`/${workflowId}`).then(res => res.data.data),
-    fetchOnlyWorkflowById: async workflowId => workflowAxios.get(`/workflow/${workflowId}`).then(res => res.data),
-    fetchProcess: async processId => workflowAxios.get(`/workflowProcessId/${processId}`).then(res => res.data.data),
+    fetch: async () => workflowAxios.get('/fetch').then(res => res.data),
+    create: async workflowData => workflowAxios.post('/create', { workflowData }).then(res => res.data.workflow),
+    update: async workflowData => workflowAxios.put('/update', { workflowData }),
+    delete: async _id => workflowAxios.post('/delete', { _id }),
+    fetchById: async _id => workflowAxios.post('/fetchById', { _id }).then(res => res.data.data),
+    fetchOnlyWorkflowById: async _id => workflowAxios.post('/fetchOnlyWorkflowById', { _id }).then(res => res.data),
+    fetchProcess: async processId => workflowAxios.post('/fetchProcess', { processId }).then(res => res.data.data),
     fetchProcesses: async () => workflowAxios.get('/workflowProcesses/fetchWorkflowProcesses').then(res => res.data.data),
   };
 })();

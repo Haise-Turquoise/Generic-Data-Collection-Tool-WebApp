@@ -60,6 +60,7 @@ const AppRoleResourcesTable = () => {
     acc[resource._id] = resource.resourcePath;
     return acc;
   }, {});
+  console.log('lookupSysRoles', lookupSysRoles)
   
   // Prepare the columns for material table
   const columns = useMemo(
@@ -155,7 +156,6 @@ const AppRoleResources = props => {
   return (
     <div className="AppRoleResources">
       <AppRoleResourcesHeader />
-      {/* <FileDropzone/> */}
       <AppRoleResourcesTable {...props} />
     </div>
   );

@@ -5,17 +5,15 @@ import ColumnNameService from '../../services/ColumnName';
 const ColumnNameController = Service([ColumnNameService], service => {
   const router = Router();
   return (() => {
-    router.get('/columnNames', (req, res, next) => {
-      // Get query from middleware -- auth handler
-
+    router.get('/columnNames/fetch', (req, res, next) => {
       service
         .findColumnName({})
-        .then(columnNames => res.json({ columnNames }))
+        .then(columnNames => res.json( columnNames ))
         .catch(next);
     });
 
-    router.get('/columnNames/:_id', (req, res, next) => {
-      const { _id } = req.params;
+    router.post('/columnNames/fetchAttribute', (req, res, next) => {
+      const { _id } = req.body;
 
       service
         .findById(_id)
@@ -23,16 +21,16 @@ const ColumnNameController = Service([ColumnNameService], service => {
         .catch(next);
     });
 
-    router.post('/columnNames', (req, res, next) => {
+    router.post('/columnNames/create', (req, res, next) => {
       service
         .createColumnName(req.body.columnName)
         .then(columnName => res.json({ columnName }))
         .catch(next);
     });
 
-    router.put('/columnNames/:_id', (req, res, next) => {
-      const { _id } = req.params;
+    router.put('/columnNames/update', (req, res, next) => {
       const { columnName } = req.body;
+      const _id = columnName._id;
 
       service
         .updateColumnName(_id, columnName)
@@ -40,8 +38,8 @@ const ColumnNameController = Service([ColumnNameService], service => {
         .catch(next);
     });
 
-    router.delete('/columnNames/:_id', (req, res, next) => {
-      const { _id } = req.params;
+    router.post('/columnNames/delete', (req, res, next) => {
+      const { _id } = req.body;
 
       service
         .deleteColumnName(_id)

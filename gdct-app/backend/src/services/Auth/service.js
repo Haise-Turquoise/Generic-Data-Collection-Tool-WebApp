@@ -1,16 +1,12 @@
 import passport from 'passport';
 import Container from 'typedi';
 import mongodb from 'mongodb';
-import i18n from 'i18n';
-import { nextTick } from 'process';
 import UserModel from '../../models/User/model';
 import { returnNormalJson, returnErrorJson } from '../../utils';
 import UserRepository from '../../repositories/User';
 import AppRoleResourceRepository from '../../repositories/AppRoleResource';
 import AppResourceRepository from '../../repositories/AppResource';
 import AppSysRoleModel from '../../models/AppSysRole';
-import AppError from '../../utils/AppError';
-import async from 'async';
 
 const { ObjectID } = mongodb;
 
@@ -96,31 +92,16 @@ export default class AuthService {
         const authService = new AuthService();
         authService.UserRepository.findByEmail(req.user.email)
           .then(data => {
+              data.sessionID = req.sessionID;
               returnNormalJson(res, data);
           })
       } else {
         returnErrorJson(res, 'Not authenticated', 401);
       }
-      // }, 10000)
-      next
     } catch (err) {
       next(err);
     }
   }
-
-  // profile(req, res, next) {
-  //   try {
-  //     if (req.user) {
-  //       returnNormalJson(res, { email: req.user.email });
-  //       // returnErrorJson(res, 'Not authenticated', 401);
-  //     } else {
-  //       returnErrorJson(res, 'Not authenticated', 401);
-  //     }
-  //     // }, 10000)
-  //   } catch (err) {
-  //     next(err);
-  //   }
-  // }
 
   createUser(req, res, next) {
     try {
@@ -170,11 +151,13 @@ export default class AuthService {
           isActive: true,
         });
 
+        // @ts-ignore
         finalUser.setHashedPassword(password);
 
         return finalUser
           .save()
           .then(user => {
+            // @ts-ignore
             returnNormalJson(res, { email: user.email });
           })
           .catch(err => res.json({ error: err }));
@@ -212,15 +195,11 @@ export default class AuthService {
         const { email } = req.user;
         const user = await authService.UserRepository.findByEmail(email);
 
-        req.session.roles = [];
         req.session.isAdmin = false;
         if (user) {
-          user.sysRole.forEach(e => {
-            req.session.roles.push(e.role);
-            if (e.role === 'Business Admin') {
-              req.session.isAdmin = true;
-            }
-          });
+          const selectedRole = req.body.selectedRole || user.sysRole[0].role;
+          req.session.role = selectedRole;
+          req.session.isAdmin = (selectedRole === 'Business Admin');
           
           return next();
         }

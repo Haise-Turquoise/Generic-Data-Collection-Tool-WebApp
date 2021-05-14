@@ -7,7 +7,6 @@ const COAGroupModel = model(
       name: { type: String },
       code: { type: String },
       timestamp: { type: Date },
-      //    userCreatorId: { type: ObjectId, ref: 'User' },
       updatedBy: { type: String },
       isActive: { type: Boolean },
     },

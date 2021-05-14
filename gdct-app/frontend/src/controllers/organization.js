@@ -8,15 +8,13 @@ const orgController = (() => {
     withCredentials: true,
   });
   return {
-    fetchOrg: async _id => orgAxios.get(`/fetchOrganization/${_id}`).then(res => res.data.Org),
-    fetch: async () => orgAxios.get('/fetchOrganizations').then(res => res.data.Orgs),
-    create: async Org => orgAxios.post('/createOrganization', { Org }).then(res => res.data.Org),
-    delete: async _id => orgAxios.delete(`/deleteOrganization/${_id}`),
-    update: async Org => orgAxios.put(`/updateOrganization/${Org._id}`, { Org }),
+    fetch: async () => orgAxios.get('/fetch').then(res => res.data),
+    create: async Org => orgAxios.post('/create', { Org }).then(res => res.data.Org),
+    update: async Org => orgAxios.put('/update', { Org }),
+    delete: async _id => orgAxios.post('/delete', { _id }),
     fetchByOrgGroupId: async orgGroupId =>
-      orgAxios.get(`/searchOrgByOrgGroupId/${orgGroupId}`).then(res => res.data.organizations),
-    fetchById: async Id =>
-      orgAxios.get(`/searchOrgByOrgId/${Id}`).then(res => { return res.data;}),
+      orgAxios.post('/fetchByOrgGroupId', { orgGroupId }).then(res => res.data.organizations),
+    fetchById: async Id => orgAxios.post('/fetchById', { Id }).then(res => res.data),
   };
 })();
 

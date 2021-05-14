@@ -6,37 +6,34 @@ import Template from '../../entities/Template';
 const TemplateController = Service([TemplateService], service => {
   const router = Router();
   return (() => {
-    router.get('/templates/fetchTemplate', (req, res, next) => {
-
-      // Get query from middleware -- auth handler
+    router.get('/templates/fetch', (req, res, next) => {
       service
         .findTemplate(new Template(req.body))
         .then(templates =>
-          res.json({
-            templates: templates.map(template => ({ ...template, templateData: undefined })),
-          }),
+          res.json( templates.map(template => ({ ...template, templateData: undefined })) ),
         )
         .catch(next);
     });
 
-    router.get('/templates/:_id', (req, res, next) => {
-      // Get query from middleware -- auth handler
+    router.post('/templates/fetchTemplate', (req, res, next) => {
+      const { _id } = req.body;
+
       service
-        .findTemplateById(req.params._id)
-        .then(template => res.json({ template }))
+        .findTemplateById(_id)
+        .then(template => res.json( template ))
         .catch(next);
     });
 
-    router.post('/templates', (req, res, next) => {
+    router.post('/templates/create', (req, res, next) => {
       service
         .createTemplate(req.body.template)
         .then(template => res.json({ template }))
         .catch(next);
     });
 
-    router.put('/templates/:_id', (req, res, next) => {
-      const { _id } = req.params;
+    router.put('/templates/update', (req, res, next) => {
       const { template } = req.body;
+      const _id = template._id;
 
       service
         .updateTemplate(_id, template)
@@ -44,27 +41,8 @@ const TemplateController = Service([TemplateService], service => {
         .catch(next);
     });
 
-    router.put('/templates/sheetUpdate/:_id', (req, res, next) => {
-      const { _id } = req.params;
-      const { sheetData } = req.body;
-
-      service
-        .updateTemplateSheetData(_id, sheetData)
-        .then(() => res.end())
-        .catch(next);
-    });
-
-    router.put('/templates/:_id/workflowProcess/:workflowProcessId', (req, res, next) => {
-      const { _id, workflowProcessId } = req.params;
-
-      service
-        .updateTemplateWorkflowProcess(_id, workflowProcessId)
-        .then(() => res.end())
-        .catch(next);
-    });
-
-    router.delete('/templates/:_id', (req, res, next) => {
-      const { _id } = req.params;
+    router.post('/templates/delete', (req, res, next) => {
+      const { _id } = req.body;
 
       service
         .deleteTemplate(_id)
@@ -72,13 +50,21 @@ const TemplateController = Service([TemplateService], service => {
         .catch(next);
     });
 
-    // Last Updated: Nov 27, 2020
-    // Creates new google sheet and returns its spreadsheetID
-    // It was developed to redirect the workflow from an embedded spreadsheet to Google Sheet
-    router.get('/templates/openTemplate/:_id', (req, res, next) => {
+    router.put('/templates/sheetUpdate', (req, res, next) => {
+      const { _id, sheetData } = req.body;
+
       service
-        .openTemplate(req.params._id, req.user.email)
-        .then(spreadsheetID => { res.json({ spreadsheetID }) })
+        .updateTemplateSheetData(_id, sheetData)
+        .then(() => res.end())
+        .catch(next);
+    });
+
+    router.put('/templates/workflowProcess', (req, res, next) => {
+      const { _id, workflowProcessId } = req.body;
+
+      service
+        .updateTemplateWorkflowProcess(_id, workflowProcessId)
+        .then(() => res.end())
         .catch(next);
     });
 

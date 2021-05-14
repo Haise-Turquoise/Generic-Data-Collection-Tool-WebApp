@@ -1,30 +1,27 @@
 import { Service } from 'typedi';
 import { Router } from 'express';
 import ProgramService from '../../services/Program';
-import { authorized } from '../../middlewares/auth/auth';
 
 const ProgramController = Service([ProgramService], service => {
   const router = Router();
   return (() => {
-    router.get('/programs/fetchPrograms', authorized, (req, res, next) => {
-      // Get query from middleware -- auth handler
-
+    router.get('/programs/fetch', (req, res, next) => {
       service
         .findProgram({})
-        .then(programs => res.json({ programs }))
+        .then(programs => res.json( programs ))
         .catch(next);
     });
 
-    router.post('/programs/createProgram', authorized, (req, res, next) => {
+    router.post('/programs/create', (req, res, next) => {
       service
         .createProgram(req.body.program)
         .then(program => res.json({ program }))
         .catch(next);
     });
 
-    router.put('/programs/updateProgram/:_id', authorized, (req, res, next) => {
-      const { _id } = req.params;
+    router.put('/programs/update', (req, res, next) => {
       const { program } = req.body;
+      const _id = program._id;
 
       service
         .updateProgram(_id, program)
@@ -32,8 +29,8 @@ const ProgramController = Service([ProgramService], service => {
         .catch(next);
     });
 
-    router.delete('/programs/deleteProgram/:_id', authorized, (req, res, next) => {
-      const { _id } = req.params;
+    router.post('/programs/delete', (req, res, next) => {
+      const { _id } = req.body;
 
       service
         .deleteProgram(_id)
@@ -50,8 +47,8 @@ const ProgramController = Service([ProgramService], service => {
         .catch(next)
     });
 
-    router.get('/programs/searchProgram/:_id', (req, res, next) => {
-      const { _id } = req.params;
+    router.post('/programs/searchProgram', (req, res, next) => {
+      const { _id } = req.body;
 
       service
         .findProgramById(_id)

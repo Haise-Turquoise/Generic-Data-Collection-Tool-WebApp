@@ -5,17 +5,15 @@ import AppRoleService from '../../services/AppRole';
 const AppRoleController = Service([AppRoleService], service => {
   const router = Router();
   return (() => {
-    router.get('/appRoles', (req, res, next) => {
-      // Get query from middleware -- auth handler
-
+    router.get('/appRoles/fetch', (req, res, next) => {
       service
         .findAppRole({})
-        .then(AppRoles => res.json({ AppRoles }))
+        .then(AppRoles => res.json( AppRoles ))
         .catch(next);
     });
 
-    router.get('/appRoles/:_id', (req, res, next) => {
-      const { _id } = req.params;
+    router.post('/appRoles/fetchAppRole', (req, res, next) => {
+      const { _id } = req.body;
 
       service
         .findById(_id)
@@ -23,29 +21,29 @@ const AppRoleController = Service([AppRoleService], service => {
         .catch(next);
     });
 
-    router.post('/appRoles', (req, res, next) => {
+    router.post('/appRoles/create', (req, res, next) => {
       service
         .createAppRole(req.body.AppRole)
         .then(AppRole => res.json({ AppRole }))
         .catch(next);
     });
 
-    //update function
-    router.put('/appRoles/:_id', (req, res, next) => {
-      const { _id } = req.params;
-      const { AppRole } = req.body;
+    router.post('/appRoles/delete', (req, res, next) => {
+      const { _id } = req.body;
 
       service
-        .updateAppRole(_id, AppRole)
+        .deleteAppRole(_id)
         .then(() => res.end())
         .catch(next);
     });
 
-    router.delete('/appRoles/:_id', (req, res, next) => {
-      const { _id } = req.params;
+    //update function
+    router.put('/appRoles/update', (req, res, next) => {
+      const { AppRole } = req.body;
+      const _id = AppRole._id;
 
       service
-        .deleteAppRole(_id)
+        .updateAppRole(_id, AppRole)
         .then(() => res.end())
         .catch(next);
     });

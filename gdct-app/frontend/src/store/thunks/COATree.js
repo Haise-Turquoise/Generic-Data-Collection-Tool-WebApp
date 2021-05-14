@@ -8,7 +8,7 @@ import COATreesStore from '../COATreesStore/store';
 import COATreeStore from '../COATreeStore/store';
 import DialogsStore from '../DialogsStore/store';
 import { deleteRequestFactory, updateRequestFactory, getRequestFactory } from './common/REST';
-import moment from 'moment';
+import { unauthorized_dialog } from '../../components/Unauthorized_Dialog/Unauthorized_Dialog';
 
 const normalizeTrees = denormalizedCOATrees => {
   const stack = [...denormalizedCOATrees];
@@ -90,6 +90,7 @@ export const getCOATreesBySheetNameRequest = (sheetName, isTreeComponent = false
   dispatch(COATreesStore.actions.REQUEST());
   COAController.fetch()
     .then(result => {
+      if (result === "UNAUTHORIZED ACCESS") unauthorized_dialog();
       dispatch(COAsStore.actions.RECEIVE(result));
     })
     .then(result => {

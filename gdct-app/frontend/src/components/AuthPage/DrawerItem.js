@@ -1,14 +1,16 @@
 import React from 'react';
-import { withStyles, Button, Menu, MenuItem, ListItemText, ListItem } from '@material-ui/core';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
 import { Link } from 'react-router-dom';
-import IconItem from '../IconItem/IconItem';
+import { withStyles, Button, Menu, ListItemText, ListItem } from '@material-ui/core';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+
+import IconItem from './IconItem';
 
 const StyledMenu = withStyles({
   paper: {
     border: '1px solid #d3d4d5',
   },
 })(props => (
+  // @ts-ignore
   <Menu
     elevation={0}
     getContentAnchorEl={null}
@@ -23,17 +25,6 @@ const StyledMenu = withStyles({
     {...props}
   />
 ));
-
-const StyledMenuItem = withStyles(theme => ({
-  root: {
-    '&:focus': {
-      backgroundColor: theme.palette.primary.main,
-      '& .MuiListItemIcon-root, & .MuiListItemText-primary': {
-        color: theme.palette.common.white,
-      },
-    },
-  },
-}))(MenuItem);
 
 export default function DrawerItem(props) {
   const { name, icon, url, children, isSubMenu, option } = props;

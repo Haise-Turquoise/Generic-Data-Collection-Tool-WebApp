@@ -2,7 +2,7 @@
     "UserRegistration.title":"Title",
     "UserRegistration.step1":"Step1",
     "UserRegistration.step2":"Step2",
-    "UserRegistration.phoneNumber":"Phone Number",
+    "UserRegistration.phoneNumber":"*Phone Number",
     "UserRegistration.lastName":"Last Name",
     "UserRegistration.firstName":"First Name",
     "UserRegistration.email":"Email",

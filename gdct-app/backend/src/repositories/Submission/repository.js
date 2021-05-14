@@ -145,11 +145,6 @@ export default class SubmissionRepository extends BaseRepository {
     return SubmissionModel.find({ orgId: {$in: orgIds}, programId: { $in: programIds }, isLatest: true });
   }
 
-  // Created on Nov 26, 2020
-  // Updates
-  async updateGoogleSheetId(_id, googleSheetId) {
-    return SubmissionModel.findByIdAndUpdate( _id,  { googleSheetId } );
-  }
   // Created on Nov 27, 2020
   // Updates submission with new workkbook
   async updateWorkbook(_id, workbookData){

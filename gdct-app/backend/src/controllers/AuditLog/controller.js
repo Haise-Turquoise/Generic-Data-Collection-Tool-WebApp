@@ -15,10 +15,12 @@ const AuditLogController = Service([AuditLogService], service => {
     })
     
     // Create one Audit Log
-    router.post(`/createAuditLog`, (req, res, next) => {
+    router.post('/createAuditLog', (req, res, next) => {
       const { AuditLogInfo } = req.body;
+
       service
         .createAuditLog(AuditLogInfo)
+        .then(auditlog => res.json(auditlog))
         .catch(next)
     });
 

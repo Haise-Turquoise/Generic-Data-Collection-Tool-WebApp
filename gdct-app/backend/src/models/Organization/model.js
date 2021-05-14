@@ -31,7 +31,6 @@ const OrgModel = model(
       expiryDate: { type: Date, default: null },
 
       timestamp: { type: Date },
-      //    userCreatorId: { type: ObjectId, ref: 'User' },
       updatedBy: { type: String },
     },
     { minimize: false },

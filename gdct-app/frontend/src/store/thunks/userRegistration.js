@@ -5,7 +5,7 @@ import { fromAddress } from 'xlsx-populate/lib/addressConverter';
 import organizationController from '../../controllers/organization';
 import AppSysController from '../../controllers/AppSys';
 import organizationGroupController from '../../controllers/organizationGroup';
-import programController from '../../controllers/programs';
+import programController from '../../controllers/Program';
 import templateTypeController from '../../controllers/templateType';
 import userController from '../../controllers/user';
 import usersController from '../../controllers/Users';
@@ -254,7 +254,6 @@ const getProgram = programInfo => {
   programInfo.forEach(program => {
     programId.push(program.id);
   });
-
   return programController.fetchByIds(programId).then(programs => {
     const options = [];
     programs.forEach(program => {
@@ -440,15 +439,25 @@ export const orgChange = selectedOrganization => dispatch => {
   });
 };
 
-export const programChange = selectedPrograms => dispatch => {
+export const programChange = selectedPrograms => (dispatch, getState) => {
+  const {
+    UserRegistrationStore: { userPrograms },
+  } = getState()
+  let userProgramsCopy = cloneDeep(userPrograms)
   
-  const userPrograms = [];
+  const newUserPrograms = [];
   selectedPrograms.forEach(program => {
-    userPrograms.push(program.information);
+    newUserPrograms.push(program.information);
   });
-  dispatch(userRegistrationStore.actions.setUserPrograms(userPrograms));
+  
+  if(userProgramsCopy.length > 0){
+    // programs differentiate by _id and organization differentiate by id.
+    userProgramsCopy = userProgramsCopy.filter((userProgram=>userProgram._id != newUserPrograms[0]._id || userProgram.org.id !=  newUserPrograms[0].org.id))
+  }
+  userProgramsCopy.push(newUserPrograms[0])
+  dispatch(userRegistrationStore.actions.setUserPrograms(userProgramsCopy));
 
-  getTemplateType(userPrograms).then(templateTypeList => {
+  getTemplateType(userProgramsCopy).then(templateTypeList => {
     dispatch(userRegistrationStore.actions.setUserSubmissionList(templateTypeList));
   });
 };

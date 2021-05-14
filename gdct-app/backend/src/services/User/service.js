@@ -171,7 +171,6 @@ export default class UserService {
   }
 
   async fetchUserByUserName(username) {
-
     return this.UserRepository.findByUserName(username);
   }
 

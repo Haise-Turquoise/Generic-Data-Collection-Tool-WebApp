@@ -43,8 +43,8 @@ const ReportingPeriodsTable = () => {
   useEffect(()=>{setRowNum(reportingPeriods.length)}, [reportingPeriods])
   // Convert Date format
   reportingPeriods.forEach(reportingPeriod => {
-    const logtime = new Date(reportingPeriods.timestamp);
-    reportingPeriods.timestamp = moment(logtime).format("YYYY-MM-DD HH:mm:ss")
+    const logtime = new Date(reportingPeriod.timestamp);
+    reportingPeriod.timestamp = moment(logtime).format("YYYY-MM-DD HH:mm:ss")
   });
 
   // Prepare the columns for material table

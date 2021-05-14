@@ -1,24 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import Avatar from '@material-ui/core/Avatar';
-import Button from '@material-ui/core/Button';
-import CssBaseline from '@material-ui/core/CssBaseline';
-import TextField from '@material-ui/core/TextField';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Checkbox from '@material-ui/core/Checkbox';
-import Link from '@material-ui/core/Link';
-import Box from '@material-ui/core/Box';
-import Grid from '@material-ui/core/Grid';
+import { Avatar, Button, Box, CssBaseline, Checkbox, Container, MenuItem, FormControl, InputLabel,
+         FormControlLabel, Grid, Link, Snackbar, TextField, Typography, Select } from '@material-ui/core';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
-import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
-import { Container } from '@material-ui/core';
-import Snackbar from '@material-ui/core/Snackbar';
 import MuiAlert from '@material-ui/lab/Alert';
-import { useSelector, shallowEqual, useDispatch, batch } from 'react-redux';
+
+import { useDispatch } from 'react-redux';
 import { host } from '../constants/domain';
 import AuthController from '../controllers/Auth';
+
 import CreateAuditLog from './AuditLog_Global';
 import SessionController from '../controllers/Session';
+import AppConfigController from '../controllers/AppConfig';
+
+import usersController from '../controllers/Users'
 
 import moment from 'moment';
 import Swal from 'sweetalert2';
@@ -51,6 +46,13 @@ const useStyles = makeStyles(theme => ({
   form: {
     width: '100%', // Fix IE 11 issue.
     marginTop: theme.spacing(1),
+  },
+  select: {
+    marginTop: theme.spacing(2),
+    minWidth: '120px'
+  },
+  selectLabel: {
+    padding: theme.spacing(0, 1)
   },
   submit: {
     margin: theme.spacing(3, 0, 2),
@@ -85,15 +87,9 @@ export default function Login({ setLoggedIn }) {
   const [userFeedback, setUserFeedback] = useState('');
   const [checkLogin, setCheckLogin] = useState('false');
   const [open, setOpen] = React.useState(false);
+  const [selectedRole, setSelectedRole] = useState('')
+  const [roles, setRoles] = useState([])
 
-  // useEffect(() => {
-  //   AuthController.auto().then(auto => {
-  //     console.log(auto)
-  //     if (auto.data === true) {
-  //       setLoggedIn(true);
-  //     }
-  //   });
-  // }, []);
   const displayUserFeedback = () => {
     setOpen(true);
   };
@@ -115,15 +111,19 @@ export default function Login({ setLoggedIn }) {
         setPassword(value);
         break;
       case 'email':
+        // @ts-ignore
         updatedErrors.email = !validEmailRegex.test(value) ? 'Not a Valid Email' : '';
         setEmail(value);
         setErrors(updatedErrors);
-
         break;
+      case 'role':
+        setSelectedRole(value.toString())
+        break
       default:
     }
   };
 
+  let sessionID = null;
   // onSubmit for sign in button
   const handleSubmit = async e => {
     e.preventDefault();
@@ -131,18 +131,30 @@ export default function Login({ setLoggedIn }) {
     let checkLogin;
     try {
       if (email && validateForm(errors)) {
-        // window.location.replace(
-        //   `http://localhost:3000/auth/local?email=${email}&password=${password}`
-        // )
-        checkLogin = await AuthController.login({ email, password })
+        // logic to verify validity of submitter role
+        const { sysRole } = await usersController.fetchByEmail(email)
+        
+        const possibleRoles = sysRole.reduce((acc, curr) => acc.concat(curr.role), [])
+        let currentRole = selectedRole
+        if (possibleRoles.length < 2) {
+          currentRole = sysRole[0].role
+        } else if (!possibleRoles.includes(currentRole)) {
+          handleUpdateRoles()
+          setLoggedIn(false)
+          return
+        }
+
+        checkLogin = await AuthController.login({ email, password, selectedRole })
           .then(data => {
             if (data === undefined) {
               return false;
             }
             if (data.status === 'ok') {
-              // dispatch(UserStore.actions.SET_CURRENT_USER({currentUser:data.data.email}))
+              // picks first role if signing in with autofill
               localStorage.setItem('currentUser', data.data.email);
               localStorage.setItem('currentUserID', data.data._id);
+              localStorage.setItem('currentRole', currentRole)
+              sessionID = data.data.sessionID;
               // Audit Login
               CreateAuditLog(email, 'Login', 'Login', null, {}, {});
               // Set status
@@ -154,95 +166,97 @@ export default function Login({ setLoggedIn }) {
             console.log(err);
           });
       }
-      // console.log(checkLogin);
       if (!checkLogin) {
         console.log('not login in');
 
         displayUserFeedback();
       }
-
-      // TODO: decide if it is logged in
     } catch (err) {
       console.log(err);
       setLoggedIn(false);
     }
   };
 
-  // Session Timer
-  const Timer = () => {
-    setTimeout(function() {
-      SessionController.fetch()
-        .then(session => {
-          if (session.length > 0) {
-            const session_id = session[0]._id;
-            console.log(session[0]._id);
-            let i = 0;
-            while (i < 60) {
-              (function(i) {
-                setTimeout(function() {
-                  SessionController.fetchById(session_id)
-                    .then(session => {
-                      const expirationTime = session.expires;
-                      const currentTime = moment();
-                      const remainingMinutes = moment(expirationTime).diff(currentTime, 'minutes');
-                      const remainingSeconds = moment(expirationTime).diff(currentTime, 'seconds');
-                      console.log(`${remainingMinutes}  ${remainingSeconds}`);
-
-                      // Session only has at most 5 minutes
-                      if (remainingMinutes === 5 || remainingMinutes === 1) {
-                        const swalWithBootstrapButtons = Swal.mixin({
-                          customClass: {
-                            confirmButton: 'btn btn-success',
-                            cancelButton: 'btn btn-danger'
-                          },
-                        })
-                        swalWithBootstrapButtons.fire({
-                          title: `Session expiring in ${remainingMinutes} minutes`,
-                          text: "Unsaved process maybe lost if session expires",
-                          icon: 'warning',
-                          showCancelButton: true,
-                          confirmButtonText: 'Reset it',
-                          cancelButtonText: 'Cancel',
-                          reverseButtons: true
-                        }).then((result) => {
-                          if (result.isConfirmed) {
-                            SessionController.updateExpiration(session_id);
-                            swalWithBootstrapButtons.fire(
-                              'Reset!',
-                              'Your session has been reset',
-                              'success'
-                            )
-                          } else if (result.dismiss === Swal.DismissReason.cancel) {
-                            swalWithBootstrapButtons.fire(
-                              'Cancelled',
-                              'Session expiring...',
-                              'error'
-                            )
-                          }
-                        })
-                      }
-                      // Session has expired
-                      else if (remainingMinutes === 0 && remainingSeconds <= 0) {
-                        Swal.fire({
-                          title: 'Session has expired!',
-                          text: "You will be redirected to the login page",
-                          icon: 'warning',
-                          confirmButtonColor: '#3085d6',
-                          confirmButtonText: 'OK'
-                        }).then((result) => {
-                          if (result.isConfirmed) {
-                            window.location.reload();
-                          }
-                        })
-                      }
-                    })
-                }, 10 * 1000 * i)
-              })(i++)
-            }
-          }
-        })
-    }, 1000)
+  const handleUpdateRoles = () => {
+    usersController.fetchByEmail(email)
+    .then(data => {
+      setRoles(data.sysRole.map(role => role.role))
+      // set selected role manually if only one available
+      if (data.sysRole.length >= 1) {
+        setSelectedRole(data.sysRole[0].role)
+      }
+    })
+    .catch(() => setRoles([]))
   }
+
+  // Session Timer
+  const Timer = async () => {
+    const sessionCheckingPeriod = await AppConfigController.fetchSessionCheckingPeriod();
+    let i = 0;
+    while (i < 60) {
+      (function(i) {
+        setTimeout(function() {
+          SessionController.fetchById(sessionID).then(session => {
+            if (session !== null) {
+              const expirationTime = session.expires;
+              const currentTime = moment();
+              const remainingMinutes = moment(expirationTime).diff(currentTime, 'minutes');
+              const remainingSeconds = moment(expirationTime).diff(currentTime, 'seconds');
+              console.log(`${remainingMinutes}  ${remainingSeconds}`);
+
+              // Session only has at most 5 minutes
+              if (remainingMinutes === 5 || remainingMinutes === 1) {
+                const swalWithBootstrapButtons = Swal.mixin({
+                  customClass: {
+                    confirmButton: 'btn btn-success',
+                    cancelButton: 'btn btn-danger'
+                  },
+                })
+                swalWithBootstrapButtons.fire({
+                  title: `Session expiring in ${remainingMinutes} minutes`,
+                  text: "Unsaved process maybe lost if session expires",
+                  icon: 'warning',
+                  showCancelButton: true,
+                  confirmButtonText: 'Reset it',
+                  cancelButtonText: 'Cancel',
+                  reverseButtons: true
+                }).then((result) => {
+                  if (result.isConfirmed) {
+                    SessionController.updateExpiration(sessionID);
+                    swalWithBootstrapButtons.fire(
+                      'Reset!',
+                      'Your session has been reset',
+                      'success'
+                    )
+                  } else if (result.dismiss === Swal.DismissReason.cancel) {
+                    swalWithBootstrapButtons.fire(
+                      'Cancelled',
+                      'Session expiring...',
+                      'error'
+                    )
+                  }
+                })
+              }
+              // Session has expired
+              else if (remainingMinutes === 0 && remainingSeconds <= 0) {
+                Swal.fire({
+                  title: 'Session has expired!',
+                  text: "You will be redirected to the login page",
+                  icon: 'warning',
+                  confirmButtonColor: '#3085d6',
+                  confirmButtonText: 'OK'
+                }).then((result) => {
+                  if (result.isConfirmed) {
+                    window.location.reload();
+                  }
+                })
+              }
+            }
+          })
+        }, sessionCheckingPeriod.value * 60 * 1000 * i)
+      })(i++)
+    };
+  };
 
   return (
     <Container component="main" maxWidth="xs">
@@ -254,7 +268,7 @@ export default function Login({ setLoggedIn }) {
         <Typography component="h1" variant="h5">
           Sign in
         </Typography>
-        <form onSubmit={handleSubmit} className={classes.form} noValidate>
+        <form onSubmit={handleSubmit} onClick={Timer} className={classes.form} noValidate>
           <TextField
             variant="outlined"
             margin="normal"
@@ -267,6 +281,7 @@ export default function Login({ setLoggedIn }) {
             autoComplete="email"
             autoFocus
             onChange={handleChange}
+            onBlur={handleUpdateRoles}
           />
           <TextField
             variant="outlined"
@@ -281,13 +296,27 @@ export default function Login({ setLoggedIn }) {
             autoComplete="password"
             onChange={handleChange}
           />
+          {/* show role selector only if > 1 roles to choose from */}
+          {roles.length > 1 && <FormControl fullWidth variant='outlined' className={classes.select}>
+            <InputLabel id='role-selector-label' required>Role</InputLabel>
+            <Select
+              labelWidth={40}
+              labelId='role-selector-label'
+              id='role-selector'
+              name='role'
+              value={selectedRole}
+              onChange={(e) => setSelectedRole(e.target.value.toString())} // toString for consistent types
+            >
+              {roles.map((role, index) => <MenuItem value={role} key={index}>{role}</MenuItem>)}
+            </Select>
+          </FormControl>}
           <FormControlLabel
             control={<Checkbox value="remember" color="primary" />}
             label="Remember me"
           />
           <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
             <Alert onClose={handleClose} severity="error">
-              please enter the correct password or email
+              Please enter the correct password or email
             </Alert>
           </Snackbar>
           <Button

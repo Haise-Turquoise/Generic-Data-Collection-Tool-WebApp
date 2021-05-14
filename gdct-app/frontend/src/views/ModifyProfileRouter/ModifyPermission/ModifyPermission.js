@@ -154,10 +154,11 @@ const selectOrgProgram = (
             valueProp="value"
             buttonText="Add Organization"
             className="modifyPermission__filteredMultiSelect"
-            showFilter={false}
+            showFilter={true}
             classNames={{
               button: 'modifyPermission__step3Button',
               select: 'modifyPermission__multiSelect',
+              
             }}
           />
         </div>
@@ -167,16 +168,17 @@ const selectOrgProgram = (
           <FilteredMultiSelect
             onChange={handleProgramChange}
             options={programOptions}
-            selectedOptions={selectedPrograms}
+            
             textProp="label"
             valueProp="value"
             buttonText="Add Program"
             className="modifyPermission__filteredMultiSelect"
-            showFilter={false}
+            showFilter={true}
             classNames={{
               button: 'modifyPermission__step3Button',
               select: 'modifyPermission__multiSelect',
             }}
+            selectedOptions = {[]}
           />
         </div>
       </>
@@ -503,8 +505,28 @@ const ModifyPermission_container = props => {
     );
     activeStep = 1
     const organizationOptionsCopy = cloneDeep(organizationOptions)
-    organizationOptionsCopy.sort(function(a,b) {return a.value - b.value})
-    
+    console.log('organizationOptionsCopy', organizationOptionsCopy)
+    // organizationOptionsCopy.sort(function(a,b) {
+    //   const LabelAStart = a.label.indexOf(")")+1
+    //   const LabelBStart = b.label.indexOf(")")+1
+    //   const LabelA = a.label.substring(LabelAStart,a.label.length).toLowerCase()
+    //   const LabelB = b.label.substring(LabelBStart,b.label.length).toLowerCase()
+      
+    //   const compareArray = [LabelA,LabelB]
+    //   compareArray.sort();
+    //   return compareArray[0] == LabelA? -1 : 1
+    // })
+    organizationOptionsCopy.sort(function(a,b){
+      const compareArray = [a.value.toString(),b.value.toString()]
+      compareArray.sort()
+      return compareArray[0] == a.value.toString()? -1 : 1
+    })
+
+
+
+
+
+
     return (
 
             <div>
