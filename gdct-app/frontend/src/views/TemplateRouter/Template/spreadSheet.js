@@ -106,7 +106,6 @@ class SpreadSheet extends Component{
         this.disablePreview()
         const workBookData = this.sheet.getData();
         templateController.sheetUpdate(this.id, workBookData);
-        console.log(workBookData)
       }
     }
 
@@ -233,7 +232,7 @@ class SpreadSheet extends Component{
       this.sheet.reRender();
     }
 
-    lineNumberInsertion(){
+    lineNumberInsertion(reRender=false){
       const currSheetIndex = this.sheet.getCurrentSheetIndex();
       const currSheet = this.sheet.datas[currSheetIndex];
       const categoryMap = generateCategoryMap(currSheet);
@@ -245,6 +244,7 @@ class SpreadSheet extends Component{
       for (let i = 0; i < categoryIDs.length; i++){
         this.sheet.cellText(categoryMap[categoryIDs[i]], 2, i + 1, currSheetIndex);
       }
+      if (reRender) this.sheet.reRender();
     }
 
     // This function is responsible for inserting atrributes
@@ -284,7 +284,7 @@ class SpreadSheet extends Component{
                 <Button variant="outlined" color="primary" onClick={()=>this.disablePreview()}>
                   Disable preview
                 </Button>
-                <Button variant="outlined" color="primary" onClick={()=>this.lineNumberInsertion()}>
+                <Button variant="outlined" color="primary" onClick={()=>this.lineNumberInsertion(true)}>
                   Organize line numbers
                 </Button>
                 <Button variant="outlined" color="primary" onClick={()=>this.downloadTemplate(this.sheet.getData())}>
