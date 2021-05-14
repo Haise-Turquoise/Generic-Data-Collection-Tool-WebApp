@@ -11,7 +11,7 @@ const AuditLogController = (() => {
 
   return {
     fetch: async () => AuditLogAxios.get('/fetchAllAuditLogs').then(res => res.data),
-    create: async AuditLogInfo => AuditLogAxios.post(`/createAuditLog`, { AuditLogInfo }).then(res => res.data.AuditLogInfo),
+    create: async AuditLogInfo => AuditLogAxios.post('/createAuditLog', { AuditLogInfo }).then(res => res.data),
   };
 })();
 

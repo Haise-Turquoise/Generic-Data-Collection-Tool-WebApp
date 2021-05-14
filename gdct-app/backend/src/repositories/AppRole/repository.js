@@ -30,4 +30,10 @@ export default class AppRoleRepository extends BaseRepository {
       AppRoles.map(AppRole => new AppRoleEntity(AppRole.toObject())),
     );
   }
+
+  async findByName(name) {
+    return AppRoleModel.find({name:name}).then(AppRoles =>
+      AppRoles.map(AppRole => new AppRoleEntity(AppRole.toObject())),
+    );
+  }
 }

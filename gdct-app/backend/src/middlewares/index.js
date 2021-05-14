@@ -10,6 +10,9 @@ import i18n from 'i18n';
 import path from 'path';
 import { dbUtil } from './db';
 import customLogger from '../utils/log/customLogger';
+import AppRoleResourceModel from '../models/AppRoleResource';
+import AppResourceModel from '../models/AppResource';
+import UserModel from '../models/User';
 
 i18n.configure({
   locales: ['en', 'fr'],
@@ -40,7 +43,7 @@ export const middlewares = app => {
       // saveUninitialized can only be false in here!
       saveUninitialized: false,
       rolling: true,
-      cookie: { maxAge: 70 * 1000 },
+      cookie: { maxAge: 30 * 60 * 1000 },
       store: new CookieStore({ mongooseConnection: mongoose.connection }),
     }),
   );
@@ -56,50 +59,44 @@ export const middlewares = app => {
     return next();
   });
 
-  let isAdmin = false;
-  app.use('/', (req, res, next) => {
-    console.log()
-    // Check whether user is admin type
-    if (req.session.isAdmin !== undefined) {
-      isAdmin = req.session.isAdmin;
-      console.log(isAdmin);
-    }
-
+  let allowedUrls = [];
+  let isLoggedIn = false;
+  app.use('/', async (req, res, next) => {
     const requestUrl = req.originalUrl;
-    console.log(requestUrl);
-    if (!isAdmin) {
-      // NOTE: these urls are not webpage urls, they are request urls sent by controllers
-      // const AdminUrls = AppResources.find(resourcePath) where (isProtected === true)
-      
-      // Check illegal access
-      const AdminUrls = [
-        '/admin',
-        '/template_manager',
-        '/workflow_manager',
-        '/COA_manager',
-        '/designer/statuses',
-        '/org_manager',
-        '/programs',
-        '/reportingPeriods',
-        '/role_manager',
-        '/dataResume',
-        '/sheetNames',
-        '/AuditLog',
-        '/masterValue'
-      ];
-      if (!requestUrl.includes('/admin/user_management/fetchByEmail')) {
-        for (let i = 0; i < AdminUrls.length; i++) {
-          if (requestUrl.includes(AdminUrls[i])) {
-            console.log("SHOULD REDIRECT");
-            return res.send("UNAUTHORIZED ACCESS");
-          }
-        }
+    // Allow all requests before completing login
+    if (!isLoggedIn && requestUrl !== '/login') return next();
+
+    // During the logging in process, fetch all allowed requestUrls for this user
+    if (!isLoggedIn && requestUrl === '/login') {
+      // Fetching
+      const user = await UserModel.findOne({ email: req.body.email });
+      const loggedInSysRole = user.sysRole.find(sysRole => sysRole.role === req.body.selectedRole);
+      const loggedInAs = loggedInSysRole.appSys + ' ' + loggedInSysRole.role;
+      const allowedRoleResource = await AppRoleResourceModel.findOne({ 'appSysRoleId.roleName': loggedInAs });
+      const allowedResources = allowedRoleResource.toObject().resourceId;
+      const promise = allowedResources.map(async allowedResource => {
+        const resource = await AppResourceModel.findById({ _id: allowedResource.id });
+        return resource.resourcePath;
+      })
+      Promise.all(promise).then(result => allowedUrls = result);
+      // The user is logged in
+      isLoggedIn = true;
+    };
+
+    // Check whether a logged in user is allowed to access requestUrls
+    if (isLoggedIn && requestUrl !== '/login') {
+      if (allowedUrls.includes(requestUrl)) {
+        console.log("ALLOWED");
+        // return next();
+      } else {
+        console.log("NOT ALLOWED");
+        return res.send("UNAUTHORIZED ACCESS");
       }
-      
-      // Check Role specific access
+    };
 
-
-    }
+    // Clear all stored data for completing logout
+    if (isLoggedIn && requestUrl === '/logout') { allowedUrls = []; isLoggedIn = false };
+    
     // MAYBE NOT IN USE, BUT DO NOT DELETE
     // VALUABLE SECTION HERE: One way of getting current session/cookie id stored both on the webpage and in the database(in collection: sessions)
     // if (req.headers.cookie) {

@@ -14,6 +14,13 @@ const AppConfigController = Service([AppConfigService], service => {
         .catch(next)
     });
 
+    router.post('/appConfigs/fetchSessionCheckingPeriod', (req, res, next) => {
+      service
+        .findSessionCheckingPeriod()
+        .then(SessionCheckingPeriod => res.json( SessionCheckingPeriod ))
+        .catch(next)
+    });
+
     router.get('/appConfigs/searchAllAppConfigs', (req, res, next) => {
       service
         .findAllAppConfig()

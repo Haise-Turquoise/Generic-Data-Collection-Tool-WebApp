@@ -11,6 +11,7 @@ import AuthController from '../controllers/Auth';
 
 import CreateAuditLog from './AuditLog_Global';
 import SessionController from '../controllers/Session';
+import AppConfigController from '../controllers/AppConfig';
 
 import usersController from '../controllers/Users'
 
@@ -132,6 +133,7 @@ export default function Login({ setLoggedIn }) {
       if (email && validateForm(errors)) {
         // logic to verify validity of submitter role
         const { sysRole } = await usersController.fetchByEmail(email)
+        
         const possibleRoles = sysRole.reduce((acc, curr) => acc.concat(curr.role), [])
         let currentRole = selectedRole
         if (possibleRoles.length < 2) {
@@ -188,14 +190,14 @@ export default function Login({ setLoggedIn }) {
   }
 
   // Session Timer
-  const Timer = () => {
+  const Timer = async () => {
+    const sessionCheckingPeriod = await AppConfigController.fetchSessionCheckingPeriod();
     let i = 0;
     while (i < 60) {
       (function(i) {
         setTimeout(function() {
-          console.log(sessionID);
-          SessionController.fetchById(sessionID)
-            .then(session => {
+          SessionController.fetchById(sessionID).then(session => {
+            if (session !== null) {
               const expirationTime = session.expires;
               const currentTime = moment();
               const remainingMinutes = moment(expirationTime).diff(currentTime, 'minutes');
@@ -249,8 +251,9 @@ export default function Login({ setLoggedIn }) {
                   }
                 })
               }
-            })
-        }, 10 * 1000 * i)
+            }
+          })
+        }, sessionCheckingPeriod.value * 60 * 1000 * i)
       })(i++)
     };
   };

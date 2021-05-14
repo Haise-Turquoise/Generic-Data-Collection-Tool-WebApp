@@ -21,7 +21,6 @@ export const getRequestFactory = (store, controller) => (
 
   controller[isPopulated ? 'fetchPopulated' : 'fetch'](query)
     .then(values => {
-      console.log('values: ', values);
       if (values === "UNAUTHORIZED ACCESS") unauthorized_dialog();
       dispatch(store.actions.RECEIVE(values));
       if (resolve) resolve();
@@ -38,6 +37,7 @@ export const createRequestFactory = (store, controller) => (
   reject,
   isPopulated = false,
 ) => dispatch => {
+  console.log(value)
   dispatch(store.actions.REQUEST());
 
   controller[isPopulated ? 'createPopulated' : 'create'](value)
