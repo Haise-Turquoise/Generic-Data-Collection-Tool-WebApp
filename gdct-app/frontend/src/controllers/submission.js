@@ -10,6 +10,7 @@ const submissionController = (() => {
   return {
     fetchAndCreate: async email =>
       submissionAxios.post(`/findSubmissions`, { email }).then(res => {
+        console.log('Hi', res.data);
         return res.data.submissions;
       }),
     updateWorkbook: async (submission, submissionNote) =>

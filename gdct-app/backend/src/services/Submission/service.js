@@ -17,6 +17,8 @@ import { mastervalueExtraction } from '../../utils/mastervalue/mastervalueExtrac
 import { mastervaluePrepopulation } from '../../utils/mastervalue/mastervaluePrepopulation';
 import {ObjectId} from 'mongodb';
 import Organization from '../../entities/Organization';
+import { template } from '@babel/core';
+import { isExpressionWithTypeArguments } from 'typescript';
 const mongoose = require('mongoose');
 mongoose.Promise = require('bluebird');
 
@@ -332,105 +334,175 @@ export default class SubmissionService {
     
     return this.findTemplatePackage(programAndTempTypes).then(templatePackages => {
       const name = 'Unsubmitted';
+      const inProgressName ='in progress';
       return this.statusRepository.findByName(name).then(status => {
-        const promiseQuery1 = [];
-        templatePackages.forEach(templatePackage => {
-          promiseQuery1.push(
-            this.submissionRepository
-              .findByTemplatePackageId(templatePackage._id)
-              .then(submissions => {
-                // console.log('submissions',submissions)
-                if (!submissions[0]) {
-                  const { templateIds } = templatePackage;
-                  const promiseQuery3 = [];
-                  if (templateIds !== undefined) {
-                    templateIds.forEach(templateId => {
-                      if (templatePackage.programIds !== undefined) {
-                        templatePackage.programIds.forEach(programId => {
-                          programAndTempTypes.forEach(element => {
-                            if (element.program.toString() == programId.toString()) {
-                             Object.keys(orgMapping).forEach(organizationId=>{
-                               if (orgMapping[organizationId].includes(element.program)){
-                                 const orgId = organizationId;
-                                  promiseQuery3.push(
-                                  this.createSubmissionBaseOnTemplatePackage({
-                                    orgId,
-                                    templateId,
-                                    templatePackageId: templatePackage._id,
-                                    submissionPeriodId: templatePackage.submissionPeriodId,
-                                    programId,
-                                    statusId: status[0]._id,
-                                    version: 0,
-                                    isLatest: true,
-                                  }),
-                                );
-                               }
-                             });
-                            }
-                          });
-                        });
-                      }
-                    });
-                    // console.log(promiseQuery3)
-                    // count+=1;
-                    return Promise.all(promiseQuery3);
-
-                    // return Promise.all(promiseQuery3);
-                  }
-                }
-              }),
-          );
-        });
-        return Promise.all(promiseQuery1).then(() => {
-          const changedSubmissions = [];
-          return this.submissionRepository
-            .findByOrgIdAndProgramId(Object.keys(orgMapping), programIds)
-            .then(submissions => {
-              const promiseQuery2 = [];
-              submissions.forEach(submission => {
-                const permission = [];
-                this.checkUserRole(userInfo, submission, permission);
-                promiseQuery2.push(
-                  this.statusRepository.findById(submission.statusId).then(status => {
-                    return this.templatePackageRepository
-                      .findById(submission.templatePackageId)
-                      .then(templatePackage => {
-                        return this.submissionPeriodRepository
-                          .findById(templatePackage.submissionPeriodId)
-                          .then(submissionPeriod => {
-                            return this.programRepository
-                              .findById(submission.programId)
-                              .then(program => {
-                                // const inflatedWorkbook = pako.inflate( submission._doc.workbookData.data, { to: 'string' });
-                                const inflatedWorkbook = submission._doc.workbookData;
-                                // submission._doc.workbookData.data = JSON.parse(inflatedWorkbook);
-                                submission._doc.workbookData = inflatedWorkbook;
-                                const changedSubmission = {
-                                  ...submission._doc,
-                                  programName: program.name,
-                                  programId: program._id,
-                                  period: submissionPeriod.name,
-                                  phase: status.name,
-                                  permission,
-                                  parentId: submission.parentId
-                                    ? submission.parentId
-                                    : submission._id,
-                                  templatePackageName: templatePackage.name,
-                                };
-                                changedSubmissions.push(cloneDeep(changedSubmission));
-                                
+        return this.statusRepository.findByName(inProgressName).then(inProgress=>{
+          const promiseQuery1 = [];
+          templatePackages.forEach(templatePackage => {
+            if (templatePackage.statusId.toString() !=inProgress[0]._id.toString())
+            promiseQuery1.push(
+              this.submissionRepository
+                .findByTemplatePackageId(templatePackage._id)
+                .then(submissions => {
+                  // console.log('submissions',submissions)
+                  if (!submissions[0]) {
+                    const { templateIds } = templatePackage;
+                    const promiseQuery3 = [];
+                    if (templateIds !== undefined) {
+                      templateIds.forEach(templateId => {
+                        if (templatePackage.programIds !== undefined) {
+                          templatePackage.programIds.forEach(programId => {
+                            programAndTempTypes.forEach(element => {
+                              if (element.program.toString() == programId.toString()) {
+                              Object.keys(orgMapping).forEach(organizationId=>{
+                                if (orgMapping[organizationId].includes(element.program)){
+                                  const orgId = organizationId;
+                                    promiseQuery3.push(
+                                    this.createSubmissionBaseOnTemplatePackage({
+                                      orgId,
+                                      templateId,
+                                      templatePackageId: templatePackage._id,
+                                      submissionPeriodId: templatePackage.submissionPeriodId,
+                                      programId,
+                                      statusId: status[0]._id,
+                                      version: 0,
+                                      isLatest: true,
+                                    }),
+                                  );
+                                }
                               });
+                              }
+                            });
                           });
+                        }
                       });
-                  }),
-                );
-              });
-              // console.log('count at the end ', count)
-              return Promise.all(promiseQuery2).then(() => {
-                return changedSubmissions;
+                      // console.log(promiseQuery3)
+                      // count+=1;
+                      return Promise.all(promiseQuery3);
+
+                      // return Promise.all(promiseQuery3);
+                    }
+                  }
+                }),
+            );
+          });
+          return Promise.all(promiseQuery1).then(async () => {
+            const changedSubmissions = [];
+
+            // Generate all the maps
+            const periodSet = new Map();
+            const programSet = new Map();
+            const templatePkgSet = new Map();
+            const statusSet = new Map();
+
+            const submissionArr = await this.submissionRepository.findByOrgIdAndProgramId(Object.keys(orgMapping), programIds);
+
+            // Generate a the sets of look up tables to prevent dupllicate entries and provide
+            // ease of access later in the code
+            submissionArr.forEach(submission => {
+              const submissionPeriodId = String(submission.submissionPeriodId);
+              const programId = String(submission.programId);
+              const templatePackageId = String(submission.templatePackageId);
+              const statusId = String(submission.statusId)
+
+              if (!periodSet.has(submissionPeriodId)) periodSet.set(submissionPeriodId);
+              if (!programSet.has(programId)) programSet.set(programId);
+              if (!templatePkgSet.has(templatePackageId)) templatePkgSet.set(templatePackageId);
+              if (!statusSet.has(statusId)) statusSet.set(statusId);
+            });
+            
+            // Retrieve related data from templatePkg repo
+            await this.templatePackageRepository.find({_id: {$in: [...templatePkgSet.keys()]}})
+            .then(templateData=>{
+              templateData.forEach(e => {
+                templatePkgSet.set(String(e._id), e);
               });
             });
+
+            // Retrieve related data from submissionPeriod repo
+            await this.submissionPeriodRepository.find({_id: {$in: [...periodSet.keys()]}})
+            .then(periodData=>{
+              periodData.forEach(e => {
+                periodSet.set(String(e._id), e);
+              });
+            });
+
+            // Retrieve related data from programRepository repo
+            await this.programRepository.find({_id: {$in: [...programSet.keys()]}})
+            .then(programData=>{
+              programData.forEach(e => {
+                programSet.set(String(e._id), e);
+              });
+            });
+
+            // Retrieve related data from status repo
+            await this.statusRepository.find({_id: {$in: [...statusSet.keys()]}})
+            .then(statusData=>{
+              statusData.forEach(e => {
+                statusSet.set(String(e._id), e);
+              });
+            });
+            
+            // Assemble each the object for transfer
+            submissionArr.forEach(submission => {
+
+              const programData = programSet.get(String(submission.programId));
+              const periodName = periodSet.get(String(submission.submissionPeriodId)).name;
+              const statusName = statusSet.get(String(submission.statusId)).name;
+              const templateData = templatePkgSet.get(String(submission.templatePackageId));
+
+              const permission = []
+              this.checkUserRole(userInfo, submission, permission);
+              const changedSubmission = {
+                ...submission._doc,
+                programName: programData.name,
+                programId: programData._id,
+                period: periodName,
+                phase: statusName,
+                permission,
+                parentId: submission.parentId
+                  ? submission.parentId
+                  : submission._id,
+                templatePackageName: templateData.name,
+              };
+
+              changedSubmissions.push(changedSubmission)
+            });
+            return changedSubmissions
+
+            /* Note the below code is a faster implementation, but might not scale well 
+            * It uses mongoDB's pipeline to reduce complexity, but it might be resouce
+            * intensive when there are a lot of submissions*/
+
+            // const orgIds = Object.keys(orgMapping).map(id=>Number(id));
+            // return this.submissionRepository.fetchAllInfo(orgIds, programIds).then(data=>{
+            //   data.forEach(submission=>{
+            //     const permission = [];
+            //     this.checkUserRole(userInfo, submission, permission);
+            //     const submissionData = {
+            //       ...submission,
+            //       permission,
+            //       programName: submission.program.name,
+            //       programId: submission.program._id,
+            //       period: submission.submissionPeriod.name,
+            //       phase: submission.status.name,
+            //       parentId: submission.parentId
+            //         ? submission.parentId
+            //         : submission._id,
+            //       templatePackageName: submission.templatePackage.name,
+            //     }
+            //     delete submissionData.templatePackage;
+            //     delete submissionData.submissionPeriod;
+            //     delete submissionData.program;
+            //     delete submissionData.status;
+            //     changedSubmissions.push(submissionData);
+            //   });
+            //   return changedSubmissions;
+            // });
+            //-------------------------------------------------------------------------------------------------
+          });
         });
+
       });
     });
   }

@@ -25,6 +25,13 @@ export default class SubmissionPeriodRepository extends BaseRepository {
     );
   }
 
+  async findByIds(ids){
+    const data = await SubmissionPeriodModel.find({ _id: { $in: ids } });
+    return data.map(submitPeriod=>
+      new SubmissionPeriodEntity(submitPeriod.toObject())
+    );
+  }
+
   async find(query) {
     const realQuery = {};
 

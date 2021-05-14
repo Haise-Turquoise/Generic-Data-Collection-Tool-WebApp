@@ -128,7 +128,7 @@ export async function mastervaluePrepopulation(workbook, submission){
     const firstAttributeCol = findFirstAttributeCol(sheet);
     for (let i = 0; i < firstAttributeCol; i++) colList.push(i);
     if (colList.length > 0) colList.push(1);
-    lockSheet(colList, colList.length > 0 ? [9]: [], sheet);
+    lockSheet(colList, colList.length > 0 ? [9, 0]: [0], sheet);
   }
 
   return workbook;

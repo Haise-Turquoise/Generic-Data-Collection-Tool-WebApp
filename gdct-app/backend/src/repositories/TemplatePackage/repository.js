@@ -7,6 +7,7 @@ import TemplatePackageModel from '../../models/TemplatePackage';
 import TemplatePackageEntity from '../../entities/TemplatePackage';
 import StatusRepository from '../Status';
 import UsersRepository from '../Users';
+import TemplateModel from '../../models/Template';
 
 const populatedParams = 'submissionPeriodId templateIds statusId programIds';
 
@@ -114,6 +115,14 @@ export default class TemplatePackageRepository extends BaseRepository {
 
   async delete(id) {
     return TemplatePackageModel.findByIdAndDelete(id).then(
+      templatePackage => new TemplatePackageEntity(templatePackage.toObject()),
+    );
+  }
+
+  async findByIds(ids){
+    const templatePackages = await TemplatePackageModel.find({ _id: { $in: ids } });
+    
+    return templatePackages.map(
       templatePackage => new TemplatePackageEntity(templatePackage.toObject()),
     );
   }
