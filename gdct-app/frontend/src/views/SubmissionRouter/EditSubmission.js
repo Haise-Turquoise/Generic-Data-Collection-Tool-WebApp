@@ -133,7 +133,6 @@ const EditSubmission = ({ history }) => {
         // @ts-ignore
         .fetchProcess(location.state.detail.workflowProcessId)
         .then(workflowProcess => {
-          console.log(workflowProcess)
           if (workflowProcess !== undefined)
             
             workflowProcess.to.forEach(process => {

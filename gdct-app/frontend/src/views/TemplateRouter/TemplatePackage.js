@@ -294,7 +294,8 @@ const TemplatePackage = ({
       submissionPeriodId: populatedData.submissionPeriodId._id,
       templateIds: populatedData.templateIds.map(({ _id }) => _id),
       programIds: populatedData.programIds.map(({ _id }) => _id),
-      timestamp: new Date(),
+      creationDate: populatedData.creationDate,
+      timestamp: Date(),  
       updatedBy: localStorage.getItem('currentUser'),
     };
 
