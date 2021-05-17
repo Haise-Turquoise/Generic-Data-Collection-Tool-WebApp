@@ -1,3 +1,4 @@
+  
 import React, { useMemo, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -32,10 +33,15 @@ const AppResourceList = ({ resourceId, isEditable = true, onClickAdd, onClickDel
   const nonOrgProgs = () => resourceList.filter(elem => !resourceIdList.includes(elem._id));
   const [readOrgRowNum, setOrgRowNum] = useState(1);
   const [readNonOrgRowNum, setNonOrgRowNum] = useState(1);
+  // needed to set these here to prevent clearing search term
+  useEffect(() => {
+    setOrgRowNum(OrgProgs().length)
+    setNonOrgRowNum(nonOrgProgs().length)
+  }, [resourceList])
 
   const columns = useMemo(() => 
     [
-      { title: 'ResourceName', field: 'resourceName' },
+      { title: 'ResourceName', field: 'resourceName', defaultSort: 'asc' },
       { title: 'ResourcePath', field: 'resourcePath' },
     //   { title: 'TimeStamp', field: 'timestamp' },
     //   { title: 'UpdatedBy', field: 'updatedBy' },
@@ -55,14 +61,11 @@ const AppResourceList = ({ resourceId, isEditable = true, onClickAdd, onClickDel
   );
 
 
-  const left_actions = useMemo(() => [{ icon: DeleteIcon, tooltip: 'Remove from Organization', onClick: onClickDelete }], []);
+  const left_actions = useMemo(() => [{ icon: DeleteIcon, tooltip: 'Remove from Mapping', onClick: onClickDelete }], []);
 
-  const right_actions = useMemo(() => [{ icon: AddIcon, tooltip: 'Add to Organization', onClick: onClickAdd }], []);
-  useEffect(()=>{setOrgRowNum(OrgProgs().length)}, [OrgProgs()])
-  useEffect(()=>{setNonOrgRowNum(nonOrgProgs().length)}, [nonOrgProgs()])
+  const right_actions = useMemo(() => [{ icon: AddIcon, tooltip: 'Add to Mapping', onClick: onClickAdd }], []);
   const orgOptions = useMemo(() => calculateOptions(readOrgRowNum), [readOrgRowNum]);
   const nonOrgOptions = useMemo(() => calculateOptions(readNonOrgRowNum), [readNonOrgRowNum]);
-  console.log('readNonOrgRowNum', readNonOrgRowNum)
   return (
     <div className="tableContainer">
       <div className="tableWrapper-linked">
@@ -72,7 +75,10 @@ const AppResourceList = ({ resourceId, isEditable = true, onClickAdd, onClickDel
           key = {readOrgRowNum}
           columns={columns}
           data={OrgProgs()}
-          options={orgOptions}
+          options={{
+            ...orgOptions,
+            actionsColumnIndex: 0
+          }}
           actions={isEditable ? left_actions : null}
         />
       </div>
@@ -83,7 +89,10 @@ const AppResourceList = ({ resourceId, isEditable = true, onClickAdd, onClickDel
           // @ts-ignore
           columns={columns}
           data={nonOrgProgs()}
-          options={nonOrgOptions}
+          options={{
+            ...nonOrgOptions,
+            actionsColumnIndex: 0
+          }}
           actions={isEditable ? right_actions : null}
         />
       </div>

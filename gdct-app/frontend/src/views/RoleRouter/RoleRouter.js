@@ -7,7 +7,6 @@ import AppSyses from './AppSyses';
 import AppSysRoles from './AppSysRoles';
 import AppRoles from './AppRoles';
 import AppResources from './AppResources';
-import AppRoleResources from './AppRoleResources';
 import AppRoleResourcesManagement from './AppRoleResourcesManagement'
 import AppRoleResourceManagement from './AppRoleResourceManagement'
 const TemplateRouter = () => (
@@ -16,7 +15,6 @@ const TemplateRouter = () => (
     <Route exact path="/admin/role/appsysrole" component={AppSysRoles} />
     <Route exact path="/admin/role/approle" component={AppRoles} />
     <Route exact path="/admin/role/appresource" component={AppResources} />
-    <Route exact path="/admin/role/app_role_resource" component={AppRoleResources} />
     <Route exact path="/admin/role/app_role_resource_management" component={AppRoleResourcesManagement} />
     <Route exact path="/admin/role/app_role_resource_management/:_id" component={AppRoleResourceManagement} />
     <Route component={NotFound} />
