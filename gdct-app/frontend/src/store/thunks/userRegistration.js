@@ -438,7 +438,17 @@ export const orgChange = selectedOrganization => dispatch => {
     dispatch(userRegistrationStore.actions.setProgramOptions(programOptions));
   });
 };
+// export const programChange = selectedPrograms => dispatch => {
+//   const userPrograms = [];
+//   selectedPrograms.forEach(program => {
+//     userPrograms.push(program.information);
+//   });
+//   dispatch(userRegistrationStore.actions.setUserPrograms(userPrograms));
 
+//   getTemplateType(userPrograms).then(templateTypeList => {
+//     dispatch(userRegistrationStore.actions.setUserSubmissionList(templateTypeList));
+//   });
+// };
 export const programChange = selectedPrograms => (dispatch, getState) => {
   const {
     UserRegistrationStore: { userPrograms },

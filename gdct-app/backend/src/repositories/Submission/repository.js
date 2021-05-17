@@ -29,7 +29,6 @@ export default class SubmissionRepository extends BaseRepository {
     return SubmissionModel.find({ templatePackageId });
   }
   async findByParentId(parentId) {
-    console.log('parentId', parentId)
     return SubmissionModel.find({ parentId }).then(submission=>{
       if(submission == undefined){return {}}
       else{

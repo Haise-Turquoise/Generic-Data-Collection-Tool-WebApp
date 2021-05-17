@@ -60,6 +60,15 @@ const SubmissionController = Service([SubmissionService], service => {
         .catch(next);
     });
 
+    router.post('/submissions/findSubmissionByParentId', (req, res, next) => {
+      const { parentId } = req.body;
+
+      service
+        .findSubmissionByParentId(parentId)
+        .then(submission => res.json({ submission }))
+        .catch(next);
+    });
+
     router.post('/submissions/delete', (req, res, next) => {
       const { _id } = req.body;
 
