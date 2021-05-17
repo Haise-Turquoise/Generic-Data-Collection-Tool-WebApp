@@ -10,7 +10,7 @@ import Button from '@material-ui/core/Button';
 import { digitToAlpha,
   generateCategoryMap, generateAttributeMap, 
   findWordInRow, findLastAttributeCol, 
-  templateDownloader, excelImportHandler} from '../../../tools/misc';
+  templateDownloader, excelImportHandler, generateFullMap} from '../../../tools/misc';
 
 // Sheet style Option
 const sheetOption = {
@@ -235,7 +235,7 @@ class SpreadSheet extends Component{
     lineNumberInsertion(reRender=false){
       const currSheetIndex = this.sheet.getCurrentSheetIndex();
       const currSheet = this.sheet.datas[currSheetIndex];
-      const categoryMap = generateCategoryMap(currSheet);
+      const categoryMap = generateFullMap(currSheet);
 
       let categoryIDs = Object.keys(categoryMap).sort((id1, id2)=>
         categoryMap[id1] - categoryMap[id2]
