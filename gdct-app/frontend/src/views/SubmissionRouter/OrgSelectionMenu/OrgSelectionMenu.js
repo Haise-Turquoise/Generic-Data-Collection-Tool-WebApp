@@ -1,5 +1,5 @@
-import React, { useEffect, useState, createRef, useRef } from 'react';
-import usersController from '../../controllers/Users'
+import React, { useEffect, useState, useRef } from 'react';
+import usersController from '../../../controllers/Users'
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Dialog from '@material-ui/core/Dialog';
 import Button from '@material-ui/core/Button';
@@ -35,7 +35,6 @@ const OrgselectionMenu = (props) => {
           orgArr.push({orgId, orgName})
         });
       });
-      console.log(orgArr);
       setOrglist(orgArr);
     })
   }, [status])
@@ -51,7 +50,7 @@ const OrgselectionMenu = (props) => {
           <form>
             <select name="org_name" id="org_name" ref={orgRef}>
               <option>Please select an Organization</option>
-              {orgList.map(e=><option id={e.orgId}>{e.orgName?e.orgName:""}</option>)}
+              {orgList.map(e=><option id={e.orgId}>{e.orgId}</option>)}
             </select>
           </form>
         </div>

@@ -11,7 +11,6 @@ const COATreeModel = model(
       categoryId: [{ type: Object, ref: 'Category' }],
       sheetNameId: { type: ObjectId, ref: 'SheetName' },
       timestamp: { type: Date },
-      //    userCreatorId: { type: ObjectId, ref: 'User' },
       updatedBy: { type: String },
     },
     { minimize: false },

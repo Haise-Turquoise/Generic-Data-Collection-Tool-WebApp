@@ -6,50 +6,48 @@ import TemplatePackage from '../../entities/TemplatePackage';
 const TemplatePackageController = Service([TemplatePackageService], service => {
   const router = Router();
   return (() => {
-    router.get('/templatePackages', (req, res, next) => {
-      // Get query from middleware -- auth handler
+    router.get('/templatePackages/fetch', (req, res, next) => {
       service
         .findTemplatePackage(new TemplatePackage(req.body))
         .then(templatePackages =>
-          res.json({
-            templatePackages: templatePackages.map(templatePackage => ({
+          res.json(
+            templatePackages.map(templatePackage => ({
               ...templatePackage,
               templatePackageData: undefined,
             })),
-          }),
+          ),
         )
         .catch(next);
     });
 
-    router.get('/templatePackages/:_id', (req, res, next) => {
-      // Get query from middleware -- auth handler
+    router.post('/templatePackages/fetchTemplatePackage', (req, res, next) => {
+      const { _id } = req.body;
 
       service
-        .findTemplatePackage(new TemplatePackage({ _id: req.params._id }))
+        .findTemplatePackage(new TemplatePackage({ _id }))
         .then(([templatePackage]) => res.json({ templatePackage }))
         .catch(next);
     });
 
-    router.post('/templatePackages', (req, res, next) => {
+    router.post('/templatePackages/create', (req, res, next) => {
       service
         .createTemplatePackage(req.body.templatePackage)
         .then(templatePackage => res.json({ templatePackage }))
         .catch(next);
     });
 
-    router.put('/templatePackages/:_id', (req, res, next) => {
-      const { _id } = req.params;
+    router.put('/templatePackages/update', (req, res, next) => {
       const { templatePackage } = req.body;
+      const _id = templatePackage._id;
 
       service
         .updateTemplatePackage(_id, templatePackage)
         .then(() => res.end())
-        .catch(error => console.error(error))
         .catch(next);
     });
 
-    router.delete('/templatePackages/:_id', (req, res, next) => {
-      const { _id } = req.params;
+    router.post('/templatePackages/delete', (req, res, next) => {
+      const { _id } = req.body;
 
       service
         .deleteTemplatePackage(_id)
@@ -57,18 +55,18 @@ const TemplatePackageController = Service([TemplatePackageService], service => {
         .catch(next);
     });
 
-    router.get('/templatePackages/populated/:_id', (req, res, next) => {
-      // Get query from middleware -- auth handler
+    router.post('/templatePackages/fetchPopulated', (req, res, next) => {
+      const { _id } = req.body;
 
       service
-        .findTemplatePackage(new TemplatePackage({ _id: req.params._id }), true)
-        .then(([templatePackage]) => res.json({ templatePackage }))
+        .findTemplatePackage(new TemplatePackage({ _id }), true)
+        .then(([templatePackage]) => res.json( templatePackage ))
         .catch(next);
     });
 
-    router.put('/templatePackages/populated/:_id', (req, res, next) => {
-      const { _id } = req.params;
+    router.put('/templatePackages/updatePopulated', (req, res, next) => {
       const { templatePackage } = req.body;
+      const _id = templatePackage._id;
 
       service
         .updateTemplatePackage(_id, templatePackage, true)

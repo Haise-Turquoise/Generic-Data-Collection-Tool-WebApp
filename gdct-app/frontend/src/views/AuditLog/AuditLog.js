@@ -1,14 +1,14 @@
 import React, { Fragment, useMemo, useEffect } from 'react';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 
-import moment from 'moment'
-import DatePicker from "react-datepicker"
+import moment from 'moment';
+import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
+import MaterialTable from 'material-table';
 import { Paper, Typography, Button,
          Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@material-ui/core';
 import FindInPageIcon from '@material-ui/icons/FindInPage';
-import MaterialTable from 'material-table';
 
 import { selectFactoryRESTResponseTableValues } from '../../store/common/REST/selectors';
 import { getAuditLogRequest } from '../../store/thunks/AuditLog';

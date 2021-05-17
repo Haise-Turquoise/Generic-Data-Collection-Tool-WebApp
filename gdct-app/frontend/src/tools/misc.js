@@ -238,7 +238,6 @@ export const compareSheet = (oldWorkBook, newNewWorkBook) => {
 export const generateCategoryMap = (sheet)=>{
   // @ts-ignore
   const maxRowNum = Math.max(...Object.keys(sheet.rows._))
-  console.log('rowNums', sheet.rows._)
   const categoryMap = {};
 
   // Go though each row's first cell
@@ -253,6 +252,7 @@ export const generateCategoryMap = (sheet)=>{
   }
   return categoryMap;
 }
+
 
 // Created by Sheldon Su on 2021/04/12
 // Generate attribute ID to Column mapping
@@ -306,11 +306,13 @@ export const findWordInRow = (sheet, row, text)=>{
   return -1;
 }
 
-// Create by Sheldon Su 2021/04/21
-// This function handles download template feature, it convert Json array
-// from x-data-spreadsheet to xlsx
+/* 
+ * Create by Sheldon Su 2021/04/21
+ * This function handles download template feature, it convert Json array
+ * from x-data-spreadsheet to xlsx. Note that the page that calls this
+ * function must have a empty <a> tag with id 'download'.
+ */
 export const templateDownloader = (workBookName, sheetData)=>{
-  console.log(workBookName, sheetData)
 
   let workbook = new Excel.Workbook();
   workbook.modified = new Date();
@@ -368,7 +370,7 @@ export const templateDownloader = (workBookName, sheetData)=>{
       const colArray = Object.keys(sheet.rows[rowNum].cells);
       for (const colNum of colArray){
         const targetCell = sheet.rows[rowNum].cells[colNum];
-        if (targetCell.style){ 
+        if (targetCell.style !== undefined){ 
           const coord = digitToAlpha(Number(colNum) + 1) + (Number(rowNum)+1);
           const cell = currSheet.getCell(coord);
           Xspreadsheet2ExcelStyle(cell, styleArray[targetCell.style]);
@@ -404,13 +406,15 @@ export const templateDownloader = (workBookName, sheetData)=>{
   })
 }
 
-// Create by Sheldon Su 2021/04/21
-// This is the function for handling the import
-// It reads the file from client's computer and converts it into Json array that
-// x-data-spreadsheet can understand. At the end we are saving this Json array 
-// to our DB.
-// Note that since reader.onload is async, you have to pass in a data handler function to
-// retreive your data.
+/* 
+ * Create by Sheldon Su 2021/04/21
+ * This is the function for handling the import
+ * It reads the file from client's computer and converts it into Json array that
+ * x-data-spreadsheet can understand. At the end we are saving this Json array 
+ * to our DB.
+ * Note that since reader.onload is async, you have to pass in a data handler function to
+ * retreive your data.
+ */
 export const excelImportHandler = (event, dataHandler) => {
   //set up a event listner
   let reader = new FileReader();
@@ -477,6 +481,7 @@ export const excelImportHandler = (event, dataHandler) => {
               const currStyle = excelJsStyle2Xspreadsheet(currCellStyle);
 
               // Compare object using Json
+              // Since json cannot be compared, we need to convert it to Json string first
               let jsonReference = JSON.stringify(currStyle);
 
               if (styleMap.has(jsonReference)){

@@ -5,51 +5,23 @@ import MasterValueService from '../../services/MasterValue';
 const MasterValueController = Service([MasterValueService], service => {
   const router = Router();
   return (() => {
-    router.get('/masterValue', (req, res, next) => {
-      // Get query from middleware -- auth handler
+    router.get('/masterValue/fetch', (req, res, next) => {
       service
         .findMasterValue({})
         .then(masterValueTable => res.json({ masterValueTable }))
         .catch(next);
     });
 
-    router.post('/masterValue', (req, res, next) => {
-      // console.log('reach backend controller create')
-      service
-
-        .findMasterValue({})
-        .then(masterValueTable => res.json({ masterValueTable }))
-        .catch(next);
-    });
-
-    router.post('/masterValue', (req, res, next) => {
-      // console.log('reach backend controller create')
+    router.post('/masterValue/create', (req, res, next) => {
       service
         .createMasterValue(req.body.masterValue)
         .then(masterValue => res.json({ masterValue }))
         .catch(next);
     });
 
-    router.post('/masterValue/addDocument', (req, res, next) => {
-      // console.log('reach backend controller addDocument')
-      service
-        .addDocument(req.body.masterValue)
-        .then(masterValue => res.json({ masterValue }))
-        .catch(next);
-    });
-
-
-    router.post('/masterValue/addDocument', (req, res, next) => {
-      // console.log('reach backend controller addDocument')
-      service
-        .addDocument(req.body.masterValue)
-        .then(masterValue => res.json({ masterValue }))
-        .catch(next);
-    });
-
-    router.put('/masterValue/:_id', (req, res, next) => {
-      const { _id } = req.params;
+    router.put('/masterValue/update', (req, res, next) => {
       const { masterValue } = req.body;
+      const _id = masterValue._id;
 
       service
         .updateMasterValue(_id, masterValue)
@@ -57,11 +29,19 @@ const MasterValueController = Service([MasterValueService], service => {
         .catch(next);
     });
 
-    router.delete('/masterValue/:_id', (req, res, next) => {
-      const { _id } = req.params;
+    router.post('/masterValue/delete', (req, res, next) => {
+      const { _id } = req.body;
+
       service
         .deleteMasterValue(_id)
         .then(() => res.end())
+        .catch(next);
+    });
+
+    router.post('/masterValue/addDocument', (req, res, next) => {
+      service
+        .addDocument(req.body.masterValue)
+        .then(masterValue => res.json({ masterValue }))
         .catch(next);
     });
 

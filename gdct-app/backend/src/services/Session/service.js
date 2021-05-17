@@ -7,10 +7,6 @@ export default class SheetNameService {
     this.sessionRepository = Container.get(SessionRepository);
   }
 
-  async findByExpirationTime(expirationTimeLowerBound, expirationTimeUpperBound) {
-    return this.sessionRepository.findByExpirationTime(expirationTimeLowerBound, expirationTimeUpperBound);
-  }
-
   async findById(id) {
     return this.sessionRepository.findById(id);
   }

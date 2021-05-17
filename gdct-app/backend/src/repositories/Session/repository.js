@@ -7,10 +7,6 @@ export default class SessionRepository extends BaseRepository {
     super(SessionModel);
   }
 
-  async findByExpirationTime(expirationTimeLowerBound, expirationTimeUpperBound) {
-    return SessionModel.find({ expires: {'$gte': expirationTimeLowerBound, '$lte': expirationTimeUpperBound} });
-  }
-
   async findById(id) {
     return SessionModel.findOne({ _id: id });
   }
@@ -18,7 +14,6 @@ export default class SessionRepository extends BaseRepository {
   async updateExpiration(id, originalMaxAge) {
     const currentTime = new Date();
     const newSessionTime = new Date(currentTime.getTime() + (originalMaxAge));
-    console.log(originalMaxAge + newSessionTime);
     return SessionModel.findOneAndUpdate({ _id: id }, { expires: newSessionTime});
   }
 }

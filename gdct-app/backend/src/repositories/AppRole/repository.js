@@ -17,17 +17,22 @@ export default class AppRoleRepository extends BaseRepository {
 
   async create(AppRole) {
     AppRole.isActive = true;
+    // @ts-ignore
     return AppRoleModel.create(AppRole).then(AppRole => new AppRoleEntity(AppRole.toObject()));
   }
 
   async update(id, AppRole) {
-    return AppRoleModel.findByIdAndUpdate(id, AppRole).then(
-      AppRole => new AppRoleEntity(AppRole.toObject()),
-    );
+    return AppRoleModel.findByIdAndUpdate(id, AppRole);
   }
 
   async find(query) {
     return AppRoleModel.find(query).then(AppRoles =>
+      AppRoles.map(AppRole => new AppRoleEntity(AppRole.toObject())),
+    );
+  }
+
+  async findByName(name) {
+    return AppRoleModel.find({name:name}).then(AppRoles =>
       AppRoles.map(AppRole => new AppRoleEntity(AppRole.toObject())),
     );
   }

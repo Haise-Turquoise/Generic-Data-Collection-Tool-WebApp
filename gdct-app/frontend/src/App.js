@@ -61,11 +61,7 @@ const PrivateRouter = ({ setLoggedIn }) => {
       {/* <Route path="/submission_manager" component={SubmissionRouter} /> */}
       <Route exact path="/admin/sheetName" component={SheetNames} />
       {/* <Route path={ROUTE_COLUMN_NAMES} component={ColumnNames} /> */}
-      <Route
-        exact
-        path="/logout"
-        render={props => <Logout {...props} setLoggedIn={setLoggedIn} />}
-      />
+      <Route exact path="/logout" render={props => <Logout {...props} setLoggedIn={setLoggedIn} />}/>
       <Redirect from="*" to="/" />
     </Switch>
   );

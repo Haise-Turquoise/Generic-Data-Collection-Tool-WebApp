@@ -2,7 +2,7 @@ import React from "react";
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Dialog from '@material-ui/core/Dialog';
 import Button from '@material-ui/core/Button';
-import spreadSheetController from '../../controllers/spreadSheet'
+import spreadSheetController from '../../../../controllers/spreadSheet'
 
 // This component is responsible for attribute insertion menu
 // Created by Sheldon Su on 2021/03/01

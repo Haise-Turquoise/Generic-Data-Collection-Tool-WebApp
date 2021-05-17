@@ -1,8 +1,9 @@
 import React, { Component } from "react";
 import Spreadsheet from 'x-data-spreadsheet';
 import submissionController from '../../controllers/submission';
+import usersController from '../../controllers/Users';
 import statusController from '../../controllers/status';
-import OrgselectionMenu from '../OrgSelectionMenu';
+import OrgselectionMenu from './OrgSelectionMenu';
 import orgController from '../../controllers/organization';
 import { compareSheet } from '../../tools/misc';
 import CreateAuditLog from '../AuditLog_Global';
@@ -61,6 +62,7 @@ class SubmissionSpreadSheet extends Component{
       this.orginalValue = null;
       this.clearComponentChild = this.clearComponentChild.bind(this);
       this.insertOrg = this.insertOrg.bind(this);
+      this.disable = this.props.disable;
     }
 
     // After component mount, initailize spreadsheet and load data from DB
@@ -68,7 +70,7 @@ class SubmissionSpreadSheet extends Component{
       if(this.sheet == null){
         submissionController.fetchSubmission(this.id).then(submission=>{
           statusController.findStatusByID(submission.statusId).then((status)=>{
-            if (status && (status.name === 'Approved')){
+            if (status && (status.status.name === 'Approved')){
               sheetOption.mode = 'read';
               this.edit = false;
             }
@@ -82,7 +84,21 @@ class SubmissionSpreadSheet extends Component{
             this.sheet.on('cell-selected',(cell, row, col)=>{
               this.currentCoord = {row, col};
             })
-          })
+
+            // // Get user data from server, handle auto population
+            // const currentUser = localStorage.getItem('currentUser');
+            // usersController.fetchByEmail(currentUser).then(data=>{
+            //   let orgArr = []
+            //   data.sysRole.forEach(element => {
+            //     element.org.forEach(org => {
+            //       const {orgId} = org;
+            //       orgArr.push(orgId);
+            //     });
+            //   });
+            //   if (orgArr.length == 1) this.insertOrg(orgArr[0]);
+            // });
+  
+          });
         });
       }else{
         submissionController.fetchSubmission(this.id).then(submission=>{
@@ -123,24 +139,33 @@ class SubmissionSpreadSheet extends Component{
     saveTemplate = () =>{
       if (this.sheet && this.edit){
         const newData = this.sheet.getData();
-        console.log(newData)
         this.submissionObject.workbookData = newData;
         submissionController.updateWorkbook(this.submissionObject).then(res=>{
           const difference = compareSheet(this.orginalValue, newData);
           CreateAuditLog(null, "Update Submission workbook", "Submisson", this.submissionObject._id, difference.oldValues, difference.newValues);
         });
-
       }
     }
 
-    insertOrg = (orgId) => {
-      orgController.fetchById(Number(orgId)).then(org=>{
-        const data = this.sheet.getData()
+    insertOrg = async (orgId) => {
+      if (this.edit){
+
+        // Get org data
+        const org = await orgController.fetchById(Number(orgId));
+
+        // Get reporting period data
+        const reportPeriod = await submissionController.fetchSubmissionReportingPeriod(this.id);
+        const data = this.sheet.getData();
+
+        // Iterate through each sheet to fill in information (start from the second sheet)
         for (let i = 1; i < data.length; i++){
           const currSheet = data[i];
+
+          // Identification sheet has different format
           if (currSheet.name.toLowerCase() === 'identification'){
             this.sheet.cellText(8, 3, org.id, i);
             this.sheet.cellText(9, 3, org.IFISNum, i);
+            this.sheet.cellText(10, 3, reportPeriod.name, i);
             this.sheet.cellText(12, 3, org.name, i);
             this.sheet.cellText(13, 3, org.legalName, i);
           }else{
@@ -149,7 +174,8 @@ class SubmissionSpreadSheet extends Component{
           }
         }
         this.sheet.reRender();
-      })
+
+      }
     }
 
     render(){

@@ -7,6 +7,7 @@ import TemplatePackageModel from '../../models/TemplatePackage';
 import TemplatePackageEntity from '../../entities/TemplatePackage';
 import StatusRepository from '../Status';
 import UsersRepository from '../Users';
+import TemplateModel from '../../models/Template';
 
 const populatedParams = 'submissionPeriodId templateIds statusId programIds';
 
@@ -118,8 +119,19 @@ export default class TemplatePackageRepository extends BaseRepository {
     );
   }
 
+  async findByIds(ids){
+    const templatePackages = await TemplatePackageModel.find({ _id: { $in: ids } });
+    
+    return templatePackages.map(
+      templatePackage => new TemplatePackageEntity(templatePackage.toObject()),
+    );
+  }
+
   async findStatusById(id){
     const statusID = await TemplatePackageModel.findById(id, {_id:0, statusId:1});
     return this.statusRepository.findById({_id:statusID.statusId}, {name:1});
+  }
+  async findByUpdateBy(updatedBy) {
+    return TemplatePackageModel.find({ updatedBy });
   }
 }

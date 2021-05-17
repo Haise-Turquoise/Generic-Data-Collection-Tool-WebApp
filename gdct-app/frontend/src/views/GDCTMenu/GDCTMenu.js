@@ -1,24 +1,23 @@
 import React, { useState, useEffect } from 'react';
-import navigationConfig from '../../components/AuthPage/config';
-import DrawerItem from '../../components/DrawerItem/DrawerItem';
-import IconItem from '../../components/IconItem/IconItem';
+import createUserNavigation from '../../components/AuthPage/createUserNavigation';
+import DrawerItem from '../../components/AuthPage/DrawerItem';
+import IconItem from '../../components/AuthPage/IconItem';
 import { Button } from '@material-ui/core';
 
 const MenuHeader = () => {
-  const [anchorEl, setAnchorEl] = React.useState(null);
+  const [setAnchorEl] = React.useState(null);
   const handleClick = event => {
     setAnchorEl(event.currentTarget);
   };
   const [config, setConfig] = useState([]);
   useEffect(() => {
-    navigationConfig().then(res => {
+    createUserNavigation().then(res => {
       setConfig(res);
     });
   }, []);
   return (
     <>
       {config
-        .filter(item => item.type !== 'divider')
         .map((item, index) => {
           const { type, name, icon, url } = item;
           return item.type !== 'drawer' && item.type !== 'topmenu' ? (

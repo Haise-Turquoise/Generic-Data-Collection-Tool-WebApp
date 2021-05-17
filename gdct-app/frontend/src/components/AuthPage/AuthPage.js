@@ -1,35 +1,20 @@
 import React, { useState, Fragment, useEffect, useCallback } from 'react';
+import { Link } from 'react-router-dom';
 import clsx from 'clsx';
-import { makeStyles, useTheme, withStyles } from '@material-ui/core/styles';
-import Drawer from '@material-ui/core/Drawer';
-import AppBar from '@material-ui/core/AppBar';
-import Chip from '@material-ui/core/Chip';
-import Toolbar from '@material-ui/core/Toolbar';
-import List from '@material-ui/core/List';
-import CssBaseline from '@material-ui/core/CssBaseline';
-import Typography from '@material-ui/core/Typography';
-import Divider from '@material-ui/core/Divider';
-import IconButton from '@material-ui/core/IconButton';
+
+import { makeStyles, useTheme } from '@material-ui/core/styles';
+import { AppBar, Drawer, Chip, Toolbar, List, CssBaseline, Typography, IconButton,
+         ListItem, ListItemIcon, ListItemText, Collapse, Switch, FormControlLabel } from '@material-ui/core'
 import MenuIcon from '@material-ui/icons/Menu';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
-import Collapse from '@material-ui/core/Collapse';
 import ExpandMore from '@material-ui/icons/ExpandMore';
 import ExpandLess from '@material-ui/icons/ExpandLess';
-import Switch from '@material-ui/core/Switch';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
+
+import createUserNavigation from './createUserNavigation';
+import TopItemList from './TopItemList';
 import './_chip.scss';
-import MenuItem from '@material-ui/core/MenuItem';
-import { Link } from 'react-router-dom';
 import './_listitem.scss';
-
-import { event } from 'jquery';
-import navigationConfig from './config';
-
-import TopItemList from '../TopItemList/TopItemList';
 
 const drawerWidth = 240;
 const headerHeight = 55;
@@ -111,6 +96,17 @@ const useStyles = makeStyles(theme => ({
       textDecoration: 'none',
     },
   },
+  chip: {
+    padding: '20px 15px',
+    textAlign: 'center'
+  },
+  chipTitle: {
+    fontSize: '0.9rem'
+  },
+  chipSubtitle: {
+    fontSize: '0.75rem',
+    color: 'gray'
+  }
 }));
 
 const HeaderHandle = ({ open, classes, handleDrawerOpen, isTopMenu }) => {
@@ -134,6 +130,11 @@ const HeaderTitle = ({ title }) => (
     {title}
   </Typography>
 );
+
+const checkRole = () => {
+  const currRole = localStorage.getItem('currentRole')
+  return currRole && currRole !== 'undefined' && currRole !== 'null'
+}
 
 const Header = ({
   title,
@@ -163,7 +164,16 @@ const Header = ({
         <HeaderTitle title={title} />
       </Link>
       {isTopMenu && <TopItemList config={config} classes={classes} isMobile={isMobile} />}
-      <Chip label={localStorage.getItem('currentUser')} id='MuiChip-label-Authpage' />
+      <Chip label={
+          <span>
+            <span className={classes.chipTitle}>{localStorage.getItem('currentUser')}</span><br/>
+            {/* subtitle to show if user has a roles */}
+            {
+              checkRole() && 
+              <span className={classes.chipSubtitle}>{localStorage.getItem('currentRole')}</span>
+            }
+          </span>
+        } id='MuiChip-label-Authpage' className={classes.chip} />
       <FormControlLabel
         className={classes.flexItem}
         control={
@@ -279,17 +289,10 @@ const NavigationContent = ({ config }) => {
     let Component;
 
     const { type, name } = item;
-
     switch (type) {
       case 'drawer':
         Component = MenuDrawer;
         break;
-      case 'divider':
-        Component = Divider;
-        break;
-
-      case 'title':
-      case 'menu':
       default:
         Component = MenuItemLink;
         break;
@@ -314,18 +317,15 @@ const NavigationDrawer = ({ title, open, theme, config, classes, handleDrawerClo
       handleDrawerClose={handleDrawerClose}
       theme={theme}
     />
-    <Divider />
     <NavigationContent config={config} />
   </Drawer>
 );
 
 const AuthPage = ({
-
   // headerTitle = 'MOHLTC - Generic Data Collection Tool',
   headerTitle = 'MOH - OHFS Budgeting and Forecasting',
   drawerTitle = 'MOH - OHFS Budgeting and Forecasting',
 
-  // config = [navigationConfig],
   children,
 }) => {
   const classes = useStyles();
@@ -339,7 +339,7 @@ const AuthPage = ({
     const handler = e => setMobile(e.matches);
     window.matchMedia('(max-width: 1000px)').addListener(handler);
     setTopMenu(!isMobile);
-    navigationConfig().then(res => {
+    createUserNavigation().then(res => {
       setConfig(res);
     });
   }, [isMobile]);
