@@ -60,9 +60,9 @@ const AppResourceList = ({ resourceId, isEditable = true, onClickAdd, onClickDel
   );
 
 
-  const left_actions = useMemo(() => [{ icon: DeleteIcon, tooltip: 'Remove from Organization', onClick: onClickDelete }], []);
+  const left_actions = useMemo(() => [{ icon: DeleteIcon, tooltip: 'Remove from Mapping', onClick: onClickDelete }], []);
 
-  const right_actions = useMemo(() => [{ icon: AddIcon, tooltip: 'Add to Organization', onClick: onClickAdd }], []);
+  const right_actions = useMemo(() => [{ icon: AddIcon, tooltip: 'Add to Mapping', onClick: onClickAdd }], []);
   const orgOptions = useMemo(() => calculateOptions(readOrgRowNum), [readOrgRowNum]);
   const nonOrgOptions = useMemo(() => calculateOptions(readNonOrgRowNum), [readNonOrgRowNum]);
   console.log('readNonOrgRowNum', readNonOrgRowNum)
