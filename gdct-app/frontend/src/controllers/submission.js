@@ -18,6 +18,8 @@ const submissionController = (() => {
       submissionAxios.put(`/updateSubmissionStatus`, {submission, submissionNote, role, nextProcessId, updatedBy}),
     fetchSubmission: async _id => 
       submissionAxios.post('/findSubmission', { _id }).then(res => res.data.submission),
+    fetchSubmissionByParentId: async parentId => 
+      submissionAxios.post('/findSubmissionByParentId', { parentId }).then(res => res.data.submission),
     fetch: async query => 
       submissionAxios.get('').then(res => res.data.submissions),
     delete: async _id => 

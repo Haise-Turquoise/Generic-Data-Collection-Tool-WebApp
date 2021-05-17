@@ -1,3 +1,4 @@
+  
 import React, { useMemo, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -65,7 +66,6 @@ const AppResourceList = ({ resourceId, isEditable = true, onClickAdd, onClickDel
   const right_actions = useMemo(() => [{ icon: AddIcon, tooltip: 'Add to Organization', onClick: onClickAdd }], []);
   const orgOptions = useMemo(() => calculateOptions(readOrgRowNum), [readOrgRowNum]);
   const nonOrgOptions = useMemo(() => calculateOptions(readNonOrgRowNum), [readNonOrgRowNum]);
-  console.log('readNonOrgRowNum', readNonOrgRowNum)
   return (
     <div className="tableContainer">
       <div className="tableWrapper-linked">
