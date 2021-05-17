@@ -62,18 +62,19 @@ const SheetNamesTable = () => {
   const options = useMemo(() => calculateOptions(readRowNum), [readRowNum]);
 
   // Record who and when of the action
-    function recordUpdate(sheetName) {
-      //get username and record in Modified By column
-      sheetName.updatedBy = localStorage.getItem('currentUser');
-      //record new date and time in Modified On column 
-     sheetName.timestamp = new Date().toLocaleString();   
-    }
+  const recordUpdate = (sheetName) => {
+    //get username and record in Modified By column
+    sheetName.updatedBy = localStorage.getItem('currentUser');
+    //record new date and time in Modified On column 
+    sheetName.timestamp = new Date().toLocaleString();   
+  }
    
   // Prepare the editing functionalities for the material table
   const editable = useMemo(
     () => ({
       onRowAdd: sheetName =>
         new Promise((resolve, reject) => {
+          sheetName.id = readRowNum
           recordUpdate(sheetName);
           dispatch(createSheetNameRequest(sheetName, resolve, reject));
         }).then(newSheetName => {
@@ -120,7 +121,7 @@ const SheetNamesTable = () => {
           });
         }),
     }),
-    [dispatch],
+    [dispatch, readRowNum],
   );
   
   useEffect(() => {
