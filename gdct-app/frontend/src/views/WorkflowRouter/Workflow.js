@@ -167,10 +167,12 @@ const WorkflowStatuses = () => {
     shallowEqual,
   );
 
-  statuses = useMemo(
-    () => statuses.filter(({ name }) => name.toLowerCase().includes(workflowFilter.toLowerCase())),
-    [statuses, workflowFilter],
-  );
+  // helper function for filtering valid statuses
+  const filterStatus = ({ name, isActive, forPackage }) => {
+    return name.toLowerCase().includes(workflowFilter.toLowerCase()) && isActive && !forPackage
+  }
+
+  statuses = useMemo(() => statuses.filter(filterStatus), [statuses, workflowFilter], );
 
   useEffect(() => {
     dispatch(getStatusesRequest());

@@ -28,8 +28,102 @@ export default class SubmissionRepository extends BaseRepository {
   async findByTemplatePackageId(templatePackageId) {
     return SubmissionModel.find({ templatePackageId });
   }
+
+  async findByTemplatePackageIds(templatePackageIds) {
+    return SubmissionModel.find({ templatePackageId: {$in:templatePackageIds}});
+  }
+
+  /**
+   * Created by Sheldon Su 2021/05/13
+   * This function uses mongoDB's pipeline feature to accelerate read and write speed, 
+   * if the pipeline uses more than 100MB RAM during runtime, it will throw an error,
+   * you will need to pass in param to increase the space allowed.
+   * Check this link for more info:
+   * https://docs.mongodb.com/manual/core/aggregation-pipeline-limits/
+   * @param {Array<Number>} orgIds 
+   * @param {Array<Object>} programIds 
+   * @returns An array of objects
+   */
+  async fetchAllInfo(orgIds, programIds){
+    const aggratePipeLine = [
+      {
+        $match: { 
+          orgId:{
+            $in: orgIds
+          }, 
+          programId: {
+            $in: programIds
+          },
+          isLatest:true
+        }
+      },
+
+      // Join search from template package
+      {
+        $lookup:{
+          from:'TemplatePackage',
+          localField:'templatePackageId',
+          foreignField:'_id',
+          as:'templatePackage'
+        }
+      },
+      // unwind package
+      {
+        $unwind: "$templatePackage"
+      },
+      // Join search with SubmissionPeriod collection
+      {
+        $lookup:{
+          from:'SubmissionPeriod',
+          localField:'submissionPeriodId',
+          foreignField:'_id',
+          as:'submissionPeriod'
+        }
+      },
+      {
+        $unwind: "$submissionPeriod"
+      },
+      // Join search program collection
+      {
+         $lookup:{
+          from:'Program',
+          localField:'programId',
+          foreignField:'_id',
+          as:'program'
+        }
+      },
+      {
+        $unwind: "$program"
+      },
+      {
+         $lookup:{
+          from:'Status',
+          localField:'statusId',
+          foreignField:'_id',
+          as:'status'
+        }
+      },
+      {
+        $unwind: "$status"
+      },
+    ]
+
+    if (orgIds.length == 0){
+      aggratePipeLine[0] = {
+        // @ts-ignore
+        $match: { 
+          programId: {
+            $in: programIds
+          },
+          isLatest:true
+        }
+      }
+    }
+    
+    return SubmissionModel.aggregate(aggratePipeLine);
+  }
+
   async findByParentId(parentId) {
-    console.log('parentId', parentId)
     return SubmissionModel.find({ parentId }).then(submission=>{
       if(submission == undefined){return {}}
       else{
@@ -46,9 +140,9 @@ export default class SubmissionRepository extends BaseRepository {
     return SubmissionModel.find({ isLatest: true });
   }
 
-  async findByOrgIdAndProgramId(orgId, programIds) {
-    if (!orgId) return SubmissionModel.find({ programId: { $in: programIds }, isLatest: true });
-    return SubmissionModel.find({ orgId, programId: { $in: programIds }, isLatest: true });
+  async findByOrgIdAndProgramId(orgIds, programIds) {
+    if (orgIds.length == 0) return SubmissionModel.find({ programId: { $in: programIds }, isLatest: true });
+    return SubmissionModel.find({ orgId: {$in: orgIds}, programId: { $in: programIds }, isLatest: true });
   }
 
   // Created on Nov 27, 2020

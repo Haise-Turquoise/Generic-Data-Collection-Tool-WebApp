@@ -51,10 +51,9 @@ const TemplateController = Service([TemplateService], service => {
     });
 
     router.put('/templates/sheetUpdate', (req, res, next) => {
-      const { _id, sheetData } = req.body;
-
+      const { id, sheetData } = req.body;
       service
-        .updateTemplateSheetData(_id, sheetData)
+        .updateTemplateSheetData(id, sheetData)
         .then(() => res.end())
         .catch(next);
     });
