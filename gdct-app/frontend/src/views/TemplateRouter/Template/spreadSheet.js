@@ -235,7 +235,7 @@ class SpreadSheet extends Component{
     lineNumberInsertion(reRender=false){
       const currSheetIndex = this.sheet.getCurrentSheetIndex();
       const currSheet = this.sheet.datas[currSheetIndex];
-      const categoryMap = generateFullMap(currSheet);
+      const categoryMap = generateCategoryMap(currSheet);
 
       let categoryIDs = Object.keys(categoryMap).sort((id1, id2)=>
         categoryMap[id1] - categoryMap[id2]
