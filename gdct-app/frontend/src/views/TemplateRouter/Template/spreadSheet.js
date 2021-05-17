@@ -10,7 +10,7 @@ import Button from '@material-ui/core/Button';
 import { digitToAlpha,
   generateCategoryMap, generateAttributeMap, 
   findWordInRow, findLastAttributeCol, 
-  templateDownloader, excelImportHandler} from '../../../tools/misc';
+  templateDownloader, excelImportHandler, generateFullMap} from '../../../tools/misc';
 
 // Sheet style Option
 const sheetOption = {
