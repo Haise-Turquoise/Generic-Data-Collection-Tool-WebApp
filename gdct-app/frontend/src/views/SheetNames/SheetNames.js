@@ -3,6 +3,7 @@ import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 
 import MaterialTable from 'material-table';
 import { Paper, Typography } from '@material-ui/core';
+import Swal from 'sweetalert2';
 
 import moment from 'moment';
 import {
@@ -11,6 +12,7 @@ import {
   deleteSheetNameRequest,
   updateSheetNameRequest,
 } from '../../store/thunks/sheetName';
+import DetectEmptySheet from './DetectEmptySheet';
 
 import { selectFactoryRESTResponseTableValues } from '../../store/common/REST/selectors';
 import { selectSheetNamesStore } from '../../store/SheetNamesStore/selectors';
@@ -59,11 +61,14 @@ const SheetNamesTable = () => {
 
   const options = useMemo(() => calculateOptions(readRowNum), [readRowNum]);
 
-  // Record user and time when an action occurs 
-  function recordUpdate(sheetName) {
-    sheetName.updatedBy = localStorage.getItem('currentUser');
-    sheetName.timestamp = new Date().toLocaleString(); 
-  }
+  // Record who and when of the action
+    function recordUpdate(sheetName) {
+      //get username and record in Modified By column
+      sheetName.updatedBy = localStorage.getItem('currentUser');
+      //record new date and time in Modified On column 
+     sheetName.timestamp = new Date().toLocaleString();   
+    }
+   
   // Prepare the editing functionalities for the material table
   const editable = useMemo(
     () => ({
@@ -89,10 +94,30 @@ const SheetNamesTable = () => {
       onRowDelete: sheetName =>
         new Promise((resolve, reject) => {
           recordUpdate(sheetName);
-          dispatch(deleteSheetNameRequest(sheetName._id, resolve, reject));
-          // For Auditlog
-          const sheetName_trim = (({ tableData, ...o }) => o)(sheetName);
-          CreateAuditLog(null, "Delete Sheet", "SheetName", sheetName._id, sheetName_trim, {});
+          //Prevent deletion of referenced sheetname logic
+          DetectEmptySheet(sheetName._id).then(hiddenValue =>{
+            //if hiddenValue is true, the categoryTree is empty and the sheetname will be delete-able
+            if (hiddenValue === true) {
+              dispatch(deleteSheetNameRequest(sheetName._id, resolve, reject));
+              // For Auditlog
+              const sheetName_trim = (({ tableData, ...o }) => o)(sheetName);
+              CreateAuditLog(null, "Delete Sheet", "SheetName", sheetName._id, sheetName_trim, {});
+            }
+            //trigger warning popup to alert user sheetname is referenced in a Category Tree
+            else {
+              Swal.fire({
+                title: 'Warning!',
+                text: "The sheet you are attempting to delete is referenced by a Category Tree and may not be deleted. Please click OK to return to the page.",
+                icon: 'error',
+                confirmButtonColor: '#3085d6',
+                confirmButtonText: 'OK',
+              }).then((result) => {
+                if (result.isConfirmed) {
+                  window.location.reload();
+                }
+              })
+            }
+          });
         }),
     }),
     [dispatch],
