@@ -86,7 +86,6 @@ export const Xspreadsheet2ExcelStyle = (cell, style)=>{
   }
 
   // add fill
-  console.log(cell.fill, style);
   if (style.bgcolor){
     cell.fill = {
       type: 'pattern',
@@ -254,6 +253,7 @@ export const generateCategoryMap = (sheet)=>{
   return categoryMap;
 }
 
+
 // Created by Sheldon Su on 2021/04/12
 // Generate attribute ID to Column mapping
 export const generateAttributeMap = (sheet)=>{
@@ -313,7 +313,6 @@ export const findWordInRow = (sheet, row, text)=>{
  * function must have a empty <a> tag with id 'download'.
  */
 export const templateDownloader = (workBookName, sheetData)=>{
-  console.log(workBookName, sheetData)
 
   let workbook = new Excel.Workbook();
   workbook.modified = new Date();
