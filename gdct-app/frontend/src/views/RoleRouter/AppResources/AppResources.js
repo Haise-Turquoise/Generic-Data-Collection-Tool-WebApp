@@ -47,6 +47,7 @@ const AppResourcesTable = () => {
   // Prepare the columns for material table
   const columns = useMemo(
     () => [
+      { title: "ID", field: "id", editComponent: () => {return <div></div>}},
       { title: 'Resource Name', field: 'resourceName' },
       { title: 'Resource Path', field: 'resourcePath' },
       { title: 'Protection', field: 'isProtected' },
@@ -59,7 +60,7 @@ const AppResourcesTable = () => {
   const options = useMemo(() => (calculateOptions(readRowNum)), [readRowNum]);
 
   // Record who and when action took place
-  function recordUpdate(appResource) {
+  const recordUpdate = (appResource) => {
     // get email and record in Modified By columns
     appResource.updatedBy = localStorage.getItem('currentUser');
     // record new date and time in Modified On column 
@@ -70,6 +71,7 @@ const AppResourcesTable = () => {
     () => ({
       onRowAdd: appResource =>
         new Promise((resolve, reject) => {
+          appResource.id = readRowNum + 1
           recordUpdate(appResource);
           dispatch(createAppResourceRequest(appResource, resolve, reject));
         }).then(newAppResource => {
@@ -98,7 +100,7 @@ const AppResourcesTable = () => {
           dispatch(deleteAppResourceRequest(appResource._id, resolve, reject));
         }),
     }),
-    [dispatch],
+    [dispatch, readRowNum],
   );
 
   useEffect(() => {
