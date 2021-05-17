@@ -6,7 +6,7 @@ const AppResourceModel = model(
     {
       resourceName: { type: String },
       resourcePath: { type: String },
-      isProtected: { type: Boolean },
+      isProtected: { type: String },
       timestamp: { type: Date },
       updatedBy: { type: String },
     },

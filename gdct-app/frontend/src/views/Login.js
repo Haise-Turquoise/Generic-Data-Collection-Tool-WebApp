@@ -202,7 +202,7 @@ export default function Login({ setLoggedIn }) {
               const currentTime = moment();
               const remainingMinutes = moment(expirationTime).diff(currentTime, 'minutes');
               const remainingSeconds = moment(expirationTime).diff(currentTime, 'seconds');
-              console.log(`${remainingMinutes}  ${remainingSeconds}`);
+              // console.log(`${remainingMinutes}  ${remainingSeconds}`);
 
               // Session only has at most 5 minutes
               if (remainingMinutes === 5 || remainingMinutes === 1) {
