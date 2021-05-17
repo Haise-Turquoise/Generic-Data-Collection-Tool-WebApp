@@ -69,13 +69,13 @@ export async function mastervaluePrepopulation(workbook, submission){
     // populate the sheet with master values according to the mappings
     const colMap = new Map();
     const colList = []
-
     // iterate through the response array to fill in master values
     for (const item in res) {
 
       let masterValueItem = res[item];
       let ri = categoryMap[masterValueItem.CategoryId];
       let ci = attributeMap[masterValueItem.AttributeId];
+      if (!sheet.rows[ri].cells[ci]) sheet.rows[ri].cells[ci] = {};
       sheet.rows[ri].cells[ci].text = masterValueItem.value;
       sheet.rows[ri].cells[ci].editable = false;
 
