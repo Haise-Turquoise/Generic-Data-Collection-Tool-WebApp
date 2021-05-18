@@ -43,18 +43,48 @@ const AppResourcesTable = () => {
     const logtime = new Date(appResource.timestamp);
     appResource.timestamp = moment(logtime).format("YYYY-MM-DD HH:mm:ss")
   });
+
+  const validateName = (rowData, appResources) => {
+    // name of the element being edited -- null if not editing
+    let currName = null
+    if (rowData.tableData) {
+      if (rowData.tableData.editing === 'delete') {
+        return true
+      } else if (rowData.tableData.editing === 'update') {
+        currName = appResources.find(resource => resource.id === rowData.id).resourceName
+      }
+    }
+    const paths = appResources.map(resource => resource.resourceName)
+    const duplicate = paths.find(path => path === rowData.resourceName && path !== currName)
+    return duplicate ? 'Duplicate names not allowed' : true
+  }
+
+  const validatePath = (rowData, appResources) => {
+    // path of the element being edited -- null if not editing
+    let currPath = null
+    if (rowData.tableData) {
+      if (rowData.tableData.editing === 'delete') {
+        return true
+      } else if (rowData.tableData.editing === 'update') {
+        currPath = appResources.find(resource => resource.id === rowData.id).resourcePath
+      }
+    }
+    const paths = appResources.map(resource => resource.resourcePath)
+    const duplicate = paths.find(path => path === rowData.resourcePath && path !== currPath)
+    return duplicate ? 'Duplicate paths not allowed' : true
+  }
   
   // Prepare the columns for material table
   const columns = useMemo(
     () => [
       { title: "ID", field: "id", editComponent: () => {return <div></div>}},
-      { title: 'Resource Name', field: 'resourceName' },
-      { title: 'Resource Path', field: 'resourcePath' },
+      { title: 'Resource Name', field: 'resourceName', validate: rowData => validateName(rowData, appResources) },
+      { title: 'Resource Path', field: 'resourcePath', validate: rowData => validatePath(rowData, appResources) },
       { title: 'Protection', field: 'isProtected' },
       { title: 'Modified On', field: 'timestamp', editComponent: () => {return <div></div>} },
       { title: 'Updated By', field: 'updatedBy', editComponent: () => {return <div></div>} },
     ],
-    [],
+    [appResources],
   );
 
   const options = useMemo(() => (calculateOptions(readRowNum)), [readRowNum]);
