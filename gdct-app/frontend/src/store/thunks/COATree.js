@@ -44,17 +44,17 @@ export const getCOATreesRequest = getRequestFactory(COATreesStore, COATreeContro
 export const deleteCOATreeRequest = deleteRequestFactory(COATreesStore, COATreeController);
 export const updateCOATreeRequest = updateRequestFactory(COATreesStore, COATreeController);
 
-export const getCOATreeRequest = _id => dispatch => {
-  dispatch(COATreesStore.actions.REQUEST());
+// export const getCOATreeRequest = _id => dispatch => {
+//   dispatch(COATreesStore.actions.REQUEST());
 
-  COATreeController.fetchCOATree(_id)
-    .then(COATree => {
-      dispatch(COATreeStore.actions.LOAD_COA_TREE_UI({ treeList: [COATree] }));
-    })
-    .catch(error => {
-      dispatch(COATreesStore.actions.FAIL_REQUEST(error));
-    });
-};
+//   COATreeController.fetchCOATree(_id)
+//     .then(COATree => {
+//       dispatch(COATreeStore.actions.LOAD_COA_TREE_UI({ treeList: [COATree] }));
+//     })
+//     .catch(error => {
+//       dispatch(COATreesStore.actions.FAIL_REQUEST(error));
+//     });
+// };
 
 export const createCOATreeRequest = (
   COAGroup,

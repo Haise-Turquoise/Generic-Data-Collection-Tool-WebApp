@@ -71,7 +71,10 @@ export const middlewares = app => {
       // Fetching
       const user = await UserModel.findOne({ email: req.body.email });
       const loggedInSysRole = user.sysRole.find(sysRole => sysRole.role === req.body.selectedRole);
+      
+      // Please keep clicking "SIGN IN" if "unhandled promise" warning is seen
       const loggedInAs = loggedInSysRole.appSys + ' ' + loggedInSysRole.role;
+      
       const allowedRoleResource = await AppRoleResourceModel.findOne({ 'appSysRoleId.roleName': loggedInAs });
       const allowedResources = allowedRoleResource.toObject().resourceId;
       const promise = allowedResources.map(async allowedResource => {
@@ -86,8 +89,7 @@ export const middlewares = app => {
     // Check whether a logged in user is allowed to access requestUrls
     if (isLoggedIn && requestUrl !== '/login') {
       if (allowedUrls.includes(requestUrl)) {
-        console.log("ALLOWED");
-        // return next();
+        // console.log("ALLOWED");
       } else {
         console.log("NOT ALLOWED");
         return res.send("UNAUTHORIZED ACCESS");
