@@ -513,3 +513,22 @@ export const excelImportHandler = (event, dataHandler) => {
     dataHandler(dataArr);
   };
 }
+
+// check for duplicates in a material-table column
+export const checkDuplicates = (rowData, tableData, field) => {
+  // field of element being edited -- null if not editing
+  let current = null
+  if (rowData.tableData) {
+    if (rowData.tableData.editing === 'delete') {
+      return true
+    } else if (rowData.tableData.editing === 'update') {
+      current = tableData.find(el => el._id === rowData._id)[field]
+    }
+  } else if (rowData._id) {
+    // this case runs while submitting a change
+    return true
+  }
+  const vals = tableData.map(el => el[field])
+  const duplicate = vals.find(val => val === rowData[field] && val !== current)
+  return duplicate ? `Duplicate ${field} not allowed` : true
+}

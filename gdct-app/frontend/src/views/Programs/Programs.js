@@ -14,7 +14,7 @@ import {
 } from '../../store/thunks/program';
 import { selectFactoryRESTResponseTableValues } from '../../store/common/REST/selectors';
 import { selectProgramsStore } from '../../store/ProgramsStore/selectors';
-import { calculateOptions } from '../../tools/misc'
+import { calculateOptions, checkDuplicates } from '../../tools/misc'
 
 import ErrorBanner from '../ErrorBanner';
 import ProgramController from '../../controllers/Program'
@@ -50,12 +50,12 @@ const ProgramsTable = () => {
   const columns = useMemo(
     () => [
       { title: 'Name', field: 'name' },
-      { title: 'Code', field: 'code' },
+      { title: 'Code', field: 'code', validate: rowData => checkDuplicates(rowData, programs, 'code') },
       { title: 'Modified On', field: 'timestamp', editComponent: () => {return <div></div>} },
       { title: 'Updated By', field: 'updatedBy', editComponent: () => {return <div></div>} },
       { title: 'Active', type: 'boolean', field: 'isActive' },
     ],
-    [],
+    [programs],
   );
   
   const options = useMemo(() => calculateOptions(readRowNum), [readRowNum]);

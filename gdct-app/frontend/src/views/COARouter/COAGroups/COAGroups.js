@@ -15,7 +15,7 @@ import {
 import ErrorBanner from '../../ErrorBanner'
 import { selectFactoryRESTResponseTableValues } from '../../../store/common/REST/selectors';
 import { selectCOAGroupsStore } from '../../../store/COAGroupsStore/selectors';
-import { calculateOptions } from '../../../tools/misc';
+import { calculateOptions, checkDuplicates } from '../../../tools/misc';
 import CreateAuditLog from '../../AuditLog_Global';
 import COAGroupController from '../../../controllers/COAGroup';
 
@@ -49,13 +49,13 @@ const COAGroupsTable = () => {
   // Prepare the columns for material table
   const columns = useMemo(
     () => [
-      { title: 'Name', field: 'name' },
+      { title: 'Name', field: 'name', validate: rowData => checkDuplicates(rowData, COAGroups, 'name') },
       { title: 'Code', field: 'code' },
       { title: 'Active', type: 'boolean', field: 'isActive' },
       { title: 'Modified On', field: 'timestamp', editComponent: () => {return <div></div>} },
       { title: 'Updated By', field: 'updatedBy', editComponent: () => {return <div></div>} },
     ],
-    [],
+    [COAGroups],
   );
 
   const options = useMemo(() => calculateOptions(readRowNum), [readRowNum]);

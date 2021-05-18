@@ -14,7 +14,7 @@ import {
 
 import { selectFactoryRESTResponseTableValues } from '../../../store/common/REST/selectors';
 import { selectAppResourcesStore } from '../../../store/AppResourcesStore/selectors';
-import { calculateOptions } from '../../../tools/misc'
+import { calculateOptions, checkDuplicates } from '../../../tools/misc'
 import CreateAuditLog from '../../AuditLog_Global';
 import AppResourceController from '../../../controllers/AppResource';
 
@@ -43,50 +43,13 @@ const AppResourcesTable = () => {
     const logtime = new Date(appResource.timestamp);
     appResource.timestamp = moment(logtime).format("YYYY-MM-DD HH:mm:ss")
   });
-
-  const validateName = (rowData, appResources) => {
-    console.log(rowData)
-    // name of the element being edited -- null if not editing
-    let currName = null
-    if (rowData.tableData) {
-      if (rowData.tableData.editing === 'delete') {
-        return true
-      } else if (rowData.tableData.editing === 'update') {
-        currName = appResources.find(resource => resource.id === rowData.id).resourceName
-      }
-    } else if (rowData.id) {
-      // this case runs while submitting a change
-      return true
-    }
-    const paths = appResources.map(resource => resource.resourceName)
-    const duplicate = paths.find(path => path === rowData.resourceName && path !== currName)
-    return duplicate ? 'Duplicate names not allowed' : true
-  }
-
-  const validatePath = (rowData, appResources) => {
-    // path of the element being edited -- null if not editing
-    let currPath = null
-    if (rowData.tableData) {
-      if (rowData.tableData.editing === 'delete') {
-        return true
-      } else if (rowData.tableData.editing === 'update') {
-        currPath = appResources.find(resource => resource.id === rowData.id).resourcePath
-      }
-    } else if (rowData.id) {
-      // this case runs while submitting a change
-      return true
-    }
-    const paths = appResources.map(resource => resource.resourcePath)
-    const duplicate = paths.find(path => path === rowData.resourcePath && path !== currPath)
-    return duplicate ? 'Duplicate paths not allowed' : true
-  }
   
   // Prepare the columns for material table
   const columns = useMemo(
     () => [
       { title: "ID", field: "id", editComponent: () => {return <div></div>}},
-      { title: 'Resource Name', field: 'resourceName', validate: rowData => validateName(rowData, appResources) },
-      { title: 'Resource Path', field: 'resourcePath', validate: rowData => validatePath(rowData, appResources) },
+      { title: 'Resource Name', field: 'resourceName', validate: rowData => checkDuplicates(rowData, appResources, 'resourceName') },
+      { title: 'Resource Path', field: 'resourcePath', validate: rowData => checkDuplicates(rowData, appResources, 'resourcePath') },
       { title: 'Protection', field: 'isProtected' },
       { title: 'Modified On', field: 'timestamp', editComponent: () => {return <div></div>} },
       { title: 'Updated By', field: 'updatedBy', editComponent: () => {return <div></div>} },
