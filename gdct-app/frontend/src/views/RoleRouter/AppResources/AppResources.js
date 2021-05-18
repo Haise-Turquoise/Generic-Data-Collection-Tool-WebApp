@@ -45,6 +45,7 @@ const AppResourcesTable = () => {
   });
 
   const validateName = (rowData, appResources) => {
+    console.log(rowData)
     // name of the element being edited -- null if not editing
     let currName = null
     if (rowData.tableData) {
@@ -53,6 +54,9 @@ const AppResourcesTable = () => {
       } else if (rowData.tableData.editing === 'update') {
         currName = appResources.find(resource => resource.id === rowData.id).resourceName
       }
+    } else if (rowData.id) {
+      // this case runs while submitting a change
+      return true
     }
     const paths = appResources.map(resource => resource.resourceName)
     const duplicate = paths.find(path => path === rowData.resourceName && path !== currName)
@@ -68,6 +72,9 @@ const AppResourcesTable = () => {
       } else if (rowData.tableData.editing === 'update') {
         currPath = appResources.find(resource => resource.id === rowData.id).resourcePath
       }
+    } else if (rowData.id) {
+      // this case runs while submitting a change
+      return true
     }
     const paths = appResources.map(resource => resource.resourcePath)
     const duplicate = paths.find(path => path === rowData.resourcePath && path !== currPath)
