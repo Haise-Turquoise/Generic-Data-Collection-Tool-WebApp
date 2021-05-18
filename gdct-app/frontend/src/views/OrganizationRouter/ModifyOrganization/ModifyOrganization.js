@@ -301,7 +301,6 @@ class ModifyOrganization extends React.Component {
   }
 
   componentDidMount () {
-    console.log(this.props)
     orgController.fetch().then(orgs => {
       if (orgs) {
         this.setState({
@@ -315,12 +314,10 @@ class ModifyOrganization extends React.Component {
   componentDidUpdate (prevProps, prevState) {
     if (prevState.id !== this.state.id) {
       if (this.state.takenIds.includes(this.state.id)) {
-        console.log('SET ERROR HERE')
         this.setState({
           blockSubmit: true
         })
       } else {
-        console.log('CLEAR ERROR HERE')
         this.setState({
           blockSubmit: false
         })
