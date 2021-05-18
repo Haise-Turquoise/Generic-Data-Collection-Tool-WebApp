@@ -11,6 +11,10 @@ import './ModifyOrganization.scss';
 import ProgList from '../ProgramList';
 import ErrorBanner from '../../ErrorBanner'
 
+import orgController from '../../../controllers/organization'
+import OrgsStore from '../../../store/OrganizationsStore/store'
+import { connect } from 'react-redux'
+
 const OrganizationHeader = ({ title }) => {
   return (
     <Paper className="header">
@@ -286,9 +290,42 @@ class ModifyOrganization extends React.Component {
     super(props);
     const temp = { ...props.object };
     delete temp._id;
-    this.state = temp;
+    this.state = {
+      ...temp,
+      takenIds: [],
+      blockSubmit: false
+    }
     this.updateState = this.updateState.bind(this);
     this.handleChanges = this.handleChanges.bind(this);
+    this.preSubmit = this.preSubmit.bind(this)
+  }
+
+  componentDidMount () {
+    console.log(this.props)
+    orgController.fetch().then(orgs => {
+      if (orgs) {
+        this.setState({
+          // all organization ids except the one currently being edited
+          takenIds: orgs.map(org => org.id).filter(id => id !== this.props.object.id)
+        })
+      }
+    })
+  }
+
+  componentDidUpdate (prevProps, prevState) {
+    if (prevState.id !== this.state.id) {
+      if (this.state.takenIds.includes(this.state.id)) {
+        console.log('SET ERROR HERE')
+        this.setState({
+          blockSubmit: true
+        })
+      } else {
+        console.log('CLEAR ERROR HERE')
+        this.setState({
+          blockSubmit: false
+        })
+      }
+    }
   }
 
   updateState(name, value) {
@@ -321,6 +358,16 @@ class ModifyOrganization extends React.Component {
     this.updateState(name, updateValue);
   }
 
+  preSubmit () {
+    if (this.state.blockSubmit) {
+      // random used here so that ErrorBanner displays every attempted submit
+      this.props.dispatch(OrgsStore.actions.FAIL_REQUEST('Duplicate id is not allowed' + Math.random().toString()))
+      return false
+    } else {
+      this.props.submit(this.state)
+    }
+  }
+
   render() {
     return (
       <div>
@@ -328,7 +375,7 @@ class ModifyOrganization extends React.Component {
         <ErrorBanner title={"The organization ID already exists in the database. Please select a unique ID"} targetStore={selectOrgsStore}/>
         <OrganizationForm
           object={this.state}
-          submit={() => this.props.submit(this.state)}
+          submit={this.preSubmit}
           cancel={this.props.cancel}
           // @ts-ignore
           handleChanges={this.handleChanges}
@@ -347,4 +394,6 @@ ModifyOrganization.propTypes = {
   cancel: PropTypes.func,
 };
 
-export default ModifyOrganization;
+const ConnectedModifyOrganization = connect(state => ({...state}))(ModifyOrganization)
+
+export default ConnectedModifyOrganization;
