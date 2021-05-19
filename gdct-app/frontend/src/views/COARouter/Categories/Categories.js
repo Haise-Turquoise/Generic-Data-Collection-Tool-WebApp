@@ -16,7 +16,7 @@ import {
 
 import { selectFactoryRESTResponseTableValues, selectFactoryRESTError } from '../../../store/common/REST/selectors';
 import { selectCOAsStore } from '../../../store/COAsStore/selectors';
-import { calculateOptions } from '../../../tools/misc';
+import { calculateOptions, checkDuplicates } from '../../../tools/misc';
 import CreateAuditLog from '../../AuditLog_Global';
 import COAController from '../../../controllers/COA';
 
@@ -98,13 +98,13 @@ const COAsTable = () => {
   // Prepare the columns for material table
   const columns = useMemo(
     () => [
-      { title: 'ID', field: 'id' },
+      { title: 'ID', field: 'id', validate: rowData => checkDuplicates(rowData, COAs, 'id') },
       { title: 'Name', field: 'name' },
       { title: 'OHFS Mapping', field: 'COA' },
       { title: 'Modified On', field: 'timestamp', editComponent: () => {return <div></div>} },
       { title: 'Updated By', field: 'updatedBy', editComponent: () => {return <div></div>} },
     ],
-    [],
+    [COAs],
   );
   
   const options = useMemo(() => calculateOptions(readRowNum), [readRowNum]);

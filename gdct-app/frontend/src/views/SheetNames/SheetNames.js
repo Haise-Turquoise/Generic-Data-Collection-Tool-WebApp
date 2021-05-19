@@ -16,7 +16,7 @@ import DetectEmptySheet from './DetectEmptySheet';
 
 import { selectFactoryRESTResponseTableValues } from '../../store/common/REST/selectors';
 import { selectSheetNamesStore } from '../../store/SheetNamesStore/selectors';
-import { calculateOptions } from '../../tools/misc';
+import { calculateOptions, checkDuplicates } from '../../tools/misc';
 
 import sheetNameController from '../../controllers/sheetName';
 import CreateAuditLog from '../AuditLog_Global';
@@ -51,12 +51,12 @@ const SheetNamesTable = () => {
   const columns = useMemo(
     () => [
       { title: "ID", field: "id", editComponent: () => {return <div></div>} },
-      { title: 'Name', field: 'name' },
+      { title: 'Name', field: 'name', validate: rowData => checkDuplicates(rowData, sheetNames, 'name') },
       { title: 'Active', field: 'isActive', type: 'boolean' },
       { title: 'Modified On', field: 'timestamp', editComponent: () => {return <div></div>} },
       { title: 'Updated By', field: 'updatedBy', editComponent: () => {return <div></div>} },
     ],
-    [],
+    [sheetNames],
   );
 
   const options = useMemo(() => calculateOptions(readRowNum), [readRowNum]);
