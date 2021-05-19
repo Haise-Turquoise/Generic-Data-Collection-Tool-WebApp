@@ -578,7 +578,7 @@ export const loadModifyPermissionPage =  ()=> async (dispatch,getState)=>{
       else{
         UserSysRole = user.tempSysRole
       }
-      
+      console.log('UserSysRole', UserSysRole)
       UserSysRole.forEach(sysRole=>{
           let userSubmission = {
           organization:null,
@@ -626,6 +626,7 @@ export const loadModifyPermissionPage =  ()=> async (dispatch,getState)=>{
           
           // loop through each each organization
           sysRole.org.forEach(async org=>{
+            console.log('UserSysRole_org', org)
             // get the authorizedPerson Info
             const orgInfo = await organizationController.fetchById(org.orgId)
             userSubmission.organization = {
@@ -826,8 +827,6 @@ export const updatePermission = () =>(dispatch, getState)=>{
   const email = localStorage.getItem('currentUser');
 
   userData.newTemplates = submissionChange(userSubmissions);
-  console.log(userSubmissions)
-  console.log(userData.newTemplates)
   userData.newTemplates.forEach(newTemplate=>newTemplate.appSys = userAppSys)
   updatePermissionData(email,userData);
 }
