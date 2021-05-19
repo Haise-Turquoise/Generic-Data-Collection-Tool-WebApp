@@ -32,10 +32,6 @@ const AppConfigController = Service([AppConfigService], service => {
       service
         .createAppConfig(req.body.AppConfig)
         .then(AppConfig => res.json({ AppConfig }))
-        .catch(error => {
-          console.error(error);
-          throw error;
-        })
         .catch(next);
     });
 

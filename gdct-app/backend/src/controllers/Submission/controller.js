@@ -59,7 +59,16 @@ const SubmissionController = Service([SubmissionService], service => {
         .then(submission => res.json({ submission }))
         .catch(next);
     });
-
+    
+    router.post('/findReportingPeriod', (req, res, next) => {
+    const { _id } = req.body;
+    
+    service
+    .findReportingPeriod(_id)
+    .then(reportingPeriod => res.json({ reportingPeriod }))
+    .catch(next);
+    });
+    
     router.post('/submissions/findSubmissionByParentId', (req, res, next) => {
       const { parentId } = req.body;
 
