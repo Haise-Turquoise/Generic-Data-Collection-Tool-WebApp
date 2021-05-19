@@ -14,7 +14,7 @@ import {
 
 import { selectFactoryRESTResponseTableValues } from '../../../store/common/REST/selectors';
 import { selectAppResourcesStore } from '../../../store/AppResourcesStore/selectors';
-import { calculateOptions } from '../../../tools/misc'
+import { calculateOptions, checkDuplicates } from '../../../tools/misc'
 import CreateAuditLog from '../../AuditLog_Global';
 import AppResourceController from '../../../controllers/AppResource';
 
@@ -48,13 +48,13 @@ const AppResourcesTable = () => {
   const columns = useMemo(
     () => [
       { title: "ID", field: "id", editComponent: () => {return <div></div>}},
-      { title: 'Resource Name', field: 'resourceName' },
-      { title: 'Resource Path', field: 'resourcePath' },
+      { title: 'Resource Name', field: 'resourceName', validate: rowData => checkDuplicates(rowData, appResources, 'resourceName') },
+      { title: 'Resource Path', field: 'resourcePath', validate: rowData => checkDuplicates(rowData, appResources, 'resourcePath') },
       { title: 'Protection', field: 'isProtected' },
       { title: 'Modified On', field: 'timestamp', editComponent: () => {return <div></div>} },
       { title: 'Updated By', field: 'updatedBy', editComponent: () => {return <div></div>} },
     ],
-    [],
+    [appResources],
   );
 
   const options = useMemo(() => (calculateOptions(readRowNum)), [readRowNum]);

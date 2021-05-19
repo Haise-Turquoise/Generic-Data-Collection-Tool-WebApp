@@ -28,10 +28,31 @@ import {
     deleteAppRoleResourceRequest,
     updateAppRoleResourceRequest,
   } from '../../../store/thunks/AppRoleResource';
-const AppRoleResourceManagementHeader = () => {
+const AppRoleResourceManagementHeader = ({
+  match: {
+    params: { _id },
+  },
+}) => {
+  const [roleName, setRoleName] = useState('')
+  let { appRoleResource } = useSelector(
+    state => ({
+      appRoleResource: (selectFactoryRESTResponseTableValues(selectAppRoleResourcesStore)(state).filter(
+        elem => elem._id === _id,
+      ) || [{}])[0],
+    }),
+    shallowEqual,
+  );
+
+  useEffect(() => {
+    if (appRoleResource) {
+      setRoleName(appRoleResource.appSysRoleId.roleName)
+    }
+  }, [appRoleResource])
+
   return (
     <Paper className="header">
       <Typography variant="h5">App Role Resource Management</Typography>
+      <Typography variant='body1'>{roleName}</Typography>
       {/* <HeaderActions/> */}
     </Paper>
     
@@ -184,7 +205,7 @@ const LinkProgramTable = ({
 
 const AppRoleResourceManagement = props => (
   <div className="templateTypePage">
-    <AppRoleResourceManagementHeader />
+    <AppRoleResourceManagementHeader {...props} />
     
     <LinkProgramTable {...props} />
   </div>
