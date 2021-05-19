@@ -231,7 +231,6 @@ const EditSubmission = ({ history }) => {
       }, 2000);
     }
   };
-
   return (
 
 
