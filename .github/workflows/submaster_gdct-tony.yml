@@ -24,6 +24,7 @@ jobs:
     - name: yarn install
       run: |
         yarn
+        yarn upgrade caniuse-lite browserslist
 
     - name: Upload artifact for deployment job
       uses: actions/upload-artifact@v2
