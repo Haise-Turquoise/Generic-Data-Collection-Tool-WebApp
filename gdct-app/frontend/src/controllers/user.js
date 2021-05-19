@@ -15,6 +15,8 @@ const userController = (() => {
       userAxios.put('/updatePopulatedUser', { userData }).then(res => res.data),
     fetchUserByUserName: async username => 
       userAxios.post('/fetchUserByUserName', { username }).then(res => res.data),
+    updatePermissionByUserEmail: async (email, permissionData) =>
+      userAxios.post(`/users/updatePermission`, {email, permissionData}).then(res => res.data),
   };
 })();
 

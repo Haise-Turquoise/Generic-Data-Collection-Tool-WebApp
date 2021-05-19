@@ -83,6 +83,7 @@ export default class UserRepository extends BaseRepository {
   }
 
   async modifyUserInfo(_id, userData) {
+    console.log(userData)
     return UserModel.findOneAndUpdate({ _id: _id }, 
       { title: userData.title, 
         firstName: userData.firstName, 
@@ -90,7 +91,8 @@ export default class UserRepository extends BaseRepository {
         email: userData.email, 
         username: userData.username,
         phoneNumber: userData.phoneNumber,
-        ext: userData.ext
+        ext: userData.ext,
+        toBeApproved: userData.toBeApproved,
       }
     );
   }

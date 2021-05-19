@@ -826,6 +826,9 @@ export const updatePermission = () =>(dispatch, getState)=>{
   const email = localStorage.getItem('currentUser');
 
   userData.newTemplates = submissionChange(userSubmissions);
+  console.log(userSubmissions)
+  console.log(userData.newTemplates)
+  userData.newTemplates.forEach(newTemplate=>newTemplate.appSys = userAppSys)
   updatePermissionData(email,userData);
 }
 
