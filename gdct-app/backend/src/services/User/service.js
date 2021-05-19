@@ -258,6 +258,6 @@ export default class UserService {
         })
       }
     })
-    // return this.UserRepository.updatePermissionByUserEmail(email.email,permissionData.permissionData,orgList)
+    return this.UserRepository.updatePermissionByUserEmail(email.email,permissionData.permissionData,orgList)
   }
 }
