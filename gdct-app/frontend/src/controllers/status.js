@@ -13,7 +13,7 @@ const statusController = (() => {
     create: async status => statusAxios.post('/create', { status }).then(res => res.data.status),
     update: async status => statusAxios.put('/update', { status }),
     delete: async _id => statusAxios.post('/delete', { _id }),
-    findStatusByID: async id => statusAxios.post('/findStatusByID', { id }).then(res => res.data)
+    findStatusByID: async _id => statusAxios.post('/findStatusByID', { _id }).then(res => res.data)
   };
 })();
 
