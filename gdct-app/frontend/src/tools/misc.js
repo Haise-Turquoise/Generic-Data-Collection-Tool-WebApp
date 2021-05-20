@@ -253,6 +253,37 @@ export const generateCategoryMap = (sheet)=>{
   return categoryMap;
 }
 
+// Created by Sheldon Su on 2021/04/1
+// Generate category ID to row mapping
+export const generateFullMap = (sheet)=>{
+  // @ts-ignore
+  const maxRowNum = Math.max(...Object.keys(sheet.rows._))
+  const categoryMap = {};
+  const attributeMap = generateAttributeMap(sheet);
+
+  // Go though each row's first cell
+  for (let ri = 0; ri <= maxRowNum; ri++){
+    const targetRow = sheet.rows._[ri];
+    if (targetRow){
+      const targetCells = targetRow.cells[0];
+
+      if (targetCells && !isNaN(targetCells.text) && targetCells.text !== ""){
+        categoryMap[targetCells.text] = ri;
+      }
+
+      else if (targetCells && targetCells.text == ""){
+        for (const id of Object.keys(attributeMap)){
+          const currCell = targetRow.cells[attributeMap[id]];
+          if(currCell && currCell.text && currCell.text[0] == '='){
+            categoryMap[targetRow + id] = ri;
+            break;
+          }
+        }
+      }
+    }
+  }
+  return categoryMap;
+}
 
 // Created by Sheldon Su on 2021/04/12
 // Generate attribute ID to Column mapping
@@ -512,4 +543,23 @@ export const excelImportHandler = (event, dataHandler) => {
     // return the formatted workbook
     dataHandler(dataArr);
   };
+}
+
+// check for duplicates in a material-table column
+export const checkDuplicates = (rowData, tableData, field) => {
+  // field of element being edited -- null if not editing
+  let current = null
+  if (rowData.tableData) {
+    if (rowData.tableData.editing === 'delete') {
+      return true
+    } else if (rowData.tableData.editing === 'update') {
+      current = tableData.find(el => el._id === rowData._id)[field]
+    }
+  } else if (rowData._id) {
+    // this case runs while submitting a change
+    return true
+  }
+  const vals = tableData.map(el => el[field])
+  const duplicate = vals.find(val => val === rowData[field] && val !== current)
+  return duplicate ? `Duplicate ${field} not allowed` : true
 }

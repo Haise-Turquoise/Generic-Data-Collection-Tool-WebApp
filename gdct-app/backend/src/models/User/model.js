@@ -21,6 +21,7 @@ const User = new Schema(
     newPermissionPending:{type: Boolean,default:false},
     tempSysRole:[],
     newTemplates:[],
+    toBeApproved:{type: Array},
     phoneNumber: { type: String, default: '' },
     
     password: String,
