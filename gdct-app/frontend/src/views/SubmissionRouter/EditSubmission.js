@@ -231,6 +231,7 @@ const EditSubmission = ({ history }) => {
       }, 2000);
     }
   };
+  console.log('button',submitUnavailable , !isSubmitterOrInputter,hasBeenSubmitted)
   return (
 
 
