@@ -76,7 +76,7 @@ export const routerManager = app => {
 
   // Oct 26, 2020
   // Used to handle requests from google
-  // app.use('/googleapis_manager', Container.get(GoogleApisController));
+  app.use('/googleapis_manager', Container.get(SpreadsheetApisController));
 
   // Jan 22, 2021
   // Use to handle transfer control

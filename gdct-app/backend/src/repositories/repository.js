@@ -37,7 +37,7 @@ export default class BaseRepository {
 
   async findById(id) {
     return this._model.findById(id).then(result => {
-      if (!result) {console.log(result);throw new AppError(i18n.__('idDoesNotExist'));} // throw new Error('_id does not exist');
+      if (!result) {;throw new AppError(i18n.__('idDoesNotExist'));} // throw new Error('_id does not exist');
       return result.toObject();
     });
   }

@@ -1,6 +1,5 @@
 import i18n from 'i18n';
 import cloneDeep from 'clone-deep';
-import { copyFile } from 'fs';
 import UserEntity from '../../entities/User';
 import BaseRepository from '../repository';
 import UserModel from '../../models/User';

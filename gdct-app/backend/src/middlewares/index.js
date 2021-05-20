@@ -12,6 +12,7 @@ import { dbUtil } from './db';
 import customLogger from '../utils/log/customLogger';
 import AppRoleResourceModel from '../models/AppRoleResource';
 import AppResourceModel from '../models/AppResource';
+import UserModel from '../models/User';
 
 i18n.configure({
   locales: ['en', 'fr'],
@@ -58,56 +59,47 @@ export const middlewares = app => {
     return next();
   });
 
-  app.use('/', (req, res, next) => {
-    console.log()
-    if (req.session.roles) {
-      const potentialSysRoles = req.user.sysRole;
-      console.log("This person can be one of the following roles:");
-      console.log(potentialSysRoles);
-      console.log();
-      
-      const generalRole = req.session.roles[0];
-      console.log("This person is currently logged in as this general role: " + generalRole);
-      console.log();
-      
-      let loggedInAs = null;
-      potentialSysRoles.forEach(sysRole => {
-        if (sysRole.role === generalRole) {
-          loggedInAs = sysRole.appSys + ' ' + sysRole.role;
-        }
-      });
-      console.log("This person is currently logged in as this sys role: " + loggedInAs);
-      console.log();
-      
-      const requestUrl = req.originalUrl;
-      console.log("This person is currently trying to access url: " + requestUrl);
-      console.log()
+  let allowedUrls = [];
+  let isLoggedIn = false;
+  app.use('/', async (req, res, next) => {
+    const requestUrl = req.originalUrl;
+    // Allow all requests before completing login
+    if (!isLoggedIn && requestUrl !== '/login') return next();
 
-      // Business Admin has access to any Urls
-      if (generalRole === "Business Admin") {
-        return next()
+    // During the logging in process, fetch all allowed requestUrls for this user
+    if (!isLoggedIn && requestUrl === '/login' && req.body.selectedRole !== "") {
+      // Fetching
+      const user = await UserModel.findOne({ email: req.body.email });
+      const loggedInSysRole = user.sysRole.find(sysRole => sysRole.role === req.body.selectedRole);
+      const loggedInAs = loggedInSysRole.appSys + ' ' + loggedInSysRole.role;
+      const allowedRoleResource = await AppRoleResourceModel.findOne({ 'appSysRoleId.roleName': loggedInAs });
+      const allowedResources = allowedRoleResource.toObject().resourceId;
+      const promise = allowedResources.map(async allowedResource => {
+        const resource = await AppResourceModel.findById({ _id: allowedResource.id });
+        if (resource === null) {
+          console.log("Resource: " + allowedResource.resourceName + " not found due to a mismatch of id/name!");
+        } else{
+          return resource.resourcePath;
+        }
+      })
+      Promise.all(promise).then(result => allowedUrls = result);
+      // The user is logged in
+      isLoggedIn = true;
+    };
+
+    // Check whether a logged in user is allowed to access requestUrls
+    if (isLoggedIn && requestUrl !== '/login') {
+      console.log(allowedUrls.length);
+      if (allowedUrls.includes(requestUrl)) {
+        console.log("ALLOWED");
       } else {
-        let allowedUrls = [];
-        AppRoleResourceModel.findOne({ 'appSysRoleId.roleName': loggedInAs }).then(appRoleResource => {
-          // Check whether requestUrl is in the allowed Url list
-          const allowedResources = appRoleResource.toObject().resourceId;
-          allowedResources.forEach(Resource => {
-            AppResourceModel.findById({ _id: Resource.id }).then(resource => {
-              allowedUrls.push(resource.resourcePath);
-              if (allowedUrls.length === allowedResources.length) {
-                if (allowedUrls.includes(requestUrl)) {
-                  console.log("ALLOWED");
-                  // next();
-                } else {
-                  console.log("NOT ALLOWED");
-                  return res.send("UNAUTHORIZED ACCESS");
-                }
-              }
-            })
-          })
-        })
+        console.log("NOT ALLOWED");
+        return res.send("UNAUTHORIZED ACCESS");
       }
-    }
+    };
+
+    // Clear all stored data for completing logout
+    if (isLoggedIn && requestUrl === '/logout') { allowedUrls = []; isLoggedIn = false };
     
     // MAYBE NOT IN USE, BUT DO NOT DELETE
     // VALUABLE SECTION HERE: One way of getting current session/cookie id stored both on the webpage and in the database(in collection: sessions)

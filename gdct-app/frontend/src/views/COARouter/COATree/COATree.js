@@ -6,6 +6,7 @@ import { useSelector, shallowEqual, useDispatch, batch } from 'react-redux';
 import { Paper, Typography, Button, TextField, IconButton } from '@material-ui/core';
 
 import DeleteIcon from '@material-ui/icons/Delete';
+import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import AddIcon from '@material-ui/icons/Add';
 
 import { useParams } from 'react-router-dom';
@@ -170,6 +171,10 @@ const COATree = () => {
     <div className="COATree">
       <COATreeHeader sheetNameId={sheetNameId} />
       <COATreeTreeStructure sheetNameId={sheetNameId} />
+      <Button variant="outlined" color="primary" href="/admin/coa/tree" style={{marginTop: '0.8%'}}>
+        <ArrowBackIcon></ArrowBackIcon>
+        Back
+      </Button>
     </div>
   );
 };

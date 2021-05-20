@@ -6,19 +6,22 @@ import COATreeEntity from '../../entities/COATree';
 const COATreeController = Service([COATreeService], service => {
   const router = Router();
   return (() => {
-    router.post('/COATrees/fetchCOATree', (req, res, next) => {
-      const { sheetNameId } = req.body;
+    // SUSPECT: NOT IN USE
+    // router.post('/COATrees/fetchCOATree', (req, res, next) => {
+    //   const { sheetNameId } = req.body;
 
-      service
-        .findCOATree(new COATreeEntity({ sheetNameId }))
-        .then(([COATree]) => res.json({ COATree }))
-        .catch(next);
-    });
+    //   console.log(sheetNameId);
+    //   service
+    //     .findCOATree(new COATreeEntity({ sheetNameId }))
+    //     .then(([COATree]) => res.json({ COATree }))
+    //     .catch(next);
+    // });
 
     router.post('/COATrees/sheetName/fetchBySheetName', (req, res, next) => {
       const { sheetNameId } = req.body;
 
       service
+        // @ts-ignore
         .findCOATree(new COATreeEntity({ sheetNameId }))
         .then(COATrees =>
           res.json({ COATrees: COATrees.map(COATree => ({ ...COATree, COATreeData: undefined })) }),

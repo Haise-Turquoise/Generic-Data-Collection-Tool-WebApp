@@ -19,6 +19,7 @@ import { selectColumnNamesStore } from '../../store/ColumnNamesStore/selectors';
 import { ColumnNamesActions } from '../../store/ColumnNamesStore/store';
 import CreateAuditLog from '../AuditLog_Global';
 import columnNameController from '../../controllers/columnName';
+import { checkDuplicates } from '../../tools/misc'
 
 const ColumnNameHeader = () => {
   return (
@@ -97,14 +98,14 @@ const ColumnNamesTable = () => {
   // Prepare the columns for material table
   const columns = useMemo(
     () => [
-      { title: 'ID', field: 'id' },
+      { title: 'ID', field: 'id', validate: rowData => checkDuplicates(rowData, columnNames, 'id') },
       { title: 'Name', field: 'name' },
       { title: 'Description', field: 'description' },
       { title: 'Active', type: 'boolean', field: 'isActive' },
       { title: 'Modified On', field: 'timestamp', editComponent: () => {return <div></div>} },
       { title: 'Updated By', field: 'updatedBy', editComponent: () => {return <div></div>} },
     ],
-    [],
+    [columnNames],
   );
   
   const options = useMemo(

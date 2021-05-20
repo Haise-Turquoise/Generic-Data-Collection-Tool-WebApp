@@ -578,9 +578,9 @@ export const loadModifyPermissionPage =  ()=> async (dispatch,getState)=>{
       else{
         UserSysRole = user.tempSysRole
       }
-      console.log('UserSysRole', UserSysRole)
-      UserSysRole.forEach(sysRole=>{
-          let userSubmission = {
+
+      for (const sysRole of UserSysRole){
+        let userSubmission = {
           organization:null,
           program:null,
           submission:null,
@@ -622,66 +622,61 @@ export const loadModifyPermissionPage =  ()=> async (dispatch,getState)=>{
             }
           else if(sysRole.role == 'Reporter'){
                   userSubmission.viewCognos = true;
+        }
+        // loop over each organization
+        for (const org of sysRole.org){
+          // fetch the organization info
+          const orgInfo = await organizationController.fetchById(org.orgId)
+          userSubmission.organization = {
+            name:orgInfo.name,
+            id:orgInfo.id,
+            authorizedPerson:orgInfo.authorizedPerson,
+            IsActive : org.IsActive,   
+          }
+          // loop over each program
+          for (const program of org.program){
+            // fetch additional program info
+            const programInfo = await programController.fetchById(program.programId)
+            userSubmission.program =  {
+            name:programInfo.name,
+            code:programInfo.code,
+            _id:programInfo._id,
             }
+            // loop over each template
+            for (const template of program.template){
+              userSubmission.submission = {
+                name: template.templateCode,
+                _id: template.templateTypeId,
+                status:template.status,
+                }
+              let userSubmissionCopy = cloneDeep(userSubmission)
+                          // get specific template information 
+              const templateTypeInfo = await templateTypeController.fetchById(template.templateTypeId)
+                          
+              userSubmissionCopy.approveAvailable = templateTypeInfo.isApprovable;
+              userSubmissionCopy.reviewAvailable = templateTypeInfo.isReviewable;
+              userSubmissionCopy.submitAvailable = templateTypeInfo.isSubmittable;
+              userSubmissionCopy.inputAvailable = templateTypeInfo.isInputtable;
+              userSubmissionCopy.viewAvailable = templateTypeInfo.isViewable;
+              userSubmissionCopy.viewCognosAvailable = templateTypeInfo.isReportable;
+                          
+                          
+              const {
+                UserRegistrationStore: { tempUserSubmissions },
+              } = getState();
+              const userSubmissionsCopy = cloneDeep(tempUserSubmissions)
+              userSubmissionCopy.index = userSubmissionsCopy.length
+                          
+              userSubmissionsCopy.push(userSubmissionCopy)
+              dispatch(userRegistrationStore.actions.setTempUserSubmissionList(userSubmissionsCopy))
           
-          // loop through each each organization
-          sysRole.org.forEach(async org=>{
-            console.log('UserSysRole_org', org)
-            // get the authorizedPerson Info
-            const orgInfo = await organizationController.fetchById(org.orgId)
-            userSubmission.organization = {
-              name:orgInfo.name,
-              id:orgInfo.id,
-              authorizedPerson:orgInfo.authorizedPerson,
-              IsActive : org.IsActive,
-              
-              }
-            // loop through each program
-            org.program.forEach(async program=>{
-              // get specific program information 
-              const programInfo = await programController.fetchById(program.programId)
-              userSubmission.program =  {
-                name:programInfo.name,
-                code:programInfo.code,
-                _id:programInfo._id,
-                }
-              // loop through each template
-              program.template.forEach(async template=>{
-                userSubmission.submission = {
-                  name: template.templateCode,
-                  _id: template.templateTypeId,
-                  status:template.status,
-                }
-                let userSubmissionCopy = cloneDeep(userSubmission)
-                // get specific template information 
-                const templateTypeInfo = await templateTypeController.fetchById(template.templateTypeId)
-                
-                userSubmissionCopy.approveAvailable = templateTypeInfo.isApprovable;
-                userSubmissionCopy.reviewAvailable = templateTypeInfo.isReviewable;
-                userSubmissionCopy.submitAvailable = templateTypeInfo.isSubmittable;
-                userSubmissionCopy.inputAvailable = templateTypeInfo.isInputtable;
-                userSubmissionCopy.viewAvailable = templateTypeInfo.isViewable;
-                userSubmissionCopy.viewCognosAvailable = templateTypeInfo.isReportable;
-                
-                
-                const {
-                  UserRegistrationStore: { tempUserSubmissions },
-                } = getState();
-                const userSubmissionsCopy = cloneDeep(tempUserSubmissions)
-                userSubmissionCopy.index = userSubmissionsCopy.length
-                
-                userSubmissionsCopy.push(userSubmissionCopy)
-                
-                dispatch(userRegistrationStore.actions.setTempUserSubmissionList(userSubmissionsCopy))
-
-                const permissionList = submissionChange(userSubmissionsCopy);
-                dispatch(userRegistrationStore.actions.setUserPermissionList(permissionList));
-                                
-              })
-            })
-          })
-      })
-
+              const permissionList = submissionChange(userSubmissionsCopy);
+              dispatch(userRegistrationStore.actions.setUserPermissionList(permissionList));
+            }
+            
+          }
+        }
+      }
   }
 
 
@@ -711,12 +706,9 @@ export const stepNext = values => (dispatch, getState) => {
     //   UsersStore: { response },
     // } = getState();
     // const users = response.Values;
-    // console.log(users);
-    // console.log(values);
     // let duplicate = false;
     // users.forEach(user => {
     //   if (user.username == values.username) {
-    //     console.log('find duplicate');
     //     duplicate = true;
     //   }
     // });
@@ -758,8 +750,6 @@ export const stepUpdate = values => (dispatch, getState) => {
     //   UsersStore: { response },
     // } = getState();
     // const users = response.Values;
-    // console.log(users);
-    // console.log(values);
     // let duplicate = false;
     // users.forEach(user => {
     //   if (user.username == values.username) {

@@ -14,14 +14,14 @@ const UserController = Service([UserService], service => {
     // User Profile Update
     router.put(`/updatePopulatedUser`, (req, res, next) => {
       const { userData } = req.body;
-      const { _id } = userData._id;
+      const _id = userData._id;
       
       service
         .modifyUserInfo(_id, userData)
         .catch(next);
     });
 
-    router.get(`/fetchUserByUserName`, (req, res, next) => {
+    router.post(`/fetchUserByUserName`, (req, res, next) => {
       const { username } = req.body;
 
       service

@@ -19,6 +19,7 @@ import { getSubmissionsRequest } from '../../store/thunks/submission';
 import { selectSubmissionsStore } from '../../store/SubmissionsStore/selectors';
 import { selectFactoryRESTResponseTableValues } from '../../store/common/REST/selectors';
 import { calculateOptions } from '../../tools/misc'
+import StatusController from '../../controllers/status'
 import './SubmissionDashboard.scss'
 
 const useStyles = makeStyles((theme) => ({
@@ -37,26 +38,21 @@ const SubmissionHeader = () => (
 
 const SubmissionDashboard = ({ history }) => {
   const dispatch = useDispatch();
-  const publishedSubmission = [];
-  const approvedSubmission = [];
-  const rejectedSubmission = [];
-  const expiredSubmission = [];
-  const submittedSubmission = [];
-  const unsubmittedSubmission = [];
   const submissionPeriod = {};
   const styleFactor = '0.2%';
   const classTheme = useStyles();
-  console.log('Hi')
-
-  // Set up the states that update the table row number
-  const [readUnsubmittedLength, setUnsubmittedLength] = useState(1);
-  const [readApprovedLength, setApprovedLength] = useState(1);
-  const [readRejectedLength, setRejectedLength] = useState(1);
-  const [readExpiredLength, setExpiredLength] = useState(1);
-  const [readSubmittedLength, setSubmittedLength] = useState(1);
 
   const [readFilterFrom, setFilterFrom] = useState('All');
   const [readFilterTo, setFilterTo] = useState('All');
+
+  const [statuses, setStatuses] = useState([])
+
+  useEffect(() => {
+    StatusController.fetch().then(res => {
+      const valid = res.filter(status => status.isActive && !status.forPackage)
+      setStatuses(valid.map(status => status.name))
+    })
+  }, [])
 
   const timeOption = { year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric' };
   let { submissions } = useSelector(
@@ -102,50 +98,12 @@ const SubmissionDashboard = ({ history }) => {
           ) !== undefined
         )
           submitterFlag = true;
-        switch (submission.phase) {
-          case 'Unsubmitted':
-            unsubmittedSubmission.push(submission);
-            break;
-          case 'Submitted':
-            submittedSubmission.push(submission);
-            break;
-          case 'Expired':
-            expiredSubmission.push(submission);
-            break;
-          case 'Rejected':
-            rejectedSubmission.push(submission);
-            break;
-          case 'Approved':
-            approvedSubmission.push(submission);
-            break;
-          case 'Published':
-            publishedSubmission.push(submission);
-            break;
-        }
+      } else {
+        // should remove invalid (undefined/out of range) submissions
+        submissions.filter(element => element !== submission)
       }
     });
   }
-
-  // Set the length state after array change, cause a refresh for the page
-  useEffect(() => {
-    setSubmittedLength(submittedSubmission.length)
-  }, [submittedSubmission])
-
-  useEffect(() => {
-    setExpiredLength(expiredSubmission.length)
-  }, [expiredSubmission])
-
-  useEffect(() => {
-    setRejectedLength(rejectedSubmission.length)
-  }, [rejectedSubmission])
-
-  useEffect(() => {
-    setUnsubmittedLength(unsubmittedSubmission.length)
-  }, [unsubmittedSubmission])
-
-  useEffect(() => {
-    setApprovedLength(approvedSubmission.length)
-  }, [approvedSubmission])
 
 
   const handleFilterFrom = (event) => {
@@ -174,15 +132,6 @@ const SubmissionDashboard = ({ history }) => {
     ],
     [],
   );
-
-
-  // memfunction that generate options object
-  const unsubmittedOptions = useMemo(() => calculateOptions(readUnsubmittedLength), [readUnsubmittedLength]);
-  const submittedOptions = useMemo(() => calculateOptions(readSubmittedLength), [readSubmittedLength]);
-  const expiredOptions = useMemo(() => calculateOptions(readExpiredLength), [readExpiredLength]);
-  const rejectedOptions = useMemo(() => calculateOptions(readRejectedLength), [readRejectedLength]);
-  const approvedOptions = useMemo(() => calculateOptions(readApprovedLength), [readApprovedLength]);
-
 
   const notEditableActions = useMemo(
     () => [
@@ -259,112 +208,30 @@ const SubmissionDashboard = ({ history }) => {
         </Select>
       </FormControl>
 
-      <ExpansionPanel>
-        <ExpansionPanelSummary
-          expandIcon={<ExpandMoreIcon />}
-          aria-controls="panel1a-content"
-          id="panel1a-header"
-        >
-          <Typography> To-do </Typography>
-        </ExpansionPanelSummary>
-
-        {/* We need to pass row number state to 
-          "key" param to force an table update */}
-        <div className="MuiTableContainer">
-          <MaterialTable
-            key={readUnsubmittedLength}
-            columns={checkBoxColumns}
-            options={unsubmittedOptions}
-            data={unsubmittedSubmission}
-            actions={submitterFlag ? actions : notEditableActions}
-          />
-        </div>
-
-      </ExpansionPanel>
-
-      <ExpansionPanel>
-        <ExpansionPanelSummary
-          expandIcon={<ExpandMoreIcon />}
-          aria-controls="panel1a-content"
-          id="panel1a-header"
-        >
-          <Typography> Submitted</Typography>
-        </ExpansionPanelSummary>
-        {/* <ExpansionPanelDetails> */}
-        <div className="MuiTableContainer">
-          <MaterialTable
-            key={readSubmittedLength}
-            columns={checkBoxColumns}
-            options={submittedOptions}
-            data={submittedSubmission}
-            actions={notEditableActions}
-          />
-        </div>
-        {/* </ExpansionPanelDetails> */}
-      </ExpansionPanel>
-
-      <ExpansionPanel>
-        <ExpansionPanelSummary
-          expandIcon={<ExpandMoreIcon />}
-          aria-controls="panel1a-content"
-          id="panel1a-header"
-        >
-          <Typography> Rejected</Typography>
-        </ExpansionPanelSummary>
-        {/* <ExpansionPanelDetails> */}
-        <div className="MuiTableContainer">
-          <MaterialTable
-            key={readRejectedLength}
-            columns={checkBoxColumns}
-            options={rejectedOptions}
-            data={rejectedSubmission}
-            actions={submitterFlag ? actions : notEditableActions}
-          />
-        </div>
-        {/* </ExpansionPanelDetails> */}
-      </ExpansionPanel>
-
-      <ExpansionPanel>
-        <ExpansionPanelSummary
-          expandIcon={<ExpandMoreIcon />}
-          aria-controls="panel1a-content"
-          id="panel1a-header"
-        >
-          <Typography> Expired</Typography>
-        </ExpansionPanelSummary>
-        {/* <ExpansionPanelDetails> */}
-        <div className="MuiTableContainer">
-          <MaterialTable
-            key={readExpiredLength}
-            columns={checkBoxColumns}
-            options={expiredOptions}
-            data={expiredSubmission}
-            actions={notEditableActions}
-          />
-          {/* </ExpansionPanelDetails> */}
-        </div>
-      </ExpansionPanel>
-
-      <ExpansionPanel>
-        <ExpansionPanelSummary
-          expandIcon={<ExpandMoreIcon />}
-          aria-controls="panel1a-content"
-          id="panel1a-header"
-        >
-          <Typography> Approved</Typography>
-        </ExpansionPanelSummary>
-        {/* <ExpansionPanelDetails> */}
-        <div className="MuiTableContainer">
-          <MaterialTable
-            key={readApprovedLength}
-            columns={checkBoxColumns}
-            options={approvedOptions}
-            data={approvedSubmission}
-            actions={notEditableActions}
-          />
-        </div>
-        {/* </ExpansionPanelDetails> */}
-      </ExpansionPanel>
+      {statuses.map(status => {
+        const data = submissions.filter(submission => submission.phase === status)
+        const options = calculateOptions(data.length)
+        return (
+          <ExpansionPanel>
+            <ExpansionPanelSummary 
+              expandIcon={<ExpandMoreIcon />}
+              aria-controls="panel1a-content"
+              id="panel1a-header"
+            >
+              <Typography>{status === 'Unsubmitted' ? 'To-do' : status}</Typography>
+            </ExpansionPanelSummary>
+            <div className="MuiTableContainer">
+              <MaterialTable
+                key={data.length}
+                columns={checkBoxColumns}
+                options={options}
+                data={data}
+                actions={submitterFlag ? actions : notEditableActions}
+              />
+            </div>
+          </ExpansionPanel>
+        )
+      })}
     </div>
   );
 };

@@ -51,8 +51,8 @@ export default {
   // Main Menu User
   User: <AccountCircleIcon />,
   Profile: <AccountCircleIcon style={MenuItemStyle} />,
-  'Submission Permissions': <EnhancedEncryptionIcon style={MenuItemStyle} />,
-  'Personal Details': <SettingsApplicationsIcon style={MenuItemStyle} />,
+  'Submission Permissions': <EnhancedEncryptionIcon style={SubMenuItemStyle} />,
+  'Personal Details': <SettingsApplicationsIcon style={SubMenuItemStyle} />,
 
   Logout: <ExitToAppIcon style={MenuItemStyle} />,
   // Main Menu Report
