@@ -121,7 +121,7 @@ export async function mastervaluePrepopulation(workbook, submission){
         if (!sheetRows[3].cells[1]) sheetRows[3].cells[1] = {text:''};
         if (!sheetRows[2].cells[1]) sheetRows[2].cells[1] = {text:''};
 
-        sheetRows[3].cells[1].text = 'Quarter: ' + reportingPeriodInfo.name;
+        sheetRows[4].cells[1].text = 'Reporting Period: ' + reportingPeriodInfo.name;
         sheetRows[3].cells[1].text = 'Facility ID: ' + orgInfo.id;
         sheetRows[2].cells[1].text = 'Hospital Name: ' + orgInfo.name;
       }
