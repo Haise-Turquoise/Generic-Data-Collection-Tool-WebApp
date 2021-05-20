@@ -58,7 +58,6 @@ const WorkflowController = Service([WorkflowService], service => {
 
     router.post('/workflows/fetchProcess', (req, res, next) => {
       const { processId } = req.body;
-
       service
         .findOutwardProcessesPopulated(processId)
         .then(workflowProcess => res.json({ data: workflowProcess }))
