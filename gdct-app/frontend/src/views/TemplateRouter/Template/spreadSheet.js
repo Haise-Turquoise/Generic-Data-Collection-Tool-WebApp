@@ -103,8 +103,9 @@ class SpreadSheet extends Component{
     // Save function
     saveTemplate = () =>{
       if (this.sheet){
-        this.disablePreview()
+        this.disablePreview();
         const workBookData = this.sheet.getData();
+        console.log(workBookData);
         templateController.sheetUpdate(this.id, workBookData);
       }
     }

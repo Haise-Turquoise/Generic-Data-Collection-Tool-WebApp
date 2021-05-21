@@ -49,7 +49,8 @@ const steps = getSteps();
 
 // Column for permission table.
 const columns = [
-  { title: 'Organization', field: 'organization.name' },
+  // { title: 'Organization', field: 'organization.name' },
+  { title: 'Organization', render: rowData => '(' + rowData.organization.id + ') '+rowData.organization.name  },
   { title: 'Program', field: 'program.code' },
   { title: 'Submission', field: 'submission.name' },
   { title: 'Permission', field: 'permission' },

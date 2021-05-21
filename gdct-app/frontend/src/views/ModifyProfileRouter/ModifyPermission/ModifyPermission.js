@@ -43,7 +43,7 @@ import {
 
 // Column for permission table.
 const columns = [
-    { title: 'Organization', field: 'organization.name' },
+    { title: 'Organization', render: rowData => '(' + rowData.organization.id + ') '+rowData.organization.name  },
     { title: 'Program', field: 'program.code' },
     { title: 'Submission', field: 'submission.name' },
     { title: 'Permission', field: 'permission' },
@@ -331,6 +331,7 @@ const selectOrgProgram = (
 
         const submissionList = cloneDeep(userSubmissions);
         const permissionList = cloneDeep(userPermissions);
+        console.log('permissionList', permissionList)
         return (
           <div className="modifyPermission__form">
             {selectOrgProgram(
