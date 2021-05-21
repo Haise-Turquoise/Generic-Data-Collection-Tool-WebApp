@@ -16,11 +16,6 @@ import ReportingPeriodRepository from '../../repositories/ReportingPeriod';
 import { mastervalueExtraction } from '../../utils/mastervalue/mastervalueExtraction';
 import { mastervaluePrepopulation } from '../../utils/mastervalue/mastervaluePrepopulation';
 import {ObjectId} from 'mongodb';
-import Organization from '../../entities/Organization';
-import { template } from '@babel/core';
-import { isExpressionWithTypeArguments } from 'typescript';
-const mongoose = require('mongoose');
-mongoose.Promise = require('bluebird');
 
 // @Service()
 export default class SubmissionService {
@@ -407,7 +402,18 @@ export default class SubmissionService {
             const templatePkgSet = new Map();
             const statusSet = new Map();
 
-            const submissionArr = await this.submissionRepository.findByOrgIdAndProgramId(Object.keys(orgMapping), programIds);
+
+            Object.keys(orgMapping).forEach(e=>{
+              orgMapping[e] = orgMapping[e].map(id=>String(id));
+            })
+
+            const rawSubmissionArr = await this.submissionRepository.findByOrgIdAndProgramId(Object.keys(orgMapping), programIds);
+
+    
+            const submissionArr = orgId? rawSubmissionArr.filter(submission=>
+              orgMapping[submission.orgId].includes(String(submission.programId))
+            ) : rawSubmissionArr;
+            
 
             // Generate a the sets of look up tables to prevent dupllicate entries and provide
             // ease of access later in the code
