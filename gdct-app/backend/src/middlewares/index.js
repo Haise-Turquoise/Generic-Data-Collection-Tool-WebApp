@@ -67,7 +67,7 @@ export const middlewares = app => {
     if (!isLoggedIn && requestUrl !== '/login') return next();
 
     // During the logging in process, fetch all allowed requestUrls for this user
-    if (!isLoggedIn && requestUrl === '/login') {
+    if (!isLoggedIn && requestUrl === '/login' && req.body.selectedRole !== "") {
       // Fetching
       const user = await UserModel.findOne({ email: req.body.email });
       const loggedInSysRole = user.sysRole.find(sysRole => sysRole.role === req.body.selectedRole);
@@ -76,7 +76,11 @@ export const middlewares = app => {
       const allowedResources = allowedRoleResource.toObject().resourceId;
       const promise = allowedResources.map(async allowedResource => {
         const resource = await AppResourceModel.findById({ _id: allowedResource.id });
-        return resource.resourcePath;
+        if (resource === null) {
+          console.log("Resource: " + allowedResource.resourceName + " not found due to a mismatch of id/name!");
+        } else{
+          return resource.resourcePath;
+        }
       })
       Promise.all(promise).then(result => allowedUrls = result);
       // The user is logged in
@@ -85,9 +89,9 @@ export const middlewares = app => {
 
     // Check whether a logged in user is allowed to access requestUrls
     if (isLoggedIn && requestUrl !== '/login') {
+      console.log(allowedUrls.length);
       if (allowedUrls.includes(requestUrl)) {
         console.log("ALLOWED");
-        // return next();
       } else {
         console.log("NOT ALLOWED");
         return res.send("UNAUTHORIZED ACCESS");

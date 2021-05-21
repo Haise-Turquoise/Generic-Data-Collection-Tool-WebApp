@@ -9,6 +9,7 @@ export default class UserEntity {
     phoneNumber,
     password,
     sysRole,
+    toBeApproved,
     organizations,
     isActive,
     isEmailVerified,
@@ -30,6 +31,7 @@ export default class UserEntity {
     this.phoneNumber = phoneNumber;
     this.password = password;
     this.sysRole = sysRole;
+    this.toBeApproved = toBeApproved;
     this.organizations = organizations;
     this.isActive = isActive;
     this.isEmailVerified = isEmailVerified;

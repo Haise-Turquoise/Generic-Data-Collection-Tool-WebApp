@@ -1,6 +1,7 @@
 import Container, { Service } from 'typedi';
 import UserRepository from '../../repositories/User';
 import AppSysRoleRepository from '../../repositories/AppSysRole';
+import cloneDeep from 'clone-deep';
 import {
   sendUserVerficationEmail,
   sendPermissionChangeUserVerficationEmail,
@@ -177,8 +178,8 @@ export default class UserService {
   async updatePermissionByUserEmail(email,permissionData){
 
 
-    let registerData = permissionData.permissionData;
-    
+    let registerData = permissionData;
+    // console.log(registerData)
     const promiseQuery = [];
     registerData.sysRole.forEach(sysRole => {
  
@@ -221,8 +222,22 @@ export default class UserService {
     });
     await Promise.all(promiseQuery);
     const orgList = [];
-    const newTemplates = permissionData.permissionData.newTemplates;
-    newTemplates.forEach(template=>{
+    const newTemplates = permissionData.newTemplates;
+    newTemplates.forEach(async template=>{
+      const orgApproverName = template.organization.authorizedPerson.name;
+      // console.log(orgApprovedName)
+      // this.fetchUserByUserName(orgApproverName).then(orgApprover=>{
+      //   const orgApproverCopy = cloneDeep(orgApprover)
+      //   orgApproverCopy.toBeApproved.push(template)
+      //   console.log(orgApproverCopy)
+      //   this.modifyUserInfo(orgApproverCopy._id, orgApproverCopy)
+      // })
+      const orgApprover = await this.fetchUserByUserName(orgApproverName);
+      // console.log(orgApprover.toBeApproved)
+      const orgApproverCopy = cloneDeep(orgApprover)
+      orgApproverCopy.toBeApproved.push(template)
+      await this.modifyUserInfo(orgApproverCopy._id, orgApproverCopy)
+      
       let orgInfo = orgList.find(function(element){
         return element.orgId == template.organization.id;
       })
@@ -243,6 +258,6 @@ export default class UserService {
         })
       }
     })
-    return this.UserRepository.updatePermissionByUserEmail(email.email,permissionData.permissionData,orgList)
+    // return this.UserRepository.updatePermissionByUserEmail(email.email,permissionData.permissionData,orgList)
   }
 }

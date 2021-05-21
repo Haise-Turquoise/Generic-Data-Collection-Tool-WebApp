@@ -36,22 +36,36 @@ export default class SubmissionService {
     this.submissionPeriodRepository = Container.get(SubmissionPeriodRepository);
   }
 
-  checkUserRole(userInfo, submission, permission) {
-    userInfo.sysRole.forEach(sysRole => {
-    if (sysRole.org[0]){
-        sysRole.org[0].program.forEach(program => {
-          if (
-            sysRole.org[0].orgId == submission.orgId &&
-            program.programId.toString() == submission.programId.toString()
-          ) {
-            permission.push(sysRole.role);
+  // checkUserRole(userInfo, submission, permission) {
+  //   userInfo.sysRole.forEach(sysRole => {
+  //   if (sysRole.org[0]){
+  //       sysRole.org[0].program.forEach(program => {
+  //         if (
+  //           sysRole.org[0].orgId == submission.orgId &&
+  //           program.programId.toString() == submission.programId.toString()
+  //         ) {
+  //           console.log('first case')
+  //           permission.push(sysRole.role);
+  //         }
+  //       });
+  //   }
+  //   else{
+  //     console.log('second case')
+  //     permission.push(sysRole.role);
+  //   }
+  //   });
+  //   console.log('permission', permission)
+  // }
+  checkUserRole(userInfo, submission, permission){
+    userInfo.sysRole.forEach(sysRole=>{
+      sysRole.org.forEach(org=>{
+        org.program.forEach(program=>{
+          if(org.orgId == submission.orgId && program.programId.toString() == submission.programId.toString()){
+            permission.push(sysRole.role)
           }
-        });
-    }
-    else{
-      permission.push(sysRole.role);
-    }
-    });
+        })
+      })
+    })
   }
 
   async findReportingPeriod(_id){
@@ -464,7 +478,6 @@ export default class SubmissionService {
             
             // Assemble each the object for transfer
             submissionArr.forEach(submission => {
-
               const programData = programSet.get(String(submission.programId));
               const periodName = periodSet.get(String(submission.submissionPeriodId)).name;
               const statusName = statusSet.get(String(submission.statusId)).name;
