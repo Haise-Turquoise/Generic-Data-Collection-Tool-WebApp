@@ -21,9 +21,14 @@ export const getRequestFactory = (store, controller) => (
 
   controller[isPopulated ? 'fetchPopulated' : 'fetch'](query)
     .then(values => {
-      if (values === "UNAUTHORIZED ACCESS") unauthorized_dialog();
-      dispatch(store.actions.RECEIVE(values));
-      if (resolve) resolve();
+      if (values === "UNAUTHORIZED ACCESS") {
+        dispatch(store.actions.FAIL_REQUEST());
+        reject();
+        unauthorized_dialog();
+      } else {
+        dispatch(store.actions.RECEIVE(values));
+        if (resolve) resolve();
+      }
     })
     .catch(error => {
       dispatch(store.actions.FAIL_REQUEST(error));
@@ -79,9 +84,16 @@ export const updateRequestFactory = (store, controller) => (
 ) => dispatch => {
   dispatch(store.actions.REQUEST());
   controller[isPopulated ? 'updatePopulated' : 'update'](value)
-    .then(() => {
-      dispatch(store.actions.UPDATE(isPopulated ? populatedData : value));
-      if (resolve) resolve(value);
+    .then(values => {
+      console.log(values);
+      if (values.data === "UNAUTHORIZED ACCESS") {
+        dispatch(store.actions.FAIL_REQUEST());
+        reject();
+        unauthorized_dialog();
+      } else {
+        dispatch(store.actions.UPDATE(isPopulated ? populatedData : value));
+        if (resolve) resolve(value);
+      }
     })
     .catch(error => {
       dispatch(store.actions.FAIL_REQUEST(error));

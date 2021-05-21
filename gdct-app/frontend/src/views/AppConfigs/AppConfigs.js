@@ -103,7 +103,7 @@ const AppConfigsTable = () => {
           // Find the old value before updating for Auditlog
           (async () => {
             const oldAppConfig = await AppConfigController.fetchAppConfig(appConfig._id);
-            CreateAuditLog(null, "Update Application System", "AppSys", appConfig._id, oldAppConfig, appConfig);
+            CreateAuditLog(null, "Update Application Configuration", "AppConfig", appConfig._id, oldAppConfig, appConfig);
           })();
           // Do Update
           dispatch(updateAppConfigRequest(appConfig, resolve, reject));
