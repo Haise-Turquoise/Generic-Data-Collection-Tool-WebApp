@@ -48,10 +48,10 @@ export async function mastervalueExtraction(
           const currentPeriod = attributeId.slice(0,6);
 
           for (let item in openSubmissions){
-              if (openSubmissions[item].code === currentPeriod){
-                currentYearAttributes.push(attributeId);
-                break;
-              }
+            if (openSubmissions[item].code === currentPeriod){
+              currentYearAttributes.push(attributeId);
+              break;
+            }
           }
         }
 
@@ -138,8 +138,8 @@ export async function mastervalueExtraction(
                           template,
                           templateType,
                           reportingPeriod: reportingPeriod.name,
-                          AttributeId: attributeID,
-                          CategoryId: categoryID,
+                          attributeId: attributeID,
+                          categoryId: categoryID,
                           COATreeId: COATreeId._id,
                           categoryGroup: string,
                           value: targetCell.text, //change this line back
