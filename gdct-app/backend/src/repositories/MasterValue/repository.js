@@ -51,6 +51,7 @@ export default class MasterValueRepository extends BaseRepository {
         id: masterValue.org.id,
         name: masterValue.org.name,
       },
+      reportingPeriod: masterValue.reportingPeriod,
     };
     return MasterValueModel.findOne(key).then(res => {
       if (res) {
