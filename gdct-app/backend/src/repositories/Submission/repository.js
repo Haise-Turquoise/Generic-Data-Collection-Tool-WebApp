@@ -22,7 +22,7 @@ export default class SubmissionRepository extends BaseRepository {
   async update(id, submission) {
     return SubmissionModel.findByIdAndUpdate(id, submission).then(
       submission => new SubmissionEntity(submission.toObject()),
-    );
+    ); 
   }
 
   async findByTemplatePackageId(templatePackageId) {
