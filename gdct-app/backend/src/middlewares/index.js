@@ -27,15 +27,11 @@ export const middlewares = app => {
   app.use(cookieParser());
   app.use(json({ limit: '50mb' }));
   app.use(urlencoded({ extended: true }));
-
   app.use(cors({ credentials: true, origin: process.env.CLIENT_SERVER }));
-
   app.use(compression());
-
   app.use(customLogger);
 
   const CookieStore = mongoStore(session);
-  
   app.use(
     session({
       secret: process.env.COOKIE_SECRET,
@@ -48,17 +44,6 @@ export const middlewares = app => {
     }),
   );
   
-  app.use(passport.initialize());
-  app.use(passport.session());
-
-  app.use((req, res, next) => {
-    // res.cookie('lang', 'fr');
-    i18n.init(req, res);
-    res.locals.__ = res.__;
-    const currentLocale = i18n.getLocales();
-    return next();
-  });
-
   let allowedUrls = [];
   let isLoggedIn = false;
   app.use('/', async (req, res, next) => {
@@ -89,7 +74,6 @@ export const middlewares = app => {
 
     // Check whether a logged in user is allowed to access requestUrls
     if (isLoggedIn && requestUrl !== '/login') {
-      console.log(allowedUrls.length);
       if (allowedUrls.includes(requestUrl)) {
         console.log("ALLOWED");
       } else {
@@ -109,6 +93,17 @@ export const middlewares = app => {
     //   console.log(cookieID);
     // }
     next();
+  });
+  
+  app.use(passport.initialize());
+  app.use(passport.session());
+
+  app.use((req, res, next) => {
+    // res.cookie('lang', 'fr');
+    i18n.init(req, res);
+    res.locals.__ = res.__;
+    const currentLocale = i18n.getLocales();
+    return next();
   });
 
   dbUtil.connect();
