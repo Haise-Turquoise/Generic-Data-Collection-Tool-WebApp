@@ -14,7 +14,7 @@ export default class MasterValueRepository extends BaseRepository {
   }
 
   async batchFind(attributeIds, categoryIds, orgId) {
-    return MasterValueModel.find({ AttributeId: { $in : attributeIds }, CategoryId: {$in : categoryIds }, 'org.id':orgId}).then(values => {return values});
+    return MasterValueModel.find({ attributeId: { $in : attributeIds }, categoryId: {$in : categoryIds }, 'org.id':orgId}).then(values => {return values});
   }
 
   async findAll(){
@@ -22,15 +22,15 @@ export default class MasterValueRepository extends BaseRepository {
   }
   
   async batchDelete(attributeIds, categoryIds, orgId) {
-    return MasterValueModel.deleteMany({ AttributeId: { $in : attributeIds }, CategoryId: {$in : categoryIds }, org: orgId}).then(values => {return values});
+    return MasterValueModel.deleteMany({ attributeId: { $in : attributeIds }, categoryId: {$in : categoryIds }, org: orgId}).then(values => {return values});
   }
 
   async findByCategoryId(id){
-    return MasterValueModel.find({CategoryId: id});
+    return MasterValueModel.find({categoryId: id});
   }
 
   async findByAttributeId(id){
-    return MasterValueModel.find({AttributeId: id});
+    return MasterValueModel.find({attributeId: id});
   }
 
   async findOneByProgramId(programId){
@@ -51,6 +51,7 @@ export default class MasterValueRepository extends BaseRepository {
         id: masterValue.org.id,
         name: masterValue.org.name,
       },
+      reportingPeriod: masterValue.reportingPeriod,
     };
     return MasterValueModel.findOne(key).then(res => {
       if (res) {

@@ -1,9 +1,7 @@
 import React, { Component } from "react";
 import Spreadsheet from 'x-data-spreadsheet';
 import submissionController from '../../controllers/submission';
-import usersController from '../../controllers/Users';
 import statusController from '../../controllers/status';
-import OrgselectionMenu from './OrgSelectionMenu';
 import orgController from '../../controllers/organization';
 import { compareSheet } from '../../tools/misc';
 import CreateAuditLog from '../AuditLog_Global';
@@ -70,9 +68,12 @@ class SubmissionSpreadSheet extends Component{
       if(this.sheet == null){
         submissionController.fetchSubmission(this.id).then(submission=>{
           statusController.findStatusByID(submission.statusId).then((status)=>{
-            if (status && (status.status.name === 'Approved')){
+            if (status && (status.name === 'Approved')){
               sheetOption.mode = 'read';
               this.edit = false;
+            }else{
+              sheetOption.mode = 'edit';
+              this.edit = true;
             }
   
             this.submissionObject = submission;
@@ -84,19 +85,6 @@ class SubmissionSpreadSheet extends Component{
             this.sheet.on('cell-selected',(cell, row, col)=>{
               this.currentCoord = {row, col};
             })
-
-            // // Get user data from server, handle auto population
-            // const currentUser = localStorage.getItem('currentUser');
-            // usersController.fetchByEmail(currentUser).then(data=>{
-            //   let orgArr = []
-            //   data.sysRole.forEach(element => {
-            //     element.org.forEach(org => {
-            //       const {orgId} = org;
-            //       orgArr.push(orgId);
-            //     });
-            //   });
-            //   if (orgArr.length == 1) this.insertOrg(orgArr[0]);
-            // });
   
           });
         });
@@ -185,7 +173,7 @@ class SubmissionSpreadSheet extends Component{
               <Button variant="outlined" color="primary" onClick={this.saveTemplate}>
                 Save
               </Button>
-              <OrgselectionMenu callback={this.insertOrg}/>
+              
             </div>
             <div id="x-spreadsheet"></div>
           </div>
