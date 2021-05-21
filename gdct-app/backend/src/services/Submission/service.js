@@ -409,7 +409,8 @@ export default class SubmissionService {
 
             const rawSubmissionArr = await this.submissionRepository.findByOrgIdAndProgramId(Object.keys(orgMapping), programIds);
 
-    
+            // if orgId is undefined, then it must be an admin, so the filter will not filter
+            // the submissions
             const submissionArr = orgId? rawSubmissionArr.filter(submission=>
               orgMapping[submission.orgId].includes(String(submission.programId))
             ) : rawSubmissionArr;
