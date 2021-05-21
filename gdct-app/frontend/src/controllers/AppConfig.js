@@ -1,4 +1,3 @@
-import async from 'async';
 import axios from 'axios';
 
 import { host } from '../constants/domain';

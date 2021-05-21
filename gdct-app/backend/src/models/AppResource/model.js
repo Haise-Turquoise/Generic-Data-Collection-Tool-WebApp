@@ -4,6 +4,7 @@ const AppResourceModel = model(
   'AppResource',
   new Schema(
     {
+      id: { type: Number },
       resourceName: { type: String },
       resourcePath: { type: String },
       isProtected: { type: String },

@@ -46,7 +46,12 @@ const UserController = Service([UserService], service => {
         .catch(next);
     });
 
-
+    router.post(`/users/updatePermission`, (req, res, next) => {
+      const { email, permissionData } = req.body;
+      service
+      .updatePermissionByUserEmail(email, permissionData)
+      .catch(next);
+    });
     router.get(`/users/activeUser`, (req, res, next) => {
       const { _id, hashedUsername } = req.query;
       service

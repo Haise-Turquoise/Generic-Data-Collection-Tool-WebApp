@@ -16,7 +16,7 @@ import DetectEmptySheet from './DetectEmptySheet';
 
 import { selectFactoryRESTResponseTableValues } from '../../store/common/REST/selectors';
 import { selectSheetNamesStore } from '../../store/SheetNamesStore/selectors';
-import { calculateOptions } from '../../tools/misc';
+import { calculateOptions, checkDuplicates } from '../../tools/misc';
 
 import sheetNameController from '../../controllers/sheetName';
 import CreateAuditLog from '../AuditLog_Global';
@@ -51,29 +51,30 @@ const SheetNamesTable = () => {
   const columns = useMemo(
     () => [
       { title: "ID", field: "id", editComponent: () => {return <div></div>} },
-      { title: 'Name', field: 'name' },
+      { title: 'Name', field: 'name', validate: rowData => checkDuplicates(rowData, sheetNames, 'name') },
       { title: 'Active', field: 'isActive', type: 'boolean' },
       { title: 'Modified On', field: 'timestamp', editComponent: () => {return <div></div>} },
       { title: 'Updated By', field: 'updatedBy', editComponent: () => {return <div></div>} },
     ],
-    [],
+    [sheetNames],
   );
 
   const options = useMemo(() => calculateOptions(readRowNum), [readRowNum]);
 
   // Record who and when of the action
-    function recordUpdate(sheetName) {
-      //get username and record in Modified By column
-      sheetName.updatedBy = localStorage.getItem('currentUser');
-      //record new date and time in Modified On column 
-     sheetName.timestamp = new Date().toLocaleString();   
-    }
+  const recordUpdate = (sheetName) => {
+    //get username and record in Modified By column
+    sheetName.updatedBy = localStorage.getItem('currentUser');
+    //record new date and time in Modified On column 
+    sheetName.timestamp = new Date().toLocaleString();   
+  }
    
   // Prepare the editing functionalities for the material table
   const editable = useMemo(
     () => ({
       onRowAdd: sheetName =>
         new Promise((resolve, reject) => {
+          sheetName.id = readRowNum
           recordUpdate(sheetName);
           dispatch(createSheetNameRequest(sheetName, resolve, reject));
         }).then(newSheetName => {
@@ -120,7 +121,7 @@ const SheetNamesTable = () => {
           });
         }),
     }),
-    [dispatch],
+    [dispatch, readRowNum],
   );
   
   useEffect(() => {
