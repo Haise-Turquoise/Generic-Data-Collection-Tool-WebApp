@@ -41,7 +41,7 @@ class populationSelectionMenu extends Component{
             <select id="orgs">
               <option>Please select an organization</option>
               {this.orgList.map(element => {
-                const text = element.name;
+                const text = `(${element.id}) ` + element.name;
                 const id = element.id;
                 return <option id={id}>{text}</option>
               })}

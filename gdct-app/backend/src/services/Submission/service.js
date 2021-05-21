@@ -326,12 +326,14 @@ export default class SubmissionService {
     const programAndTempTypes = [];
     const programIds = [];
     const orgMapping = {};
+
+    // Generate org Mappings to find out which submissions are missing
     if (orgId){
       userInfo.sysRole.forEach(sysRole => {
         sysRole.org.forEach(organization => {
           orgMapping[organization.orgId] = [];
           organization.program.forEach(program => {
-            orgMapping[organization.orgId].push(program.programId);
+            orgMapping[organization.orgId].push(program.programId.toString());
             if (!programIds.includes(program.programId)){
               programAndTempTypes.push({ program: program.programId, templateTypes: program.template });
               programIds.push(program.programId);
@@ -340,15 +342,15 @@ export default class SubmissionService {
         });
       });
 
-
     }else{
       const programID = await this.programRepository.find({})
       programID.forEach(element=>{programIds.push(element._id)})
     }
-    
+    // Find template packages base on programs and template types
     return this.findTemplatePackage(programAndTempTypes).then(templatePackages => {
       const name = 'Unsubmitted';
       const inProgressName ='in progress';
+      // Filter out in progress template packages
       return this.statusRepository.findByName(name).then(status => {
         return this.statusRepository.findByName(inProgressName).then(inProgress=>{
           const promiseQuery1 = [];
@@ -358,45 +360,55 @@ export default class SubmissionService {
               this.submissionRepository
                 .findByTemplatePackageId(templatePackage._id)
                 .then(submissions => {
-                  // console.log('submissions',submissions)
-                  if (!submissions[0]) {
-                    const { templateIds } = templatePackage;
-                    const promiseQuery3 = [];
-                    if (templateIds !== undefined) {
-                      templateIds.forEach(templateId => {
-                        if (templatePackage.programIds !== undefined) {
-                          templatePackage.programIds.forEach(programId => {
-                            programAndTempTypes.forEach(element => {
-                              if (element.program.toString() == programId.toString()) {
-                              Object.keys(orgMapping).forEach(organizationId=>{
-                                if (orgMapping[organizationId].includes(element.program)){
-                                  const orgId = organizationId;
-                                    promiseQuery3.push(
-                                    this.createSubmissionBaseOnTemplatePackage({
-                                      orgId,
-                                      templateId,
-                                      templatePackageId: templatePackage._id,
-                                      submissionPeriodId: templatePackage.submissionPeriodId,
-                                      programId,
-                                      statusId: status[0]._id,
-                                      version: 0,
-                                      isLatest: true,
-                                    }),
-                                  );
-                                }
-                              });
+                  
+                  const newOrgMapping = JSON.parse(JSON.stringify(orgMapping));
+                  submissions.forEach(submission => {
+                    const orgId = submission.orgId;
+                    const programId = submission.programId;
+                    if(newOrgMapping[orgId]){
+                      newOrgMapping[orgId] = newOrgMapping[orgId].filter(e => 
+                        e.toString() !== programId.toString()
+                     );
+                     newOrgMapping[orgId] = newOrgMapping[orgId].map(e=>String(e))
+                    }
+                  });
+                  const { templateIds } = templatePackage;
+                  const promiseQuery3 = [];
+                  if (templateIds !== undefined) {
+                    templateIds.forEach(templateId => {
+                      if (templatePackage.programIds !== undefined) {
+                        templatePackage.programIds.forEach(programId => {
+                          programAndTempTypes.forEach(element => {
+                            if (element.program.toString() == programId.toString()) {
+                            Object.keys(newOrgMapping).forEach(organizationId=>{
+                              if (newOrgMapping[organizationId].includes(String(element.program))){
+                                const orgId = organizationId;
+                                  promiseQuery3.push(
+                                  this.createSubmissionBaseOnTemplatePackage({
+                                    orgId,
+                                    templateId,
+                                    templatePackageId: templatePackage._id,
+                                    submissionPeriodId: templatePackage.submissionPeriodId,
+                                    programId,
+                                    statusId: status[0]._id,
+                                    version: 0,
+                                    isLatest: true,
+                                  }),
+                                );
                               }
                             });
+                            }
                           });
-                        }
-                      });
-                      // console.log(promiseQuery3)
-                      // count+=1;
-                      return Promise.all(promiseQuery3);
+                        });
+                      }
+                    });
+                    // console.log(promiseQuery3)
+                    // count+=1;
+                    return Promise.all(promiseQuery3);
 
-                      // return Promise.all(promiseQuery3);
-                    }
+                    // return Promise.all(promiseQuery3);
                   }
+                  
                 }),
             );
           });
