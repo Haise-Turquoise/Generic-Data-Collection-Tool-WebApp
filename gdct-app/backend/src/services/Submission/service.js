@@ -155,7 +155,7 @@ export default class SubmissionService {
     return this.findSubmissionById(id).then(submission => {
       if (!submission) throw 'Submission id does not exist';
       return this.orgRepository.findById(submission.orgId).then(org => {
-        const orgConst = { id: org[0].id, name: org[0].name };
+        const orgConst = { id: org.id, name: org.name };
         return this.programRepository.findById(submission.programId).then(program => {
           const programConst = { _id: program._id, name: program.name };
           return this.templateRepository.findById(submission.templateId).then(template => {

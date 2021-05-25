@@ -414,13 +414,21 @@ export const templateDownloader = (workBookName, sheetData)=>{
     for (const keys of colNums){
       const colNum = Number(keys);
       const targetCol = currSheet.getColumn(colNum + 1)
-      targetCol.width = sheet.cols[keys].width/9
+      if (sheet.cols[keys].width){
+        targetCol.width = sheet.cols[keys].width/9
+      }
     }
 
     // create merge cells
     for (const merges of sheet.merges){
       currSheet.mergeCells(merges);
     }
+
+    const categoryIdRow = currSheet.getRow(1)
+    const attributeIdRow = currSheet.getColumn(1);
+    categoryIdRow.hidden = true;
+    attributeIdRow.hidden = true;
+
   });
 
   //Generate download file
@@ -466,7 +474,7 @@ export const excelImportHandler = (event, dataHandler) => {
     await workBook.xlsx.load(data)
 
     // Iterate over sheets
-    workBook.eachSheet((targetSheet, sheetId)=>{
+    workBook.eachSheet((targetSheet)=>{
 
       const styleMap = new Map();
       const mergeMap = new Map();

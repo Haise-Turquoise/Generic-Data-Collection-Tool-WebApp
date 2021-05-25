@@ -77,7 +77,8 @@ export const middlewares = app => {
       if (allowedUrls.includes(requestUrl)) {
         console.log("ALLOWED");
       } else {
-        console.log("NOT ALLOWED");
+        // If the user is not authenticated
+        console.log(`NOT ALLOWED for request url: ${requestUrl}`);
         return res.send("UNAUTHORIZED ACCESS");
       }
     };
