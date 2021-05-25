@@ -20,6 +20,7 @@ import { selectSubmissionsStore } from '../../store/SubmissionsStore/selectors';
 import { selectFactoryRESTResponseTableValues } from '../../store/common/REST/selectors';
 import { calculateOptions } from '../../tools/misc'
 import StatusController from '../../controllers/status'
+import UsersController from '../../controllers/Users';
 import './SubmissionDashboard.scss'
 
 const useStyles = makeStyles((theme) => ({
@@ -45,13 +46,26 @@ const SubmissionDashboard = ({ history }) => {
   const [readFilterFrom, setFilterFrom] = useState('All');
   const [readFilterTo, setFilterTo] = useState('All');
 
-  const [statuses, setStatuses] = useState([])
+  const [statuses, setStatuses] = useState([]);
+  const [programFilter, setFilter] = useState([]);
 
   useEffect(() => {
+
     StatusController.fetch().then(res => {
       const valid = res.filter(status => status.isActive && !status.forPackage)
-      setStatuses(valid.map(status => status.name))
+      setStatuses(valid.map(status => status.name));
     })
+
+    UsersController.fetchByEmail(localStorage.getItem('currentUser')).then(res=>{
+      let filter = [];
+      const currRole = localStorage.getItem('currentRole');
+      res.sysRole.forEach(role => {
+        if (role.role === currRole && currRole !== 'Business Admin'){
+          filter = filter.concat(role.org[0].program.map(e=>String(e.programId)))
+        }
+      });
+      setFilter(filter);
+    });
   }, [])
 
   const timeOption = { year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric' };
@@ -68,6 +82,11 @@ const SubmissionDashboard = ({ history }) => {
     dispatch(getSubmissionsRequest());
   }
   if (submissions[0] !== undefined) {
+    if (localStorage.getItem('currentRole') !== 'Business Admin'){
+      submissions = submissions.filter(submission=>
+        programFilter.includes(String(submission.programId))
+      );
+    }
     submissions.forEach(submission => {
       const createdAt = new Date(submission.createdAt);
       const modifiedAt = new Date(submission.updatedAt);
