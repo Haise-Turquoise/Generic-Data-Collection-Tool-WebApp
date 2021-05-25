@@ -141,7 +141,6 @@ const SubmissionDashboard = ({ history }) => {
     ],
     [],
   );
-
   const notEditableActions = useMemo(
     () => [
       {
