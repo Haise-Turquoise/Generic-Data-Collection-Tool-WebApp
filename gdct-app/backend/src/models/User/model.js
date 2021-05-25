@@ -23,7 +23,7 @@ const User = new Schema(
     newTemplates:[],
     toBeApproved:{type: Array},
     phoneNumber: { type: String, default: '' },
-    
+    pendingPermissions:{type:Array},
     password: String,
     sysRole: [
       {

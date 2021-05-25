@@ -61,7 +61,7 @@ const ProgList = ({ programIds, isEditable = true, onClickAdd, onClickDelete }) 
       </div>
       <div className="tableWrapper-other">
         <MaterialTable
-          title="Other Programs"
+          title="Available Programs"
           // @ts-ignore
           columns={columns}
           data={nonOrgProgs()}

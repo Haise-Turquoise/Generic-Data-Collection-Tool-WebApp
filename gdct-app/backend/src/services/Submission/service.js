@@ -326,7 +326,7 @@ export default class SubmissionService {
     if (orgId){
       userInfo.sysRole.forEach(sysRole => {
         sysRole.org.forEach(organization => {
-          orgMapping[organization.orgId] = [];
+          if (!orgMapping[organization.orgId]) orgMapping[organization.orgId] = [];
           organization.program.forEach(program => {
             orgMapping[organization.orgId].push(program.programId.toString());
             if (!programIds.includes(program.programId)){

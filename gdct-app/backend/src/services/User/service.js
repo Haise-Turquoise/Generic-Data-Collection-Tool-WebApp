@@ -60,43 +60,68 @@ export default class UserService {
         ),
       );
     });
+    // reset sysRole to empty
+    registerData.sysRole = [];
     await Promise.all(promiseQuery);
-    this.UserRepository.create(registerData).then(registerRecord => {
-      sendUserVerficationEmail(registerData);
-      const { hashedUsername } = registerRecord;
-      const { username } = registerRecord;
-      const userId = registerRecord._id;
-      const orgList = [];
-      registerData.sysRole.forEach(sysRole => {
-        sysRole.org.forEach(org => {
-          let orgInfo = orgList.find(function (element) {
-            return element.orgId == org.orgId;
-          });
-          if (orgInfo == undefined) {
-            const orgData = {
-              authorizedPerson: org.authorizedPerson,
-              name: org.name,
-              orgId: org.orgId,
-              permission: [],
-            };
-            orgInfo = orgData;
-            orgList.push(orgInfo);
-          }
-          org.program.forEach(program => {
-            program.template.forEach(template => {
-              orgInfo.permission.push({
-                template: template.templateCode,
-                role: sysRole.role,
-              });
-            });
-          });
-        });
-      });
+    await this.UserRepository.create(registerData);
 
-      orgList.forEach(orgInfo => {
-        sendAdminVerficationEmail(orgInfo, hashedUsername, userId, username);
-      });
-    });
+    const newTemplates = registerData.newTemplates;
+    for (const template of newTemplates) {
+      const appSysRole = await this.AppSysRoleReposiotry.findAndCreateAppSysRole(template.appSys, template.permission)
+      template.appSysRoleId = appSysRole._id;
+      // console.log(template)
+      const orgApproverName = template.organization.authorizedPerson.name;
+      const orgApprover = await this.fetchUserByUserName(orgApproverName);
+      const orgApproverCopy = cloneDeep(orgApprover)
+      orgApproverCopy.toBeApproved.push(template)
+      await this.UserRepository.modifyUserToBeApproved(orgApproverCopy._id, orgApproverCopy)
+
+
+
+      const userInfo = await this.UserRepository.findByEmail(registerData.email)
+      const userInfoCopy = cloneDeep(userInfo)
+      userInfoCopy.pendingPermissions.push(template)
+      await this.UserRepository.modifyUserPendingPermissions(userInfo._id,userInfoCopy)
+    }
+
+
+
+    // this.UserRepository.create(registerData).then(registerRecord => {
+    //   sendUserVerficationEmail(registerData);
+    //   const { hashedUsername } = registerRecord;
+    //   const { username } = registerRecord;
+    //   const userId = registerRecord._id;
+    //   const orgList = [];
+    //   registerData.sysRole.forEach(sysRole => {
+    //     sysRole.org.forEach(org => {
+    //       let orgInfo = orgList.find(function (element) {
+    //         return element.orgId == org.orgId;
+    //       });
+    //       if (orgInfo == undefined) {
+    //         const orgData = {
+    //           authorizedPerson: org.authorizedPerson,
+    //           name: org.name,
+    //           orgId: org.orgId,
+    //           permission: [],
+    //         };
+    //         orgInfo = orgData;
+    //         orgList.push(orgInfo);
+    //       }
+    //       org.program.forEach(program => {
+    //         program.template.forEach(template => {
+    //           orgInfo.permission.push({
+    //             template: template.templateCode,
+    //             role: sysRole.role,
+    //           });
+    //         });
+    //       });
+    //     });
+    //   });
+
+    //   orgList.forEach(orgInfo => {
+    //     sendAdminVerficationEmail(orgInfo, hashedUsername, userId, username);
+    //   });
+    // });
   }
 
   login(username) {
@@ -171,13 +196,21 @@ export default class UserService {
     return this.UserRepository.modifyUserInfo(_id, userData);
   }
 
+  async modifyUserToBeApproved(_id, userData) {
+    return this.UserRepository.modifyUserToBeApproved(_id, userData);
+  }
+
+  async modifyUserPendingPermissions(_id, userData) {
+    return this.UserRepository.modifyUserPendingPermissions(_id, userData);
+  }
+
   async fetchUserByUserName(username) {
     return this.UserRepository.findByUserName(username);
   }
 
   async updatePermissionByUserEmail(email,permissionData){
 
-
+    
     let registerData = permissionData;
     // console.log(registerData)
     const promiseQuery = [];
@@ -223,41 +256,43 @@ export default class UserService {
     await Promise.all(promiseQuery);
     const orgList = [];
     const newTemplates = permissionData.newTemplates;
-    newTemplates.forEach(async template=>{
+    for (const template of newTemplates) {
+      const appSysRole = await this.AppSysRoleReposiotry.findAndCreateAppSysRole(template.appSys, template.permission)
+      template.appSysRoleId = appSysRole._id;
+      // console.log(template)
       const orgApproverName = template.organization.authorizedPerson.name;
-      // console.log(orgApprovedName)
-      // this.fetchUserByUserName(orgApproverName).then(orgApprover=>{
-      //   const orgApproverCopy = cloneDeep(orgApprover)
-      //   orgApproverCopy.toBeApproved.push(template)
-      //   console.log(orgApproverCopy)
-      //   this.modifyUserInfo(orgApproverCopy._id, orgApproverCopy)
-      // })
       const orgApprover = await this.fetchUserByUserName(orgApproverName);
-      // console.log(orgApprover.toBeApproved)
       const orgApproverCopy = cloneDeep(orgApprover)
       orgApproverCopy.toBeApproved.push(template)
-      await this.modifyUserInfo(orgApproverCopy._id, orgApproverCopy)
-      
-      let orgInfo = orgList.find(function(element){
-        return element.orgId == template.organization.id;
-      })
-      if(orgInfo == undefined){
-        const orgData = {
-          authorizedPerson:template.organization.authorizedPerson,
-          name:template.organization.name,
-          orgId:template.organization.id,
-          permission:[],
-        }
-        orgInfo = orgData;
-        orgList.push(orgInfo);
-        orgInfo.permission.push({
-          template: template.submission.name,
-          role: template.permission,
-          programName:template.program.name,
-          programCode:template.program.code,
-        })
-      }
-    })
+      await this.UserRepository.modifyUserToBeApproved(orgApproverCopy._id, orgApproverCopy)
+
+
+
+      const userInfo = await this.UserRepository.findByEmail(email)
+      const userInfoCopy = cloneDeep(userInfo)
+      userInfoCopy.pendingPermissions.push(template)
+      await this.UserRepository.modifyUserPendingPermissions(userInfo._id,userInfoCopy)
+      // prepare for sending email
+      // let orgInfo = orgList.find(function(element){
+      //   return element.orgId == template.organization.id;
+      // })
+      // if(orgInfo == undefined){
+      //   const orgData = {
+      //     authorizedPerson:template.organization.authorizedPerson,
+      //     name:template.organization.name,
+      //     orgId:template.organization.id,
+      //     permission:[],
+      //   }
+      //   orgInfo = orgData;
+      //   orgList.push(orgInfo);
+      //   orgInfo.permission.push({
+      //     template: template.submission.name,
+      //     role: template.permission,
+      //     programName:template.program.name,
+      //     programCode:template.program.code,
+      //   })
+      // }
+    }
     // return this.UserRepository.updatePermissionByUserEmail(email.email,permissionData.permissionData,orgList)
   }
 }
