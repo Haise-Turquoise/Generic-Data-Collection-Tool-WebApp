@@ -8,6 +8,7 @@ const Status = new Schema(
     updatedBy: { type: String },
     isActive: { type: Boolean },
     forPackage: { type: Boolean },
+    order: { type: Number }
   },
   { minimize: false, timestamps: true },
 )

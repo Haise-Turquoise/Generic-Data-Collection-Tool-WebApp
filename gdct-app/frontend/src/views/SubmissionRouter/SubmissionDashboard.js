@@ -52,7 +52,9 @@ const SubmissionDashboard = ({ history }) => {
   useEffect(() => {
 
     StatusController.fetch().then(res => {
-      const valid = res.filter(status => status.isActive && !status.forPackage)
+      const valid = res
+        .filter(status => status.isActive && !status.forPackage)
+        .sort((a, b) => a.order - b.order)
       setStatuses(valid.map(status => status.name));
     })
 
