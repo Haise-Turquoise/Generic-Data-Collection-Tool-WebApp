@@ -78,20 +78,8 @@ const SubmissionDashboard = ({ history }) => {
       if (!submissionPeriod[submission.period]) {
         submissionPeriod[submission.period] = 1;
       }
-      let filterFrom = submission.period.split(' ')[2];
-      let filterTo = filterFrom;
 
-      if (readFilterFrom != 'All') {
-        filterFrom = readFilterFrom.split(' ')[2];
-      }
-
-      if (readFilterTo != 'All') {
-        filterTo = readFilterTo.split(' ')[2];
-      }
-
-      if (submission !== undefined &&
-        (submission.period.split(' ')[2] >= filterFrom && submission.period.split(' ')[2] <= filterTo)) {
-
+      if (submission !== undefined) {
         if (
           submission.permission.find(
             permission => permission === 'Submitter' || permission === 'Inputter',
@@ -175,6 +163,14 @@ const SubmissionDashboard = ({ history }) => {
     dispatch(getSubmissionsRequest());
   }, [dispatch]);
 
+  const getSubmissionsInRange = (status) => submissions.filter(
+    (submission) =>
+      // get submissions for given status and selected period 
+      submission.phase === status && 
+      (readFilterFrom === 'All' || submission.period >= readFilterFrom) && 
+      (readFilterTo === 'All' || submission.period <= readFilterTo)
+    )
+
 
   return (
     <div className="submissions">
@@ -209,7 +205,7 @@ const SubmissionDashboard = ({ history }) => {
       </FormControl>
 
       {statuses.map(status => {
-        const data = submissions.filter(submission => submission.phase === status)
+        const data = getSubmissionsInRange(status)
         const options = calculateOptions(data.length)
         return (
           <ExpansionPanel>

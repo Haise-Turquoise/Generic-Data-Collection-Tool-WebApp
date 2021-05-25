@@ -44,7 +44,6 @@ export default class MasterValueService {
     // console.log(categoryGroupList);
     let string = '';
     for (const item in categoryGroupList) {
-      console.log(item);
       string += categoryGroupList[item].name;
       string += ', ';
     }
