@@ -95,7 +95,6 @@ export default class UserRepository extends BaseRepository {
     );
   }
   async modifyUserToBeApproved(_id, userData) {
-    console.log(_id)
     return UserModel.findOneAndUpdate({ _id: _id }, 
       { 
         toBeApproved: userData.toBeApproved,
@@ -103,7 +102,6 @@ export default class UserRepository extends BaseRepository {
     );
   }
   async modifyUserPendingPermissions(_id, userData) {
-    console.log(_id)
     return UserModel.findOneAndUpdate({ _id: _id }, 
       { 
         sysRole:userData.sysRole,
