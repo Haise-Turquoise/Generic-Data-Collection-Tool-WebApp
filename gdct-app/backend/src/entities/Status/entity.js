@@ -1,5 +1,5 @@
 export default class StatusEntity {
-  constructor({ _id, name, description, timestamp, updatedBy, isActive, forPackage }) {
+  constructor({ _id, name, description, timestamp, updatedBy, isActive, forPackage, order }) {
     this._id = _id;
     this.name = name;
     this.description = description;
@@ -7,5 +7,6 @@ export default class StatusEntity {
     this.updatedBy = updatedBy;
     this.isActive = isActive;
     this.forPackage = forPackage;
+    this.order = order;
   }
 }
