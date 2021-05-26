@@ -328,7 +328,7 @@ export default class SubmissionService {
         sysRole.org.forEach(organization => {
           if (!orgMapping[organization.orgId]) orgMapping[organization.orgId] = [];
           organization.program.forEach(program => {
-            orgMapping[organization.orgId].push(program.programId.toString());
+            orgMapping[organization.orgId].push(String(program.programId));
             if (!programIds.includes(program.programId)){
               programAndTempTypes.push({ program: program.programId, templateTypes: program.template });
               programIds.push(program.programId);
@@ -425,8 +425,9 @@ export default class SubmissionService {
 
             // if orgId is undefined, then it must be an admin, so the filter will not filter
             // the submissions
-            const submissionArr = orgId? rawSubmissionArr.filter(submission=>
-              orgMapping[submission.orgId].includes(String(submission.programId))
+            const submissionArr = orgId? rawSubmissionArr.filter(submission=>{
+              return orgMapping[submission.orgId].includes(String(submission.programId))
+            }
             ) : rawSubmissionArr;
             
 
