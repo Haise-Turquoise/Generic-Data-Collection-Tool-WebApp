@@ -74,7 +74,6 @@ export async function mastervaluePrepopulation(workbook, submission){
       let masterValueItem = res[item];
       let ri = categoryMap[masterValueItem.categoryId];
       let ci = attributeMap[masterValueItem.attributeId];
-      console.log('Hi', ri, ci)
       if (!sheet.rows[ri].cells[ci]) sheet.rows[ri].cells[ci] = {};
       sheet.rows[ri].cells[ci].text = masterValueItem.value;
       sheet.rows[ri].cells[ci].editable = false;
