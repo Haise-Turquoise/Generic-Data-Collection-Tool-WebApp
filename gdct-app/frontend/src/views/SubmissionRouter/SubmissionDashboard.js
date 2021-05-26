@@ -61,7 +61,9 @@ const SubmissionDashboard = ({ history }) => {
       const currRole = localStorage.getItem('currentRole');
       res.sysRole.forEach(role => {
         if (role.role === currRole && currRole !== 'Business Admin'){
-          filter = filter.concat(role.org[0].program.map(e=>String(e.programId)))
+          role.org.forEach(orginfo => {
+            filter = filter.concat(orginfo.program.map(e=>String(e.programId)))
+          });
         }
       });
       setFilter(filter);

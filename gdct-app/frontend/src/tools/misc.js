@@ -55,6 +55,7 @@ export const urlParser = (orgId, categories, attributes)=>{
   attributes.forEach((entry)=>{
     UrlWithCategories = UrlWithCategories + entry + ",";
   });
+  // console.log(UrlWithCategories.slice(0, -1))
   return UrlWithCategories.slice(0, -1);
 }
 
@@ -199,16 +200,16 @@ export const compareSheet = (oldWorkBook, newNewWorkBook) => {
     const oldSheet = oldWorkBook[i];
     const newSheet = newNewWorkBook[i];
     const sheetName = oldSheet.name;
-    const rows = Object.keys(oldSheet.rows).slice(0, -1);
+    const rows = Object.keys(newSheet.rows).slice(0, -1);
     const maxRow = Number(rows[rows.length - 1]);
     for (let rowNum = 0; rowNum <= maxRow; rowNum++){
       const oldRow = oldSheet.rows[String(rowNum)];
       const newRow = newSheet.rows[String(rowNum)];
 
       if (oldRow && newRow){
-        const oldCols = Object.keys(oldRow.cells);
+        const newCols = Object.keys(newRow.cells);
         // Iterate through the cols
-        for (const index of oldCols){
+        for (const index of newCols){
           // check if cell is empty
           const oldCell = oldRow.cells[index];
           const newCell = newRow.cells[index];
@@ -225,6 +226,9 @@ export const compareSheet = (oldWorkBook, newNewWorkBook) => {
               oldValues.push({ sheetName: sheetName, row:rowNum + 1, col:index, value: 'empty' });
               newValues.push({ sheetName: sheetName, row:rowNum + 1, col:index, value: newCell.text });
             };
+          }else{
+            oldValues.push({ sheetName: sheetName, row:rowNum + 1, col:index, value: 'empty' });
+            newValues.push({ sheetName: sheetName, row:rowNum + 1, col:index, value: newCell.text });
           };
         };
       };
