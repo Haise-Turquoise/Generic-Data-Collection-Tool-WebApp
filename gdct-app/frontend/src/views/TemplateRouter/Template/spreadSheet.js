@@ -95,7 +95,7 @@ class SpreadSheet extends Component{
         // default value is 0.05
         this.validationThreshold = data.value?Number(data.value):0.05;
       })
-      
+
     }
     
     // This handles user navigate to different page without saving
@@ -164,7 +164,7 @@ class SpreadSheet extends Component{
 
       // Search if the variance column exist
       const findResult = findWordInRow(currSheet, 9, 'Variance');
-      let targetCol =  findResult > 0 ? findResult: findLastAttributeCol(currSheet) + 1;
+      const targetCol =  findResult > 0 ? Number(findResult): Number(findLastAttributeCol(currSheet) + 1);
 
       // Insert the variance column if it does not exist
       if (findResult < 0){
@@ -176,17 +176,20 @@ class SpreadSheet extends Component{
 
       // Insert the variance formula for each of the cells
       // e.g: =(A1-A2)/A2
+      const targetColAlphabit = digitToAlpha(targetCol);
       for (const attributeID of keys){
         const rowNum = Number(categoryMap[attributeID]) + 1;
         const text = '=' + '(' + startCol + rowNum + '-' + endCol + rowNum + ')/' + startCol + rowNum;
         this.sheet.cellText(rowNum - 1, targetCol, text, currSheetIndex);
-        this.sheet.addGreterThan(
+        const cellCoord = targetColAlphabit + (targetCol + 1);
+        this.sheet.addOtherGreaterThan(
           rowNum - 1, 
           rowNum - 1, 
-          targetCol, 
-          targetCol, 
+          targetCol + 1, 
+          targetCol + 1,
+          `=${cellCoord}`, 
           0.05, 
-          {}, 
+          { bgcolor: "#FFEF00" }, 
           currSheetIndex
         )
       }
