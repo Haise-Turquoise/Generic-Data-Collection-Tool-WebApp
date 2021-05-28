@@ -1,0 +1,36 @@
+# Node.js with webpack
+# Build a Node.js project using the webpack CLI.
+# Add steps that analyze code, save build artifacts, deploy, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/languages/javascript
+
+trigger:
+- subazure
+
+pool:
+  vmImage: ubuntu-latest
+
+steps:
+- task: NodeTool@0
+  inputs:
+    versionSpec: '14.x'
+  displayName: 'Install Node.js'
+
+# - script: |
+#     npm install -g webpack webpack-cli --save-dev
+#     npm install
+#     npx webpack --config webpack.config.js
+
+- script: |
+    yarn
+    yarn global add webpack webpack-cli -dev
+    yarn upgrade caniuse-lite browserslist
+    yarn add webpack-config
+    yarn add https://github.com/Sheldonsu28/x-spreadsheet.git 
+  displayName: 'yarn install, webpack cli, speadsheet and build'
+
+- task: CopyFiles@2
+  inputs:
+    # contents: '_buildOutput/**'
+    contents: '**.zip*'
+    sourceFolder: $(Build.SourcesDirectory)
+    targetFolder: $(Build.ArtifactStagingDirectory)
