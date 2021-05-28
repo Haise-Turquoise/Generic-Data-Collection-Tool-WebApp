@@ -26,7 +26,7 @@ steps:
     yarn upgrade caniuse-lite browserslist
     yarn add webpack-config
     yarn add https://github.com/Sheldonsu28/x-spreadsheet.git 
-  displayName: 'yarn install, webpack cli, speadsheet and build'
+  displayName: 'yarn install, webpack cli, speadsheet'
 
 - task: CopyFiles@2
   inputs:
