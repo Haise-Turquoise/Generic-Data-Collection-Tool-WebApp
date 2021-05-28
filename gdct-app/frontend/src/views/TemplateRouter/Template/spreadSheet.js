@@ -11,6 +11,7 @@ import { digitToAlpha,
   generateCategoryMap, generateAttributeMap, 
   findWordInRow, findLastAttributeCol, 
   templateDownloader, excelImportHandler, generateFullMap} from '../../../tools/misc';
+import appConfigController from '../../../controllers/AppConfig';
 
 // Sheet style Option
 const sheetOption = {
@@ -71,6 +72,8 @@ class SpreadSheet extends Component{
       this.categoryAndAttribute = {};
       this.insertedPreview = [];
       this.prevVarianceSelection = null;
+      this.validationThreshold = 0.05;
+      this.attrbuteRow = 9;
     }
 
     // After component mount, initailize spreadsheet and load data from DB
@@ -86,6 +89,13 @@ class SpreadSheet extends Component{
           this.currentCoord = {row, col};
         })
       });
+
+      // fetch Validation Threshold
+      appConfigController.fetchValidationThreshold().then(data=>{
+        // default value is 0.05
+        this.validationThreshold = data.value?Number(data.value):0.05;
+      })
+      
     }
     
     // This handles user navigate to different page without saving
@@ -170,6 +180,15 @@ class SpreadSheet extends Component{
         const rowNum = Number(categoryMap[attributeID]) + 1;
         const text = '=' + '(' + startCol + rowNum + '-' + endCol + rowNum + ')/' + startCol + rowNum;
         this.sheet.cellText(rowNum - 1, targetCol, text, currSheetIndex);
+        this.sheet.addGreterThan(
+          rowNum - 1, 
+          rowNum - 1, 
+          targetCol, 
+          targetCol, 
+          0.05, 
+          {}, 
+          currSheetIndex
+        )
       }
 
       // keep the previous varaince selection to incase user insert a new attribute

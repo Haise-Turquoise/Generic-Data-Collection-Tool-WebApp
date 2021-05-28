@@ -11,6 +11,10 @@ export default class AppConfigService {
     return this.AppConfigRepository.create(AppConfig);
   }
 
+  async findValidationThreshold(){
+    return this.AppConfigRepository.findOne({key: "Validation Threshold"});
+  }
+
   async deleteAppConfig(id) {
     return this.AppConfigRepository.delete(id);
   }
