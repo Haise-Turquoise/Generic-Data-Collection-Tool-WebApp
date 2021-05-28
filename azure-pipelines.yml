@@ -31,6 +31,6 @@ steps:
 - task: CopyFiles@2
   inputs:
     # contents: '_buildOutput/**'
-    contents: '**.zip*'
+    # contents: '**.zip*'
     sourceFolder: $(Build.SourcesDirectory)
     targetFolder: $(Build.ArtifactStagingDirectory)
