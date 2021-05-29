@@ -28,11 +28,14 @@ steps:
    # yarn add https://github.com/Sheldonsu28/x-spreadsheet.git 
   displayName: 'yarn install, webpack cli, #speadsheet'
 
-- task: CopyFiles@2
-  inputs:
-    # contents: '_buildOutput/**'
-    # contents: '**.zip*'
-    sourceFolder: $(Build.SourcesDirectory)
-    targetFolder: $(Build.ArtifactStagingDirectory)
+# - task: CopyFiles@2
+#   inputs:
+#     # contents: '_buildOutput/**'
+#     # contents: '**.zip*'
+#     sourceFolder: $(Build.SourcesDirectory)
+#     targetFolder: $(Build.ArtifactStagingDirectory)
 
-#- task: PublishBuildArtifacts@1
+task: PublishBuildArtifacts@1
+  inputs:
+    pathToPublish: '$(Build.ArtifactStagingDirectory)'
+    artifactName: gdct
