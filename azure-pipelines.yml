@@ -35,4 +35,4 @@ steps:
     sourceFolder: $(Build.SourcesDirectory)
     targetFolder: $(Build.ArtifactStagingDirectory)
 
-- task: PublishBuildArtifacts@1
+#- task: PublishBuildArtifacts@1
