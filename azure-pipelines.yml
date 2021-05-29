@@ -34,3 +34,5 @@ steps:
     # contents: '**.zip*'
     sourceFolder: $(Build.SourcesDirectory)
     targetFolder: $(Build.ArtifactStagingDirectory)
+
+- task: PublishBuildArtifacts@1
