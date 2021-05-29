@@ -1,8 +1,8 @@
-const PORT = process.env.PORT || 3000;
-const BACKEND_LOCAL = `http://localhost:${PORT}`;
+//const PORT = process.env.PORT || 3000;
+//const BACKEND_LOCAL = `http://localhost:${PORT}`;
 
 // export const SERVER_APP = process.env.NODE_ENV === "production" ? process.env.SERVER_URL : BACKEND_LOCAL;
-export const SERVER_APP = process.env.SERVER_URL || BACKEND_LOCAL;
+//export const SERVER_APP = process.env.SERVER_URL || BACKEND_LOCAL;
 
 /* Route groups and routes - separated by auth or security */
 export const REST_GROUP_PUBLIC = '/public';
