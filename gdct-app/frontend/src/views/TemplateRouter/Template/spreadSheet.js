@@ -96,6 +96,10 @@ class SpreadSheet extends Component{
         this.validationThreshold = data.value?Number(data.value):0.05;
       })
 
+      appConfigController.fetchAttributeRow().then(data=>{
+        this.attrbuteRow = data.vale? Number(data.value) - 1:9 
+      })
+
     }
     
     // This handles user navigate to different page without saving
@@ -176,19 +180,19 @@ class SpreadSheet extends Component{
 
       // Insert the variance formula for each of the cells
       // e.g: =(A1-A2)/A2
-      const targetColAlphabit = digitToAlpha(targetCol);
+      const targetColAlphabit = digitToAlpha(targetCol + 1);
       for (const attributeID of keys){
         const rowNum = Number(categoryMap[attributeID]) + 1;
         const text = '=' + '(' + startCol + rowNum + '-' + endCol + rowNum + ')/' + startCol + rowNum;
         this.sheet.cellText(rowNum - 1, targetCol, text, currSheetIndex);
-        const cellCoord = targetColAlphabit + (targetCol + 1);
+        const cellCoord = targetColAlphabit.toLocaleLowerCase() + (rowNum);
         this.sheet.addOtherGreaterThan(
           rowNum - 1, 
           rowNum - 1, 
           targetCol + 1, 
           targetCol + 1,
+          this.validationThreshold, 
           `=${cellCoord}`, 
-          0.05, 
           { bgcolor: "#FFEF00" }, 
           currSheetIndex
         )

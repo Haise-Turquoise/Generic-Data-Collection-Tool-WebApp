@@ -35,6 +35,13 @@ const AppConfigController = Service([AppConfigService], service => {
         .catch(next);
     });
 
+    router.get('/appConfigs/attributeRow', (req, res, next) => {
+      service
+        .findAttributeRow()
+        .then(thershold => res.json( thershold ))
+        .catch(next);
+    });
+
     router.post('/appConfigs/create', (req, res, next) => {
       service
         .createAppConfig(req.body.AppConfig)
