@@ -63,9 +63,8 @@ const AppSysRolesTable = props => {
       {
         title: 'Application System',
         field: 'appSys',
-        lookup: lookupSysRoles,
       },
-      { title: 'Role', field: 'role', lookup: lookupAppRoles },
+      { title: 'Role', field: 'role' },
       { title: 'Modified On', field: 'timestamp', editComponent: () => {return <div></div>} },
       { title: 'Updated By', field: 'updatedBy', editComponent: () => {return <div></div>} },
     ],
