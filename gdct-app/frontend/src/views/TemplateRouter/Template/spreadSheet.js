@@ -197,8 +197,8 @@ class SpreadSheet extends Component{
       // Get the master values from DB
       spreadSheetController.fetchByOrgID(orgID, categories, attributes).then(data=>{
         data.forEach(element => {
-          const COAID = element["CategoryId"];
-          const attributeId = element["AttributeId"];
+          const COAID = element["categoryId"];
+          const attributeId = element["attributeId"];
           const value = element['value'];
           this.sheet.cellText(categoryMapping[COAID], attributeMapping[attributeId], value, currentSheetIndex);
           this.insertedPreview.push({COAID, attributeId, currentSheetIndex});
