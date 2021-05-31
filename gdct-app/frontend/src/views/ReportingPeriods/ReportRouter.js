@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { Switch, Route } from 'react-router-dom';
-import './static_report.jpg'
+import '../../images/static_report.jpg'
 
 const ReportRouter = () => (
   <Switch>
