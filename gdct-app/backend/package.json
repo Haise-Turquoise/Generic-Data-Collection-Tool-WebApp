@@ -77,7 +77,6 @@
     "eslint-plugin-import": "^2.22.0",
     "eslint-plugin-prettier": "^3.1.1",
     "esm": "^3.2.25",
-    "husky": "^4.2.5",
     "jest": "^25.4.0",
     "lint-staged": "^10.2.11",
     "ndb": "^1.1.5",
