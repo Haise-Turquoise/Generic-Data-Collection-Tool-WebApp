@@ -192,6 +192,7 @@ export default function Login({ setLoggedIn }) {
   // Session Timer
   const Timer = async () => {
     const sessionCheckingPeriod = await AppConfigController.fetchSessionCheckingPeriod();
+    const period = sessionCheckingPeriod.value;
     let i = 0;
     while (i < 60) {
       (function(i) {
@@ -253,7 +254,7 @@ export default function Login({ setLoggedIn }) {
               }
             }
           })
-        }, sessionCheckingPeriod.value * 60 * 1000 * i)
+        }, period * 60 * 1000 * i)
       })(i++)
     };
   };

@@ -83,7 +83,6 @@ export default class UserRepository extends BaseRepository {
   }
 
   async modifyUserInfo(_id, userData) {
-    console.log(userData)
     return UserModel.findOneAndUpdate({ _id: _id }, 
       { title: userData.title, 
         firstName: userData.firstName, 
@@ -100,7 +99,6 @@ export default class UserRepository extends BaseRepository {
   async updatePermissionByUserEmail(email,permissionData,orgList) {
     const sysRole = permissionData.sysRole;
     const newTemplates = permissionData.newTemplates
-    console.log(sysRole)
     return UserModel.findOne({email}).then(user=>{
       sendPermissionChangeUserVerficationEmail(user.username, user.email)
       const hashedUsername = user.hashedUsername;

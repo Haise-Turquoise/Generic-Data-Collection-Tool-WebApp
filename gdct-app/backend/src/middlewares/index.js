@@ -48,14 +48,16 @@ export const middlewares = app => {
   let isLoggedIn = false;
   app.use('/', async (req, res, next) => {
     const requestUrl = req.originalUrl;
-    // Allow all requests before completing login
-    if (!isLoggedIn && requestUrl !== '/login') return next();
-
+    
     // During the logging in process, fetch all allowed requestUrls for this user
-    if (!isLoggedIn && requestUrl === '/login' && req.body.selectedRole !== "") {
+    if (!isLoggedIn && requestUrl === '/login' && req.body.selectedRole !== undefined) {
       // Fetching
       const user = await UserModel.findOne({ email: req.body.email });
-      const loggedInSysRole = user.sysRole.find(sysRole => sysRole.role === req.body.selectedRole);
+      let loggedInSysRole = user.sysRole.find(sysRole => sysRole.role === req.body.selectedRole);
+      // *** Set the role to be the first available role for this user as the default role 
+      // *** because autofill feature would make the user role empty
+      if (!loggedInSysRole) loggedInSysRole = user.sysRole[0];
+
       const loggedInAs = loggedInSysRole.appSys + ' ' + loggedInSysRole.role;
       const allowedRoleResource = await AppRoleResourceModel.findOne({ 'appSysRoleId.roleName': loggedInAs });
       const allowedResources = allowedRoleResource.toObject().resourceId;
@@ -75,7 +77,7 @@ export const middlewares = app => {
     // Check whether a logged in user is allowed to access requestUrls
     if (isLoggedIn && requestUrl !== '/login') {
       if (allowedUrls.includes(requestUrl)) {
-        console.log("ALLOWED");
+        // console.log("ALLOWED");
       } else {
         console.log("NOT ALLOWED");
         return res.send("UNAUTHORIZED ACCESS");
