@@ -124,7 +124,6 @@ const UsersTable = () => {
       onRowUpdate: user =>
         new Promise((resolve, reject) => {
           recordUpdate(user);
-          console.log(user);
           // Find the old value before updating in order to Auditlog
           (async () => {
             // seems redundant, but we cannot put user._id directly into an object
