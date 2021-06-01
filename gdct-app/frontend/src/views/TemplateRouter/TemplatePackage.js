@@ -157,6 +157,7 @@ const Content = ({ setFieldValue, handleChange, values }) => {
     return selected;
   }, [values]);
 
+
   const selectedPrograms = useMemo(() => {
     const selected = {};
 

@@ -191,8 +191,8 @@ class SpreadSheet extends Component{
           rowNum - 1, 
           targetCol + 1, 
           targetCol + 1,
-          this.validationThreshold, 
-          `=${cellCoord}`, 
+          `=${cellCoord}`,
+          this.validationThreshold,  
           { bgcolor: "#FFEF00" }, 
           currSheetIndex
         )
