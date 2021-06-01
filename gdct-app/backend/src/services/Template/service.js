@@ -2,6 +2,7 @@ import Container from 'typedi';
 import TemplateRepository from '../../repositories/Template';
 import TemplateTypeRepository from '../../repositories/TemplateType';
 import WorkflowProcessRepository from '../../repositories/WorkflowProcess/WorkflowProcess';
+import StatusRepositoy from '../../repositories/Status';
 
 // @Service()
 export default class TemplateService {
@@ -9,6 +10,7 @@ export default class TemplateService {
     this.templateRepository = Container.get(TemplateRepository);
     this.templateTypeRepository = Container.get(TemplateTypeRepository);
     this.workflowProcessRepository = Container.get(WorkflowProcessRepository);
+    this.statusRepository = Container.get(StatusRepositoy);
   }
 
   async createTemplate(template) {

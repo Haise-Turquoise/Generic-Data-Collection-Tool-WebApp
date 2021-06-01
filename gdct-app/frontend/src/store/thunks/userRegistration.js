@@ -346,7 +346,7 @@ const sendRegistrationData = registerData => {
 };
 const updatePermissionData = (email,permissionData) => {
   
-  return userController.updatePermissionByUserEmail(email,permissionData).catch(error => console.error(error));
+  return userController.updatePermissionByUserEmail(email,permissionData).then((result=>{Promise.resolve(result)})).catch(error => console.error(error));
 };
 
 const submissionChange = userSubmissions => {
@@ -679,6 +679,14 @@ export const loadModifyPermissionPage =  ()=> async (dispatch,getState)=>{
       }
   }
 
+  const {
+    UserRegistrationStore: { userPermissions },
+  } = getState();
+  const userPermissionsCopy = cloneDeep(userPermissions);
+  for(const pendingPermission of user.pendingPermissions){
+    userPermissionsCopy.push(pendingPermission)
+  }
+  dispatch(userRegistrationStore.actions.setUserPermissionList(userPermissionsCopy));
 
   getAppSys().then(appSys => {
     dispatch(userRegistrationStore.actions.setAppSysOptions(appSys));
@@ -784,7 +792,9 @@ export const submit = () => (dispatch, getState) => {
     handleInputSysRole(userData, 'view', submission, userAppSys);
     handleInputSysRole(userData, 'viewCognos', submission, userAppSys);
   });
-
+  userData.newTemplates = submissionChange(userSubmissions);
+  userData.newTemplates.forEach(newTemplate=>{newTemplate.appSys = userAppSys, newTemplate.applierEmail = userData.email})
+  console.log(userData)
   sendRegistrationData(userData);
 };
 
@@ -817,7 +827,8 @@ export const updatePermission = () =>(dispatch, getState)=>{
   const email = localStorage.getItem('currentUser');
 
   userData.newTemplates = submissionChange(userSubmissions);
-  userData.newTemplates.forEach(newTemplate=>newTemplate.appSys = userAppSys)
+  userData.newTemplates.forEach(newTemplate=>{newTemplate.appSys = userAppSys, newTemplate.applierEmail = email})
+  console.log(userData)
   updatePermissionData(email,userData);
 }
 

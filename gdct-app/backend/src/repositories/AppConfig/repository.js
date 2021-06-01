@@ -44,4 +44,8 @@ export default class AppConfigRepository extends BaseRepository {
   async findSessionCheckingPeriod() {
     return AppConfigModel.findOne({ key: "Session Timer Checking Interval" });
   }
+
+  async findOne(param){
+    return AppConfigModel.findOne(param);
+  }
 }

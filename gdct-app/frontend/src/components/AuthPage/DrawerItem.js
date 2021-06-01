@@ -27,13 +27,17 @@ const StyledMenu = withStyles({
 ));
 
 export default function DrawerItem(props) {
-  const { name, icon, url, children, isSubMenu, option } = props;
+  const { name, icon, url, children, isSubMenu, option, closeParent } = props;
   const [anchorEl, setAnchorEl] = React.useState(null);
   const handleClick = event => {
     setAnchorEl(event.currentTarget);
   };
 
   const handleClose = () => {
+    if (isSubMenu && closeParent) {
+      // close all parent menus also
+      closeParent()
+    }
     setAnchorEl(null);
   };
 
@@ -57,10 +61,10 @@ export default function DrawerItem(props) {
         {children.map(item => {
           const { name, type, url, icon } = item;
           if (type === 'drawer') {
-            return <DrawerItem key={`${type}-${name}`} {...item} isSubMenu={true} />;
+            return <DrawerItem key={`${type}-${name}`} {...item} isSubMenu={true} closeParent={handleClose} />;
           }
           return (
-            <ListItem key={name} component={url && Link} button to={url}>
+            <ListItem key={name} component={url && Link} button to={url} onClick={handleClose}>
               <ListItemIcon>{icon}</ListItemIcon>
               <ListItemText primary={name} />
             </ListItem>

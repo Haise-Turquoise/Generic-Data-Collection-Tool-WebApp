@@ -14,7 +14,6 @@ const TemplateController = Service([TemplateService], service => {
         )
         .catch(next);
     });
-
     router.post('/templates/fetchTemplate', (req, res, next) => {
       const { _id } = req.body;
 

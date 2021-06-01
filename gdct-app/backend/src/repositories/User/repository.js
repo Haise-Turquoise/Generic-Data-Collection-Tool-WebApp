@@ -79,7 +79,7 @@ export default class UserRepository extends BaseRepository {
   }
 
   async update(_id, user) {
-    return UserModel.findOneAndUpdate({ _id }, { user });
+    return UserModel.findOneAndUpdate({ _id}, { user });
   }
 
   async modifyUserInfo(_id, userData) {
@@ -91,7 +91,21 @@ export default class UserRepository extends BaseRepository {
         username: userData.username,
         phoneNumber: userData.phoneNumber,
         ext: userData.ext,
+      }
+    );
+  }
+  async modifyUserToBeApproved(_id, userData) {
+    return UserModel.findOneAndUpdate({ _id: _id }, 
+      { 
         toBeApproved: userData.toBeApproved,
+      }
+    );
+  }
+  async modifyUserPendingPermissions(_id, userData) {
+    return UserModel.findOneAndUpdate({ _id: _id }, 
+      { 
+        sysRole:userData.sysRole,
+        pendingPermissions: userData.pendingPermissions,
       }
     );
   }

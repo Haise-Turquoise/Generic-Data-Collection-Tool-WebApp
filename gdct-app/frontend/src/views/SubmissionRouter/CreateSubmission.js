@@ -1,6 +1,7 @@
 import { shallowEqual, useDispatch, useSelector } from 'react-redux';
 import React, { useCallback, useEffect, useState } from 'react';
 import Button from '@material-ui/core/Button';
+import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import { useLocation } from 'react-router-dom';
@@ -38,7 +39,7 @@ const FileUpload = () => {
   );
 };
 
-const CreateSubmission = props => {
+const CreateSubmission = ({ history }) => {
   //  const [workflowProcess, setWorkflowProcess] = useState()
   const dispatch = useDispatch();
   const [showSave, setSave] = useState('hidden');
@@ -64,6 +65,12 @@ const CreateSubmission = props => {
     }),
     shallowEqual,
   );
+  const backButtonAction = () => {
+    history.push({
+
+      pathname: `/submission/dashboard`
+    })
+  }
 
   const handleCreateSubmission = useCallback(
     (submissionNote, submissionWorkbook) =>
@@ -92,6 +99,15 @@ const CreateSubmission = props => {
         </div>
 
         <div style={{display:'flex', verticalAlign:'middle'}}>
+          <Button
+            size="large"
+            color="primary"
+            variant="contained"
+            onClick={backButtonAction}
+          >
+            <ArrowBackIcon></ArrowBackIcon>
+            Back
+          </Button>          
           <Button
             color="primary"
             variant="contained"
