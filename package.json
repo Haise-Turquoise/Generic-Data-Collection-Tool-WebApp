@@ -11,7 +11,6 @@
     "fix": "yarn --cwd gdct-app fix",
     "test": "jest"
   },
-
   "lint-staged": {
     "./**/*.{js,ts}": [
       "yarn fix"
