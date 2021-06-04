@@ -25,25 +25,13 @@ steps:
     # npm install webpack-config
     # npx webpack --config webpack.config.js
 
-# - task: CopyFiles@2
-#   inputs:
-#     SourceFolder: '$(System.DefaultWorkingDirectory)'
-#     Contents: |
-#       **\*.js
-#       package.json
-#     TargetFolder: '$(Build.ArtifactStagingDirectory)'
-# - task: CopyFiles@2
-#   displayName: 'Copy Files to: $(Build.ArtifactStagingDirectory)'
-#   inputs:
-#     SourceFolder: '$(Build.SourcesDirectory)'
-#     # Contents: |
-#     #   **/*
-#     #   !.git/**/*
-#     TargetFolder: '$(Build.ArtifactStagingDirectory)'
+
+- task: CopyFiles@2
+  inputs:
+    Contents: 'build/**'
+    TargetFolder: '$(Build.ArtifactStagingDirectory)'
 
 - task: PublishBuildArtifacts@1
-
-# - task: ArchiveFiles@2
-#   inputs:
-#     rootFolderOrFile: '$(System.DefaultWorkingDirectory)'
-#     includeRootFolder: false
+  inputs: 
+    PathtoPublish: $(Build.ArtifactStagingDirectory) 
+    ArtifactName: 'gdct'
