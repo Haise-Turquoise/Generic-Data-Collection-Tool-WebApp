@@ -1,5 +1,7 @@
-import React, { useState } from 'react';
-import { Input, Button } from '@material-ui/core';
+import React, { useState, useEffect } from 'react';
+import { Button, Typography } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
+import { Publish } from '@material-ui/icons';
 import ExcelJS from 'exceljs';
 import COATreeController from '../../../controllers/COATree';
 import SheetNameController from '../../../controllers/sheetName';
@@ -82,11 +84,11 @@ const buildObjects = async data => {
   for (let sheetName of Object.keys(data)) {
     // get ID from existing sheetName
     const foundSheet = sheets.find(sheet => sheet.name === 'Medical Staff Remuneration');
-    let sheetNameId
+    let sheetNameId;
     if (!foundSheet) {
-      continue
+      continue;
     } else {
-      sheetNameId = foundSheet._id
+      sheetNameId = foundSheet._id;
     }
     for (let ctgGroup of Object.keys(data[sheetName])) {
       const newCategories = data[sheetName][ctgGroup];
@@ -107,11 +109,16 @@ const buildObjects = async data => {
         foundGroup = await COAGroupController.create({
           name: ctgGroup,
           isActive: true,
-          updatedBy: 'julien',
+          updatedBy: localStorage.getItem('currentUser'),
         });
       }
-      const categoryGroupId = foundGroup._id
-      objects.push({ categoryId, sheetNameId, categoryGroupId, updatedBy: 'julien' });
+      const categoryGroupId = foundGroup._id;
+      objects.push({
+        categoryId,
+        sheetNameId,
+        categoryGroupId,
+        updatedBy: localStorage.getItem('currentUser'),
+      });
     }
   }
   if (allNewCategories.length > 0) {
@@ -126,21 +133,39 @@ const createTrees = async trees => {
   // remove existing trees
   trees = trees.filter(tree => {
     const found = currTrees.find(
-      currTree => currTree.categoryGroupId && currTree.categoryGroupId._id === tree.categoryGroupId && currTree.sheetNameId === tree.sheetNameId,
+      currTree =>
+        currTree.categoryGroupId &&
+        currTree.categoryGroupId._id === tree.categoryGroupId &&
+        currTree.sheetNameId === tree.sheetNameId,
     );
-    return !found
+    return !found;
   });
   // send any remaining trees
   if (trees.length > 0) {
-    COATreeController.create(trees)
+    COATreeController.create(trees);
   }
 };
 
+const useStyles = makeStyles({
+  container: {
+    height: '100%',
+    width: '100%',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    flexDirection: 'column',
+  },
+});
+
 export default function COAGenerator() {
   const [file, setFile] = useState();
+  const [fileName, setFileName] = useState('');
+
+  const classes = useStyles();
 
   const handleFileUpload = e => {
     setFile(e.target.files[0]);
+    setFileName(e.target.files[0].name);
   };
 
   const processWorkbook = () => {
@@ -151,10 +176,15 @@ export default function COAGenerator() {
   };
 
   return (
-    <div>
-      <Input type="file" inputProps={{ accept: '.xlsx' }} onChange={handleFileUpload} />
+    <div className={classes.container}>
+      <Typography>{fileName && `Uploaded: ${fileName}`}</Typography>
+      <Button variant="contained" startIcon={<Publish />} component="label">
+        Upload File
+        <br />
+        <input type="file" accept=".xlsx" hidden onChange={handleFileUpload} />
+      </Button>
       <Button variant="contained" color="primary" onClick={processWorkbook}>
-        Click
+        Generate COA
       </Button>
     </div>
   );
