@@ -63,9 +63,8 @@ const AppSysRolesTable = props => {
       {
         title: 'Application System',
         field: 'appSys',
-        lookup: lookupSysRoles,
       },
-      { title: 'Role', field: 'role', lookup: lookupAppRoles },
+      { title: 'Role', field: 'role' },
       { title: 'Modified On', field: 'timestamp', editComponent: () => {return <div></div>} },
       { title: 'Updated By', field: 'updatedBy', editComponent: () => {return <div></div>} },
     ],
@@ -96,7 +95,6 @@ const AppSysRolesTable = props => {
           // Find the old value before updating in order to Auditlog
           (async () => { 
             const oldAppSysRole = await AppSysRoleController.fetchAppSysRole(appSysRole._id);
-            console.log(oldAppSysRole)
             CreateAuditLog(null, "Update Application System Role", "AppSysRole", oldAppSysRole._id, oldAppSysRole, appSysRole);
           })();
           // Do Update

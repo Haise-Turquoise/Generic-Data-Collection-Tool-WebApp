@@ -155,7 +155,7 @@ export default class SubmissionService {
     return this.findSubmissionById(id).then(submission => {
       if (!submission) throw 'Submission id does not exist';
       return this.orgRepository.findById(submission.orgId).then(org => {
-        const orgConst = { id: org[0].id, name: org[0].name };
+        const orgConst = { id: org.id, name: org.name };
         return this.programRepository.findById(submission.programId).then(program => {
           const programConst = { _id: program._id, name: program.name };
           return this.templateRepository.findById(submission.templateId).then(template => {
@@ -326,9 +326,9 @@ export default class SubmissionService {
     if (orgId){
       userInfo.sysRole.forEach(sysRole => {
         sysRole.org.forEach(organization => {
-          orgMapping[organization.orgId] = [];
+          if (!orgMapping[organization.orgId]) orgMapping[organization.orgId] = [];
           organization.program.forEach(program => {
-            orgMapping[organization.orgId].push(program.programId.toString());
+            orgMapping[organization.orgId].push(String(program.programId));
             if (!programIds.includes(program.programId)){
               programAndTempTypes.push({ program: program.programId, templateTypes: program.template });
               programIds.push(program.programId);
@@ -425,8 +425,9 @@ export default class SubmissionService {
 
             // if orgId is undefined, then it must be an admin, so the filter will not filter
             // the submissions
-            const submissionArr = orgId? rawSubmissionArr.filter(submission=>
-              orgMapping[submission.orgId].includes(String(submission.programId))
+            const submissionArr = orgId? rawSubmissionArr.filter(submission=>{
+              return orgMapping[submission.orgId].includes(String(submission.programId))
+            }
             ) : rawSubmissionArr;
             
 

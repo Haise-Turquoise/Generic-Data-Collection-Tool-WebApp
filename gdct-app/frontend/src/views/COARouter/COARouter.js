@@ -8,11 +8,13 @@ import COATree from './COATree';
 import COAGroups from './COAGroups';
 import COAs from './Categories';
 import Attributes from './Attributes';
+import COAGenerator from './COAGenerator'
 import {
   ROUTE_CATEGORY_CATEGORIES,
   ROUTE_CATEGORY_GROUPS,
   ROUTE_CATEGORY_TREES,
   ROUTE_CATEGORY_ATTRIBUTES,
+  ROUTE_CATEGORY_GENERATE,
 } from '../../constants/routes';
 
 const COARouter = () => (
@@ -22,6 +24,7 @@ const COARouter = () => (
     <Route exact path={ROUTE_CATEGORY_TREES} component={COATrees} />
     <Route exact path={`${ROUTE_CATEGORY_TREES}/:_id`} component={COATree} />
     <Route exact path={ROUTE_CATEGORY_ATTRIBUTES} component={Attributes} />
+    <Route exact path={ROUTE_CATEGORY_GENERATE} component={COAGenerator} />
     <Route component={NotFound} />
   </Switch>
 );

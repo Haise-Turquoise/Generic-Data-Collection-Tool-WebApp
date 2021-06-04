@@ -55,6 +55,7 @@ export const urlParser = (orgId, categories, attributes)=>{
   attributes.forEach((entry)=>{
     UrlWithCategories = UrlWithCategories + entry + ",";
   });
+  // console.log(UrlWithCategories.slice(0, -1))
   return UrlWithCategories.slice(0, -1);
 }
 
@@ -199,16 +200,16 @@ export const compareSheet = (oldWorkBook, newNewWorkBook) => {
     const oldSheet = oldWorkBook[i];
     const newSheet = newNewWorkBook[i];
     const sheetName = oldSheet.name;
-    const rows = Object.keys(oldSheet.rows).slice(0, -1);
+    const rows = Object.keys(newSheet.rows).slice(0, -1);
     const maxRow = Number(rows[rows.length - 1]);
     for (let rowNum = 0; rowNum <= maxRow; rowNum++){
       const oldRow = oldSheet.rows[String(rowNum)];
       const newRow = newSheet.rows[String(rowNum)];
 
       if (oldRow && newRow){
-        const oldCols = Object.keys(oldRow.cells);
+        const newCols = Object.keys(newRow.cells);
         // Iterate through the cols
-        for (const index of oldCols){
+        for (const index of newCols){
           // check if cell is empty
           const oldCell = oldRow.cells[index];
           const newCell = newRow.cells[index];
@@ -225,6 +226,9 @@ export const compareSheet = (oldWorkBook, newNewWorkBook) => {
               oldValues.push({ sheetName: sheetName, row:rowNum + 1, col:index, value: 'empty' });
               newValues.push({ sheetName: sheetName, row:rowNum + 1, col:index, value: newCell.text });
             };
+          }else{
+            oldValues.push({ sheetName: sheetName, row:rowNum + 1, col:index, value: 'empty' });
+            newValues.push({ sheetName: sheetName, row:rowNum + 1, col:index, value: newCell.text });
           };
         };
       };
@@ -414,13 +418,21 @@ export const templateDownloader = (workBookName, sheetData)=>{
     for (const keys of colNums){
       const colNum = Number(keys);
       const targetCol = currSheet.getColumn(colNum + 1)
-      targetCol.width = sheet.cols[keys].width/9
+      if (sheet.cols[keys].width){
+        targetCol.width = sheet.cols[keys].width/9
+      }
     }
 
     // create merge cells
     for (const merges of sheet.merges){
       currSheet.mergeCells(merges);
     }
+
+    const categoryIdRow = currSheet.getRow(1)
+    const attributeIdRow = currSheet.getColumn(1);
+    categoryIdRow.hidden = true;
+    attributeIdRow.hidden = true;
+
   });
 
   //Generate download file
@@ -466,7 +478,7 @@ export const excelImportHandler = (event, dataHandler) => {
     await workBook.xlsx.load(data)
 
     // Iterate over sheets
-    workBook.eachSheet((targetSheet, sheetId)=>{
+    workBook.eachSheet((targetSheet)=>{
 
       const styleMap = new Map();
       const mergeMap = new Map();

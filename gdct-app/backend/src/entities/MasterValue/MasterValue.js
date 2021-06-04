@@ -8,8 +8,8 @@ export default class MasterValueEntity {
     templateType,
     template,
     COATreeId,
-    CategoryId,
-    AttributeId,
+    categoryId,
+    attributeId,
     value,
   }) {
     this.submission = submission;
@@ -20,8 +20,8 @@ export default class MasterValueEntity {
     this.templateType = templateType;
     this.template = template;
     this.COATreeId = COATreeId;
-    this.CategoryId = CategoryId;
-    this.AttributeId = AttributeId;
+    this.categoryId = categoryId;
+    this.attributeId = attributeId;
     this.value = value;
   }
 }
