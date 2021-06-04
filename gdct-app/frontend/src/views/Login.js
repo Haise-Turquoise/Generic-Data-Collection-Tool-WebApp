@@ -249,8 +249,10 @@ export default function Login({ setLoggedIn }) {
                   confirmButtonText: 'OK'
                 }).then((result) => {
                   if (result.isConfirmed) {
-                    window.location.reload();
                     dispatch(UserStore.actions.LOGOUT(false));
+                    window.location.reload();
+                    // dispatch(UserStore.actions.LOGOUT(false));
+                    
                   }
                 })
               }
