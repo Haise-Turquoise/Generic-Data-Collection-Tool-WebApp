@@ -17,20 +17,16 @@ steps:
 
 - script: |
     npm install
-    # npm run build
   displayName: 'npm install and build'
 
 - script: |
     npm install webpack webpack-cli --save-dev
-    # npm install webpack-config
-    # npx webpack --config webpack.config.js
-
+    npm install webpack-config
 
 - task: CopyFiles@2
   inputs:
-    # Contents: 'build/**'
-    # sourceFolder: $(Build.SourcesDirectory)
     targetFolder: $(Build.ArtifactStagingDirectory)
+
 - task: PublishBuildArtifacts@1
   inputs: 
     PathtoPublish: $(Build.ArtifactStagingDirectory) 
