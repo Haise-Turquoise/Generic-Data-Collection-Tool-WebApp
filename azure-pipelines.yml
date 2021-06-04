@@ -22,7 +22,7 @@ steps:
 
 - script: |
     npm install webpack webpack-cli --save-dev
-    npm install webpack-config
+    # npm install webpack-config
     # npx webpack --config webpack.config.js
 
 # - task: CopyFiles@2
@@ -32,18 +32,18 @@ steps:
 #       **\*.js
 #       package.json
 #     TargetFolder: '$(Build.ArtifactStagingDirectory)'
-- task: CopyFiles@2
-  displayName: 'Copy Files to: $(Build.ArtifactStagingDirectory)'
-  inputs:
-    SourceFolder: '$(Build.SourcesDirectory)'
-    # Contents: |
-    #   **/*
-    #   !.git/**/*
-    TargetFolder: '$(Build.ArtifactStagingDirectory)'
+# - task: CopyFiles@2
+#   displayName: 'Copy Files to: $(Build.ArtifactStagingDirectory)'
+#   inputs:
+#     SourceFolder: '$(Build.SourcesDirectory)'
+#     # Contents: |
+#     #   **/*
+#     #   !.git/**/*
+#     TargetFolder: '$(Build.ArtifactStagingDirectory)'
 
-# - task: PublishBuildArtifacts@1
+- task: PublishBuildArtifacts@1
 
-- task: ArchiveFiles@2
-  inputs:
-    rootFolderOrFile: '$(System.DefaultWorkingDirectory)'
-    includeRootFolder: false
+# - task: ArchiveFiles@2
+#   inputs:
+#     rootFolderOrFile: '$(System.DefaultWorkingDirectory)'
+#     includeRootFolder: false
