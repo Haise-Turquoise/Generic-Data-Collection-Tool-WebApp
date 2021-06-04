@@ -760,7 +760,6 @@ const Register_container = props => {
     dispatch(orgChange(selectedOrganization));
   }, []);
   const handleProgramChange = useCallback(selectedPrograms => {
-    console.log(selectedPrograms)
     dispatch(programChange(selectedPrograms));
   }, []);
   const handleChangeSubmission = useCallback(() => {

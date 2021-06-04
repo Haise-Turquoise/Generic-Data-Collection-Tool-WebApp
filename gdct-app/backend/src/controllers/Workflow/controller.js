@@ -12,6 +12,15 @@ const WorkflowController = Service([WorkflowService], service => {
         .catch(next);
     });
 
+    router.post('/workflows/fetchByStatusId', (req, res, next) => {
+      const { id }= req.body;
+      console.log(id);
+      service
+        .findWorkflowProessByStatus(id)
+        .then(workflows => res.json( workflows ))
+        .catch(next);
+    });
+
     router.post('/workflows/create', (req, res, next) => {
       service
         .createWorkflow(req.body.workflowData)

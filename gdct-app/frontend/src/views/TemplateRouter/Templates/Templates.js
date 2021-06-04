@@ -60,7 +60,6 @@ const TemplatesTable = ({ history }) => {
     acc[value._id] = value.statusId.name;
     return acc;
   }, {});
-
   const columns = useMemo(
     () => [
       { title: 'Name', field: 'name' },
@@ -164,6 +163,7 @@ const TemplatesTable = ({ history }) => {
   useEffect(() => { setRowNum(templates.length) }, [templates])
 
   return (
+    // @ts-ignore
     <MaterialTable
       key={readRowNum}
       columns={columns}

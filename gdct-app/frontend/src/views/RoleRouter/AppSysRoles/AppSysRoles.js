@@ -95,7 +95,6 @@ const AppSysRolesTable = props => {
           // Find the old value before updating in order to Auditlog
           (async () => { 
             const oldAppSysRole = await AppSysRoleController.fetchAppSysRole(appSysRole._id);
-            console.log(oldAppSysRole)
             CreateAuditLog(null, "Update Application System Role", "AppSysRole", oldAppSysRole._id, oldAppSysRole, appSysRole);
           })();
           // Do Update
