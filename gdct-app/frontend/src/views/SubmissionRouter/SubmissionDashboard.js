@@ -19,7 +19,6 @@ import { getSubmissionsRequest } from '../../store/thunks/submission';
 import { selectSubmissionsStore } from '../../store/SubmissionsStore/selectors';
 import { selectFactoryRESTResponseTableValues } from '../../store/common/REST/selectors';
 import { calculateOptions } from '../../tools/misc'
-import StatusController from '../../controllers/status'
 import UsersController from '../../controllers/Users';
 import './SubmissionDashboard.scss'
 
@@ -48,17 +47,46 @@ const SubmissionDashboard = ({ history }) => {
 
   const [statuses, setStatuses] = useState([]);
   const [programFilter, setFilter] = useState([]);
+  const currRole = localStorage.getItem('currentRole');
 
-  useEffect(() => {
+  let allowedGrouping;
 
-    StatusController.fetch().then(res => {
-      const valid = res.filter(status => status.isActive && !status.forPackage)
-      setStatuses(valid.map(status => status.name));
-    })
+  switch(currRole){
+    case('Inputter'):
+      allowedGrouping = ['Inputted', 'Unsubmitted'];
+      break;
 
+    case('Submitter'):
+      allowedGrouping = ['Unsubmitted', 'Inputted', 'Submitted', 'review', 'Approved' ,'Returned', 'Rejected'];
+      break;
+
+    case('Reviewer'):
+      allowedGrouping = ['Submitted', 'Returned', 'Approved', 'review'];
+      break;
+
+    case('Submission Approver'):
+       allowedGrouping = ['Submitted', 'Returned', 'Approved', 'review'];
+      break;
+
+    default:
+      allowedGrouping = ['Unsubmitted', 'Inputted', 'Submitted', 'Approved',
+      'pre_view', 'review', 'Returned', 'Rejected'];
+      break;
+  }
+
+  const timeOption = { year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric' };
+  let { submissions } = useSelector(
+    state => ({
+      submissions: selectFactoryRESTResponseTableValues(selectSubmissionsStore)(state),
+    }),
+    shallowEqual,
+  )
+
+   useEffect(() => {
+    const submissionGroups = submissions.map(e=>e.phase);
+    setStatuses(allowedGrouping.filter(e=>submissionGroups.includes(e)));
     UsersController.fetchByEmail(localStorage.getItem('currentUser')).then(res=>{
       let filter = [];
-      const currRole = localStorage.getItem('currentRole');
       res.sysRole.forEach(role => {
         if (role.role === currRole && currRole !== 'Business Admin'){
           role.org.forEach(orginfo => {
@@ -68,15 +96,8 @@ const SubmissionDashboard = ({ history }) => {
       });
       setFilter(filter);
     });
-  }, [])
+  }, [submissions])
 
-  const timeOption = { year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric' };
-  let { submissions } = useSelector(
-    state => ({
-      submissions: selectFactoryRESTResponseTableValues(selectSubmissionsStore)(state),
-    }),
-    shallowEqual,
-  )
   let submitterFlag = false;
 
   if (!Array.isArray(submissions)) {
@@ -195,7 +216,6 @@ const SubmissionDashboard = ({ history }) => {
     dispatch(getSubmissionsRequest());
   }, [dispatch]);
 
-
   return (
     <div className="submissions">
       <SubmissionHeader />
@@ -227,31 +247,34 @@ const SubmissionDashboard = ({ history }) => {
           })}
         </Select>
       </FormControl>
-
-      {statuses.map(status => {
-        const data = submissions.filter(submission => submission.phase === status)
-        const options = calculateOptions(data.length)
-        return (
-          <ExpansionPanel>
-            <ExpansionPanelSummary 
-              expandIcon={<ExpandMoreIcon />}
-              aria-controls="panel1a-content"
-              id="panel1a-header"
-            >
-              <Typography>{status === 'Unsubmitted' ? 'To-do' : status}</Typography>
-            </ExpansionPanelSummary>
-            <div className="MuiTableContainer">
-              <MaterialTable
-                key={data.length}
-                columns={checkBoxColumns}
-                options={options}
-                data={data}
-                actions={submitterFlag ? actions : notEditableActions}
-              />
-            </div>
-          </ExpansionPanel>
-        )
-      })}
+      {statuses.length > 0 ? 
+        statuses.map(status => {
+          const data = submissions.filter(submission => submission.phase === status)
+          const options = calculateOptions(data.length)
+          return (
+            <ExpansionPanel>
+              <ExpansionPanelSummary 
+                expandIcon={<ExpandMoreIcon />}
+                aria-controls="panel1a-content"
+                id="panel1a-header"
+              >
+                <Typography>{status === 'Unsubmitted' ? 'To-do' : status}</Typography>
+              </ExpansionPanelSummary>
+              <div className="MuiTableContainer">
+                <MaterialTable
+                  key={data.length}
+                  columns={checkBoxColumns}
+                  options={options}
+                  data={data}
+                  actions={submitterFlag ? actions : notEditableActions}
+                />
+              </div>
+            </ExpansionPanel>
+          )
+        }):(<Typography variant="h6" align='center'>
+              Nothing to show.
+            </Typography>)
+      }
     </div>
   );
 };

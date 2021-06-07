@@ -27,7 +27,14 @@ import TemplatesStore from '../../../store/TemplatesStore/store';
 
 const TemplatePhases = ({ template }) => {
   const [workflowProcess, setWorkflowProcess] = useState();
+  let buttonStatus = true;
   const dispatch = useDispatch();
+  const currRole = localStorage.getItem('currentRole');
+
+  if ( currRole === "Template Designer" || currRole === 'Business Admin'){
+    buttonStatus = false;
+  }
+
   useEffect(() => {
     if (template)
       workflowController
@@ -51,7 +58,7 @@ const TemplatePhases = ({ template }) => {
           <Chip className="rounded" color="primary" label="Phase Actions:" />
           {workflowProcess && workflowProcess.to.length ? (
             workflowProcess.to.map(outwardProcess => (
-              <Button key={outwardProcess._id} onClick={() => handleClickWorkflow(outwardProcess._id)}>
+              <Button disabled={buttonStatus} key={outwardProcess._id} onClick={() => handleClickWorkflow(outwardProcess._id)}>
                 {outwardProcess.statusId.name}
               </Button>
             ))
