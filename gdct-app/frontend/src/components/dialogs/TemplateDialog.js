@@ -43,11 +43,16 @@ const TemplateDialog = ({ selectedTemplates, shouldClose, handleChange }) => {
 
   useEffect(()=>{
     if (templates.length > 0){
+      const workflowProcessArray = templates.map(e=>e.workflowProcessId);
+
       StatusController.fetch().then(data=>{
         data=data.filter(e=>e.name == 'Approved')[0];
-        workflowController.fetchByStatusId(data._id).then(item=>{
-          const itemIds=item.map(e=>String(e._id));
-          setTemplates(templates.filter(template=>itemIds.includes(String(template.workflowProcessId))));
+        workflowController.fetchProcessesByIds(workflowProcessArray).then(workflowPrcesses=>{
+          
+          const endedProcesses = workflowPrcesses.filter(e=>e.to.length === 0);
+          const endedIdArray = endedProcesses.map(e=>String(e._id));
+
+          setTemplates(templates.filter(template=>endedIdArray.includes(String(template.workflowProcessId))));
         })
       })
     }
