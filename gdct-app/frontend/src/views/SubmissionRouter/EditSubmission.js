@@ -51,7 +51,7 @@ const EditSubmission = ({ history }) => {
   const [cursor, setCursor] = useState('standard');
   const [userFeedback, setUserFeedback] = useState('');
   const [refresh, setRefresh] = useState(false);
-
+  const [visitStatusNode, setVisitStatusNode] = useState([])
   const SubmissionHeader = () => (
     <Paper className="header">
       <Typography variant="h5">Submissions</Typography>
@@ -87,11 +87,65 @@ const EditSubmission = ({ history }) => {
     }),
     shallowEqual,
   );
+  // recursive get the element in a workflow
+  const getWorkflowTreeByProcessesId = async (root, visited,statusIds) => {
+    if(root._id){
+      visited.push(root._id)
+      statusIds.push(root.statusId)
+    }
+    if(!root.to ||root.to.length == 0){
+      return visited
+    }
+    for (const to of root.to){
+      if(visited.includes(to._id)){
+        return visited
+      }
+      else{
+        if(to._id){getWorkflowTreeByProcessesId(to, visited,statusIds )}
+        // getWorkflowTreeByProcessesId(to, visited)
+
+      }
+    }
+  }
+  console.log(visitStatusNode);
   useEffect(() => {
     // @ts-ignore
     
-    
     if (location.state.detail) {
+      console.log('detail', location.state.detail)
+      
+      workflowController.fetchProcess(location.state.detail.workflowProcessId).then(root=>{
+        let visited = []
+        let statusIds = []
+        getWorkflowTreeByProcessesId(root, visited, statusIds)
+        let statusMap = []
+        let promiseQuery = []
+        for(const workflowProcess of statusIds){
+          if(! workflowProcess.name){
+            promiseQuery.push(
+              statusController.fetchStatus(workflowProcess).then(status=>{
+                return status.name
+              })
+            )
+
+          }
+          else{
+            promiseQuery.push(
+              statusController.fetchStatus(workflowProcess._id).then(status=>{
+                return status.name
+              })
+            )
+
+          }
+
+        }
+      console.log(promiseQuery)
+      Promise.all(promiseQuery).then(statusMap=>{
+        console.log(statusMap)
+        setVisitStatusNode(statusMap)
+      })
+      })
+
       if (
         // @ts-ignore
         location.state.detail.permission.find(
@@ -231,7 +285,7 @@ const EditSubmission = ({ history }) => {
       }, 2000);
     }
   };
-  console.log('button',submitUnavailable , !isSubmitterOrInputter,hasBeenSubmitted)
+  // console.log('button',submitUnavailable , !isSubmitterOrInputter,hasBeenSubmitted)
   return (
 
 
@@ -281,7 +335,8 @@ const EditSubmission = ({ history }) => {
           >
             Download
           </Button>
-          <Button
+          
+          {/*<Button
             color="primary"
             variant="contained"
             size="large"
@@ -316,7 +371,22 @@ const EditSubmission = ({ history }) => {
             }}
           >
             Submit
+          </Button>*/}
+          {visitStatusNode.map(status=>{
+            return(
+              <Button
+            color="primary"
+            variant="contained"
+            size="large"
+            style={{ cursor }}
+
+          >
+            {status}
           </Button>
+            )
+          })
+
+          }
           <Button
             color="primary"
             variant="contained"
