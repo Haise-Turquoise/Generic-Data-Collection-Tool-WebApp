@@ -26,6 +26,7 @@ export default class WorkflowRepository extends BaseRepository {
   }
 
   async find(query) {
+    console.log(query)
     const realQuery = {};
 
     for (const key in query) {

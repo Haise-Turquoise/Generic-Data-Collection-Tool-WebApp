@@ -51,7 +51,14 @@ const EditSubmission = ({ history }) => {
   const [cursor, setCursor] = useState('standard');
   const [userFeedback, setUserFeedback] = useState('');
   const [refresh, setRefresh] = useState(false);
-  const [visitStatusNode, setVisitStatusNode] = useState([])
+
+
+
+  const [visitStatusNode, setVisitStatusNode] = useState([]);
+  const [currentRole, setCurrentRole] = useState('');
+  // const [downloadUnavailable, setDownloadUnavailable] = useState(true);
+  const [nextStepId, setNextStepId] = useState('')
+  const [submissionHasBeen, setSubmissionHasBeen] = useState('');
   const SubmissionHeader = () => (
     <Paper className="header">
       <Typography variant="h5">Submissions</Typography>
@@ -107,7 +114,17 @@ const EditSubmission = ({ history }) => {
       }
     }
   }
-  console.log(visitStatusNode);
+
+
+  const roleButtonMap = {
+    'Viewer':['Download'],
+    'Imputer': ['Download','inputted'],
+    'Submitter':['Download','Submitted','inputted'],
+    'Submission Approver':['Rejected', 'Approved','Reviewed','Returned'],
+    'Reviewer':['Rejected', 'Approved','Reviewed','Returned']
+  }
+
+
   useEffect(() => {
     // @ts-ignore
     
@@ -139,13 +156,35 @@ const EditSubmission = ({ history }) => {
           }
 
         }
-      console.log(promiseQuery)
       Promise.all(promiseQuery).then(statusMap=>{
+        const newStatusMap = statusMap.filter(ele=>{return (ele != 'Start' && ele != 'Unsubmitted')})
         console.log(statusMap)
-        setVisitStatusNode(statusMap)
+        // setVisitStatusNode(newStatusMap)
       })
       })
-
+      // workflowController.fetchOnlyWorkflowById('60ae8834a8661d10388da415').then((workflow)=>{
+      //   console.log(workflow)
+      // })
+      workflowController.fetchProcessesByWorkflowId(location.state.detail.workflowId).then((workflowProcesses)=>{
+        
+        let promiseQuery1 = [];
+        for (const workflowProcess of workflowProcesses){
+          promiseQuery1.push(statusController.fetchStatus(workflowProcess.statusId))
+        }
+        
+        Promise.all(promiseQuery1).then((statuses)=>{
+          // console.log(statuses)
+          let statusMap = [];
+          for (const status of statuses){
+            statusMap.push(status.name)
+          }
+          statusMap = statusMap.filter(ele=>{return (ele != 'Start' && ele != 'Unsubmitted')})
+          console.log(statusMap)
+          setVisitStatusNode(statusMap)
+        })
+        
+      })
+      setCurrentRole(location.state.detail.permission)
       if (
         // @ts-ignore
         location.state.detail.permission.find(
@@ -169,6 +208,7 @@ const EditSubmission = ({ history }) => {
               statusController.fetchStatus(childrenSubmission.statusId).then(status=>{
                 if(status.name == 'Submitted'){
                   setHasBeenSubmitted(true)
+                  setSubmissionHasBeen(status.name)
                 }
               })
             })
@@ -178,9 +218,11 @@ const EditSubmission = ({ history }) => {
         // check has the submitted object has been approved at this moment
         SubmissionController.fetchSubmission(location.state.detail._id).then(submission=>{
           statusController.fetchStatus(submission.statusId).then(status=>{
-            if(status.name == 'Approved'){
-              setHasBeenApproved(true)
-            }
+            setSubmissionHasBeen(status.name)
+            // if(status.name == 'Approved'){
+            //   // setHasBeenApproved(true)
+            // }
+
           })
         })
       workflowController
@@ -191,24 +233,28 @@ const EditSubmission = ({ history }) => {
             
             workflowProcess.to.forEach(process => {
               
-              
-              switch (process.statusId.name) {
-                case 'Submitted': {
-                  setSubmitUnavailable(false);
-                  setSubmitId(process._id);
-                  break;
-                }
-                case 'Approved': {
-                  setApproveUnavailable(false);
-                  setApproveId(process._id);
-                  break;
-                }
-                case 'Rejected': {
-                  setRejectUnavailable(false);
-                  setRejectId(process._id);
-                  break;
+              for(const workflowUnit of visitStatusNode){
+                if(process.statusId.name == workflowUnit){
+                  setNextStepId(process._id)
                 }
               }
+              // switch (process.statusId.name) {
+              //   case 'Submitted': {
+              //     setSubmitUnavailable(false);
+              //     setSubmitId(process._id);
+              //     break;
+              //   }
+              //   case 'Approved': {
+              //     setApproveUnavailable(false);
+              //     setApproveId(process._id);
+              //     break;
+              //   }
+              //   case 'Rejected': {
+              //     setRejectUnavailable(false);
+              //     setRejectId(process._id);
+              //     break;
+              //   }
+              // }
             });
         });
     }
@@ -260,7 +306,43 @@ const EditSubmission = ({ history }) => {
       setUserFeedback('');
     }, 4000);
   };
+  const handleButtonDisplayByRole = (button,role, map)=>{
+    const checkList = map[role[0]];
+    if(! checkList.includes(button)){
+      return true
+    }
+    else{
+      return false
+    }
+  }
 
+  const handleButtonDisplayByStatus = (button, status)=>{
+    console.log('button',button, 'status', status)
+    
+    const consistentStatusMap = {
+      'Submitted':['Submitted'],
+      'inputted':['Inputted'],
+      'Approved':['Approved','Rejected'],
+      'Rejected':['Approved', 'Rejected'],
+      'Reviewed':['Returned', 'Reviewed'],
+      'Returned':['Returned', 'Reviewed']
+    }
+    if(status in consistentStatusMap){
+      console.log(status)
+      if(consistentStatusMap[status].includes(button)){
+        return true
+      }
+      else{
+        return false
+      }
+    }
+    // if(consistentStatusMap[status].includes(button)){
+    //   return true
+    // }
+    else{
+      return false
+    }
+  }
   const handleChangeStatus = async (submission, submissionNote, role, newProcessId) => {
     // setCursor('progress');
 
@@ -332,6 +414,7 @@ const EditSubmission = ({ history }) => {
             style={{ cursor }}
             size="large"
             onClick={()=>templateDownloader(submission.name, submission.workbookData)}
+            disabled = {isReviewerOrApprover}
           >
             Download
           </Button>
@@ -373,12 +456,21 @@ const EditSubmission = ({ history }) => {
             Submit
           </Button>*/}
           {visitStatusNode.map(status=>{
+            const buttonDisplayBaseOnRole = handleButtonDisplayByRole(status,currentRole,roleButtonMap)
+            const buttonDisplayBaseOnStatus = handleButtonDisplayByStatus(status, submissionHasBeen)
+            // console.log(buttonDisplayBaseOnStatus, submissionHasBeen)
             return(
               <Button
             color="primary"
             variant="contained"
             size="large"
+            key = {status}
             style={{ cursor }}
+            disabled = {buttonDisplayBaseOnRole || buttonDisplayBaseOnStatus}
+            onClick={() => {
+              
+              handleChangeStatus(submission, submissionNote, status, nextStepId)
+            }}
 
           >
             {status}

@@ -114,4 +114,8 @@ export default class WorkflowService {
   async findProcesses() {
     return this.workflowProcessesRepository.find();
   }
+
+  async findProcessesByWorkflowId(workflowId) {
+    return this.workflowProcessesRepository.findProcessesByWorkflowId(workflowId);
+  }
 }
