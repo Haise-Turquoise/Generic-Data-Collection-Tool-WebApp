@@ -12,7 +12,6 @@ export const getSubmissionsRequest = () => dispatch => {
   dispatch(SubmissionsStore.actions.REQUEST());
 
   AuthController.profile().then(profile => {
-    console.log(profile.data.email);
     submissionController
       .fetchAndCreate(profile.data.email)
       .then(values => {

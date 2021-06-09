@@ -501,9 +501,11 @@ export default class SubmissionService {
 
               changedSubmissions.push(changedSubmission)
             });
+
+            
             return changedSubmissions
 
-            /* Note the below code is a faster implementation, but might not scale well 
+            /* Note the below code is a faster implementation at small scale, but might not scale well (not sure)
             * It uses mongoDB's pipeline to reduce complexity, but it might be resouce
             * intensive when there are a lot of submissions*/
 

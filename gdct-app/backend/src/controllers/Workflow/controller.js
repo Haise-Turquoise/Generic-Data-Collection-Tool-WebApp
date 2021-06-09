@@ -87,6 +87,14 @@ const WorkflowController = Service([WorkflowService], service => {
         .catch(next);
     });
 
+    router.post('/workflows/fetchProcessByIds', (req, res, next)=>{
+      const {ids} = req.body;
+      service
+        .findWorkflowProessesById(ids)
+        .then(workflowProcess => res.json({ data: workflowProcess }))
+        .catch(next);
+    });
+
     return router;
   })();
 });
