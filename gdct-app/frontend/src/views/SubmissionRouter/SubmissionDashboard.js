@@ -91,7 +91,9 @@ const SubmissionDashboard = ({ history }) => {
   )
 
    useEffect(() => {
+    
     const submissionGroups = submissions.map(e=>e.phase);
+    console.log('status', submissionGroups)
     setStatuses(allowedGrouping.filter(e=>submissionGroups.includes(e)));
     UsersController.fetchByEmail(localStorage.getItem('currentUser')).then(res=>{
       let filter = [];
@@ -220,7 +222,7 @@ const SubmissionDashboard = ({ history }) => {
       (readFilterTo === 'All' || submission.period <= readFilterTo)
     )
 
-
+  console.log('status', statuses)
   return (
     <div className="submissions">
       <SubmissionHeader />
@@ -254,6 +256,7 @@ const SubmissionDashboard = ({ history }) => {
       </FormControl>
       {statuses.length > 0 ? 
         statuses.map(status => {
+          console.log('status', status)
           const data = getSubmissionsInRange(status)
           const options = calculateOptions(data.length)
           return (

@@ -95,25 +95,25 @@ const EditSubmission = ({ history }) => {
     shallowEqual,
   );
   // recursive get the element in a workflow
-  const getWorkflowTreeByProcessesId = async (root, visited,statusIds) => {
-    if(root._id){
-      visited.push(root._id)
-      statusIds.push(root.statusId)
-    }
-    if(!root.to ||root.to.length == 0){
-      return visited
-    }
-    for (const to of root.to){
-      if(visited.includes(to._id)){
-        return visited
-      }
-      else{
-        if(to._id){getWorkflowTreeByProcessesId(to, visited,statusIds )}
-        // getWorkflowTreeByProcessesId(to, visited)
+  // const getWorkflowTreeByProcessesId = async (root, visited,statusIds) => {
+  //   if(root._id){
+  //     visited.push(root._id)
+  //     statusIds.push(root.statusId)
+  //   }
+  //   if(!root.to ||root.to.length == 0){
+  //     return visited
+  //   }
+  //   for (const to of root.to){
+  //     if(visited.includes(to._id)){
+  //       return visited
+  //     }
+  //     else{
+  //       if(to._id){getWorkflowTreeByProcessesId(to, visited,statusIds )}
+  //       // getWorkflowTreeByProcessesId(to, visited)
 
-      }
-    }
-  }
+  //     }
+  //   }
+  // }
 
 
   const roleButtonMap = {
@@ -131,40 +131,38 @@ const EditSubmission = ({ history }) => {
     if (location.state.detail) {
       console.log('detail', location.state.detail)
       
-      workflowController.fetchProcess(location.state.detail.workflowProcessId).then(root=>{
-        let visited = []
-        let statusIds = []
-        getWorkflowTreeByProcessesId(root, visited, statusIds)
-        let statusMap = []
-        let promiseQuery = []
-        for(const workflowProcess of statusIds){
-          if(! workflowProcess.name){
-            promiseQuery.push(
-              statusController.fetchStatus(workflowProcess).then(status=>{
-                return status.name
-              })
-            )
+      // workflowController.fetchProcess(location.state.detail.workflowProcessId).then(root=>{
+      //   let visited = []
+      //   let statusIds = []
+      //   getWorkflowTreeByProcessesId(root, visited, statusIds)
+      //   let statusMap = []
+      //   let promiseQuery = []
+      //   for(const workflowProcess of statusIds){
+      //     if(! workflowProcess.name){
+      //       promiseQuery.push(
+      //         statusController.fetchStatus(workflowProcess).then(status=>{
+      //           return status.name
+      //         })
+      //       )
 
-          }
-          else{
-            promiseQuery.push(
-              statusController.fetchStatus(workflowProcess._id).then(status=>{
-                return status.name
-              })
-            )
+      //     }
+      //     else{
+      //       promiseQuery.push(
+      //         statusController.fetchStatus(workflowProcess._id).then(status=>{
+      //           return status.name
+      //         })
+      //       )
 
-          }
+      //     }
 
-        }
-      Promise.all(promiseQuery).then(statusMap=>{
-        const newStatusMap = statusMap.filter(ele=>{return (ele != 'Start' && ele != 'Unsubmitted')})
-        console.log(statusMap)
-        // setVisitStatusNode(newStatusMap)
-      })
-      })
-      // workflowController.fetchOnlyWorkflowById('60ae8834a8661d10388da415').then((workflow)=>{
-      //   console.log(workflow)
+      //   }
+      // Promise.all(promiseQuery).then(statusMap=>{
+      //   const newStatusMap = statusMap.filter(ele=>{return (ele != 'Start' && ele != 'Unsubmitted')})
+      //   console.log(statusMap)
+      //   // setVisitStatusNode(newStatusMap)
       // })
+      // })
+
       workflowController.fetchProcessesByWorkflowId(location.state.detail.workflowId).then((workflowProcesses)=>{
         
         let promiseQuery1 = [];
@@ -319,26 +317,23 @@ const EditSubmission = ({ history }) => {
   const handleButtonDisplayByStatus = (button, status)=>{
     console.log('button',button, 'status', status)
     
-    const consistentStatusMap = {
-      'Submitted':['Submitted'],
-      'inputted':['Inputted'],
-      'Approved':['Approved','Rejected'],
-      'Rejected':['Approved', 'Rejected'],
-      'Reviewed':['Returned', 'Reviewed'],
-      'Returned':['Returned', 'Reviewed']
+    const StatusAndBannedActions = {
+      'Submitted':['Submitted','Inputted'],
+      'inputted':['Inputted','Approved', 'Rejected', 'Returned', 'Reviewed'],
+      'Approved':['Approved','Rejected', 'Submitted','Inputted', 'Returned', 'Reviewed'],
+      'Rejected':['Approved', 'Rejected', 'Submitted','Inputted', 'Returned', 'Reviewed'],
+      'Reviewed':['Returned', 'Reviewed', 'Submitted','Inputted', 'Approved', 'Rejected'],
+      'Returned':['Returned', 'Reviewed', 'Submitted','Inputted', 'Approved', 'Rejected'],
     }
-    if(status in consistentStatusMap){
+    if(status in StatusAndBannedActions){
       console.log(status)
-      if(consistentStatusMap[status].includes(button)){
+      if(StatusAndBannedActions[status].includes(button)){
         return true
       }
       else{
         return false
       }
     }
-    // if(consistentStatusMap[status].includes(button)){
-    //   return true
-    // }
     else{
       return false
     }
