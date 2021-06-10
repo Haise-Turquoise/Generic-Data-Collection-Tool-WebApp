@@ -4,6 +4,7 @@ import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import Paper from '@material-ui/core/Paper';
+import cloneDeep from 'clone-deep';
 import { useLocation } from 'react-router-dom';
 import MaterialTable from 'material-table';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
@@ -57,7 +58,7 @@ const EditSubmission = ({ history }) => {
   const [visitStatusNode, setVisitStatusNode] = useState([]);
   const [currentRole, setCurrentRole] = useState('');
   // const [downloadUnavailable, setDownloadUnavailable] = useState(true);
-  const [nextStepId, setNextStepId] = useState('')
+  const [nextStepIdMap, setNextStepIdMap] = useState({})
   const [submissionHasBeen, setSubmissionHasBeen] = useState('');
   const SubmissionHeader = () => (
     <Paper className="header">
@@ -158,7 +159,6 @@ const EditSubmission = ({ history }) => {
       //   }
       // Promise.all(promiseQuery).then(statusMap=>{
       //   const newStatusMap = statusMap.filter(ele=>{return (ele != 'Start' && ele != 'Unsubmitted')})
-      //   console.log(statusMap)
       //   // setVisitStatusNode(newStatusMap)
       // })
       // })
@@ -177,7 +177,6 @@ const EditSubmission = ({ history }) => {
             statusMap.push(status.name)
           }
           statusMap = statusMap.filter(ele=>{return (ele != 'Start' && ele != 'Unsubmitted')})
-          console.log(statusMap)
           setVisitStatusNode(statusMap)
         })
         
@@ -197,32 +196,45 @@ const EditSubmission = ({ history }) => {
         ) !== undefined
       )
         setIsReviewerOrApprover(true);
-        // check has the to-do object has been submitted at this moment
+        // check has the submission status.
         SubmissionController.fetchSubmissionByParentId(location.state.detail._id).then(childrenSubmissions=>{
           
           if(childrenSubmissions.length > 0){
             let submitted = false;
             childrenSubmissions.forEach(childrenSubmission=>{
               statusController.fetchStatus(childrenSubmission.statusId).then(status=>{
+                // check the status is Submitted or not.
                 if(status.name == 'Submitted'){
                   setHasBeenSubmitted(true)
                   setSubmissionHasBeen(status.name)
                 }
+                // check the status after the phrase Submitted
+                else{
+                  SubmissionController.fetchSubmission(location.state.detail._id).then(submission=>{
+                    statusController.fetchStatus(submission.statusId).then(status=>{
+                      setSubmissionHasBeen(status.name)
+                    })
+                  })
+                }
+              })
+            })
+          }
+          // check the status before the phrase Submitted
+          else{
+            SubmissionController.fetchSubmission(location.state.detail._id).then(submission=>{
+              statusController.fetchStatus(submission.statusId).then(status=>{
+                setSubmissionHasBeen(status.name)
               })
             })
           }
           
         })
         // check has the submitted object has been approved at this moment
-        SubmissionController.fetchSubmission(location.state.detail._id).then(submission=>{
-          statusController.fetchStatus(submission.statusId).then(status=>{
-            setSubmissionHasBeen(status.name)
-            // if(status.name == 'Approved'){
-            //   // setHasBeenApproved(true)
-            // }
-
-          })
-        })
+        // SubmissionController.fetchSubmission(location.state.detail._id).then(submission=>{
+        //   statusController.fetchStatus(submission.statusId).then(status=>{
+        //     setSubmissionHasBeen(status.name)
+        //   })
+        // })
       workflowController
         // @ts-ignore
         .fetchProcess(location.state.detail.workflowProcessId)
@@ -230,12 +242,10 @@ const EditSubmission = ({ history }) => {
           if (workflowProcess !== undefined)
             
             workflowProcess.to.forEach(process => {
-              
-              for(const workflowUnit of visitStatusNode){
-                if(process.statusId.name == workflowUnit){
-                  setNextStepId(process._id)
-                }
-              }
+              // console.log(process.statusId.name)
+              let nextStepIdMapCopy = cloneDeep(nextStepIdMap);
+              nextStepIdMapCopy[process.statusId.name] = process._id;
+              setNextStepIdMap(nextStepIdMapCopy)
               // switch (process.statusId.name) {
               //   case 'Submitted': {
               //     setSubmitUnavailable(false);
@@ -362,6 +372,7 @@ const EditSubmission = ({ history }) => {
       }, 2000);
     }
   };
+  // console.log('nextStepIdMap', nextStepIdMap)
   // console.log('button',submitUnavailable , !isSubmitterOrInputter,hasBeenSubmitted)
   return (
 
@@ -464,7 +475,7 @@ const EditSubmission = ({ history }) => {
             disabled = {buttonDisplayBaseOnRole || buttonDisplayBaseOnStatus}
             onClick={() => {
               
-              handleChangeStatus(submission, submissionNote, status, nextStepId)
+              handleChangeStatus(submission, submissionNote, status, nextStepIdMap[status])
             }}
 
           >
