@@ -122,7 +122,8 @@ const EditSubmission = ({ history }) => {
     'Imputer': ['Download','inputted'],
     'Submitter':['Download','Submitted','inputted'],
     'Submission Approver':['Rejected', 'Approved','Reviewed','Returned'],
-    'Reviewer':['Rejected', 'Approved','Reviewed','Returned']
+    'Reviewer':['Rejected', 'Approved','Reviewed','Returned'],
+    'Business Admin': ['Submitted','inputted','Rejected', 'Approved','Reviewed','Returned'],
   }
 
 
@@ -315,6 +316,10 @@ const EditSubmission = ({ history }) => {
     }, 4000);
   };
   const handleButtonDisplayByRole = (button,role, map)=>{
+    console.log('role', role)
+    if(role.length == 0){
+      role[0] = 'Business Admin'
+    }
     const checkList = map[role[0]];
     if(! checkList.includes(button)){
       return true
@@ -331,9 +336,9 @@ const EditSubmission = ({ history }) => {
       'Submitted':['Submitted','Inputted'],
       'inputted':['Inputted','Approved', 'Rejected', 'Returned', 'Reviewed'],
       'Approved':['Approved','Rejected', 'Submitted','Inputted', 'Returned', 'Reviewed'],
-      'Rejected':['Approved', 'Rejected', 'Submitted','Inputted', 'Returned', 'Reviewed'],
+      'Rejected':['Approved', 'Rejected','Inputted', 'Returned', 'Reviewed'],
       'Reviewed':['Returned', 'Reviewed', 'Submitted','Inputted', 'Approved', 'Rejected'],
-      'Returned':['Returned', 'Reviewed', 'Submitted','Inputted', 'Approved', 'Rejected'],
+      'Returned':['Returned', 'Reviewed','Inputted', 'Approved', 'Rejected'],
     }
     if(status in StatusAndBannedActions){
       console.log(status)
