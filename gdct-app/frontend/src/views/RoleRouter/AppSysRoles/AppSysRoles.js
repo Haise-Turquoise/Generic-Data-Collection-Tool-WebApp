@@ -34,6 +34,11 @@ const AppSysRolesHeader = () => {
 const AppSysRolesTable = props => {
   const dispatch = useDispatch();
   const [readNumRow, setNumRow] = useState(1);
+  const [hasAppSysRoles, setHasAppSysRoles] = useState(false)
+
+  // table stuff while loading
+  const preAppSysRoles = [{ name: 'LOADING...' }]
+  const preColumns = [{title: 'Name', field: 'name'}]
 
   const { appSyses, appSysRoles, appRoles } = useSelector(
     state => ({
@@ -119,11 +124,20 @@ const AppSysRolesTable = props => {
     dispatch(getAppSysRolesRequest());
   }, [dispatch]);
 
-  useEffect(()=>{setNumRow(appSysRoles.length)}, [appSysRoles])
+  useEffect(()=>{
+    setNumRow(appSysRoles.length)
+    setHasAppSysRoles(appSysRoles.length >= 1)
+  }, [appSysRoles])
 
   return (
     // @ts-ignore
-    <MaterialTable key={readNumRow} columns={columns} data={appSysRoles} editable={editable} options={options} />
+    <MaterialTable
+      key={readNumRow}
+      columns={hasAppSysRoles ? columns : preColumns}
+      data={hasAppSysRoles ? appSysRoles : preAppSysRoles}
+      editable={hasAppSysRoles ? editable : undefined}
+      options={options}
+    />
   );
 };
 

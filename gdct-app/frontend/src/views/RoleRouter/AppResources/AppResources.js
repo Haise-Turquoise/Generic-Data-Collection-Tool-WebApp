@@ -30,6 +30,11 @@ const AppResourcesHeader = () => {
 const AppResourcesTable = () => {
   const dispatch = useDispatch();
   const [readRowNum, setRowNum] = useState(1);
+  const [hasAppRes, setHasAppRes] = useState(false)
+
+  // table stuff while loading
+  const preAppResources = [{ name: 'LOADING...' }]
+  const preColumns = [{title: 'Name', field: 'name'}]
   
   // Prepare the data for material table
   const { appResources } = useSelector(
@@ -107,11 +112,20 @@ const AppResourcesTable = () => {
     dispatch(getAppResourcesRequest());
   }, [dispatch]);
 
-  useEffect(()=>{setRowNum(appResources.length)}, [appResources]);
+  useEffect(()=>{
+    setRowNum(appResources.length)
+    setHasAppRes(appResources.length >= 1)
+  }, [appResources]);
 
   return (
     // @ts-ignore
-    <MaterialTable key={readRowNum} columns={columns} data={appResources} editable={editable} options={options} />
+    <MaterialTable
+      key={readRowNum}
+      columns={hasAppRes ? columns : preColumns}
+      data={hasAppRes ? appResources : preAppResources}
+      editable={hasAppRes ? editable : undefined}
+      options={options}
+    />
   );
 };
 

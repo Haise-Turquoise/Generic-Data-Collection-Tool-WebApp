@@ -38,6 +38,7 @@ const AppRoleResourceHeader = () => {
 const AppRoleResourceTable = ({ history }) => {
   const dispatch = useDispatch();
   const [readRowNum, setRowNum] = useState(1);
+  const [hasAppRoleRes, setHasAppRoleRes] = useState(false)
   // get app role resource info
   const { appRoleResources, appSysRoles, appResources } = useSelector(
     state => ({
@@ -48,7 +49,14 @@ const AppRoleResourceTable = ({ history }) => {
     shallowEqual,
   );
 
-  useEffect(()=>{setRowNum(appRoleResources.length)}, [appRoleResources])
+  // table stuff while loading
+  const preAppRoleResources = [{ name: 'LOADING...' }]
+  const preColumns = [{title: 'Name', field: 'name'}]
+
+  useEffect(()=>{
+    setRowNum(appRoleResources.length)
+    setHasAppRoleRes(appRoleResources.length >= 1)
+  }, [appRoleResources])
   // Convert Date format
   appRoleResources.forEach(appRoleResource => {
     const logtime = new Date(appRoleResource.timestamp);
@@ -154,7 +162,13 @@ const AppRoleResourceTable = ({ history }) => {
 
   return (
     // @ts-ignore
-    <MaterialTable key={readRowNum} columns={columns} actions={actions} data={appRoleResources} editable={editable} options={options} />
+    <MaterialTable
+      key={readRowNum}
+      columns={hasAppRoleRes ? columns : preColumns}
+      actions={actions}
+      data={hasAppRoleRes ? appRoleResources : preAppRoleResources}
+      editable={hasAppRoleRes ? editable : undefined}
+      options={options} />
   );
 };
 

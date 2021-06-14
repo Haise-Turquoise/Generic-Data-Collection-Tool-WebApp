@@ -33,6 +33,11 @@ const COATreesHeader = () => {
 const COATreesTable = ({ history }) => {
   const dispatch = useDispatch();
   const [refresh, setRefresh] = useState(false);
+  const [hasTrees, setHasTrees] = useState(false)
+
+  // table stuff while loading
+  const preTrees = [{ name: 'LOADING...' }]
+  const preColumns = [{title: 'Name', field: 'name'}]
 
   const[readRowNum, setRowNum] = useState(1);
   const { sheetNames } = useSelector(
@@ -67,7 +72,9 @@ const COATreesTable = ({ history }) => {
 
   const options = useMemo(() => calculateOptions(readRowNum), [readRowNum]);
 
-  useEffect(()=>{setRowNum(sheetNames.length)},[sheetNames]);
+  useEffect(()=>{
+    setRowNum(sheetNames.length)
+  },[sheetNames]);
 
   const actions = useMemo(
     () => [
@@ -114,15 +121,19 @@ const COATreesTable = ({ history }) => {
     dispatch(getDetectEmptyTree());
   }, [dispatch, refresh]);
 
+  useEffect(() => {
+    setHasTrees(detectEmptyTree.length >= 1)
+  }, [detectEmptyTree])
+
   return (
     <MaterialTable
       key={readRowNum}
-      columns={columns}
+      columns={hasTrees ? columns : preColumns}
       actions={actions}
-      data={detectEmptyTree}
+      data={hasTrees ? detectEmptyTree : preTrees}
       // @ts-ignore
       options={options}
-      editable={editable}
+      editable={hasTrees ? editable : undefined}
     />
   );
 };
