@@ -5,9 +5,36 @@ import { useHistory } from 'react-router-dom';
 import moment from 'moment';
 
 import ModifyOrganization from '../ModifyOrganization';
+//@ts-ignore
 import OrgEntity from '../../../../../backend/src/entities/Organization/entity';
+//@ts-ignore
 import { createOrgsRequest } from '../../../store/thunks/organization';
+//@ts-ignore
 import CreateAuditLog from '../../AuditLog_Global';
+
+interface Organization {
+  _id: string,
+  id: number,
+  effectiveDate: string,
+  expiryDate?: null,
+  name: string,
+  IFISNum: string,
+  province?: string,
+  organizationGroupId: string[],
+  programId: string[],
+  authorizedPerson: {
+    name: string,
+    email: string,
+  },
+  active?: boolean,
+  address?: string,
+  city?: string,
+  code?: string,
+  legalName?: string,
+  location?: [],
+  managerUserIds?: [],
+  postalCode?: string,
+}
 
 const CreateOrganization = () => {
   const history = useHistory();
@@ -27,12 +54,14 @@ const CreateOrganization = () => {
     history.push('/admin/organization/org');
   };
 
-  const submit = organization => {
+  const submit = (organization: Organization) => {
     new Promise((resolve, reject) => {
       dispatch(createOrgsRequest(organization, resolve, reject));
-    }).then(newOrganization => {
+    }).then((newOrganization) => {
       // For Auditlog
-      CreateAuditLog(null, "Create Organization", "Organization", newOrganization._id, {}, newOrganization);
+      if (newOrganization) {
+        CreateAuditLog(null, "Create Organization", "Organization", (newOrganization as Organization)._id, {}, newOrganization);
+      }
       // Redirect back after creation
       redirect();
     })

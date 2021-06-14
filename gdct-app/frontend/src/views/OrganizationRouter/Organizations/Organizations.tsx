@@ -2,15 +2,41 @@ import React, { useMemo, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 
-import MaterialTable from 'material-table';
+import MaterialTable, { Column, Action } from 'material-table';
 import { Paper, Button, Typography }from '@material-ui/core';
 
-import { useHistory } from 'react-router-dom';
+import { BrowserRouter, Route, Router, RouterProps, useHistory } from 'react-router-dom';
 import EditIcon from '@material-ui/icons/Edit';
+//@ts-ignore
 import { selectFactoryRESTResponseTableValues } from '../../../store/common/REST/selectors';
+//@ts-ignore
 import { selectOrgsStore } from '../../../store/OrganizationsStore/selectors';
+//@ts-ignore
 import { getOrgsRequest } from '../../../store/thunks/organization';
+//@ts-ignore
 import { calculateOptions } from '../../../tools/misc';
+
+// TODO PUT IN SEPERATE FOLDER PLEASE JULIEN I'M BEGGING YOU
+interface Organization {
+  name: string,
+  _id: string,
+  id: number,
+  effectiveDate: Date,
+  expiryDate?: null,
+  IFISNum: string,
+  province?: string,
+  organizationGroupId: string[],
+  programId: string[],
+  authorizedPerson: string[],
+  active?: boolean,
+  address?: string,
+  city?: string,
+  code?: string,
+  legalName?: string,
+  location?: any[],
+  manageUserIds?: string[],
+  postalCode?: string,
+}
 
 const HeaderActions = () => {
   const history = useHistory();
@@ -35,17 +61,17 @@ const OrganizationHeader = () => {
   );
 };
 
-const Organizations = ({ history }) => {
+const Organizations = ({ history }: RouterProps) => {
   const dispatch = useDispatch();
   const [readRowNum, setRowNum] = useState(1);
 
   // Prepare the data for material table
-  const { Orgs } = useSelector(state => ({
+  const { Orgs }: { Orgs: Organization[] } = useSelector(state => ({
     Orgs: selectFactoryRESTResponseTableValues(selectOrgsStore)(state),
   }));
 
   // Prepare the columns for material table
-  const columns = useMemo(
+  const columns: Column<any>[] = useMemo(
     () => [
       { title: 'Name', field: 'name' },
       { title: 'Legal Name', field: 'legalName' },
@@ -61,12 +87,12 @@ const Organizations = ({ history }) => {
   const options = useMemo(() => calculateOptions(readRowNum), [readRowNum]);
 
   // Prepare the actions for material table
-  const actions = useMemo(
+  const actions: Action<any>[] = useMemo(
     () => [
       {
         icon: EditIcon,
         tooltip: 'Edit Organization',
-        onClick: (_event, org) => history.push(`/admin/organization/edit/${org._id}`),
+        onClick: (_: any, org: Organization) => history.push(`/admin/organization/edit/${org._id}`),
       },
     ],
     [history],
