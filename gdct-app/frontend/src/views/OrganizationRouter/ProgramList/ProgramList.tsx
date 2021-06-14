@@ -1,16 +1,39 @@
 import React, { useMemo, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
-import MaterialTable from 'material-table';
+import MaterialTable, { Action, Column } from 'material-table';
 import AddIcon from '@material-ui/icons/Add';
 import DeleteIcon from '@material-ui/icons/Delete';
 
 import PropTypes from 'prop-types';
+//@ts-ignore
 import { selectFactoryRESTResponseTableValues } from '../../../store/common/REST/selectors';
+//@ts-ignore
 import { selectProgramsStore } from '../../../store/ProgramsStore/selectors';
+//@ts-ignore
 import { getProgramsRequest } from '../../../store/thunks/program';
 
-const ProgList = ({ programIds, isEditable = true, onClickAdd, onClickDelete }) => {
+interface Program {
+  _id: string,
+  code: string,
+  isActive: boolean,
+  name: string,
+  tableData: {
+    id: number,
+  },
+  timestamp: string,
+  updatedAt: string,
+  updatedBy: string,
+}
+
+interface ProgListProps {
+  programIds: string[],
+  isEditable: boolean,
+  onClickAdd: (event: Event, program: Program) => void,
+  onClickDelete: (event: Event, program: Program) => void,
+}
+
+const ProgList = ({ programIds, isEditable = true, onClickAdd, onClickDelete }: ProgListProps) => {
   const dispatch = useDispatch();
   useEffect(() => {
     dispatch(getProgramsRequest());
@@ -20,10 +43,10 @@ const ProgList = ({ programIds, isEditable = true, onClickAdd, onClickDelete }) 
     programList: selectFactoryRESTResponseTableValues(selectProgramsStore)(state),
   }));
 
-  const OrgProgs = () => programList.filter(elem => programIds.includes(elem._id));
-  const nonOrgProgs = () => programList.filter(elem => !programIds.includes(elem._id));
+  const OrgProgs = () => programList.filter((elem: Program) => programIds.includes(elem._id));
+  const nonOrgProgs = () => programList.filter((elem: Program) => !programIds.includes(elem._id));
 
-  const columns = useMemo(() => 
+  const columns: Column<{ title: string, field: string, [key: string]: any }>[] = useMemo(() => 
     [
       { title: 'Name', field: 'name' },
       { title: 'Code', field: 'code' },
@@ -43,9 +66,9 @@ const ProgList = ({ programIds, isEditable = true, onClickAdd, onClickDelete }) 
     []
   );
 
-  const left_actions = useMemo(() => [{ icon: DeleteIcon, tooltip: 'Remove from Organization', onClick: onClickDelete }], []);
+  const left_actions: Action<any>[] = useMemo(() => [{ icon: DeleteIcon, tooltip: 'Remove from Organization', onClick: onClickDelete }], []);
 
-  const right_actions = useMemo(() => [{ icon: AddIcon, tooltip: 'Add to Organization', onClick: onClickAdd }], []);
+  const right_actions: Action<any>[] = useMemo(() => [{ icon: AddIcon, tooltip: 'Add to Organization', onClick: onClickAdd }], []);
 
   return (
     <div className="tableContainer">
@@ -56,7 +79,7 @@ const ProgList = ({ programIds, isEditable = true, onClickAdd, onClickDelete }) 
           columns={columns}
           data={OrgProgs()}
           options={options}
-          actions={isEditable ? left_actions : null}
+          actions={isEditable ? left_actions : undefined}
         />
       </div>
       <div className="tableWrapper-other">
@@ -66,7 +89,7 @@ const ProgList = ({ programIds, isEditable = true, onClickAdd, onClickDelete }) 
           columns={columns}
           data={nonOrgProgs()}
           options={options}
-          actions={isEditable ? right_actions : null}
+          actions={isEditable ? right_actions : undefined}
         />
       </div>
     </div>
