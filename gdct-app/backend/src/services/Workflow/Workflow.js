@@ -79,7 +79,7 @@ export default class WorkflowService {
   }
 
   async findOutwardProcessesPopulated(processId) {
-    console.log('hi', processId)
+    // console.log('hi', processId)
     const workflowProcess = await this.workflowProcessesRepository.findById(processId);
 
     workflowProcess.to = await this.workflowProcessesRepository.findMany(workflowProcess.to, true);
@@ -111,7 +111,15 @@ export default class WorkflowService {
     return this.workflowProcessesRepository.find({statusId:objectId(statusId)});
   }
 
+  async findWorkflowProessesById(ids){
+    return this.workflowProcessesRepository.find({_id: {$in:ids}});
+  }
+
   async findProcesses() {
     return this.workflowProcessesRepository.find();
+  }
+
+  async findProcessesByWorkflowId(workflowId) {
+    return this.workflowProcessesRepository.findProcessesByWorkflowId(workflowId);
   }
 }

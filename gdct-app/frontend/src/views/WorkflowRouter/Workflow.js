@@ -18,6 +18,7 @@ import {
 } from '../../store/WorkflowStore/selectors';
 import { WorkflowStoreActions } from '../../store/WorkflowStore/store';
 import { submitWorkflow, updateWorkflow, loadWorkflow } from '../../store/thunks/workflow';
+import { getWorkflowsRequest, deleteWorkflowRequest } from '../../store/thunks/workflow';
 import './Workflow.scss';
 
 import CreateAuditLog from '../AuditLog_Global';
@@ -32,6 +33,7 @@ const WorkflowHeaderActions = ({ type, id }) => {
   const handleSave = useCallback(() => {
       // removed updateworkflow since it's never used
       dispatch(type === 'create' ? submitWorkflow() : updateWorkflow());
+      dispatch(getWorkflowsRequest());
       
       // For AuditLog
       const Auditlog_Message = type === 'create' ? 'Create Workflow' : 'Update Workflow';

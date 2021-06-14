@@ -15,6 +15,8 @@ import AppConfigController from '../controllers/AppConfig';
 
 import usersController from '../controllers/Users'
 
+import UserStore from '../store/UserStore/store'
+
 import moment from 'moment';
 import Swal from 'sweetalert2';
 function Copyright() {
@@ -248,7 +250,10 @@ export default function Login({ setLoggedIn }) {
                   confirmButtonText: 'OK'
                 }).then((result) => {
                   if (result.isConfirmed) {
+                    dispatch(UserStore.actions.LOGOUT(false));
                     window.location.reload();
+                    // dispatch(UserStore.actions.LOGOUT(false));
+                    
                   }
                 })
               }

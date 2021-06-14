@@ -94,6 +94,7 @@ const Workflows = () => {
   );
 
   useEffect(() => {
+    console.log('page refresh')
     dispatch(getWorkflowsRequest());
   }, [dispatch]);
 

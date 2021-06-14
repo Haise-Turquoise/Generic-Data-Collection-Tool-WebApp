@@ -78,6 +78,12 @@ class SpreadSheet extends Component{
 
     // After component mount, initailize spreadsheet and load data from DB
     componentDidMount(){
+      const userRole = localStorage.getItem('currentRole');
+      if (userRole ==='Template Approver'){
+        sheetOption.mode = 'read';
+      }else{
+        sheetOption.mode = 'edit';
+      }
       templateController.fetchTemplate(this.id).then(template=>{
         const data = template.templateData?template.templateData:[];
         // @ts-ignore

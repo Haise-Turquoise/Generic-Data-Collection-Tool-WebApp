@@ -48,7 +48,11 @@ import { selectFactoryValueById } from '../../store/common/REST/selectors';
     //   const logtime = new Date(status.timestamp);
     //   status.timestamp = moment(logtime).format("YYYY-MM-DD HH:mm:ss")
     // });
-    const toBeApproved = user? cloneDeep(user.toBeApproved):[];
+    let toBeApproved = [];
+    if(user && user.toBeApproved){
+      toBeApproved = cloneDeep(user.toBeApproved);
+    }
+    // const toBeApproved = user? cloneDeep(user.toBeApproved):[];
     const onClickApprove = async (_event, rowData) => {
 
       const  applierUser = await usersController.fetchByEmail(rowData.applierEmail);
