@@ -11,15 +11,23 @@ import {
   createStatusRequest,
   deleteStatusRequest,
   updateStatusRequest,
+  //@ts-ignore
 } from '../../store/thunks/status';
 
+  //@ts-ignore
 import { selectFactoryRESTResponseTableValues } from '../../store/common/REST/selectors';
+  //@ts-ignore
 import { selectStatusesStore } from '../../store/StatusesStore/selectors';
 
+  //@ts-ignore
 import {calculateOptions} from '../../tools/misc';
 
+  //@ts-ignore
 import statusController from '../../controllers/status';
+  //@ts-ignore
 import CreateAuditLog from '../AuditLog_Global';
+
+import Status from '../../types/status'
 
 const StatusHeader = () => {
   return (
@@ -46,7 +54,7 @@ const StatusesTable = () => {
     shallowEqual,
   );
   // Convert Date format
-  statuses.forEach(status => {
+  statuses.forEach((status: Status) => {
     const logtime = new Date(status.timestamp);
     status.timestamp = moment(logtime).format("YYYY-MM-DD HH:mm:ss")
   });
@@ -67,25 +75,27 @@ const StatusesTable = () => {
   const options = useMemo(() => calculateOptions(readRowNum), [readRowNum]);
   
   // Record who and when of the action
-  function recordUpdate(status) {
+  function recordUpdate(status: Status) {
     //get username and record in Modified By column
-    status.updatedBy = localStorage.getItem('currentUser');
+    status.updatedBy = localStorage.getItem('currentUser') || '';
     //record new date and time in Modified On column 
     status.timestamp = new Date().toLocaleString(); 
   }
   // Prepare the editing functionalities for the material table
   const editable = useMemo(
     () => ({
-      onRowAdd: status =>
+      onRowAdd: (status: Status) =>
         new Promise((resolve, reject) => {
           recordUpdate(status);
           dispatch(createStatusRequest(status, resolve, reject));
         }).then(newStatus => {
           // For Auditlog
-          CreateAuditLog(null, "Add Status", "Status", newStatus._id, {}, newStatus);
+          if (newStatus) {
+            CreateAuditLog(null, "Add Status", "Status", (newStatus as Status)._id, {}, newStatus);
+          }
         }),
       
-      onRowUpdate: status =>
+      onRowUpdate: (status: Status) =>
         new Promise((resolve, reject) => {
           recordUpdate(status);
           // Find the old value before updating for Auditlog
@@ -97,7 +107,7 @@ const StatusesTable = () => {
           dispatch(updateStatusRequest(status, resolve, reject));
         }),
       
-      onRowDelete: status =>
+      onRowDelete: (status: Status & { tableData: any }) =>
         new Promise((resolve, reject) => {
           recordUpdate(status);
           dispatch(deleteStatusRequest(status._id, resolve, reject));
@@ -121,10 +131,19 @@ const StatusesTable = () => {
   }, [statuses]);
 
   // @ts-ignore
-  return <MaterialTable key={readRowNum} columns={columns} data={statuses} editable={editable} options={options} />;
+  return (
+    <MaterialTable
+      key={readRowNum}
+      columns={hasStatuses ? columns : preColumns}
+      data={hasStatuses ? statuses : preStatuses}
+      editable={hasStatuses ? editable : undefined}
+      options={options}
+    />
+  );
 };
 
-const Status = props => (
+// any is fine since no props required
+const Status = (props: any) => (
   <div className="statusesPage">
     <StatusHeader />
     <StatusesTable {...props} />
