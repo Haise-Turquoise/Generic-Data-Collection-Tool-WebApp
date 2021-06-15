@@ -3,7 +3,7 @@ import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 
 import moment from 'moment';
 
-import MaterialTable, { MaterialTableProps } from 'material-table';
+import MaterialTable, { Column, MaterialTableProps, Options } from 'material-table';
 import { Paper, Typography } from '@material-ui/core';
 import {
   getProgramsRequest,
@@ -27,6 +27,10 @@ import ProgramController from '../../controllers/Program'
 import CreateAuditLog from '../AuditLog_Global'
 import Program from '../../types/program'
 
+interface ProgramMT extends Program {
+  tableData?: any,
+}
+
 const ProgramHeader = () => {
   return (
     <Paper className="header">
@@ -42,11 +46,19 @@ const ProgramsTable = () => {
   const [hasPrograms, setHasPrograms] = useState(false)
 
   // table vars for loading
-  const preColumns = [{ title: 'Name', field: 'name' }]
-  const prePrograms = [{ name: 'LOADING... '}]
+  const preColumns: Column<ProgramMT>[] = [{ title: 'Name', field: 'name' }]
+  const prePrograms: ProgramMT[] = [{
+    name: 'LOADING... ',
+    _id: '',
+    code: '',
+    isActive: true,
+    updatedAt: '',
+    updatedBy: '',
+    timestamp: '',
+  }]
 
   // Prepare the data for material table
-  const { programs } = useSelector(
+  const { programs }: { programs: Program[] } = useSelector(
     state => ({
       programs: selectFactoryRESTResponseTableValues(selectProgramsStore)(state),
     }),
@@ -59,7 +71,7 @@ const ProgramsTable = () => {
   });
 
   // Prepare the columns for material table
-  const columns = useMemo(
+  const columns: Column<ProgramMT>[] = useMemo(
     () => [
       { title: 'Name', field: 'name' },
       { title: 'Code', field: 'code', validate: (rowData: Program) => checkDuplicates(rowData, programs, 'code') },
@@ -70,10 +82,10 @@ const ProgramsTable = () => {
     [programs],
   );
   
-  const options = useMemo(() => calculateOptions(readRowNum), [readRowNum]);
+  const options: Options<ProgramMT> = useMemo(() => calculateOptions(readRowNum), [readRowNum]);
   
   // Record who and when of the action
-  function recordUpdate(program: Program) {
+  function recordUpdate(program: ProgramMT) {
     //get username and record in Modified By column
     program.updatedBy = localStorage.getItem('currentUser') || '';
     //record new date and time in Modified On column 
@@ -82,7 +94,7 @@ const ProgramsTable = () => {
   // Prepare the editing functionalities for the material table
   const editable = useMemo(
     () => ({
-      onRowAdd: (program: Program) =>
+      onRowAdd: (program: ProgramMT) =>
         new Promise((resolve, reject) => {
           recordUpdate(program);
           dispatch(createProgramsRequest(program, resolve, reject));
@@ -93,10 +105,9 @@ const ProgramsTable = () => {
           }
         }),
       
-      onRowUpdate: (program: any) =>
+      onRowUpdate: (program: ProgramMT) =>
         new Promise((resolve, reject) => {
           recordUpdate(program);
-          console.log('PROGRAM', program);
           // Find the old value before updating in order to Auditlog
           (async () => {
             const oldProgram: Program = await ProgramController.fetchById(program._id);
@@ -106,7 +117,7 @@ const ProgramsTable = () => {
           dispatch(updateProgramsRequest(program, resolve, reject));
         }),
       
-      onRowDelete: (program: Program & { tableData: any }) =>
+      onRowDelete: (program: ProgramMT) =>
         new Promise((resolve, reject) => {
           recordUpdate(program);
           dispatch(deleteProgramsRequest(program._id, resolve, reject));
@@ -129,7 +140,6 @@ const ProgramsTable = () => {
     }
   }, [programs])
 
-  // @ts-ignore
   return (
     <MaterialTable
       key={readRowNum}

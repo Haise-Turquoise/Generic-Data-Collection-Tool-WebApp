@@ -1,7 +1,7 @@
 import React, { useMemo, useEffect, useState } from 'react';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 
-import MaterialTable from 'material-table';
+import MaterialTable, { Column, Options } from 'material-table';
 import { Paper, Typography } from '@material-ui/core';
 
 import moment from 'moment';
@@ -29,6 +29,10 @@ import CreateAuditLog from '../AuditLog_Global';
 
 import Status from '../../types/status'
 
+interface StatusMT extends Status {
+  tableData?: any,
+}
+
 const StatusHeader = () => {
   return (
     <Paper className="header">
@@ -43,11 +47,20 @@ const StatusesTable = () => {
   const [readRowNum, setRowNum] = useState(1);
   const [hasStatuses, setHasStatuses] = useState(false)
 
-  const preColumns = [{ title: 'Name', field: 'name' }]
-  const preStatuses = [{ name: 'LOADING...' }]
+  const preColumns: Column<StatusMT>[] = [{ title: 'Name', field: 'name' }]
+  const preStatuses: StatusMT[] = [{
+    name: 'LOADING...',
+    _id: '',
+    description: '',
+    isActive: true,
+    updatedAt: '',
+    forPackage: true,
+    timestamp: '',
+    updatedBy: '',
+  }]
   
   // Prepare the data for the material table
-  const { statuses } = useSelector(
+  const { statuses }: { statuses: Status[] } = useSelector(
     state => ({
       statuses: selectFactoryRESTResponseTableValues(selectStatusesStore)(state),
     }),
@@ -60,7 +73,7 @@ const StatusesTable = () => {
   });
 
   // Prepare the columns for material table
-  const columns = useMemo(
+  const columns: Column<StatusMT>[] = useMemo(
     () => [
       { title: 'Name', field: 'name' },
       { title: 'Description', field: 'description' },
@@ -72,10 +85,10 @@ const StatusesTable = () => {
     [],
   );
 
-  const options = useMemo(() => calculateOptions(readRowNum), [readRowNum]);
+  const options: Options<StatusMT> = useMemo(() => calculateOptions(readRowNum), [readRowNum]);
   
   // Record who and when of the action
-  function recordUpdate(status: Status) {
+  function recordUpdate(status: StatusMT) {
     //get username and record in Modified By column
     status.updatedBy = localStorage.getItem('currentUser') || '';
     //record new date and time in Modified On column 
@@ -84,7 +97,7 @@ const StatusesTable = () => {
   // Prepare the editing functionalities for the material table
   const editable = useMemo(
     () => ({
-      onRowAdd: (status: Status) =>
+      onRowAdd: (status: StatusMT) =>
         new Promise((resolve, reject) => {
           recordUpdate(status);
           dispatch(createStatusRequest(status, resolve, reject));
@@ -95,7 +108,7 @@ const StatusesTable = () => {
           }
         }),
       
-      onRowUpdate: (status: Status) =>
+      onRowUpdate: (status: StatusMT) =>
         new Promise((resolve, reject) => {
           recordUpdate(status);
           // Find the old value before updating for Auditlog
@@ -107,7 +120,7 @@ const StatusesTable = () => {
           dispatch(updateStatusRequest(status, resolve, reject));
         }),
       
-      onRowDelete: (status: Status & { tableData: any }) =>
+      onRowDelete: (status: StatusMT) =>
         new Promise((resolve, reject) => {
           recordUpdate(status);
           dispatch(deleteStatusRequest(status._id, resolve, reject));
@@ -130,7 +143,6 @@ const StatusesTable = () => {
     }
   }, [statuses]);
 
-  // @ts-ignore
   return (
     <MaterialTable
       key={readRowNum}

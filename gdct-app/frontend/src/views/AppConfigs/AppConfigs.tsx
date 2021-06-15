@@ -1,7 +1,7 @@
 import React, { useMemo, useEffect, useState } from 'react';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 
-import MaterialTable, { Options } from 'material-table';
+import MaterialTable, { Column, Options } from 'material-table';
 import { Paper, Typography } from '@material-ui/core';
 
 import moment from 'moment';
@@ -29,6 +29,10 @@ import CreateAuditLog from '../AuditLog_Global';
 import AppConfig from '../../types/appconfig'
 import AppSys from '../../types/appsys'
 
+interface AppConfigMT extends AppConfig {
+  tableData?: any,
+}
+
 const AppConfigsHeader = () => {
   return (
     <Paper className="header">
@@ -43,8 +47,16 @@ const AppConfigsTable = () => {
   const [hasConfigs, setHasConfigs] = useState(false)
 
   // table vars for loading
-  const preColumns = [{ title: 'Name', field: 'name' }]
-  const preConfigs = [{ name: 'LOADING...' }]
+  const preColumns: Column<AppConfigMT>[] = [{ title: 'Name', field: 'value' }]
+  const preConfigs: AppConfigMT[] = [{ 
+    value: 'LOADING...',
+    _id: '',
+    key: '',
+    appSys: '',
+    sys: '',
+    timestamp: '',
+    updatedBy: '',
+  }]
 
   // Prepare the data for the material table
   const { appConfigs, appSyses } = useSelector(
@@ -66,7 +78,7 @@ const AppConfigsTable = () => {
   }, {});
 
   // Prepare the columns for the material table
-  const columns = useMemo(
+  const columns: Column<AppConfigMT>[] = useMemo(
     () => [
       { title: 'Key', field: 'key' },
       { title: 'Value', field: 'value' },
@@ -78,7 +90,7 @@ const AppConfigsTable = () => {
   );
 
   // Prepare the options
-  const options: Options<AppConfig & {tableData: any}> = useMemo(
+  const options: Options<AppConfigMT> = useMemo(
     () => (
       {
         actionsColumnIndex: -1,
@@ -91,7 +103,7 @@ const AppConfigsTable = () => {
   );
 
   // Record who and when of the action
-  function recordUpdate(appConfig: AppConfig) {
+  function recordUpdate(appConfig: AppConfigMT) {
     //get username and record in Modified By column
     appConfig.updatedBy = localStorage.getItem('currentUser') || '';
     //record new date and time in Modified On column 
@@ -100,7 +112,7 @@ const AppConfigsTable = () => {
   // Prepare the editing functionalities for the material table
   const editable = useMemo(
     () => ({
-      onRowAdd: (appConfig: AppConfig) =>
+      onRowAdd: (appConfig: AppConfigMT) =>
         new Promise((resolve, reject) => {
           recordUpdate(appConfig);
           dispatch(createAppConfigRequest(appConfig, resolve, reject));
@@ -118,7 +130,7 @@ const AppConfigsTable = () => {
           }
         }),
 
-      onRowUpdate: (appConfig: AppConfig) =>
+      onRowUpdate: (appConfig: AppConfigMT) =>
         new Promise((resolve, reject) => {
           recordUpdate(appConfig);
           // Find the old value before updating for Auditlog
@@ -130,7 +142,7 @@ const AppConfigsTable = () => {
           dispatch(updateAppConfigRequest(appConfig, resolve, reject));
         }),
         
-      onRowDelete: (appConfig: AppConfig & { tableData: any }) =>
+      onRowDelete: (appConfig: AppConfigMT) =>
         new Promise((resolve, reject) => {
           recordUpdate(appConfig);
           dispatch(deleteAppConfigRequest(appConfig._id, resolve, reject));
