@@ -3,22 +3,29 @@ import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 
 import moment from 'moment';
 
-import MaterialTable from 'material-table';
+import MaterialTable, { MaterialTableProps } from 'material-table';
 import { Paper, Typography } from '@material-ui/core';
-
 import {
   getProgramsRequest,
   createProgramsRequest,
   deleteProgramsRequest,
   updateProgramsRequest,
+  //@ts-ignore
 } from '../../store/thunks/program';
+  //@ts-ignore
 import { selectFactoryRESTResponseTableValues } from '../../store/common/REST/selectors';
+  //@ts-ignore
 import { selectProgramsStore } from '../../store/ProgramsStore/selectors';
+  //@ts-ignore
 import { calculateOptions, checkDuplicates } from '../../tools/misc'
 
+  //@ts-ignore
 import ErrorBanner from '../ErrorBanner';
+  //@ts-ignore
 import ProgramController from '../../controllers/Program'
+  //@ts-ignore
 import CreateAuditLog from '../AuditLog_Global'
+import Program from '../../types/program'
 
 const ProgramHeader = () => {
   return (
@@ -46,7 +53,7 @@ const ProgramsTable = () => {
     shallowEqual,
   );
   // Convert Date format
-  programs.forEach(program => {
+  programs.forEach((program: Program) => {
     const logtime = new Date(program.timestamp);
     program.timestamp = moment(logtime).format("YYYY-MM-DD HH:mm:ss")
   });
@@ -55,7 +62,7 @@ const ProgramsTable = () => {
   const columns = useMemo(
     () => [
       { title: 'Name', field: 'name' },
-      { title: 'Code', field: 'code', validate: rowData => checkDuplicates(rowData, programs, 'code') },
+      { title: 'Code', field: 'code', validate: (rowData: Program) => checkDuplicates(rowData, programs, 'code') },
       { title: 'Modified On', field: 'timestamp', editComponent: () => {return <div></div>} },
       { title: 'Updated By', field: 'updatedBy', editComponent: () => {return <div></div>} },
       { title: 'Active', type: 'boolean', field: 'isActive' },
@@ -66,37 +73,40 @@ const ProgramsTable = () => {
   const options = useMemo(() => calculateOptions(readRowNum), [readRowNum]);
   
   // Record who and when of the action
-  function recordUpdate(program) {
+  function recordUpdate(program: Program) {
     //get username and record in Modified By column
-    program.updatedBy = localStorage.getItem('currentUser');
+    program.updatedBy = localStorage.getItem('currentUser') || '';
     //record new date and time in Modified On column 
     program.timestamp = new Date().toLocaleString(); 
   }
   // Prepare the editing functionalities for the material table
   const editable = useMemo(
     () => ({
-      onRowAdd: program =>
+      onRowAdd: (program: Program) =>
         new Promise((resolve, reject) => {
           recordUpdate(program);
           dispatch(createProgramsRequest(program, resolve, reject));
         }).then(newProgram => {
           // For Auditlog
-          CreateAuditLog(null, "Create Program", "Program", newProgram._id, {}, newProgram);
+          if (newProgram) {
+            CreateAuditLog(null, "Create Program", "Program", (newProgram as Program)._id, {}, newProgram);
+          }
         }),
       
-      onRowUpdate: program =>
+      onRowUpdate: (program: any) =>
         new Promise((resolve, reject) => {
           recordUpdate(program);
+          console.log('PROGRAM', program);
           // Find the old value before updating in order to Auditlog
           (async () => {
-            const oldProgram = await ProgramController.fetchById(program._id);
+            const oldProgram: Program = await ProgramController.fetchById(program._id);
             CreateAuditLog(null, "Update Program", "Program", oldProgram._id, oldProgram, program);
           })();
           // Do Update
           dispatch(updateProgramsRequest(program, resolve, reject));
         }),
       
-      onRowDelete: program =>
+      onRowDelete: (program: Program & { tableData: any }) =>
         new Promise((resolve, reject) => {
           recordUpdate(program);
           dispatch(deleteProgramsRequest(program._id, resolve, reject));
@@ -131,7 +141,8 @@ const ProgramsTable = () => {
   );
 };
 
-const Program = props => (
+// any type since no props used in table
+const Program = (props: any) => (
   <div className="programsPage">
     <ProgramHeader />
     <ErrorBanner title={"Cannot delete the selected program since it is referenced in the master value table"} targetStore={selectProgramsStore}/>
