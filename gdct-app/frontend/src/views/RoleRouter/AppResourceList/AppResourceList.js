@@ -43,7 +43,9 @@ const AppResourceList = ({ resourceId, isEditable = true, onClickAdd, onClickDel
   useEffect(() => {
     setOrgRowNum(OrgProgs().length)
     setNonOrgRowNum(nonOrgProgs().length)
-    setHasProgs(resourceList.length >= 1)
+    if (!hasProgs) {
+      setHasProgs(resourceList.length >= 1)
+    }
   }, [resourceList])
 
   const columns = useMemo(() => 

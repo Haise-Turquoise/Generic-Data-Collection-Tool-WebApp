@@ -33,6 +33,10 @@ const StatusHeader = () => {
 const StatusesTable = () => {
   const dispatch = useDispatch();
   const [readRowNum, setRowNum] = useState(1);
+  const [hasStatuses, setHasStatuses] = useState(false)
+
+  const preColumns = [{ title: 'Name', field: 'name' }]
+  const preStatuses = [{ name: 'LOADING...' }]
   
   // Prepare the data for the material table
   const { statuses } = useSelector(
@@ -109,7 +113,12 @@ const StatusesTable = () => {
     dispatch(getStatusesRequest());
   }, [dispatch]);
 
-  useEffect(()=>{setRowNum(statuses.length)}, [statuses]);
+  useEffect(()=>{
+    setRowNum(statuses.length)
+    if (!hasStatuses) {
+      setHasStatuses(statuses.length >= 1)
+    }
+  }, [statuses]);
 
   // @ts-ignore
   return <MaterialTable key={readRowNum} columns={columns} data={statuses} editable={editable} options={options} />;

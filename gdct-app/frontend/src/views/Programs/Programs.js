@@ -32,6 +32,11 @@ const ProgramHeader = () => {
 const ProgramsTable = () => {
   const dispatch = useDispatch();
   const [readRowNum, setRowNum] = useState(1);
+  const [hasPrograms, setHasPrograms] = useState(false)
+
+  // table vars for loading
+  const preColumns = [{ title: 'Name', field: 'name' }]
+  const prePrograms = [{ name: 'LOADING... '}]
 
   // Prepare the data for material table
   const { programs } = useSelector(
@@ -107,10 +112,23 @@ const ProgramsTable = () => {
     dispatch(getProgramsRequest());
   }, [dispatch]);
 
-  useEffect(()=>{setRowNum(programs.length)}, [programs])
+  useEffect(()=>{
+    setRowNum(programs.length)
+    if (!hasPrograms) {
+      setHasPrograms(programs.length >= 1)
+    }
+  }, [programs])
 
   // @ts-ignore
-  return <MaterialTable key={readRowNum} columns={columns} data={programs} editable={editable} options={options} />;
+  return (
+    <MaterialTable
+      key={readRowNum}
+      columns={hasPrograms ? columns : preColumns}
+      data={hasPrograms ? programs : prePrograms}
+      editable={hasPrograms ? editable : undefined}
+      options={options}
+    />
+  );
 };
 
 const Program = props => (

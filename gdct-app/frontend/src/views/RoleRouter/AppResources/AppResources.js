@@ -114,7 +114,9 @@ const AppResourcesTable = () => {
 
   useEffect(()=>{
     setRowNum(appResources.length)
-    setHasAppRes(appResources.length >= 1)
+    if (!hasAppRes) {
+      setHasAppRes(appResources.length >= 1)
+    }
   }, [appResources]);
 
   return (

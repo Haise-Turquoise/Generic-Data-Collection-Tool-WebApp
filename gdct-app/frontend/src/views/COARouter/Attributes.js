@@ -174,7 +174,9 @@ const ColumnNamesTable = () => {
 
   useEffect(()=>{
     setRowNum(columnNames.length)
-    setHasCols(columnNames.length >= 1)
+    if (!hasCols) {
+      setHasCols(columnNames.length >= 1)
+    }
   }, [columnNames]);
 
   useEffect(() => {

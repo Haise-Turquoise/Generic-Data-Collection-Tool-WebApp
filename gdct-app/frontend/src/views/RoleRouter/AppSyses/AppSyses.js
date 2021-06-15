@@ -111,7 +111,9 @@ const AppSysesTable = () => {
 
   useEffect(()=>{
     setRowNum(appSyses.length)
-    setHasAppSys(appSyses.length >= 1)
+    if (!hasAppSyses) {
+      setHasAppSys(appSyses.length >= 1)
+    }
   }, [appSyses])
 
   // @ts-ignore

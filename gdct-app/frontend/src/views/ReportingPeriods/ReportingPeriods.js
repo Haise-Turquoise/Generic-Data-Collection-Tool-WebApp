@@ -32,6 +32,11 @@ const ReportingPeriodHeader = () => {
 const ReportingPeriodsTable = () => {
   const dispatch = useDispatch();
   const [readRowNum, setRowNum] = useState(1);
+  const [hasPeriods, setHasPeriods] = useState(false)
+
+  // table vars for loading
+  const preColumns = [{ title: 'Name', field: 'name' }]
+  const prePeriods = [{ name: 'LOADING... '}]
 
   // Prepare the data for material table
   const { reportingPeriods } = useSelector(
@@ -40,7 +45,12 @@ const ReportingPeriodsTable = () => {
     }),
     shallowEqual,
   );
-  useEffect(()=>{setRowNum(reportingPeriods.length)}, [reportingPeriods])
+  useEffect(()=>{
+    setRowNum(reportingPeriods.length)
+    if (!hasPeriods) {
+      setHasPeriods(reportingPeriods.length >= 1)
+    }
+  }, [reportingPeriods])
   // Convert Date format
   reportingPeriods.forEach(reportingPeriod => {
     const logtime = new Date(reportingPeriod.timestamp);
@@ -107,9 +117,9 @@ const ReportingPeriodsTable = () => {
   return (
     <MaterialTable
       key={readRowNum}
-      columns={columns}
-      data={reportingPeriods}
-      editable={editable}
+      columns={hasPeriods ? columns : preColumns}
+      data={hasPeriods ? reportingPeriods : prePeriods}
+      editable={hasPeriods ? editable : undefined}
       // @ts-ignore
       options={options}
     />

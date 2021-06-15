@@ -33,6 +33,11 @@ const AppConfigsHeader = () => {
 
 const AppConfigsTable = () => {
   const dispatch = useDispatch();
+  const [hasConfigs, setHasConfigs] = useState(false)
+
+  // table vars for loading
+  const preColumns = [{ title: 'Name', field: 'name' }]
+  const preConfigs = [{ name: 'LOADING...' }]
 
   // Prepare the data for the material table
   const { appConfigs, appSyses } = useSelector(
@@ -125,6 +130,12 @@ const AppConfigsTable = () => {
     dispatch(getAppSysesRequest());
     dispatch(getAppConfigsRequest());
   }, [dispatch]);
+
+  useEffect(() => {
+    if (!hasConfigs) {
+      setHasConfigs(appConfigs.length >= 1)
+    }
+  }, [appConfigs])
 
   return (
     <MaterialTable

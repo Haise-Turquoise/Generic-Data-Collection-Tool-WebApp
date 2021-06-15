@@ -166,7 +166,9 @@ const COAsTable = () => {
 
   useEffect(()=>{ 
     setRowNum(COAs.length)
-    setHasCOAs(COAs.length >= 1)
+    if (!hasCOAs) {
+      setHasCOAs(COAs.length >= 1)
+    }
   }, [COAs])
 
   return (

@@ -36,7 +36,7 @@ const COATreesTable = ({ history }) => {
   const [hasTrees, setHasTrees] = useState(false)
 
   // table stuff while loading
-  const preTrees = [{ name: 'LOADING...' }]
+  const preTrees = [{ name: 'LOADING...', value: '' }]
   const preColumns = [{title: 'Name', field: 'name'}]
 
   const[readRowNum, setRowNum] = useState(1);
@@ -122,14 +122,16 @@ const COATreesTable = ({ history }) => {
   }, [dispatch, refresh]);
 
   useEffect(() => {
-    setHasTrees(detectEmptyTree.length >= 1)
+    if (!hasTrees) {
+      setHasTrees(detectEmptyTree.length >= 1)
+    }
   }, [detectEmptyTree])
 
   return (
     <MaterialTable
       key={readRowNum}
       columns={hasTrees ? columns : preColumns}
-      actions={actions}
+      actions={hasTrees ? actions : undefined}
       data={hasTrees ? detectEmptyTree : preTrees}
       // @ts-ignore
       options={options}

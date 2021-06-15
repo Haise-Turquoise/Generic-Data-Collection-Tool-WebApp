@@ -111,7 +111,9 @@ const COAGroupsTable = () => {
 
   useEffect(() => { 
     setRowNum(COAGroups.length)
-    setHasGroups(COAGroups.length >= 1)
+    if (!hasGroups) {
+      setHasGroups(COAGroups.length >= 1)
+    }
   }, [COAGroups]);
 
   // @ts-ignore

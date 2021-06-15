@@ -108,7 +108,9 @@ const AppRolesTable = () => {
 
   useEffect(()=>{
     setRowNum(appRoles.length)
-    setHasAppRoles(appRoles.length >= 1)
+    if (!hasAppRoles) {
+      setHasAppRoles(appRoles.length >= 1)
+    }
   }, [appRoles])
 
   // @ts-ignore

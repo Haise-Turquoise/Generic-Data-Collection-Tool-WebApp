@@ -21,7 +21,7 @@ interface Organization {
   name: string,
   _id: string,
   id: number,
-  effectiveDate: Date,
+  effectiveDate: string,
   expiryDate?: null,
   IFISNum: string,
   province?: string,
@@ -64,6 +64,7 @@ const OrganizationHeader = () => {
 const Organizations = ({ history }: RouterProps) => {
   const dispatch = useDispatch();
   const [readRowNum, setRowNum] = useState(1);
+  const [hasOrgs, setHasOrgs] = useState(false)
   
   // table stuff while loading
   const preOrgs = [{ name: 'LOADING...' }]
@@ -106,16 +107,21 @@ const Organizations = ({ history }: RouterProps) => {
     dispatch(getOrgsRequest());
   }, [dispatch]);
 
-  useEffect(() => { setRowNum(Orgs.length) }, [Orgs])
+  useEffect(() => { 
+    setRowNum(Orgs.length)
+    if (!hasOrgs) {
+      setHasOrgs(Orgs.length >= 1)
+    }
+  }, [Orgs])
   
   return (
     <div className="organizations">
       <OrganizationHeader />
       <MaterialTable 
         key={readRowNum}
-        columns={Orgs.length >= 1 ? columns : preColumns}
-        data={Orgs.length >= 1 ? Orgs : preOrgs}
-        actions={Orgs.length >= 1 ? actions : undefined}
+        columns={hasOrgs ? columns : preColumns}
+        data={hasOrgs ? Orgs : preOrgs}
+        actions={hasOrgs ? actions : undefined}
         options={options}
       />
     </div>

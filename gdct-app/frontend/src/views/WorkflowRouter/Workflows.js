@@ -35,6 +35,11 @@ const Workflows = () => {
   const dispatch = useDispatch();
   const history = useHistory();
   const [readRowNum, setRowNum] = useState(1);
+  const [hasWorkflows, setHasWorkflows] = useState(false)
+
+  // table vars for loading
+  const preColumns = [{ title: 'Name', field: 'name' }]
+  const preWorkflows = [{ name: 'LOADING...' }]
 
   const { workflows } = useSelector(
     state => ({
@@ -98,7 +103,12 @@ const Workflows = () => {
     dispatch(getWorkflowsRequest());
   }, [dispatch]);
 
-  useEffect(()=>{setRowNum(workflows.length)}, [workflows])
+  useEffect(()=>{
+    setRowNum(workflows.length)
+    if (!hasWorkflows) {
+      setHasWorkflows(workflows.length >= 1)
+    }
+  }, [workflows])
 
   return (
     <div>

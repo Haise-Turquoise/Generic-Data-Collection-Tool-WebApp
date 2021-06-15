@@ -33,6 +33,11 @@ const SheetNameHeader = () => {
 const SheetNamesTable = () => {
   const dispatch = useDispatch();
   const [readRowNum, setRowNum] = useState(1);
+  const [hasSheets, setHasSheets] = useState(false)
+
+  // table vars while loading data
+  const preColumns = [{ title: 'Name', field: 'name' }]
+  const preSheets = [{ name: 'LOADING...' }]
 
   // Prepare the data for material table
   const { sheetNames } = useSelector(
@@ -129,11 +134,22 @@ const SheetNamesTable = () => {
     dispatch(getSheetNamesRequest());
   }, [dispatch]);
 
-  useEffect(()=>{setRowNum(sheetNames.length)}, [sheetNames])
+  useEffect(()=>{
+    setRowNum(sheetNames.length)
+    if (!hasSheets) {
+      setHasSheets(sheetNames.length >= 1)
+    }
+  }, [sheetNames])
 
   return (
     // @ts-ignore
-    <MaterialTable key={readRowNum} columns={columns} data={sheetNames} editable={editable} options={options} />
+    <MaterialTable
+      key={readRowNum}
+      columns={hasSheets ? columns : preColumns}
+      data={hasSheets ? sheetNames : preSheets}
+      editable={hasSheets ? editable : undefined}
+      options={options}
+    />
   );
 };
 

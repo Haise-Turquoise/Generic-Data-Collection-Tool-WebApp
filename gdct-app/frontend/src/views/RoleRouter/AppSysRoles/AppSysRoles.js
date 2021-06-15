@@ -126,7 +126,9 @@ const AppSysRolesTable = props => {
 
   useEffect(()=>{
     setNumRow(appSysRoles.length)
-    setHasAppSysRoles(appSysRoles.length >= 1)
+    if (!hasAppSysRoles) {
+      setHasAppSysRoles(appSysRoles.length >= 1)
+    }
   }, [appSysRoles])
 
   return (

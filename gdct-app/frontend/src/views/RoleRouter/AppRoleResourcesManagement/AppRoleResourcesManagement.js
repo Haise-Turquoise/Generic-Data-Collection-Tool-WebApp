@@ -55,7 +55,9 @@ const AppRoleResourceTable = ({ history }) => {
 
   useEffect(()=>{
     setRowNum(appRoleResources.length)
-    setHasAppRoleRes(appRoleResources.length >= 1)
+    if (!hasAppRoleRes) {
+      setHasAppRoleRes(appRoleResources.length >= 1)
+    }
   }, [appRoleResources])
   // Convert Date format
   appRoleResources.forEach(appRoleResource => {
@@ -165,7 +167,7 @@ const AppRoleResourceTable = ({ history }) => {
     <MaterialTable
       key={readRowNum}
       columns={hasAppRoleRes ? columns : preColumns}
-      actions={actions}
+      actions={hasAppRoleRes ? actions : undefined}
       data={hasAppRoleRes ? appRoleResources : preAppRoleResources}
       editable={hasAppRoleRes ? editable : undefined}
       options={options} />

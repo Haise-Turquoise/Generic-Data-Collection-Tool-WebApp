@@ -48,6 +48,11 @@ const TemplatePackages = () => {
   const dispatch = useDispatch();
   const history = useHistory();
   const [readRowNum, setRowNum] = useState(1);
+  const [hasPackages, setHasPackages] = useState(false)
+
+  // table vars while loading
+  const preColumns = [{ title: 'Name', field: 'name' }]
+  const prePackages = [{ name: 'LOADING...' }]
 
   // Prepare the data for material table
   const {
@@ -222,7 +227,12 @@ const TemplatePackages = () => {
     };
   }, [dispatch]);
 
-  useEffect(()=>{setRowNum(templatePackages.length)}, [templatePackages])
+  useEffect(()=>{
+    setRowNum(templatePackages.length)
+    if (!hasPackages) {
+      setHasPackages(templatePackages.length >= 1)
+    }
+  }, [templatePackages])
 
   return (
     <div>
@@ -230,12 +240,12 @@ const TemplatePackages = () => {
       <ErrorBanner title={"You cannot delete the selected template package since it was already published"} targetStore={selectTemplatePackagesStore}/>
       <MaterialTable
         key={readRowNum}
-        columns={columns}
-        data={templatePackages}
-        editable={editable}
+        columns={hasPackages ? columns : preColumns}
+        data={hasPackages ? templatePackages : prePackages}
+        editable={hasPackages ? editable : undefined}
         // @ts-ignore
         options={options}
-        actions={actions}
+        actions={hasPackages ? actions : undefined}
       />
     </div>
   );
