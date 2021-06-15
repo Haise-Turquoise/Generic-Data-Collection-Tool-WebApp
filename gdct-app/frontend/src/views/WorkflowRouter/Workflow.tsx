@@ -1,12 +1,16 @@
 import React, { useEffect, useMemo, useCallback } from 'react';
-import { FlowChart, actions, REACT_FLOW_CHART } from '@mrblenny/react-flow-chart';
+import { FlowChart, actions, REACT_FLOW_CHART, IFlowChartCallbacks, INodeDefaultProps } from '@mrblenny/react-flow-chart';
 import { useSelector, shallowEqual, useDispatch } from 'react-redux';
 import { TextField, List, ListItem, Typography, Button } from '@material-ui/core';
 import { mapValues } from 'lodash';
 import { useRouteMatch, useHistory } from 'react-router-dom';
+//@ts-ignore
 import { selectFactoryRESTResponseValues } from '../../store/common/REST/selectors';
+//@ts-ignore
 import { selectStatusesStore } from '../../store/StatusesStore/selectors';
+//@ts-ignore
 import { getStatusesRequest } from '../../store/thunks/status';
+//@ts-ignore
 import { StatusesStoreActions } from '../../store/StatusesStore/store';
 
 import {
@@ -15,18 +19,27 @@ import {
   selectSelectedNodeValue,
   selectWorkflowFilter,
   selectWorkflowName,
+//@ts-ignore
 } from '../../store/WorkflowStore/selectors';
+//@ts-ignore
 import { WorkflowStoreActions } from '../../store/WorkflowStore/store';
+//@ts-ignore
 import { submitWorkflow, updateWorkflow, loadWorkflow } from '../../store/thunks/workflow';
+//@ts-ignore
 import { getWorkflowsRequest, deleteWorkflowRequest } from '../../store/thunks/workflow';
 import './Workflow.scss';
 
+import Status from '../../types/status'
+type actionType = 'create' | 'update'
+
+//@ts-ignore
 import CreateAuditLog from '../AuditLog_Global';
 
-const Auditlog_Operation = [];
+
+const Auditlog_Operation: string[] = [];
 
 // The Save button and its logic in the header
-const WorkflowHeaderActions = ({ type, id }) => {
+const WorkflowHeaderActions = ({ type, id }: { type: actionType, id: string }) => {
   const dispatch = useDispatch();
   const history = useHistory();
 
@@ -54,7 +67,7 @@ const WorkflowHeaderActions = ({ type, id }) => {
 };
 
 // The Header for workflow, including the name input field.
-const WorkflowHeader = ({ type, id }) => {
+const WorkflowHeader = ({ type, id }: { type: actionType, id: string }) => {
   const dispatch = useDispatch();
 
   let name = useSelector(state => selectWorkflowName(state), shallowEqual);
@@ -86,7 +99,7 @@ const WorkflowHeader = ({ type, id }) => {
   );
 };
 
-const createNodeDragData = (_id, name) => 
+const createNodeDragData = (_id: string, name: string) => 
   JSON.stringify({
     type: { _id, name },
     ports: {
@@ -105,7 +118,7 @@ const createNodeDragData = (_id, name) =>
   });
 
 // The list component for statuses in status picker
-const StatusItems = ({ statuses }) => (
+const StatusItems = ({ statuses }: { statuses: Status[] }) => (
   <List className="statuses">
     {statuses.map(({ _id, name }) => (
       <ListItem
@@ -126,7 +139,8 @@ const StatusItems = ({ statuses }) => (
 );
 
 // Left click on node will generate a box of potential actions that could be performed to the node under the list of statuses.
-const SelectedNodeActions = ({ value, stateActions }) => (
+const SelectedNodeActions = ({ value, stateActions }: 
+  { value: string, stateActions: IFlowChartCallbacks }) => (
   <div className="sections">
     <Typography gutterBottom>{value}</Typography>
     <Button
@@ -143,7 +157,7 @@ const SelectedNodeActions = ({ value, stateActions }) => (
     </Button>
   </div>
 );
-const SelectedNode = ({ stateActions }) => {
+const SelectedNode = ({ stateActions }: { stateActions: IFlowChartCallbacks }) => {
   const { selectedNodeId, selectedNodeValue } = useSelector(
     state => ({
       selectedNodeId: selectSelectedNodeId(state),
@@ -170,7 +184,7 @@ const WorkflowStatuses = () => {
   );
 
   // helper function for filtering valid statuses
-  const filterStatus = ({ name, isActive, forPackage }) => {
+  const filterStatus = ({ name, isActive, forPackage }: Status) => {
     return name.toLowerCase().includes(workflowFilter.toLowerCase()) && isActive && !forPackage
   }
 
@@ -209,16 +223,19 @@ const WorkflowStatuses = () => {
 };
 
 // The status picker and potential actions box
-const WorkflowSideBar = ({ stateActions }) => (
+const WorkflowSideBar = ({ stateActions }: { stateActions: IFlowChartCallbacks }) => (
   <div className="workflowPicker">
     <WorkflowStatuses />
     <SelectedNode stateActions={stateActions} />
   </div>
 );
 
-const NodeInnerCustom = ({ node }) => <div className="workflowNode">{node.type.name}</div>;
+// TODO unsure about this
+const NodeInnerCustom = ({ node }: { node: any }) => 
+  <div className="workflowNode">{node.type.name}</div>;
+
 // The flow chart of workflow
-const WorkflowPane = ({ stateActions }) => {
+const WorkflowPane = ({ stateActions }: { stateActions: IFlowChartCallbacks }) => {
   const chart = useSelector(state => selectWorkflowChart(state), shallowEqual);
 
   return (
@@ -240,9 +257,9 @@ const WorkflowPane = ({ stateActions }) => {
 const Workflow = () => {
   const dispatch = useDispatch();
 
-  const stateActions = useMemo(
+  const stateActions: IFlowChartCallbacks = useMemo(
     () =>
-      mapValues(actions, func => (...args) => {
+      mapValues(actions, func => (...args: any) => {
         // @ts-ignore
         dispatch(WorkflowStoreActions.UPDATE_WORKFLOW_CHART(func(...args)))
       }),
@@ -259,7 +276,7 @@ const Workflow = () => {
   );
 };
 
-const WorkflowContainer = ({ type }) => {
+const WorkflowContainer = ({ type }: { type: actionType }) => {
   const dispatch = useDispatch();
   // Get the workflow id inside the url
   // @ts-ignore

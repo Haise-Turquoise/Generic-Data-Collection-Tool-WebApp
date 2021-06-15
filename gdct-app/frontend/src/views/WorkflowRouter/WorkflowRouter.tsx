@@ -1,5 +1,6 @@
 import React from 'react';
 import { Switch, Route } from 'react-router-dom';
+//@ts-ignore
 import { ROUTE_WORKFLOW, ROUTE_WORKFLOW_CREATE } from '../../constants/routes';
 import Workflow from './Workflow';
 import Workflows from './Workflows';
