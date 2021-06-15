@@ -15,6 +15,7 @@ import { selectFactoryRESTResponseTableValues } from '../../../store/common/REST
 import orgController from '../../../controllers/organization';
 //@ts-ignore
 import CreateAuditLog from '../../AuditLog_Global';
+import Organization from '../../../types/organization'
 
 interface EditOrgProps {
   match: {
@@ -22,30 +23,6 @@ interface EditOrgProps {
       _id: string,
     }
   }
-}
-
-interface Organization {
-  _id: string,
-  id: number,
-  effectiveDate: string,
-  expiryDate?: null,
-  name: string,
-  IFISNum: string,
-  province?: string,
-  organizationGroupId: string[],
-  programId: string[],
-  authorizedPerson: {
-    name: string,
-    email: string,
-  },
-  active?: boolean,
-  address?: string,
-  city?: string,
-  code?: string,
-  legalName?: string,
-  location?: [],
-  managerUserIds?: [],
-  postalCode?: string,
 }
 
 const EditOrganization = ({

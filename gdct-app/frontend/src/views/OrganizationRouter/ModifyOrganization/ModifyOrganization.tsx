@@ -19,44 +19,10 @@ import orgController from '../../../controllers/organization'
 import OrgsStore from '../../../store/OrganizationsStore/store'
 import { connect } from 'react-redux'
 
+import Organization from '../../../types/organization'
+import Program from '../../../types/program'
+
 type genObject = { [key: string]: any }
-
-interface Program {
-  _id: string,
-  code: string,
-  isActive: boolean,
-  name: string,
-  tableData: {
-    id: number,
-  },
-  timestamp: string,
-  updatedAt: string,
-  updatedBy: string,
-}
-
-interface Organization {
-  _id: string,
-  id: number,
-  effectiveDate: string,
-  expiryDate?: null,
-  name: string,
-  IFISNum: string,
-  province?: string,
-  organizationGroupId: string[],
-  programId: string[],
-  authorizedPerson: {
-    name: string,
-    email: string,
-  },
-  active?: boolean,
-  address?: string,
-  city?: string,
-  code?: string,
-  legalName?: string,
-  location?: [],
-  managerUserIds?: [],
-  postalCode?: string,
-}
 
 interface MOProps {
   [key: string]: any,

@@ -12,19 +12,7 @@ import { selectFactoryRESTResponseTableValues } from '../../../store/common/REST
 import { selectProgramsStore } from '../../../store/ProgramsStore/selectors';
 //@ts-ignore
 import { getProgramsRequest } from '../../../store/thunks/program';
-
-interface Program {
-  _id: string,
-  code: string,
-  isActive: boolean,
-  name: string,
-  tableData: {
-    id: number,
-  },
-  timestamp: string,
-  updatedAt: string,
-  updatedBy: string,
-}
+import Program from '../../../types/program'
 
 interface ProgListProps {
   programIds: string[],

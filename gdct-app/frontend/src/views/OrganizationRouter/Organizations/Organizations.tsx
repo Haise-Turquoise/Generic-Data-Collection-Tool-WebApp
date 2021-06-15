@@ -15,28 +15,7 @@ import { selectOrgsStore } from '../../../store/OrganizationsStore/selectors';
 import { getOrgsRequest } from '../../../store/thunks/organization';
 //@ts-ignore
 import { calculateOptions } from '../../../tools/misc';
-
-// TODO PUT IN SEPERATE FOLDER PLEASE JULIEN I'M BEGGING YOU
-interface Organization {
-  name: string,
-  _id: string,
-  id: number,
-  effectiveDate: string,
-  expiryDate?: null,
-  IFISNum: string,
-  province?: string,
-  organizationGroupId: string[],
-  programId: string[],
-  authorizedPerson: string[],
-  active?: boolean,
-  address?: string,
-  city?: string,
-  code?: string,
-  legalName?: string,
-  location?: any[],
-  manageUserIds?: string[],
-  postalCode?: string,
-}
+import Organization from '../../../types/organization'
 
 const HeaderActions = () => {
   const history = useHistory();
