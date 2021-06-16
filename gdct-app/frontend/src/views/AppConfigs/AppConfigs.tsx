@@ -1,7 +1,7 @@
 import React, { useMemo, useEffect, useState } from 'react';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 
-import MaterialTable from 'material-table';
+import MaterialTable, { Column, Options } from 'material-table';
 import { Paper, Typography } from '@material-ui/core';
 
 import moment from 'moment';
@@ -11,16 +11,27 @@ import {
   createAppConfigRequest,
   deleteAppConfigRequest,
   updateAppConfigRequest,
+  //@ts-ignore
 } from '../../store/thunks/AppConfig';
-
+//@ts-ignore
 import { getAppSysesRequest } from '../../store/thunks/AppSys';
-
+//@ts-ignore
 import { selectFactoryRESTResponseTableValues } from '../../store/common/REST/selectors';
+//@ts-ignore
 import { selectAppConfigsStore } from '../../store/AppConfigsStore/selectors';
+//@ts-ignore
 import { selectAppSysesStore } from '../../store/AppSysesStore/selectors';
-
+//@ts-ignore
 import AppConfigController from '../../controllers/AppConfig';
+//@ts-ignore
 import CreateAuditLog from '../AuditLog_Global';
+
+import AppConfig from '../../types/appconfig'
+import AppSys from '../../types/appsys'
+
+interface AppConfigMT extends AppConfig {
+  tableData?: any,
+}
 
 const AppConfigsHeader = () => {
   return (
@@ -33,6 +44,19 @@ const AppConfigsHeader = () => {
 
 const AppConfigsTable = () => {
   const dispatch = useDispatch();
+  const [hasConfigs, setHasConfigs] = useState(false)
+
+  // table vars for loading
+  const preColumns: Column<AppConfigMT>[] = [{ title: 'Name', field: 'value' }]
+  const preConfigs: AppConfigMT[] = [{ 
+    value: 'LOADING...',
+    _id: '',
+    key: '',
+    appSys: '',
+    sys: '',
+    timestamp: '',
+    updatedBy: '',
+  }]
 
   // Prepare the data for the material table
   const { appConfigs, appSyses } = useSelector(
@@ -43,18 +67,18 @@ const AppConfigsTable = () => {
     shallowEqual,
   );
   // Convert Date format
-  appConfigs.forEach(appConfig => {
+  appConfigs.forEach((appConfig: AppConfig) => {
     const logtime = new Date(appConfig.timestamp);
     appConfig.timestamp = moment(logtime).format("YYYY-MM-DD HH:mm:ss")
   });
   // Assign code as name
-  const lookupSysRoles = appSyses.reduce(function (acc, appSys) {
+  const lookupSysRoles = appSyses.reduce(function (acc: {[key:string]: string}, appSys: AppSys) {
     acc[appSys.code] = appSys.name;
     return acc;
   }, {});
 
   // Prepare the columns for the material table
-  const columns = useMemo(
+  const columns: Column<AppConfigMT>[] = useMemo(
     () => [
       { title: 'Key', field: 'key' },
       { title: 'Value', field: 'value' },
@@ -66,7 +90,7 @@ const AppConfigsTable = () => {
   );
 
   // Prepare the options
-  const options = useMemo(
+  const options: Options<AppConfigMT> = useMemo(
     () => (
       {
         actionsColumnIndex: -1,
@@ -79,25 +103,34 @@ const AppConfigsTable = () => {
   );
 
   // Record who and when of the action
-  function recordUpdate(appConfig) {
+  function recordUpdate(appConfig: AppConfigMT) {
     //get username and record in Modified By column
-    appConfig.updatedBy = localStorage.getItem('currentUser');
+    appConfig.updatedBy = localStorage.getItem('currentUser') || '';
     //record new date and time in Modified On column 
     appConfig.timestamp = new Date().toLocaleString(); 
   }
   // Prepare the editing functionalities for the material table
   const editable = useMemo(
     () => ({
-      onRowAdd: appConfig =>
+      onRowAdd: (appConfig: AppConfigMT) =>
         new Promise((resolve, reject) => {
           recordUpdate(appConfig);
           dispatch(createAppConfigRequest(appConfig, resolve, reject));
         }).then(newAppConfig => {
           // For Auditlog
-          CreateAuditLog(null, "Add Application Configuration", "AppConfig", newAppConfig._id, {}, newAppConfig);
+          if (newAppConfig) {
+            CreateAuditLog(
+              null,
+              "Add Application Configuration",
+              "AppConfig",
+              (newAppConfig as AppConfig)._id,
+              {},
+              newAppConfig
+            );
+          }
         }),
 
-      onRowUpdate: appConfig =>
+      onRowUpdate: (appConfig: AppConfigMT) =>
         new Promise((resolve, reject) => {
           recordUpdate(appConfig);
           // Find the old value before updating for Auditlog
@@ -109,7 +142,7 @@ const AppConfigsTable = () => {
           dispatch(updateAppConfigRequest(appConfig, resolve, reject));
         }),
         
-      onRowDelete: appConfig =>
+      onRowDelete: (appConfig: AppConfigMT) =>
         new Promise((resolve, reject) => {
           recordUpdate(appConfig);
           dispatch(deleteAppConfigRequest(appConfig._id, resolve, reject));
@@ -126,18 +159,24 @@ const AppConfigsTable = () => {
     dispatch(getAppConfigsRequest());
   }, [dispatch]);
 
+  useEffect(() => {
+    if (!hasConfigs) {
+      setHasConfigs(appConfigs.length >= 1)
+    }
+  }, [appConfigs])
+
   return (
     <MaterialTable
-      columns={columns}
-      data={appConfigs}
-      editable={editable}
-      // @ts-ignore
+      columns={hasConfigs ? columns : preColumns}
+      data={hasConfigs ? appConfigs : preConfigs}
+      editable={hasConfigs ? editable : undefined}
       options={options}
     />
   );
 };
 
-const AppConfigs = props => (
+// any because props are unused
+const AppConfigs = (props: any) => (
   <div className="AppConfigs">
     <AppConfigsHeader />
     {/* <FileDropzone/> */}

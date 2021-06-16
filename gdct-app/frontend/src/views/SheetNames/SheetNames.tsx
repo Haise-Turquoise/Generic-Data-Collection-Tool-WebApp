@@ -1,7 +1,7 @@
 import React, { useMemo, useEffect, useState } from 'react';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 
-import MaterialTable from 'material-table';
+import MaterialTable, { Column, Options } from 'material-table';
 import { Paper, Typography } from '@material-ui/core';
 import Swal from 'sweetalert2';
 
@@ -11,15 +11,26 @@ import {
   createSheetNameRequest,
   deleteSheetNameRequest,
   updateSheetNameRequest,
+  //@ts-ignore
 } from '../../store/thunks/sheetName';
+//@ts-ignore
 import DetectEmptySheet from './DetectEmptySheet';
-
+//@ts-ignore
 import { selectFactoryRESTResponseTableValues } from '../../store/common/REST/selectors';
+//@ts-ignore
 import { selectSheetNamesStore } from '../../store/SheetNamesStore/selectors';
+//@ts-ignore
 import { calculateOptions, checkDuplicates } from '../../tools/misc';
-
+//@ts-ignore
 import sheetNameController from '../../controllers/sheetName';
+//@ts-ignore
 import CreateAuditLog from '../AuditLog_Global';
+
+import SheetName from '../../types/sheetname'
+
+interface SheetNameMT extends SheetName {
+  tableData?: any
+}
 
 const SheetNameHeader = () => {
   return (
@@ -33,22 +44,35 @@ const SheetNameHeader = () => {
 const SheetNamesTable = () => {
   const dispatch = useDispatch();
   const [readRowNum, setRowNum] = useState(1);
+  const [hasSheets, setHasSheets] = useState(false)
+
+  // table vars while loading data
+  const preColumns: Column<SheetNameMT>[] = [{ title: 'Name', field: 'name' }]
+  const preSheets: SheetName[] = [{
+    name: 'LOADING...',
+    _id: '',
+    id: 0,
+    isActive: true,
+    timestamp: '',
+    updatedBy: '',
+    templateTypeId: '',
+  }]
 
   // Prepare the data for material table
-  const { sheetNames } = useSelector(
+  const { sheetNames }: { sheetNames: SheetName[] } = useSelector(
     state => ({
       sheetNames: selectFactoryRESTResponseTableValues(selectSheetNamesStore)(state),
     }),
     shallowEqual,
   );
   // Convert Date format
-  sheetNames.forEach(sheetName => {
+  sheetNames.forEach((sheetName: SheetName) => {
     const logtime = new Date(sheetName.timestamp);
     sheetName.timestamp = moment(logtime).format("YYYY-MM-DD HH:mm:ss")
   });
   
   // Prepare the columns for material table
-  const columns = useMemo(
+  const columns: Column<SheetNameMT>[] = useMemo(
     () => [
       { title: "ID", field: "id", editComponent: () => {return <div></div>} },
       { title: 'Name', field: 'name', validate: rowData => checkDuplicates(rowData, sheetNames, 'name') },
@@ -59,12 +83,12 @@ const SheetNamesTable = () => {
     [sheetNames],
   );
 
-  const options = useMemo(() => calculateOptions(readRowNum), [readRowNum]);
+  const options: Options<SheetNameMT> = useMemo(() => calculateOptions(readRowNum), [readRowNum]);
 
   // Record who and when of the action
-  const recordUpdate = (sheetName) => {
+  const recordUpdate = (sheetName: SheetNameMT) => {
     //get username and record in Modified By column
-    sheetName.updatedBy = localStorage.getItem('currentUser');
+    sheetName.updatedBy = localStorage.getItem('currentUser') || '';
     //record new date and time in Modified On column 
     sheetName.timestamp = new Date().toLocaleString();   
   }
@@ -72,16 +96,24 @@ const SheetNamesTable = () => {
   // Prepare the editing functionalities for the material table
   const editable = useMemo(
     () => ({
-      onRowAdd: sheetName =>
+      onRowAdd: (sheetName: SheetNameMT) =>
         new Promise((resolve, reject) => {
           sheetName.id = readRowNum
           recordUpdate(sheetName);
           dispatch(createSheetNameRequest(sheetName, resolve, reject));
         }).then(newSheetName => {
           // For Auditlog
-          CreateAuditLog(null, "Create Sheet", "SheetName", newSheetName._id, {}, newSheetName);
+          if (newSheetName) {
+            CreateAuditLog(
+              null,
+              "Create Sheet",
+              "SheetName",
+              (newSheetName as SheetName)._id,
+              {},
+              newSheetName);
+          }
         }),
-      onRowUpdate: sheetName =>
+      onRowUpdate: (sheetName: SheetNameMT) =>
         new Promise((resolve, reject) => {
           recordUpdate(sheetName); 
           // Find the old value before updating in order to Auditlog
@@ -92,11 +124,11 @@ const SheetNamesTable = () => {
           // Do Update
           dispatch(updateSheetNameRequest(sheetName, resolve, reject));
         }),
-      onRowDelete: sheetName =>
+      onRowDelete: (sheetName: SheetNameMT) =>
         new Promise((resolve, reject) => {
           recordUpdate(sheetName);
           //Prevent deletion of referenced sheetname logic
-          DetectEmptySheet(sheetName._id).then(hiddenValue =>{
+          DetectEmptySheet(sheetName._id).then((hiddenValue: boolean) =>{
             //if hiddenValue is true, the categoryTree is empty and the sheetname will be delete-able
             if (hiddenValue === true) {
               dispatch(deleteSheetNameRequest(sheetName._id, resolve, reject));
@@ -129,15 +161,27 @@ const SheetNamesTable = () => {
     dispatch(getSheetNamesRequest());
   }, [dispatch]);
 
-  useEffect(()=>{setRowNum(sheetNames.length)}, [sheetNames])
+  useEffect(()=>{
+    setRowNum(sheetNames.length)
+    if (!hasSheets) {
+      setHasSheets(sheetNames.length >= 1)
+    }
+  }, [sheetNames])
 
   return (
     // @ts-ignore
-    <MaterialTable key={readRowNum} columns={columns} data={sheetNames} editable={editable} options={options} />
+    <MaterialTable
+      key={readRowNum}
+      columns={hasSheets ? columns : preColumns}
+      data={hasSheets ? sheetNames : preSheets}
+      editable={hasSheets ? editable : undefined}
+      options={options}
+    />
   );
 };
 
-const SheetName = props => (
+// any type since props unused
+const SheetName = (props: any) => (
   <div className="sheetNames">
     <SheetNameHeader />
     <SheetNamesTable {...props} />

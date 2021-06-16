@@ -15,28 +15,7 @@ import { selectOrgsStore } from '../../../store/OrganizationsStore/selectors';
 import { getOrgsRequest } from '../../../store/thunks/organization';
 //@ts-ignore
 import { calculateOptions } from '../../../tools/misc';
-
-// TODO PUT IN SEPERATE FOLDER PLEASE JULIEN I'M BEGGING YOU
-interface Organization {
-  name: string,
-  _id: string,
-  id: number,
-  effectiveDate: Date,
-  expiryDate?: null,
-  IFISNum: string,
-  province?: string,
-  organizationGroupId: string[],
-  programId: string[],
-  authorizedPerson: string[],
-  active?: boolean,
-  address?: string,
-  city?: string,
-  code?: string,
-  legalName?: string,
-  location?: any[],
-  manageUserIds?: string[],
-  postalCode?: string,
-}
+import Organization from '../../../types/organization'
 
 const HeaderActions = () => {
   const history = useHistory();
@@ -64,6 +43,20 @@ const OrganizationHeader = () => {
 const Organizations = ({ history }: RouterProps) => {
   const dispatch = useDispatch();
   const [readRowNum, setRowNum] = useState(1);
+  const [hasOrgs, setHasOrgs] = useState(false)
+  
+  // table stuff while loading
+  const preOrgs: Organization[] = [{ 
+    name: 'LOADING...',
+    _id: '',
+    id: 0,
+    effectiveDate: '',
+    IFISNum: '',
+    organizationGroupId: [''],
+    programId: [''],
+    authorizedPerson: [''],
+  }]
+  const preColumns: Column<Organization>[] = [{title: 'Name', field: 'name'}]
 
   // Prepare the data for material table
   const { Orgs }: { Orgs: Organization[] } = useSelector(state => ({
@@ -71,14 +64,14 @@ const Organizations = ({ history }: RouterProps) => {
   }));
 
   // Prepare the columns for material table
-  const columns: Column<any>[] = useMemo(
+  const columns: Column<Organization>[] = useMemo(
     () => [
       { title: 'Name', field: 'name' },
       { title: 'Legal Name', field: 'legalName' },
       { title: 'Organization ID', field: 'id' },
       { title: 'IFIS Number', field: 'IFISNum' },
       { title: 'Active', type: 'boolean', field: 'active' },
-      { title: 'Modified On', field: 'timestamp' },
+      { title: 'Modified On', field: 'timesStamp' },
       { title: 'Updated By', field: 'updatedBy' },
     ],
     [],
@@ -87,12 +80,17 @@ const Organizations = ({ history }: RouterProps) => {
   const options = useMemo(() => calculateOptions(readRowNum), [readRowNum]);
 
   // Prepare the actions for material table
-  const actions: Action<any>[] = useMemo(
+  const actions: Action<Organization>[] = useMemo(
     () => [
       {
         icon: EditIcon,
         tooltip: 'Edit Organization',
-        onClick: (_: any, org: Organization) => history.push(`/admin/organization/edit/${org._id}`),
+        onClick: (_: any, org: Organization | Organization[]) => {
+          if (!Array.isArray(org)) {
+            // previously only this behaviour is specified - ill keep that
+            history.push(`/admin/organization/edit/${org._id}`)
+          }
+        },
       },
     ],
     [history],
@@ -102,12 +100,23 @@ const Organizations = ({ history }: RouterProps) => {
     dispatch(getOrgsRequest());
   }, [dispatch]);
 
-  useEffect(() => { setRowNum(Orgs.length) }, [Orgs])
+  useEffect(() => { 
+    setRowNum(Orgs.length)
+    if (!hasOrgs) {
+      setHasOrgs(Orgs.length >= 1)
+    }
+  }, [Orgs])
   
   return (
     <div className="organizations">
       <OrganizationHeader />
-      <MaterialTable key={readRowNum} columns={columns} data={Orgs} actions={actions} options={options} />
+      <MaterialTable 
+        key={readRowNum}
+        columns={hasOrgs ? columns : preColumns}
+        data={hasOrgs ? Orgs : preOrgs}
+        actions={hasOrgs ? actions : undefined}
+        options={options}
+      />
     </div>
   );
 };

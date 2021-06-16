@@ -32,6 +32,11 @@ const COAGroupsHeader = () => {
 const COAGroupsTable = () => {
   const dispatch = useDispatch();
   const [readRowNum, setRowNum] = useState(1);
+  const [hasGroups, setHasGroups] = useState(false)
+
+  // table stuff while loading
+  const preGroups = [{ name: 'LOADING...' }]
+  const preColumns = [{title: 'Name', field: 'name'}]
   
   // Prepare the data for material table
   const { COAGroups } = useSelector(
@@ -104,10 +109,23 @@ const COAGroupsTable = () => {
     dispatch(getCOAGroupsRequest());
   }, [dispatch]);
 
-  useEffect(() => { setRowNum(COAGroups.length) }, [COAGroups]);
+  useEffect(() => { 
+    setRowNum(COAGroups.length)
+    if (!hasGroups) {
+      setHasGroups(COAGroups.length >= 1)
+    }
+  }, [COAGroups]);
 
   // @ts-ignore
-  return <MaterialTable key={readRowNum} columns={columns} data={COAGroups} editable={editable} options={options} />;
+  return (
+    <MaterialTable
+      key={readRowNum}
+      columns={hasGroups ? columns : preColumns}
+      data={hasGroups ? COAGroups : preGroups}
+      editable={hasGroups ? editable : undefined}
+      options={options} 
+    />
+  );
 };
 
 const COAGroups = props => (

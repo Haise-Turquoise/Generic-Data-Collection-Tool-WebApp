@@ -30,6 +30,11 @@ const AppRolesHeader = () => {
 const AppRolesTable = () => {
   const dispatch = useDispatch();
   const [readRowNum, setRowNum] = useState(1);
+  const [hasAppRoles, setHasAppRoles] = useState(false)
+
+  // table stuff while loading
+  const preAppRoles = [{ name: 'LOADING...' }]
+  const preColumns = [{title: 'Name', field: 'name'}]
   
   // Prepare the data for material table
   const { appRoles } = useSelector(
@@ -101,10 +106,23 @@ const AppRolesTable = () => {
     dispatch(getAppRolesRequest());
   }, [dispatch]);
 
-  useEffect(()=>{setRowNum(appRoles.length)}, [appRoles])
+  useEffect(()=>{
+    setRowNum(appRoles.length)
+    if (!hasAppRoles) {
+      setHasAppRoles(appRoles.length >= 1)
+    }
+  }, [appRoles])
 
   // @ts-ignore
-  return <MaterialTable key={readRowNum} columns={columns} data={appRoles} editable={editable} options={options} />;
+  return (
+    <MaterialTable
+      key={readRowNum}
+      columns={hasAppRoles ? columns : preColumns}
+      data={hasAppRoles ? appRoles : preAppRoles}
+      editable={hasAppRoles ? editable : undefined}
+      options={options}
+    />
+  );
 };
 
 const AppRoles = props => {

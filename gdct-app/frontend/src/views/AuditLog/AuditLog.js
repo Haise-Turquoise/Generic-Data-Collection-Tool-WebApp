@@ -1,4 +1,4 @@
-import React, { Fragment, useMemo, useEffect } from 'react';
+import React, { Fragment, useMemo, useEffect, useState } from 'react';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 
 import moment from 'moment';
@@ -69,6 +69,11 @@ const CustomDatePicker = (props) => {
 // Table contents
 const AuditLogTable = () => {
   const dispatch = useDispatch();
+  const [hasLogs, setHasLogs] = useState(false)
+
+  // table vars for loading
+  const preColumns = [{ title: 'Name', field: 'name' }]
+  const preLogs = [{ name: 'LOADING...'}]
 
   //==================================================================================================
   
@@ -162,12 +167,18 @@ const AuditLogTable = () => {
     dispatch(getAuditLogRequest());
   }, [dispatch]);
 
+  useEffect(() => {
+    if (!hasLogs) {
+      setHasLogs(auditlogs.length >= 1)
+    }
+  }, [auditlogs])
+
   return <Fragment>
             <MaterialTable 
-              columns={columns} 
-              data={auditlogs} 
+              columns={hasLogs ? columns : preColumns} 
+              data={hasLogs ? auditlogs : preLogs} 
               options={options} 
-              actions={actions} 
+              actions={hasLogs ? actions : undefined} 
             />
             <Dialog
               open={open}

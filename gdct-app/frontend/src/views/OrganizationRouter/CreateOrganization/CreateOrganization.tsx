@@ -11,30 +11,7 @@ import OrgEntity from '../../../../../backend/src/entities/Organization/entity';
 import { createOrgsRequest } from '../../../store/thunks/organization';
 //@ts-ignore
 import CreateAuditLog from '../../AuditLog_Global';
-
-interface Organization {
-  _id: string,
-  id: number,
-  effectiveDate: string,
-  expiryDate?: null,
-  name: string,
-  IFISNum: string,
-  province?: string,
-  organizationGroupId: string[],
-  programId: string[],
-  authorizedPerson: {
-    name: string,
-    email: string,
-  },
-  active?: boolean,
-  address?: string,
-  city?: string,
-  code?: string,
-  legalName?: string,
-  location?: [],
-  managerUserIds?: [],
-  postalCode?: string,
-}
+import Organization from '../../../types/organization'
 
 const CreateOrganization = () => {
   const history = useHistory();

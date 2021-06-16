@@ -82,6 +82,11 @@ const AlertSign = () => {
 const ColumnNamesTable = () => {
   const dispatch = useDispatch();
   const [readRowNum, setRowNum] = useState(1);
+  const [hasCols, setHasCols] = useState(false)
+
+  // table stuff while loading
+  const preCols = [{ name: 'LOADING...' }]
+  const preColumns = [{title: 'Name', field: 'name'}]
 
   const { columnNames } = useSelector(
     state => ({
@@ -167,7 +172,12 @@ const ColumnNamesTable = () => {
     [dispatch],
   );
 
-  useEffect(()=>{setRowNum(columnNames.length)}, [columnNames]);
+  useEffect(()=>{
+    setRowNum(columnNames.length)
+    if (!hasCols) {
+      setHasCols(columnNames.length >= 1)
+    }
+  }, [columnNames]);
 
   useEffect(() => {
     dispatch(getColumnNamesRequest());
@@ -179,7 +189,13 @@ const ColumnNamesTable = () => {
 
   return (
     // @ts-ignore
-    <MaterialTable key={readRowNum} columns={columns} data={columnNames} editable={editable} options={options} />
+    <MaterialTable
+      key={readRowNum}
+      columns={hasCols ? columns : preColumns}
+      data={hasCols ? columnNames : preCols}
+      editable={hasCols ? editable : undefined}
+      options={options}
+    />
   );
 };
 

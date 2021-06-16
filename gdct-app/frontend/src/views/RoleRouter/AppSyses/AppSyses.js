@@ -31,6 +31,12 @@ const AppSysesHeader = () => {
 const AppSysesTable = () => {
   const dispatch = useDispatch();
   const [readRowNum, setRowNum] = useState(1);
+  const [hasAppSys, setHasAppSys] = useState(false)
+
+  // table stuff while loading
+  const preAppSys = [{ name: 'LOADING...' }]
+  const preColumns = [{title: 'Name', field: 'name'}]
+
   const { appSyses } = useSelector(
     state => ({
       appSyses: selectFactoryRESTResponseTableValues(selectAppSysesStore)(state),
@@ -103,10 +109,23 @@ const AppSysesTable = () => {
     dispatch(getAppSysesRequest());
   }, [dispatch]);
 
-  useEffect(()=>{setRowNum(appSyses.length)}, [appSyses])
+  useEffect(()=>{
+    setRowNum(appSyses.length)
+    if (!hasAppSys) {
+      setHasAppSys(appSyses.length >= 1)
+    }
+  }, [appSyses])
 
   // @ts-ignore
-  return <MaterialTable key={readRowNum} columns={columns} data={appSyses} editable={editable} options={options} />;
+  return (
+    <MaterialTable
+      key={readRowNum}
+      columns={hasAppSys ? columns : preColumns}
+      data={hasAppSys ? appSyses : preAppSys}
+      editable={hasAppSys ? editable : undefined}
+      options={options} 
+    />
+  );
 };
 
 const AppSyses = props => (
