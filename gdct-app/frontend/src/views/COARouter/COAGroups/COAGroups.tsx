@@ -1,7 +1,7 @@
 import React, { useMemo, useEffect, useState } from 'react';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 
-import MaterialTable from 'material-table';
+import MaterialTable, { Column, Options } from 'material-table';
 import { Paper, Typography } from '@material-ui/core';
 import moment from 'moment'
 
@@ -10,14 +10,27 @@ import {
   createCOAGroupRequest,
   deleteCOAGroupRequest,
   updateCOAGroupRequest,
+  //@ts-ignore
 } from '../../../store/thunks/COAGroup';
 
+  //@ts-ignore
 import ErrorBanner from '../../ErrorBanner'
+  //@ts-ignore
 import { selectFactoryRESTResponseTableValues } from '../../../store/common/REST/selectors';
+  //@ts-ignore
 import { selectCOAGroupsStore } from '../../../store/COAGroupsStore/selectors';
+  //@ts-ignore
 import { calculateOptions, checkDuplicates } from '../../../tools/misc';
+  //@ts-ignore
 import CreateAuditLog from '../../AuditLog_Global';
+  //@ts-ignore
 import COAGroupController from '../../../controllers/COAGroup';
+
+import CategoryGroup from '../../../types/categorygroup';
+
+interface CategoryGroupMT extends CategoryGroup {
+  tableData?: any,
+}
 
 const COAGroupsHeader = () => {
   return (
@@ -35,24 +48,28 @@ const COAGroupsTable = () => {
   const [hasGroups, setHasGroups] = useState(false)
 
   // table stuff while loading
-  const preGroups = [{ name: 'LOADING...' }]
-  const preColumns = [{title: 'Name', field: 'name'}]
+  const preColumns: Column<CategoryGroupMT>[] = [{title: 'Name', field: 'name'}]
+  const preGroups: CategoryGroupMT[] = [{ 
+    name: 'LOADING...',
+    _id: '',
+    timestamp: '',
+  }]
   
   // Prepare the data for material table
-  const { COAGroups } = useSelector(
+  const { COAGroups }: { COAGroups: CategoryGroup[] } = useSelector(
     state => ({
       COAGroups: selectFactoryRESTResponseTableValues(selectCOAGroupsStore)(state),
     }),
     shallowEqual,
   );
   // Convert Date format
-  COAGroups.forEach(COAGroup => {
+  COAGroups.forEach((COAGroup: CategoryGroup) => {
     const logtime = new Date(COAGroup.timestamp);
     COAGroup.timestamp = moment(logtime).format("YYYY-MM-DD HH:mm:ss")
   });
   
   // Prepare the columns for material table
-  const columns = useMemo(
+  const columns: Column<CategoryGroupMT>[] = useMemo(
     () => [
       { title: 'Name', field: 'name', validate: rowData => checkDuplicates(rowData, COAGroups, 'name') },
       { title: 'Code', field: 'code' },
@@ -63,25 +80,34 @@ const COAGroupsTable = () => {
     [COAGroups],
   );
 
-  const options = useMemo(() => calculateOptions(readRowNum), [readRowNum]);
+  const options: Options<CategoryGroupMT> = useMemo(() => calculateOptions(readRowNum), [readRowNum]);
   
   // Record user and time when an action occurs 
-  function recordUpdate(COAGroup) {
-    COAGroup.updatedBy = localStorage.getItem('currentUser');
+  function recordUpdate(COAGroup: CategoryGroupMT) {
+    COAGroup.updatedBy = localStorage.getItem('currentUser') || '';
     COAGroup.timestamp = new Date().toLocaleString(); 
   }
   const editable = useMemo(
     () => ({
-      onRowAdd: COAGroup =>
+      onRowAdd: (COAGroup: CategoryGroupMT) =>
         new Promise((resolve, reject) => {
           recordUpdate(COAGroup);
           dispatch(createCOAGroupRequest(COAGroup, resolve, reject));
         }).then(newCOAGroup => {
           // For Auditlog
-          CreateAuditLog(null, "Create Category Group", "CategoryGroup", newCOAGroup._id, {}, newCOAGroup);
+          if (newCOAGroup) {
+            CreateAuditLog(
+              null,
+              "Create Category Group",
+              "CategoryGroup",
+              (newCOAGroup as CategoryGroup)._id,
+              {},
+              newCOAGroup
+            );
+          }
         }),
 
-      onRowUpdate: COAGroup =>
+      onRowUpdate: (COAGroup: CategoryGroupMT) =>
         new Promise((resolve, reject) => {
           recordUpdate(COAGroup);
           // Find the old value before updating in order to Auditlog
@@ -93,7 +119,7 @@ const COAGroupsTable = () => {
           dispatch(updateCOAGroupRequest(COAGroup, resolve, reject));
         }),
 
-      onRowDelete: COAGroup =>
+      onRowDelete: (COAGroup: CategoryGroupMT) =>
         new Promise((resolve, reject) => {
           recordUpdate(COAGroup);
           dispatch(deleteCOAGroupRequest(COAGroup._id, resolve, reject));
@@ -116,7 +142,6 @@ const COAGroupsTable = () => {
     }
   }, [COAGroups]);
 
-  // @ts-ignore
   return (
     <MaterialTable
       key={readRowNum}
@@ -128,7 +153,8 @@ const COAGroupsTable = () => {
   );
 };
 
-const COAGroups = props => (
+// any type since props unused
+const COAGroups = (props: any) => (
   <div className="COAGroups">
     <COAGroupsHeader />
     {/* <FileDropzone/> */}

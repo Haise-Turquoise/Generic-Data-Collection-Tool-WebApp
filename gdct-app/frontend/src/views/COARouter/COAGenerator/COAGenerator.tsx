@@ -1,17 +1,37 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, ChangeEvent, FormEvent } from 'react';
 import { Button, Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { Publish } from '@material-ui/icons';
 import ExcelJS from 'exceljs';
+//@ts-ignore
 import COATreeController from '../../../controllers/COATree';
+//@ts-ignore
 import SheetNameController from '../../../controllers/sheetName';
+//@ts-ignore
 import COAGroupController from '../../../controllers/COAGroup';
+//@ts-ignore
 import COAController from '../../../controllers/COA';
+import SheetName from '../../../types/sheetname';
+import CategoryGroup from '../../../types/categorygroup';
+import Category from '../../../types/category';
+import CategoryTree from '../../../types/categorytree';
 let workbook = new ExcelJS.Workbook();
 
 const ignoreSheets = ['Main Menu', 'Identification'];
 
-const colToInt = col => {
+type NewCatType = {
+  id: number,
+  name: string,
+  unit: string,
+}
+type CatIDType = {
+  [key: string]: NewCatType[]
+}
+type AllDataType = {
+  [key: string]: CatIDType
+}
+
+const colToInt = (col: string) => {
   let res = 0,
     base = 1;
 
@@ -34,31 +54,34 @@ const constants = {
 };
 
 // process uploaded file data
-const processData = async (file, cb) => {
+const processData = async (file: File, cb: (allData: AllDataType) => void) => {
   let reader = new FileReader();
   reader.readAsArrayBuffer(file);
   // reads necessary data
   reader.onload = async () => {
     const data = reader.result;
+    if (!data || typeof data === "string") {
+      return
+    }
     workbook = await workbook.xlsx.load(data);
-    let allData = {};
+    let allData: AllDataType = {};
 
     workbook.eachSheet((worksheet, sheetId) => {
       if (ignoreSheets.includes(worksheet.name)) {
         return;
       }
-      const categoryIds = {};
+      const categoryIds: CatIDType = {};
       worksheet.eachRow((row, rowNumber) => {
         if (rowNumber === 0) {
           return;
         }
         const id = row.getCell(constants.ID).value;
-        let groupName = row.getCell(constants.GROUP_NAME).value;
+        let groupName: string | undefined = row.getCell(constants.GROUP_NAME).value?.toString();
         if (typeof groupName === 'string' && groupName.split(' ')[0] === 'Total') {
           groupName = groupName.replace('Total ', '');
         }
-        const name = row.getCell(constants.NAME).value;
-        const unit = row.getCell(constants.UNIT).value;
+        const name: string | undefined = row.getCell(constants.NAME).value?.toString();
+        const unit: string = row.getCell(constants.UNIT).value?.toString() || '';
         if (id && typeof id === 'number' && groupName && name) {
           if (!categoryIds[groupName]) {
             categoryIds[groupName] = [];
@@ -75,12 +98,12 @@ const processData = async (file, cb) => {
 };
 
 // build tree objects
-const buildObjects = async data => {
-  const objects = [];
-  const groups = await COAGroupController.fetch();
-  const sheets = await SheetNameController.fetch();
-  const categories = await COAController.fetch();
-  const allNewCategories = [];
+const buildObjects = async (data: AllDataType) => {
+  const objects: CategoryTree[] = [];
+  const groups: CategoryGroup[] = await COAGroupController.fetch();
+  const sheets: SheetName[] = await SheetNameController.fetch();
+  const categories: Category[] = await COAController.fetch();
+  const allNewCategories: NewCatType[] = [];
   for (let sheetName of Object.keys(data)) {
     // get ID from existing sheetName
     const foundSheet = sheets.find(sheet => sheet.name === 'Medical Staff Remuneration');
@@ -91,7 +114,7 @@ const buildObjects = async data => {
       sheetNameId = foundSheet._id;
     }
     for (let ctgGroup of Object.keys(data[sheetName])) {
-      const newCategories = data[sheetName][ctgGroup];
+      const newCategories: NewCatType[] = data[sheetName][ctgGroup];
       // add new categories to a list that will be added to DB later
       newCategories.forEach(category => {
         const inAllCat = allNewCategories.find(cat => cat.id.toString() === category.id.toString());
@@ -102,7 +125,7 @@ const buildObjects = async data => {
       });
 
       // get categoryId
-      const categoryId = newCategories.map(obj => obj.id);
+      const categoryId = newCategories.map(obj => obj.id.toString());
       // get categoryGroupId
       let foundGroup = groups.find(group => group.name === ctgGroup);
       if (!foundGroup) {
@@ -112,12 +135,13 @@ const buildObjects = async data => {
           updatedBy: localStorage.getItem('currentUser'),
         });
       }
-      const categoryGroupId = foundGroup._id;
+      const categoryGroupId = foundGroup?._id || '';
       objects.push({
+        _id: '',
         categoryId,
         sheetNameId,
         categoryGroupId,
-        updatedBy: localStorage.getItem('currentUser'),
+        updatedBy: localStorage.getItem('currentUser') || '',
       });
     }
   }
@@ -128,14 +152,14 @@ const buildObjects = async data => {
 };
 
 // send tree objects to database - check for duplicates
-const createTrees = async trees => {
-  const currTrees = await COATreeController.fetch();
+const createTrees = async (trees: CategoryTree[]) => {
+  const currTrees: CategoryTree[] = await COATreeController.fetch();
   // remove existing trees
   trees = trees.filter(tree => {
     const found = currTrees.find(
       currTree =>
         currTree.categoryGroupId &&
-        currTree.categoryGroupId._id === tree.categoryGroupId &&
+        (currTree.categoryGroupId as CategoryGroup)._id === tree.categoryGroupId &&
         currTree.sheetNameId === tree.sheetNameId,
     );
     return !found;
@@ -158,21 +182,30 @@ const useStyles = makeStyles({
 });
 
 export default function COAGenerator() {
-  const [file, setFile] = useState();
+  const [file, setFile] = useState<File | null>(null);
   const [fileName, setFileName] = useState('');
 
   const classes = useStyles();
 
-  const handleFileUpload = e => {
-    setFile(e.target.files[0]);
-    setFileName(e.target.files[0].name);
+  const handleFileUpload = (e: FormEvent<HTMLInputElement>) => {
+    if (!e || !e.currentTarget || !e.currentTarget.files) {
+      console.log('no files')
+      return
+    }
+    setFile(e.currentTarget.files[0]);
+    setFileName(e.currentTarget.files[0].name);
   };
 
   const processWorkbook = () => {
     if (!file) {
+      console.log('no file')
       return;
     }
-    processData(file, data => buildObjects(data).then(createTrees));
+    processData(file, data => buildObjects(data).then((trees) => {
+      if (trees) {
+        createTrees(trees as CategoryTree[])
+      }
+    }));
   };
 
   return (

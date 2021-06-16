@@ -15,6 +15,7 @@ import {
   ROUTE_CATEGORY_TREES,
   ROUTE_CATEGORY_ATTRIBUTES,
   ROUTE_CATEGORY_GENERATE,
+//@ts-ignore
 } from '../../constants/routes';
 
 const COARouter = () => (

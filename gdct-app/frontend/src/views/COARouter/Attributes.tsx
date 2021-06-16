@@ -1,7 +1,7 @@
 import React, { useMemo, useEffect, useState } from 'react';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 
-import MaterialTable from 'material-table';
+import MaterialTable, { Column, Options } from 'material-table';
 import { Paper, Typography, Collapse, IconButton } from '@material-ui/core';
 import Alert from '@material-ui/lab/Alert';
 import CloseIcon from '@material-ui/icons/Close';
@@ -12,14 +12,23 @@ import {
   createColumnNameRequest,
   deleteColumnNameRequest,
   updateColumnNameRequest,
+  //@ts-ignore
 } from '../../store/thunks/columnName';
 
+  //@ts-ignore
 import { selectFactoryRESTResponseTableValues, selectFactoryRESTError } from '../../store/common/REST/selectors';
+  //@ts-ignore
 import { selectColumnNamesStore } from '../../store/ColumnNamesStore/selectors';
+  //@ts-ignore
 import { ColumnNamesActions } from '../../store/ColumnNamesStore/store';
+  //@ts-ignore
 import CreateAuditLog from '../AuditLog_Global';
+  //@ts-ignore
 import columnNameController from '../../controllers/columnName';
+  //@ts-ignore
 import { checkDuplicates } from '../../tools/misc'
+
+import Attribute from '../../types/attrubute';
 
 const ColumnNameHeader = () => {
   return (
@@ -85,23 +94,28 @@ const ColumnNamesTable = () => {
   const [hasCols, setHasCols] = useState(false)
 
   // table stuff while loading
-  const preCols = [{ name: 'LOADING...' }]
-  const preColumns = [{title: 'Name', field: 'name'}]
+  const preColumns: Column<Attribute>[] = [{title: 'Name', field: 'name'}]
+  const preCols: Attribute[] = [{
+    name: 'LOADING...',
+    _id: '',
+    id: '',
+    timestamp: '',
+  }]
 
-  const { columnNames } = useSelector(
+  const { columnNames }: { columnNames: Attribute[] } = useSelector(
     state => ({
       columnNames: selectFactoryRESTResponseTableValues(selectColumnNamesStore)(state),
     }),
     shallowEqual,
   );
   // Convert Date format
-  columnNames.forEach(columnName => {
+  columnNames.forEach((columnName: Attribute) => {
     const logtime = new Date(columnName.timestamp);
     columnName.timestamp = moment(logtime).format("YYYY-MM-DD HH:mm:ss");
   });
 
   // Prepare the columns for material table
-  const columns = useMemo(
+  const columns: Column<Attribute>[] = useMemo(
     () => [
       { title: 'ID', field: 'id', validate: rowData => checkDuplicates(rowData, columnNames, 'id') },
       { title: 'Name', field: 'name' },
@@ -113,7 +127,7 @@ const ColumnNamesTable = () => {
     [columnNames],
   );
   
-  const options = useMemo(
+  const options: Options<Attribute> = useMemo(
     () => (
       {
         actionsColumnIndex: -1,
@@ -126,22 +140,31 @@ const ColumnNamesTable = () => {
   );
 
   // Record user and time when an action occurs 
-  function recordUpdate(columnName) {
-    columnName.updatedBy = localStorage.getItem('currentUser');
+  function recordUpdate(columnName: Attribute) {
+    columnName.updatedBy = localStorage.getItem('currentUser') || '';
     columnName.timestamp = new Date().toLocaleString(); 
   }
   const editable = useMemo(
     () => ({
-      onRowAdd: columnName =>
+      onRowAdd: (columnName: Attribute) =>
         new Promise((resolve, reject) => {
           recordUpdate(columnName);
           dispatch(createColumnNameRequest(columnName, resolve, reject));
         }).then(newColumnName => {
           // For Auditlog
-          CreateAuditLog(null, "Create Attribute", "Attribute", newColumnName._id, {}, newColumnName);
+          if (newColumnName) {
+            CreateAuditLog(
+              null,
+              "Create Attribute",
+              "Attribute",
+              (newColumnName as Attribute)._id,
+              {},
+              newColumnName
+            );
+          }
         }),
 
-      onRowUpdate: columnName =>
+      onRowUpdate: (columnName: Attribute) =>
         new Promise((resolve, reject) => {
           recordUpdate(columnName);
           // Find the old value before updating in order to Auditlog
@@ -154,7 +177,7 @@ const ColumnNamesTable = () => {
           dispatch(updateColumnNameRequest(columnName, resolve, reject));
         }),
 
-      onRowDelete: columnName =>
+      onRowDelete: (columnName: Attribute) =>
         new Promise((resolve, reject) => {
           recordUpdate(columnName);
           dispatch(deleteColumnNameRequest(columnName._id, resolve, reject));
@@ -199,7 +222,7 @@ const ColumnNamesTable = () => {
   );
 };
 
-const ColumnName = props => (
+const ColumnName = (props: any) => (
   <div className="columnNamesPage">
     <ColumnNameHeader />
     <AlertSign />

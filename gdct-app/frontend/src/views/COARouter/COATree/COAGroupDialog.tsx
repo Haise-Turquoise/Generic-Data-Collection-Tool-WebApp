@@ -2,17 +2,37 @@ import React, { useCallback, useEffect, useMemo } from 'react';
 
 import { useSelector, shallowEqual, useDispatch } from 'react-redux';
 
+//@ts-ignore
 import { getCOAGroupsRequest } from '../../../store/thunks/COAGroup';
 
+//@ts-ignore
 import { createCOATreeRequest } from '../../../store/thunks/COATree';
 
+//@ts-ignore
 import SelectableTableDialog from '../../../components/dialogs/SelectableTableDialog';
+//@ts-ignore
 import DialogsStore from '../../../store/DialogsStore/store';
+import CategoryGroup from '../../../types/categorygroup';
+type SelectorParams = {
+  COAGroupsStore: {
+    response: {
+      Values: CategoryGroup[]
+    }
+  },
+  DialogsStore: {
+    isCOAGroupDialogOpen: boolean
+  }
+}
+type SelectorResult = {
+  isCOAGroupDialogOpen: boolean,
+  COAGroups: CategoryGroup[]
+}
 
-const COAGroupDialog = ({ sheetNameId, Auditlog_Operations }) => {
+const COAGroupDialog = ({ sheetNameId, Auditlog_Operations }:
+  { sheetNameId: string, Auditlog_Operations: string[] }) => {
   const dispatch = useDispatch();
 
-  const { isCOAGroupDialogOpen, COAGroups } = useSelector(
+  const { isCOAGroupDialogOpen, COAGroups } = useSelector<SelectorParams, SelectorResult>(
     ({
       COAGroupsStore: {
         response: { Values },

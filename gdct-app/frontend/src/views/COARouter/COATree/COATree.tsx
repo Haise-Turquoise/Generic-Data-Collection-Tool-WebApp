@@ -14,6 +14,7 @@ import { useParams } from 'react-router-dom';
 import {
   updateCOATreesBySheetNameRequest,
   getCOATreesBySheetNameRequest,
+//@ts-ignore
 } from '../../../store/thunks/COATree';
 
 import GroupDialog from './COAGroupDialog';
@@ -21,27 +22,31 @@ import COADialog from './COADialog';
 
 import './COATree.scss';
 import 'react-sortable-tree/style.css';
+//@ts-ignore
 import COATreeStore from '../../../store/COATreeStore/store';
+//@ts-ignore
 import DialogsStore from '../../../store/DialogsStore/store';
 
+//@ts-ignore
 import CreateAuditLog from '../../AuditLog_Global';
+//@ts-ignore
 import sheetNameController from '../../../controllers/sheetName';
 
-let Auditlog_Operations = [];
+let Auditlog_Operations: string[] = [];
 
-const DeleteButton = ({ handleClick }) => (
+const DeleteButton = ({ handleClick }: { handleClick: () => void }) => (
   <IconButton aria-label="delete" onClick={handleClick}>
     <DeleteIcon />
   </IconButton>
 );
 
-const AddButton = ({ handleClick }) => (
+const AddButton = ({ handleClick }: { handleClick: () => void }) => (
   <IconButton aria-label="add" onClick={handleClick}>
     <AddIcon />
   </IconButton>
 );
 
-const COATreeActions = ({ sheetNameId }) => {
+const COATreeActions = ({ sheetNameId }: { sheetNameId: string }) => {
   const dispatch = useDispatch();
   const history = useHistory();
 
@@ -86,7 +91,7 @@ const COATreeActions = ({ sheetNameId }) => {
   );
 };
 
-const COATreeHeader = ({ sheetNameId }) => {
+const COATreeHeader = ({ sheetNameId }: { sheetNameId: string }) => {
   return (
     <Paper className="header">
       <Typography variant="h5">COA Tree</Typography>
@@ -96,7 +101,7 @@ const COATreeHeader = ({ sheetNameId }) => {
   );
 };
 
-const COATreeTreeStructure = ({ sheetNameId }) => {
+const COATreeTreeStructure = ({ sheetNameId }: { sheetNameId: string }) => {
   const dispatch = useDispatch();
 
   const { localTree } = useSelector(
@@ -164,8 +169,7 @@ const COATreeTreeStructure = ({ sheetNameId }) => {
 };
 
 const COATree = () => {
-  // @ts-ignore
-  const { _id: sheetNameId } = useParams();
+  const { _id: sheetNameId } = useParams<{ _id: string }>();
 
   return (
     <div className="COATree">

@@ -2,21 +2,29 @@ import React, { useCallback, useEffect, useMemo } from 'react';
 
 import { useSelector, shallowEqual, useDispatch } from 'react-redux';
 
+//@ts-ignore
 import { getCOAsRequest } from '../../../store/thunks/COA';
 
 import {
   selectSelectedCOAIdsMap,
   selectSelectedCOATreeId,
+//@ts-ignore
 } from '../../../store/COATreeStore/selectors';
 
+//@ts-ignore
 import SelectableTableDialog from '../../../components/dialogs/SelectableTableDialog';
+//@ts-ignore
 import COATreeStore from '../../../store/COATreeStore/store';
+//@ts-ignore
 import DialogsStore from '../../../store/DialogsStore/store';
+//@ts-ignore
 import { selectFactoryRESTResponseValues } from '../../../store/common/REST/selectors';
+//@ts-ignore
 import { selectCOAsStore } from '../../../store/COAsStore/selectors';
+//@ts-ignore
 import { selectIsCOADialogOpen } from '../../../store/DialogsStore/selectors';
 
-const COADialog = ({ Auditlog_Operations }) => {
+const COADialog = ({ Auditlog_Operations }: { Auditlog_Operations: string[] }) => {
   const dispatch = useDispatch();
 
   const { COAs, selectedCOAIds, isCOADialogOpen, COATreeId } = useSelector(

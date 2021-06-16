@@ -1,7 +1,7 @@
 import React, { useMemo, useEffect, useState } from 'react';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 
-import MaterialTable from 'material-table';
+import MaterialTable, { Column, Options } from 'material-table';
 import { Paper, Typography, Collapse, IconButton }  from '@material-ui/core';
 import Alert from '@material-ui/lab/Alert';
 import CloseIcon from '@material-ui/icons/Close';
@@ -12,13 +12,20 @@ import {
   createCOARequest,
   deleteCOARequest,
   updateCOARequest,
+  //@ts-ignore
 } from '../../../store/thunks/COA';
-
+//@ts-ignore
 import { selectFactoryRESTResponseTableValues, selectFactoryRESTError } from '../../../store/common/REST/selectors';
+//@ts-ignore
 import { selectCOAsStore } from '../../../store/COAsStore/selectors';
+//@ts-ignore
 import { calculateOptions, checkDuplicates } from '../../../tools/misc';
+//@ts-ignore
 import CreateAuditLog from '../../AuditLog_Global';
+//@ts-ignore
 import COAController from '../../../controllers/COA';
+
+import Category from '../../../types/category'
 
 const COAsHeader = () => {
   return (
@@ -84,24 +91,31 @@ const COAsTable = () => {
   const [hasCOAs, setHasCOAs] = useState(false)
 
   // table stuff while loading
-  const preCOAs = [{ name: 'LOADING...' }]
-  const preColumns = [{title: 'Name', field: 'name'}]
+  const preColumns: Column<Category>[] = [{title: 'Name', field: 'name'}]
+  const preCOAs: Category[] = [{ 
+    name: 'LOADING...',
+    _id: '',
+    id: '',
+    COA: '',
+    unitOfMeasure: '',
+    timestamp: '', 
+  }]
 
   // Prepare the data for material table
-  const { COAs } = useSelector(
+  const { COAs }: { COAs: Category[] } = useSelector(
     state => ({
       COAs: selectFactoryRESTResponseTableValues(selectCOAsStore)(state),
     }),
     shallowEqual,
   );
   // Convert Date format
-  COAs.forEach(COA => {
+  COAs.forEach((COA: Category) => {
     const logtime = new Date(COA.timestamp);
     COA.timestamp = moment(logtime).format("YYYY-MM-DD HH:mm:ss");
   });
 
   // Prepare the columns for material table
-  const columns = useMemo(
+  const columns: Column<Category>[] = useMemo(
     () => [
       { title: 'ID', field: 'id', validate: rowData => checkDuplicates(rowData, COAs, 'id') },
       { title: 'Name', field: 'name' },
@@ -112,25 +126,34 @@ const COAsTable = () => {
     [COAs],
   );
   
-  const options = useMemo(() => calculateOptions(readRowNum), [readRowNum]);
+  const options: Options<Category> = useMemo(() => calculateOptions(readRowNum), [readRowNum]);
 
   // Record user and time when an action occurs 
-  function recordUpdate(COA) {
-    COA.updatedBy = localStorage.getItem('currentUser');
+  function recordUpdate(COA: Category) {
+    COA.updatedBy = localStorage.getItem('currentUser') || '';
     COA.timestamp = new Date().toLocaleString(); 
   }
   const editable = useMemo(
     () => ({
-      onRowAdd: COA =>
+      onRowAdd: (COA: Category) =>
         new Promise((resolve, reject) => {
           recordUpdate(COA);
           dispatch(createCOARequest(COA, resolve, reject));
         }).then(newCOA => {
           // For Auditlog
-          CreateAuditLog(null, "Create Category", "Category", newCOA._id, {}, newCOA);
+          if (newCOA) {
+            CreateAuditLog(
+              null,
+              "Create Category",
+              "Category", 
+              (newCOA as Category)._id,
+              {},
+              newCOA
+            );
+          }
         }),
 
-      onRowUpdate: COA =>
+      onRowUpdate: (COA: Category) =>
         new Promise((resolve, reject) => {
           recordUpdate(COA);
           // Find the old value before updating in order to Auditlog
@@ -142,7 +165,7 @@ const COAsTable = () => {
           dispatch(updateCOARequest(COA, resolve, reject));
         }),
 
-      onRowDelete: COA => 
+      onRowDelete: (COA: Category) => 
         new Promise((resolve, reject) => {
           recordUpdate(COA);  
           dispatch(deleteCOARequest(COA._id, resolve, reject));
