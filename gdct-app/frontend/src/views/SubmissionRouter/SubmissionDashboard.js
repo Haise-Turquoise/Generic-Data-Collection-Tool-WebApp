@@ -22,6 +22,7 @@ import { selectFactoryRESTResponseTableValues } from '../../store/common/REST/se
 import { calculateOptions } from '../../tools/misc'
 import UsersController from '../../controllers/Users';
 import './SubmissionDashboard.scss'
+import { set } from 'lodash';
 
 const useStyles = makeStyles((theme) => ({
   formControl: {
@@ -45,6 +46,7 @@ const SubmissionDashboard = ({ history }) => {
 
   const [readFilterFrom, setFilterFrom] = useState('All');
   const [readFilterTo, setFilterTo] = useState('All');
+  const [readMessage, setMessage] = useState('Loading submissions...');
 
   const [statuses, setStatuses] = useState([]);
   const [programFilter, setFilter] = useState([]);
@@ -66,7 +68,7 @@ const SubmissionDashboard = ({ history }) => {
       break;
 
     case('Submission Approver'):
-       allowedGrouping = ['Submitted', 'Returned', 'Approved', 'review'];
+       allowedGrouping = ['Submitted', 'Returned', 'Approved', 'review', 'Rejected'];
       break;
 
     default:
@@ -93,8 +95,8 @@ const SubmissionDashboard = ({ history }) => {
    useEffect(() => {
     
     const submissionGroups = submissions.map(e=>e.phase);
-    console.log('status', submissionGroups)
-    setStatuses(allowedGrouping.filter(e=>submissionGroups.includes(e)));
+    const allowedStatus = allowedGrouping.filter(e=>submissionGroups.includes(e));
+    setStatuses(allowedStatus);
     UsersController.fetchByEmail(localStorage.getItem('currentUser')).then(res=>{
       let filter = [];
       res.sysRole.forEach(role => {
@@ -112,8 +114,10 @@ const SubmissionDashboard = ({ history }) => {
 
   if (!Array.isArray(submissions)) {
     submissions = [];
-    dispatch(getSubmissionsRequest());
+    dispatch(getSubmissionsRequest(()=>{setMessage('Nothing to show');}));
   }
+
+
   if (submissions[0] !== undefined) {
     if (localStorage.getItem('currentRole') !== 'Business Admin'){
       submissions = submissions.filter(submission=>
@@ -211,7 +215,7 @@ const SubmissionDashboard = ({ history }) => {
   );
 
   useEffect(() => {
-    dispatch(getSubmissionsRequest());
+    dispatch(getSubmissionsRequest(()=>{setMessage('Nothing to show')}));
   }, [dispatch]);
 
   const getSubmissionsInRange = (status) => submissions.filter(
@@ -280,7 +284,7 @@ const SubmissionDashboard = ({ history }) => {
             </ExpansionPanel>
           )
         }):(<Typography variant="h6" align='center'>
-              Nothing to show.
+              {readMessage}
             </Typography>)
       }
     </div>
