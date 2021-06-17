@@ -62,7 +62,11 @@ const AppRoleResourceManagementHeader = ({
 
   useEffect(() => {
     if (appRoleResource) {
-      setRoleName(appRoleResource.appSysRoleId.roleName)
+      setRoleName(
+        typeof appRoleResource.appSysRoleId === 'string' ? 
+        appRoleResource.appSysRoleId : 
+        appRoleResource.appSysRoleId.roleName
+      )
     }
   }, [appRoleResource])
 
