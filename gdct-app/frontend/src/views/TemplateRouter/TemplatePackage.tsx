@@ -1,28 +1,58 @@
-import React, { useEffect, useCallback, useMemo } from 'react';
+import React, { useEffect, useCallback, useMemo, MouseEventHandler, ChangeEventHandler, ChangeEvent } from 'react';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 
-import { Formik, Form } from 'formik';
+import { Formik, Form, FormikProps } from 'formik';
 import { Button, TextField, Paper, Typography,
          List, ListItem, ListItemText, ListItemSecondaryAction } from '@material-ui/core';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 
 import uniqid from 'uniqid';
+//@ts-ignore
 import { selectTemplatePackagesStore } from '../../store/TemplatePackagesStore/selectors';
+  //@ts-ignore
 import { selectFactoryValueById } from '../../store/common/REST/selectors';
 
 import {
   getTemplatePackagePopulatedRequest,
   updateTemplatePackageRequest,
+  //@ts-ignore
 } from '../../store/thunks/templatePackage';
+//@ts-ignore
 import { StatusIdButton, SubmissionPeriodIdButton } from '../../components/buttons';
 
+//@ts-ignore
 import TemplateDialog from '../../components/dialogs/TemplateDialog';
+//@ts-ignore
 import { DialogsStoreActions } from '../../store/DialogsStore/store';
+//@ts-ignore
 import { TemplatePackagesStoreActions } from '../../store/TemplatePackagesStore/store';
+//@ts-ignore
 import ProgramDialog from '../../components/dialogs/ProgramDialog';
+//@ts-ignore
 import CreateAuditLog from '../AuditLog_Global';
+//@ts-ignore
 import templatePackageController from '../../controllers/templatePackage';
+
+import TemplatePackage from '../../types/templatepackage';
+import Template from '../../types/template';
+import Program from '../../types/program';
+import Status from '../../types/status';
+import SubmissionPeriod from '../../types/submissionperiod';
+// values for the form
+interface TemplateValues {
+  name: string,
+  programIds: Program[],
+  // define good blank values for initial empty package
+  statusId: Status | { _id: '', name: '' },
+  submissionPeriodId: SubmissionPeriod | { _id: '', name: '' },
+  templateIds: Template[],
+}
+interface FormProps extends FormikProps<TemplateValues> {
+  enableReinitialize?: boolean,
+  initialValues: TemplateValues,
+  handleSubmit: (data: any) => void,
+}
 
 // The header or the title of this page
 const Header = () => (
@@ -31,14 +61,22 @@ const Header = () => (
   </div>
 );
 
-const CustomButton = ({ text, handleClick }) => (
+const CustomButton = ({ text, handleClick }: {
+  text: string,
+  handleClick: MouseEventHandler,
+}) => (
   <Button onClick={handleClick} size="small" className="p-0" variant="contained" color="primary">
     {text}
   </Button>
 );
 
 // children is a built in property, so even without passing in, it still exists
-const CustomField = ({ label, children, addButton = false, handleClick = null }) => (
+const CustomField = ({ label, children, addButton = false, handleClick = () => {}}: {
+  label: string,
+  children: any,
+  addButton?: boolean,
+  handleClick?: MouseEventHandler,
+}) => (
   <div className="mb-2 mt-3">
     <div className="d-flex justify-content-between">
       <span className={`align-baseline ${addButton ? 'mr-5' : ''}`}>{label}</span>
@@ -49,10 +87,14 @@ const CustomField = ({ label, children, addButton = false, handleClick = null })
 );
 
 // For showing Status and Submission Period on the left side
-const FirstSection = ({ values, handleChangeStatus, handleChangeSubmissionPeriod }) => (
+const FirstSection = ({ values, handleChangeStatus, handleChangeSubmissionPeriod }: {
+  values: TemplateValues,
+  handleChangeStatus: (statusId: string) => void,
+  handleChangeSubmissionPeriod: (submissionPeriodId: string) => void,
+}) => (
   <div>
     <CustomField label="Status">
-      <StatusIdButton 
+      <StatusIdButton
         value={values.statusId.name} 
         onChange={handleChangeStatus} isPopulated 
       />
@@ -67,7 +109,10 @@ const FirstSection = ({ values, handleChangeStatus, handleChangeSubmissionPeriod
 );
 
 // For showing templates in the middle
-const SecondSection = ({ values, handleRemoveTemplate }) => {
+const SecondSection = ({ values, handleRemoveTemplate }: {
+  values: TemplateValues,
+  handleRemoveTemplate: (template: Template) => void,
+}) => {
   const dispatch = useDispatch();
 
   const handleOpenTemplateDialog = useCallback(() => {
@@ -93,7 +138,10 @@ const SecondSection = ({ values, handleRemoveTemplate }) => {
 };
 
 // For showing the programs on the right side
-const ThirdSection = ({ values, handleRemoveProgram }) => {
+const ThirdSection = ({ values, handleRemoveProgram }: {
+  values: TemplateValues,
+  handleRemoveProgram: (program: Program) => void,
+}) => {
   const dispatch = useDispatch();
 
   const handleOpenTemplateDialog = useCallback(() => {
@@ -123,6 +171,12 @@ const Sections = ({
   handleRemoveProgram,
   handleChangeStatus,
   handleChangeSubmissionPeriod,
+}: {
+  values: TemplateValues,
+  handleRemoveTemplate: (template: Template) => void,
+  handleRemoveProgram: (program: Program) => void,
+  handleChangeStatus: (statudId: string) => void,
+  handleChangeSubmissionPeriod: (submissionPeriodId: string) => void,
 }) => (
   <div className="d-flex justify-content-between">
     <FirstSection
@@ -136,9 +190,9 @@ const Sections = ({
 );
 
 // For handling changes in each section, and popups for template and program addition
-const Content = ({ setFieldValue, handleChange, values }) => {
+const Content = ({ setFieldValue, handleChange, values }: FormProps) => {
   const handleChangeField = useCallback(
-    field => data => {
+    field => (data: any) => {
       setFieldValue(field, data);
     },
     [setFieldValue, values],
@@ -150,8 +204,7 @@ const Content = ({ setFieldValue, handleChange, values }) => {
   const handleChangePrograms = handleChangeField('programIds');
 
   const selectedTemplates = useMemo(() => {
-    const selected = {};
-
+    const selected: {[key: string]: boolean} = {};
     values.templateIds.forEach(template => (selected[template._id] = true));
 
     return selected;
@@ -159,8 +212,7 @@ const Content = ({ setFieldValue, handleChange, values }) => {
 
 
   const selectedPrograms = useMemo(() => {
-    const selected = {};
-
+    const selected: {[key: string]: boolean} = {};
     values.programIds.forEach(program => (selected[program._id] = true));
 
     return selected;
@@ -168,7 +220,7 @@ const Content = ({ setFieldValue, handleChange, values }) => {
 
   const handleAddTemplate = useCallback(
     template => {
-      let newTemplates = values.templateIds.filter(({ _id }) => _id !== template._id);
+      let newTemplates = values.templateIds.filter(({ _id }: { _id: string }) => _id !== template._id);
 
       if (newTemplates.length === values.templateIds.length)
         newTemplates = [...values.templateIds, template];
@@ -180,7 +232,7 @@ const Content = ({ setFieldValue, handleChange, values }) => {
 
   const handleAddProgram = useCallback(
     program => {
-      let newPrograms = values.programIds.filter(({ _id }) => _id !== program._id);
+      let newPrograms = values.programIds.filter(({ _id }: { _id: string }) => _id !== program._id);
 
       if (newPrograms.length === values.programIds.length)
         newPrograms = [...values.programIds, program];
@@ -192,14 +244,14 @@ const Content = ({ setFieldValue, handleChange, values }) => {
 
   const handleRemoveTemplate = useCallback(
     template => {
-      handleChangeTemplates(values.templateIds.filter(({ _id }) => _id !== template._id));
+      handleChangeTemplates(values.templateIds.filter(({ _id }: { _id: string }) => _id !== template._id));
     },
     [values, handleChangeTemplates],
   );
 
   const handleRemoveProgram = useCallback(
     program => {
-      handleChangePrograms(values.programIds.filter(({ _id }) => _id !== program._id));
+      handleChangePrograms(values.programIds.filter(({ _id }: { _id: string }) => _id !== program._id));
     },
     [values, handleChangePrograms],
   );
@@ -237,7 +289,7 @@ const Content = ({ setFieldValue, handleChange, values }) => {
 };
 
 // Save and Back buttons at the bottom of the page
-const Buttons = ({ handleSubmit }) => {
+const Buttons = ({ handleSubmit }: FormProps) => {
   // Redirect to the list of template packages page
   const history = useHistory();
   const redirect = () => { history.push('/admin/template/package') };
@@ -254,11 +306,11 @@ const Buttons = ({ handleSubmit }) => {
   )
 };
 
-const init = {
+const init: TemplateValues = {
   name: '',
-  submissionPeriodId: {},
+  submissionPeriodId: { _id: '', name: '' },
   templateIds: [],
-  statusId: {},
+  statusId: { _id: '', name: '' },
   programIds: [],
 };
 
@@ -266,11 +318,15 @@ const TemplatePackage = ({
   match: {
     params: { _id },
   },
+}: {
+  match: {
+    params: { _id: string }
+  }
 }) => {
   const dispatch = useDispatch();
   const history = useHistory();
 
-  const { templatePackage } = useSelector(state => {
+  const { templatePackage }: { templatePackage: TemplateValues } = useSelector(state => {
     const templatePackage = selectFactoryValueById(selectTemplatePackagesStore)(_id)(state);
     return {
       templatePackage: templatePackage || init,
@@ -293,11 +349,11 @@ const TemplatePackage = ({
       name: populatedData.name,
       statusId: populatedData.statusId._id,
       submissionPeriodId: populatedData.submissionPeriodId._id,
-      templateIds: populatedData.templateIds.map(({ _id }) => _id),
-      programIds: populatedData.programIds.map(({ _id }) => _id),
+      templateIds: populatedData.templateIds.map(({ _id }: Template) => _id),
+      programIds: populatedData.programIds.map(({ _id }: Program) => _id),
       creationDate: populatedData.creationDate,
       timestamp: Date(),  
-      updatedBy: localStorage.getItem('currentUser'),
+      updatedBy: localStorage.getItem('currentUser') || '',
     };
 
     // Find the old value before updating in order to Auditlog

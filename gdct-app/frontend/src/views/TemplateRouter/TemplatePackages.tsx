@@ -4,36 +4,59 @@ import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import { Paper, Typography } from '@material-ui/core';
 import LaunchIcon from '@material-ui/icons/Launch';
 
-import MaterialTable from 'material-table';
+import MaterialTable, { Action, Column, Options } from 'material-table';
 import moment from 'moment';
 
 import { useHistory } from 'react-router-dom';
 import Select from 'react-select';
-import { cloneDeep } from 'lodash';
 import {
   selectFactoryRESTResponseTableValues,
   selectFactoryRESTIsCallInProgress,
   selectFactoryRESTLookup,
+  //@ts-ignore
 } from '../../store/common/REST/selectors';
+  //@ts-ignore
 import { selectTemplatePackagesStore } from '../../store/TemplatePackagesStore/selectors';
 import {
   getTemplatePackagesRequest,
   createTemplatePackageRequest,
   deleteTemplatePackageRequest,
   updateTemplatePackageRequest,
+  //@ts-ignore
 } from '../../store/thunks/templatePackage';
+  //@ts-ignore
 import { ROUTE_TEMPLATE_PCKGS_PCKGS } from '../../constants/routes';
+  //@ts-ignore
 import { TemplatePackagesStoreActions } from '../../store/TemplatePackagesStore/store';
+  //@ts-ignore
 import { selectStatusesStore } from '../../store/StatusesStore/selectors';
+  //@ts-ignore
 import { getStatusesRequest } from '../../store/thunks/status';
+  //@ts-ignore
 import { selectSubmissionPeriodsStore } from '../../store/SubmissionPeriodsStore/selectors';
+  //@ts-ignore
 import { getSubmissionPeriodsRequest } from '../../store/thunks/submissionPeriod';
+  //@ts-ignore
 import StatusesStore from '../../store/StatusesStore/store';
+  //@ts-ignore
 import SubmissionPeriodsStore from '../../store/SubmissionPeriodsStore/store';
+  //@ts-ignore
 import ErrorBanner from '../ErrorBanner';
+  //@ts-ignore
 import { calculateOptions } from '../../tools/misc';
+  //@ts-ignore
 import CreateAuditLog from '../AuditLog_Global';
+  //@ts-ignore
 import templatePackageController from '../../controllers/templatePackage';
+
+import TemplatePackage from '../../types/templatepackage';
+import Status from '../../types/status';
+import SubmissionPeriod from '../../types/submissionperiod';
+
+interface TemplatePackageMT extends TemplatePackage {
+  tableData?: any,
+}
+
 
 const TemplatePackageHeader = () => {
   return (
@@ -51,8 +74,18 @@ const TemplatePackages = () => {
   const [hasPackages, setHasPackages] = useState(false)
 
   // table vars while loading
-  const preColumns = [{ title: 'Name', field: 'name' }]
-  const prePackages = [{ name: 'LOADING...' }]
+  const preColumns: Column<TemplatePackageMT>[] = [{ title: 'Name', field: 'name' }]
+  const prePackages: TemplatePackageMT[] = [{
+    name: 'LOADING...',
+    _id: '',
+    creationDate: '',
+    programIds: [],
+    statusId: '',
+    submissionPeriodId: '',
+    templateIds: [],
+    timestamp: '',
+    updatedBy: '',
+  }]
 
   // Prepare the data for material table
   const {
@@ -60,6 +93,11 @@ const TemplatePackages = () => {
     lookupStatuses,
     lookupSubmissionPeriods,
     WholeLookupStatuses,
+  }: {
+    templatePackages: TemplatePackage[],
+    lookupStatuses: {[key: string]: string},
+    lookupSubmissionPeriods: {[key: string]: string},
+    WholeLookupStatuses: Status[],
   } = useSelector(
     state => ({
       isCallInProgress: selectFactoryRESTIsCallInProgress(selectTemplatePackagesStore)(state),
@@ -80,19 +118,23 @@ const TemplatePackages = () => {
   });
 
   // Prepare the actions for material table
-  const actions = useMemo(
+  const actions: Action<TemplatePackageMT>[] = useMemo(
     () => [
       {
         icon: LaunchIcon,
         tooltip: 'Open Package',
-        onClick: (_event, pckg) => history.push(`${ROUTE_TEMPLATE_PCKGS_PCKGS}/${pckg._id}`),
+        onClick: (_: any, pckg: TemplatePackageMT | TemplatePackageMT[]) => {
+          if (!Array.isArray(pckg)) {
+            history.push(`${ROUTE_TEMPLATE_PCKGS_PCKGS}/${pckg._id}`)
+          }
+        },
       },
     ],
     [dispatch],
   );
 
   // Prepare the columns for material table
-  const columns = useMemo(
+  const columns: Column<TemplatePackageMT>[] = useMemo(
     () => [
       { title: 'Name', field: 'name' },
       { title: 'Submission Period ID', field: 'submissionPeriodId', lookup: lookupSubmissionPeriods },
@@ -101,16 +143,20 @@ const TemplatePackages = () => {
         field: 'statusId',
         lookup: lookupStatuses,
 
-        editComponent: props => {
+        editComponent: (props) => {
+          console.log('PROPS', props)
           const optionList = [];
+          // ignoring these for now because optionList is unused
+          //@ts-ignore
           for (const key in props.columnDef.lookup) {
             optionList.push({
               value: key,
+              //@ts-ignore
               label: props.columnDef.lookup[key],
             });
           }
 
-          const optionListForPackage = [];
+          const optionListForPackage: { value: string, label: string }[] = [];
           WholeLookupStatuses.forEach(status => {
             if (status.forPackage) {
               optionListForPackage.push({
@@ -119,7 +165,7 @@ const TemplatePackages = () => {
               });
             }
           });
-          function isEmpty(obj) {
+          function isEmpty(obj: Object) {
             return Object.keys(obj).length === 0;
           }
           if (isEmpty(props.rowData) || !props.rowData.templateIds) {
@@ -131,7 +177,7 @@ const TemplatePackages = () => {
           }
           if (props.rowData.templateIds.length == 0 || props.rowData.programIds.length == 0) {
             // console.log('forPackage');
-            const optionInProgress = [];
+            const optionInProgress: { value: string, label: string }[] = [];
             WholeLookupStatuses.forEach(status => {
               status.name == 'in progress'
                 ? optionInProgress.push({ value: status._id, label: status.name })
@@ -142,7 +188,7 @@ const TemplatePackages = () => {
             return (
               <Select
                 onChange={data => {
-                  props.onChange(data.value);
+                  props.onChange(data?.value);
                 }}
                 // options={optionListForPackage}/>
                 // options={[{ value: '5fc53f2af05fb45fed6c88b1', label: 'in progress' }]}
@@ -152,8 +198,8 @@ const TemplatePackages = () => {
           }
           return (
             <Select
-              onChange={data => {
-                props.onChange(data.value);
+              onChange={(data) => {
+                props.onChange(data?.value);
               }}
               options={optionListForPackage}
             />
@@ -169,17 +215,17 @@ const TemplatePackages = () => {
     [lookupStatuses, lookupSubmissionPeriods],
   );
 
-  const options = useMemo(() => calculateOptions(readRowNum), [readRowNum]);
+  const options: Options<TemplatePackageMT> = useMemo(() => calculateOptions(readRowNum), [readRowNum]);
 
   // Record user and time when an action occurs 
-  function recordUpdate(templatePackage) {
-    templatePackage.updatedBy = localStorage.getItem('currentUser');
+  function recordUpdate(templatePackage: TemplatePackageMT) {
+    templatePackage.updatedBy = localStorage.getItem('currentUser') || '';
     templatePackage.timestamp = new Date().toLocaleString(); 
   }
   // Prepare the editing functionalities for the material table
   const editable = useMemo(
     () => ({
-      onRowAdd: templatePackage =>
+      onRowAdd: (templatePackage: TemplatePackageMT) =>
         new Promise((resolve, reject) => {
           recordUpdate(templatePackage);
           templatePackage = { ...templatePackage, templateIds: [], programIds: [] };
@@ -187,10 +233,19 @@ const TemplatePackages = () => {
           dispatch(createTemplatePackageRequest(templatePackage, resolve, reject));
         }).then(newTemplatePackage => {
           // For Auditlog
-          CreateAuditLog(null, "Create Template Package", "TemplatePackage", newTemplatePackage._id, {}, newTemplatePackage);
+          if (newTemplatePackage) {
+            CreateAuditLog(
+              null,
+              "Create Template Package",
+              "TemplatePackage",
+              (newTemplatePackage as TemplatePackage)._id,
+              {},
+              newTemplatePackage
+            );
+          }
         }),
 
-      onRowUpdate: templatePackage =>
+      onRowUpdate: (templatePackage: TemplatePackageMT) =>
         new Promise((resolve, reject) => {
           recordUpdate(templatePackage);
           console.log(templatePackage);
@@ -203,7 +258,7 @@ const TemplatePackages = () => {
           dispatch(updateTemplatePackageRequest(templatePackage, resolve, reject));
         }),
         
-      onRowDelete: templatePackage =>
+      onRowDelete: (templatePackage: TemplatePackageMT) =>
         new Promise((resolve, reject) => {
           recordUpdate(templatePackage);
           dispatch(deleteTemplatePackageRequest(templatePackage._id, resolve, reject));
