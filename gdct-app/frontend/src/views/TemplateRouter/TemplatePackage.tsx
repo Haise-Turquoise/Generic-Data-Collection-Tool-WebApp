@@ -1,6 +1,6 @@
 import React, { useEffect, useCallback, useMemo, MouseEventHandler, ChangeEventHandler, ChangeEvent } from 'react';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
-import { useHistory } from 'react-router-dom';
+import { RouteComponentProps, useHistory } from 'react-router-dom';
 
 import { Formik, Form, FormikProps } from 'formik';
 import { Button, TextField, Paper, Typography,
@@ -53,6 +53,7 @@ interface FormProps extends FormikProps<TemplateValues> {
   initialValues: TemplateValues,
   handleSubmit: (data: any) => void,
 }
+type propType = { _id?: string }
 
 // The header or the title of this page
 const Header = () => (
@@ -318,11 +319,7 @@ const TemplatePackage = ({
   match: {
     params: { _id },
   },
-}: {
-  match: {
-    params: { _id: string }
-  }
-}) => {
+}: RouteComponentProps<propType>) => {
   const dispatch = useDispatch();
   const history = useHistory();
 

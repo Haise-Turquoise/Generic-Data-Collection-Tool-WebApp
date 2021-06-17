@@ -1,22 +1,33 @@
 import React, { useMemo, useEffect, useState } from 'react';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
-import { useHistory } from 'react-router-dom';
+import { RouteChildrenProps, RouteComponentProps, RouterProps, useHistory } from 'react-router-dom';
 
-import MaterialTable from 'material-table';
+import MaterialTable, { Column, Options } from 'material-table';
 import { Paper, Typography, Button } from '@material-ui/core';
+//@ts-ignore
 import Loading from '../../components/Loading';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 
 import {
   getTemplateTypesRequest,
   updateTemplateTypeRequest,
+//@ts-ignore
 } from '../../store/thunks/templateType';
 
+//@ts-ignore
 import ProgramList from '../OrganizationRouter/ProgramList';
+//@ts-ignore
 import { selectFactoryRESTResponseTableValues } from '../../store/common/REST/selectors';
+//@ts-ignore
 import { selectTemplateTypesStore } from '../../store/TemplateTypesStore/selectors';
+//@ts-ignore
 import TemplateTypesStore from '../../store/TemplateTypesStore/store';
+//@ts-ignore
 import { calculateOptions } from '../../tools/misc';
+
+import TemplateType from '../../types/templatetype';
+import Program from '../../types/program';
+type propType = { _id?: string }
 
 const TemplateTypeHeader = () => {
   return (
@@ -33,22 +44,22 @@ const TemplateTypeTable = ({
   match: {
     params: { _id },
   },
-}) => {
+}: RouteComponentProps<propType>) => {
   const dispatch = useDispatch();
   const [readRowNum, setRowNum] = useState(1);
 
   // Prepare the data for TemplateTypeTable
-  const { templateType } = useSelector(
+  const { templateType }: { templateType: TemplateType[] } = useSelector(
     state => ({
       templateType: selectFactoryRESTResponseTableValues(selectTemplateTypesStore)(state).filter(
-        elem => elem._id === _id,
+        (elem: TemplateType) => elem._id === _id,
       ) || [{}],
     }),
     shallowEqual,
   );
 
   // Prepare the columns for TemplateTypeTable
-  const columns = useMemo(
+  const columns: Column<TemplateType>[] = useMemo(
     () => [
       { title: 'Name', field: 'name' },
       { title: 'Description', field: 'description' },
@@ -65,7 +76,7 @@ const TemplateTypeTable = ({
 
   useEffect(() => { setRowNum(templateType.length) }, [templateType])
 
-  const options = useMemo(() => calculateOptions(readRowNum), [readRowNum]);
+  const options: Options<TemplateType> = useMemo(() => calculateOptions(readRowNum), [readRowNum]);
 
   useEffect(() => {
     dispatch(getTemplateTypesRequest());
@@ -92,14 +103,14 @@ const LinkProgramTable = ({
   match: {
     params: { _id },
   },
-}) => {
+}: RouteComponentProps<propType>) => {
   const dispatch = useDispatch();
 
   // Prepare the data for LinkProgramTable
-  let { templateType } = useSelector(
+  let { templateType }: { templateType: TemplateType } = useSelector(
     state => ({
       templateType: (selectFactoryRESTResponseTableValues(selectTemplateTypesStore)(state).filter(
-        elem => elem._id === _id,
+        (elem: TemplateType) => elem._id === _id,
       ) || [{}])[0],
     }),
     shallowEqual,
@@ -107,14 +118,14 @@ const LinkProgramTable = ({
 
   const reject = () => { alert('Missing or invalid parameters') };
 
-  const onClickAdd = (_event, rowData) => {
+  const onClickAdd = (_: any, rowData: Program) => {
     templateType.programIds = templateType.programIds.concat([rowData._id]);
     dispatch(updateTemplateTypeRequest(templateType, null, reject));
     // Refresh templateType because dispatch makes object read-only, not allowing multiple adding.
     templateType = Object.assign({}, templateType);
   };
 
-  const onClickDelete = (_event, rowData) => {
+  const onClickDelete = (_: any, rowData: Program) => {
     templateType.programIds = templateType.programIds.filter(elem => elem !== rowData._id);
     dispatch(updateTemplateTypeRequest(templateType, null, reject));
     // Refresh templateType because dispatch makes object read-only, not allowing multiple deleting.
@@ -147,7 +158,7 @@ const LinkProgramTable = ({
 };
 
 
-const TemplateType = props => (
+const TemplateType = (props: RouteComponentProps<propType>) => (
   <div className="templateTypePage">
     <TemplateTypeHeader />
     <TemplateTypeTable {...props} />

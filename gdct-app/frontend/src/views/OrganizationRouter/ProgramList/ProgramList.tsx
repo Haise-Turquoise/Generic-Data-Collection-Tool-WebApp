@@ -16,12 +16,12 @@ import Program from '../../../types/program'
 
 interface ProgListProps {
   programIds: string[],
-  isEditable: boolean,
+  isEditable?: boolean,
   onClickAdd: (event: Event, program: Program) => void,
   onClickDelete: (event: Event, program: Program) => void,
 }
 
-const ProgList = ({ programIds, isEditable = true, onClickAdd, onClickDelete }: ProgListProps) => {
+const ProgList = ({ programIds, onClickAdd, onClickDelete, isEditable = true }: ProgListProps) => {
   const dispatch = useDispatch();
   useEffect(() => {
     dispatch(getProgramsRequest());
