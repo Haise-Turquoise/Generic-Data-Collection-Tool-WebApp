@@ -29,6 +29,7 @@ import workflowController from '../../controllers/workflow';
 
 const timeOption = { year: 'numeric', month: 'numeric', day: 'numeric', hour:'numeric', minute:'numeric' };
 import statusController from '../../controllers/status';
+import { length } from 'file-loader';
 const useStyles = makeStyles(theme => ({
   root: {
     width: '100%',
@@ -56,10 +57,12 @@ const EditSubmission = ({ history }) => {
 
 
   const [visitStatusNode, setVisitStatusNode] = useState([]);
+  const [visitedWorkFlowProcesses, setVisitedWorkFlowProcesses] = useState([]);
   const [currentRole, setCurrentRole] = useState('');
+  const [statusAndBannedActions, setStatusAndBannedActions] = useState({});
   // const [downloadUnavailable, setDownloadUnavailable] = useState(true);
   const [nextStepIdMap, setNextStepIdMap] = useState({})
-  const [submissionHasBeen, setSubmissionHasBeen] = useState('');
+  const [submissionHasBeen, setSubmissionHasBeen] = useState(undefined);
   const SubmissionHeader = () => (
     <Paper className="header">
       <Typography variant="h5">Submissions</Typography>
@@ -95,9 +98,9 @@ const EditSubmission = ({ history }) => {
     }),
     shallowEqual,
   );
-  // recursive get the element in a workflow
+  // recursive get the element in a workflow.
   // const getWorkflowTreeByProcessesId = async (root, visited,statusIds) => {
-  //   if(root._id){
+  //   if (root._id){
   //     visited.push(root._id)
   //     statusIds.push(root.statusId)
   //   }
@@ -110,8 +113,6 @@ const EditSubmission = ({ history }) => {
   //     }
   //     else{
   //       if(to._id){getWorkflowTreeByProcessesId(to, visited,statusIds )}
-  //       // getWorkflowTreeByProcessesId(to, visited)
-
   //     }
   //   }
   // }
@@ -131,56 +132,40 @@ const EditSubmission = ({ history }) => {
     // @ts-ignore
     
     if (location.state.detail) {
-      console.log('detail', location.state.detail)
-      
-      // workflowController.fetchProcess(location.state.detail.workflowProcessId).then(root=>{
-      //   let visited = []
-      //   let statusIds = []
-      //   getWorkflowTreeByProcessesId(root, visited, statusIds)
-      //   let statusMap = []
-      //   let promiseQuery = []
-      //   for(const workflowProcess of statusIds){
-      //     if(! workflowProcess.name){
-      //       promiseQuery.push(
-      //         statusController.fetchStatus(workflowProcess).then(status=>{
-      //           return status.name
-      //         })
-      //       )
-
-      //     }
-      //     else{
-      //       promiseQuery.push(
-      //         statusController.fetchStatus(workflowProcess._id).then(status=>{
-      //           return status.name
-      //         })
-      //       )
-
-      //     }
-
-      //   }
-      // Promise.all(promiseQuery).then(statusMap=>{
-      //   const newStatusMap = statusMap.filter(ele=>{return (ele != 'Start' && ele != 'Unsubmitted')})
-      //   // setVisitStatusNode(newStatusMap)
-      // })
-      // })
-
+      // console.log('detail', location.state.detail)
       workflowController.fetchProcessesByWorkflowId(location.state.detail.workflowId).then((workflowProcesses)=>{
         
         let promiseQuery1 = [];
+        let promiseQuery2 = [];
         for (const workflowProcess of workflowProcesses){
           promiseQuery1.push(statusController.fetchStatus(workflowProcess.statusId))
+          promiseQuery2.push(
+            statusController.fetchStatus(workflowProcess.statusId).then((status)=>{
+              let workflowProcessCopy = cloneDeep(workflowProcess);
+              workflowProcessCopy.statusName = status.name
+              workflowProcessCopy.toStatusesName = [];
+              return workflowProcessCopy
+            })
+            
+          )
         }
-        
-        Promise.all(promiseQuery1).then((statuses)=>{
-          // console.log(statuses)
-          let statusMap = [];
-          for (const status of statuses){
-            statusMap.push(status.name)
+        Promise.all(promiseQuery2).then((workflowProcesses)=>{
+          let statusMap = {};
+          for(const workflowProcess of workflowProcesses){
+            statusMap[workflowProcess._id] = workflowProcess.statusName
           }
-          statusMap = statusMap.filter(ele=>{return (ele != 'Start' && ele != 'Unsubmitted')})
-          setVisitStatusNode(statusMap)
+          let workflowProcessesList = workflowProcesses.filter(ele=>{return ele.statusName != 'Start' && ele.statusName != 'Unsubmitted'})
+          for(const workflowProcesses of workflowProcessesList){
+            for (const toStatus of workflowProcesses.to ){
+              workflowProcesses.toStatusesName.push(statusMap[toStatus])
+            }
+          }
+          console.log(workflowProcessesList)
+          setVisitedWorkFlowProcesses(workflowProcessesList)
+
+
+
         })
-        
       })
       setCurrentRole(location.state.detail.permission)
       if (
@@ -198,44 +183,42 @@ const EditSubmission = ({ history }) => {
       )
         setIsReviewerOrApprover(true);
         // check has the submission status.
-        SubmissionController.fetchSubmissionByParentId(location.state.detail._id).then(childrenSubmissions=>{
+        // SubmissionController.fetchSubmissionByParentId(location.state.detail._id).then(childrenSubmissions=>{
+        //   console.log(childrenSubmissions)
+        //   if(childrenSubmissions.length > 0){
+        //     let submitted = false;
+        //     childrenSubmissions.forEach(childrenSubmission=>{
+        //       statusController.fetchStatus(childrenSubmission.statusId).then(status=>{
+        //         // check the status is Submitted or not.
+        //         if(status.name == 'Submitted'){
+        //           setHasBeenSubmitted(true)
+        //           setSubmissionHasBeen(status.name)
+        //         }
+        //         // check the status after the phrase Submitted
+        //         else{
+        //           SubmissionController.fetchSubmission(location.state.detail._id).then(submission=>{
+        //             statusController.fetchStatus(submission.statusId).then(status=>{
+        //               console.log(status)
+        //               setSubmissionHasBeen(status.name)
+        //             })
+        //           })
+        //         }
+        //       })
+        //     })
+        //   }
+        //   // check the status before the phrase Submitted
+        //   else{
+        //     SubmissionController.fetchSubmission(location.state.detail._id).then(submission=>{
+        //       console.log(submission)
+        //       statusController.fetchStatus(submission.statusId).then(status=>{
+        //         console.log(status)
+        //         setSubmissionHasBeen(status.name)
+        //       })
+        //     })
+        //   }
           
-          if(childrenSubmissions.length > 0){
-            let submitted = false;
-            childrenSubmissions.forEach(childrenSubmission=>{
-              statusController.fetchStatus(childrenSubmission.statusId).then(status=>{
-                // check the status is Submitted or not.
-                if(status.name == 'Submitted'){
-                  setHasBeenSubmitted(true)
-                  setSubmissionHasBeen(status.name)
-                }
-                // check the status after the phrase Submitted
-                else{
-                  SubmissionController.fetchSubmission(location.state.detail._id).then(submission=>{
-                    statusController.fetchStatus(submission.statusId).then(status=>{
-                      setSubmissionHasBeen(status.name)
-                    })
-                  })
-                }
-              })
-            })
-          }
-          // check the status before the phrase Submitted
-          else{
-            SubmissionController.fetchSubmission(location.state.detail._id).then(submission=>{
-              statusController.fetchStatus(submission.statusId).then(status=>{
-                setSubmissionHasBeen(status.name)
-              })
-            })
-          }
-          
-        })
-        // check has the submitted object has been approved at this moment
-        // SubmissionController.fetchSubmission(location.state.detail._id).then(submission=>{
-        //   statusController.fetchStatus(submission.statusId).then(status=>{
-        //     setSubmissionHasBeen(status.name)
-        //   })
         // })
+
       workflowController
         // @ts-ignore
         .fetchProcess(location.state.detail.workflowProcessId)
@@ -274,7 +257,70 @@ const EditSubmission = ({ history }) => {
     dispatch(getSubmissionNoteRequest(location.state.detail.parentId));
   }, [location, dispatch, refresh]);
 
+  useEffect(() => {
+    (async function() {
+        try {
 
+          let childrenSubmissions = await SubmissionController.fetchSubmissionByParentId(location.state.detail._id);
+          if(childrenSubmissions.length > 0){
+            for(const childrenSubmission of childrenSubmissions){
+              const status = await statusController.fetchStatus(childrenSubmission.statusId);
+              if(status.name == 'Submitted'){
+                setSubmissionHasBeen(status.name)
+              }
+              else{
+                const submission = await SubmissionController.fetchSubmission(location.state.detail._id);
+                const status = await statusController.fetchStatus(submission.statusId);
+                setSubmissionHasBeen(status.name)
+              }
+            }
+          }
+          else{
+            const submission = await SubmissionController.fetchSubmission(location.state.detail._id);
+            const status = await statusController.fetchStatus(submission.statusId);
+            setSubmissionHasBeen(status.name)
+          }
+          // SubmissionController.fetchSubmissionByParentId(location.state.detail._id).then(childrenSubmissions=>{
+          //   console.log(childrenSubmissions)
+          //   if(childrenSubmissions.length > 0){
+          //     let submitted = false;
+          //     childrenSubmissions.forEach(childrenSubmission=>{
+          //       statusController.fetchStatus(childrenSubmission.statusId).then(status=>{
+          //         // check the status is Submitted or not.
+          //         if(status.name == 'Submitted'){
+          //           setHasBeenSubmitted(true)
+          //           setSubmissionHasBeen(status.name)
+          //         }
+          //         // check the status after the phrase Submitted
+          //         else{
+          //           SubmissionController.fetchSubmission(location.state.detail._id).then(submission=>{
+          //             statusController.fetchStatus(submission.statusId).then(status=>{
+          //               console.log(status)
+          //               setSubmissionHasBeen(status.name)
+          //             })
+          //           })
+          //         }
+          //       })
+          //     })
+          //   }
+          //   // check the status before the phrase Submitted
+          //   else{
+          //     SubmissionController.fetchSubmission(location.state.detail._id).then(submission=>{
+          //       console.log(submission)
+          //       statusController.fetchStatus(submission.statusId).then(status=>{
+          //         console.log(status)
+          //         setSubmissionHasBeen(status.name)
+          //       })
+          //     })
+          //   }
+            
+          // })
+            
+        } catch (e) {
+            
+        }
+    })();
+}, [location, dispatch, refresh]);
  
   submissionNotes = submissionNoteHistory.filter(note=>note.note !== undefined)
   // @ts-ignore
@@ -315,8 +361,8 @@ const EditSubmission = ({ history }) => {
       setUserFeedback('');
     }, 4000);
   };
+  // decide button display base on current role.
   const handleButtonDisplayByRole = (button,role, map)=>{
-    console.log('role', role)
     if(role.length == 0){
       role[0] = 'Business Admin'
     }
@@ -328,21 +374,32 @@ const EditSubmission = ({ history }) => {
       return false
     }
   }
-
-  const handleButtonDisplayByStatus = (button, status)=>{
-    console.log('button',button, 'status', status)
-    
-    const StatusAndBannedActions = {
+  // decide button display base on current Status
+  const handleButtonDisplayByStatus = (button, visitedWorkFlowProcesses,status)=>{
+    let StatusAndBannedActions = {
       'Submitted':['Submitted','Inputted'],
       'inputted':['Inputted','Approved', 'Rejected', 'Returned', 'Reviewed'],
       'Approved':['Approved','Rejected', 'Submitted','Inputted', 'Returned', 'Reviewed'],
-      'Rejected':['Approved', 'Rejected','Inputted', 'Returned', 'Reviewed'],
+      'Rejected':['Approved', 'Rejected','Submitted','Inputted', 'Returned', 'Reviewed'],
       'Reviewed':['Returned', 'Reviewed', 'Submitted','Inputted', 'Approved', 'Rejected'],
-      'Returned':['Returned', 'Reviewed','Inputted', 'Approved', 'Rejected'],
+      'Returned':['Returned', 'Reviewed','Submitted','Inputted', 'Approved', 'Rejected'],
+    }
+    // remove the possible avaiable button from the banned list
+    if(visitedWorkFlowProcesses.length >0 && status){
+      for(const workFlowProcesses of visitedWorkFlowProcesses){
+        if(workFlowProcesses.statusName == status){
+          for(const toName of workFlowProcesses.toStatusesName){
+            const index = StatusAndBannedActions[status].indexOf(toName)
+            if(index > -1){
+              StatusAndBannedActions[status].splice(index,1)
+            }
+          }
+        }
+      }
     }
     if(status in StatusAndBannedActions){
-      console.log(status)
       if(StatusAndBannedActions[status].includes(button)){
+        
         return true
       }
       else{
@@ -377,12 +434,11 @@ const EditSubmission = ({ history }) => {
       }, 2000);
     }
   };
-  // console.log('nextStepIdMap', nextStepIdMap)
-  // console.log('button',submitUnavailable , !isSubmitterOrInputter,hasBeenSubmitted)
+
+
+
+  
   return (
-
-
-
     <div className="submissions" style={{ cursor }}>
       <SubmissionHeader />
 
@@ -466,25 +522,24 @@ const EditSubmission = ({ history }) => {
           >
             Submit
           </Button>*/}
-          {visitStatusNode.map(status=>{
-            const buttonDisplayBaseOnRole = handleButtonDisplayByRole(status,currentRole,roleButtonMap)
-            const buttonDisplayBaseOnStatus = handleButtonDisplayByStatus(status, submissionHasBeen)
-            // console.log(buttonDisplayBaseOnStatus, submissionHasBeen)
+          {visitedWorkFlowProcesses.map(status=>{
+            const buttonDisplayBaseOnRole = handleButtonDisplayByRole(status.statusName,currentRole,roleButtonMap)
+            const buttonDisplayBaseOnStatus = handleButtonDisplayByStatus(status.statusName, visitedWorkFlowProcesses,submissionHasBeen)
             return(
               <Button
             color="primary"
             variant="contained"
             size="large"
-            key = {status}
+            key = {status.statusName}
             style={{ cursor }}
             disabled = {buttonDisplayBaseOnRole || buttonDisplayBaseOnStatus}
             onClick={() => {
               
-              handleChangeStatus(submission, submissionNote, status, nextStepIdMap[status])
+              handleChangeStatus(submission, submissionNote, status.statusName, nextStepIdMap[status.statusName])
             }}
 
           >
-            {status}
+            {status.statusName}
           </Button>
             )
           })
@@ -523,3 +578,4 @@ const EditSubmission = ({ history }) => {
 };
 
 export default EditSubmission;
+
