@@ -2,7 +2,7 @@
 import React, { useMemo, useEffect, useState } from 'react';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 
-import MaterialTable from 'material-table';
+import MaterialTable, { Column, Options } from 'material-table';
 import Paper from '@material-ui/core/Paper';
 import moment from 'moment';
 
@@ -12,16 +12,23 @@ import {
   createSubmissionPeriodRequest,
   deleteSubmissionPeriodRequest,
   updateSubmissionPeriodRequest,
+//@ts-ignore
 } from '../../store/thunks/submissionPeriod';
 
 import {
   selectFactoryRESTResponseTableValues,
   selectFactoryRESTLookup,
 } from '../../store/common/REST/selectors';
+//@ts-ignore
 import { selectSubmissionPeriodsStore } from '../../store/SubmissionPeriodsStore/selectors';
+//@ts-ignore
 import { selectReportingPeriodsStore } from '../../store/ReportingPeriodsStore/selectors';
+//@ts-ignore
 import { getReportingPeriodsRequest } from '../../store/thunks/reportingPeriod';
+//@ts-ignore
 import { calculateOptions } from '../../tools/misc'
+
+import SubmissionPeriod from '../../types/submissionperiod';
 
 const SubmissionPeriodHeader = () => {
   return (
@@ -40,7 +47,10 @@ const SubmissionPeriod = () => {
   const preColumns = [{ title: 'Name', field: 'name' }]
   const prePeriods = [{ name: 'LOADING...' }]
 
-  const { submissionPeriods, lookupReportingPeriods } = useSelector(
+  const { submissionPeriods, lookupReportingPeriods }: {
+    submissionPeriods: SubmissionPeriod[],
+    lookupReportingPeriods: {[key:string]: any}
+  } = useSelector(
     state => ({
       submissionPeriods: selectFactoryRESTResponseTableValues(selectSubmissionPeriodsStore)(state),
       lookupReportingPeriods: selectFactoryRESTLookup(selectReportingPeriodsStore)(state),
@@ -54,7 +64,7 @@ const SubmissionPeriod = () => {
     submissionPeriod.timestamp = moment(logtime).format("YYYY-MM-DD HH:mm:ss")
   });
 
-  const columns = useMemo(
+  const columns: Column<SubmissionPeriod>[] = useMemo(
     () => [
       { title: 'Name', field: 'name' },
       { title: 'Start Date', type: 'date', field: 'startDate' },
@@ -71,28 +81,28 @@ const SubmissionPeriod = () => {
   );
 
   // Record who and when of the action
-  function recordUpdate(submissionPeriod) {
+  function recordUpdate(submissionPeriod: SubmissionPeriod) {
     //get username and record in Modified By column
     submissionPeriod.updatedBy = localStorage.getItem('currentUser');
     //record new date and time in Modified On column 
     submissionPeriod.timestamp = new Date().toLocaleString(); 
   }
 
-  const options = useMemo(() => calculateOptions(readRowNum), [readRowNum]);
+  const options: Options<SubmissionPeriod> = useMemo(() => calculateOptions(readRowNum), [readRowNum]);
 
   const editable = useMemo(
     () => ({
-      onRowAdd: submissionPeriod =>
+      onRowAdd: (submissionPeriod: SubmissionPeriod) =>
         new Promise((resolve, reject) => {
           recordUpdate(submissionPeriod);
           dispatch(createSubmissionPeriodRequest(submissionPeriod, resolve, reject));
         }),
-      onRowUpdate: submissionPeriod =>
+      onRowUpdate: (submissionPeriod: SubmissionPeriod) =>
         new Promise((resolve, reject) => {
           recordUpdate(submissionPeriod);
           dispatch(updateSubmissionPeriodRequest(submissionPeriod, resolve, reject));
         }),
-      onRowDelete: submissionPeriod =>
+      onRowDelete: (submissionPeriod: SubmissionPeriod) =>
         new Promise((resolve, reject) => {
           recordUpdate(submissionPeriod);
           dispatch(deleteSubmissionPeriodRequest(submissionPeriod._id, resolve, reject));

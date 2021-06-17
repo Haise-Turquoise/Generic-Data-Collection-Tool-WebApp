@@ -1,6 +1,7 @@
 import React from 'react';
 import { Switch, Route } from 'react-router-dom';
 
+//@ts-ignore
 import NotFound from '../../components/NotFound';
 import Users from './Users';
 import UserInfo from './UserInfo';

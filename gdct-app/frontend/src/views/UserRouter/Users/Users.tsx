@@ -2,22 +2,31 @@ import React, { useState, useMemo, useEffect, Component } from 'react';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 
-import MaterialTable from 'material-table';
+import MaterialTable, { Action, Column, Options } from 'material-table';
 import { Paper, Typography } from '@material-ui/core';
 
 import moment from 'moment';
 
 import VisibilityIcon from '@material-ui/icons/Visibility';
+//@ts-ignore
 import { selectFactoryRESTResponseTableValues } from '../../../store/common/REST/selectors';
+//@ts-ignore
 import { selectUsersStore } from '../../../store/UsersStore/selectors';
+//@ts-ignore
 import { calculateOptions } from '../../../tools/misc'
 import {
   getUsersRequest,
   updateUsersRequest,
+//@ts-ignore
 } from '../../../store/thunks/users';
 
+//@ts-ignore
 import usersController from '../../../controllers/Users';
+//@ts-ignore
 import CreateAuditLog from '../../AuditLog_Global';
+
+import User from '../../../types/user';
+import SysRole from '../../../types/sysrole';
 
 const UsersHeader = () => {
   return (
@@ -42,8 +51,23 @@ const UsersTable = () => {
   const [hasUsers, setHasUsers] = useState(false)
 
   // table vars for loading
-  const preColumns = [{ title: 'Name', field: 'name' }]
-  const preUsers = [{ name: 'LOADING... '}]
+  const preColumns: Column<User>[] = [{ title: 'Name', field: 'username' }]
+  const preUsers: User[] = [{
+    _id: '',
+    approvedDate: '',
+    creationDate: '',
+    email: '',
+    firstName: '',
+    isActive: true,
+    isEmailVerified: true,
+    lastName: '',
+    password: '',
+    phoneNumber: '',
+    sysRole: [],
+    timestamp: '',
+    title: '',
+    username: 'LOADING...',
+  }]
 
   const handleClear = () => {
     setUserName('');
@@ -80,7 +104,7 @@ const UsersTable = () => {
   };
 
   // Prepare the data for material table
-  const { users } = useSelector(state => ({
+  const { users }: { users: User[] } = useSelector(state => ({
     users: selectFactoryRESTResponseTableValues(selectUsersStore)(state),
   }));
   // Convert Date format
@@ -90,7 +114,7 @@ const UsersTable = () => {
   });
 
   // Prepare the columns for material table
-  const columns = useMemo(
+  const columns: Column<User>[] = useMemo(
     () => [
       { title: 'User Name', field: 'username' },
       { title: 'First Name', field: 'firstName' },
@@ -104,7 +128,7 @@ const UsersTable = () => {
     [],
   );
 
-  const options = useMemo(() => calculateOptions(readRowNum),[readRowNum]);
+  const options: Options<User> = useMemo(() => calculateOptions(readRowNum),[readRowNum]);
 
   // Customization for search bar
   const localization = useMemo(
@@ -119,14 +143,14 @@ const UsersTable = () => {
 
 
   // Record username and time when an action occurs 
-  function recordUpdate(user) {
-    user.updatedBy = localStorage.getItem('currentUser');
+  function recordUpdate(user: User) {
+    user.updatedBy = localStorage.getItem('currentUser') || '';
     user.timestamp = new Date().toLocaleString(); 
   }
   // Prepare the editing functionalities for the material table
   const editable = useMemo(
     () => ({
-      onRowUpdate: user =>
+      onRowUpdate: (user: User) =>
         new Promise((resolve, reject) => {
           recordUpdate(user);
           // Find the old value before updating in order to Auditlog
@@ -144,12 +168,14 @@ const UsersTable = () => {
   );
 
   // Prepare the actions for material table
-  const actions = [
+  const actions: Action<User>[] = [
     {
       icon: VisibilityIcon,
       tooltip: 'View User Information',
-      onClick: (_event, user) => {
-        history.push(`/admin/user_management/${user._id}`);
+      onClick: (_: any, user: User | User[]) => {
+        if (!Array.isArray(user)) {
+          history.push(`/admin/user_management/${user._id}`);
+        }
       },
     },
   ];
@@ -207,7 +233,8 @@ const UsersTable = () => {
   );
 };
 
-const User = props => (
+// any type since props unused
+const User = (props: any) => (
   <div className="User">
     <UsersHeader />
     <UsersTable {...props} />

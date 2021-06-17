@@ -1,31 +1,58 @@
 import PropTypes from 'prop-types';
 import React, { useEffect, useMemo, useState } from 'react';
 
-import { useHistory } from "react-router-dom";
+import { RouteComponentProps, useHistory } from "react-router-dom";
 
 import { useDispatch, useSelector } from 'react-redux';
 
-import MaterialTable, { MTableCell } from 'material-table';
+import MaterialTable, { Column, MTableCell, Options } from 'material-table';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
+//@ts-ignore
 import { getUsersRequest } from '../../../store/thunks/users';
+//@ts-ignore
 import { getOrgsRequest } from '../../../store/thunks/organization';
+//@ts-ignore
 import { getProgramsRequest } from '../../../store/thunks/program';
+//@ts-ignore
 import { getTemplateTypesRequest } from '../../../store/thunks/templateType';
 
 import {
   selectFactoryRESTResponseTableValues,
   selectFactoryRESTIsCallInProgress,
+//@ts-ignore
 } from '../../../store/common/REST/selectors';
+//@ts-ignore
 import { selectUsersStore } from '../../../store/UsersStore/selectors';
+//@ts-ignore
 import { selectOrgsStore } from '../../../store/OrganizationsStore/selectors';
+//@ts-ignore
 import { selectProgramsStore } from '../../../store/ProgramsStore/selectors';
+//@ts-ignore
 import { selectTemplateTypesStore } from '../../../store/TemplateTypesStore/selectors';
+//@ts-ignore
 import { calculateOptions } from '../../../tools/misc'
+//@ts-ignore
 import Loading from '../../../components/Loading';
 
+import User from '../../../types/user';
+import Organization from '../../../types/organization';
+import Program from '../../../types/program';
+import TemplateType from '../../../types/templatetype';
+import { string } from 'yargs';
+type propType = { _id?: string }
+
+interface TableData {
+  user: string,
+  date: string,
+  organization: string,
+  program: string,
+  template: string,
+  permission: string,
+  appsys: string,
+}
 
 const HeaderActions = () => {
   return (
@@ -49,7 +76,7 @@ const UserInfo = ({
   match: {
     params: { _id },
   },
-}) => {
+}: RouteComponentProps<propType>) => {
   const dispatch = useDispatch();
   const history = useHistory();
 
@@ -60,10 +87,16 @@ const UserInfo = ({
     dispatch(getTemplateTypesRequest());
   }, [dispatch]);
 
-  const { userObject, isCallInProgress, organizations, programs, templateTypes } = useSelector(
+  const { userObject, isCallInProgress, organizations, programs, templateTypes }: {
+    userObject: User,
+    isCallInProgress: boolean,
+    organizations: Organization[],
+    programs: Program[],
+    templateTypes: TemplateType[],
+  } = useSelector(
     state => ({
       userObject: (selectFactoryRESTResponseTableValues(selectUsersStore)(state).filter(
-        elem => elem._id == _id,
+        (elem: User) => elem._id == _id,
       ) || [{}])[0],
       isCallInProgress:
         selectFactoryRESTIsCallInProgress(selectUsersStore)(state) ||
@@ -77,10 +110,11 @@ const UserInfo = ({
     }),
   );
 
-  const dfs = (object, depth, path) => {
+  // TODO help - uneasy about touching this function
+  const dfs = (object: {[key: string]: any}, depth: number, path: {[key:string]: string}) => {
     for (const attribute of EXTRACT_INFO[depth]) path[attribute] = object[attribute];
     if (depth < MAX_DEPTH) {
-      let res = [];
+      let res: {[key:string]: string}[] = [];
       if (!Object.prototype.hasOwnProperty.call(object, EDGE_PARAM[depth])) return res;
       for (const child of object[EDGE_PARAM[depth]])
         res = res.concat(dfs(child, depth + 1, { ...path }));
@@ -89,15 +123,15 @@ const UserInfo = ({
     return [path];
   };
 
-  const [data, updateData] = useState([]);
+  const [data, updateData] = useState<TableData[]>([]);
   const [readRowNum, setRowNum] = useState(1);
 
   useEffect(() => {
     if (userObject) {
       const extracted_data = dfs(userObject, 0, {});
-      const organizations_map = {};
-      const programs_map = {};
-      const templateTypes_map = {};
+      const organizations_map: {[key: string]: any} = {};
+      const programs_map: {[key: string]: any} = {};
+      const templateTypes_map: {[key: string]: any} = {};
       organizations.forEach(doc => (organizations_map[doc.id] = doc.name));
       programs.forEach(doc => (programs_map[doc._id] = doc.name));
       templateTypes.forEach(doc => (templateTypes_map[doc._id] = doc.name));
@@ -117,7 +151,7 @@ const UserInfo = ({
     }
   }, [userObject, organizations, programs, templateTypes]);
 
-  const columns = useMemo(
+  const columns: Column<TableData>[] = useMemo(
     () => [
       { title: 'User', field: 'user' },
       { title: 'Date', field: 'date' },
@@ -130,14 +164,14 @@ const UserInfo = ({
     [],
   );
 
-  const options = useMemo(
+  const options: Options<TableData> = useMemo(
     () => calculateOptions(readRowNum),
     [readRowNum],
   );
 
   const components = useMemo(
     () => ({
-      Cell: props => <MTableCell {...props} style={{ whiteSpace: 'pre-wrap' }} />,
+      Cell: (props: any) => <MTableCell {...props} style={{ whiteSpace: 'pre-wrap' }} />,
     }),
     [],
   );
@@ -156,7 +190,13 @@ const UserInfo = ({
     <div className="userInfo">
       <HeaderActions />
     
-      <MaterialTable key={readRowNum} components={components} columns={columns} data={data} options={options} />
+      <MaterialTable
+        key={readRowNum}
+        components={components}
+        columns={columns}
+        data={data}
+        options={options}
+      />
 
 
       <Button
