@@ -1,43 +1,60 @@
 import React, { useMemo, useEffect, useState } from 'react';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
-import { useHistory } from 'react-router-dom';
+import { RouteComponentProps, useHistory } from 'react-router-dom';
 
 import MaterialTable from 'material-table';
 import { Paper, Typography, Button } from '@material-ui/core';
+//@ts-ignore
 import Loading from '../../../components/Loading';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 
 
 import AppResourceList from '../AppResourceList'
 import ProgramList from '../../OrganizationRouter/ProgramList';
+//@ts-ignore
 import { selectFactoryRESTResponseTableValues } from '../../../store/common/REST/selectors';
+//@ts-ignore
 import { calculateOptions } from '../../../tools/misc';
 //
+//@ts-ignore
 import{selectAppRoleResourcesStore} from '../../../store/AppRoleResourcesStore/selectors';
+//@ts-ignore
 import { selectAppSysRolesStore } from '../../../store/AppSysRolesStore/selectors';
+//@ts-ignore
 import { selectAppResourcesStore } from '../../../store/AppResourcesStore/selectors';
 
+//@ts-ignore
 import {AppRoleResourcesStore} from '../../../store/AppRoleResourcesStore/store';
+//@ts-ignore
 import {AppSysRolesStore} from '../../../store/AppSysRolesStore/store';
+//@ts-ignore
 import {AppResourcesStore} from '../../../store/AppResourcesStore/store';
+//@ts-ignore
 import { getAppSysRolesRequest } from '../../../store/thunks/AppSysRole';
+//@ts-ignore
 import { getAppResourcesRequest } from '../../../store/thunks/AppResource';
 import {
     getAppRoleResourcesRequest,
     createAppRoleResourceRequest,
     deleteAppRoleResourceRequest,
     updateAppRoleResourceRequest,
+//@ts-ignore
   } from '../../../store/thunks/AppRoleResource';
+
+import AppRoleResource from '../../../types/approleresource';
+import AppResource from '../../../types/appresource';
+type propType = { _id: string }
+
 const AppRoleResourceManagementHeader = ({
   match: {
     params: { _id },
   },
-}) => {
+}: RouteComponentProps<propType>) => {
   const [roleName, setRoleName] = useState('')
-  let { appRoleResource } = useSelector(
+  let { appRoleResource }: { appRoleResource: AppRoleResource } = useSelector(
     state => ({
       appRoleResource: (selectFactoryRESTResponseTableValues(selectAppRoleResourcesStore)(state).filter(
-        elem => elem._id === _id,
+        (elem: AppRoleResource) => elem._id === _id,
       ) || [{}])[0],
     }),
     shallowEqual,
@@ -123,7 +140,7 @@ const LinkProgramTable = ({
   match: {
     params: { _id },
   },
-}) => {
+}: RouteComponentProps<propType>) => {
   const dispatch = useDispatch();
   // useEffect(() => {
   //   dispatch(getTemplateTypesRequest());
@@ -152,10 +169,10 @@ const LinkProgramTable = ({
   //   shallowEqual,
   // );
 
-  let { appRoleResource } = useSelector(
+  let { appRoleResource }: { appRoleResource: AppRoleResource } = useSelector(
     state => ({
       appRoleResource: (selectFactoryRESTResponseTableValues(selectAppRoleResourcesStore)(state).filter(
-        elem => elem._id === _id,
+        (elem: AppRoleResource) => elem._id === _id,
       ) || [{}])[0],
     }),
     shallowEqual,
@@ -163,14 +180,20 @@ const LinkProgramTable = ({
 
   const reject = () => { alert('Missing or invalid parameters') };
 
-  const onClickAdd = (_event, rowData) => {
+  const onClickAdd = (_: any, rowData: AppResource | AppResource[]) => {
+    if (Array.isArray(rowData)) {
+      return
+    }
     appRoleResource.resourceId = appRoleResource.resourceId.concat([{id:rowData._id, resourceName:rowData.resourceName}]);
     dispatch(updateAppRoleResourceRequest(appRoleResource, null, reject));
     // Refresh appRoleResource because dispatch makes object read-only, not allowing multiple adding.
     appRoleResource = Object.assign({}, appRoleResource);
   };
 
-  const onClickDelete = (_event, rowData) => {
+  const onClickDelete = (_: any, rowData: AppResource | AppResource[]) => {
+    if (Array.isArray(rowData)) {
+      return
+    }
     appRoleResource.resourceId = appRoleResource.resourceId.filter(elem => elem.id !== rowData._id);
     dispatch(updateAppRoleResourceRequest(appRoleResource, null, reject));
     // Refresh appRoleResource because dispatch makes object read-only, not allowing multiple deleting.
@@ -203,7 +226,7 @@ const LinkProgramTable = ({
 };
 
 
-const AppRoleResourceManagement = props => (
+const AppRoleResourceManagement = (props: RouteComponentProps<propType>) => (
   <div className="templateTypePage">
     <AppRoleResourceManagementHeader {...props} />
     

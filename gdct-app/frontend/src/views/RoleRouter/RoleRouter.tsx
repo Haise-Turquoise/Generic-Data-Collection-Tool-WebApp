@@ -2,6 +2,7 @@ import React from 'react';
 
 import { Switch, Route } from 'react-router-dom';
 
+//@ts-ignore
 import NotFound from '../../components/NotFound';
 import AppSyses from './AppSyses';
 import AppSysRoles from './AppSysRoles';

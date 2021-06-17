@@ -1,39 +1,69 @@
   
-import React, { useMemo, useEffect, useState } from 'react';
+import React, { useMemo, useEffect, useState, MouseEventHandler } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
-import MaterialTable from 'material-table';
+import MaterialTable, { Action, Column, Options } from 'material-table';
 import AddIcon from '@material-ui/icons/Add';
 import DeleteIcon from '@material-ui/icons/Delete';
 import PropTypes from 'prop-types';
 
+//@ts-ignore
 import { selectAppResourcesStore } from '../../../store/AppResourcesStore/selectors';
+//@ts-ignore
 import { getAppResourcesRequest } from '../../../store/thunks/AppResource';
 //
+//@ts-ignore
 import { selectFactoryRESTResponseTableValues } from '../../../store/common/REST/selectors';
+//@ts-ignore
 import { selectProgramsStore } from '../../../store/ProgramsStore/selectors';
+//@ts-ignore
 import { getProgramsRequest } from '../../../store/thunks/program';
+//@ts-ignore
 import { calculateOptions } from '../../../tools/misc';
-const AppResourceList = ({ resourceId, isEditable = true, onClickAdd, onClickDelete }) => {
+
+import AppResource from '../../../types/appresource';
+
+const AppResourceList = ({ resourceId, isEditable = true, onClickAdd, onClickDelete }: {
+  resourceId: { id: string, resourceName: string }[],
+  isEditable?: boolean,
+  onClickAdd: (e: any, value: AppResource | AppResource[]) => void,
+  onClickDelete: (e: any, value: AppResource | AppResource[]) => void,
+}) => {
   const dispatch = useDispatch();
   const [hasProgs, setHasProgs] = useState(false)
   useEffect(() => {
     dispatch(getAppResourcesRequest());
   }, []);
   
-  const { resourceList } = useSelector(state => ({
+  const { resourceList }: { resourceList: AppResource[] } = useSelector(state => ({
     resourceList: selectFactoryRESTResponseTableValues(selectAppResourcesStore)(state),
   }));
   // convert resourceId into a id only array
-  const resourceIdList = [];
+  const resourceIdList: string[] = [];
   resourceId.forEach(resource=>{
-    resourceIdList.push(resource.id)
+    resourceIdList.push(resource.id.toString())
   })
 
   // table stuff while loading
-  const preOrgProgs = [{ name: 'LOADING...' }]
-  const preNonOrgProgs = [{ name: 'LOADING...' }]
-  const preColumns = [{title: 'Name', field: 'name'}]
+  const preColumns: Column<AppResource>[] = [{title: 'Name', field: 'resourceName'}]
+  const preOrgProgs: AppResource[] = [{
+    _id: '',
+    id: 0,
+    isProtected: '',
+    resourceName: 'LOADING...',
+    resourcePath: '',
+    timestamp: '',
+    updatedBy: '',
+  }]
+  const preNonOrgProgs: AppResource[] = [{
+    _id: '',
+    id: 0,
+    isProtected: '',
+    resourceName: 'LOADING...',
+    resourcePath: '',
+    timestamp: '',
+    updatedBy: '',
+  }]
   
   const OrgProgs = () => resourceList.filter(elem => resourceIdList.includes(elem._id));
   const nonOrgProgs = () => resourceList.filter(elem => !resourceIdList.includes(elem._id));
@@ -48,7 +78,7 @@ const AppResourceList = ({ resourceId, isEditable = true, onClickAdd, onClickDel
     }
   }, [resourceList])
 
-  const columns = useMemo(() => 
+  const columns: Column<AppResource>[] = useMemo(() => 
     [
       { title: 'ResourceName', field: 'resourceName', defaultSort: 'asc' },
       { title: 'ResourcePath', field: 'resourcePath' },
@@ -58,7 +88,7 @@ const AppResourceList = ({ resourceId, isEditable = true, onClickAdd, onClickDel
     []
   );
 
-  const options = useMemo(() => (
+  const options: Options<AppResource> = useMemo(() => (
     { 
       actionsColumnIndex: -1, 
       search: false, 
@@ -70,11 +100,11 @@ const AppResourceList = ({ resourceId, isEditable = true, onClickAdd, onClickDel
   );
 
 
-  const left_actions = useMemo(() => [{ icon: DeleteIcon, tooltip: 'Remove from Mapping', onClick: onClickDelete }], []);
+  const left_actions: Action<AppResource>[] = useMemo(() => [{ icon: DeleteIcon, tooltip: 'Remove from Mapping', onClick: onClickDelete }], []);
 
-  const right_actions = useMemo(() => [{ icon: AddIcon, tooltip: 'Add to Mapping', onClick: onClickAdd }], []);
-  const orgOptions = useMemo(() => calculateOptions(readOrgRowNum), [readOrgRowNum]);
-  const nonOrgOptions = useMemo(() => calculateOptions(readNonOrgRowNum), [readNonOrgRowNum]);
+  const right_actions: Action<AppResource>[] = useMemo(() => [{ icon: AddIcon, tooltip: 'Add to Mapping', onClick: onClickAdd }], []);
+  const orgOptions: Options<AppResource> = useMemo(() => calculateOptions(readOrgRowNum), [readOrgRowNum]);
+  const nonOrgOptions: Options<AppResource> = useMemo(() => calculateOptions(readNonOrgRowNum), [readNonOrgRowNum]);
   return (
     <div className="tableContainer">
       <div className="tableWrapper-linked">
@@ -82,13 +112,13 @@ const AppResourceList = ({ resourceId, isEditable = true, onClickAdd, onClickDel
           title="Linked App Resource"
           // @ts-ignore
           key = {readOrgRowNum}
-          columns={OrgProgs().length >= 1 ? columns : preColumns}
-          data={OrgProgs().length >= 1 ? OrgProgs() : preOrgProgs}
+          columns={hasProgs ? columns : preColumns}
+          data={hasProgs ? OrgProgs() : preOrgProgs}
           options={{
             ...orgOptions,
             actionsColumnIndex: 0
           }}
-          actions={(isEditable && OrgProgs().length >= 1) ? left_actions : null}
+          actions={(isEditable && hasProgs) ? left_actions : undefined}
         />
       </div>
       <div className="tableWrapper-other">
@@ -102,18 +132,11 @@ const AppResourceList = ({ resourceId, isEditable = true, onClickAdd, onClickDel
             ...nonOrgOptions,
             actionsColumnIndex: 0
           }}
-          actions={(isEditable && hasProgs) ? right_actions : null}
+          actions={(isEditable && hasProgs) ? right_actions : undefined}
         />
       </div>
     </div>
   );
-};
-
-AppResourceList.propTypes = {
-  resourceId: PropTypes.array.isRequired,
-  isEditable: PropTypes.bool,
-  onClickAdd: PropTypes.func.isRequired,
-  onClickDelete: PropTypes.func.isRequired,
 };
 
 export default AppResourceList;

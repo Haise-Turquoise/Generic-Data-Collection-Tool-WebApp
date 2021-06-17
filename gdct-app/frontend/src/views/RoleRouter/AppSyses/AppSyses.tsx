@@ -1,7 +1,7 @@
 import React, { useMemo, useEffect, useState } from 'react';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 
-import MaterialTable from 'material-table';
+import MaterialTable, { Column, Options } from 'material-table';
 import { Paper, Typography } from '@material-ui/core';
 import moment from 'moment';
 
@@ -10,14 +10,25 @@ import {
   createAppSysRequest,
   deleteAppSysRequest,
   updateAppSysRequest,
+//@ts-ignore
 } from '../../../store/thunks/AppSys';
 
+//@ts-ignore
 import { selectFactoryRESTResponseTableValues } from '../../../store/common/REST/selectors';
+//@ts-ignore
 import { selectAppSysesStore } from '../../../store/AppSysesStore/selectors';
+//@ts-ignore
 import { calculateOptions } from '../../../tools/misc'
 
+//@ts-ignore
 import AppSysController from '../../../controllers/AppSys'
+//@ts-ignore
 import CreateAuditLog from '../../AuditLog_Global'
+
+import AppSys from '../../../types/appsys';
+interface AppSysMT extends AppSys {
+  tableData?: any,
+}
 
 const AppSysesHeader = () => {
   return (
@@ -34,10 +45,16 @@ const AppSysesTable = () => {
   const [hasAppSys, setHasAppSys] = useState(false)
 
   // table stuff while loading
-  const preAppSys = [{ name: 'LOADING...' }]
-  const preColumns = [{title: 'Name', field: 'name'}]
-
-  const { appSyses } = useSelector(
+  const preColumns: Column<AppSysMT>[] = [{title: 'Name', field: 'name'}]
+  const preAppSys: AppSysMT[] = [{
+    name: 'LOADING...',
+    _id: '',
+    code: '',
+    isActive: false,
+    timestamp: '',
+  }]
+  
+  const { appSyses }: { appSyses: AppSys[] } = useSelector(
     state => ({
       appSyses: selectFactoryRESTResponseTableValues(selectAppSysesStore)(state),
     }),
@@ -50,7 +67,7 @@ const AppSysesTable = () => {
     appSys.timestamp = moment(logtime).format("YYYY-MM-DD HH:mm:ss")
   });
 
-  const columns = useMemo(
+  const columns: Column<AppSysMT>[] = useMemo(
     () => [
       { title: 'Code', field: 'code' },
       { title: 'Name', field: 'name' },
@@ -60,28 +77,37 @@ const AppSysesTable = () => {
     [],
   );
   
-  const options = useMemo(() => calculateOptions(readRowNum), [readRowNum]);
+  const options: Options<AppSysMT> = useMemo(() => calculateOptions(readRowNum), [readRowNum]);
 
   // Record who and when of the action
-  function recordUpdate(appSys) {
+  function recordUpdate(appSys: AppSysMT) {
     //get username and record in Modified By column
-    appSys.updatedBy = localStorage.getItem('currentUser');
+    appSys.updatedBy = localStorage.getItem('currentUser') || '';
     //record new date and time in Modified On column 
     appSys.timestamp = new Date().toLocaleString(); 
   }
   // Prepare the editing functionalities for the material table
   const editable = useMemo(
     () => ({
-      onRowAdd: appSys => 
+      onRowAdd: (appSys: AppSys) => 
         new Promise((resolve, reject) => {
           recordUpdate(appSys);
           dispatch(createAppSysRequest(appSys, resolve, reject));
         }).then(newAppSys => {
           // For Auditlog
-          CreateAuditLog(null, "Add Application System", "AppSys", newAppSys._id, {}, newAppSys);
+          if (newAppSys) {
+            CreateAuditLog(
+              null,
+              "Add Application System",
+              "AppSys",
+              (newAppSys as AppSys)._id,
+              {},
+              newAppSys
+            );
+          }
         }),
 
-      onRowUpdate: appSys => 
+      onRowUpdate: (appSys: AppSysMT) => 
         new Promise((resolve, reject) => {
           recordUpdate(appSys); 
           // Find the old value before updating for Auditlog
@@ -93,7 +119,7 @@ const AppSysesTable = () => {
           dispatch(updateAppSysRequest(appSys, resolve, reject));
         }),
         
-      onRowDelete: appSys =>
+      onRowDelete: (appSys: AppSysMT) =>
         new Promise((resolve, reject) => {
           recordUpdate(appSys);
           dispatch(deleteAppSysRequest(appSys._id, resolve, reject));
@@ -116,7 +142,6 @@ const AppSysesTable = () => {
     }
   }, [appSyses])
 
-  // @ts-ignore
   return (
     <MaterialTable
       key={readRowNum}
@@ -128,7 +153,8 @@ const AppSysesTable = () => {
   );
 };
 
-const AppSyses = props => (
+// any type since props unused
+const AppSyses = (props: any) => (
   <div className="AppSyses">
     <AppSysesHeader />
     {/* <FileDropzone/> */}

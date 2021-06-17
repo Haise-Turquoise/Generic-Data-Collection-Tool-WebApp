@@ -1,26 +1,44 @@
 import React, { useMemo, useEffect, useState } from 'react';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 
-import MaterialTable from 'material-table';
+import MaterialTable, { Column, Options } from 'material-table';
 import { Paper, Typography } from '@material-ui/core';
 import {
   getAppSysRolesRequest,
   createAppSysRoleRequest,
   deleteAppSysRoleRequest,
   updateAppSysRoleRequest,
+//@ts-ignore
 } from '../../../store/thunks/AppSysRole';
 
+//@ts-ignore
 import { getAppRolesRequest } from '../../../store/thunks/AppRole';
+//@ts-ignore
 import { getAppSysesRequest } from '../../../store/thunks/AppSys';
 
+//@ts-ignore
 import { selectFactoryRESTResponseTableValues } from '../../../store/common/REST/selectors';
+//@ts-ignore
 import { selectAppSysRolesStore } from '../../../store/AppSysRolesStore/selectors';
+//@ts-ignore
 import { selectAppSysesStore } from '../../../store/AppSysesStore/selectors';
+//@ts-ignore
 import { selectAppRolesStore } from '../../../store/AppRolesStore/selectors';
+//@ts-ignore
 import { calculateOptions } from '../../../tools/misc';
 import moment from 'moment';
+//@ts-ignore
 import CreateAuditLog from '../../AuditLog_Global';
+//@ts-ignore
 import AppSysRoleController from '../../../controllers/AppSysRole';
+
+import AppSysRole from '../../../types/appsysrole';
+import AppSys from '../../../types/appsys';
+import AppRole from '../../../types/approle';
+
+interface AppSysRoleMT extends AppSysRole {
+  tableData?: any,
+}
 
 const AppSysRolesHeader = () => {
   return (
@@ -31,16 +49,26 @@ const AppSysRolesHeader = () => {
   );
 };
 
-const AppSysRolesTable = props => {
+const AppSysRolesTable = () => {
   const dispatch = useDispatch();
   const [readNumRow, setNumRow] = useState(1);
   const [hasAppSysRoles, setHasAppSysRoles] = useState(false)
 
   // table stuff while loading
-  const preAppSysRoles = [{ name: 'LOADING...' }]
-  const preColumns = [{title: 'Name', field: 'name'}]
+  const preColumns: Column<AppSysRoleMT>[] = [{title: 'Name', field: 'role'}]
+  const preAppSysRoles: AppSysRoleMT[] = [{
+    _id: '',
+    appSys: '',
+    isActive: false,
+    role: 'LOADING...',
+    timestamp: '',
+  }]
 
-  const { appSyses, appSysRoles, appRoles } = useSelector(
+  const { appSyses, appSysRoles, appRoles }: {
+    appSyses: AppSys[],
+    appSysRoles: AppSysRole[],
+    appRoles: AppRole[],
+  } = useSelector(
     state => ({
       appRoles: selectFactoryRESTResponseTableValues(selectAppRolesStore)(state),
       appSyses: selectFactoryRESTResponseTableValues(selectAppSysesStore)(state),
@@ -53,17 +81,17 @@ const AppSysRolesTable = props => {
     const logtime = new Date(appSysRole.timestamp);
     appSysRole.timestamp = moment(logtime).format("YYYY-MM-DD HH:mm:ss")
   });
-  const lookupSysRoles = appSyses.reduce(function (acc, appSys) {
+  const lookupSysRoles = appSyses.reduce(function (acc: {[key:string]: string}, appSys: AppSys) {
     acc[appSys.code] = appSys.name;
     return acc;
   }, {});
 
-  const lookupAppRoles = appRoles.reduce(function (acc, appRole) {
+  const lookupAppRoles = appRoles.reduce(function (acc: {[key:string]: string}, appRole: AppRole) {
     acc[appRole.code] = appRole.name;
     return acc;
   }, {});
 
-  const columns = useMemo(
+  const columns: Column<AppSysRoleMT>[] = useMemo(
     () => [
       {
         title: 'Application System',
@@ -76,25 +104,34 @@ const AppSysRolesTable = props => {
     [lookupSysRoles, lookupAppRoles],
   );
 
-  const options = useMemo(() => calculateOptions(readNumRow), [readNumRow]);
+  const options: Options<AppSysRoleMT> = useMemo(() => calculateOptions(readNumRow), [readNumRow]);
   
   // Record user and time when an action occurs 
-  function recordUpdate(appSysRole) {
-    appSysRole.updatedBy = localStorage.getItem('currentUser');
+  function recordUpdate(appSysRole: AppSysRoleMT) {
+    appSysRole.updatedBy = localStorage.getItem('currentUser') || '';
     appSysRole.timestamp = new Date().toLocaleString(); 
   }
   const editable = useMemo(
     () => ({
-      onRowAdd: appSysRole =>
+      onRowAdd: (appSysRole: AppSysRoleMT) =>
         new Promise((resolve, reject) => {
           recordUpdate(appSysRole);
           dispatch(createAppSysRoleRequest(appSysRole, resolve, reject));
         }).then(newAppSysRole => {
           // For Auditlog
-          CreateAuditLog(null, "Create Application System Role", "AppSysRole", newAppSysRole._id, {}, newAppSysRole);
+          if (newAppSysRole) {
+            CreateAuditLog(
+              null,
+              "Create Application System Role",
+              "AppSysRole",
+              (newAppSysRole as AppSysRole)._id,
+              {},
+              newAppSysRole
+            );
+          }
         }),
 
-      onRowUpdate: appSysRole =>
+      onRowUpdate: (appSysRole: AppSysRoleMT) =>
         new Promise((resolve, reject) => {
           recordUpdate(appSysRole);
           // Find the old value before updating in order to Auditlog
@@ -106,7 +143,7 @@ const AppSysRolesTable = props => {
           dispatch(updateAppSysRoleRequest(appSysRole, resolve, reject));
         }),
 
-      onRowDelete: appSysRole =>
+      onRowDelete: (appSysRole: AppSysRoleMT) =>
         new Promise((resolve, reject) => {
           recordUpdate(appSysRole);
           dispatch(deleteAppSysRoleRequest(appSysRole._id, resolve, reject));
@@ -132,7 +169,6 @@ const AppSysRolesTable = props => {
   }, [appSysRoles])
 
   return (
-    // @ts-ignore
     <MaterialTable
       key={readNumRow}
       columns={hasAppSysRoles ? columns : preColumns}

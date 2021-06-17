@@ -1,7 +1,7 @@
 import React, { useMemo, useEffect, useState } from 'react';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 
-import MaterialTable from 'material-table';
+import MaterialTable, { Column, Options } from 'material-table';
 import { Paper, Typography } from '@material-ui/core';
 import moment from 'moment';
 
@@ -10,13 +10,25 @@ import {
   createAppResourceRequest,
   deleteAppResourceRequest,
   updateAppResourceRequest,
+//@ts-ignore
 } from '../../../store/thunks/AppResource';
 
+//@ts-ignore
 import { selectFactoryRESTResponseTableValues } from '../../../store/common/REST/selectors';
+//@ts-ignore
 import { selectAppResourcesStore } from '../../../store/AppResourcesStore/selectors';
+//@ts-ignore
 import { calculateOptions, checkDuplicates } from '../../../tools/misc'
+//@ts-ignore
 import CreateAuditLog from '../../AuditLog_Global';
+//@ts-ignore
 import AppResourceController from '../../../controllers/AppResource';
+
+import AppResource from '../../../types/appresource'
+
+interface AppResourceMT extends AppResource {
+  tableData?: any,
+}
 
 const AppResourcesHeader = () => {
   return (
@@ -33,11 +45,19 @@ const AppResourcesTable = () => {
   const [hasAppRes, setHasAppRes] = useState(false)
 
   // table stuff while loading
-  const preAppResources = [{ name: 'LOADING...' }]
-  const preColumns = [{title: 'Name', field: 'name'}]
+  const preColumns: Column<AppResourceMT>[] = [{title: 'Name', field: 'resourceName'}]
+  const preAppResources: AppResourceMT[] = [{
+    _id: '',
+    id: 0,
+    isProtected: '',
+    resourceName: 'LOADING...',
+    resourcePath: '',
+    timestamp: '',
+    updatedBy: '',
+  }]
   
   // Prepare the data for material table
-  const { appResources } = useSelector(
+  const { appResources }: { appResources: AppResource[] } = useSelector(
     state => ({
       appResources: selectFactoryRESTResponseTableValues(selectAppResourcesStore)(state),
     }),
@@ -50,7 +70,7 @@ const AppResourcesTable = () => {
   });
   
   // Prepare the columns for material table
-  const columns = useMemo(
+  const columns: Column<AppResourceMT>[] = useMemo(
     () => [
       { title: "ID", field: "id", editComponent: () => {return <div></div>}},
       { title: 'Resource Name', field: 'resourceName', validate: rowData => checkDuplicates(rowData, appResources, 'resourceName') },
@@ -62,29 +82,38 @@ const AppResourcesTable = () => {
     [appResources],
   );
 
-  const options = useMemo(() => (calculateOptions(readRowNum)), [readRowNum]);
+  const options: Options<AppResourceMT> = useMemo(() => (calculateOptions(readRowNum)), [readRowNum]);
 
   // Record who and when action took place
-  const recordUpdate = (appResource) => {
+  const recordUpdate = (appResource: AppResourceMT) => {
     // get email and record in Modified By columns
-    appResource.updatedBy = localStorage.getItem('currentUser');
+    appResource.updatedBy = localStorage.getItem('currentUser') || '';
     // record new date and time in Modified On column 
     const event = new Date();
     appResource.timestamp = event.toLocaleString();     
   }
   const editable = useMemo(
     () => ({
-      onRowAdd: appResource =>
+      onRowAdd: (appResource: AppResourceMT) =>
         new Promise((resolve, reject) => {
           appResource.id = readRowNum + 1
           recordUpdate(appResource);
           dispatch(createAppResourceRequest(appResource, resolve, reject));
         }).then(newAppResource => {
           // For Auditlog
-          CreateAuditLog(null, "Create Application Resource", "AppResource", newAppResource._id, {}, newAppResource);
+          if (newAppResource) {
+            CreateAuditLog(
+              null,
+              "Create Application Resource",
+              "AppResource",
+              (newAppResource as AppResource)._id,
+              {},
+              newAppResource
+            );
+          }
         }),
 
-      onRowUpdate: appResource =>
+      onRowUpdate: (appResource: AppResourceMT) =>
         new Promise((resolve, reject) => {
           recordUpdate(appResource);
           // Find the old value before updating in order to Auditlog
@@ -96,7 +125,7 @@ const AppResourcesTable = () => {
           dispatch(updateAppResourceRequest(appResource, resolve, reject));
         }),
 
-      onRowDelete: appResource =>
+      onRowDelete: (appResource: AppResourceMT) =>
         new Promise((resolve, reject) => {
           recordUpdate(appResource);
           // For Auditlog
@@ -120,7 +149,6 @@ const AppResourcesTable = () => {
   }, [appResources]);
 
   return (
-    // @ts-ignore
     <MaterialTable
       key={readRowNum}
       columns={hasAppRes ? columns : preColumns}
@@ -131,7 +159,8 @@ const AppResourcesTable = () => {
   );
 };
 
-const AppResources = props => {
+// any type since props unused
+const AppResources = (props: any) => {
   return (
     <div className="AppResources">
       <AppResourcesHeader />

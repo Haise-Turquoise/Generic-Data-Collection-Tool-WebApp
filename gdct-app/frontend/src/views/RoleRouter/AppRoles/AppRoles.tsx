@@ -1,7 +1,7 @@
 import React, { useMemo, useEffect, useState } from 'react';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 
-import MaterialTable from 'material-table';
+import MaterialTable, { Column, Options } from 'material-table';
 import { Paper, Typography } from '@material-ui/core';
 import moment from 'moment';
 
@@ -10,13 +10,24 @@ import {
   createAppRoleRequest,
   deleteAppRoleRequest,
   updateAppRoleRequest,
+//@ts-ignore
 } from '../../../store/thunks/AppRole';
 
+//@ts-ignore
 import { selectFactoryRESTResponseTableValues } from '../../../store/common/REST/selectors';
+//@ts-ignore
 import { selectAppRolesStore } from '../../../store/AppRolesStore/selectors';
+//@ts-ignore
 import { calculateOptions } from '../../../tools/misc';
+//@ts-ignore
 import CreateAuditLog from '../../AuditLog_Global';
+//@ts-ignore
 import AppRoleController from '../../../controllers/AppRole';
+
+import AppRole from '../../../types/approle';
+interface AppRoleMT extends AppRole {
+  tableData?: any,
+}
 
 const AppRolesHeader = () => {
   return (
@@ -33,11 +44,18 @@ const AppRolesTable = () => {
   const [hasAppRoles, setHasAppRoles] = useState(false)
 
   // table stuff while loading
-  const preAppRoles = [{ name: 'LOADING...' }]
-  const preColumns = [{title: 'Name', field: 'name'}]
+  const preColumns: Column<AppRoleMT>[] = [{title: 'Name', field: 'name'}]
+  const preAppRoles: AppRoleMT[] = [{
+    name: 'LOADING...',
+    _id: '',
+    code: '',
+    isActive: false,
+    timestamp: '',
+    updatedBy: '',
+  }]
   
   // Prepare the data for material table
-  const { appRoles } = useSelector(
+  const { appRoles }: { appRoles: AppRoleMT[] } = useSelector(
     state => ({
       appRoles: selectFactoryRESTResponseTableValues(selectAppRolesStore)(state),
     }),
@@ -50,7 +68,7 @@ const AppRolesTable = () => {
   });
   
   // Prepare the columns for material table
-  const columns = useMemo(
+  const columns: Column<AppRoleMT>[] = useMemo(
     () => [
       { title: 'Code', field: 'code' },
       { title: 'Name', field: 'name' },
@@ -60,25 +78,34 @@ const AppRolesTable = () => {
     [],
   );
 
-  const options = useMemo(() => calculateOptions(readRowNum), [readRowNum]);
+  const options: Options<AppRoleMT> = useMemo(() => calculateOptions(readRowNum), [readRowNum]);
 
   // Record user and time when an action occurs 
-  function recordUpdate(appRole) {
-    appRole.updatedBy = localStorage.getItem('currentUser');
+  function recordUpdate(appRole: AppRoleMT) {
+    appRole.updatedBy = localStorage.getItem('currentUser') || '';
     appRole.timestamp = new Date().toLocaleString(); 
   }
   const editable = useMemo(
     () => ({
-      onRowAdd: appRole =>
+      onRowAdd: (appRole: AppRoleMT) =>
         new Promise((resolve, reject) => {
           recordUpdate(appRole);
           dispatch(createAppRoleRequest(appRole, resolve, reject));
         }).then(newAppRole => {
           // For Auditlog
-          CreateAuditLog(null, "Create Application Role", "AppRole", newAppRole._id, {}, newAppRole);
+          if (newAppRole) {
+            CreateAuditLog(
+              null,
+              "Create Application Role",
+              "AppRole",
+              (newAppRole as AppRole)._id,
+              {},
+              newAppRole
+            );
+          }
         }),
 
-      onRowUpdate: appRole =>
+      onRowUpdate: (appRole: AppRoleMT) =>
         new Promise((resolve, reject) => {
           recordUpdate(appRole);
           // Find the old value before updating in order to Auditlog
@@ -90,7 +117,7 @@ const AppRolesTable = () => {
           dispatch(updateAppRoleRequest(appRole, resolve, reject));
         }),
 
-      onRowDelete: appRole =>
+      onRowDelete: (appRole: AppRoleMT) =>
         new Promise((resolve, reject) => {
           recordUpdate(appRole);
           dispatch(deleteAppRoleRequest(appRole._id, resolve, reject));
@@ -125,7 +152,8 @@ const AppRolesTable = () => {
   );
 };
 
-const AppRoles = props => {
+// any type since props unused
+const AppRoles = (props: any) => {
   console.log('why not: ', props);
   return (
     <div className="AppRoles">
