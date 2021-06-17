@@ -5,14 +5,19 @@ import moment from 'moment';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
-import MaterialTable from 'material-table';
+import MaterialTable, { Action, Column, EditCellColumnDef, Filter, Options } from 'material-table';
 import { Paper, Typography, Button,
          Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@material-ui/core';
 import FindInPageIcon from '@material-ui/icons/FindInPage';
 
+//@ts-ignore
 import { selectFactoryRESTResponseTableValues } from '../../store/common/REST/selectors';
+//@ts-ignore
 import { getAuditLogRequest } from '../../store/thunks/AuditLog';
+//@ts-ignore
 import { selectAuditLogStore } from '../../store/AuditLogStore/selectors';
+
+import AuditLog from '../../types/auditlog';
 
 // Title Text
 const AuditLogHeader = () => {
@@ -25,7 +30,10 @@ const AuditLogHeader = () => {
 };
 
 // A calendar for selecting dates
-const CustomDatePicker = (props) => {
+const CustomDatePicker = (props: {
+  columnDef: Column<AuditLog>,
+  onFilterChanged: (rowId: string, value: any) => void,
+}) => {
   const [startDate, setStartDate] = React.useState(new Date());
   const [endDate, setEndDate] = React.useState(new Date());
   return (
@@ -34,10 +42,17 @@ const CustomDatePicker = (props) => {
       <DatePicker id="startDatePicker"
         selected={startDate}
         dateFormat={"yyyy-MM-dd HH:mm"}
-        onChange={(selectedDate) => { 
-          // @ts-ignore
+        onChange={(selectedDate) => {
+          if (!selectedDate) {
+            return
+          } else if (Array.isArray(selectedDate)) {
+            selectedDate = selectedDate[0]
+          }
           setStartDate(selectedDate)
-          props.onFilterChanged(props.columnDef.tableData.id, selectedDate);
+          props.onFilterChanged(
+            (props.columnDef as EditCellColumnDef).tableData.id.toString(),
+            selectedDate
+          );
         }}
         closeOnScroll={e => e.target === document}
         showTimeSelect
@@ -53,7 +68,11 @@ const CustomDatePicker = (props) => {
         onChange={(selectedDate) => {
           // @ts-ignore
           setEndDate(selectedDate)
-          props.onFilterChanged(props.columnDef.tableData.id, selectedDate);
+          // @ts-ignore
+          props.onFilterChanged(
+            (props.columnDef as EditCellColumnDef).tableData.id.toString(), 
+            selectedDate
+          );
         }}
         closeOnScroll={e => e.target === document}
         minDate={startDate}
@@ -72,23 +91,35 @@ const AuditLogTable = () => {
   const [hasLogs, setHasLogs] = useState(false)
 
   // table vars for loading
-  const preColumns = [{ title: 'Name', field: 'name' }]
-  const preLogs = [{ name: 'LOADING...'}]
+  const preColumns: Column<AuditLog>[] = [{ title: 'Name', field: 'moduleName' }]
+  const preLogs: AuditLog[] = [{
+    _id: '',
+    activity: '',
+    moduleName: 'LOADING...',
+    newValue: {},
+    oldValue: {},
+    recordId: '',
+    user: {_id: '', email: ''},
+    timestamp: '',
+  }]
 
   //==================================================================================================
   
   // Prepare the table columns for MaterialTable
-  const columns = useMemo(
+  const columns: Column<AuditLog>[] = useMemo(
     () => [
       { title: 'Time', 
         field: 'timestamp', 
         // Use Datepicker as filter
         filterComponent: (props) => <CustomDatePicker {...props}/>,
         // must have "term" as an input even it is not used
-        customFilterAndSearch: (term, rowData) => {
-          const startDate = document.getElementById("startDatePicker").getAttribute("value")
-          const endDate = document.getElementById("endDatePicker").getAttribute("value")
-          return new Date(rowData.timestamp) >= new Date(startDate) && new Date (rowData.timestamp) <= new Date(endDate)
+        customFilterAndSearch: (_term, rowData) => {
+          const startDate = document.getElementById("startDatePicker")!.getAttribute("value")
+          const endDate = document.getElementById("endDatePicker")!.getAttribute("value")
+          return (
+            new Date(rowData.timestamp) >= new Date(startDate || '') && 
+            new Date (rowData.timestamp) <= new Date(endDate || '')
+          )
         }
       },
       { title: 'User Email', field: 'user.email' },
@@ -101,7 +132,7 @@ const AuditLogTable = () => {
   //==================================================================================================
   
   // Prepare the options for MaterialTable
-  const options = useMemo(
+  const options: Options<AuditLog> = useMemo(
     () => (
       {
         actionsColumnIndex: -1,
@@ -116,7 +147,7 @@ const AuditLogTable = () => {
   //==================================================================================================
 
   // Prepare the data for MaterialTable
-  let { auditlogs } = useSelector(
+  let { auditlogs }: { auditlogs: AuditLog[] } = useSelector(
     state => ({
       auditlogs: selectFactoryRESTResponseTableValues(selectAuditLogStore)(state),
     }),
@@ -133,7 +164,7 @@ const AuditLogTable = () => {
   const [open, setOpen] = React.useState(false);
   const [detail, setDetail] = React.useState("");
   // onClick function for action
-  const handleClickOpen = (rowData) => {
+  const handleClickOpen = (rowData: AuditLog) => {
     setOpen(true);
     setDetail(
       `AT ${rowData.timestamp}
@@ -150,12 +181,14 @@ const AuditLogTable = () => {
   const handleClose = () => {
     setOpen(false);
   };
-  const actions = [
+  const actions: Action<AuditLog>[] = [
     {
       icon: () => <FindInPageIcon />, 
       tooltip: "Detail Information",
-      onClick: (event, rowData) => {
-        handleClickOpen(rowData);
+      onClick: (_: any, rowData: AuditLog | AuditLog[]) => {
+        if (!Array.isArray(rowData)) {
+          handleClickOpen(rowData);
+        }
       }
     }
   ]
@@ -203,7 +236,8 @@ const AuditLogTable = () => {
           </Fragment>
 } // End of defining Table contents
 
-const AuditLog = props => (
+// any type since props unused
+const AuditLog = (props: any) => (
   <div className="AuditLogPage">
     <AuditLogHeader />
     <AuditLogTable {...props} />
