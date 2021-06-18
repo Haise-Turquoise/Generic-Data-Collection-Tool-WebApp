@@ -16,6 +16,7 @@ import { getProgramsRequest } from '../../../store/thunks/program';
 import { calculateOptions } from '../../../tools/misc';
 const AppResourceList = ({ resourceId, isEditable = true, onClickAdd, onClickDelete }) => {
   const dispatch = useDispatch();
+  const [hasProgs, setHasProgs] = useState(false)
   useEffect(() => {
     dispatch(getAppResourcesRequest());
   }, []);
@@ -28,6 +29,11 @@ const AppResourceList = ({ resourceId, isEditable = true, onClickAdd, onClickDel
   resourceId.forEach(resource=>{
     resourceIdList.push(resource.id)
   })
+
+  // table stuff while loading
+  const preOrgProgs = [{ name: 'LOADING...' }]
+  const preNonOrgProgs = [{ name: 'LOADING...' }]
+  const preColumns = [{title: 'Name', field: 'name'}]
   
   const OrgProgs = () => resourceList.filter(elem => resourceIdList.includes(elem._id));
   const nonOrgProgs = () => resourceList.filter(elem => !resourceIdList.includes(elem._id));
@@ -37,6 +43,9 @@ const AppResourceList = ({ resourceId, isEditable = true, onClickAdd, onClickDel
   useEffect(() => {
     setOrgRowNum(OrgProgs().length)
     setNonOrgRowNum(nonOrgProgs().length)
+    if (!hasProgs) {
+      setHasProgs(resourceList.length >= 1)
+    }
   }, [resourceList])
 
   const columns = useMemo(() => 
@@ -73,13 +82,13 @@ const AppResourceList = ({ resourceId, isEditable = true, onClickAdd, onClickDel
           title="Linked App Resource"
           // @ts-ignore
           key = {readOrgRowNum}
-          columns={columns}
-          data={OrgProgs()}
+          columns={OrgProgs().length >= 1 ? columns : preColumns}
+          data={OrgProgs().length >= 1 ? OrgProgs() : preOrgProgs}
           options={{
             ...orgOptions,
             actionsColumnIndex: 0
           }}
-          actions={isEditable ? left_actions : null}
+          actions={(isEditable && OrgProgs().length >= 1) ? left_actions : null}
         />
       </div>
       <div className="tableWrapper-other">
@@ -87,13 +96,13 @@ const AppResourceList = ({ resourceId, isEditable = true, onClickAdd, onClickDel
           title="Other App Resource"
           key = {readNonOrgRowNum}
           // @ts-ignore
-          columns={columns}
-          data={nonOrgProgs()}
+          columns={hasProgs ? columns : preColumns}
+          data={hasProgs ? nonOrgProgs() : preNonOrgProgs}
           options={{
             ...nonOrgOptions,
             actionsColumnIndex: 0
           }}
-          actions={isEditable ? right_actions : null}
+          actions={(isEditable && hasProgs) ? right_actions : null}
         />
       </div>
     </div>

@@ -6,12 +6,17 @@ const Dotenv = require('dotenv-webpack');
 module.exports = {
   entry: path.join(__dirname, '/src/index.js'),
   resolve: {
-    extensions: ['*', '.js', '.jsx'],
+    extensions: ['*', '.js', '.jsx', '.ts', '.tsx'],
   },
   module: {
     rules: [
       {
-        test: /\.js$/,
+        test: /\.tsx?$/,
+        exclude: /node_modules/,
+        use: { loader: 'ts-loader' },
+      },
+      {
+        test: /\.jsx?$/,
         exclude: /node_modules/,
         use: { loader: 'babel-loader' },
       },

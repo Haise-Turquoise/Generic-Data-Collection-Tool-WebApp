@@ -39,6 +39,11 @@ const UsersTable = () => {
   const [orgId, setOrgId] = useState('');
   const [orgName, setOrgName] = useState('');
   const [readRowNum, setRowNum] = useState(1);
+  const [hasUsers, setHasUsers] = useState(false)
+
+  // table vars for loading
+  const preColumns = [{ title: 'Name', field: 'name' }]
+  const preUsers = [{ name: 'LOADING... '}]
 
   const handleClear = () => {
     setUserName('');
@@ -153,7 +158,12 @@ const UsersTable = () => {
     dispatch(getUsersRequest());
   }, [dispatch]);
 
-  useEffect(() => {setRowNum(users.length)}, [users])
+  useEffect(() => {
+    setRowNum(users.length)
+    if (!hasUsers) {
+      setHasUsers(users.length >= 1)
+    }
+  }, [users])
 
   return (
     <div>
@@ -184,7 +194,15 @@ const UsersTable = () => {
           <button onClick={handleClear}>Clear</button>
         </div>
       </Paper>
-      <MaterialTable key={readRowNum} columns={columns} data={users} editable={editable} options={options} actions={actions} localization={localization} />
+      <MaterialTable
+        key={readRowNum}
+        columns={hasUsers ? columns : preColumns}
+        data={hasUsers ? users : preUsers}
+        editable={hasUsers ? editable : undefined}
+        options={options}
+        actions={hasUsers ? actions : undefined}
+        localization={localization}
+      />
     </div>
   );
 };

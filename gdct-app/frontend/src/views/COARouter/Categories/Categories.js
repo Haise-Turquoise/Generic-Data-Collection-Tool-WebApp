@@ -81,6 +81,11 @@ const AlertSign = () => {
 const COAsTable = () => {
   const dispatch = useDispatch();
   const [readRowNum, setRowNum] = useState(1);
+  const [hasCOAs, setHasCOAs] = useState(false)
+
+  // table stuff while loading
+  const preCOAs = [{ name: 'LOADING...' }]
+  const preColumns = [{title: 'Name', field: 'name'}]
 
   // Prepare the data for material table
   const { COAs } = useSelector(
@@ -159,13 +164,24 @@ const COAsTable = () => {
     dispatch(getCOAsRequest());
   }, [dispatch]);
 
-  useEffect(()=>{ setRowNum(COAs.length) }, [COAs])
+  useEffect(()=>{ 
+    setRowNum(COAs.length)
+    if (!hasCOAs) {
+      setHasCOAs(COAs.length >= 1)
+    }
+  }, [COAs])
 
   return (
     <div>
       <COAsHeader />
       <AlertSign />
-      <MaterialTable key={readRowNum} columns={columns} data={COAs} editable={editable} options={options}/>
+      <MaterialTable
+        key={readRowNum}
+        columns={hasCOAs ? columns : preColumns}
+        data={hasCOAs ? COAs : preCOAs}
+        editable={hasCOAs ? editable : undefined}
+        options={options}
+      />
     </div>
   );
 };

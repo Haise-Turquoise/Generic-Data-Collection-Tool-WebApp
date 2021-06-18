@@ -2,20 +2,34 @@ import React, { useMemo, useEffect, useState } from 'react';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 
-import MaterialTable from 'material-table';
+import MaterialTable, { Action, Column, Options } from 'material-table';
 import { Paper, Typography, Button } from '@material-ui/core';
 import LaunchIcon from '@material-ui/icons/Launch';
 
+//@ts-ignore
 import { selectFactoryRESTResponseTableValues } from '../../store/common/REST/selectors';
+//@ts-ignore
 import { selectWorkflowsStore } from '../../store/WorkflowsStore/selectors';
+//@ts-ignore
 import { ROUTE_WORKFLOW_CREATE, ROUTE_WORKFLOW } from '../../constants/routes';
+//@ts-ignore
 import { getWorkflowsRequest, deleteWorkflowRequest } from '../../store/thunks/workflow';
+//@ts-ignore
 import { calculateOptions } from '../../tools/misc';
 
 import moment from 'moment';
+//@ts-ignore
 import ErrorBanner from '../ErrorBanner';
+//@ts-ignore
 import CreateAuditLog from '../AuditLog_Global';
+//@ts-ignore
 import workflowController from '../../controllers/workflow';
+
+import Workflow from '../../types/workflow';
+
+interface WorkflowMT extends Workflow {
+  tableData?: any,
+}
 
 const WorkflowHeader = () => {
   const history = useHistory();
@@ -35,8 +49,19 @@ const Workflows = () => {
   const dispatch = useDispatch();
   const history = useHistory();
   const [readRowNum, setRowNum] = useState(1);
+  const [hasWorkflows, setHasWorkflows] = useState(false)
 
-  const { workflows } = useSelector(
+  // table vars for loading
+  const preColumns: Column<WorkflowMT>[] = [{ title: 'Name', field: 'name' }]
+  const preWorkflows: WorkflowMT[] = [{
+    name: 'LOADING...',
+    _id: '',
+    timestamp: '',
+    updatedBy: '',
+    isActive: true,
+  }]
+
+  const { workflows }: { workflows: Workflow[] } = useSelector(
     state => ({
       workflows: selectFactoryRESTResponseTableValues(selectWorkflowsStore)(state),
     }),
@@ -48,7 +73,7 @@ const Workflows = () => {
     workflow.timestamp = moment(logtime).format("YYYY-MM-DD HH:mm:ss")
   });
 
-  const columns = useMemo(
+  const columns: Column<WorkflowMT>[] = useMemo(
     () => [
       { title: 'Name', field: 'name' },
       { title: 'Modified On', field: 'timestamp', editComponent: () => {return <div></div>} },
@@ -57,16 +82,16 @@ const Workflows = () => {
     []
   );
 
-  const options = useMemo(() => calculateOptions(readRowNum), [readRowNum]);
+  const options: Options<WorkflowMT> = useMemo(() => calculateOptions(readRowNum), [readRowNum]);
 
   // Record user and time when an action occurs 
-  function recordUpdate(workflow) {
-    workflow.updatedBy = localStorage.getItem('currentUser');
+  function recordUpdate(workflow: WorkflowMT) {
+    workflow.updatedBy = localStorage.getItem('currentUser') || '';
     workflow.timestamp = new Date().toLocaleString(); 
   }
   const editable = useMemo(
     () => ({
-      onRowDelete: workflow =>
+      onRowDelete: (workflow: WorkflowMT) =>
         new Promise((resolve, reject) => {
           recordUpdate(workflow);
           dispatch(deleteWorkflowRequest(workflow._id, resolve, reject));
@@ -82,12 +107,16 @@ const Workflows = () => {
     [dispatch],
   );
 
-  const actions = useMemo(
+  const actions: Action<WorkflowMT>[] = useMemo(
     () => [
       {
         icon: LaunchIcon,
         tooltip: 'Open Workflow',
-        onClick: (_event, workflow) => history.push(`${ROUTE_WORKFLOW}/${workflow._id}`),
+        onClick: (_: any, workflow: Workflow | Workflow[]) => {
+          if (!Array.isArray(workflow)) {
+            history.push(`${ROUTE_WORKFLOW}/${workflow._id}`)
+          }
+        },
       },
     ],
     [history],
@@ -98,7 +127,12 @@ const Workflows = () => {
     dispatch(getWorkflowsRequest());
   }, [dispatch]);
 
-  useEffect(()=>{setRowNum(workflows.length)}, [workflows])
+  useEffect(()=>{
+    setRowNum(workflows.length)
+    if (!hasWorkflows) {
+      setHasWorkflows(workflows.length >= 1)
+    }
+  }, [workflows])
 
   return (
     <div>
@@ -106,12 +140,11 @@ const Workflows = () => {
       <ErrorBanner title={"You cannnot delete this workflow because it is refernced in template type."} targetStore={selectWorkflowsStore}/>
       <MaterialTable
         key={readRowNum} 
-        columns={columns}
-        data={workflows}
-        editable={editable}
-        // @ts-ignore
+        columns={hasWorkflows ? columns : preColumns}
+        data={hasWorkflows ? workflows : preWorkflows}
+        editable={hasWorkflows ? editable : undefined}
         options={options}
-        actions={actions}
+        actions={hasWorkflows ? actions : undefined}
       />
     </div>
   );

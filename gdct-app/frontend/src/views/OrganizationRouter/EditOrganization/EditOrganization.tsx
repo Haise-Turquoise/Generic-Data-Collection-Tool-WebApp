@@ -4,18 +4,32 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import ModifyOrganization from '../ModifyOrganization';
 
+//@ts-ignore
 import { updateOrgsRequest, getOrgsRequest } from '../../../store/thunks/organization';
+//@ts-ignore
 import { selectOrgsStore } from '../../../store/OrganizationsStore/selectors';
+//@ts-ignore
 import { selectFactoryRESTResponseTableValues } from '../../../store/common/REST/selectors';
 
+//@ts-ignore
 import orgController from '../../../controllers/organization';
+//@ts-ignore
 import CreateAuditLog from '../../AuditLog_Global';
+import Organization from '../../../types/organization'
+
+interface EditOrgProps {
+  match: {
+    params: {
+      _id: string,
+    }
+  }
+}
 
 const EditOrganization = ({
   match: {
     params: { _id },
   },
-}) => {
+}: EditOrgProps) => {
   const history = useHistory();
   const dispatch = useDispatch();
 
@@ -26,7 +40,7 @@ const EditOrganization = ({
   // Prepare the data
   const { object } = useSelector(state => ({
     object: (selectFactoryRESTResponseTableValues(selectOrgsStore)(state).filter(
-      elem => elem._id === _id,
+      (elem: Organization) => elem._id === _id,
     ) || [{}])[0],
   }));
 
@@ -36,7 +50,9 @@ const EditOrganization = ({
 
   const reject = () => { alert('Missing or invalid parameters') };
 
-  const submit = newOrganization => { // This newOrgnization does not contain "_id" required for update (it does contain the artificial "id")
+  const submit = (newOrganization: Organization & {tableData: any}) => { 
+    // we let tableData be any since we are just trimming it
+    // This newOrgnization does not contain "_id" required for update (it does contain the artificial "id")
     (async () => {
       // Find the old value before updating in order to Auditlog
       const oldOrganization = await orgController.fetchById(newOrganization.id);

@@ -1,5 +1,6 @@
 // ModifyOrganization is the parent page for CreateOrganization and EditOrganization
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, ChangeEventHandler, ChangeEvent } from 'react';
+//@ts-ignore
 import { selectOrgsStore } from '../../../store/OrganizationsStore/selectors';
 
 import PropTypes from 'prop-types';
@@ -9,13 +10,48 @@ import { Paper, Button, Typography, TextField, AppBar, Tabs, Tab, Checkbox} from
 
 import './ModifyOrganization.scss';
 import ProgList from '../ProgramList';
+//@ts-ignore
 import ErrorBanner from '../../ErrorBanner'
 
+//@ts-ignore
 import orgController from '../../../controllers/organization'
+//@ts-ignore
 import OrgsStore from '../../../store/OrganizationsStore/store'
 import { connect } from 'react-redux'
 
-const OrganizationHeader = ({ title }) => {
+import Organization from '../../../types/organization'
+import Program from '../../../types/program'
+
+type genObject = { [key: string]: any }
+
+interface MOProps {
+  [key: string]: any,
+}
+
+interface MOState {
+  id: number,
+  takenIds: number[],
+  blockSubmit: boolean,
+  [key: string]: any,
+}
+
+interface OrgFormProps {
+  object: {[key: string]: any},
+  preSubmit?: () => boolean | undefined,
+  cancel: () => void,
+  submit: () => void,
+  handleChanges: (e: ChangeEvent) => void,
+  updateState: (name: any, value: any) => void,
+}
+
+interface TabPanelProps {
+  value: number,
+  index: number,
+  children: genObject,
+  other?: genObject,
+}
+
+const OrganizationHeader = ({ title }: { title: string }) => {
   return (
     <Paper className="header">
       <Typography variant="h5">{title}</Typography>
@@ -24,26 +60,18 @@ const OrganizationHeader = ({ title }) => {
   );
 };
 
-OrganizationHeader.propTypes = {
-  title: PropTypes.string,
-};
-
-const Label = ({ attribute, text }) => (
+const Label = ({ attribute, text }: { attribute: string, text: string }) => (
   <label htmlFor={attribute}>
     <Typography variant="subtitle2">{text}</Typography>
   </label>
 );
 
-Label.propTypes = {
-  attribute: PropTypes.string,
-  text: PropTypes.string,
-};
-
 const currentTime = () => {
   return moment().format();
 };
 
-const getValue = (object, attribute) => {
+// using very generic object here
+const getValue = (object: { [key: string]: any }, attribute: string) => {
   let value;
   switch (typeof object[attribute]) {
     case 'undefined':
@@ -59,12 +87,23 @@ const getValue = (object, attribute) => {
   return { value };
 };
 
-getValue.propTypes = {
-  object: PropTypes.object,
-  attribute: PropTypes.string,
-};
+interface LabelProps {
+  attribute: string,
+  text: string,
+}
 
-const Input = ({ object, attribute, text, handleChanges, type, cannotEdit }) => (
+interface InputProps extends LabelProps {
+  object: genObject,
+  handleChanges: ChangeEventHandler,
+  type: string,
+  cannotEdit?: boolean,
+}
+
+interface TextGroupProps extends InputProps {
+  fullWidth?: boolean,
+}
+
+const Input = ({ object, attribute, text, handleChanges, type, cannotEdit }: InputProps) => (
   <TextField
     name={attribute}
     type={type}
@@ -77,16 +116,7 @@ const Input = ({ object, attribute, text, handleChanges, type, cannotEdit }) => 
   />
 );
 
-Input.propTypes = {
-  object: PropTypes.object,
-  attribute: PropTypes.string,
-  text: PropTypes.string,
-  handleChanges: PropTypes.func,
-  type: PropTypes.string,
-  cannotEdit: PropTypes.bool,
-};
-
-const TextGroup = props => (
+const TextGroup = (props: TextGroupProps) => (
   <div className="InputGroup" style={{ width: props.fullWidth ? '100%' : '23%' }}>
     <Label {...props} />
     <br />
@@ -94,12 +124,13 @@ const TextGroup = props => (
   </div>
 );
 
-TextGroup.propTypes = {
-  fullWidth: PropTypes.bool,
-};
+interface ButtonGroupProps extends LabelProps {
+  object: genObject,
+  handleChanges: (e: ChangeEvent) => void,
+}
 
 // NOT a generic button group, DO NOT REUSE for other purposes
-const ButtonGroup = props => (
+const ButtonGroup = (props: ButtonGroupProps) => (
   <div className="InputGroup">
     <Label {...props} />
     <Checkbox
@@ -111,13 +142,7 @@ const ButtonGroup = props => (
   </div>
 );
 
-ButtonGroup.propTypes = {
-  attribute: PropTypes.string,
-  object: PropTypes.object,
-  handleChanges: PropTypes.func,
-};
-
-const NumberGroup = props => (
+const NumberGroup = (props: InputProps) => (
   <div className="InputGroup" style={{ width: '23%' }}>
     <Label {...props} />
     <br />
@@ -125,11 +150,7 @@ const NumberGroup = props => (
   </div>
 );
 
-NumberGroup.propTypes = {
-  props: PropTypes.object,
-};
-
-const OrgInfo = props => (
+const OrgInfo = (props: OrgFormProps) => (
   <div>
     <div
       // Align Expire Checkbox to the right side
@@ -138,26 +159,26 @@ const OrgInfo = props => (
       <ButtonGroup {...props} attribute={'active'} text={'Expire Organization'} />
     </div>
 
-    <TextGroup {...props} attribute={'name'} text={'Organization Name*'} fullWidth={true} />
-    <TextGroup {...props} attribute={'legalName'} text={'Legal Name'} fullWidth={true} />
+    <TextGroup {...props} attribute={'name'} text={'Organization Name*'} fullWidth={true} type='text' />
+    <TextGroup {...props} attribute={'legalName'} text={'Legal Name'} fullWidth={true} type='text' />
 
     <div className="formRow" id="basicInfo">
-      <NumberGroup {...props} attribute={'id'} text={'Organization ID*'} />
-      <TextGroup {...props} attribute={'code'} text={'Organization Code'} />
-      <TextGroup {...props} attribute={'IFISNum'} text={'IFIS Number*'} />
-      <TextGroup {...props} attribute={'effectiveDate'} text={'Effective Date'} cannotEdit={true} />
+      <NumberGroup {...props} attribute={'id'} text={'Organization ID*'} type='number' />
+      <TextGroup {...props} attribute={'code'} text={'Organization Code'} type='text' />
+      <TextGroup {...props} attribute={'IFISNum'} text={'IFIS Number*'} type='text' />
+      <TextGroup {...props} attribute={'effectiveDate'} text={'Effective Date'} type='text' />
     </div>
 
     <div className="formRow" id="locationInfo">
-      <TextGroup {...props} attribute={'address'} text={'Address'} />
-      <TextGroup {...props} attribute={'city'} text={'City'} />
-      <TextGroup {...props} attribute={'province'} text={'Province'} />
-      <TextGroup {...props} attribute={'postalCode'} text={'Postal Code'} />
+      <TextGroup {...props} attribute={'address'} text={'Address'} type='text' />
+      <TextGroup {...props} attribute={'city'} text={'City'} type='text' />
+      <TextGroup {...props} attribute={'province'} text={'Province'} type='text' />
+      <TextGroup {...props} attribute={'postalCode'} text={'Postal Code'} type='text' />
     </div>
 
     <div className="formRow" id="userInfo">
-      <TextGroup {...props} attribute={'authorizedUserId'} text={'Authoritative Person'} />
-      <TextGroup {...props} attribute={'contactUserId'} text={"Authoritative Person's Email"} />
+      <TextGroup {...props} attribute={'authorizedUserId'} text={'Authoritative Person'} type='text' />
+      <TextGroup {...props} attribute={'contactUserId'} text={"Authoritative Person's Email"} type='text' />
       {/*
                 <userIdButton onChange={props.handleChanges}/>
             */}
@@ -169,8 +190,9 @@ OrgInfo.propTypes = {
   props: PropTypes.object,
 };
 
-const TabPanel = props => {
+const TabPanel = (props: TabPanelProps) => {
   const { children, value, index, ...other } = props;
+  const display = value === index ? 'inline' : 'none'
 
   return (
     <div
@@ -179,7 +201,7 @@ const TabPanel = props => {
       hidden={value !== index}
       id={`tabpanel-${index}`}
       aria-labelledby={`tab-${index}`}
-      display={value === index ? 'inline' : 'none'}
+      style={{display: display}}
       {...other}
     >
       {children}
@@ -187,36 +209,25 @@ const TabPanel = props => {
   );
 };
 
-TabPanel.propTypes = {
-  children: PropTypes.object,
-  value: PropTypes.number,
-  index: PropTypes.number,
-  other: PropTypes.object,
-};
-
-const makeIdentifier = index => ({
+const makeIdentifier = (index: number) => ({
   id: `tab-${index}`,
   'aria-controls': `tabpanel-${index}`,
 });
 
-makeIdentifier.propTypes = {
-  index: PropTypes.any,
-};
-
-const OrganizationForm = props => {
+const OrganizationForm = (props: OrgFormProps) => {
   const [current, setCurrent] = useState(0);
   const [programIds, setProgramIds] = useState(props.object.programId)
-  const handleChange = (event, value) => setCurrent(value);
+  const handleChange = (event: ChangeEvent<{}>, value: number) => setCurrent(value);
   useEffect(() => {
     props.updateState('programId', programIds)
   }, [programIds])
 
-  const onClickAdd = (_event, program) => {
-    setProgramIds(prevIds => prevIds.concat(program._id));
+  const onClickAdd = (_event: Event, program: Program) => {
+    setProgramIds((prevIds: string[]) => prevIds.concat(program._id));
   };
 
-  const onClickDelete = (_event, program) => {
-    setProgramIds(prevIds => prevIds.filter(elem => elem !== program._id))
+  const onClickDelete = (_event: Event, program: Program) => {
+    setProgramIds((prevIds: string[]) => prevIds.filter(elem => elem !== program._id))
   };
   
   return (
@@ -278,15 +289,8 @@ const OrganizationForm = props => {
   );
 };
 
-OrganizationForm.propTypes = {
-  updateState: PropTypes.func,
-  object: PropTypes.object,
-  cancel: PropTypes.func,
-  submit: PropTypes.func,
-};
-
-class ModifyOrganization extends React.Component {
-  constructor(props) {
+class ModifyOrganization extends React.Component<MOProps, MOState> {
+  constructor(props: MOProps) {
     super(props);
     const temp = { ...props.object };
     delete temp._id;
@@ -301,17 +305,17 @@ class ModifyOrganization extends React.Component {
   }
 
   componentDidMount () {
-    orgController.fetch().then(orgs => {
+    orgController.fetch().then((orgs: Organization[]) => {
       if (orgs) {
         this.setState({
           // all organization ids except the one currently being edited
-          takenIds: orgs.map(org => org.id).filter(id => id !== this.props.object.id)
+          takenIds: orgs.map(org => org.id).filter((id: number) => id !== this.props.object.id)
         })
       }
     })
   }
 
-  componentDidUpdate (prevProps, prevState) {
+  componentDidUpdate (prevProps: MOProps, prevState: MOState) {
     if (prevState.id !== this.state.id) {
       if (this.state.takenIds.includes(this.state.id)) {
         this.setState({
@@ -325,12 +329,12 @@ class ModifyOrganization extends React.Component {
     }
   }
 
-  updateState(name, value) {
+  updateState(name: any, value: any) {
     this.setState(state => ({ ...state, [name]: value }));
   }
 
-  handleChanges(e) {
-    const { name, value, checked, type } = e.target;
+  handleChanges(e: Event) {
+    const { name, value, checked, type } = (e.target as HTMLInputElement);
     let updateValue;
 
     switch (type) {
@@ -382,14 +386,6 @@ class ModifyOrganization extends React.Component {
     );
   }
 }
-
-// createOrg passes in empty object, editOrg passes in pre-existing object
-ModifyOrganization.propTypes = {
-  object: PropTypes.object,
-  title: PropTypes.string,
-  submit: PropTypes.func,
-  cancel: PropTypes.func,
-};
 
 const ConnectedModifyOrganization = connect(state => ({...state}))(ModifyOrganization)
 

@@ -37,6 +37,10 @@ const TemplateTypeHeader = () => {
 const TemplateTypesTable = ({ history }) => {
   const dispatch = useDispatch();
   const [readRowNum, setRowNum] = useState(1);
+  const [hasTypes, setHasTypes] = useState(false)
+
+  const preColumns = [{ title: 'Name', field: 'name' }]
+  const preTypes = [{ name: 'LOADING...' }]
 
   const { templateTypes, workflows } = useSelector(
     state => ({
@@ -57,7 +61,12 @@ const TemplateTypesTable = ({ history }) => {
     return acc;
   }, {});
 
-  useEffect(()=>{setRowNum(templateTypes.length)}, [templateTypes])
+  useEffect(()=>{
+    setRowNum(templateTypes.length)
+    if (!hasTypes) {
+      setHasTypes(templateTypes.length >= 1)
+    }
+  }, [templateTypes])
   
   // Prepare the columns for material table
   const columns = [
@@ -144,7 +153,14 @@ const TemplateTypesTable = ({ history }) => {
 
   return (
     // @ts-ignore
-    <MaterialTable key={readRowNum} columns={columns} actions={actions} data={templateTypes} editable={editable} options={options} />
+    <MaterialTable
+      key={readRowNum}
+      columns={hasTypes ? columns : preColumns}
+      actions={hasTypes ? actions : undefined}
+      data={hasTypes ? templateTypes : preTypes} 
+      editable={hasTypes ? editable : undefined}
+      options={options}
+    />
   );
 };
 

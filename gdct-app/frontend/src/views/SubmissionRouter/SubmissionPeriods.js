@@ -34,6 +34,11 @@ const SubmissionPeriodHeader = () => {
 const SubmissionPeriod = () => {
   const dispatch = useDispatch();
   const [readRowNum, setRowNum] = useState(1);
+  const [hasPeriods, setHasPeriods] = useState(false)
+
+  // table vars for loading
+  const preColumns = [{ title: 'Name', field: 'name' }]
+  const prePeriods = [{ name: 'LOADING...' }]
 
   const { submissionPeriods, lookupReportingPeriods } = useSelector(
     state => ({
@@ -101,16 +106,21 @@ const SubmissionPeriod = () => {
     dispatch(getReportingPeriodsRequest());
   }, [dispatch]);
 
-  useEffect(()=>{setRowNum(submissionPeriods.length)}, [submissionPeriods])
+  useEffect(()=>{
+    setRowNum(submissionPeriods.length)
+    if (!hasPeriods) {
+      setHasPeriods(submissionPeriods.length >= 1)
+    }
+  }, [submissionPeriods])
 
   return (
     <div>
       <SubmissionPeriodHeader />
       <MaterialTable
         key={readRowNum}
-        columns={columns}
-        data={submissionPeriods}
-        editable={editable}
+        columns={hasPeriods ? columns : preColumns}
+        data={hasPeriods ? submissionPeriods : prePeriods}
+        editable={hasPeriods ? editable : undefined}
         options={options}
       />
     </div>
