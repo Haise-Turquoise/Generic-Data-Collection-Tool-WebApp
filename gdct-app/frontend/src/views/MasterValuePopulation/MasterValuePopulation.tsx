@@ -1,20 +1,20 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { ChangeEvent, ComponentProps, Dispatch, ReactNode, ReactPropTypes, SetStateAction, useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 
-import MaterialTable from 'material-table';
+import MaterialTable, { Action, Column, Options } from 'material-table';
 import Paper from '@material-ui/core/Paper';
 import Select from '@material-ui/core/Select';
 import FormControl from '@material-ui/core/FormControl';
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles, StyledProps, Theme } from '@material-ui/core/styles';
 import ControlPoint from '@material-ui/icons/ControlPoint';
 import AddCircleIcon from '@material-ui/icons/AddCircle';
 import Button from '@material-ui/core/Button';
 import LinearProgress from '@material-ui/core/LinearProgress';
 import CheckIcon from '@material-ui/icons/Check';
 import Box from '@material-ui/core/Box';
-import CircularProgress from '@material-ui/core/CircularProgress';
+import CircularProgress, { CircularProgressProps } from '@material-ui/core/CircularProgress';
 import Typography from '@material-ui/core/Typography';
 import './MasterValuePopulation.scss';
 import cloneDeep from 'clone-deep';
@@ -23,32 +23,116 @@ import axios from 'axios';
 import {
   selectFactoryRESTResponseTableValues,
   selectFactoryRESTIsCallInProgress,
+//@ts-ignore
 } from '../../store/common/REST/selectors';
+//@ts-ignore
 import { selectOrgsStore } from '../../store/OrganizationsStore/selectors';
+//@ts-ignore
 import { selectCOAsStore } from '../../store/COAsStore/selectors';
+//@ts-ignore
 import { selectColumnNamesStore } from '../../store/ColumnNamesStore/selectors';
+//@ts-ignore
 import {selectDataResumeStore}from '../../store/DataResumeStore/selector';
+//@ts-ignore
 import Loading from '../../components/Loading';
+//@ts-ignore
 import {getDataResume,updateDataResume} from '../../store/thunks/DataResume';
+//@ts-ignore
 import { getColumnNamesRequest } from '../../store/thunks/columnName';
+//@ts-ignore
 import { getCOAsRequest } from '../../store/thunks/COA';
+//@ts-ignore
 import { getOrgsRequest } from '../../store/thunks/organization';
+//@ts-ignore
 import MasterValueModel from '../../../../backend/src/models/MasterValue';
+//@ts-ignore
 import MasterValueController from '../../controllers/MasterValue';
 
+//@ts-ignore
 import { selectReportingPeriodsStore } from '../../store/ReportingPeriodsStore/selectors';
+//@ts-ignore
 import { getReportingPeriodsRequest } from '../../store/thunks/reportingPeriod';
 
+//@ts-ignore
 import DataResumeController from '../../controllers/DataResume'
+//@ts-ignore
 import OrganizationController from '../../controllers/organization';
+//@ts-ignore
 import COAController from '../../controllers/COA';
 import { withStyles } from '@material-ui/core/styles';
 import Dialog from '@material-ui/core/Dialog';
-import MuiDialogTitle from '@material-ui/core/DialogTitle';
+import MuiDialogTitle, { DialogTitleProps } from '@material-ui/core/DialogTitle';
 import MuiDialogContent from '@material-ui/core/DialogContent';
 import MuiDialogActions from '@material-ui/core/DialogActions';
 import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
+import Category from '../../types/category';
+import Organization from '../../types/organization';
+import Attribute from '../../types/attrubute';
+import ReportingPeriod from '../../types/reportingperiod';
+import DataResume from '../../types/dataresume';
+import { createStyles, StyledComponentProps, Styles } from '@material-ui/styles';
+
+interface MasterValue {
+  attributeId: string,
+  attributeName: string,
+  categoryId: string,
+  categoryName: string,
+  org: {
+    id: number,
+    name: string,
+  },
+  reportingPeriod: string,
+  template: string,
+  // idk if this should be more specific
+  value?: any,
+}
+
+interface PopulateParamters {
+  category: Category[],
+  ap: string,
+  hfk: Organization[],
+  col: Attribute[],
+  currentCount: number,
+  totalCount: number,
+  resumeArray: MasterValue[],
+}
+
+interface QueryRESTParams {
+  category: Category[],
+  ap: string,
+  hfk: Organization[],
+  attribute: Attribute,
+}
+
+interface CheckableCategory extends Category {
+  checked?: boolean,
+  tableData?: any,
+}
+
+interface CheckableOrg extends Organization {
+  checked?: boolean,
+  tableData?: any,
+}
+
+interface headerActionsProps {
+  val: string,
+  data: string[],
+  name: string,
+  handleChange: (event: ChangeEvent<{name?: string, value: unknown}>) => void
+}
+
+type resultType = {
+  data: [
+    [number, string, number]
+  ]
+}
+
+type dialogTitleProps = StyledComponentProps & {
+  children: ReactNode,
+  onClose: () => void,
+  id?: string,
+}
 
 
 
@@ -57,12 +141,16 @@ const REST_API = 'https://ohfsrest.azurewebsites.net';
 
 const TABLES = ['FCLTY_BSA_YTD_ACTL_FORCST_DETL', 'FCLTY_SECDY_YTD_ACTL_FORCST_DT'];
 
-const isBalanceSheet = COA => {
+const isBalanceSheet = (COA: string) => {
+  if (!COA) {
+    return 0
+  }
   const BSA = ['1', '3', '4', '5', '6'];
   const idx = COA.indexOf('pa=');
   return idx != -1 && BSA.includes(COA[idx + 3]) ? 0 : 1;
 };
-const addDocument = async masterValue => {
+
+const addDocument = async (masterValue: MasterValue) => {
   const newMasterValue = {
     categoryId: masterValue.categoryId,
     categoryName: masterValue.categoryName,
@@ -76,15 +164,25 @@ const addDocument = async masterValue => {
     template: masterValue.template,
     value: masterValue.value,
   };
-  await MasterValueController.addDocument(newMasterValue).then(res => {
+  await MasterValueController.addDocument(newMasterValue).then((_res: any) => {
     // setLoadCount(loadCount=>loadCount+1);
-    
-    console.log('add one successfully');
-    
+    console.log('add one successfully');  
   })
 };
-const queryREST = async ({ category, ap, hfk, attribute },setGetCount, setGetTotal,getCount,getTotal,setResumeQueries,resumeQueries,setGetButtonDisabled) => {
-  const queries = [];
+const queryREST = async (
+    { category, ap, hfk, attribute }: QueryRESTParams,
+    setGetCount: Dispatch<SetStateAction<number>>,
+    setGetTotal: Dispatch<SetStateAction<number>>,
+    getCount: number,
+    getTotal: number,
+    setResumeQueries: Dispatch<SetStateAction<MasterValue[]>>,
+    resumeQueries: MasterValue[],
+    setGetButtonDisabled: Dispatch<SetStateAction<boolean>>,
+  ) => {
+  if (!attribute) {
+    return
+  }
+  const queries: string[] = [];
 
   const upsList = [];
   const ye = ap.split('/')[0];
@@ -107,7 +205,7 @@ const queryREST = async ({ category, ap, hfk, attribute },setGetCount, setGetTot
         attributeName: attribute.name,
       });
       const table = TABLES[isBalanceSheet(c.COA)];
-      if (c.COA.length == 0) {
+      if (!c.COA || c.COA.length == 0) {
         queries.push(`${REST_API}/${table}/A_P=${`${year}${stage}`}&ORG_ID=-1&pa=2*`);
       } // temporary fix
       else {
@@ -123,8 +221,7 @@ const queryREST = async ({ category, ap, hfk, attribute },setGetCount, setGetTot
   
 
 
-
-  const addDocument = async masterValue => {
+  const addDocument = async (masterValue: MasterValue) => {
     const newMasterValue = {
       categoryId: masterValue.categoryId,
       categoryName: masterValue.categoryName,
@@ -138,19 +235,17 @@ const queryREST = async ({ category, ap, hfk, attribute },setGetCount, setGetTot
       template: masterValue.template,
       value: masterValue.value,
     };
-    await MasterValueController.addDocument(newMasterValue).then(res => {
+    await MasterValueController.addDocument(newMasterValue).then((_res: any) => {
       // setLoadCount(loadCount=>loadCount+1);
-      
       console.log('add one successfully');
-      
     })
   };
 
 
   let failedQueries = [];
   let failedMasterValues = [];
-  let results = [];
-  let masterValueList = upsList;
+  let results: (resultType | [])[] = [];
+  let masterValueList: MasterValue[] = upsList;
   setGetTotal(queries.length);
   let progressCount = 0;
   for (let i = 0;i< queries.length; i++) {
@@ -161,7 +256,7 @@ const queryREST = async ({ category, ap, hfk, attribute },setGetCount, setGetTot
       //   throw `index ${i} can be divided by 20`;
       // }
       
-      await axios.get(queries[i]).then((result)=>{    
+      await axios.get(queries[i]).then((result)=>{
         results.push(result);
       })
     } catch (e) {
@@ -178,10 +273,10 @@ const queryREST = async ({ category, ap, hfk, attribute },setGetCount, setGetTot
     try{
       if(results[i] ==[]){
         throw `Get Iteration ${i} has already failed, corresponding url is ${queries[i]}`;
-      }
-      else if (results[i].data.length > 0) {
-        console.log(`index ${i} has data`)      
-        masterValueList[i].value = results[i].data[0][2];            
+      // I cast manually in elif because we know it's not []
+      } else if ((results[i] as resultType).data.length > 0) {
+        console.log(`index ${i} has data`)
+        masterValueList[i].value = (results[i] as resultType).data[0][2];            
         await addDocument(masterValueList[i]);
         
       }
@@ -206,7 +301,17 @@ const queryREST = async ({ category, ap, hfk, attribute },setGetCount, setGetTot
   setGetButtonDisabled(false)
 };
 
-const DoRetrieval = ({ category, ap, hfk, col },setGetCount, setGetTotal,getCount,getTotal,setResumeQueries,resumeQueries,setGetSuccess,setGetButtonDisabled) => {
+const DoRetrieval = (
+    { category, ap, hfk, col }: PopulateParamters,
+    setGetCount: Dispatch<SetStateAction<number>>,
+    setGetTotal: Dispatch<SetStateAction<number>>,
+    getCount: number,
+    getTotal: number,
+    setResumeQueries: Dispatch<SetStateAction<MasterValue[]>>,
+    resumeQueries: MasterValue[],
+    setGetSuccess: Dispatch<SetStateAction<boolean>>,
+    setGetButtonDisabled: Dispatch<SetStateAction<boolean>>,
+  ) => {
   setGetSuccess(false)
   if (category && ap && hfk && category.length > 0 && hfk.length > 0 && ap.length > 0) {
     // console.log(ap)
@@ -224,12 +329,20 @@ const DoRetrieval = ({ category, ap, hfk, col },setGetCount, setGetTotal,getCoun
     } else alert("Attribute doesn't exist in database");
   } else alert('Missing one or more parameters.');
 };
-const  handleResume = async (setGetCount,setGetTotal,getCount,getTotal,setResumeQueries,resumeQueries,setResumeButtonDisabled)=>{
+const  handleResume = async (
+    setGetCount: Dispatch<SetStateAction<number>>,
+    setGetTotal: Dispatch<SetStateAction<number>>,
+    getCount: number,
+    getTotal: number,
+    setResumeQueries: Dispatch<SetStateAction<MasterValue[]>>,
+    resumeQueries: MasterValue[],
+    setResumeButtonDisabled: Dispatch<SetStateAction<boolean>>,
+  )=>{
   console.log(resumeQueries)
   console.log(getCount,getTotal)
   setResumeButtonDisabled(true)
   let failedQueries = [];
-  let results = [];
+  let results: (resultType | [])[] = [];
   
   
   for (let i = 0;i< resumeQueries.length; i++) {
@@ -271,8 +384,7 @@ const  handleResume = async (setGetCount,setGetTotal,getCount,getTotal,setResume
       // console.log(resumeQueries[i].value[0])
 
 
-      await axios.get(resumeQuery).then((result)=>{ 
-        
+      await axios.get(resumeQuery).then((result)=>{
         results.push(result)
       })
     } catch (e) {
@@ -288,11 +400,10 @@ const  handleResume = async (setGetCount,setGetTotal,getCount,getTotal,setResume
     }
 
     try{
-      // console.log(results);
-      if (results[i].data.length > 0) {
+      if (results[i] !== [] && (results[i] as resultType).data.length > 0) {
         console.log(`index ${i} has data`)
-        const masterValue = cloneDeep(resumeQueries[i])      
-        masterValue.value = results[i].data[0][2];            
+        const masterValue = cloneDeep(resumeQueries[i])
+        masterValue.value = (results[i] as resultType).data[0][2];            
         await addDocument(masterValue);
         
       }
@@ -310,7 +421,7 @@ const  handleResume = async (setGetCount,setGetTotal,getCount,getTotal,setResume
   setResumeQueries(failedQueries);
   setResumeButtonDisabled(false);
 }
-const HeaderActions = props => {
+const HeaderActions = (props: headerActionsProps) => {
   return (
     <Paper className="header">
       <Typography variant="h5">Prepopulate from OHFS</Typography>
@@ -320,7 +431,7 @@ const HeaderActions = props => {
     </Paper>
   );
 };
-function CircularProgressWithLabel(props) {
+function CircularProgressWithLabel(props: CircularProgressProps) {
   return (
     <Box padding = "0%" position="relative" display="inline-flex">
       <CircularProgress variant="determinate" {...props} />
@@ -336,7 +447,7 @@ function CircularProgressWithLabel(props) {
         justifyContent="center"
       >
         <Typography variant="caption" component="div" color="textSecondary">{`${Math.round(
-          props.value,
+          props.value || 0,
         )}%`}</Typography>
       </Box>
     </Box>
@@ -402,11 +513,11 @@ function CircularProgressWithLabel(props) {
 
 
 
+type footerActionProps = { getPopulateParameters: () => PopulateParamters }
+const  FooterActions =  (props: footerActionProps) =>  {
 
-const  FooterActions =  props =>  {
-
-  const [getCount, setGetCount] = useState(props.getPopulateParameters().currentCount);
-  const [getTotal, setGetTotal] = useState(props.getPopulateParameters().totalCount);
+  const [getCount, setGetCount] = useState<number>(props.getPopulateParameters().currentCount);
+  const [getTotal, setGetTotal] = useState<number>(props.getPopulateParameters().totalCount);
   const [getSuccess, setGetSuccess] = useState(false);
   const [resumeQueries,setResumeQueries] = useState(props.getPopulateParameters().resumeArray);
   const [getButtonDisabled,setGetButtonDisabled] = useState(false);
@@ -418,7 +529,7 @@ const  FooterActions =  props =>  {
 
   const [open, setOpen] = React.useState(false);
   
-    const handleDialogOpen = (alertMessage,alertTitle) => {
+    const handleDialogOpen = (alertMessage: string, alertTitle: string) => {
       setAlertMessage(alertMessage);
       setAlertTitle(alertTitle)
       setOpen(true);
@@ -435,7 +546,7 @@ const  FooterActions =  props =>  {
 
 
 
-  const dialogStyles = (theme) => ({
+  const dialogStyles = createStyles((theme: Theme) => ({
     root: {
       margin: 0,
       padding: theme.spacing(2),
@@ -446,15 +557,14 @@ const  FooterActions =  props =>  {
       top: theme.spacing(1),
       color: theme.palette.grey[500],
     },
-  });
-  
-  const DialogTitle = withStyles(dialogStyles)((props) => {
+  }));
+  const DialogTitle = withStyles(dialogStyles)((props: dialogTitleProps) => {
     const { children, classes, onClose, ...other } = props;
     return (
-      <MuiDialogTitle disableTypography className={classes.root} {...other}>
+      <MuiDialogTitle disableTypography className={classes?.root} {...other}>
         <Typography variant="h6">{children}</Typography>
         {onClose ? (
-          <IconButton aria-label="close" className={classes.closeButton} onClick={onClose}>
+          <IconButton aria-label="close" className={classes?.closeButton} onClick={onClose}>
             <CloseIcon />
           </IconButton>
         ) : null}
@@ -475,7 +585,7 @@ const  FooterActions =  props =>  {
     },
   }))(MuiDialogActions);
   
-  const  CustomizedDialogs = props=> {
+  const  CustomizedDialogs = (props: { alertTitle: string, alertMessage: string }) => {
     
   
     return (
@@ -623,11 +733,11 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-const Selection = ({ val, data, name, handleChange }) => {
+const Selection = ({ val, data, name, handleChange }: headerActionsProps) => {
   const classes = useStyles();
   return (
     <FormControl className={classes.formControl}>
-      <InputLabel name={name}>{name}</InputLabel>
+      <InputLabel htmlFor={name}>{name}</InputLabel>
       <Select labelId="label" value={val} onChange={handleChange} name={name}>
         {data.map(dat => (
           <MenuItem key={dat} value={dat}>
@@ -662,6 +772,13 @@ const MasterValuePopulation = () => {
     reportingPeriods,
     dataResumeStatues,
     isCallInProgress,
+  }: {
+    db_categoryList: Category[],
+    db_hfkList: Organization[],
+    db_columnNamesList: Attribute[],
+    reportingPeriods: ReportingPeriod[],
+    dataResumeStatues: DataResume[],
+    isCallInProgress: boolean,
   } = useSelector(state => ({
     db_categoryList: selectFactoryRESTResponseTableValues(selectCOAsStore)(state),
     db_hfkList: selectFactoryRESTResponseTableValues(selectOrgsStore)(state),
@@ -686,18 +803,18 @@ const MasterValuePopulation = () => {
 
   
 
-  const periodList = [];
+  const periodList: string[] = [];
   reportingPeriods.forEach(period => {
     periodList.push(period.name);
   });
   periodList.sort().reverse();
 
-  const [categoryList, updateCategoryList] = useState([]);
+  const [categoryList, updateCategoryList] = useState<CheckableCategory[]>([]);
   const [userFeedBack, setUserFeedBack] = useState('');
-  const [hfkList, updateHfkList] = useState([]);
+  const [hfkList, updateHfkList] = useState<CheckableOrg[]>([]);
   const [currentCount, setCurrentCount] = useState(0);
   const [totalCount, setTotalCount] = useState(0);
-  const [resumeArray, setResumeArray] = useState([]);
+  const [resumeArray, setResumeArray] = useState<MasterValue[]>([]);
 
   useEffect(() => {
     console.log('dataResumeStatues', dataResumeStatues)
@@ -717,7 +834,7 @@ const MasterValuePopulation = () => {
     updateHfkList(() =>
       db_hfkList
         .filter(org => org.active)
-        .sort((a, b) => parseInt(a.id) - parseInt(b.id))
+        .sort((a, b) => a.id - b.id)
         .map(org => ({ ...org, checked: false })),
     );
   }, [db_hfkList]);
@@ -726,12 +843,12 @@ const MasterValuePopulation = () => {
     year: '',
   });
 
-  const handleChange = event => {
+  const handleChange = (event: ChangeEvent<{ name?: string, value: unknown }>) => {
     const { name } = event.target;
-    setQuery(qu => ({ ...qu, [name]: event.target.value }));
+    setQuery(qu => ({ ...qu, [name || '']: event.target.value }));
   };
 
-  const hfk_columns = useMemo(
+  const hfk_columns: Column<Organization>[] = useMemo(
     () => [
       { title: '✓', type: 'boolean', field: 'checked' },
       { title: 'ID', field: 'id' },
@@ -740,13 +857,13 @@ const MasterValuePopulation = () => {
     [],
   );
 
-  const category_columns = useMemo(() => [
+  const category_columns: Column<CheckableCategory>[] = useMemo(() => [
     { title: '✓', type: 'boolean', field: 'checked' },
     { title: 'ID', field: 'id' },
     { title: 'Name', field: 'name' },
-  ]);
+  ], []);
 
-  const options = useMemo(
+  const options: Options<CheckableCategory | CheckableOrg> = useMemo(
     () => ({
       actionsColumnIndex: -1,
       search: true,
@@ -758,12 +875,15 @@ const MasterValuePopulation = () => {
 
   const [hfkState, updateHfkState] = useState(false);
 
-  const hfk_actions = useMemo(
+  const hfk_actions: Action<CheckableOrg>[] = useMemo(
     () => [
       {
         icon: ControlPoint,
         tooltip: 'Toggle',
-        onClick: (_event, obj) => {
+        onClick: (_: any, obj: CheckableOrg | CheckableOrg[]) => {
+          if (Array.isArray(obj)) {
+            return
+          }
           updateHfkList(list =>
             list.map(hfk => {
               if (hfk !== obj) return hfk;
@@ -776,7 +896,7 @@ const MasterValuePopulation = () => {
         icon: AddCircleIcon,
         tooltip: 'Toggle All',
         position: 'toolbar',
-        onClick: _event => {
+        onClick: (_: any, _obj: CheckableOrg | CheckableOrg[]) => {
           // very sketchy fix, not sure why hfkState isn't updating outside of updateHfkState...
           updateHfkState(state => {
             updateHfkList(list => list.map(hfk => ({ ...hfk, checked: !state })));
@@ -790,11 +910,11 @@ const MasterValuePopulation = () => {
 
   const [categoryState, updateCategoryState] = useState(false);
 
-  const category_actions = useMemo(() => [
+  const category_actions: Action<CheckableCategory>[] = useMemo(() => [
     {
       icon: ControlPoint,
       tooltip: 'Toggle',
-      onClick: (_event, obj) => {
+      onClick: (_: any, obj: CheckableCategory | CheckableCategory[]) => {
         updateCategoryList(list =>
           list.map(category => {
             if (category !== obj) return category;
@@ -807,16 +927,16 @@ const MasterValuePopulation = () => {
       icon: AddCircleIcon,
       tooltip: 'Toggle All',
       position: 'toolbar',
-      onClick: _event => {
+      onClick: (_: any, _obj: CheckableCategory | CheckableCategory[]) => {
         updateCategoryList(list =>
           list.map(category => ({ ...category, checked: !categoryState })),
         );
         updateCategoryState(state => !state);
       },
     },
-  ]);
+  ], []);
 
-  const getPopulateParameters = () => {
+  const getPopulateParameters = (): PopulateParamters => {
     const category = categoryList.filter(obj => obj.checked).map(obj => ({ ...obj }));
     category.forEach(obj => {
       delete obj.checked;
@@ -847,21 +967,30 @@ const MasterValuePopulation = () => {
       <div className="tableContainer">
         <div className="tableWrapper">
           <MaterialTable
-            className={classes.scrollTable}
+            // className not supported yet
+            style={{
+              height: '500',
+              width: '100%',
+              overflowY: 'auto',
+            }}
             title={'Organizations'}
             columns={hfk_columns}
             data={hfkList}
-            options={options}
+            options={(options as Options<CheckableOrg>)}
             actions={hfk_actions}
           />
         </div>
         <div className="tableWrapper">
           <MaterialTable
-            className={classes.scrollTable}
+            style={{
+              height: '500',
+              width: '100%',
+              overflowY: 'auto',
+            }}
             title={'Categories'}
             columns={category_columns}
             data={categoryList}
-            options={options}
+            options={(options as Options<CheckableCategory>)}
             actions={category_actions}
           />
         </div>
