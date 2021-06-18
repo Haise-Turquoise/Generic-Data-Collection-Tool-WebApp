@@ -1,9 +1,8 @@
-export default interface AppSys {
+export default interface AppRole {
   _id: string,
   code: string,
   name: string,
   isActive: boolean,
+  updatedBy: string,
   timestamp: string,
-  updatedBy?: string,
-  __v?: number
 }

@@ -8,6 +8,9 @@ module.exports = {
   resolve: {
     extensions: ['*', '.js', '.jsx', '.ts', '.tsx'],
   },
+  watchOptions: {
+    ignored: [/node_modules/]
+  },
   module: {
     rules: [
       {
