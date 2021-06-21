@@ -67,6 +67,7 @@ const WorkflowController = Service([WorkflowService], service => {
 
     router.post('/workflows/fetchProcess', (req, res, next) => {
       const { processId } = req.body;
+      console.log('processId', processId)
       service
         .findOutwardProcessesPopulated(processId)
         .then(workflowProcess => res.json({ data: workflowProcess }))
@@ -76,6 +77,13 @@ const WorkflowController = Service([WorkflowService], service => {
     router.get('/workflows/workflowProcesses/fetchWorkflowProcesses', (req, res, next) => {
       service
         .findProcesses()
+        .then(workflowProcess => res.json({ data: workflowProcess }))
+        .catch(next);
+    });
+    router.post('/workflows/fetchWorkflowProcessesByWorkflowId', (req, res, next) => {
+      const { workflowId } = req.body;
+      service
+        .findProcessesByWorkflowId(workflowId)
         .then(workflowProcess => res.json({ data: workflowProcess }))
         .catch(next);
     });

@@ -20,6 +20,7 @@ export default class UserEntity {
     timestamp,
     updatedBy,
     newPermissionPending,
+    pendingPermissions,
     tempSysRole,
   }) {
     this._id = _id;
@@ -42,6 +43,7 @@ export default class UserEntity {
     this.timestamp = timestamp;
     this.updatedBy = updatedBy;
     this.newPermissionPending = newPermissionPending;
+    this.pendingPermissions = pendingPermissions;
     this.tempSysRole = tempSysRole;
   }
 }

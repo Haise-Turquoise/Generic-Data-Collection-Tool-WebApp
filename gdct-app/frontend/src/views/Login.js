@@ -15,6 +15,8 @@ import AppConfigController from '../controllers/AppConfig';
 
 import usersController from '../controllers/Users'
 
+import UserStore from '../store/UserStore/store'
+
 import moment from 'moment';
 import Swal from 'sweetalert2';
 function Copyright() {
@@ -192,6 +194,7 @@ export default function Login({ setLoggedIn }) {
   // Session Timer
   const Timer = async () => {
     const sessionCheckingPeriod = await AppConfigController.fetchSessionCheckingPeriod();
+    const period = sessionCheckingPeriod.value;
     let i = 0;
     while (i < 60) {
       (function(i) {
@@ -247,13 +250,16 @@ export default function Login({ setLoggedIn }) {
                   confirmButtonText: 'OK'
                 }).then((result) => {
                   if (result.isConfirmed) {
+                    dispatch(UserStore.actions.LOGOUT(false));
                     window.location.reload();
+                    // dispatch(UserStore.actions.LOGOUT(false));
+                    
                   }
                 })
               }
             }
           })
-        }, sessionCheckingPeriod.value * 60 * 1000 * i)
+        }, period * 60 * 1000 * i)
       })(i++)
     };
   };

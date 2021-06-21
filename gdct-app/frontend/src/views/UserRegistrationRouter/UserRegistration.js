@@ -36,10 +36,10 @@ import {
   searchKeyChange,
   referenceChange,
 } from '../../store/thunks/userRegistration';
-import { getUsersRequest } from '../../store/thunks/users';
-import { fetchUserByUsername } from '../../store/thunks/user';
-import { selectFactoryRESTResponseTableValues } from '../../store/common/REST/selectors';
-import { selectUsersStore } from '../../store/UsersStore/selectors';
+// import { getUsersRequest } from '../../store/thunks/users';
+// import { fetchUserByUsername } from '../../store/thunks/user';
+// import { selectFactoryRESTResponseTableValues } from '../../store/common/REST/selectors';
+// import { selectUsersStore } from '../../store/UsersStore/selectors';
 import UserController from '../../controllers/user';
 
 function getSteps() {
@@ -760,7 +760,6 @@ const Register_container = props => {
     dispatch(orgChange(selectedOrganization));
   }, []);
   const handleProgramChange = useCallback(selectedPrograms => {
-    console.log(selectedPrograms)
     dispatch(programChange(selectedPrograms));
   }, []);
   const handleChangeSubmission = useCallback(() => {

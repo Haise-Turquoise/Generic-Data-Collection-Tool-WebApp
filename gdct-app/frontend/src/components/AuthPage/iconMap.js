@@ -53,6 +53,7 @@ export default {
   Profile: <AccountCircleIcon style={MenuItemStyle} />,
   'Submission Permissions': <EnhancedEncryptionIcon style={SubMenuItemStyle} />,
   'Personal Details': <SettingsApplicationsIcon style={SubMenuItemStyle} />,
+  'Request Management':<AccountCircleIcon style={MenuItemStyle} />,
 
   Logout: <ExitToAppIcon style={MenuItemStyle} />,
   // Main Menu Report

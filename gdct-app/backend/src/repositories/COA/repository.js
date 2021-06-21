@@ -12,7 +12,13 @@ export default class COARepository extends BaseRepository {
   }
 
   async create(COA) {
-    return COAModel.create(COA).then(COA => new COAEntity(COA.toObject()));
+    return COAModel.create(COA).then(COA => {
+      if (Array.isArray(COA)) {
+        // handles adding multiple COA objects
+        return COA.map(category => new COAEntity(category.toObject()))
+      }
+      return new COAEntity(COA.toObject())
+    });
   }
 
   async update(id, COA) {

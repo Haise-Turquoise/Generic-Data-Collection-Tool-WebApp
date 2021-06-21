@@ -13,6 +13,7 @@ import CreateOutlinedIcon from '@material-ui/icons/CreateOutlined';
 import ExpansionPanel from '@material-ui/core/ExpansionPanel';
 import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import StatusController from '../../controllers/status';
 
 import Typography from '@material-ui/core/Typography';
 import { getSubmissionsRequest } from '../../store/thunks/submission';
@@ -76,6 +77,13 @@ const SubmissionDashboard = ({ history }) => {
       break;
   }
 
+  // StatusController.fetch().then(res => {
+  //     const valid = res
+  //       .filter(status => status.isActive && !status.forPackage)
+  //       .sort((a, b) => a.order - b.order)
+  //     setStatuses(valid.map(status => status.name));
+  //   })
+
   const timeOption = { year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric' };
   let { submissions } = useSelector(
     state => ({
@@ -85,6 +93,7 @@ const SubmissionDashboard = ({ history }) => {
   )
 
    useEffect(() => {
+    
     const submissionGroups = submissions.map(e=>e.phase);
     const allowedStatus = allowedGrouping.filter(e=>submissionGroups.includes(e));
     setStatuses(allowedStatus);
@@ -125,20 +134,8 @@ const SubmissionDashboard = ({ history }) => {
       if (!submissionPeriod[submission.period]) {
         submissionPeriod[submission.period] = 1;
       }
-      let filterFrom = submission.period.split(' ')[2];
-      let filterTo = filterFrom;
 
-      if (readFilterFrom != 'All') {
-        filterFrom = readFilterFrom.split(' ')[2];
-      }
-
-      if (readFilterTo != 'All') {
-        filterTo = readFilterTo.split(' ')[2];
-      }
-
-      if (submission !== undefined &&
-        (submission.period.split(' ')[2] >= filterFrom && submission.period.split(' ')[2] <= filterTo)) {
-
+      if (submission !== undefined) {
         if (
           submission.permission.find(
             permission => permission === 'Submitter' || permission === 'Inputter',
@@ -221,6 +218,15 @@ const SubmissionDashboard = ({ history }) => {
     dispatch(getSubmissionsRequest(()=>{setMessage('Nothing to show')}));
   }, [dispatch]);
 
+  const getSubmissionsInRange = (status) => submissions.filter(
+    (submission) =>
+      // get submissions for given status and selected period 
+      submission.phase === status && 
+      (readFilterFrom === 'All' || submission.period >= readFilterFrom) && 
+      (readFilterTo === 'All' || submission.period <= readFilterTo)
+    )
+
+  console.log('status', statuses)
   return (
     <div className="submissions">
       <SubmissionHeader />
@@ -254,7 +260,8 @@ const SubmissionDashboard = ({ history }) => {
       </FormControl>
       {statuses.length > 0 ? 
         statuses.map(status => {
-          const data = submissions.filter(submission => submission.phase === status)
+          console.log('status', status)
+          const data = getSubmissionsInRange(status)
           const options = calculateOptions(data.length)
           return (
             <ExpansionPanel>
