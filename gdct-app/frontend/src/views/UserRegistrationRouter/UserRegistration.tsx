@@ -1,21 +1,26 @@
+//@ts-ignore
 import React, { lazy, useCallback, useMemo, useEffect, useState } from 'react';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import { Formik } from 'formik';
+//@ts-ignore
 import cloneDeep from 'clone-deep';
 
 import Paper from '@material-ui/core/Paper';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
+//@ts-ignore
 import Select from 'react-select';
 import Stepper from '@material-ui/core/Stepper';
 import Step from '@material-ui/core/Step';
 import StepLabel from '@material-ui/core/StepLabel';
 import Typography from '@material-ui/core/Typography';
 import Checkbox from '@material-ui/core/Checkbox';
+//@ts-ignore
 import FilteredMultiSelect from 'react-filtered-multiselect';
 
 import './Register.scss';
 import Box from '@material-ui/core/Box';
+//@ts-ignore
 import * as yup from 'yup';
 import MaterialTable from 'material-table';
 
@@ -35,12 +40,16 @@ import {
   searchOrganization,
   searchKeyChange,
   referenceChange,
+  //@ts-ignore
 } from '../../store/thunks/userRegistration';
-// import { getUsersRequest } from '../../store/thunks/users';
-// import { fetchUserByUsername } from '../../store/thunks/user';
-// import { selectFactoryRESTResponseTableValues } from '../../store/common/REST/selectors';
-// import { selectUsersStore } from '../../store/UsersStore/selectors';
+//@ts-ignore
 import UserController from '../../controllers/user';
+
+import Presubmission from '../../types/presubmission';
+
+interface PresubmissionMT extends Presubmission {
+  tableData?: any;
+}
 
 function getSteps() {
   return ['Step1', 'Step2'];
@@ -50,7 +59,10 @@ const steps = getSteps();
 // Column for permission table.
 const columns = [
   // { title: 'Organization', field: 'organization.name' },
-  { title: 'Organization', render: rowData => '(' + rowData.organization.id + ') '+rowData.organization.name  },
+  {
+    title: 'Organization',
+    render: (rowData:any) => `(${rowData.organization.id}) ${rowData.organization.name}`,
+  },
   { title: 'Program', field: 'program.code' },
   { title: 'Submission', field: 'submission.name' },
   { title: 'Permission', field: 'permission' },
@@ -76,7 +88,7 @@ const registerSchema = () =>
       .string()
       .min(6, 'Username must be 6 to 20 characters long')
       .max(20, 'Username must be 6 to 20 characters long')
-      .test('Unique Username', 'Username has already been used', async function (value) {
+      .test('Unique Username', 'Username has already been used', async function (value:string) {
         const fetchData = await UserController.fetchUserByUserName(value);
 
         if (Object.keys(fetchData.user).length === 0 && fetchData.user.constructor === Object) {
@@ -135,6 +147,14 @@ const ButtonBox = ({
   handleBack,
   handleNext,
   handleSubmit,
+}:{
+  activeStep:number;
+  ableToComplete:boolean;
+  values: object;
+  isValid:boolean;
+  handleNext:(values:object)=>void;
+  handleBack:()=>void;
+  handleSubmit:()=>void;
 }) => (
   <Box border={1} color="primary" className="register__buttonBox" justifyContent="center">
     <Button
@@ -180,23 +200,23 @@ const ButtonBox = ({
 // Read the information user select and ask controller to send request to backend
 // After responsed from backend, page will be refreshed.
 const selectOrgProgram = (
-  searchKey,
-  reference,
-  organizationGroup,
-  organizationOptions,
-  organizationGroupOptions,
-  appSysOptions,
-  programOptions,
-  handleAppSysChange,
-  handleOrgGroupChange,
-  handleOrgChange,
-  handleProgramChange,
+  searchKey:any,
+  reference:any,
+  organizationGroup:object,
+  organizationOptions:object[],
+  organizationGroupOptions:object[],
+  appSysOptions:object[],
+  programOptions:object[],
+  handleAppSysChange:(event:any)=>void,
+  handleOrgGroupChange:(event:any)=>void,
+  handleOrgChange:(selectedOrganization:object)=>void,
+  handleProgramChange:(selectedPrograms:object[])=>void,
 ) => {
   //  if (organizationGroup !== "Health Service Providers") {
-  const selectedPrograms = [];
-  const selectedOrganizations = [];
+  const selectedPrograms:object[] = [];
+  const selectedOrganizations:object[] = [];
   return (
-    <>
+    <div>
       <div className="register__selectField">
         <Typography className="register__inputTitle"> *Application </Typography>
         <Select
@@ -253,37 +273,37 @@ const selectOrgProgram = (
           }}
         />
       </div>
-    </>
+    </div>
   );
 };
 
 // Have the detail UI page for each step
 const getStepContent = (
-  snackbarMessage,
-  activeStep,
-  searchKey,
-  reference,
-  organizationGroup,
-  isSnackbarOpen,
-  userOrganizations,
-  userPrograms,
-  userSubmissions,
-  userPermissions,
-  appSysOptions,
-  organizationGroupOptions,
-  organizationOptions,
-  programOptions,
-  ableToComplete,
-  handleOrgGroupChange,
-  handleBack,
-  handleNext,
-  handleSubmit,
-  handleAppSysChange,
-  handleOrgChange,
-  handleProgramChange,
-  handleChangeSubmission,
-  handleChangePermission,
-  props,
+  snackbarMessage:string,
+  activeStep:number,
+  searchKey:any,
+  reference:any,
+  organizationGroup:object,
+  isSnackbarOpen:boolean,
+  userOrganizations:any[],
+  userPrograms:any[],
+  userSubmissions:Presubmission[],
+  userPermissions:any[],
+  appSysOptions:any[],
+  organizationGroupOptions:any[],
+  organizationOptions:any[],
+  programOptions:any[],
+  ableToComplete:boolean,
+  handleOrgGroupChange:any,
+  handleBack:()=>void,
+  handleNext:(values:object)=>void,
+  handleSubmit:()=>void,
+  handleAppSysChange:(event:any)=>void,
+  handleOrgChange:(selectedOrganization:object)=>void,
+  handleProgramChange:(selectedPrograms:object[])=>void,
+  handleChangeSubmission:()=>void,
+  handleChangePermission:(rowData:object, permission:string)=>void,
+  props: any,
 ) => {
   const { values, handleChange, touched, handleBlur, errors, isValid } = props;
   const [userSubmissionsLength, setSubmissionsLength] = useState(1);
@@ -298,7 +318,7 @@ const getStepContent = (
     setPermissionsLength(userPermissions.length);
   }, [userPermissions]);
 
-  const calculateOptions = itemCount => {
+  const calculateOptions = (itemCount:number) => {
     let length = itemCount;
     if (length > 100) length = 100;
     else if (length == 0) length = 1;
@@ -311,7 +331,7 @@ const getStepContent = (
     };
   };
 
-  const calculateMaxLength = value => {
+  const calculateMaxLength = (value:string) => {
     let max = 10;
     for (const character of value) {
       if (character == '-') {
@@ -337,10 +357,12 @@ const getStepContent = (
     {
       title: 'Approve*',
       field: 'approve',
-      render: rowData => (
+      // TO-FIX
+      render: (rowData:Presubmission) => (
         <Checkbox
           checked={rowData.approve}
           disabled={!rowData.approveAvailable}
+          // @ts-ignore
           onChange={handleChangePermission.bind(this, rowData, 'approve')}
           color="primary"
         />
@@ -349,10 +371,12 @@ const getStepContent = (
     {
       title: 'Review**',
       field: 'review',
-      render: rowData => (
+      // TO-FIX
+      render: (rowData:Presubmission) => (
         <Checkbox
           checked={rowData.review}
           disabled={!rowData.reviewAvailable}
+          // @ts-ignore
           onChange={handleChangePermission.bind(this, rowData, 'review')}
           color="primary"
         />
@@ -361,10 +385,12 @@ const getStepContent = (
     {
       title: 'Submit***',
       field: 'submit',
-      render: rowData => (
+      // TO-FIX
+      render: (rowData:Presubmission) => (
         <Checkbox
           checked={rowData.submit}
           disabled={!rowData.submitAvailable}
+          // @ts-ignore
           onChange={handleChangePermission.bind(this, rowData, 'submit')}
           color="primary"
         />
@@ -373,10 +399,12 @@ const getStepContent = (
     {
       title: 'Input****',
       field: 'input',
-      render: rowData => (
+    // TO-FIX
+      render: (rowData:Presubmission) => (
         <Checkbox
           checked={rowData.input}
           disabled={!rowData.inputAvailable}
+          // @ts-ignore
           onChange={handleChangePermission.bind(this, rowData, 'input')}
           color="primary"
         />
@@ -385,10 +413,12 @@ const getStepContent = (
     {
       title: 'View*****',
       field: 'view',
-      render: rowData => (
+      //TO-FIX
+      render: (rowData:Presubmission) => (
         <Checkbox
           checked={rowData.view}
           disabled={!rowData.viewAvailable}
+          // @ts-ignore
           onChange={handleChangePermission.bind(this, rowData, 'view')}
           color="primary"
         />
@@ -397,10 +427,12 @@ const getStepContent = (
     {
       title: 'View Cognos******',
       field: 'viewCognos',
-      render: rowData => (
+      // TO-FIX
+      render: (rowData:Presubmission) => (
         <Checkbox
           checked={rowData.Reporter}
           disabled={!rowData.viewCognosAvailable}
+          // @ts-ignore
           onChange={handleChangePermission.bind(this, rowData, 'viewCognos')}
           color="primary"
         />
@@ -412,7 +444,7 @@ const getStepContent = (
     case 0:
       // const {t, i18n} = useTranslation();
       return (
-        <>
+        <div>
           <form className="register__form">
             <br />
             <div className="register__label">
@@ -647,7 +679,7 @@ const getStepContent = (
               handleNext={handleNext}
             />
           </form>
-        </>
+        </div>
       );
     case 1:
       const submissionList = cloneDeep(userSubmissions);
@@ -670,6 +702,7 @@ const getStepContent = (
 
           <div className="register__tableContainer">
             <MaterialTable
+            // @ts-ignore
               className="register__table"
               key={userSubmissionsLength}
               columns={checkBoxColumns}
@@ -701,6 +734,7 @@ const getStepContent = (
           </Button>
           <div className="register__tableContainer">
             <MaterialTable
+            // @ts-ignore
               className="register__table"
               key={userPermissionsLength}
               columns={columns}
@@ -736,7 +770,8 @@ const getStepContent = (
 };
 
 // Get the state and shown it on the website
-const Register_container = props => {
+const Register_container = (props: any) => {
+  console.log(props)
   const dispatch = useDispatch();
   const handleOrgGroupChange = useCallback(event => {
     dispatch(orgGroupChange(event));
@@ -787,6 +822,7 @@ const Register_container = props => {
     ableToComplete,
   } = useSelector(
     ({
+      // @ts-ignore
       UserRegistrationStore: {
         snackbarMessage,
         activeStep,
@@ -823,23 +859,23 @@ const Register_container = props => {
     }),
     shallowEqual,
   );
-  const organizationOptionsCopy = cloneDeep(organizationOptions)
-  organizationOptionsCopy.sort(function(a,b){
-    const compareArray = [a.value.toString(),b.value.toString()]
-    compareArray.sort()
-    return compareArray[0] == a.value.toString()? -1 : 1
-  })
-    // console.log('organizationOptionsCopy', organizationOptionsCopy)
-    // organizationOptionsCopy.sort(function(a,b) {
-    //   const LabelAStart = a.label.indexOf(")")+1
-    //   const LabelBStart = b.label.indexOf(")")+1
-    //   const LabelA = a.label.substring(LabelAStart,a.label.length).toLowerCase()
-    //   const LabelB = b.label.substring(LabelBStart,b.label.length).toLowerCase()
-    //   // console.log(LabelA,LabelB)
-    //   const compareArray = [LabelA,LabelB]
-    //   compareArray.sort();
-    //   return compareArray[0] == LabelA? -1 : 1
-    // })
+  const organizationOptionsCopy = cloneDeep(organizationOptions);
+  organizationOptionsCopy.sort(function (a:{value:number}, b:{value:number}) {
+    const compareArray = [a.value.toString(), b.value.toString()];
+    compareArray.sort();
+    return compareArray[0] == a.value.toString() ? -1 : 1;
+  });
+  // console.log('organizationOptionsCopy', organizationOptionsCopy)
+  // organizationOptionsCopy.sort(function(a,b) {
+  //   const LabelAStart = a.label.indexOf(")")+1
+  //   const LabelBStart = b.label.indexOf(")")+1
+  //   const LabelA = a.label.substring(LabelAStart,a.label.length).toLowerCase()
+  //   const LabelB = b.label.substring(LabelBStart,b.label.length).toLowerCase()
+  //   // console.log(LabelA,LabelB)
+  //   const compareArray = [LabelA,LabelB]
+  //   compareArray.sort();
+  //   return compareArray[0] == LabelA? -1 : 1
+  // })
   return (
     <div>
       <Stepper className="register__stepper" activeStep={activeStep}>
@@ -897,6 +933,7 @@ const Register = () => {
   const handleSubmit = () => {};
   const dispatch = useDispatch();
   const { registrationData } = useSelector(
+    // @ts-ignore
     ({ UserRegistrationStore: { registrationData } }) => ({
       registrationData,
     }),
@@ -904,7 +941,7 @@ const Register = () => {
   );
 
   return (
-    <>
+    <div>
       {/* <SRIHeader/> */}
       <div className="register">
         <br />
@@ -917,7 +954,7 @@ const Register = () => {
           />
         </Paper>
       </div>
-    </>
+    </div>
   );
 };
 export default Register;

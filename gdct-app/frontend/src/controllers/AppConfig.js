@@ -9,14 +9,18 @@ const AppConfigController = (() => {
   });
 
   return {
-    fetchAppConfig: async _id => AppConfigAxios.post('/fetchAppConfig', { _id }).then(res => res.data.AppConfig),
-    fetchSessionCheckingPeriod : async _ => AppConfigAxios.post('/fetchSessionCheckingPeriod').then(res => res.data),
-    fetchValidationThreshold: async () => AppConfigAxios.get('/validationThreshold').then(res=>res.data),
-    fetchAttributeRow: async () => AppConfigAxios.get('/attributeRow').then(res=>res.data),
+    fetchAppConfig: async _id =>
+      AppConfigAxios.post('/fetchAppConfig', { _id }).then(res => res.data.AppConfig),
+    fetchSessionCheckingPeriod: async _ =>
+      AppConfigAxios.post('/fetchSessionCheckingPeriod').then(res => res.data),
+    fetchValidationThreshold: async () =>
+      AppConfigAxios.get('/validationThreshold').then(res => res.data),
+    fetchAttributeRow: async () => AppConfigAxios.get('/attributeRow').then(res => res.data),
     fetch: async () => AppConfigAxios.get('/searchAllAppConfigs').then(res => res.data),
-    create: async AppConfig => AppConfigAxios.post('/create', { AppConfig }).then(res => res.data.AppConfig),
+    create: async AppConfig =>
+      AppConfigAxios.post('/create', { AppConfig }).then(res => res.data.AppConfig),
     delete: async _id => AppConfigAxios.post('/delete', { _id }),
-    update: async AppConfig => AppConfigAxios.put('/update', { _id: AppConfig._id, AppConfig: AppConfig}),
+    update: async AppConfig => AppConfigAxios.put('/update', { _id: AppConfig._id, AppConfig }),
   };
 })();
 

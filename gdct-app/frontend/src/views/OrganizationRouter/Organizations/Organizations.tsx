@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 
 import MaterialTable, { Column, Action } from 'material-table';
-import { Paper, Button, Typography }from '@material-ui/core';
+import { Paper, Button, Typography } from '@material-ui/core';
 
 import { BrowserRouter, Route, Router, RouterProps, useHistory } from 'react-router-dom';
 import EditIcon from '@material-ui/icons/Edit';
@@ -15,7 +15,7 @@ import { selectOrgsStore } from '../../../store/OrganizationsStore/selectors';
 import { getOrgsRequest } from '../../../store/thunks/organization';
 //@ts-ignore
 import { calculateOptions } from '../../../tools/misc';
-import Organization from '../../../types/organization'
+import Organization from '../../../types/organization';
 
 const HeaderActions = () => {
   const history = useHistory();
@@ -43,20 +43,22 @@ const OrganizationHeader = () => {
 const Organizations = ({ history }: RouterProps) => {
   const dispatch = useDispatch();
   const [readRowNum, setRowNum] = useState(1);
-  const [hasOrgs, setHasOrgs] = useState(false)
-  
+  const [hasOrgs, setHasOrgs] = useState(false);
+
   // table stuff while loading
-  const preOrgs: Organization[] = [{ 
-    name: 'LOADING...',
-    _id: '',
-    id: 0,
-    effectiveDate: '',
-    IFISNum: '',
-    organizationGroupId: [''],
-    programId: [''],
-    authorizedPerson: [''],
-  }]
-  const preColumns: Column<Organization>[] = [{title: 'Name', field: 'name'}]
+  const preOrgs: Organization[] = [
+    {
+      name: 'LOADING...',
+      _id: '',
+      id: 0,
+      effectiveDate: '',
+      IFISNum: '',
+      organizationGroupId: [''],
+      programId: [''],
+      authorizedPerson: [''],
+    },
+  ];
+  const preColumns: Column<Organization>[] = [{ title: 'Name', field: 'name' }];
 
   // Prepare the data for material table
   const { Orgs }: { Orgs: Organization[] } = useSelector(state => ({
@@ -88,7 +90,7 @@ const Organizations = ({ history }: RouterProps) => {
         onClick: (_: any, org: Organization | Organization[]) => {
           if (!Array.isArray(org)) {
             // previously only this behaviour is specified - ill keep that
-            history.push(`/admin/organization/edit/${org._id}`)
+            history.push(`/admin/organization/edit/${org._id}`);
           }
         },
       },
@@ -100,17 +102,17 @@ const Organizations = ({ history }: RouterProps) => {
     dispatch(getOrgsRequest());
   }, [dispatch]);
 
-  useEffect(() => { 
-    setRowNum(Orgs.length)
+  useEffect(() => {
+    setRowNum(Orgs.length);
     if (!hasOrgs) {
-      setHasOrgs(Orgs.length >= 1)
+      setHasOrgs(Orgs.length >= 1);
     }
-  }, [Orgs])
-  
+  }, [Orgs]);
+
   return (
     <div className="organizations">
       <OrganizationHeader />
-      <MaterialTable 
+      <MaterialTable
         key={readRowNum}
         columns={hasOrgs ? columns : preColumns}
         data={hasOrgs ? Orgs : preOrgs}

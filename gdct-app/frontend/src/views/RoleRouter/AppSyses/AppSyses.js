@@ -14,10 +14,10 @@ import {
 
 import { selectFactoryRESTResponseTableValues } from '../../../store/common/REST/selectors';
 import { selectAppSysesStore } from '../../../store/AppSysesStore/selectors';
-import { calculateOptions } from '../../../tools/misc'
+import { calculateOptions } from '../../../tools/misc';
 
-import AppSysController from '../../../controllers/AppSys'
-import CreateAuditLog from '../../AuditLog_Global'
+import AppSysController from '../../../controllers/AppSys';
+import CreateAuditLog from '../../AuditLog_Global';
 
 const AppSysesHeader = () => {
   return (
@@ -31,11 +31,11 @@ const AppSysesHeader = () => {
 const AppSysesTable = () => {
   const dispatch = useDispatch();
   const [readRowNum, setRowNum] = useState(1);
-  const [hasAppSys, setHasAppSys] = useState(false)
+  const [hasAppSys, setHasAppSys] = useState(false);
 
   // table stuff while loading
-  const preAppSys = [{ name: 'LOADING...' }]
-  const preColumns = [{title: 'Name', field: 'name'}]
+  const preAppSys = [{ name: 'LOADING...' }];
+  const preColumns = [{ title: 'Name', field: 'name' }];
 
   const { appSyses } = useSelector(
     state => ({
@@ -47,59 +47,78 @@ const AppSysesTable = () => {
   // Convert Date format
   appSyses.forEach(appSys => {
     const logtime = new Date(appSys.timestamp);
-    appSys.timestamp = moment(logtime).format("YYYY-MM-DD HH:mm:ss")
+    appSys.timestamp = moment(logtime).format('YYYY-MM-DD HH:mm:ss');
   });
 
   const columns = useMemo(
     () => [
       { title: 'Code', field: 'code' },
       { title: 'Name', field: 'name' },
-      { title: 'Modified On', field: 'timestamp', editComponent: () => {return <div></div>} },
-      { title: 'Updated By', field: 'updatedBy', editComponent: () => {return <div></div>} },
+      {
+        title: 'Modified On',
+        field: 'timestamp',
+        editComponent: () => {
+          return <div></div>;
+        },
+      },
+      {
+        title: 'Updated By',
+        field: 'updatedBy',
+        editComponent: () => {
+          return <div></div>;
+        },
+      },
     ],
     [],
   );
-  
+
   const options = useMemo(() => calculateOptions(readRowNum), [readRowNum]);
 
   // Record who and when of the action
   function recordUpdate(appSys) {
-    //get username and record in Modified By column
+    // get username and record in Modified By column
     appSys.updatedBy = localStorage.getItem('currentUser');
-    //record new date and time in Modified On column 
-    appSys.timestamp = new Date().toLocaleString(); 
+    // record new date and time in Modified On column
+    appSys.timestamp = new Date().toLocaleString();
   }
   // Prepare the editing functionalities for the material table
   const editable = useMemo(
     () => ({
-      onRowAdd: appSys => 
+      onRowAdd: appSys =>
         new Promise((resolve, reject) => {
           recordUpdate(appSys);
           dispatch(createAppSysRequest(appSys, resolve, reject));
         }).then(newAppSys => {
           // For Auditlog
-          CreateAuditLog(null, "Add Application System", "AppSys", newAppSys._id, {}, newAppSys);
+          CreateAuditLog(null, 'Add Application System', 'AppSys', newAppSys._id, {}, newAppSys);
         }),
 
-      onRowUpdate: appSys => 
+      onRowUpdate: appSys =>
         new Promise((resolve, reject) => {
-          recordUpdate(appSys); 
+          recordUpdate(appSys);
           // Find the old value before updating for Auditlog
           (async () => {
             const oldAppSys = await AppSysController.fetchAppSys(appSys._id);
-            CreateAuditLog(null, "Update Application System", "AppSys", appSys._id, oldAppSys, appSys);
+            CreateAuditLog(
+              null,
+              'Update Application System',
+              'AppSys',
+              appSys._id,
+              oldAppSys,
+              appSys,
+            );
           })();
           // Do Update
           dispatch(updateAppSysRequest(appSys, resolve, reject));
         }),
-        
+
       onRowDelete: appSys =>
         new Promise((resolve, reject) => {
           recordUpdate(appSys);
           dispatch(deleteAppSysRequest(appSys._id, resolve, reject));
           // onRowDelete will add a "tableData" attribute in the Object, which we don't need for Auditlog
-          const appSys_trim = (({ tableData, ...o }) => o)(appSys)
-          CreateAuditLog(null, "Delete Application System", "AppSys", appSys._id, appSys_trim, {});
+          const appSys_trim = (({ tableData, ...o }) => o)(appSys);
+          CreateAuditLog(null, 'Delete Application System', 'AppSys', appSys._id, appSys_trim, {});
         }),
     }),
     [dispatch],
@@ -109,12 +128,12 @@ const AppSysesTable = () => {
     dispatch(getAppSysesRequest());
   }, [dispatch]);
 
-  useEffect(()=>{
-    setRowNum(appSyses.length)
+  useEffect(() => {
+    setRowNum(appSyses.length);
     if (!hasAppSys) {
-      setHasAppSys(appSyses.length >= 1)
+      setHasAppSys(appSyses.length >= 1);
     }
-  }, [appSyses])
+  }, [appSyses]);
 
   // @ts-ignore
   return (
@@ -123,7 +142,7 @@ const AppSysesTable = () => {
       columns={hasAppSys ? columns : preColumns}
       data={hasAppSys ? appSyses : preAppSys}
       editable={hasAppSys ? editable : undefined}
-      options={options} 
+      options={options}
     />
   );
 };

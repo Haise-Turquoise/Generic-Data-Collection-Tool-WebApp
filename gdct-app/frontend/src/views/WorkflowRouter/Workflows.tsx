@@ -28,7 +28,7 @@ import workflowController from '../../controllers/workflow';
 import Workflow from '../../types/workflow';
 
 interface WorkflowMT extends Workflow {
-  tableData?: any,
+  tableData?: any;
 }
 
 const WorkflowHeader = () => {
@@ -49,17 +49,19 @@ const Workflows = () => {
   const dispatch = useDispatch();
   const history = useHistory();
   const [readRowNum, setRowNum] = useState(1);
-  const [hasWorkflows, setHasWorkflows] = useState(false)
+  const [hasWorkflows, setHasWorkflows] = useState(false);
 
   // table vars for loading
-  const preColumns: Column<WorkflowMT>[] = [{ title: 'Name', field: 'name' }]
-  const preWorkflows: WorkflowMT[] = [{
-    name: 'LOADING...',
-    _id: '',
-    timestamp: '',
-    updatedBy: '',
-    isActive: true,
-  }]
+  const preColumns: Column<WorkflowMT>[] = [{ title: 'Name', field: 'name' }];
+  const preWorkflows: WorkflowMT[] = [
+    {
+      name: 'LOADING...',
+      _id: '',
+      timestamp: '',
+      updatedBy: '',
+      isActive: true,
+    },
+  ];
 
   const { workflows }: { workflows: Workflow[] } = useSelector(
     state => ({
@@ -70,24 +72,36 @@ const Workflows = () => {
   // Convert Date format
   workflows.forEach(workflow => {
     const logtime = new Date(workflow.timestamp);
-    workflow.timestamp = moment(logtime).format("YYYY-MM-DD HH:mm:ss")
+    workflow.timestamp = moment(logtime).format('YYYY-MM-DD HH:mm:ss');
   });
 
   const columns: Column<WorkflowMT>[] = useMemo(
     () => [
       { title: 'Name', field: 'name' },
-      { title: 'Modified On', field: 'timestamp', editComponent: () => {return <div></div>} },
-      { title: 'Updated By', field: 'updatedBy', editComponent: () => {return <div></div>} },
+      {
+        title: 'Modified On',
+        field: 'timestamp',
+        editComponent: () => {
+          return <div></div>;
+        },
+      },
+      {
+        title: 'Updated By',
+        field: 'updatedBy',
+        editComponent: () => {
+          return <div></div>;
+        },
+      },
     ],
-    []
+    [],
   );
 
   const options: Options<WorkflowMT> = useMemo(() => calculateOptions(readRowNum), [readRowNum]);
 
-  // Record user and time when an action occurs 
+  // Record user and time when an action occurs
   function recordUpdate(workflow: WorkflowMT) {
     workflow.updatedBy = localStorage.getItem('currentUser') || '';
-    workflow.timestamp = new Date().toLocaleString(); 
+    workflow.timestamp = new Date().toLocaleString();
   }
   const editable = useMemo(
     () => ({
@@ -99,7 +113,7 @@ const Workflows = () => {
           (async () => {
             const oldWorkflow = await workflowController.fetchOnlyWorkflowById(workflow._id);
             if (oldWorkflow.length === 0) {
-              CreateAuditLog(null, "Delete Workflow", "Workflow", workflow._id, workflow, {});
+              CreateAuditLog(null, 'Delete Workflow', 'Workflow', workflow._id, workflow, {});
             }
           })();
         }),
@@ -114,7 +128,7 @@ const Workflows = () => {
         tooltip: 'Open Workflow',
         onClick: (_: any, workflow: Workflow | Workflow[]) => {
           if (!Array.isArray(workflow)) {
-            history.push(`${ROUTE_WORKFLOW}/${workflow._id}`)
+            history.push(`${ROUTE_WORKFLOW}/${workflow._id}`);
           }
         },
       },
@@ -123,23 +137,26 @@ const Workflows = () => {
   );
 
   useEffect(() => {
-    console.log('page refresh')
+    console.log('page refresh');
     dispatch(getWorkflowsRequest());
   }, [dispatch]);
 
-  useEffect(()=>{
-    setRowNum(workflows.length)
+  useEffect(() => {
+    setRowNum(workflows.length);
     if (!hasWorkflows) {
-      setHasWorkflows(workflows.length >= 1)
+      setHasWorkflows(workflows.length >= 1);
     }
-  }, [workflows])
+  }, [workflows]);
 
   return (
     <div>
       <WorkflowHeader />
-      <ErrorBanner title={"You cannnot delete this workflow because it is refernced in template type."} targetStore={selectWorkflowsStore}/>
+      <ErrorBanner
+        title={'You cannnot delete this workflow because it is refernced in template type.'}
+        targetStore={selectWorkflowsStore}
+      />
       <MaterialTable
-        key={readRowNum} 
+        key={readRowNum}
         columns={hasWorkflows ? columns : preColumns}
         data={hasWorkflows ? workflows : preWorkflows}
         editable={hasWorkflows ? editable : undefined}

@@ -14,23 +14,23 @@ import {
   //@ts-ignore
 } from '../../store/thunks/status';
 
-  //@ts-ignore
+//@ts-ignore
 import { selectFactoryRESTResponseTableValues } from '../../store/common/REST/selectors';
-  //@ts-ignore
+//@ts-ignore
 import { selectStatusesStore } from '../../store/StatusesStore/selectors';
 
-  //@ts-ignore
-import {calculateOptions} from '../../tools/misc';
+//@ts-ignore
+import { calculateOptions } from '../../tools/misc';
 
-  //@ts-ignore
+//@ts-ignore
 import statusController from '../../controllers/status';
-  //@ts-ignore
+//@ts-ignore
 import CreateAuditLog from '../AuditLog_Global';
 
-import Status from '../../types/status'
+import Status from '../../types/status';
 
 interface StatusMT extends Status {
-  tableData?: any,
+  tableData?: any;
 }
 
 const StatusHeader = () => {
@@ -45,20 +45,22 @@ const StatusHeader = () => {
 const StatusesTable = () => {
   const dispatch = useDispatch();
   const [readRowNum, setRowNum] = useState(1);
-  const [hasStatuses, setHasStatuses] = useState(false)
+  const [hasStatuses, setHasStatuses] = useState(false);
 
-  const preColumns: Column<StatusMT>[] = [{ title: 'Name', field: 'name' }]
-  const preStatuses: StatusMT[] = [{
-    name: 'LOADING...',
-    _id: '',
-    description: '',
-    isActive: true,
-    updatedAt: '',
-    forPackage: true,
-    timestamp: '',
-    updatedBy: '',
-  }]
-  
+  const preColumns: Column<StatusMT>[] = [{ title: 'Name', field: 'name' }];
+  const preStatuses: StatusMT[] = [
+    {
+      name: 'LOADING...',
+      _id: '',
+      description: '',
+      isActive: true,
+      updatedAt: '',
+      forPackage: true,
+      timestamp: '',
+      updatedBy: '',
+    },
+  ];
+
   // Prepare the data for the material table
   const { statuses }: { statuses: Status[] } = useSelector(
     state => ({
@@ -69,7 +71,7 @@ const StatusesTable = () => {
   // Convert Date format
   statuses.forEach((status: Status) => {
     const logtime = new Date(status.timestamp);
-    status.timestamp = moment(logtime).format("YYYY-MM-DD HH:mm:ss")
+    status.timestamp = moment(logtime).format('YYYY-MM-DD HH:mm:ss');
   });
 
   // Prepare the columns for material table
@@ -79,20 +81,32 @@ const StatusesTable = () => {
       { title: 'Description', field: 'description' },
       { title: 'Active', type: 'boolean', field: 'isActive' },
       { title: 'For Package', type: 'boolean', field: 'forPackage' },
-      { title: 'Modified On', field: 'timestamp', editComponent: () => {return <div></div>} },
-      { title: 'Updated By', field: 'updatedBy', editComponent: () => {return <div></div>} },
+      {
+        title: 'Modified On',
+        field: 'timestamp',
+        editComponent: () => {
+          return <div></div>;
+        },
+      },
+      {
+        title: 'Updated By',
+        field: 'updatedBy',
+        editComponent: () => {
+          return <div></div>;
+        },
+      },
     ],
     [],
   );
 
   const options: Options<StatusMT> = useMemo(() => calculateOptions(readRowNum), [readRowNum]);
-  
+
   // Record who and when of the action
   function recordUpdate(status: StatusMT) {
     //get username and record in Modified By column
     status.updatedBy = localStorage.getItem('currentUser') || '';
-    //record new date and time in Modified On column 
-    status.timestamp = new Date().toLocaleString(); 
+    //record new date and time in Modified On column
+    status.timestamp = new Date().toLocaleString();
   }
   // Prepare the editing functionalities for the material table
   const editable = useMemo(
@@ -104,29 +118,29 @@ const StatusesTable = () => {
         }).then(newStatus => {
           // For Auditlog
           if (newStatus) {
-            CreateAuditLog(null, "Add Status", "Status", (newStatus as Status)._id, {}, newStatus);
+            CreateAuditLog(null, 'Add Status', 'Status', (newStatus as Status)._id, {}, newStatus);
           }
         }),
-      
+
       onRowUpdate: (status: StatusMT) =>
         new Promise((resolve, reject) => {
           recordUpdate(status);
           // Find the old value before updating for Auditlog
           (async () => {
             const oldStatus = await statusController.fetchStatus(status._id);
-            CreateAuditLog(null, "Update Status", "Status", oldStatus._id, oldStatus, status);
+            CreateAuditLog(null, 'Update Status', 'Status', oldStatus._id, oldStatus, status);
           })();
           // Do Update
           dispatch(updateStatusRequest(status, resolve, reject));
         }),
-      
+
       onRowDelete: (status: StatusMT) =>
         new Promise((resolve, reject) => {
           recordUpdate(status);
           dispatch(deleteStatusRequest(status._id, resolve, reject));
           // For Auditlog
           const status_trim = (({ tableData, ...o }) => o)(status);
-          CreateAuditLog(null, "Delete Status", "Status", status._id, status_trim, {});
+          CreateAuditLog(null, 'Delete Status', 'Status', status._id, status_trim, {});
         }),
     }),
     [dispatch],
@@ -136,10 +150,10 @@ const StatusesTable = () => {
     dispatch(getStatusesRequest());
   }, [dispatch]);
 
-  useEffect(()=>{
-    setRowNum(statuses.length)
+  useEffect(() => {
+    setRowNum(statuses.length);
     if (!hasStatuses) {
-      setHasStatuses(statuses.length >= 1)
+      setHasStatuses(statuses.length >= 1);
     }
   }, [statuses]);
 

@@ -13,23 +13,22 @@ import CreateOutlinedIcon from '@material-ui/icons/CreateOutlined';
 import ExpansionPanel from '@material-ui/core/ExpansionPanel';
 import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import Typography from '@material-ui/core/Typography';
 import StatusController from '../../controllers/status';
 
-import Typography from '@material-ui/core/Typography';
 import { getSubmissionsRequest } from '../../store/thunks/submission';
 import { selectSubmissionsStore } from '../../store/SubmissionsStore/selectors';
 import { selectFactoryRESTResponseTableValues } from '../../store/common/REST/selectors';
-import { calculateOptions } from '../../tools/misc'
+import { calculateOptions } from '../../tools/misc';
 import UsersController from '../../controllers/Users';
-import './SubmissionDashboard.scss'
+import './SubmissionDashboard.scss';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(theme => ({
   formControl: {
     margin: theme.spacing(1),
-    minWidth: 120
-  }
+    minWidth: 120,
+  },
 }));
-
 
 const SubmissionHeader = () => (
   <Paper className="header">
@@ -52,26 +51,42 @@ const SubmissionDashboard = ({ history }) => {
 
   let allowedGrouping;
 
-  switch(currRole){
-    case('Inputter'):
+  switch (currRole) {
+    case 'Inputter':
       allowedGrouping = ['Inputted', 'Unsubmitted'];
       break;
 
-    case('Submitter'):
-      allowedGrouping = ['Unsubmitted', 'Inputted', 'Submitted', 'review', 'Approved' ,'Returned', 'Rejected'];
+    case 'Submitter':
+      allowedGrouping = [
+        'Unsubmitted',
+        'Inputted',
+        'Submitted',
+        'review',
+        'Approved',
+        'Returned',
+        'Rejected',
+      ];
       break;
 
-    case('Reviewer'):
+    case 'Reviewer':
       allowedGrouping = ['Submitted', 'Returned', 'Approved', 'review'];
       break;
 
-    case('Submission Approver'):
-       allowedGrouping = ['Submitted', 'Returned', 'Approved', 'review'];
+    case 'Submission Approver':
+      allowedGrouping = ['Submitted', 'Returned', 'Approved', 'review'];
       break;
 
     default:
-      allowedGrouping = ['Unsubmitted', 'Inputted', 'Submitted', 'Approved',
-      'pre_view', 'review', 'Returned', 'Rejected'];
+      allowedGrouping = [
+        'Unsubmitted',
+        'Inputted',
+        'Submitted',
+        'Approved',
+        'pre_view',
+        'review',
+        'Returned',
+        'Rejected',
+      ];
       break;
   }
 
@@ -82,31 +97,36 @@ const SubmissionDashboard = ({ history }) => {
   //     setStatuses(valid.map(status => status.name));
   //   })
 
-  const timeOption = { year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric' };
+  const timeOption = {
+    year: 'numeric',
+    month: 'numeric',
+    day: 'numeric',
+    hour: 'numeric',
+    minute: 'numeric',
+  };
   let { submissions } = useSelector(
     state => ({
       submissions: selectFactoryRESTResponseTableValues(selectSubmissionsStore)(state),
     }),
     shallowEqual,
-  )
+  );
 
-   useEffect(() => {
-    
-    const submissionGroups = submissions.map(e=>e.phase);
-    console.log('status', submissionGroups)
-    setStatuses(allowedGrouping.filter(e=>submissionGroups.includes(e)));
-    UsersController.fetchByEmail(localStorage.getItem('currentUser')).then(res=>{
+  useEffect(() => {
+    const submissionGroups = submissions.map(e => e.phase);
+    console.log('status', submissionGroups);
+    setStatuses(allowedGrouping.filter(e => submissionGroups.includes(e)));
+    UsersController.fetchByEmail(localStorage.getItem('currentUser')).then(res => {
       let filter = [];
       res.sysRole.forEach(role => {
-        if (role.role === currRole && currRole !== 'Business Admin'){
+        if (role.role === currRole && currRole !== 'Business Admin') {
           role.org.forEach(orginfo => {
-            filter = filter.concat(orginfo.program.map(e=>String(e.programId)))
+            filter = filter.concat(orginfo.program.map(e => String(e.programId)));
           });
         }
       });
       setFilter(filter);
     });
-  }, [submissions])
+  }, [submissions]);
 
   let submitterFlag = false;
 
@@ -115,18 +135,18 @@ const SubmissionDashboard = ({ history }) => {
     dispatch(getSubmissionsRequest());
   }
   if (submissions[0] !== undefined) {
-    if (localStorage.getItem('currentRole') !== 'Business Admin'){
-      submissions = submissions.filter(submission=>
-        programFilter.includes(String(submission.programId))
+    if (localStorage.getItem('currentRole') !== 'Business Admin') {
+      submissions = submissions.filter(submission =>
+        programFilter.includes(String(submission.programId)),
       );
     }
     submissions.forEach(submission => {
       const createdAt = new Date(submission.createdAt);
       const modifiedAt = new Date(submission.updatedAt);
       // @ts-ignore
-      submission.createdAt = createdAt.toLocaleDateString("en-US", timeOption);
+      submission.createdAt = createdAt.toLocaleDateString('en-US', timeOption);
       // @ts-ignore
-      submission.updatedAt = modifiedAt.toLocaleDateString("en-US", timeOption);
+      submission.updatedAt = modifiedAt.toLocaleDateString('en-US', timeOption);
       if (!submissionPeriod[submission.period]) {
         submissionPeriod[submission.period] = 1;
       }
@@ -140,35 +160,88 @@ const SubmissionDashboard = ({ history }) => {
           submitterFlag = true;
       } else {
         // should remove invalid (undefined/out of range) submissions
-        submissions.filter(element => element !== submission)
+        submissions.filter(element => element !== submission);
       }
     });
   }
 
-
-  const handleFilterFrom = (event) => {
+  const handleFilterFrom = event => {
     setFilterFrom(event.target.value);
-  }
+  };
 
-  const handleFilterTo = (event) => {
+  const handleFilterTo = event => {
     setFilterTo(event.target.value);
-  }
-
+  };
 
   const checkBoxColumns = useMemo(
     () => [
-      { title: 'Period', field: 'period', headerStyle: { padding: styleFactor }, cellStyle: { padding: styleFactor } },
-      { title: 'Submission', field: 'name', headerStyle: { padding: styleFactor }, cellStyle: { padding: styleFactor } },
-      { title: 'Program', field: 'programName', headerStyle: { padding: styleFactor }, cellStyle: { padding: styleFactor } },
+      {
+        title: 'Period',
+        field: 'period',
+        headerStyle: { padding: styleFactor },
+        cellStyle: { padding: styleFactor },
+      },
+      {
+        title: 'Submission',
+        field: 'name',
+        headerStyle: { padding: styleFactor },
+        cellStyle: { padding: styleFactor },
+      },
+      {
+        title: 'Program',
+        field: 'programName',
+        headerStyle: { padding: styleFactor },
+        cellStyle: { padding: styleFactor },
+      },
       { title: 'Approver', field: 'approver' },
-      { title: 'Health Service Provider', field: 'orgId', headerStyle: { padding: styleFactor }, cellStyle: { padding: styleFactor } },
-      { title: 'Template Package Name', field: 'templatePackageName', headerStyle: { padding: styleFactor }, cellStyle: { padding: styleFactor } },
-      { title: 'Status', field: 'phase', headerStyle: { padding: styleFactor }, cellStyle: { padding: styleFactor } },
-      { title: 'Created On', field: 'createdAt', headerStyle: { padding: styleFactor }, cellStyle: { padding: styleFactor } },
-      { title: 'Modified By', field: 'updatedBy', headerStyle: { padding: styleFactor }, cellStyle: { padding: styleFactor } },
-      { title: 'Modified on', field: 'updatedAt', headerStyle: { padding: styleFactor }, cellStyle: { padding: styleFactor } },
-      { title: 'version', field: 'version', headerStyle: { padding: styleFactor }, cellStyle: { padding: styleFactor } },
-      { title: 'Template Name', field: 'workbookData.name', headerStyle: { padding: styleFactor }, cellStyle: { padding: styleFactor } },
+      {
+        title: 'Health Service Provider',
+        field: 'orgId',
+        headerStyle: { padding: styleFactor },
+        cellStyle: { padding: styleFactor },
+      },
+      {
+        title: 'Template Package Name',
+        field: 'templatePackageName',
+        headerStyle: { padding: styleFactor },
+        cellStyle: { padding: styleFactor },
+      },
+      {
+        title: 'Status',
+        field: 'phase',
+        headerStyle: { padding: styleFactor },
+        cellStyle: { padding: styleFactor },
+      },
+      {
+        title: 'Created On',
+        field: 'createdAt',
+        headerStyle: { padding: styleFactor },
+        cellStyle: { padding: styleFactor },
+      },
+      {
+        title: 'Modified By',
+        field: 'updatedBy',
+        headerStyle: { padding: styleFactor },
+        cellStyle: { padding: styleFactor },
+      },
+      {
+        title: 'Modified on',
+        field: 'updatedAt',
+        headerStyle: { padding: styleFactor },
+        cellStyle: { padding: styleFactor },
+      },
+      {
+        title: 'version',
+        field: 'version',
+        headerStyle: { padding: styleFactor },
+        cellStyle: { padding: styleFactor },
+      },
+      {
+        title: 'Template Name',
+        field: 'workbookData.name',
+        headerStyle: { padding: styleFactor },
+        cellStyle: { padding: styleFactor },
+      },
     ],
     [],
   );
@@ -214,15 +287,16 @@ const SubmissionDashboard = ({ history }) => {
     dispatch(getSubmissionsRequest());
   }, [dispatch]);
 
-  const getSubmissionsInRange = (status) => submissions.filter(
-    (submission) =>
-      // get submissions for given status and selected period 
-      submission.phase === status && 
-      (readFilterFrom === 'All' || submission.period >= readFilterFrom) && 
-      (readFilterTo === 'All' || submission.period <= readFilterTo)
-    )
+  const getSubmissionsInRange = status =>
+    submissions.filter(
+      submission =>
+        // get submissions for given status and selected period
+        submission.phase === status &&
+        (readFilterFrom === 'All' || submission.period >= readFilterFrom) &&
+        (readFilterTo === 'All' || submission.period <= readFilterTo),
+    );
 
-  console.log('status', statuses)
+  console.log('status', statuses);
   return (
     <div className="submissions">
       <SubmissionHeader />
@@ -234,9 +308,9 @@ const SubmissionDashboard = ({ history }) => {
           id="demo-controlled-open-select"
           onChange={handleFilterFrom}
         >
-          <MenuItem value='All'>All</MenuItem>
-          {Object.keys(submissionPeriod).map((element) => {
-            return <MenuItem value={element}>{element}</MenuItem>
+          <MenuItem value="All">All</MenuItem>
+          {Object.keys(submissionPeriod).map(element => {
+            return <MenuItem value={element}>{element}</MenuItem>;
           })}
         </Select>
       </FormControl>
@@ -248,20 +322,20 @@ const SubmissionDashboard = ({ history }) => {
           id="demo-controlled-open-select"
           onChange={handleFilterTo}
         >
-          <MenuItem value='All'>All</MenuItem>
-          {Object.keys(submissionPeriod).map((element) => {
-            return <MenuItem value={element}>{element}</MenuItem>
+          <MenuItem value="All">All</MenuItem>
+          {Object.keys(submissionPeriod).map(element => {
+            return <MenuItem value={element}>{element}</MenuItem>;
           })}
         </Select>
       </FormControl>
-      {statuses.length > 0 ? 
+      {statuses.length > 0 ? (
         statuses.map(status => {
-          console.log('status', status)
-          const data = getSubmissionsInRange(status)
-          const options = calculateOptions(data.length)
+          console.log('status', status);
+          const data = getSubmissionsInRange(status);
+          const options = calculateOptions(data.length);
           return (
             <ExpansionPanel>
-              <ExpansionPanelSummary 
+              <ExpansionPanelSummary
                 expandIcon={<ExpandMoreIcon />}
                 aria-controls="panel1a-content"
                 id="panel1a-header"
@@ -278,11 +352,13 @@ const SubmissionDashboard = ({ history }) => {
                 />
               </div>
             </ExpansionPanel>
-          )
-        }):(<Typography variant="h6" align='center'>
-              Nothing to show.
-            </Typography>)
-      }
+          );
+        })
+      ) : (
+        <Typography variant="h6" align="center">
+          Nothing to show.
+        </Typography>
+      )}
     </div>
   );
 };

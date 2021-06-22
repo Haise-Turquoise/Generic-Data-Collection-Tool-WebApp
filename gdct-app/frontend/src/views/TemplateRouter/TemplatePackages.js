@@ -48,11 +48,11 @@ const TemplatePackages = () => {
   const dispatch = useDispatch();
   const history = useHistory();
   const [readRowNum, setRowNum] = useState(1);
-  const [hasPackages, setHasPackages] = useState(false)
+  const [hasPackages, setHasPackages] = useState(false);
 
   // table vars while loading
-  const preColumns = [{ title: 'Name', field: 'name' }]
-  const prePackages = [{ name: 'LOADING...' }]
+  const preColumns = [{ title: 'Name', field: 'name' }];
+  const prePackages = [{ name: 'LOADING...' }];
 
   // Prepare the data for material table
   const {
@@ -75,8 +75,8 @@ const TemplatePackages = () => {
   templatePackages.forEach(templatePackage => {
     const logtime = new Date(templatePackage.timestamp);
     const creationDate = new Date(templatePackage.creationDate);
-    templatePackage.timestamp = moment(logtime).format("YYYY-MM-DD HH:mm:ss");
-    templatePackage.creationDate = moment(creationDate).format("YYYY-MM-DD HH:mm:ss");
+    templatePackage.timestamp = moment(logtime).format('YYYY-MM-DD HH:mm:ss');
+    templatePackage.creationDate = moment(creationDate).format('YYYY-MM-DD HH:mm:ss');
   });
 
   // Prepare the actions for material table
@@ -95,7 +95,11 @@ const TemplatePackages = () => {
   const columns = useMemo(
     () => [
       { title: 'Name', field: 'name' },
-      { title: 'Submission Period ID', field: 'submissionPeriodId', lookup: lookupSubmissionPeriods },
+      {
+        title: 'Submission Period ID',
+        field: 'submissionPeriodId',
+        lookup: lookupSubmissionPeriods,
+      },
       {
         title: 'Status ID',
         field: 'statusId',
@@ -162,19 +166,37 @@ const TemplatePackages = () => {
           // return <Select  options={optionList}/>
         },
       },
-      { title: 'Creation Date', field: 'creationDate', editComponent: () => {return <div></div>} },
-      { title: 'Modified On', field: 'timestamp', editComponent: () => {return <div></div>} },
-      { title: 'Updated By', field: 'updatedBy', editComponent: () => {return <div></div>} },
+      {
+        title: 'Creation Date',
+        field: 'creationDate',
+        editComponent: () => {
+          return <div></div>;
+        },
+      },
+      {
+        title: 'Modified On',
+        field: 'timestamp',
+        editComponent: () => {
+          return <div></div>;
+        },
+      },
+      {
+        title: 'Updated By',
+        field: 'updatedBy',
+        editComponent: () => {
+          return <div></div>;
+        },
+      },
     ],
     [lookupStatuses, lookupSubmissionPeriods],
   );
 
   const options = useMemo(() => calculateOptions(readRowNum), [readRowNum]);
 
-  // Record user and time when an action occurs 
+  // Record user and time when an action occurs
   function recordUpdate(templatePackage) {
     templatePackage.updatedBy = localStorage.getItem('currentUser');
-    templatePackage.timestamp = new Date().toLocaleString(); 
+    templatePackage.timestamp = new Date().toLocaleString();
   }
   // Prepare the editing functionalities for the material table
   const editable = useMemo(
@@ -187,7 +209,14 @@ const TemplatePackages = () => {
           dispatch(createTemplatePackageRequest(templatePackage, resolve, reject));
         }).then(newTemplatePackage => {
           // For Auditlog
-          CreateAuditLog(null, "Create Template Package", "TemplatePackage", newTemplatePackage._id, {}, newTemplatePackage);
+          CreateAuditLog(
+            null,
+            'Create Template Package',
+            'TemplatePackage',
+            newTemplatePackage._id,
+            {},
+            newTemplatePackage,
+          );
         }),
 
       onRowUpdate: templatePackage =>
@@ -195,21 +224,37 @@ const TemplatePackages = () => {
           recordUpdate(templatePackage);
           console.log(templatePackage);
           // Find the old value before updating in order to Auditlog
-          (async () => { 
-            const oldTemplatePackage = await templatePackageController.fetchTemplatePackage(templatePackage._id);
-            CreateAuditLog(null, "Update Template Package", "TemplatePackage", oldTemplatePackage._id, oldTemplatePackage, templatePackage);
+          (async () => {
+            const oldTemplatePackage = await templatePackageController.fetchTemplatePackage(
+              templatePackage._id,
+            );
+            CreateAuditLog(
+              null,
+              'Update Template Package',
+              'TemplatePackage',
+              oldTemplatePackage._id,
+              oldTemplatePackage,
+              templatePackage,
+            );
           })();
           // Do Update
           dispatch(updateTemplatePackageRequest(templatePackage, resolve, reject));
         }),
-        
+
       onRowDelete: templatePackage =>
         new Promise((resolve, reject) => {
           recordUpdate(templatePackage);
           dispatch(deleteTemplatePackageRequest(templatePackage._id, resolve, reject));
           // For Auditlog
           const templatePackage_trim = (({ tableData, ...o }) => o)(templatePackage);
-          CreateAuditLog(null, "Delete Template Package", "TemplatePackage", templatePackage._id, templatePackage_trim, {});
+          CreateAuditLog(
+            null,
+            'Delete Template Package',
+            'TemplatePackage',
+            templatePackage._id,
+            templatePackage_trim,
+            {},
+          );
         }),
     }),
     [dispatch],
@@ -227,17 +272,20 @@ const TemplatePackages = () => {
     };
   }, [dispatch]);
 
-  useEffect(()=>{
-    setRowNum(templatePackages.length)
+  useEffect(() => {
+    setRowNum(templatePackages.length);
     if (!hasPackages) {
-      setHasPackages(templatePackages.length >= 1)
+      setHasPackages(templatePackages.length >= 1);
     }
-  }, [templatePackages])
+  }, [templatePackages]);
 
   return (
     <div>
       <TemplatePackageHeader />
-      <ErrorBanner title={"You cannot delete the selected template package since it was already published"} targetStore={selectTemplatePackagesStore}/>
+      <ErrorBanner
+        title={'You cannot delete the selected template package since it was already published'}
+        targetStore={selectTemplatePackagesStore}
+      />
       <MaterialTable
         key={readRowNum}
         columns={hasPackages ? columns : preColumns}

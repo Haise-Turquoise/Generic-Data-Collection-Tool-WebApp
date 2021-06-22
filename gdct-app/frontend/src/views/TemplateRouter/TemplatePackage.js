@@ -3,8 +3,16 @@ import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 
 import { Formik, Form } from 'formik';
-import { Button, TextField, Paper, Typography,
-         List, ListItem, ListItemText, ListItemSecondaryAction } from '@material-ui/core';
+import {
+  Button,
+  TextField,
+  Paper,
+  Typography,
+  List,
+  ListItem,
+  ListItemText,
+  ListItemSecondaryAction,
+} from '@material-ui/core';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 
 import uniqid from 'uniqid';
@@ -52,10 +60,7 @@ const CustomField = ({ label, children, addButton = false, handleClick = null })
 const FirstSection = ({ values, handleChangeStatus, handleChangeSubmissionPeriod }) => (
   <div>
     <CustomField label="Status">
-      <StatusIdButton 
-        value={values.statusId.name} 
-        onChange={handleChangeStatus} isPopulated 
-      />
+      <StatusIdButton value={values.statusId.name} onChange={handleChangeStatus} isPopulated />
     </CustomField>
     <CustomField label="Submission Period">
       <SubmissionPeriodIdButton
@@ -157,7 +162,6 @@ const Content = ({ setFieldValue, handleChange, values }) => {
     return selected;
   }, [values]);
 
-
   const selectedPrograms = useMemo(() => {
     const selected = {};
 
@@ -240,18 +244,25 @@ const Content = ({ setFieldValue, handleChange, values }) => {
 const Buttons = ({ handleSubmit }) => {
   // Redirect to the list of template packages page
   const history = useHistory();
-  const redirect = () => { history.push('/admin/template/package') };
+  const redirect = () => {
+    history.push('/admin/template/package');
+  };
   return (
     <div>
-      <Button onClick={redirect} variant="contained" color="primary" style={{marginTop: '0.8%'}}>
+      <Button onClick={redirect} variant="contained" color="primary" style={{ marginTop: '0.8%' }}>
         <ArrowBackIcon></ArrowBackIcon>
         Back
       </Button>
-      <Button onClick={handleSubmit} variant="contained" color="primary" style={{marginLeft: '1%', marginTop: '0.8%'}}>
+      <Button
+        onClick={handleSubmit}
+        variant="contained"
+        color="primary"
+        style={{ marginLeft: '1%', marginTop: '0.8%' }}
+      >
         Save
       </Button>
     </div>
-  )
+  );
 };
 
 const init = {
@@ -286,30 +297,46 @@ const TemplatePackage = ({
     };
   }, [dispatch, _id]);
 
-  const handleSubmit = useCallback(populatedData => {
-    // Reformat data based on the callback of dispatch below
-    const formattedTemplatePackage = {
-      _id,
-      name: populatedData.name,
-      statusId: populatedData.statusId._id,
-      submissionPeriodId: populatedData.submissionPeriodId._id,
-      templateIds: populatedData.templateIds.map(({ _id }) => _id),
-      programIds: populatedData.programIds.map(({ _id }) => _id),
-      creationDate: populatedData.creationDate,
-      timestamp: Date(),  
-      updatedBy: localStorage.getItem('currentUser'),
-    };
+  const handleSubmit = useCallback(
+    populatedData => {
+      // Reformat data based on the callback of dispatch below
+      const formattedTemplatePackage = {
+        _id,
+        name: populatedData.name,
+        statusId: populatedData.statusId._id,
+        submissionPeriodId: populatedData.submissionPeriodId._id,
+        templateIds: populatedData.templateIds.map(({ _id }) => _id),
+        programIds: populatedData.programIds.map(({ _id }) => _id),
+        creationDate: populatedData.creationDate,
+        timestamp: Date(),
+        updatedBy: localStorage.getItem('currentUser'),
+      };
 
-    // Find the old value before updating in order to Auditlog
-    (async () => { 
-      const oldTemplatePackage = await templatePackageController.fetchTemplatePackage(formattedTemplatePackage._id);
-      CreateAuditLog(null, "Update Template Package", "TemplatePackage", oldTemplatePackage._id, oldTemplatePackage, formattedTemplatePackage);
-    })();
+      // Find the old value before updating in order to Auditlog
+      (async () => {
+        const oldTemplatePackage = await templatePackageController.fetchTemplatePackage(
+          formattedTemplatePackage._id,
+        );
+        CreateAuditLog(
+          null,
+          'Update Template Package',
+          'TemplatePackage',
+          oldTemplatePackage._id,
+          oldTemplatePackage,
+          formattedTemplatePackage,
+        );
+      })();
 
-    // Do Update
-    const redirect = () => { history.push('/admin/template/package') };
-    dispatch(updateTemplatePackageRequest(formattedTemplatePackage, redirect, null, true, populatedData));
-  }, [dispatch, _id]);
+      // Do Update
+      const redirect = () => {
+        history.push('/admin/template/package');
+      };
+      dispatch(
+        updateTemplatePackageRequest(formattedTemplatePackage, redirect, null, true, populatedData),
+      );
+    },
+    [dispatch, _id],
+  );
 
   return (
     <Formik enableReinitialize initialValues={templatePackage} onSubmit={handleSubmit}>
@@ -322,7 +349,7 @@ const TemplatePackage = ({
             <Content {...props} />
             <Buttons {...props} />
           </Form>
-        )
+        );
       }}
     </Formik>
   );

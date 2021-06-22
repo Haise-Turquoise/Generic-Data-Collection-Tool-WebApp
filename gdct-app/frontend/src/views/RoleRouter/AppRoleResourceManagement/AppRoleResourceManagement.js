@@ -4,58 +4,57 @@ import { useHistory } from 'react-router-dom';
 
 import MaterialTable from 'material-table';
 import { Paper, Typography, Button } from '@material-ui/core';
-import Loading from '../../../components/Loading';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
+import Loading from '../../../components/Loading';
 
-
-import AppResourceList from '../AppResourceList'
+import AppResourceList from '../AppResourceList';
 import ProgramList from '../../OrganizationRouter/ProgramList';
 import { selectFactoryRESTResponseTableValues } from '../../../store/common/REST/selectors';
 import { calculateOptions } from '../../../tools/misc';
 //
-import{selectAppRoleResourcesStore} from '../../../store/AppRoleResourcesStore/selectors';
+import { selectAppRoleResourcesStore } from '../../../store/AppRoleResourcesStore/selectors';
 import { selectAppSysRolesStore } from '../../../store/AppSysRolesStore/selectors';
 import { selectAppResourcesStore } from '../../../store/AppResourcesStore/selectors';
 
-import {AppRoleResourcesStore} from '../../../store/AppRoleResourcesStore/store';
-import {AppSysRolesStore} from '../../../store/AppSysRolesStore/store';
-import {AppResourcesStore} from '../../../store/AppResourcesStore/store';
+import { AppRoleResourcesStore } from '../../../store/AppRoleResourcesStore/store';
+import { AppSysRolesStore } from '../../../store/AppSysRolesStore/store';
+import { AppResourcesStore } from '../../../store/AppResourcesStore/store';
 import { getAppSysRolesRequest } from '../../../store/thunks/AppSysRole';
 import { getAppResourcesRequest } from '../../../store/thunks/AppResource';
 import {
-    getAppRoleResourcesRequest,
-    createAppRoleResourceRequest,
-    deleteAppRoleResourceRequest,
-    updateAppRoleResourceRequest,
-  } from '../../../store/thunks/AppRoleResource';
+  getAppRoleResourcesRequest,
+  createAppRoleResourceRequest,
+  deleteAppRoleResourceRequest,
+  updateAppRoleResourceRequest,
+} from '../../../store/thunks/AppRoleResource';
+
 const AppRoleResourceManagementHeader = ({
   match: {
     params: { _id },
   },
 }) => {
-  const [roleName, setRoleName] = useState('')
-  let { appRoleResource } = useSelector(
+  const [roleName, setRoleName] = useState('');
+  const { appRoleResource } = useSelector(
     state => ({
-      appRoleResource: (selectFactoryRESTResponseTableValues(selectAppRoleResourcesStore)(state).filter(
-        elem => elem._id === _id,
-      ) || [{}])[0],
+      appRoleResource: (selectFactoryRESTResponseTableValues(selectAppRoleResourcesStore)(
+        state,
+      ).filter(elem => elem._id === _id) || [{}])[0],
     }),
     shallowEqual,
   );
 
   useEffect(() => {
     if (appRoleResource) {
-      setRoleName(appRoleResource.appSysRoleId.roleName)
+      setRoleName(appRoleResource.appSysRoleId.roleName);
     }
-  }, [appRoleResource])
+  }, [appRoleResource]);
 
   return (
     <Paper className="header">
       <Typography variant="h5">App Role Resource Management</Typography>
-      <Typography variant='body1'>{roleName}</Typography>
+      <Typography variant="body1">{roleName}</Typography>
       {/* <HeaderActions/> */}
     </Paper>
-    
   );
 };
 
@@ -154,59 +153,59 @@ const LinkProgramTable = ({
 
   let { appRoleResource } = useSelector(
     state => ({
-      appRoleResource: (selectFactoryRESTResponseTableValues(selectAppRoleResourcesStore)(state).filter(
-        elem => elem._id === _id,
-      ) || [{}])[0],
+      appRoleResource: (selectFactoryRESTResponseTableValues(selectAppRoleResourcesStore)(
+        state,
+      ).filter(elem => elem._id === _id) || [{}])[0],
     }),
     shallowEqual,
   );
 
-  const reject = () => { alert('Missing or invalid parameters') };
+  const reject = () => {
+    alert('Missing or invalid parameters');
+  };
 
   const onClickAdd = (_event, rowData) => {
-    appRoleResource.resourceId = appRoleResource.resourceId.concat([{id:rowData._id, resourceName:rowData.resourceName}]);
+    appRoleResource.resourceId = appRoleResource.resourceId.concat([
+      { id: rowData._id, resourceName: rowData.resourceName },
+    ]);
     dispatch(updateAppRoleResourceRequest(appRoleResource, null, reject));
     // Refresh appRoleResource because dispatch makes object read-only, not allowing multiple adding.
-    appRoleResource = Object.assign({}, appRoleResource);
+    appRoleResource = { ...appRoleResource };
   };
 
   const onClickDelete = (_event, rowData) => {
     appRoleResource.resourceId = appRoleResource.resourceId.filter(elem => elem.id !== rowData._id);
     dispatch(updateAppRoleResourceRequest(appRoleResource, null, reject));
     // Refresh appRoleResource because dispatch makes object read-only, not allowing multiple deleting.
-    appRoleResource = Object.assign({}, appRoleResource);
+    appRoleResource = { ...appRoleResource };
   };
-  
-  const history = useHistory();
-  const redirect = () => { history.push('/admin/role/app_role_resource_management') };
-  
-  return !appRoleResource ? (
-    <Loading message={"Loading..."}/>
-  ) : (
-      <div>
-        <AppResourceList
-          resourceId={appRoleResource.resourceId}
-          onClickAdd={onClickAdd}
-          onClickDelete={onClickDelete}
-        />
-        <Button
-          onClick={redirect} 
-          variant="contained" 
-          color="primary"
-          style={{marginTop: '0.8%'}}
-        >
-          <ArrowBackIcon></ArrowBackIcon>
-          Back
-        </Button>
-      </div>
-    );
-};
 
+  const history = useHistory();
+  const redirect = () => {
+    history.push('/admin/role/app_role_resource_management');
+  };
+
+  return !appRoleResource ? (
+    <Loading message={'Loading...'} />
+  ) : (
+    <div>
+      <AppResourceList
+        resourceId={appRoleResource.resourceId}
+        onClickAdd={onClickAdd}
+        onClickDelete={onClickDelete}
+      />
+      <Button onClick={redirect} variant="contained" color="primary" style={{ marginTop: '0.8%' }}>
+        <ArrowBackIcon></ArrowBackIcon>
+        Back
+      </Button>
+    </div>
+  );
+};
 
 const AppRoleResourceManagement = props => (
   <div className="templateTypePage">
     <AppRoleResourceManagementHeader {...props} />
-    
+
     <LinkProgramTable {...props} />
   </div>
 );

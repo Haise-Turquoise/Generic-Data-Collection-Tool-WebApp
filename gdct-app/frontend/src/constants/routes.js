@@ -15,7 +15,7 @@ export const ROUTE_CATEGORY_CATEGORIES = `${ROUTE_CATEGORY}/category`;
 export const ROUTE_CATEGORY_TREES = `${ROUTE_CATEGORY}/tree`;
 export const ROUTE_CATEGORY_ATTRIBUTES = `${ROUTE_CATEGORY}/attribute`;
 export const ROUTE_CATEGORY_GROUPS = `${ROUTE_CATEGORY}/group`;
-export const ROUTE_CATEGORY_GENERATE = `${ROUTE_CATEGORY}/generate`
+export const ROUTE_CATEGORY_GENERATE = `${ROUTE_CATEGORY}/generate`;
 
 export const ROUTE_MODIFY_PROFILE = '/user/profile';
 export const ROUTE_MODIFY_PROFILE_USER_INFO = `${ROUTE_MODIFY_PROFILE}/personaldetails`;

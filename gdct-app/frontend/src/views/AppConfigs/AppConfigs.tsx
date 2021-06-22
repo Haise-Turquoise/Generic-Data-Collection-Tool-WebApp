@@ -26,11 +26,11 @@ import AppConfigController from '../../controllers/AppConfig';
 //@ts-ignore
 import CreateAuditLog from '../AuditLog_Global';
 
-import AppConfig from '../../types/appconfig'
-import AppSys from '../../types/appsys'
+import AppConfig from '../../types/appconfig';
+import AppSys from '../../types/appsys';
 
 interface AppConfigMT extends AppConfig {
-  tableData?: any,
+  tableData?: any;
 }
 
 const AppConfigsHeader = () => {
@@ -44,19 +44,21 @@ const AppConfigsHeader = () => {
 
 const AppConfigsTable = () => {
   const dispatch = useDispatch();
-  const [hasConfigs, setHasConfigs] = useState(false)
+  const [hasConfigs, setHasConfigs] = useState(false);
 
   // table vars for loading
-  const preColumns: Column<AppConfigMT>[] = [{ title: 'Name', field: 'value' }]
-  const preConfigs: AppConfigMT[] = [{ 
-    value: 'LOADING...',
-    _id: '',
-    key: '',
-    appSys: '',
-    sys: '',
-    timestamp: '',
-    updatedBy: '',
-  }]
+  const preColumns: Column<AppConfigMT>[] = [{ title: 'Name', field: 'value' }];
+  const preConfigs: AppConfigMT[] = [
+    {
+      value: 'LOADING...',
+      _id: '',
+      key: '',
+      appSys: '',
+      sys: '',
+      timestamp: '',
+      updatedBy: '',
+    },
+  ];
 
   // Prepare the data for the material table
   const { appConfigs, appSyses } = useSelector(
@@ -69,10 +71,10 @@ const AppConfigsTable = () => {
   // Convert Date format
   appConfigs.forEach((appConfig: AppConfig) => {
     const logtime = new Date(appConfig.timestamp);
-    appConfig.timestamp = moment(logtime).format("YYYY-MM-DD HH:mm:ss")
+    appConfig.timestamp = moment(logtime).format('YYYY-MM-DD HH:mm:ss');
   });
   // Assign code as name
-  const lookupSysRoles = appSyses.reduce(function (acc: {[key:string]: string}, appSys: AppSys) {
+  const lookupSysRoles = appSyses.reduce(function (acc: { [key: string]: string }, appSys: AppSys) {
     acc[appSys.code] = appSys.name;
     return acc;
   }, {});
@@ -83,31 +85,41 @@ const AppConfigsTable = () => {
       { title: 'Key', field: 'key' },
       { title: 'Value', field: 'value' },
       { title: 'System', field: 'appSys', lookup: lookupSysRoles },
-      { title: 'Modified On', field: 'timestamp', editComponent: () => {return <div></div>} },
-      { title: 'Updated By', field: 'updatedBy', editComponent: () => {return <div></div>} },
+      {
+        title: 'Modified On',
+        field: 'timestamp',
+        editComponent: () => {
+          return <div></div>;
+        },
+      },
+      {
+        title: 'Updated By',
+        field: 'updatedBy',
+        editComponent: () => {
+          return <div></div>;
+        },
+      },
     ],
     [lookupSysRoles],
   );
 
   // Prepare the options
   const options: Options<AppConfigMT> = useMemo(
-    () => (
-      {
-        actionsColumnIndex: -1,
-        search: true,
-        showTitle: false,
-        addRowPosition: "first",
-      }
-    ), 
-    []
+    () => ({
+      actionsColumnIndex: -1,
+      search: true,
+      showTitle: false,
+      addRowPosition: 'first',
+    }),
+    [],
   );
 
   // Record who and when of the action
   function recordUpdate(appConfig: AppConfigMT) {
     //get username and record in Modified By column
     appConfig.updatedBy = localStorage.getItem('currentUser') || '';
-    //record new date and time in Modified On column 
-    appConfig.timestamp = new Date().toLocaleString(); 
+    //record new date and time in Modified On column
+    appConfig.timestamp = new Date().toLocaleString();
   }
   // Prepare the editing functionalities for the material table
   const editable = useMemo(
@@ -121,11 +133,11 @@ const AppConfigsTable = () => {
           if (newAppConfig) {
             CreateAuditLog(
               null,
-              "Add Application Configuration",
-              "AppConfig",
+              'Add Application Configuration',
+              'AppConfig',
               (newAppConfig as AppConfig)._id,
               {},
-              newAppConfig
+              newAppConfig,
             );
           }
         }),
@@ -136,19 +148,33 @@ const AppConfigsTable = () => {
           // Find the old value before updating for Auditlog
           (async () => {
             const oldAppConfig = await AppConfigController.fetchAppConfig(appConfig._id);
-            CreateAuditLog(null, "Update Application Configuration", "AppConfig", appConfig._id, oldAppConfig, appConfig);
+            CreateAuditLog(
+              null,
+              'Update Application Configuration',
+              'AppConfig',
+              appConfig._id,
+              oldAppConfig,
+              appConfig,
+            );
           })();
           // Do Update
           dispatch(updateAppConfigRequest(appConfig, resolve, reject));
         }),
-        
+
       onRowDelete: (appConfig: AppConfigMT) =>
         new Promise((resolve, reject) => {
           recordUpdate(appConfig);
           dispatch(deleteAppConfigRequest(appConfig._id, resolve, reject));
           // For Auditlog
           const appConfig_trim = (({ tableData, ...o }) => o)(appConfig);
-          CreateAuditLog(null, "Delete Application Configuration", "AppConfig", appConfig._id, appConfig_trim, {});
+          CreateAuditLog(
+            null,
+            'Delete Application Configuration',
+            'AppConfig',
+            appConfig._id,
+            appConfig_trim,
+            {},
+          );
         }),
     }),
     [dispatch],
@@ -161,9 +187,9 @@ const AppConfigsTable = () => {
 
   useEffect(() => {
     if (!hasConfigs) {
-      setHasConfigs(appConfigs.length >= 1)
+      setHasConfigs(appConfigs.length >= 1);
     }
-  }, [appConfigs])
+  }, [appConfigs]);
 
   return (
     <MaterialTable

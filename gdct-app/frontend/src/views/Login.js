@@ -1,11 +1,29 @@
 import React, { useState, useEffect } from 'react';
-import { Avatar, Button, Box, CssBaseline, Checkbox, Container, MenuItem, FormControl, InputLabel,
-         FormControlLabel, Grid, Link, Snackbar, TextField, Typography, Select } from '@material-ui/core';
+import {
+  Avatar,
+  Button,
+  Box,
+  CssBaseline,
+  Checkbox,
+  Container,
+  MenuItem,
+  FormControl,
+  InputLabel,
+  FormControlLabel,
+  Grid,
+  Link,
+  Snackbar,
+  TextField,
+  Typography,
+  Select,
+} from '@material-ui/core';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import { makeStyles } from '@material-ui/core/styles';
 import MuiAlert from '@material-ui/lab/Alert';
 
 import { useDispatch } from 'react-redux';
+import moment from 'moment';
+import Swal from 'sweetalert2';
 import { host } from '../constants/domain';
 import AuthController from '../controllers/Auth';
 
@@ -13,18 +31,16 @@ import CreateAuditLog from './AuditLog_Global';
 import SessionController from '../controllers/Session';
 import AppConfigController from '../controllers/AppConfig';
 
-import usersController from '../controllers/Users'
+import usersController from '../controllers/Users';
 
-import UserStore from '../store/UserStore/store'
+import UserStore from '../store/UserStore/store';
 
-import moment from 'moment';
-import Swal from 'sweetalert2';
 function Copyright() {
   return (
     <Typography variant="body2" color="textSecondary" align="center">
       {'Copyright © '}
       <Link color="inherit" href="#">
-        MOH - OHFS Budgeting and Forecasting 
+        MOH - OHFS Budgeting and Forecasting
       </Link>{' '}
       {new Date().getFullYear()}
       {'.'}
@@ -51,10 +67,10 @@ const useStyles = makeStyles(theme => ({
   },
   select: {
     marginTop: theme.spacing(2),
-    minWidth: '120px'
+    minWidth: '120px',
   },
   selectLabel: {
-    padding: theme.spacing(0, 1)
+    padding: theme.spacing(0, 1),
   },
   submit: {
     margin: theme.spacing(3, 0, 2),
@@ -89,8 +105,8 @@ export default function Login({ setLoggedIn }) {
   const [userFeedback, setUserFeedback] = useState('');
   const [checkLogin, setCheckLogin] = useState('false');
   const [open, setOpen] = React.useState(false);
-  const [selectedRole, setSelectedRole] = useState('')
-  const [roles, setRoles] = useState([])
+  const [selectedRole, setSelectedRole] = useState('');
+  const [roles, setRoles] = useState([]);
 
   const displayUserFeedback = () => {
     setOpen(true);
@@ -119,8 +135,8 @@ export default function Login({ setLoggedIn }) {
         setErrors(updatedErrors);
         break;
       case 'role':
-        setSelectedRole(value.toString())
-        break
+        setSelectedRole(value.toString());
+        break;
       default:
     }
   };
@@ -134,16 +150,16 @@ export default function Login({ setLoggedIn }) {
     try {
       if (email && validateForm(errors)) {
         // logic to verify validity of submitter role
-        const { sysRole } = await usersController.fetchByEmail(email)
-        
-        const possibleRoles = sysRole.reduce((acc, curr) => acc.concat(curr.role), [])
-        let currentRole = selectedRole
+        const { sysRole } = await usersController.fetchByEmail(email);
+
+        const possibleRoles = sysRole.reduce((acc, curr) => acc.concat(curr.role), []);
+        let currentRole = selectedRole;
         if (possibleRoles.length < 2) {
-          currentRole = sysRole[0].role
+          currentRole = sysRole[0].role;
         } else if (!possibleRoles.includes(currentRole)) {
-          handleUpdateRoles()
-          setLoggedIn(false)
-          return
+          handleUpdateRoles();
+          setLoggedIn(false);
+          return;
         }
 
         checkLogin = await AuthController.login({ email, password, selectedRole })
@@ -155,7 +171,7 @@ export default function Login({ setLoggedIn }) {
               // picks first role if signing in with autofill
               localStorage.setItem('currentUser', data.data.email);
               localStorage.setItem('currentUserID', data.data._id);
-              localStorage.setItem('currentRole', currentRole)
+              localStorage.setItem('currentRole', currentRole);
               sessionID = data.data.sessionID;
               // Audit Login
               CreateAuditLog(email, 'Login', 'Login', null, {}, {});
@@ -180,16 +196,17 @@ export default function Login({ setLoggedIn }) {
   };
 
   const handleUpdateRoles = () => {
-    usersController.fetchByEmail(email)
-    .then(data => {
-      setRoles(data.sysRole.map(role => role.role))
-      // set selected role manually if only one available
-      if (data.sysRole.length >= 1) {
-        setSelectedRole(data.sysRole[0].role)
-      }
-    })
-    .catch(() => setRoles([]))
-  }
+    usersController
+      .fetchByEmail(email)
+      .then(data => {
+        setRoles(data.sysRole.map(role => role.role));
+        // set selected role manually if only one available
+        if (data.sysRole.length >= 1) {
+          setSelectedRole(data.sysRole[0].role);
+        }
+      })
+      .catch(() => setRoles([]));
+  };
 
   // Session Timer
   const Timer = async () => {
@@ -197,8 +214,8 @@ export default function Login({ setLoggedIn }) {
     const period = sessionCheckingPeriod.value;
     let i = 0;
     while (i < 60) {
-      (function(i) {
-        setTimeout(function() {
+      (function (i) {
+        setTimeout(function () {
           SessionController.fetchById(sessionID).then(session => {
             if (session !== null) {
               const expirationTime = session.expires;
@@ -212,56 +229,53 @@ export default function Login({ setLoggedIn }) {
                 const swalWithBootstrapButtons = Swal.mixin({
                   customClass: {
                     confirmButton: 'btn btn-success',
-                    cancelButton: 'btn btn-danger'
+                    cancelButton: 'btn btn-danger',
                   },
-                })
-                swalWithBootstrapButtons.fire({
-                  title: `Session expiring in ${remainingMinutes} minutes`,
-                  text: "Unsaved process maybe lost if session expires",
-                  icon: 'warning',
-                  showCancelButton: true,
-                  confirmButtonText: 'Reset it',
-                  cancelButtonText: 'Cancel',
-                  reverseButtons: true
-                }).then((result) => {
-                  if (result.isConfirmed) {
-                    SessionController.updateExpiration(sessionID);
-                    swalWithBootstrapButtons.fire(
-                      'Reset!',
-                      'Your session has been reset',
-                      'success'
-                    )
-                  } else if (result.dismiss === Swal.DismissReason.cancel) {
-                    swalWithBootstrapButtons.fire(
-                      'Cancelled',
-                      'Session expiring...',
-                      'error'
-                    )
-                  }
-                })
+                });
+                swalWithBootstrapButtons
+                  .fire({
+                    title: `Session expiring in ${remainingMinutes} minutes`,
+                    text: 'Unsaved process maybe lost if session expires',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Reset it',
+                    cancelButtonText: 'Cancel',
+                    reverseButtons: true,
+                  })
+                  .then(result => {
+                    if (result.isConfirmed) {
+                      SessionController.updateExpiration(sessionID);
+                      swalWithBootstrapButtons.fire(
+                        'Reset!',
+                        'Your session has been reset',
+                        'success',
+                      );
+                    } else if (result.dismiss === Swal.DismissReason.cancel) {
+                      swalWithBootstrapButtons.fire('Cancelled', 'Session expiring...', 'error');
+                    }
+                  });
               }
               // Session has expired
               else if (remainingMinutes === 0 && remainingSeconds <= 0) {
                 Swal.fire({
                   title: 'Session has expired!',
-                  text: "You will be redirected to the login page",
+                  text: 'You will be redirected to the login page',
                   icon: 'warning',
                   confirmButtonColor: '#3085d6',
-                  confirmButtonText: 'OK'
-                }).then((result) => {
+                  confirmButtonText: 'OK',
+                }).then(result => {
                   if (result.isConfirmed) {
                     dispatch(UserStore.actions.LOGOUT(false));
                     window.location.reload();
                     // dispatch(UserStore.actions.LOGOUT(false));
-                    
                   }
-                })
+                });
               }
             }
-          })
-        }, period * 60 * 1000 * i)
-      })(i++)
-    };
+          });
+        }, period * 60 * 1000 * i);
+      })(i++);
+    }
   };
 
   return (
@@ -303,19 +317,27 @@ export default function Login({ setLoggedIn }) {
             onChange={handleChange}
           />
           {/* show role selector only if > 1 roles to choose from */}
-          {roles.length > 1 && <FormControl fullWidth variant='outlined' className={classes.select}>
-            <InputLabel id='role-selector-label' required>Role</InputLabel>
-            <Select
-              labelWidth={40}
-              labelId='role-selector-label'
-              id='role-selector'
-              name='role'
-              value={selectedRole}
-              onChange={(e) => setSelectedRole(e.target.value.toString())} // toString for consistent types
-            >
-              {roles.map((role, index) => <MenuItem value={role} key={index}>{role}</MenuItem>)}
-            </Select>
-          </FormControl>}
+          {roles.length > 1 && (
+            <FormControl fullWidth variant="outlined" className={classes.select}>
+              <InputLabel id="role-selector-label" required>
+                Role
+              </InputLabel>
+              <Select
+                labelWidth={40}
+                labelId="role-selector-label"
+                id="role-selector"
+                name="role"
+                value={selectedRole}
+                onChange={e => setSelectedRole(e.target.value.toString())} // toString for consistent types
+              >
+                {roles.map((role, index) => (
+                  <MenuItem value={role} key={index}>
+                    {role}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          )}
           <FormControlLabel
             control={<Checkbox value="remember" color="primary" />}
             label="Remember me"

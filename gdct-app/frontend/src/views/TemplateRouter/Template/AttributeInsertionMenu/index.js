@@ -1,1 +1,1 @@
-export {default} from './AttributeInsertionMenu.js';
+export { default } from './AttributeInsertionMenu.js';

@@ -10,7 +10,8 @@ const AppSysController = (() => {
 
   return {
     fetch: async () => AppSysAxios.get('/searchAllAppSyses').then(res => res.data),
-    fetchAppSys: async _id => AppSysAxios.post('/fetchAppSys', { _id }).then(res => res.data.AppSys),
+    fetchAppSys: async _id =>
+      AppSysAxios.post('/fetchAppSys', { _id }).then(res => res.data.AppSys),
     create: async AppSys => AppSysAxios.post('/create', { AppSys }).then(res => res.data.AppSys),
     delete: async _id => AppSysAxios.post('/delete', { _id }),
     update: async AppSys => AppSysAxios.put('/update', { AppSys }),

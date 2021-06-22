@@ -12,13 +12,13 @@ import { selectFactoryRESTResponseTableValues } from '../../../store/common/REST
 import { selectProgramsStore } from '../../../store/ProgramsStore/selectors';
 //@ts-ignore
 import { getProgramsRequest } from '../../../store/thunks/program';
-import Program from '../../../types/program'
+import Program from '../../../types/program';
 
 interface ProgListProps {
-  programIds: string[],
-  isEditable: boolean,
-  onClickAdd: (event: Event, program: Program) => void,
-  onClickDelete: (event: Event, program: Program) => void,
+  programIds: string[];
+  isEditable: boolean;
+  onClickAdd: (event: Event, program: Program) => void;
+  onClickDelete: (event: Event, program: Program) => void;
 }
 
 const ProgList = ({ programIds, isEditable = true, onClickAdd, onClickDelete }: ProgListProps) => {
@@ -26,7 +26,7 @@ const ProgList = ({ programIds, isEditable = true, onClickAdd, onClickDelete }: 
   useEffect(() => {
     dispatch(getProgramsRequest());
   }, []);
-  
+
   const { programList } = useSelector(state => ({
     programList: selectFactoryRESTResponseTableValues(selectProgramsStore)(state),
   }));
@@ -34,29 +34,35 @@ const ProgList = ({ programIds, isEditable = true, onClickAdd, onClickDelete }: 
   const OrgProgs = () => programList.filter((elem: Program) => programIds.includes(elem._id));
   const nonOrgProgs = () => programList.filter((elem: Program) => !programIds.includes(elem._id));
 
-  const columns: Column<{ title: string, field: string, [key: string]: any }>[] = useMemo(() => 
-    [
+  const columns: Column<{ title: string; field: string; [key: string]: any }>[] = useMemo(
+    () => [
       { title: 'Name', field: 'name' },
       { title: 'Code', field: 'code' },
       { title: 'Active', type: 'boolean', field: 'isActive' },
     ],
-    []
+    [],
   );
 
-  const options = useMemo(() => (
-    { 
-      actionsColumnIndex: -1, 
-      search: false, 
+  const options = useMemo(
+    () => ({
+      actionsColumnIndex: -1,
+      search: false,
       showTitle: true,
-      maxBodyHeight: "400px",
-      minBodyHeight: "400px"
+      maxBodyHeight: '400px',
+      minBodyHeight: '400px',
     }),
-    []
+    [],
   );
 
-  const left_actions: Action<any>[] = useMemo(() => [{ icon: DeleteIcon, tooltip: 'Remove from Organization', onClick: onClickDelete }], []);
+  const left_actions: Action<any>[] = useMemo(
+    () => [{ icon: DeleteIcon, tooltip: 'Remove from Organization', onClick: onClickDelete }],
+    [],
+  );
 
-  const right_actions: Action<any>[] = useMemo(() => [{ icon: AddIcon, tooltip: 'Add to Organization', onClick: onClickAdd }], []);
+  const right_actions: Action<any>[] = useMemo(
+    () => [{ icon: AddIcon, tooltip: 'Add to Organization', onClick: onClickAdd }],
+    [],
+  );
 
   return (
     <div className="tableContainer">

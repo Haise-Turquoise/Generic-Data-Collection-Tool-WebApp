@@ -7,13 +7,14 @@ import COATreeController from '../../../controllers/COATree';
 import SheetNameController from '../../../controllers/sheetName';
 import COAGroupController from '../../../controllers/COAGroup';
 import COAController from '../../../controllers/COA';
+
 let workbook = new ExcelJS.Workbook();
 
 const ignoreSheets = ['Main Menu', 'Identification'];
 
 const colToInt = col => {
-  let res = 0,
-    base = 1;
+  let res = 0;
+  let base = 1;
 
   while (col.length > 0) {
     res += (col.charCodeAt(col.length - 1) - 'A'.charCodeAt(0) + 1) * base;
@@ -35,13 +36,13 @@ const constants = {
 
 // process uploaded file data
 const processData = async (file, cb) => {
-  let reader = new FileReader();
+  const reader = new FileReader();
   reader.readAsArrayBuffer(file);
   // reads necessary data
   reader.onload = async () => {
     const data = reader.result;
     workbook = await workbook.xlsx.load(data);
-    let allData = {};
+    const allData = {};
 
     workbook.eachSheet((worksheet, sheetId) => {
       if (ignoreSheets.includes(worksheet.name)) {
@@ -81,7 +82,7 @@ const buildObjects = async data => {
   const sheets = await SheetNameController.fetch();
   const categories = await COAController.fetch();
   const allNewCategories = [];
-  for (let sheetName of Object.keys(data)) {
+  for (const sheetName of Object.keys(data)) {
     // get ID from existing sheetName
     const foundSheet = sheets.find(sheet => sheet.name === 'Medical Staff Remuneration');
     let sheetNameId;
@@ -90,7 +91,7 @@ const buildObjects = async data => {
     } else {
       sheetNameId = foundSheet._id;
     }
-    for (let ctgGroup of Object.keys(data[sheetName])) {
+    for (const ctgGroup of Object.keys(data[sheetName])) {
       const newCategories = data[sheetName][ctgGroup];
       // add new categories to a list that will be added to DB later
       newCategories.forEach(category => {

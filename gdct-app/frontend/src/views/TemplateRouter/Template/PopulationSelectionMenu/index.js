@@ -1,1 +1,1 @@
-export { default } from './populationSelectionMenu.js'
+export { default } from './populationSelectionMenu.js';

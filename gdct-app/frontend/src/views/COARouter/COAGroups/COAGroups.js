@@ -3,7 +3,7 @@ import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 
 import MaterialTable from 'material-table';
 import { Paper, Typography } from '@material-ui/core';
-import moment from 'moment'
+import moment from 'moment';
 
 import {
   getCOAGroupsRequest,
@@ -12,7 +12,7 @@ import {
   updateCOAGroupRequest,
 } from '../../../store/thunks/COAGroup';
 
-import ErrorBanner from '../../ErrorBanner'
+import ErrorBanner from '../../ErrorBanner';
 import { selectFactoryRESTResponseTableValues } from '../../../store/common/REST/selectors';
 import { selectCOAGroupsStore } from '../../../store/COAGroupsStore/selectors';
 import { calculateOptions, checkDuplicates } from '../../../tools/misc';
@@ -32,12 +32,12 @@ const COAGroupsHeader = () => {
 const COAGroupsTable = () => {
   const dispatch = useDispatch();
   const [readRowNum, setRowNum] = useState(1);
-  const [hasGroups, setHasGroups] = useState(false)
+  const [hasGroups, setHasGroups] = useState(false);
 
   // table stuff while loading
-  const preGroups = [{ name: 'LOADING...' }]
-  const preColumns = [{title: 'Name', field: 'name'}]
-  
+  const preGroups = [{ name: 'LOADING...' }];
+  const preColumns = [{ title: 'Name', field: 'name' }];
+
   // Prepare the data for material table
   const { COAGroups } = useSelector(
     state => ({
@@ -48,27 +48,43 @@ const COAGroupsTable = () => {
   // Convert Date format
   COAGroups.forEach(COAGroup => {
     const logtime = new Date(COAGroup.timestamp);
-    COAGroup.timestamp = moment(logtime).format("YYYY-MM-DD HH:mm:ss")
+    COAGroup.timestamp = moment(logtime).format('YYYY-MM-DD HH:mm:ss');
   });
-  
+
   // Prepare the columns for material table
   const columns = useMemo(
     () => [
-      { title: 'Name', field: 'name', validate: rowData => checkDuplicates(rowData, COAGroups, 'name') },
+      {
+        title: 'Name',
+        field: 'name',
+        validate: rowData => checkDuplicates(rowData, COAGroups, 'name'),
+      },
       { title: 'Code', field: 'code' },
       { title: 'Active', type: 'boolean', field: 'isActive' },
-      { title: 'Modified On', field: 'timestamp', editComponent: () => {return <div></div>} },
-      { title: 'Updated By', field: 'updatedBy', editComponent: () => {return <div></div>} },
+      {
+        title: 'Modified On',
+        field: 'timestamp',
+        editComponent: () => {
+          return <div></div>;
+        },
+      },
+      {
+        title: 'Updated By',
+        field: 'updatedBy',
+        editComponent: () => {
+          return <div></div>;
+        },
+      },
     ],
     [COAGroups],
   );
 
   const options = useMemo(() => calculateOptions(readRowNum), [readRowNum]);
-  
-  // Record user and time when an action occurs 
+
+  // Record user and time when an action occurs
   function recordUpdate(COAGroup) {
     COAGroup.updatedBy = localStorage.getItem('currentUser');
-    COAGroup.timestamp = new Date().toLocaleString(); 
+    COAGroup.timestamp = new Date().toLocaleString();
   }
   const editable = useMemo(
     () => ({
@@ -78,16 +94,30 @@ const COAGroupsTable = () => {
           dispatch(createCOAGroupRequest(COAGroup, resolve, reject));
         }).then(newCOAGroup => {
           // For Auditlog
-          CreateAuditLog(null, "Create Category Group", "CategoryGroup", newCOAGroup._id, {}, newCOAGroup);
+          CreateAuditLog(
+            null,
+            'Create Category Group',
+            'CategoryGroup',
+            newCOAGroup._id,
+            {},
+            newCOAGroup,
+          );
         }),
 
       onRowUpdate: COAGroup =>
         new Promise((resolve, reject) => {
           recordUpdate(COAGroup);
           // Find the old value before updating in order to Auditlog
-          (async () => { 
+          (async () => {
             const oldCOAGroup = await COAGroupController.fetchCOAGroup(COAGroup._id);
-            CreateAuditLog(null, "Update Category Group", "CategoryGroup", oldCOAGroup._id, oldCOAGroup, COAGroup);
+            CreateAuditLog(
+              null,
+              'Update Category Group',
+              'CategoryGroup',
+              oldCOAGroup._id,
+              oldCOAGroup,
+              COAGroup,
+            );
           })();
           // Do Update
           dispatch(updateCOAGroupRequest(COAGroup, resolve, reject));
@@ -99,20 +129,27 @@ const COAGroupsTable = () => {
           dispatch(deleteCOAGroupRequest(COAGroup._id, resolve, reject));
           // For Auditlog
           const COAGroup_trim = (({ tableData, ...o }) => o)(COAGroup);
-          CreateAuditLog(null, "Delete Category Group", "CategoryGroup", COAGroup._id, COAGroup_trim, {});
+          CreateAuditLog(
+            null,
+            'Delete Category Group',
+            'CategoryGroup',
+            COAGroup._id,
+            COAGroup_trim,
+            {},
+          );
         }),
     }),
     [dispatch],
   );
-  
+
   useEffect(() => {
     dispatch(getCOAGroupsRequest());
   }, [dispatch]);
 
-  useEffect(() => { 
-    setRowNum(COAGroups.length)
+  useEffect(() => {
+    setRowNum(COAGroups.length);
     if (!hasGroups) {
-      setHasGroups(COAGroups.length >= 1)
+      setHasGroups(COAGroups.length >= 1);
     }
   }, [COAGroups]);
 
@@ -123,7 +160,7 @@ const COAGroupsTable = () => {
       columns={hasGroups ? columns : preColumns}
       data={hasGroups ? COAGroups : preGroups}
       editable={hasGroups ? editable : undefined}
-      options={options} 
+      options={options}
     />
   );
 };
@@ -132,7 +169,10 @@ const COAGroups = props => (
   <div className="COAGroups">
     <COAGroupsHeader />
     {/* <FileDropzone/> */}
-    <ErrorBanner title={"Cannot delete the selected category group since it is referenced in COAGroup tree."} targetStore={selectCOAGroupsStore} />
+    <ErrorBanner
+      title={'Cannot delete the selected category group since it is referenced in COAGroup tree.'}
+      targetStore={selectCOAGroupsStore}
+    />
     <COAGroupsTable {...props} />
   </div>
 );

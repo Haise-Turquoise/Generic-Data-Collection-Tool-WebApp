@@ -10,11 +10,8 @@ import moment from 'moment';
 import VisibilityIcon from '@material-ui/icons/Visibility';
 import { selectFactoryRESTResponseTableValues } from '../../../store/common/REST/selectors';
 import { selectUsersStore } from '../../../store/UsersStore/selectors';
-import { calculateOptions } from '../../../tools/misc'
-import {
-  getUsersRequest,
-  updateUsersRequest,
-} from '../../../store/thunks/users';
+import { calculateOptions } from '../../../tools/misc';
+import { getUsersRequest, updateUsersRequest } from '../../../store/thunks/users';
 
 import usersController from '../../../controllers/Users';
 import CreateAuditLog from '../../AuditLog_Global';
@@ -39,11 +36,11 @@ const UsersTable = () => {
   const [orgId, setOrgId] = useState('');
   const [orgName, setOrgName] = useState('');
   const [readRowNum, setRowNum] = useState(1);
-  const [hasUsers, setHasUsers] = useState(false)
+  const [hasUsers, setHasUsers] = useState(false);
 
   // table vars for loading
-  const preColumns = [{ title: 'Name', field: 'name' }]
-  const preUsers = [{ name: 'LOADING... '}]
+  const preColumns = [{ title: 'Name', field: 'name' }];
+  const preUsers = [{ name: 'LOADING... ' }];
 
   const handleClear = () => {
     setUserName('');
@@ -86,7 +83,7 @@ const UsersTable = () => {
   // Convert Date format
   users.forEach(user => {
     const logtime = new Date(user.timestamp);
-    user.timestamp = moment(logtime).format("YYYY-MM-DD HH:mm:ss")
+    user.timestamp = moment(logtime).format('YYYY-MM-DD HH:mm:ss');
   });
 
   // Prepare the columns for material table
@@ -98,13 +95,25 @@ const UsersTable = () => {
       { title: 'Email', field: 'email' },
       { title: 'Phone Number', field: 'phoneNumber' },
       { title: 'Active', type: 'boolean', field: 'isActive' },
-      { title: 'Modified On', field: 'timestamp', editComponent: () => {return <div></div>} },
-      { title: 'Updated By', field: 'updatedBy', editComponent: () => {return <div></div>} },
+      {
+        title: 'Modified On',
+        field: 'timestamp',
+        editComponent: () => {
+          return <div></div>;
+        },
+      },
+      {
+        title: 'Updated By',
+        field: 'updatedBy',
+        editComponent: () => {
+          return <div></div>;
+        },
+      },
     ],
     [],
   );
 
-  const options = useMemo(() => calculateOptions(readRowNum),[readRowNum]);
+  const options = useMemo(() => calculateOptions(readRowNum), [readRowNum]);
 
   // Customization for search bar
   const localization = useMemo(
@@ -117,11 +126,10 @@ const UsersTable = () => {
     [],
   );
 
-
-  // Record username and time when an action occurs 
+  // Record username and time when an action occurs
   function recordUpdate(user) {
     user.updatedBy = localStorage.getItem('currentUser');
-    user.timestamp = new Date().toLocaleString(); 
+    user.timestamp = new Date().toLocaleString();
   }
   // Prepare the editing functionalities for the material table
   const editable = useMemo(
@@ -132,13 +140,13 @@ const UsersTable = () => {
           // Find the old value before updating in order to Auditlog
           (async () => {
             // seems redundant, but we cannot put user._id directly into an object
-            const _id = user._id;
+            const { _id } = user;
             const oldUser = await usersController.fetchById({ _id });
-            CreateAuditLog(null, "Update User", "User", oldUser._id, oldUser, user);
+            CreateAuditLog(null, 'Update User', 'User', oldUser._id, oldUser, user);
           })();
           // Do Update
           dispatch(updateUsersRequest(user, resolve, reject));
-        })
+        }),
     }),
     [dispatch],
   );
@@ -159,11 +167,11 @@ const UsersTable = () => {
   }, [dispatch]);
 
   useEffect(() => {
-    setRowNum(users.length)
+    setRowNum(users.length);
     if (!hasUsers) {
-      setHasUsers(users.length >= 1)
+      setHasUsers(users.length >= 1);
     }
-  }, [users])
+  }, [users]);
 
   return (
     <div>

@@ -1,1 +1,1 @@
-export { default } from './ModifyPermission'; 
+export { default } from './ModifyPermission';

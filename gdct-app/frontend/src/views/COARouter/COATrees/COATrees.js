@@ -4,10 +4,9 @@ import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import MaterialTable from 'material-table';
 import LaunchIcon from '@material-ui/icons/Launch';
 import { Paper, Typography } from '@material-ui/core';
+import moment from 'moment';
 import COATreeController from '../../../controllers/COATree';
-import {
-  getSheetNamesRequest,
-} from '../../../store/thunks/sheetName';
+import { getSheetNamesRequest } from '../../../store/thunks/sheetName';
 import {
   getDetectEmptyTree,
   deleteCOATreeBySheetName,
@@ -17,8 +16,7 @@ import { selectSheetNamesStore } from '../../../store/SheetNamesStore/selectors'
 import { selectDetectEmptyTreeStore } from '../../../store/DetectEmptyTreeStore/selectors';
 import { ROUTE_CATEGORY_TREES } from '../../../constants/routes';
 
-import { calculateOptions } from '../../../tools/misc'
-import moment from 'moment';
+import { calculateOptions } from '../../../tools/misc';
 import CreateAuditLog from '../../AuditLog_Global';
 
 const COATreesHeader = () => {
@@ -33,13 +31,13 @@ const COATreesHeader = () => {
 const COATreesTable = ({ history }) => {
   const dispatch = useDispatch();
   const [refresh, setRefresh] = useState(false);
-  const [hasTrees, setHasTrees] = useState(false)
+  const [hasTrees, setHasTrees] = useState(false);
 
   // table stuff while loading
-  const preTrees = [{ name: 'LOADING...', value: '' }]
-  const preColumns = [{title: 'Name', field: 'name'}]
+  const preTrees = [{ name: 'LOADING...', value: '' }];
+  const preColumns = [{ title: 'Name', field: 'name' }];
 
-  const[readRowNum, setRowNum] = useState(1);
+  const [readRowNum, setRowNum] = useState(1);
   const { sheetNames } = useSelector(
     state => ({
       sheetNames: selectFactoryRESTResponseTableValues(selectSheetNamesStore)(state),
@@ -58,23 +56,35 @@ const COATreesTable = ({ history }) => {
   // console.log(detectEmptyTree);
   detectEmptyTree.forEach(detectEmptyTree => {
     const logtime = new Date(detectEmptyTree.timestamp);
-    detectEmptyTree.timestamp = moment(logtime).format("YYYY-MM-DD HH:mm:ss")
+    detectEmptyTree.timestamp = moment(logtime).format('YYYY-MM-DD HH:mm:ss');
   });
 
   const columns = useMemo(
     () => [
       { title: 'Sheet Name', field: 'name' },
-      { title: 'Modified On', field: 'timestamp', editComponent: () => {return <div></div>} },
-      { title: 'Updated By', field: 'updatedBy', editComponent: () => {return <div></div>} },
-    ], 
-    []
+      {
+        title: 'Modified On',
+        field: 'timestamp',
+        editComponent: () => {
+          return <div></div>;
+        },
+      },
+      {
+        title: 'Updated By',
+        field: 'updatedBy',
+        editComponent: () => {
+          return <div></div>;
+        },
+      },
+    ],
+    [],
   );
 
   const options = useMemo(() => calculateOptions(readRowNum), [readRowNum]);
 
-  useEffect(()=>{
-    setRowNum(sheetNames.length)
-  },[sheetNames]);
+  useEffect(() => {
+    setRowNum(sheetNames.length);
+  }, [sheetNames]);
 
   const actions = useMemo(
     () => [
@@ -98,16 +108,16 @@ const COATreesTable = ({ history }) => {
 
       onRowDelete: sheetName =>
         new Promise((resolve, reject) => {
-          console.log(sheetName)
-          sheetName.updatedBy=localStorage.getItem('currentUser');
-          sheetName.timestamp = new Date().toLocaleString(); 
+          console.log(sheetName);
+          sheetName.updatedBy = localStorage.getItem('currentUser');
+          sheetName.timestamp = new Date().toLocaleString();
           dispatch(deleteCOATreeBySheetName(sheetName, resolve, reject));
           setRefresh(true);
         }).then(() => {
           (async () => {
             const oldSheetName = await COATreeController.fetchBySheetName(sheetName._id);
             if (oldSheetName.length === 0) {
-              CreateAuditLog(null, "Delete COA Tree", "CategoryTree", sheetName._id, sheetName, {});
+              CreateAuditLog(null, 'Delete COA Tree', 'CategoryTree', sheetName._id, sheetName, {});
             }
           })();
         }),
@@ -123,9 +133,9 @@ const COATreesTable = ({ history }) => {
 
   useEffect(() => {
     if (!hasTrees) {
-      setHasTrees(detectEmptyTree.length >= 1)
+      setHasTrees(detectEmptyTree.length >= 1);
     }
-  }, [detectEmptyTree])
+  }, [detectEmptyTree]);
 
   return (
     <MaterialTable

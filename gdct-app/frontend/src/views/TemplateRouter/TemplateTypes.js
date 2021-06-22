@@ -5,6 +5,7 @@ import MaterialTable from 'material-table';
 import LaunchIcon from '@material-ui/icons/Launch';
 import { Paper, Typography } from '@material-ui/core';
 
+import moment from 'moment';
 import {
   getTemplateTypesRequest,
   createTemplateTypeRequest,
@@ -20,7 +21,6 @@ import { WorkflowStoreActions } from '../../store/WorkflowStore/store';
 import TemplateTypesStore from '../../store/TemplateTypesStore/store';
 import ErrorBanner from '../ErrorBanner';
 import { calculateOptions } from '../../tools/misc';
-import moment from 'moment';
 import CreateAuditLog from '../AuditLog_Global';
 import templateTypeController from '../../controllers/templateType';
 
@@ -37,10 +37,10 @@ const TemplateTypeHeader = () => {
 const TemplateTypesTable = ({ history }) => {
   const dispatch = useDispatch();
   const [readRowNum, setRowNum] = useState(1);
-  const [hasTypes, setHasTypes] = useState(false)
+  const [hasTypes, setHasTypes] = useState(false);
 
-  const preColumns = [{ title: 'Name', field: 'name' }]
-  const preTypes = [{ name: 'LOADING...' }]
+  const preColumns = [{ title: 'Name', field: 'name' }];
+  const preTypes = [{ name: 'LOADING...' }];
 
   const { templateTypes, workflows } = useSelector(
     state => ({
@@ -52,7 +52,7 @@ const TemplateTypesTable = ({ history }) => {
   // Convert Date format
   templateTypes.forEach(templateType => {
     const logtime = new Date(templateType.timestamp);
-    templateType.timestamp = moment(logtime).format("YYYY-MM-DD HH:mm:ss")
+    templateType.timestamp = moment(logtime).format('YYYY-MM-DD HH:mm:ss');
   });
 
   // Config the lookup function for columns
@@ -61,13 +61,13 @@ const TemplateTypesTable = ({ history }) => {
     return acc;
   }, {});
 
-  useEffect(()=>{
-    setRowNum(templateTypes.length)
+  useEffect(() => {
+    setRowNum(templateTypes.length);
     if (!hasTypes) {
-      setHasTypes(templateTypes.length >= 1)
+      setHasTypes(templateTypes.length >= 1);
     }
-  }, [templateTypes])
-  
+  }, [templateTypes]);
+
   // Prepare the columns for material table
   const columns = [
     { title: 'Name', field: 'name' },
@@ -80,8 +80,20 @@ const TemplateTypesTable = ({ history }) => {
     // { title: 'Inputtable', type: 'boolean', field: 'isInputtable' },
     // { title: 'Viewable', type: 'boolean', field: 'isViewable' },
     // { title: 'Reportable', type: 'boolean', field: 'isReportable' },
-    { title: 'Modified On', field: 'timestamp', editComponent: props => {return <div></div>} },
-    { title: 'Updated By', field: 'updatedBy', editComponent: props => {return <div></div>} },
+    {
+      title: 'Modified On',
+      field: 'timestamp',
+      editComponent: props => {
+        return <div></div>;
+      },
+    },
+    {
+      title: 'Updated By',
+      field: 'updatedBy',
+      editComponent: props => {
+        return <div></div>;
+      },
+    },
     { title: 'Active', type: 'boolean', field: 'isActive' },
   ];
 
@@ -92,7 +104,6 @@ const TemplateTypesTable = ({ history }) => {
         icon: LaunchIcon,
         tooltip: 'View Programs',
         onClick: (_event, templateType) => {
-          
           history.push(`/admin/template/type/${templateType._id}`);
         },
       },
@@ -102,10 +113,10 @@ const TemplateTypesTable = ({ history }) => {
 
   const options = useMemo(() => calculateOptions(readRowNum), [readRowNum]);
 
-  // Record user and time when an action occurs 
+  // Record user and time when an action occurs
   function recordUpdate(templateType) {
     templateType.updatedBy = localStorage.getItem('currentUser');
-    templateType.timestamp = new Date().toLocaleString(); 
+    templateType.timestamp = new Date().toLocaleString();
   }
   // Prepare the editing functionalities for the material table
   const editable = useMemo(
@@ -116,15 +127,29 @@ const TemplateTypesTable = ({ history }) => {
           dispatch(createTemplateTypeRequest(templateType, resolve, reject));
         }).then(newTemplateType => {
           // For Auditlog
-          CreateAuditLog(null, "Create Template Type", "TemplateType", newTemplateType._id, {}, newTemplateType);
+          CreateAuditLog(
+            null,
+            'Create Template Type',
+            'TemplateType',
+            newTemplateType._id,
+            {},
+            newTemplateType,
+          );
         }),
       onRowUpdate: templateType =>
         new Promise((resolve, reject) => {
           recordUpdate(templateType);
           // Find the old value before updating in order to Auditlog
-          (async () => { 
+          (async () => {
             const oldTemplateType = await templateTypeController.fetchById(templateType._id);
-            CreateAuditLog(null, "Update Template Type", "TemplateType", oldTemplateType._id, oldTemplateType, templateType);
+            CreateAuditLog(
+              null,
+              'Update Template Type',
+              'TemplateType',
+              oldTemplateType._id,
+              oldTemplateType,
+              templateType,
+            );
           })();
           // Do Update
           dispatch(updateTemplateTypeRequest(templateType, resolve, reject));
@@ -135,7 +160,14 @@ const TemplateTypesTable = ({ history }) => {
           dispatch(deleteTemplateTypeRequest(templateType._id, resolve, reject));
           // For Auditlog
           const templateType_trim = (({ tableData, ...o }) => o)(templateType);
-          CreateAuditLog(null, "Delete Template Type", "TemplateType", templateType._id, templateType_trim, {});
+          CreateAuditLog(
+            null,
+            'Delete Template Type',
+            'TemplateType',
+            templateType._id,
+            templateType_trim,
+            {},
+          );
         }),
     }),
     [dispatch],
@@ -157,7 +189,7 @@ const TemplateTypesTable = ({ history }) => {
       key={readRowNum}
       columns={hasTypes ? columns : preColumns}
       actions={hasTypes ? actions : undefined}
-      data={hasTypes ? templateTypes : preTypes} 
+      data={hasTypes ? templateTypes : preTypes}
       editable={hasTypes ? editable : undefined}
       options={options}
     />
@@ -167,7 +199,10 @@ const TemplateTypesTable = ({ history }) => {
 const TemplateType = props => (
   <div className="templateTypesPage">
     <TemplateTypeHeader />
-    <ErrorBanner title={"The template type you are trying to delete is referenced in one or more submissions"} targetStore={selectTemplateTypesStore}/>
+    <ErrorBanner
+      title={'The template type you are trying to delete is referenced in one or more submissions'}
+      targetStore={selectTemplateTypesStore}
+    />
     <TemplateTypesTable {...props} />
   </div>
 );

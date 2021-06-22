@@ -7,23 +7,22 @@ import moment from 'moment';
 import { getAppSysRolesRequest } from '../../../store/thunks/AppSysRole';
 import { getAppResourcesRequest } from '../../../store/thunks/AppResource';
 import {
-    getAppRoleResourcesRequest,
-    createAppRoleResourceRequest,
-    deleteAppRoleResourceRequest,
-    updateAppRoleResourceRequest,
-  } from '../../../store/thunks/AppRoleResource';
+  getAppRoleResourcesRequest,
+  createAppRoleResourceRequest,
+  deleteAppRoleResourceRequest,
+  updateAppRoleResourceRequest,
+} from '../../../store/thunks/AppRoleResource';
 import { selectFactoryRESTResponseTableValues } from '../../../store/common/REST/selectors';
 import { selectAppRoleResourcesStore } from '../../../store/AppRoleResourcesStore/selectors';
 import { selectAppSysRolesStore } from '../../../store/AppSysRolesStore/selectors';
 import { selectAppResourcesStore } from '../../../store/AppResourcesStore/selectors';
-import {AppRoleResourcesStore} from '../../../store/AppRoleResourcesStore/store';
-import {AppSysRolesStore} from '../../../store/AppSysRolesStore/store';
-import {AppResourcesStore} from '../../../store/AppResourcesStore/store';
-import AppRoleResourceController from '../../../controllers/AppRoleResource'
+import { AppRoleResourcesStore } from '../../../store/AppRoleResourcesStore/store';
+import { AppSysRolesStore } from '../../../store/AppSysRolesStore/store';
+import { AppResourcesStore } from '../../../store/AppResourcesStore/store';
+import AppRoleResourceController from '../../../controllers/AppRoleResource';
 import ErrorBanner from '../../ErrorBanner';
 import { calculateOptions } from '../../../tools/misc';
 import CreateAuditLog from '../../AuditLog_Global';
-
 
 const AppRoleResourceHeader = () => {
   return (
@@ -38,7 +37,7 @@ const AppRoleResourceHeader = () => {
 const AppRoleResourceTable = ({ history }) => {
   const dispatch = useDispatch();
   const [readRowNum, setRowNum] = useState(1);
-  const [hasAppRoleRes, setHasAppRoleRes] = useState(false)
+  const [hasAppRoleRes, setHasAppRoleRes] = useState(false);
   // get app role resource info
   const { appRoleResources, appSysRoles, appResources } = useSelector(
     state => ({
@@ -50,27 +49,26 @@ const AppRoleResourceTable = ({ history }) => {
   );
 
   // table stuff while loading
-  const preAppRoleResources = [{ name: 'LOADING...' }]
-  const preColumns = [{title: 'Name', field: 'name'}]
+  const preAppRoleResources = [{ name: 'LOADING...' }];
+  const preColumns = [{ title: 'Name', field: 'name' }];
 
-  useEffect(()=>{
-    setRowNum(appRoleResources.length)
+  useEffect(() => {
+    setRowNum(appRoleResources.length);
     if (!hasAppRoleRes) {
-      setHasAppRoleRes(appRoleResources.length >= 1)
+      setHasAppRoleRes(appRoleResources.length >= 1);
     }
-  }, [appRoleResources])
+  }, [appRoleResources]);
   // Convert Date format
   appRoleResources.forEach(appRoleResource => {
     const logtime = new Date(appRoleResource.timestamp);
-    appRoleResource.timestamp = moment(logtime).format("YYYY-MM-DD HH:mm:ss")
+    appRoleResource.timestamp = moment(logtime).format('YYYY-MM-DD HH:mm:ss');
   });
-  //convert appSysRoleId from object to objectId if necessary
+  // convert appSysRoleId from object to objectId if necessary
   appRoleResources.forEach(appRoleResource => {
-    if(appRoleResource.appSysRoleId.roleId){
-      appRoleResource.appSysRoleId = appRoleResource.appSysRoleId.roleId
+    if (appRoleResource.appSysRoleId.roleId) {
+      appRoleResource.appSysRoleId = appRoleResource.appSysRoleId.roleId;
     }
-    
-  })
+  });
   const lookupSysRoles = appSysRoles.reduce(function (acc, sysRoles) {
     acc[sysRoles._id] = `${sysRoles.appSys} - ${sysRoles.role}`;
     return acc;
@@ -80,14 +78,25 @@ const AppRoleResourceTable = ({ history }) => {
     acc[resource._id] = resource.resourcePath;
     return acc;
   }, {});
-  
-  
+
   // Prepare the columns for material table
   const columns = useMemo(
     () => [
       { title: 'Application System Role', field: 'appSysRoleId', lookup: lookupSysRoles },
-      { title: 'Modified On', field: 'timestamp', editComponent: () => {return <div></div>} },
-      { title: 'Updated By', field: 'updatedBy', editComponent: () => {return <div></div>} },
+      {
+        title: 'Modified On',
+        field: 'timestamp',
+        editComponent: () => {
+          return <div></div>;
+        },
+      },
+      {
+        title: 'Updated By',
+        field: 'updatedBy',
+        editComponent: () => {
+          return <div></div>;
+        },
+      },
       // {title: 'IsActive', field: 'isActive'}
     ],
     [lookupSysRoles, lookupResources],
@@ -99,7 +108,6 @@ const AppRoleResourceTable = ({ history }) => {
         icon: LaunchIcon,
         tooltip: 'Manage App Role Resource',
         onClick: (_event, appRoleResource) => {
-          
           history.push(`/admin/role/app_role_resource_management/${appRoleResource._id}`);
         },
       },
@@ -109,10 +117,10 @@ const AppRoleResourceTable = ({ history }) => {
 
   const options = useMemo(() => calculateOptions(readRowNum), [readRowNum]);
 
-  // Record user and time when an action occurs 
+  // Record user and time when an action occurs
   function recordUpdate(appRoleResource) {
     appRoleResource.updatedBy = localStorage.getItem('currentUser');
-    appRoleResource.timestamp = new Date().toLocaleString(); 
+    appRoleResource.timestamp = new Date().toLocaleString();
   }
   // Prepare the editing functionalities for the material table
   const editable = useMemo(
@@ -123,28 +131,51 @@ const AppRoleResourceTable = ({ history }) => {
           dispatch(createAppRoleResourceRequest(appRoleResource, resolve, reject));
         }).then(newAppRoleResource => {
           // For Auditlog
-          CreateAuditLog(null, "Create Application Role Resource", "AppRoleResource", newAppRoleResource._id, {}, newAppRoleResource);
+          CreateAuditLog(
+            null,
+            'Create Application Role Resource',
+            'AppRoleResource',
+            newAppRoleResource._id,
+            {},
+            newAppRoleResource,
+          );
         }),
       onRowUpdate: appRoleResource =>
-      new Promise((resolve, reject) => {
-        recordUpdate(appRoleResource);
-        // console.log(appRoleResource)
-        // Find the old value before updating in order to Auditlog
-        (async () => { 
-          const oldAppRoleResource = await AppRoleResourceController.fetchAppRoleResource(appRoleResource._id);
-          CreateAuditLog(null, "Update Application Role Resource", "AppRoleResource", oldAppRoleResource._id, oldAppRoleResource, appRoleResource);
-        })();
-        // Do Update
-        
-        dispatch(updateAppRoleResourceRequest(appRoleResource, resolve, reject));
-      }),
+        new Promise((resolve, reject) => {
+          recordUpdate(appRoleResource);
+          // console.log(appRoleResource)
+          // Find the old value before updating in order to Auditlog
+          (async () => {
+            const oldAppRoleResource = await AppRoleResourceController.fetchAppRoleResource(
+              appRoleResource._id,
+            );
+            CreateAuditLog(
+              null,
+              'Update Application Role Resource',
+              'AppRoleResource',
+              oldAppRoleResource._id,
+              oldAppRoleResource,
+              appRoleResource,
+            );
+          })();
+          // Do Update
+
+          dispatch(updateAppRoleResourceRequest(appRoleResource, resolve, reject));
+        }),
       onRowDelete: appRoleResource =>
         new Promise((resolve, reject) => {
           recordUpdate(appRoleResource);
           dispatch(deleteAppRoleResourceRequest(appRoleResource._id, resolve, reject));
           // For Auditlog
           const appRoleResource_trim = (({ tableData, ...o }) => o)(appRoleResource);
-          CreateAuditLog(null, "Delete Application Role Resource", "AppRoleResource", appRoleResource._id, appRoleResource_trim, {});
+          CreateAuditLog(
+            null,
+            'Delete Application Role Resource',
+            'AppRoleResource',
+            appRoleResource._id,
+            appRoleResource_trim,
+            {},
+          );
         }),
     }),
     [dispatch],
@@ -155,7 +186,6 @@ const AppRoleResourceTable = ({ history }) => {
     dispatch(getAppSysRolesRequest());
     dispatch(getAppResourcesRequest());
     return () => {
-
       dispatch(AppResourcesStore.actions.RESET());
       dispatch(AppRoleResourcesStore.actions.RESET());
       dispatch(AppSysRolesStore.actions.RESET());
@@ -170,14 +200,20 @@ const AppRoleResourceTable = ({ history }) => {
       actions={hasAppRoleRes ? actions : undefined}
       data={hasAppRoleRes ? appRoleResources : preAppRoleResources}
       editable={hasAppRoleRes ? editable : undefined}
-      options={options} />
+      options={options}
+    />
   );
 };
 
 const AppRoleResourcesManagement = props => (
   <div className="appRoleResourcePage">
     <AppRoleResourceHeader />
-    <ErrorBanner title={"The AppRoleResource type you are trying to delete is referenced in one or more appSysRole"} targetStore={selectAppRoleResourcesStore }/>
+    <ErrorBanner
+      title={
+        'The AppRoleResource type you are trying to delete is referenced in one or more appSysRole'
+      }
+      targetStore={selectAppRoleResourcesStore}
+    />
     <AppRoleResourceTable {...props} />
   </div>
 );

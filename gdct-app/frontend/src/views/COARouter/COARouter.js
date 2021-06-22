@@ -8,7 +8,7 @@ import COATree from './COATree';
 import COAGroups from './COAGroups';
 import COAs from './Categories';
 import Attributes from './Attributes';
-import COAGenerator from './COAGenerator'
+import COAGenerator from './COAGenerator';
 import {
   ROUTE_CATEGORY_CATEGORIES,
   ROUTE_CATEGORY_GROUPS,

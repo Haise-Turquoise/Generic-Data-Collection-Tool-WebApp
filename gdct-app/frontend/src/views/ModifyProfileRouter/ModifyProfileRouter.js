@@ -8,21 +8,16 @@ import ModifyPermission from './ModifyPermission/ModifyPermission';
 import ModifyUserInfo from './ModifyUserInfo/ModifyUserInfo';
 
 import {
-
-    ROUTE_MODIFY_PROFILE_USER_INFO,
-    ROUTE_MODIFY_PROFILE_USER_PERMISSION,
-
-  } from '../../constants/routes';
-
-
-
+  ROUTE_MODIFY_PROFILE_USER_INFO,
+  ROUTE_MODIFY_PROFILE_USER_PERMISSION,
+} from '../../constants/routes';
 
 const ModifyProfileRouter = () => (
-    <Switch>
-      <Route exact path={ROUTE_MODIFY_PROFILE_USER_PERMISSION} component={ModifyPermission} />
-      <Route exact path={ROUTE_MODIFY_PROFILE_USER_INFO} component={ModifyUserInfo} />
-      <Route component={NotFound} />
-    </Switch>
-  );
+  <Switch>
+    <Route exact path={ROUTE_MODIFY_PROFILE_USER_PERMISSION} component={ModifyPermission} />
+    <Route exact path={ROUTE_MODIFY_PROFILE_USER_INFO} component={ModifyUserInfo} />
+    <Route component={NotFound} />
+  </Switch>
+);
 
-export default ModifyProfileRouter; 
+export default ModifyProfileRouter;

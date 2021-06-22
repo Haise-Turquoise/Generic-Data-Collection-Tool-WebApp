@@ -26,10 +26,10 @@ import sheetNameController from '../../controllers/sheetName';
 //@ts-ignore
 import CreateAuditLog from '../AuditLog_Global';
 
-import SheetName from '../../types/sheetname'
+import SheetName from '../../types/sheetname';
 
 interface SheetNameMT extends SheetName {
-  tableData?: any
+  tableData?: any;
 }
 
 const SheetNameHeader = () => {
@@ -44,19 +44,21 @@ const SheetNameHeader = () => {
 const SheetNamesTable = () => {
   const dispatch = useDispatch();
   const [readRowNum, setRowNum] = useState(1);
-  const [hasSheets, setHasSheets] = useState(false)
+  const [hasSheets, setHasSheets] = useState(false);
 
   // table vars while loading data
-  const preColumns: Column<SheetNameMT>[] = [{ title: 'Name', field: 'name' }]
-  const preSheets: SheetName[] = [{
-    name: 'LOADING...',
-    _id: '',
-    id: 0,
-    isActive: true,
-    timestamp: '',
-    updatedBy: '',
-    templateTypeId: '',
-  }]
+  const preColumns: Column<SheetNameMT>[] = [{ title: 'Name', field: 'name' }];
+  const preSheets: SheetName[] = [
+    {
+      name: 'LOADING...',
+      _id: '',
+      id: 0,
+      isActive: true,
+      timestamp: '',
+      updatedBy: '',
+      templateTypeId: '',
+    },
+  ];
 
   // Prepare the data for material table
   const { sheetNames }: { sheetNames: SheetName[] } = useSelector(
@@ -68,17 +70,39 @@ const SheetNamesTable = () => {
   // Convert Date format
   sheetNames.forEach((sheetName: SheetName) => {
     const logtime = new Date(sheetName.timestamp);
-    sheetName.timestamp = moment(logtime).format("YYYY-MM-DD HH:mm:ss")
+    sheetName.timestamp = moment(logtime).format('YYYY-MM-DD HH:mm:ss');
   });
-  
+
   // Prepare the columns for material table
   const columns: Column<SheetNameMT>[] = useMemo(
     () => [
-      { title: "ID", field: "id", editComponent: () => {return <div></div>} },
-      { title: 'Name', field: 'name', validate: rowData => checkDuplicates(rowData, sheetNames, 'name') },
+      {
+        title: 'ID',
+        field: 'id',
+        editComponent: () => {
+          return <div></div>;
+        },
+      },
+      {
+        title: 'Name',
+        field: 'name',
+        validate: rowData => checkDuplicates(rowData, sheetNames, 'name'),
+      },
       { title: 'Active', field: 'isActive', type: 'boolean' },
-      { title: 'Modified On', field: 'timestamp', editComponent: () => {return <div></div>} },
-      { title: 'Updated By', field: 'updatedBy', editComponent: () => {return <div></div>} },
+      {
+        title: 'Modified On',
+        field: 'timestamp',
+        editComponent: () => {
+          return <div></div>;
+        },
+      },
+      {
+        title: 'Updated By',
+        field: 'updatedBy',
+        editComponent: () => {
+          return <div></div>;
+        },
+      },
     ],
     [sheetNames],
   );
@@ -89,16 +113,16 @@ const SheetNamesTable = () => {
   const recordUpdate = (sheetName: SheetNameMT) => {
     //get username and record in Modified By column
     sheetName.updatedBy = localStorage.getItem('currentUser') || '';
-    //record new date and time in Modified On column 
-    sheetName.timestamp = new Date().toLocaleString();   
-  }
-   
+    //record new date and time in Modified On column
+    sheetName.timestamp = new Date().toLocaleString();
+  };
+
   // Prepare the editing functionalities for the material table
   const editable = useMemo(
     () => ({
       onRowAdd: (sheetName: SheetNameMT) =>
         new Promise((resolve, reject) => {
-          sheetName.id = readRowNum
+          sheetName.id = readRowNum;
           recordUpdate(sheetName);
           dispatch(createSheetNameRequest(sheetName, resolve, reject));
         }).then(newSheetName => {
@@ -106,20 +130,28 @@ const SheetNamesTable = () => {
           if (newSheetName) {
             CreateAuditLog(
               null,
-              "Create Sheet",
-              "SheetName",
+              'Create Sheet',
+              'SheetName',
               (newSheetName as SheetName)._id,
               {},
-              newSheetName);
+              newSheetName,
+            );
           }
         }),
       onRowUpdate: (sheetName: SheetNameMT) =>
         new Promise((resolve, reject) => {
-          recordUpdate(sheetName); 
+          recordUpdate(sheetName);
           // Find the old value before updating in order to Auditlog
-          (async () => { 
+          (async () => {
             const oldSheetName = await sheetNameController.fetchById(sheetName._id);
-            CreateAuditLog(null, "Update Sheet", "SheetName", oldSheetName._id, oldSheetName, sheetName);
+            CreateAuditLog(
+              null,
+              'Update Sheet',
+              'SheetName',
+              oldSheetName._id,
+              oldSheetName,
+              sheetName,
+            );
           })();
           // Do Update
           dispatch(updateSheetNameRequest(sheetName, resolve, reject));
@@ -128,45 +160,46 @@ const SheetNamesTable = () => {
         new Promise((resolve, reject) => {
           recordUpdate(sheetName);
           //Prevent deletion of referenced sheetname logic
-          DetectEmptySheet(sheetName._id).then((hiddenValue: boolean) =>{
+          DetectEmptySheet(sheetName._id).then((hiddenValue: boolean) => {
             //if hiddenValue is true, the categoryTree is empty and the sheetname will be delete-able
             if (hiddenValue === true) {
               dispatch(deleteSheetNameRequest(sheetName._id, resolve, reject));
               // For Auditlog
               const sheetName_trim = (({ tableData, ...o }) => o)(sheetName);
-              CreateAuditLog(null, "Delete Sheet", "SheetName", sheetName._id, sheetName_trim, {});
+              CreateAuditLog(null, 'Delete Sheet', 'SheetName', sheetName._id, sheetName_trim, {});
             }
             //trigger warning popup to alert user sheetname is referenced in a Category Tree
             else {
               Swal.fire({
                 title: 'Warning!',
-                text: "The sheet you are attempting to delete is referenced by a Category Tree and may not be deleted. Please click OK to return to the page.",
+                text:
+                  'The sheet you are attempting to delete is referenced by a Category Tree and may not be deleted. Please click OK to return to the page.',
                 icon: 'error',
                 confirmButtonColor: '#3085d6',
                 confirmButtonText: 'OK',
-              }).then((result) => {
+              }).then(result => {
                 if (result.isConfirmed) {
                   window.location.reload();
                 }
-              })
+              });
             }
           });
         }),
     }),
     [dispatch, readRowNum],
   );
-  
+
   useEffect(() => {
     // console.log('Page Refresh')
     dispatch(getSheetNamesRequest());
   }, [dispatch]);
 
-  useEffect(()=>{
-    setRowNum(sheetNames.length)
+  useEffect(() => {
+    setRowNum(sheetNames.length);
     if (!hasSheets) {
-      setHasSheets(sheetNames.length >= 1)
+      setHasSheets(sheetNames.length >= 1);
     }
-  }, [sheetNames])
+  }, [sheetNames]);
 
   return (
     // @ts-ignore

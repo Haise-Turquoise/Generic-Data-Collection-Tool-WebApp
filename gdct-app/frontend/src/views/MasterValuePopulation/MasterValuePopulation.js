@@ -7,7 +7,7 @@ import Select from '@material-ui/core/Select';
 import FormControl from '@material-ui/core/FormControl';
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles, withStyles } from '@material-ui/core/styles';
 import ControlPoint from '@material-ui/icons/ControlPoint';
 import AddCircleIcon from '@material-ui/icons/AddCircle';
 import Button from '@material-ui/core/Button';
@@ -20,6 +20,12 @@ import './MasterValuePopulation.scss';
 import cloneDeep from 'clone-deep';
 import axios from 'axios';
 
+import Dialog from '@material-ui/core/Dialog';
+import MuiDialogTitle from '@material-ui/core/DialogTitle';
+import MuiDialogContent from '@material-ui/core/DialogContent';
+import MuiDialogActions from '@material-ui/core/DialogActions';
+import IconButton from '@material-ui/core/IconButton';
+import CloseIcon from '@material-ui/icons/Close';
 import {
   selectFactoryRESTResponseTableValues,
   selectFactoryRESTIsCallInProgress,
@@ -27,9 +33,9 @@ import {
 import { selectOrgsStore } from '../../store/OrganizationsStore/selectors';
 import { selectCOAsStore } from '../../store/COAsStore/selectors';
 import { selectColumnNamesStore } from '../../store/ColumnNamesStore/selectors';
-import {selectDataResumeStore}from '../../store/DataResumeStore/selector';
+import { selectDataResumeStore } from '../../store/DataResumeStore/selector';
 import Loading from '../../components/Loading';
-import {getDataResume,updateDataResume} from '../../store/thunks/DataResume';
+import { getDataResume, updateDataResume } from '../../store/thunks/DataResume';
 import { getColumnNamesRequest } from '../../store/thunks/columnName';
 import { getCOAsRequest } from '../../store/thunks/COA';
 import { getOrgsRequest } from '../../store/thunks/organization';
@@ -39,19 +45,9 @@ import MasterValueController from '../../controllers/MasterValue';
 import { selectReportingPeriodsStore } from '../../store/ReportingPeriodsStore/selectors';
 import { getReportingPeriodsRequest } from '../../store/thunks/reportingPeriod';
 
-import DataResumeController from '../../controllers/DataResume'
+import DataResumeController from '../../controllers/DataResume';
 import OrganizationController from '../../controllers/organization';
 import COAController from '../../controllers/COA';
-import { withStyles } from '@material-ui/core/styles';
-import Dialog from '@material-ui/core/Dialog';
-import MuiDialogTitle from '@material-ui/core/DialogTitle';
-import MuiDialogContent from '@material-ui/core/DialogContent';
-import MuiDialogActions from '@material-ui/core/DialogActions';
-import IconButton from '@material-ui/core/IconButton';
-import CloseIcon from '@material-ui/icons/Close';
-
-
-
 
 const REST_API = 'https://ohfsrest.azurewebsites.net';
 
@@ -78,19 +74,27 @@ const addDocument = async masterValue => {
   };
   await MasterValueController.addDocument(newMasterValue).then(res => {
     // setLoadCount(loadCount=>loadCount+1);
-    
+
     console.log('add one successfully');
-    
-  })
+  });
 };
-const queryREST = async ({ category, ap, hfk, attribute },setGetCount, setGetTotal,getCount,getTotal,setResumeQueries,resumeQueries,setGetButtonDisabled) => {
+const queryREST = async (
+  { category, ap, hfk, attribute },
+  setGetCount,
+  setGetTotal,
+  getCount,
+  getTotal,
+  setResumeQueries,
+  resumeQueries,
+  setGetButtonDisabled,
+) => {
   const queries = [];
 
   const upsList = [];
   const ye = ap.split('/')[0];
   const year = ye.slice(2, 4);
   const stage = ap.slice(8, 10);
-  setGetButtonDisabled(true)
+  setGetButtonDisabled(true);
 
   for (const c of category) {
     for (const h of hfk) {
@@ -120,9 +124,6 @@ const queryREST = async ({ category, ap, hfk, attribute },setGetCount, setGetTot
       'Access-Control-Allow-Origin': '*',
     },
   };
-  
-
-
 
   const addDocument = async masterValue => {
     const newMasterValue = {
@@ -140,53 +141,48 @@ const queryREST = async ({ category, ap, hfk, attribute },setGetCount, setGetTot
     };
     await MasterValueController.addDocument(newMasterValue).then(res => {
       // setLoadCount(loadCount=>loadCount+1);
-      
+
       console.log('add one successfully');
-      
-    })
+    });
   };
 
-
-  let failedQueries = [];
-  let failedMasterValues = [];
-  let results = [];
-  let masterValueList = upsList;
+  const failedQueries = [];
+  const failedMasterValues = [];
+  const results = [];
+  const masterValueList = upsList;
   setGetTotal(queries.length);
   let progressCount = 0;
-  for (let i = 0;i< queries.length; i++) {
+  for (let i = 0; i < queries.length; i++) {
     console.log(`Iteration ${i} start`);
     try {
-      
       // if(i%20 == 0&& i!=0){
       //   throw `index ${i} can be divided by 20`;
       // }
-      
-      await axios.get(queries[i]).then((result)=>{    
+
+      await axios.get(queries[i]).then(result => {
         results.push(result);
-      })
+      });
     } catch (e) {
-      console.log(e)
+      console.log(e);
       console.log(`Get Iteration ${i} catch block, corresponding url is ${queries[i]}`);
       results.push([]);
       const failObject = masterValueList[i];
       failObject.value = [queries[i]];
-      failedQueries.push(failObject)
-      
+      failedQueries.push(failObject);
+
       continue;
     }
 
-    try{
-      if(results[i] ==[]){
+    try {
+      if (results[i] == []) {
         throw `Get Iteration ${i} has already failed, corresponding url is ${queries[i]}`;
-      }
-      else if (results[i].data.length > 0) {
-        console.log(`index ${i} has data`)      
-        masterValueList[i].value = results[i].data[0][2];            
+      } else if (results[i].data.length > 0) {
+        console.log(`index ${i} has data`);
+        masterValueList[i].value = results[i].data[0][2];
         await addDocument(masterValueList[i]);
-        
       }
     } catch (e) {
-      console.log(e)
+      console.log(e);
       console.log(`Load Iteration ${i} catch block`);
       const failObject = masterValueList[i];
       failObject.value = [queries[i]];
@@ -194,20 +190,32 @@ const queryREST = async ({ category, ap, hfk, attribute },setGetCount, setGetTot
       continue;
     }
 
-    setGetCount(getCount=>getCount+1);
-    progressCount +=1;
-    
-    
+    setGetCount(getCount => getCount + 1);
+    progressCount += 1;
   }
   console.log(results);
   console.log(failedQueries);
-  const dataResume = {resumeArray:failedQueries, currentCount:progressCount, totalCount:queries.length}
-  setResumeQueries(failedQueries)
-  setGetButtonDisabled(false)
+  const dataResume = {
+    resumeArray: failedQueries,
+    currentCount: progressCount,
+    totalCount: queries.length,
+  };
+  setResumeQueries(failedQueries);
+  setGetButtonDisabled(false);
 };
 
-const DoRetrieval = ({ category, ap, hfk, col },setGetCount, setGetTotal,getCount,getTotal,setResumeQueries,resumeQueries,setGetSuccess,setGetButtonDisabled) => {
-  setGetSuccess(false)
+const DoRetrieval = (
+  { category, ap, hfk, col },
+  setGetCount,
+  setGetTotal,
+  getCount,
+  getTotal,
+  setResumeQueries,
+  resumeQueries,
+  setGetSuccess,
+  setGetButtonDisabled,
+) => {
+  setGetSuccess(false);
   if (category && ap && hfk && category.length > 0 && hfk.length > 0 && ap.length > 0) {
     // console.log(ap)
     // const period = ap.split(' ')[0];
@@ -220,109 +228,119 @@ const DoRetrieval = ({ category, ap, hfk, col },setGetCount, setGetTotal,getCoun
       }
     }
     if (fnd) {
-      queryREST({ category, ap, hfk, attribute: fnd },setGetCount, setGetTotal,getCount,getTotal,setResumeQueries,resumeQueries,setGetButtonDisabled);
+      queryREST(
+        { category, ap, hfk, attribute: fnd },
+        setGetCount,
+        setGetTotal,
+        getCount,
+        getTotal,
+        setResumeQueries,
+        resumeQueries,
+        setGetButtonDisabled,
+      );
     } else alert("Attribute doesn't exist in database");
   } else alert('Missing one or more parameters.');
 };
-const  handleResume = async (setGetCount,setGetTotal,getCount,getTotal,setResumeQueries,resumeQueries,setResumeButtonDisabled)=>{
-  console.log(resumeQueries)
-  console.log(getCount,getTotal)
-  setResumeButtonDisabled(true)
-  let failedQueries = [];
-  let results = [];
-  
-  
-  for (let i = 0;i< resumeQueries.length; i++) {
+const handleResume = async (
+  setGetCount,
+  setGetTotal,
+  getCount,
+  getTotal,
+  setResumeQueries,
+  resumeQueries,
+  setResumeButtonDisabled,
+) => {
+  console.log(resumeQueries);
+  console.log(getCount, getTotal);
+  setResumeButtonDisabled(true);
+  const failedQueries = [];
+  const results = [];
+
+  for (let i = 0; i < resumeQueries.length; i++) {
     let resumeQuery = '';
-    let org = undefined;
-    let coa = undefined;
+    let org;
+    let coa;
     console.log(`Iteration ${i} start`);
     try {
-
-      
-      console.log(resumeQueries[i].org.id)
-      console.log(resumeQueries[i].categoryId)
-      org = await OrganizationController.fetchById(resumeQueries[i].org.id)
-      coa = await COAController.fetchCOAbyId(resumeQueries[i].categoryId)
-      console.log(coa.COAs)
+      console.log(resumeQueries[i].org.id);
+      console.log(resumeQueries[i].categoryId);
+      org = await OrganizationController.fetchById(resumeQueries[i].org.id);
+      coa = await COAController.fetchCOAbyId(resumeQueries[i].categoryId);
+      console.log(coa.COAs);
       // if target organization has been deleted
-      if(org.organizations.length == 0){
-        setGetCount(getCount=>getCount+1);
-        throw `Can not find corresponding org using this id: ${resumeQueries[i].org.id}` 
+      if (org.organizations.length == 0) {
+        setGetCount(getCount => getCount + 1);
+        throw `Can not find corresponding org using this id: ${resumeQueries[i].org.id}`;
       }
       // if target category has been deleted
-      if(coa.COAs.length == 0){
-        console.log('reach error part')
-        setGetCount(getCount=>getCount+1);
-        throw `Can not find corresponding coa using this id: ${resumeQueries[i].categoryId}` 
+      if (coa.COAs.length == 0) {
+        console.log('reach error part');
+        setGetCount(getCount => getCount + 1);
+        throw `Can not find corresponding coa using this id: ${resumeQueries[i].categoryId}`;
       }
       const idx = resumeQueries[i].value[0].indexOf('ID=');
-      resumeQuery += resumeQueries[i].value[0].substring(0,idx+3);
+      resumeQuery += resumeQueries[i].value[0].substring(0, idx + 3);
       // if COA is empty
-      if(coa.COAs.COA.length == 0){
-        resumeQuery += '-1&pa=2*'
-      }
-      else{
+      if (coa.COAs.COA.length == 0) {
+        resumeQuery += '-1&pa=2*';
+      } else {
         resumeQuery += org.organizations.id;
         resumeQuery += '&';
         resumeQuery += coa.COAs.COA;
       }
-      console.log(resumeQuery)
+      console.log(resumeQuery);
       // console.log(resumeQueries[i].value[0])
 
-
-      await axios.get(resumeQuery).then((result)=>{ 
-        
-        results.push(result)
-      })
+      await axios.get(resumeQuery).then(result => {
+        results.push(result);
+      });
     } catch (e) {
-      console.log(e)
-      console.log(`Get Iteration ${i} catch block, corresponding url is ${resumeQueries[i].value[0]}`);
-      results.push([])
-      console.log(resumeQueries[i])
-      const failedMasterValue = cloneDeep(resumeQueries[i])
-      failedMasterValue.value = [resumeQuery]
-      failedQueries.push(failedMasterValue)
-      
+      console.log(e);
+      console.log(
+        `Get Iteration ${i} catch block, corresponding url is ${resumeQueries[i].value[0]}`,
+      );
+      results.push([]);
+      console.log(resumeQueries[i]);
+      const failedMasterValue = cloneDeep(resumeQueries[i]);
+      failedMasterValue.value = [resumeQuery];
+      failedQueries.push(failedMasterValue);
+
       continue;
     }
 
-    try{
+    try {
       // console.log(results);
       if (results[i].data.length > 0) {
-        console.log(`index ${i} has data`)
-        const masterValue = cloneDeep(resumeQueries[i])      
-        masterValue.value = results[i].data[0][2];            
+        console.log(`index ${i} has data`);
+        const masterValue = cloneDeep(resumeQueries[i]);
+        masterValue.value = results[i].data[0][2];
         await addDocument(masterValue);
-        
       }
     } catch (e) {
-      console.log(e)
+      console.log(e);
       console.log(`Load Iteration ${i} catch block`);
-      const failedMasterValue = cloneDeep(resumeQueries[i])
-      failedMasterValue.value = [resumeQuery]
-      failedQueries.push(failedMasterValue)
+      const failedMasterValue = cloneDeep(resumeQueries[i]);
+      failedMasterValue.value = [resumeQuery];
+      failedQueries.push(failedMasterValue);
       continue;
     }
-    setGetCount(getCount=>getCount+1);
-    
+    setGetCount(getCount => getCount + 1);
   }
   setResumeQueries(failedQueries);
   setResumeButtonDisabled(false);
-}
+};
 const HeaderActions = props => {
   return (
     <Paper className="header">
       <Typography variant="h5">Prepopulate from OHFS</Typography>
-      
+
       <Selection {...props} />
-      
     </Paper>
   );
 };
 function CircularProgressWithLabel(props) {
   return (
-    <Box padding = "0%" position="relative" display="inline-flex">
+    <Box padding="0%" position="relative" display="inline-flex">
       <CircularProgress variant="determinate" {...props} />
       <Box
         top={0}
@@ -331,7 +349,6 @@ function CircularProgressWithLabel(props) {
         right={0}
         position="absolute"
         display="flex"
-        
         alignItems="center"
         justifyContent="center"
       >
@@ -343,99 +360,32 @@ function CircularProgressWithLabel(props) {
   );
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-const  FooterActions =  props =>  {
-
+const FooterActions = props => {
   const [getCount, setGetCount] = useState(props.getPopulateParameters().currentCount);
   const [getTotal, setGetTotal] = useState(props.getPopulateParameters().totalCount);
   const [getSuccess, setGetSuccess] = useState(false);
-  const [resumeQueries,setResumeQueries] = useState(props.getPopulateParameters().resumeArray);
-  const [getButtonDisabled,setGetButtonDisabled] = useState(false);
-  
-  const [resumeButtonDisabled,setResumeButtonDisabled] = useState(false);
+  const [resumeQueries, setResumeQueries] = useState(props.getPopulateParameters().resumeArray);
+  const [getButtonDisabled, setGetButtonDisabled] = useState(false);
+
+  const [resumeButtonDisabled, setResumeButtonDisabled] = useState(false);
   const [alertMessage, setAlertMessage] = useState('');
   const [alertTitle, setAlertTitle] = useState('');
   const dispatch = useDispatch();
 
   const [open, setOpen] = React.useState(false);
-  
-    const handleDialogOpen = (alertMessage,alertTitle) => {
-      setAlertMessage(alertMessage);
-      setAlertTitle(alertTitle)
-      setOpen(true);
-    };
-    const handleDialogClose = () => {
-      setAlertMessage('');
-      setAlertTitle('')
-      setOpen(false);
+
+  const handleDialogOpen = (alertMessage, alertTitle) => {
+    setAlertMessage(alertMessage);
+    setAlertTitle(alertTitle);
+    setOpen(true);
+  };
+  const handleDialogClose = () => {
+    setAlertMessage('');
+    setAlertTitle('');
+    setOpen(false);
   };
 
-
-
-
-
-
-
-  const dialogStyles = (theme) => ({
+  const dialogStyles = theme => ({
     root: {
       margin: 0,
       padding: theme.spacing(2),
@@ -447,8 +397,8 @@ const  FooterActions =  props =>  {
       color: theme.palette.grey[500],
     },
   });
-  
-  const DialogTitle = withStyles(dialogStyles)((props) => {
+
+  const DialogTitle = withStyles(dialogStyles)(props => {
     const { children, classes, onClose, ...other } = props;
     return (
       <MuiDialogTitle disableTypography className={classes.root} {...other}>
@@ -461,35 +411,29 @@ const  FooterActions =  props =>  {
       </MuiDialogTitle>
     );
   });
-  
-  const DialogContent = withStyles((theme) => ({
+
+  const DialogContent = withStyles(theme => ({
     root: {
       padding: theme.spacing(2),
     },
   }))(MuiDialogContent);
-  
-  const DialogActions = withStyles((theme) => ({
+
+  const DialogActions = withStyles(theme => ({
     root: {
       margin: 0,
       padding: theme.spacing(1),
     },
   }))(MuiDialogActions);
-  
-  const  CustomizedDialogs = props=> {
-    
-  
+
+  const CustomizedDialogs = props => {
     return (
       <div>
-        
         <Dialog onClose={handleDialogClose} aria-labelledby="customized-dialog-title" open={open}>
           <DialogTitle id="customized-dialog-title" onClose={handleDialogClose}>
             {props.alertTitle}
           </DialogTitle>
           <DialogContent dividers>
-            <Typography gutterBottom>
-              {props.alertMessage}
-            </Typography>
-            
+            <Typography gutterBottom>{props.alertMessage}</Typography>
           </DialogContent>
           <DialogActions>
             <Button autoFocus onClick={handleDialogClose} color="primary">
@@ -499,110 +443,109 @@ const  FooterActions =  props =>  {
         </Dialog>
       </div>
     );
-  }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+  };
 
   React.useEffect(() => {
-    if(getCount == getTotal && getCount>0){
-      setGetSuccess(true)
+    if (getCount == getTotal && getCount > 0) {
+      setGetSuccess(true);
     }
   }, [getCount]);
-  useEffect(()=>{
-    console.log('upload to database')
-    console.log(getCount)
-    console.log(getTotal)
-    if(!(getCount == 0 && getTotal == 0)){
-      
-      if(getCount == getTotal){
-        console.log('finish')
+  useEffect(() => {
+    console.log('upload to database');
+    console.log(getCount);
+    console.log(getTotal);
+    if (!(getCount == 0 && getTotal == 0)) {
+      if (getCount == getTotal) {
+        console.log('finish');
         setGetCount(0);
         setGetTotal(0);
-        setResumeQueries([])
-        const dataResumeStatues = {resumeArray:[], currentCount:0, totalCount:0}
+        setResumeQueries([]);
+        const dataResumeStatues = { resumeArray: [], currentCount: 0, totalCount: 0 };
         dispatch(updateDataResume(dataResumeStatues));
-        setTimeout(function(){ handleDialogOpen('finish progress successfully!','Result'); }, 500);
-        
-      }
-      else{
-        let alertMessage = ""
-        console.log('some cases failed')
+        setTimeout(function () {
+          handleDialogOpen('finish progress successfully!', 'Result');
+        }, 500);
+      } else {
+        let alertMessage = '';
+        console.log('some cases failed');
         console.log(resumeQueries);
-        for (let i = 0;i< resumeQueries.length; i++) {
-          alertMessage += 'organization id : '
-          alertMessage += resumeQueries[i].org.id
+        for (let i = 0; i < resumeQueries.length; i++) {
+          alertMessage += 'organization id : ';
+          alertMessage += resumeQueries[i].org.id;
           alertMessage += ' ';
           alertMessage += ', category id : ';
           alertMessage += resumeQueries[i].categoryId;
-          alertMessage += '\n'
+          alertMessage += '\n';
           // alertMessage += ' url : '
           alertMessage += resumeQueries[i].value[0];
           alertMessage += '\n';
         }
-        const dataResumeStatues = {resumeArray:resumeQueries, currentCount:getCount, totalCount:getTotal}
-        
+        const dataResumeStatues = {
+          resumeArray: resumeQueries,
+          currentCount: getCount,
+          totalCount: getTotal,
+        };
+
         dispatch(updateDataResume(dataResumeStatues));
-        
-        handleDialogOpen(alertMessage,'Some queries failed, they are :');
+
+        handleDialogOpen(alertMessage, 'Some queries failed, they are :');
       }
-      
-    }  
-  },[resumeQueries])
+    }
+  }, [resumeQueries]);
   return (
-    
     <Paper className="footer">
-      <div className = "bottomEle">
+      <div className="bottomEle">
         <Button
-          
           disabled={getButtonDisabled}
           color="primary"
           variant="contained"
           size="large"
-          onClick={() => DoRetrieval(props.getPopulateParameters(),setGetCount,setGetTotal,getCount,getTotal,setResumeQueries,resumeQueries,setGetSuccess,setGetButtonDisabled)}
+          onClick={() =>
+            DoRetrieval(
+              props.getPopulateParameters(),
+              setGetCount,
+              setGetTotal,
+              getCount,
+              getTotal,
+              setResumeQueries,
+              resumeQueries,
+              setGetSuccess,
+              setGetButtonDisabled,
+            )
+          }
         >
           Get Actuals from OHFS
         </Button>
-        
-        
       </div>
-      <div className = "bottomEle">
+      <div className="bottomEle">
         <Button
-          
-          disabled={getButtonDisabled||resumeButtonDisabled}
+          disabled={getButtonDisabled || resumeButtonDisabled}
           color="primary"
           variant="contained"
           size="large"
-          onClick={() => handleResume(setGetCount,setGetTotal,getCount,getTotal,setResumeQueries,resumeQueries,setResumeButtonDisabled)}
+          onClick={() =>
+            handleResume(
+              setGetCount,
+              setGetTotal,
+              getCount,
+              getTotal,
+              setResumeQueries,
+              resumeQueries,
+              setResumeButtonDisabled,
+            )
+          }
         >
           Resume the progress
         </Button>
-        
-        
       </div>
-      <div className = "bottomEle">Get From OHFS</div>
-      {getSuccess?<CheckIcon fontSize="large"/>:<CircularProgressWithLabel value={(getTotal == 0)?0:(getCount/getTotal*100)} />}
-      <CustomizedDialogs alertMessage = {alertMessage} alertTitle = {alertTitle}/>
-      
-      
+      <div className="bottomEle">Get From OHFS</div>
+      {getSuccess ? (
+        <CheckIcon fontSize="large" />
+      ) : (
+        <CircularProgressWithLabel value={getTotal == 0 ? 0 : (getCount / getTotal) * 100} />
+      )}
+      <CustomizedDialogs alertMessage={alertMessage} alertTitle={alertTitle} />
     </Paper>
-    
   );
 };
 
@@ -639,7 +582,6 @@ const Selection = ({ val, data, name, handleChange }) => {
   );
 };
 
-
 const MasterValuePopulation = () => {
   const dispatch = useDispatch();
 
@@ -653,8 +595,6 @@ const MasterValuePopulation = () => {
     dispatch(getDataResume());
   }, [dispatch, localStorage.getItem('dataLoadingFeedback')]);
 
-
-
   const {
     db_categoryList,
     db_hfkList,
@@ -667,7 +607,7 @@ const MasterValuePopulation = () => {
     db_hfkList: selectFactoryRESTResponseTableValues(selectOrgsStore)(state),
     db_columnNamesList: selectFactoryRESTResponseTableValues(selectColumnNamesStore)(state),
     reportingPeriods: selectFactoryRESTResponseTableValues(selectReportingPeriodsStore)(state),
-    dataResumeStatues:selectFactoryRESTResponseTableValues(selectDataResumeStore)(state),
+    dataResumeStatues: selectFactoryRESTResponseTableValues(selectDataResumeStore)(state),
     isCallInProgress:
       selectFactoryRESTIsCallInProgress(selectCOAsStore)(state) ||
       selectFactoryRESTIsCallInProgress(selectOrgsStore)(state) ||
@@ -684,8 +624,6 @@ const MasterValuePopulation = () => {
     isCallInProgress,
   });
 
-  
-
   const periodList = [];
   reportingPeriods.forEach(period => {
     periodList.push(period.name);
@@ -700,13 +638,12 @@ const MasterValuePopulation = () => {
   const [resumeArray, setResumeArray] = useState([]);
 
   useEffect(() => {
-    console.log('dataResumeStatues', dataResumeStatues)
-    if(dataResumeStatues.length !=0){
+    console.log('dataResumeStatues', dataResumeStatues);
+    if (dataResumeStatues.length != 0) {
       setCurrentCount(dataResumeStatues[0].currentCount);
       setTotalCount(dataResumeStatues[0].totalCount);
       setResumeArray(dataResumeStatues[0].resumeArray);
     }
-    
   }, [dataResumeStatues]);
   useEffect(() => {
     // console.log('db_categoryList changes', db_categoryList)
@@ -750,8 +687,8 @@ const MasterValuePopulation = () => {
     () => ({
       actionsColumnIndex: -1,
       search: true,
-      maxBodyHeight:400,
-      minBodyHeight:400,
+      maxBodyHeight: 400,
+      minBodyHeight: 400,
     }),
     [],
   );
@@ -866,7 +803,7 @@ const MasterValuePopulation = () => {
           />
         </div>
       </div>
-      <div className = "divider"> </div>
+      <div className="divider"> </div>
       <FooterActions getPopulateParameters={getPopulateParameters} />
       <div></div>
     </div>

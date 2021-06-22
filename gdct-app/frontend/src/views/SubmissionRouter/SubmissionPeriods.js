@@ -21,7 +21,7 @@ import {
 import { selectSubmissionPeriodsStore } from '../../store/SubmissionPeriodsStore/selectors';
 import { selectReportingPeriodsStore } from '../../store/ReportingPeriodsStore/selectors';
 import { getReportingPeriodsRequest } from '../../store/thunks/reportingPeriod';
-import { calculateOptions } from '../../tools/misc'
+import { calculateOptions } from '../../tools/misc';
 
 const SubmissionPeriodHeader = () => {
   return (
@@ -34,11 +34,11 @@ const SubmissionPeriodHeader = () => {
 const SubmissionPeriod = () => {
   const dispatch = useDispatch();
   const [readRowNum, setRowNum] = useState(1);
-  const [hasPeriods, setHasPeriods] = useState(false)
+  const [hasPeriods, setHasPeriods] = useState(false);
 
   // table vars for loading
-  const preColumns = [{ title: 'Name', field: 'name' }]
-  const prePeriods = [{ name: 'LOADING...' }]
+  const preColumns = [{ title: 'Name', field: 'name' }];
+  const prePeriods = [{ name: 'LOADING...' }];
 
   const { submissionPeriods, lookupReportingPeriods } = useSelector(
     state => ({
@@ -51,7 +51,7 @@ const SubmissionPeriod = () => {
   // Convert Date format
   submissionPeriods.forEach(submissionPeriod => {
     const logtime = new Date(submissionPeriod.timestamp);
-    submissionPeriod.timestamp = moment(logtime).format("YYYY-MM-DD HH:mm:ss")
+    submissionPeriod.timestamp = moment(logtime).format('YYYY-MM-DD HH:mm:ss');
   });
 
   const columns = useMemo(
@@ -64,18 +64,30 @@ const SubmissionPeriod = () => {
         field: 'reportingPeriodId',
         lookup: lookupReportingPeriods,
       },
-      { title: 'Modified On', field: 'timestamp', editComponent: () => {return <div></div>} },
-      { title: 'Updated By', field: 'updatedBy', editComponent: () => {return <div></div>} },
+      {
+        title: 'Modified On',
+        field: 'timestamp',
+        editComponent: () => {
+          return <div></div>;
+        },
+      },
+      {
+        title: 'Updated By',
+        field: 'updatedBy',
+        editComponent: () => {
+          return <div></div>;
+        },
+      },
     ],
     [lookupReportingPeriods],
   );
 
   // Record who and when of the action
   function recordUpdate(submissionPeriod) {
-    //get username and record in Modified By column
+    // get username and record in Modified By column
     submissionPeriod.updatedBy = localStorage.getItem('currentUser');
-    //record new date and time in Modified On column 
-    submissionPeriod.timestamp = new Date().toLocaleString(); 
+    // record new date and time in Modified On column
+    submissionPeriod.timestamp = new Date().toLocaleString();
   }
 
   const options = useMemo(() => calculateOptions(readRowNum), [readRowNum]);
@@ -106,12 +118,12 @@ const SubmissionPeriod = () => {
     dispatch(getReportingPeriodsRequest());
   }, [dispatch]);
 
-  useEffect(()=>{
-    setRowNum(submissionPeriods.length)
+  useEffect(() => {
+    setRowNum(submissionPeriods.length);
     if (!hasPeriods) {
-      setHasPeriods(submissionPeriods.length >= 1)
+      setHasPeriods(submissionPeriods.length >= 1);
     }
-  }, [submissionPeriods])
+  }, [submissionPeriods]);
 
   return (
     <div>

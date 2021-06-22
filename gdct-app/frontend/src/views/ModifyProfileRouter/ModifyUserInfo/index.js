@@ -1,1 +1,1 @@
-export { default } from './ModifyUserInfo'; 
+export { default } from './ModifyUserInfo';

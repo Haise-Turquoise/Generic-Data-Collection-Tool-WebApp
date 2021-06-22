@@ -1,1 +1,1 @@
-export { default } from './ModifyProfileRouter'; 
+export { default } from './ModifyProfileRouter';

@@ -33,7 +33,7 @@ const COADialog = ({ Auditlog_Operations }) => {
   const handleSelect = useCallback(
     item => {
       dispatch(COATreeStore.actions.SELECT_COA_COA_TREE_UI({ item }));
-      Auditlog_Operations.push(`        Added Node: ${item.name}`)
+      Auditlog_Operations.push(`        Added Node: ${item.name}`);
     },
     [dispatch],
   );

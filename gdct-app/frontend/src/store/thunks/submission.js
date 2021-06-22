@@ -2,10 +2,7 @@ import submissionController from '../../controllers/submission';
 import AuthController from '../../controllers/Auth';
 import SubmissionsStore from '../SubmissionsStore/store';
 
-import {
-  deleteRequestFactory,
-  updateRequestFactory,
-} from './common/REST';
+import { deleteRequestFactory, updateRequestFactory } from './common/REST';
 import { extractReactAndWorkbookState } from '../../tools/excel';
 
 export const getSubmissionsRequest = () => dispatch => {
@@ -117,7 +114,6 @@ export const updateSubmissionStatusRequest = (
   role,
   newProcessId,
 ) => async dispatch => {
-
   const updatedBy = localStorage.getItem('currentUser');
 
   const newSubmission = {
@@ -139,4 +135,3 @@ export const updateSubmissionStatusRequest = (
     });
   return true;
 };
-
