@@ -248,6 +248,11 @@ export default class UserService {
     } else {
       userCopy.sysRole.splice(roleIndex, 1)
     }
+
+    if (userCopy.sysRole.length < 1) {
+      userCopy.isActive = false;
+    }
+
     await this.UserRepository.modifyUserPendingPermissions(userCopy._id, userCopy)
     return userCopy
   }
