@@ -208,6 +208,50 @@ export default class UserService {
     return this.UserRepository.findByUserName(username);
   }
 
+  async deleteUserPermission(email, permissionData) {
+    const userCopy = await this.UserRepository.findByEmail(email)
+    if (!userCopy) {
+      return null
+    }
+    // see what data and roles are present
+    const foundRole = userCopy.sysRole
+      .find(role => role.role === permissionData.role)
+    const foundOrg = foundRole.org
+      .find(org => org.orgId === permissionData.orgId)
+    const foundProg = foundOrg.program
+      .find(prog => prog.programCode === permissionData.programCode)
+    const foundTemplate = foundProg.template
+      .find(template => template.templateCode === permissionData.templateCode)
+
+    if (
+      !foundRole ||
+      !foundOrg ||
+      !foundProg ||
+      !foundTemplate
+    ) {
+      console.log('ERROR OCCURED -- mismatch data in user service')
+      return user
+    }
+
+    const roleIndex = userCopy.sysRole.indexOf(foundRole)
+    const orgIndex = foundRole.org.indexOf(foundOrg)
+    const progIndex = foundOrg.program.indexOf(foundProg)
+    const templateIndex = foundProg.template.indexOf(foundTemplate)
+
+    // delete as much as possible
+    if (userCopy.sysRole[roleIndex].org[orgIndex].program[progIndex].template.length > 1) {
+      userCopy.sysRole[roleIndex].org[orgIndex].program[progIndex].template.splice(templateIndex, 1)
+    } else if (userCopy.sysRole[roleIndex].org[orgIndex].program.length > 1) {
+      userCopy.sysRole[roleIndex].org[orgIndex].program.splice(progIndex, 1)
+    } else if (userCopy.sysRole[roleIndex].org.length > 1) {
+      userCopy.sysRole[roleIndex].org.splice(orgIndex, 1)
+    } else {
+      userCopy.sysRole.splice(roleIndex, 1)
+    }
+    await this.UserRepository.modifyUserPendingPermissions(userCopy._id, userCopy)
+    return userCopy
+  }
+
   async updatePermissionByUserEmail(email,permissionData){
 
     

@@ -90,7 +90,7 @@ const AppResourcesTable = () => {
     appResource.updatedBy = localStorage.getItem('currentUser') || '';
     // record new date and time in Modified On column 
     const event = new Date();
-    appResource.timestamp = event.toLocaleString();     
+    appResource.timestamp = event.toDateString();    
   }
   const editable = useMemo(
     () => ({

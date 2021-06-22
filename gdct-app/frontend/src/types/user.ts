@@ -1,5 +1,30 @@
 import SysRole from "./sysrole";
 
+interface UserTemplate {
+  templateCode: string,
+  _id: string,
+  templateTypeId: string,
+}
+
+interface UserProg {
+  programCode: string,
+  _id: string,
+  programId: string,
+  template: UserTemplate[],
+}
+
+interface UserOrg {
+  orgId: string,
+  orgName: string,
+  _id: string,
+  program: UserProg[],
+  IsActive: boolean,
+}
+
+interface UserSysRole extends SysRole {
+  org: UserOrg[]
+}
+
 export default interface User {
   _id: string,
   hashedUsername?: string,
@@ -13,7 +38,7 @@ export default interface User {
   email: string,
   startDate?: string,
   endDate?: string,
-  sysRole: SysRole[],
+  sysRole: UserSysRole[],
   __v?: number,
   approvedDate: string,
   creationDate: string,
