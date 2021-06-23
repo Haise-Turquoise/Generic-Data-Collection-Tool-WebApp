@@ -5,7 +5,7 @@ import SubmissionsStore from '../SubmissionsStore/store';
 import { deleteRequestFactory, updateRequestFactory } from './common/REST';
 import { extractReactAndWorkbookState } from '../../tools/excel';
 
-export const getSubmissionsRequest = () => dispatch => {
+export const getSubmissionsRequest = callback => dispatch => {
   dispatch(SubmissionsStore.actions.REQUEST());
 
   AuthController.profile().then(profile => {
@@ -13,9 +13,11 @@ export const getSubmissionsRequest = () => dispatch => {
       .fetchAndCreate(profile.data.email)
       .then(values => {
         dispatch(SubmissionsStore.actions.RECEIVE(values));
+        callback();
       })
       .catch(error => {
         dispatch(SubmissionsStore.actions.FAIL_REQUEST(error));
+        callback();
       });
   });
 };
