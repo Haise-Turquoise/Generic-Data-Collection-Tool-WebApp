@@ -1,24 +1,28 @@
 import React, { lazy, useCallback, useMemo, useEffect, useState } from 'react';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import { Formik } from 'formik';
+//@ts-ignore
 import cloneDeep from 'clone-deep';
 import Box from '@material-ui/core/Box';
 import Paper from '@material-ui/core/Paper';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
+//@ts-ignore
 import Select from 'react-select';
 import Stepper from '@material-ui/core/Stepper';
 import Step from '@material-ui/core/Step';
 import StepLabel from '@material-ui/core/StepLabel';
 import Typography from '@material-ui/core/Typography';
 import Checkbox from '@material-ui/core/Checkbox';
+//@ts-ignore
 import FilteredMultiSelect from 'react-filtered-multiselect';
 import './ModifyPermission.scss';
-
+//@ts-ignore
 import * as yup from 'yup';
 import MaterialTable from 'material-table';
 
 import { useTranslation } from 'react-i18next';
+//@ts-ignore
 import userRegistrationStore from '../../../store/UserRegistrationStore/store';
 import {
   orgGroupChange,
@@ -36,13 +40,15 @@ import {
   searchKeyChange,
   referenceChange,
   loadModifyPermissionPage,
+  //@ts-ignore
 } from '../../../store/thunks/userRegistration.js';
-
+import UserPermission from '../../../types/userpermission';
+import Presubmission from '../../../types/presubmission';
 // Column for permission table.
 const columns = [
   {
     title: 'Organization',
-    render: rowData => `(${rowData.organization.id}) ${rowData.organization.name}`,
+    render: (rowData:UserPermission) => `(${rowData.organization.id}) ${rowData.organization.name}`,
   },
   { title: 'Program', field: 'program.code' },
   { title: 'Submission', field: 'submission.name' },
@@ -63,7 +69,15 @@ const columns = [
 ];
 
 // Button on the bottom of page
-const ButtonBox = ({ activeStep, ableToComplete, values, isValid, handleBack, handleSubmit }) => (
+const ButtonBox = ({ activeStep, ableToComplete, values, isValid, handleBack, handleSubmit,handleNext }:{
+  activeStep:number;
+  ableToComplete:boolean;
+  values:any;
+  isValid:boolean;
+  handleBack:any;
+  handleSubmit:any;
+  handleNext:any;
+}) => (
   <Box border={1} color="primary" className="modifyPermission__buttonBox" justifyContent="center">
     <Button
       disabled={activeStep === 0}
@@ -94,20 +108,20 @@ const ButtonBox = ({ activeStep, ableToComplete, values, isValid, handleBack, ha
 // Read the information user select and ask controller to send request to backend
 // After responsed from backend, page will be refreshed.
 const selectOrgProgram = (
-  searchKey,
-  reference,
-  organizationGroup,
-  organizationOptions,
-  organizationGroupOptions,
-  appSysOptions,
-  programOptions,
-  handleAppSysChange,
-  handleOrgGroupChange,
-  handleOrgChange,
-  handleProgramChange,
+  searchKey:string,
+  reference:string,
+  organizationGroup:object,
+  organizationOptions:object[],
+  organizationGroupOptions:object[],
+  appSysOptions:object[],
+  programOptions:object[],
+  handleAppSysChange:any,
+  handleOrgGroupChange:any,
+  handleOrgChange:any,
+  handleProgramChange:any,
 ) => {
-  const selectedPrograms = [];
-  const selectedOrganizations = [];
+  let selectedPrograms = [];
+  let selectedOrganizations:object[] = [];
   return (
     <>
       <div className="modifyPermission__selectField">
@@ -172,31 +186,31 @@ const selectOrgProgram = (
 
 // Have the detail UI page for each step
 const getStepContent = (
-  snackbarMessage,
-  activeStep,
-  searchKey,
-  reference,
-  organizationGroup,
-  isSnackbarOpen,
-  userOrganizations,
-  userPrograms,
-  userSubmissions,
-  userPermissions,
-  appSysOptions,
-  organizationGroupOptions,
-  organizationOptions,
-  programOptions,
-  ableToComplete,
-  handleOrgGroupChange,
-  handleBack,
-  handleNext,
-  handleSubmit,
-  handleAppSysChange,
-  handleOrgChange,
-  handleProgramChange,
-  handleChangeSubmission,
-  handleChangePermission,
-  props,
+  snackbarMessage:string,
+  activeStep:number,
+  searchKey:string,
+  reference:string,
+  organizationGroup:object,
+  isSnackbarOpen:boolean,
+  userOrganizations:object[],
+  userPrograms:object[],
+  userSubmissions:Presubmission[],
+  userPermissions:UserPermission[],
+  appSysOptions:object[],
+  organizationGroupOptions:object[],
+  organizationOptions:object[],
+  programOptions:object[],
+  ableToComplete:boolean,
+  handleOrgGroupChange:any,
+  handleBack:any,
+  handleNext:any,
+  handleSubmit:any,
+  handleAppSysChange:any,
+  handleOrgChange:any,
+  handleProgramChange:any,
+  handleChangeSubmission:any,
+  handleChangePermission:any,
+  props:any,
 ) => {
   const { values, isValid } = props;
   const [userSubmissionsLength, setSubmissionsLength] = useState(1);
@@ -210,7 +224,7 @@ const getStepContent = (
     setPermissionsLength(userPermissions.length);
   }, [userPermissions]);
 
-  const calculateOptions = itemCount => {
+  const calculateOptions = (itemCount:number) => {
     let length = itemCount;
     if (length > 100) length = 100;
     else if (length == 0) length = 1;
@@ -238,10 +252,11 @@ const getStepContent = (
     {
       title: 'Approve*',
       field: 'approve',
-      render: rowData => (
+      render: (rowData:Presubmission) => (
         <Checkbox
           checked={rowData.approve}
           disabled={!rowData.approveAvailable}
+          // @ts-ignore
           onChange={handleChangePermission.bind(this, rowData, 'approve')}
           color="primary"
         />
@@ -250,10 +265,11 @@ const getStepContent = (
     {
       title: 'Review**',
       field: 'review',
-      render: rowData => (
+      render: (rowData:Presubmission) => (
         <Checkbox
           checked={rowData.review}
           disabled={!rowData.reviewAvailable}
+          // @ts-ignore
           onChange={handleChangePermission.bind(this, rowData, 'review')}
           color="primary"
         />
@@ -262,10 +278,11 @@ const getStepContent = (
     {
       title: 'Submit***',
       field: 'submit',
-      render: rowData => (
+      render: (rowData:Presubmission) => (
         <Checkbox
           checked={rowData.submit}
           disabled={!rowData.submitAvailable}
+          // @ts-ignore
           onChange={handleChangePermission.bind(this, rowData, 'submit')}
           color="primary"
         />
@@ -274,10 +291,11 @@ const getStepContent = (
     {
       title: 'Input****',
       field: 'input',
-      render: rowData => (
+      render: (rowData:Presubmission) => (
         <Checkbox
           checked={rowData.input}
           disabled={!rowData.inputAvailable}
+          // @ts-ignore
           onChange={handleChangePermission.bind(this, rowData, 'input')}
           color="primary"
         />
@@ -286,10 +304,11 @@ const getStepContent = (
     {
       title: 'View*****',
       field: 'view',
-      render: rowData => (
+      render: (rowData:Presubmission) => (
         <Checkbox
           checked={rowData.view}
           disabled={!rowData.viewAvailable}
+          // @ts-ignore
           onChange={handleChangePermission.bind(this, rowData, 'view')}
           color="primary"
         />
@@ -298,10 +317,11 @@ const getStepContent = (
     {
       title: 'View Cognos******',
       field: 'viewCognos',
-      render: rowData => (
+      render: (rowData:Presubmission) => (
         <Checkbox
           checked={rowData.Reporter}
           disabled={!rowData.viewCognosAvailable}
+          // @ts-ignore
           onChange={handleChangePermission.bind(this, rowData, 'viewCognos')}
           color="primary"
         />
@@ -330,6 +350,7 @@ const getStepContent = (
 
       <div className="modifyPermission__tableContainer">
         <MaterialTable
+        //@ts-ignore
           className="modifyPermission__table"
           key={userSubmissionsLength}
           columns={checkBoxColumns}
@@ -361,6 +382,7 @@ const getStepContent = (
       </Button>
       <div className="modifyPermission__tableContainer">
         <MaterialTable
+        //@ts-ignore
           className="modifyPermission__table"
           key={userPermissionsLength}
           columns={columns}
@@ -393,7 +415,7 @@ const getStepContent = (
 };
 
 // Get the state and shown it on the website
-const ModifyPermission_container = props => {
+const ModifyPermission_container = (props:any) => {
   const dispatch = useDispatch();
   const handleOrgGroupChange = useCallback(event => {
     dispatch(orgGroupChange(event));
@@ -442,6 +464,7 @@ const ModifyPermission_container = props => {
     ableToComplete,
   } = useSelector(
     ({
+      //@ts-ignore
       UserRegistrationStore: {
         snackbarMessage,
         activeStep,
@@ -491,7 +514,7 @@ const ModifyPermission_container = props => {
   //   compareArray.sort();
   //   return compareArray[0] == LabelA? -1 : 1
   // })
-  organizationOptionsCopy.sort(function (a, b) {
+  organizationOptionsCopy.sort(function (a:{value:number}, b:{value:number}) {
     const compareArray = [a.value.toString(), b.value.toString()];
     compareArray.sort();
     return compareArray[0] == a.value.toString() ? -1 : 1;
@@ -540,6 +563,7 @@ const ModifyPermission = () => {
   }, []);
 
   const { registrationData } = useSelector(
+    //@ts-ignore
     ({ UserRegistrationStore: { registrationData } }) => ({
       registrationData,
     }),

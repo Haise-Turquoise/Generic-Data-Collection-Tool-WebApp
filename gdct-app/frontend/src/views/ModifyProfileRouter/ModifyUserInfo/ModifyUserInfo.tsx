@@ -3,21 +3,27 @@ import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 
 import { Formik } from 'formik';
 import Swal from 'sweetalert2';
+//@ts-ignore
 import * as yup from 'yup';
 
 import { TextField, Button, Typography, Box } from '@material-ui/core';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
-
+//@ts-ignore
 import { selectModifyUserInfoStore } from '../../../store/ModifyUserInfo/selectors';
+//@ts-ignore
 import { selectFactoryValueById } from '../../../store/common/REST/selectors';
+//@ts-ignore
 import { ModifyUserInfoStoreActions } from '../../../store/ModifyUserInfo/store';
 import {
   getUserInfoPopulatedRequest,
   updateUserInfoRequest,
+  //@ts-ignore
 } from '../../../store/thunks/ModifyUserInfo';
-
+//@ts-ignore
 import UserController from '../../../controllers/user';
+//@ts-ignore
 import usersController from '../../../controllers/Users';
+//@ts-ignore
 import CreateAuditLog from '../../AuditLog_Global';
 
 import './ModifyUserInfo.scss';
@@ -30,14 +36,14 @@ const Header = () => (
 );
 
 // The schema to validate user input
-const ProfileSchema = originalUsername =>
+const ProfileSchema = (originalUsername:string) =>
   yup.object().shape({
     title: yup.string().required('Please enter your title'),
     username: yup
       .string()
       .min(6, 'Username must be 6 to 20 characters long')
       .max(20, 'Username must be 6 to 20 characters long')
-      .test('Unique Username', 'Username has already been used', async function (value) {
+      .test('Unique Username', 'Username has already been used', async function (value:string) {
         const fetchData = await UserController.fetchUserByUserName(value);
         // users can only do 1: not change the username, or 2: change the username to something new
         return (
@@ -71,7 +77,7 @@ const ProfileSchema = originalUsername =>
   });
 
 // Button on the bottom of page
-const Buttons = ({ values, handleSubmit }) => {
+const Buttons = ({ values, handleSubmit}:{values:object; handleSubmit:(values:any)=>void;}) => {
   return (
     <Box color="primary" className="modifyUserInfo__buttonBox" justifyContent="center">
       <Button variant="outlined" color="primary" href="/" style={{ marginTop: '0.8%' }}>
@@ -99,6 +105,15 @@ const CustomTextField = ({
   handleBlur,
   errors,
   disabled,
+}:{
+  values:any;
+  label:string;
+  labelText:string;
+  handleChange:()=>void;
+  touched:any;
+  handleBlur:any;
+  errors:any;
+  disabled:boolean;
 }) => {
   return (
     <div className={label}>
@@ -130,7 +145,8 @@ const CustomTextField = ({
 };
 
 // Have the detail UI page for each step
-const Content = props => {
+const Content = (props:any) => {
+  console.log(props)
   const { values, handleChange, touched, handleBlur, errors } = props;
   return (
     <form className="modifyUserInfo__form">

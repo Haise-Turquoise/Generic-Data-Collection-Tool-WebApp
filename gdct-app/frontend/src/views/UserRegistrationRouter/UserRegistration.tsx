@@ -46,6 +46,7 @@ import {
 import UserController from '../../controllers/user';
 
 import Presubmission from '../../types/presubmission';
+import UserPermission from '../../types/userpermission';
 
 interface PresubmissionMT extends Presubmission {
   tableData?: any;
@@ -61,7 +62,7 @@ const columns = [
   // { title: 'Organization', field: 'organization.name' },
   {
     title: 'Organization',
-    render: (rowData:any) => `(${rowData.organization.id}) ${rowData.organization.name}`,
+    render: (rowData:UserPermission) => `(${rowData.organization.id}) ${rowData.organization.name}`,
   },
   { title: 'Program', field: 'program.code' },
   { title: 'Submission', field: 'submission.name' },
@@ -288,13 +289,13 @@ const getStepContent = (
   userOrganizations:any[],
   userPrograms:any[],
   userSubmissions:Presubmission[],
-  userPermissions:any[],
+  userPermissions:UserPermission[],
   appSysOptions:any[],
   organizationGroupOptions:any[],
   organizationOptions:any[],
   programOptions:any[],
   ableToComplete:boolean,
-  handleOrgGroupChange:any,
+  handleOrgGroupChange:(event:any)=>void,
   handleBack:()=>void,
   handleNext:(values:object)=>void,
   handleSubmit:()=>void,
