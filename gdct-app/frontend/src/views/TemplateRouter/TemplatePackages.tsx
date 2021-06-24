@@ -71,7 +71,14 @@ const TemplatePackages = () => {
   const dispatch = useDispatch();
   const history = useHistory();
   const [readRowNum, setRowNum] = useState(1);
-  const [hasPackages, setHasPackages] = useState(false)
+  const [templatePackages, setTemplatePackages] = 
+    useState<TemplatePackage[] | undefined>(undefined)
+
+  useEffect(() => {
+    templatePackageController.fetch().then((res: unknown) => {
+      setTemplatePackages(res as TemplatePackage[])
+    })
+  }, [])
 
   // table vars while loading
   const preColumns: Column<TemplatePackageMT>[] = [{ title: 'Name', field: 'name' }]
@@ -89,19 +96,16 @@ const TemplatePackages = () => {
 
   // Prepare the data for material table
   const {
-    templatePackages,
     lookupStatuses,
     lookupSubmissionPeriods,
     WholeLookupStatuses,
   }: {
-    templatePackages: TemplatePackage[],
     lookupStatuses: {[key: string]: string},
     lookupSubmissionPeriods: {[key: string]: string},
     WholeLookupStatuses: Status[],
   } = useSelector(
     state => ({
       isCallInProgress: selectFactoryRESTIsCallInProgress(selectTemplatePackagesStore)(state),
-      templatePackages: selectFactoryRESTResponseTableValues(selectTemplatePackagesStore)(state),
       lookupStatuses: selectFactoryRESTLookup(selectStatusesStore)(state),
       lookupSubmissionPeriods: selectFactoryRESTLookup(selectSubmissionPeriodsStore)(state),
       WholeLookupStatuses: selectFactoryRESTResponseTableValues(selectStatusesStore)(state),
@@ -110,7 +114,7 @@ const TemplatePackages = () => {
   );
 
   // Convert Date format
-  templatePackages.forEach(templatePackage => {
+  templatePackages?.forEach(templatePackage => {
     const logtime = new Date(templatePackage.timestamp);
     const creationDate = new Date(templatePackage.creationDate);
     templatePackage.timestamp = moment(logtime).format("YYYY-MM-DD HH:mm:ss");
@@ -271,7 +275,6 @@ const TemplatePackages = () => {
   );
 
   useEffect(() => {
-    dispatch(getTemplatePackagesRequest());
     dispatch(getStatusesRequest());
     dispatch(getSubmissionPeriodsRequest());
 
@@ -283,10 +286,7 @@ const TemplatePackages = () => {
   }, [dispatch]);
 
   useEffect(()=>{
-    setRowNum(templatePackages.length)
-    if (!hasPackages) {
-      setHasPackages(templatePackages.length >= 1)
-    }
+    setRowNum(templatePackages?.length || 1)
   }, [templatePackages])
 
   return (
@@ -295,12 +295,12 @@ const TemplatePackages = () => {
       <ErrorBanner title={"You cannot delete the selected template package since it was already published"} targetStore={selectTemplatePackagesStore}/>
       <MaterialTable
         key={readRowNum}
-        columns={hasPackages ? columns : preColumns}
-        data={hasPackages ? templatePackages : prePackages}
-        editable={hasPackages ? editable : undefined}
+        columns={!!templatePackages ? columns : preColumns}
+        data={!!templatePackages ? templatePackages : prePackages}
+        editable={!!templatePackages ? editable : undefined}
         // @ts-ignore
         options={options}
-        actions={hasPackages ? actions : undefined}
+        actions={!!templatePackages ? actions : undefined}
       />
     </div>
   );
