@@ -1,13 +1,20 @@
 import React from "react";
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Dialog from '@material-ui/core/Dialog';
+//@ts-ignore
 import spreadSheetController from '../../../../controllers/spreadSheet'
 import Button from '@material-ui/core/Button';
 import './CategoryInsertionMenu.scss';
+import {MenuProps, AttributeAndCategoryData, CategoryGroupData, InsertedID} from '../../../../types/spreadsheetTypes/insertMenuTypes'
 
 // This component responsible for category insertion dialog
-class categoryInsertMenu extends React.Component{
-  constructor(props) {
+class categoryInsertMenu extends React.Component<MenuProps>{
+  callback: any;
+  category: CategoryGroupData[];
+  InsertedID: InsertedID;
+  categoryRef: React.RefObject<unknown>;
+  data: CategoryGroupData[];
+  constructor(props:MenuProps) {
     super(props);
     this.update_subform = this.update_subform.bind(this);
     this.insert = this.insert.bind(this);
@@ -23,17 +30,17 @@ class categoryInsertMenu extends React.Component{
   
   // Get data from server and pass it into 
   componentDidMount(){
-    spreadSheetController.fetchCategoryAndAttribute().then(data=>{
+    spreadSheetController.fetchCategoryAndAttribute().then((data:AttributeAndCategoryData)=>{
     // TODO: change the hard code for balance sheet to the current sheet in the next line.
-    const unsortedData = data["Categories"].filter(entry=> entry["sheetName"] === 'Balance Sheet');
+    const unsortedData = data["Categories"].filter((entry)=> entry["sheetName"] === 'Balance Sheet');
     this.data = unsortedData.sort((a, b) => a.categoryGroup.localeCompare(b.categoryGroup));
     this.category = this.data;
     })
   }
 
   // Navigate to the next level of the Nested Json Array
-  update_subform = (caller_layer)=>{
-    let formSection = document.getElementById('formSection');
+  update_subform = (caller_layer:number)=>{
+    let formSection = document.getElementById('formSection') as HTMLElement;
     
     //onChange, remove every selection form after the target form
     let counter = 0
@@ -65,7 +72,7 @@ class categoryInsertMenu extends React.Component{
     // Obtain selection path by navigating through the Json file
     for(let i = 0; i < formSection.childNodes.length; i++){
 
-      let selection = formSection.childNodes[i]
+      let selection = formSection.childNodes[i] as any;
       if (selection.nodeName == "FORM"){
         let option = null;
         for (let element of selection.childNodes){
@@ -74,13 +81,12 @@ class categoryInsertMenu extends React.Component{
                 break;
             } 
         }
-        // @ts-ignore
         selectionList.push(option[option.selectedIndex].text)
       }  
     }
     
-    let targetList = this.category
-    let fullJsonLayer = {}
+    let targetList = this.category;
+    let fullJsonLayer:CategoryGroupData = targetList[0];
 
     // Navigate in the Json layer
     for(let item of selectionList){
@@ -108,7 +114,9 @@ class categoryInsertMenu extends React.Component{
         option.appendChild(textNode);
         select.appendChild(option)
         // Sort the data in place
+
         fullJsonLayer.childCategory.sort((a, b) => a.categoryGroup.localeCompare(b.categoryGroup));
+        
         fullJsonLayer.childCategory.forEach((element)=>{
           let option = document.createElement('OPTION');
           let name = element.categoryGroup;
@@ -127,9 +135,8 @@ class categoryInsertMenu extends React.Component{
           select.appendChild(option);
         })
         
-        // @ts-ignore
         // Add change handler
-        select.addEventListener('change',()=>{this.update_subform(caller_layer+1, this.category)})
+        select.addEventListener('change',()=>{this.update_subform(caller_layer+1)})
         form.appendChild(select);
         formSection.append(form);
         
@@ -142,8 +149,9 @@ class categoryInsertMenu extends React.Component{
         let option = document.createElement('OPTION');
         let textNode = document.createTextNode('please select an option');
         option.appendChild(textNode);
-        select.appendChild(option)
+        select.appendChild(option);
         fullJsonLayer.categories.sort((a, b) => a.name.localeCompare(b.name));
+
         fullJsonLayer.categories.forEach((element)=>{
           let option = document.createElement('OPTION');
           option.setAttribute('id', element.id);
@@ -158,25 +166,27 @@ class categoryInsertMenu extends React.Component{
         formSection.append(form);
       }
     }
+    // @ts-ignore
     this.setState({update:!this.state.update});
   }
     
-  insert = ()=>{
-    // @ts-ignore
-    let categories = {}
+  insert = () => {
+    let categories:{[id:string]:[string, string]} = {}
     let keys = Object.keys(this.InsertedID);
     keys.forEach((id)=>{
-      // @ts-ignore
+      
       let text = this.InsertedID[id].innerText;
+      
       let unit = this.InsertedID[id].className;
+      
       categories[id] = [text.substring(6), unit];
     })
     
       
     if (keys.length > 0){
-      // @ts-ignore
-      let input_row = document.getElementById('row_number').value;
-      // @ts-ignore
+      const input_row_element = document.getElementById('row_number') as HTMLInputElement;
+      const input_row = input_row_element.value;
+
       let row_num = input_row&&input_row!='' ? Number.parseInt(input_row):undefined
       this.callback(categories, row_num);
     }
@@ -188,23 +198,23 @@ class categoryInsertMenu extends React.Component{
   }
     
   insertOptions = ()=>{
-    let input_fields = document.getElementById('FinalLayer');
+    let input_fields = document.getElementById('FinalLayer') as HTMLSelectElement;
     if (input_fields){
-      // @ts-ignore
       if (input_fields.selectedIndex){
-        // @ts-ignore
-        const text = input_fields[input_fields.selectedIndex].text;
-        // @ts-ignore
-        const id = input_fields[input_fields.selectedIndex].id;
-        // @ts-ignore
-        const className = input_fields[input_fields.selectedIndex].className;
+
+        const selectedElement = input_fields[input_fields.selectedIndex] as HTMLOptionElement;
+        
+        const text = selectedElement.text;
+        const id = selectedElement.id;
+        const className = selectedElement.className;
+
         if (!this.InsertedID[id]){
           let pnode = document.createElement('P');
           pnode.setAttribute("id", id);
           pnode.setAttribute("class", className);
           let textnode = document.createTextNode(text);
           pnode.appendChild(textnode);
-          let selected = document.getElementById("SelectedOptions");
+          let selected = document.getElementById("SelectedOptions")!;
           pnode.addEventListener('click', ()=>{this.deleteOption(id)});
           selected.appendChild(pnode);
           this.InsertedID[id] = pnode;
@@ -213,9 +223,11 @@ class categoryInsertMenu extends React.Component{
     }
   }
 
-  deleteOption = (id)=>{
-    let selected_field = document.getElementById('SelectedOptions');
+  deleteOption = (id:string)=>{
+    let selected_field = document.getElementById('SelectedOptions') as HTMLElement;
+    //@ts-ignore
     selected_field.removeChild(this.InsertedID[id]);
+    //@ts-ignore
     delete this.InsertedID[id];;
   }
 
@@ -225,15 +237,18 @@ class categoryInsertMenu extends React.Component{
         <Button variant="outlined" color="primary" onClick={()=>{this.setState({open:true})}}>
           Insert Category
         </Button>
-        <Dialog onClose={()=>{this.setState({open:false})}} aria-labelledby="simple-dialog-title" open={this.state.open} fullWidth={true}>
+        <Dialog onClose={()=>{this.setState({open:false})}} aria-labelledby="simple-dialog-title" open={//@ts-ignore
+          this.state.open} fullWidth={true}>
             <DialogTitle id="simple-dialog-title">Insert Category</DialogTitle>
             <div id="formSection" ref="formSection" >
                 <form>
-                    <select name="category_name" id="category_name" ref={this.categoryRef} onChange={()=>{ this.update_subform(1, 
+                    <select name="category_name" id="category_name"//@ts-ignore
+                     ref={this.categoryRef} onChange={()=>{ this.update_subform(1, 
                     // @ts-ignore
                     this.category)}}>
                       <option>Please select a Catagory</option>
-                      {this.data.map(x=><option>{x.categoryGroup}</option>)}
+                      {this.data.map(x=><option>{
+                      x.categoryGroup}</option>)}
                     </select>
                 </form>
             </div>
