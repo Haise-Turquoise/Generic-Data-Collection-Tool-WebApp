@@ -67,6 +67,15 @@ const UserController = Service([UserService], service => {
         .catch(next);
     });
 
+    router.post(`/users/deletePermission`, (req, res, next) => {
+      const { email, permissionData } = req.body;
+      console.log(email, permissionData)
+      service
+        .deleteUserPermission(email, permissionData)
+        .then(res.json({ message: 'Permission successfully deleted' }))
+        .catch(next);
+    });
+
     router.post(`/users/updatePermission`, (req, res, next) => {
       const { email, permissionData } = req.body;
       service

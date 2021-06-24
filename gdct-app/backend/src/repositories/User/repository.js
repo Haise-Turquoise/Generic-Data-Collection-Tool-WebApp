@@ -105,6 +105,7 @@ export default class UserRepository extends BaseRepository {
     return UserModel.findOneAndUpdate({ _id: _id }, 
       { 
         sysRole:userData.sysRole,
+        isActive: userData.isActive,
         pendingPermissions: userData.pendingPermissions,
       }
     );

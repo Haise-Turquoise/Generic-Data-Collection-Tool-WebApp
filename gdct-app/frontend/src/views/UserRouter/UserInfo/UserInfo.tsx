@@ -36,12 +36,15 @@ import { selectTemplateTypesStore } from '../../../store/TemplateTypesStore/sele
 import { calculateOptions } from '../../../tools/misc'
 //@ts-ignore
 import Loading from '../../../components/Loading';
+//@ts-ignore
+import UserController from '../../../controllers/user.js'
+
+import Swal, { SweetAlertResult } from 'sweetalert2'
 
 import User from '../../../types/user';
 import Organization from '../../../types/organization';
 import Program from '../../../types/program';
 import TemplateType from '../../../types/templatetype';
-import { string } from 'yargs';
 type propType = { _id?: string }
 
 interface TableData {
@@ -52,6 +55,25 @@ interface TableData {
   template: string,
   permission: string,
   appsys: string,
+  rawKey: string,
+}
+
+interface RawData {
+  appSys: string,
+  creationDate: string,
+  email: string,
+  firstName: string,
+  lastName: string,
+  orgId: string,
+  orgName: string,
+  phoneNumber: string,
+  programCode: string,
+  programId: string,
+  rawKey: string,
+  role: string,
+  templateCode: string,
+  templateTypeId: string,
+  username: string,
 }
 
 const HeaderActions = () => {
@@ -61,16 +83,6 @@ const HeaderActions = () => {
     </Paper>
   );
 };
-
-const MAX_DEPTH = 4;
-const EDGE_PARAM = ['sysRole', 'org', 'program', 'template'];
-const EXTRACT_INFO = [
-  ['firstName', 'lastName', 'username', 'creationDate', 'phoneNumber', 'email'],
-  ['role', 'appSys'],
-  ['orgId', 'orgName'],
-  ['programCode', 'programId'],
-  ['templateCode', 'templateTypeId'],
-];
 
 const UserInfo = ({
   match: {
@@ -110,33 +122,58 @@ const UserInfo = ({
     }),
   );
 
-  // TODO help - uneasy about touching this function
-  const dfs = (object: {[key: string]: any}, depth: number, path: {[key:string]: string}) => {
-    for (const attribute of EXTRACT_INFO[depth]) path[attribute] = object[attribute];
-    if (depth < MAX_DEPTH) {
-      let res: {[key:string]: string}[] = [];
-      if (!Object.prototype.hasOwnProperty.call(object, EDGE_PARAM[depth])) return res;
-      for (const child of object[EDGE_PARAM[depth]])
-        res = res.concat(dfs(child, depth + 1, { ...path }));
-      return res;
+  // parses user object for raw/table data
+  const parseUser = (user: User): RawData[] => {
+    const rawData: RawData[] = []
+    for (let sysRole of user.sysRole) {
+      for (let org of sysRole.org) {
+        for (let prog of org.program) {
+          for (let template of prog.template) {
+            // add to rawData
+            rawData.push({
+              appSys: sysRole.appSys,
+              creationDate: user.creationDate,
+              email: user.email,
+              firstName: user.firstName,
+              lastName: user.lastName,
+              orgId: org.orgId,
+              orgName: org.orgName,
+              phoneNumber: user.phoneNumber,
+              programCode: prog.programCode,
+              programId: prog.programId,
+              rawKey: rawData.length.toString(),
+              role: sysRole.role,
+              templateCode: template.templateCode,
+              templateTypeId: template.templateTypeId,
+              username: user.username
+            })
+          }
+        }
+      }
     }
-    return [path];
-  };
+    return rawData
+  }
 
+  // raw data for communication with backend
+  const [raw, updateRaw] = useState<RawData[]>([])
+  // formatted data for table
   const [data, updateData] = useState<TableData[]>([]);
   const [readRowNum, setRowNum] = useState(1);
 
   useEffect(() => {
     if (userObject) {
-      const extracted_data = dfs(userObject, 0, {});
-      const organizations_map: {[key: string]: any} = {};
-      const programs_map: {[key: string]: any} = {};
-      const templateTypes_map: {[key: string]: any} = {};
+      const extracted_data = parseUser(userObject)
+      // rawKey links formatted data to raw data
+      const organizations_map: {[key: string]: string} = {};
+      const programs_map: {[key: string]: string} = {};
+      const templateTypes_map: {[key: string]: string} = {};
       organizations.forEach(doc => (organizations_map[doc.id] = doc.name));
       programs.forEach(doc => (programs_map[doc._id] = doc.name));
       templateTypes.forEach(doc => (templateTypes_map[doc._id] = doc.name));
+      updateRaw(extracted_data)
       updateData(() =>
         extracted_data.map(row => ({
+          rawKey: row.rawKey,
           user: `Username: ${row.username}\nName: ${row.firstName} ${row.lastName}\nPhone: ${row.phoneNumber}\nEmail: ${row.email}`,
           date: `${row.creationDate}`,
           organization: `(${row.orgId})\n${
@@ -169,6 +206,62 @@ const UserInfo = ({
     [readRowNum],
   );
 
+  const editable = useMemo(
+    () => ({
+      onRowDelete: (tableData: TableData): Promise<any> => 
+        new Promise((resolve, reject) => {
+          const rawData = raw.find(obj => obj.rawKey === tableData.rawKey)
+          if (!rawData) {
+            reject('Data not found')
+          }
+          if (raw.length === 1) {
+            // Warn user if they are about to delete last role before proceeding
+            Swal.fire({
+              title: 'You are about to delete the last role, this will deactivate the user.',
+              showCancelButton: true,
+              confirmButtonText: 'Continue',
+            }).then((result: SweetAlertResult) => {
+              if (result.isConfirmed) {
+                UserController
+                  .deletePermissionByUserEmail(rawData!.email, rawData)
+                  .then((res: unknown) => {
+                    // on success remove item from list
+                    updateData((prevData) => 
+                      prevData.filter(data => data.rawKey !== tableData.rawKey)
+                    )
+                    updateRaw((prevRaw) =>
+                      prevRaw.filter(raw => raw.rawKey !== tableData.rawKey)
+                    )
+                    resolve(res)
+                  })
+                  .catch((err: unknown) => reject(err))
+              } else {
+                reject('Action cancelled')
+              }
+            })
+          } else {
+            // if multiple roles left proceed
+            UserController
+              .deletePermissionByUserEmail(rawData!.email, rawData)
+              .then((res: unknown) => {
+                // on success remove item from list
+                updateData((prevData) => 
+                  prevData.filter(data => data.rawKey !== tableData.rawKey)
+                )
+                updateRaw((prevRaw) =>
+                  prevRaw.filter(raw => raw.rawKey !== tableData.rawKey)
+                )
+                resolve(res)
+              })
+              .catch((err: unknown) => reject(err))
+          }
+          
+          
+        }),
+    }),
+    [raw],
+  );
+
   const components = useMemo(
     () => ({
       Cell: (props: any) => <MTableCell {...props} style={{ whiteSpace: 'pre-wrap' }} />,
@@ -195,6 +288,7 @@ const UserInfo = ({
         components={components}
         columns={columns}
         data={data}
+        editable={editable}
         options={options}
       />
 
