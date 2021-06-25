@@ -43,7 +43,7 @@ import SubmissionPeriodsStore from '../../store/SubmissionPeriodsStore/store';
   //@ts-ignore
 import ErrorBanner from '../ErrorBanner';
   //@ts-ignore
-import { calculateOptions } from '../../tools/misc';
+import { calculateOptions, controllerAddRow, controllerEditRow, controllerDeleteRow } from '../../tools/misc';
   //@ts-ignore
 import CreateAuditLog from '../AuditLog_Global';
   //@ts-ignore
@@ -80,60 +80,6 @@ const TemplatePackages = () => {
       setTemplatePackages(res as TemplatePackage[])
     })
   }, [])
-
-  const addRow = async (templatePackage: TemplatePackageMT) => {
-    try {
-      const newPackage: TemplatePackage = await templatePackageController.create(templatePackage)
-      if (!newPackage) {
-        return false
-      }
-      setTemplatePackages(prev => prev?.concat(newPackage))
-    } catch(e) {
-      console.log('an error occurred')
-      return false
-    } finally {
-      return true
-    }
-  }
-
-  const editRow = async (templatePackage: TemplatePackageMT) => {
-    try {
-      const res: AxiosResponse = await templatePackageController.update(templatePackage)
-      if (res.status !== 200) {
-        return false
-      }
-      setTemplatePackages(prev => {
-        if (prev) {
-          const copy = [...prev]
-          const index = prev.findIndex(pkg => pkg._id === templatePackage._id)
-          if (index >= 0) {
-            copy[index] = templatePackage
-          }
-          return copy
-        }
-      })
-    } catch(e) {
-      console.log('an error occurred')
-      return false
-    } finally {
-      return true
-    }
-  }
-
-  const deleteRow = async (templatePackage: TemplatePackageMT) => {
-    try {
-      const res: AxiosResponse = await templatePackageController.delete(templatePackage._id)
-      if (res.status !== 200) {
-        return false
-      }
-      setTemplatePackages(prev => prev?.filter(pkg => pkg._id !== templatePackage._id))
-    } catch(e) {
-      console.log('an error occurred')
-      return false
-    } finally {
-      return true
-    }
-  }
 
   // table vars while loading
   const preColumns: Column<TemplatePackageMT>[] = [{ title: 'Name', field: 'name' }]
@@ -289,7 +235,7 @@ const TemplatePackages = () => {
           recordUpdate(templatePackage);
           templatePackage = { ...templatePackage, templateIds: [], programIds: [] };
           templatePackage.creationDate = moment().format();
-          addRow(templatePackage).then(res => {
+          controllerAddRow(templatePackageController, setTemplatePackages, templatePackage).then((res: boolean) => {
             if (res) {
               resolve(templatePackage)
             }
@@ -319,7 +265,7 @@ const TemplatePackages = () => {
             CreateAuditLog(null, "Update Template Package", "TemplatePackage", oldTemplatePackage._id, oldTemplatePackage, templatePackage);
           })();
           // Do Update
-          editRow(templatePackage).then(res => {
+          controllerEditRow(templatePackageController, setTemplatePackages, templatePackage).then((res: boolean) => {
             if (res) {
               resolve(templatePackage)
             }
@@ -330,7 +276,7 @@ const TemplatePackages = () => {
       onRowDelete: (templatePackage: TemplatePackageMT) =>
         new Promise((resolve, reject) => {
           recordUpdate(templatePackage);
-          deleteRow(templatePackage).then(res => {
+          controllerDeleteRow(templatePackageController, setTemplatePackages, templatePackage._id).then((res: boolean) => {
             if (res) {
               resolve(res)
             }
