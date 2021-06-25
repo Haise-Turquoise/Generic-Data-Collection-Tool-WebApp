@@ -137,7 +137,6 @@ const COAsTable = () => {
       onRowAdd: (COA: Category) =>
         new Promise<Category | undefined>((resolve, reject) => {
           recordUpdate(COA);
-          // dispatch(createCOARequest(COA, resolve, reject));
           controllerAddRow(COAController, setCOAs, COA)
             .then((res: Category) => {
               if (res) {
@@ -168,7 +167,6 @@ const COAsTable = () => {
             CreateAuditLog(null, "Update Category", "Category", oldCOA.COAs._id, oldCOA.COAs, COA);
           })();
           // Do Update
-          // dispatch(updateCOARequest(COA, resolve, reject));
           controllerEditRow(COAController, setCOAs, COA).then((res: boolean) => {
             if (res) {
               resolve(COA)
@@ -179,8 +177,7 @@ const COAsTable = () => {
 
       onRowDelete: (COA: Category) => 
         new Promise((resolve, reject) => {
-          recordUpdate(COA);  
-          // dispatch(deleteCOARequest(COA._id, resolve, reject));
+          recordUpdate(COA);
           controllerDeleteRow(COAController, setCOAs, COA._id).then((res: boolean) => {
             if (res) {
               resolve(COA)
@@ -198,7 +195,7 @@ const COAsTable = () => {
           })();
         }),
     }),
-    [dispatch],
+    [],
   );
 
   useEffect(()=>{ 
