@@ -584,7 +584,7 @@ export const controllerAddRow = async (Controller, setState, data) => {
       return false
     }
     // prev may be undefined
-    setState(prev => prev ? prev.concat(data) : prev)
+    setState(prev => prev ? prev.concat(newData) : prev)
   } catch (e) {
     console.log('an error has occurred')
     return false

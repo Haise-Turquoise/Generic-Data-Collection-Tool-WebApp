@@ -19,7 +19,7 @@ import { selectFactoryRESTResponseTableValues, selectFactoryRESTError } from '..
 //@ts-ignore
 import { selectCOAsStore } from '../../../store/COAsStore/selectors';
 //@ts-ignore
-import { calculateOptions, checkDuplicates } from '../../../tools/misc';
+import { calculateOptions, checkDuplicates, controllerAddRow, controllerEditRow, controllerDeleteRow } from '../../../tools/misc';
 //@ts-ignore
 import CreateAuditLog from '../../AuditLog_Global';
 //@ts-ignore
@@ -88,7 +88,13 @@ const AlertSign = () => {
 const COAsTable = () => {
   const dispatch = useDispatch();
   const [readRowNum, setRowNum] = useState(1);
-  const [hasCOAs, setHasCOAs] = useState(false)
+  const [COAs, setCOAs] = useState<Category[] | undefined>(undefined)
+
+  useEffect(() => {
+    COAController.fetch().then((res: unknown) => {
+      setCOAs(res as Category[])
+    })
+  }, [])
 
   // table stuff while loading
   const preColumns: Column<Category>[] = [{title: 'Name', field: 'name'}]
@@ -101,15 +107,8 @@ const COAsTable = () => {
     timestamp: '', 
   }]
 
-  // Prepare the data for material table
-  const { COAs }: { COAs: Category[] } = useSelector(
-    state => ({
-      COAs: selectFactoryRESTResponseTableValues(selectCOAsStore)(state),
-    }),
-    shallowEqual,
-  );
   // Convert Date format
-  COAs.forEach((COA: Category) => {
+  COAs?.forEach((COA: Category) => {
     const logtime = new Date(COA.timestamp);
     COA.timestamp = moment(logtime).format("YYYY-MM-DD HH:mm:ss");
   });
@@ -138,7 +137,13 @@ const COAsTable = () => {
       onRowAdd: (COA: Category) =>
         new Promise((resolve, reject) => {
           recordUpdate(COA);
-          dispatch(createCOARequest(COA, resolve, reject));
+          // dispatch(createCOARequest(COA, resolve, reject));
+          controllerAddRow(COAController, setCOAs, COA).then((res: boolean) => {
+            if (res) {
+              resolve(COA)
+            }
+            reject()
+          })
         }).then(newCOA => {
           // For Auditlog
           if (newCOA) {
@@ -162,13 +167,25 @@ const COAsTable = () => {
             CreateAuditLog(null, "Update Category", "Category", oldCOA.COAs._id, oldCOA.COAs, COA);
           })();
           // Do Update
-          dispatch(updateCOARequest(COA, resolve, reject));
+          // dispatch(updateCOARequest(COA, resolve, reject));
+          controllerEditRow(COAController, setCOAs, COA).then((res: boolean) => {
+            if (res) {
+              resolve(COA)
+            }
+            reject()
+          })
         }),
 
       onRowDelete: (COA: Category) => 
         new Promise((resolve, reject) => {
           recordUpdate(COA);  
-          dispatch(deleteCOARequest(COA._id, resolve, reject));
+          // dispatch(deleteCOARequest(COA._id, resolve, reject));
+          controllerDeleteRow(COAController, setCOAs, COA._id).then((res: boolean) => {
+            if (res) {
+              resolve(COA)
+            }
+            reject()
+          })
         }).then(() => {
           // For Auditlog
           (async () => {
@@ -183,15 +200,8 @@ const COAsTable = () => {
     [dispatch],
   );
 
-  useEffect(() => {
-    dispatch(getCOAsRequest());
-  }, [dispatch]);
-
   useEffect(()=>{ 
-    setRowNum(COAs.length)
-    if (!hasCOAs) {
-      setHasCOAs(COAs.length >= 1)
-    }
+    setRowNum(COAs?.length || 1)
   }, [COAs])
 
   return (
@@ -200,9 +210,9 @@ const COAsTable = () => {
       <AlertSign />
       <MaterialTable
         key={readRowNum}
-        columns={hasCOAs ? columns : preColumns}
-        data={hasCOAs ? COAs : preCOAs}
-        editable={hasCOAs ? editable : undefined}
+        columns={!!COAs ? columns : preColumns}
+        data={!!COAs ? COAs : preCOAs}
+        editable={!!COAs ? editable : undefined}
         options={options}
       />
     </div>

@@ -117,7 +117,7 @@ const ColumnNamesTable = () => {
   // Prepare the columns for material table
   const columns: Column<Attribute>[] = useMemo(
     () => [
-      { title: 'ID', field: 'id', validate: rowData => checkDuplicates(rowData, columnNames, 'id') },
+      { title: 'ID', field: 'id', validate: rowData => checkDuplicates(rowData, columnNames, 'id') || true },
       { title: 'Name', field: 'name' },
       { title: 'Description', field: 'description' },
       { title: 'Active', type: 'boolean', field: 'isActive' },
@@ -150,7 +150,7 @@ const ColumnNamesTable = () => {
         new Promise((resolve, reject) => {
           recordUpdate(columnName);
           // dispatch(createColumnNameRequest(columnName, resolve, reject));
-          controllerAddRow(columnNameController, setColumnNames, columnName).then((res: boolean) => {
+          controllerAddRow(columnNameController, setColumnNames, columnName).then((res: Attribute) => {
             if (res) {
               resolve(columnName)
             }
@@ -181,7 +181,6 @@ const ColumnNamesTable = () => {
           })();
           // Do Update
           // dispatch(updateColumnNameRequest(columnName, resolve, reject));
-          console.log('we give', columnName._id)
           controllerEditRow(columnNameController, setColumnNames, columnName).then((res: boolean) => {
             if (res) {
               resolve(columnName)
@@ -217,14 +216,6 @@ const ColumnNamesTable = () => {
   useEffect(()=>{
     setRowNum(columnNames?.length || 1)
   }, [columnNames]);
-
-  useEffect(() => {
-    dispatch(getColumnNamesRequest());
-
-    return () => {
-      dispatch(ColumnNamesActions.RESET());
-    };
-  }, [dispatch]);
 
   return (
     // @ts-ignore
