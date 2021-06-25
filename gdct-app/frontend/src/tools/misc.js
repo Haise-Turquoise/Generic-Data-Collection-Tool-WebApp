@@ -581,15 +581,14 @@ export const controllerAddRow = async (Controller, setState, data) => {
   try {
     const newData = await Controller.create(data)
     if (!newData) {
-      return false
+      return undefined
     }
     // prev may be undefined
     setState(prev => prev ? prev.concat(newData) : prev)
+    return newData
   } catch (e) {
     console.log('an error has occurred')
-    return false
-  } finally {
-    return true
+    return undefined
   }
 }
 

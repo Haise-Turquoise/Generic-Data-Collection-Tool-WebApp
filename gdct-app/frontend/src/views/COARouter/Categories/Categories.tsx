@@ -135,15 +135,16 @@ const COAsTable = () => {
   const editable = useMemo(
     () => ({
       onRowAdd: (COA: Category) =>
-        new Promise((resolve, reject) => {
+        new Promise<Category | undefined>((resolve, reject) => {
           recordUpdate(COA);
           // dispatch(createCOARequest(COA, resolve, reject));
-          controllerAddRow(COAController, setCOAs, COA).then((res: boolean) => {
-            if (res) {
-              resolve(COA)
-            }
-            reject()
-          })
+          controllerAddRow(COAController, setCOAs, COA)
+            .then((res: Category) => {
+              if (res) {
+                resolve(res)
+              }
+              reject()
+            })
         }).then(newCOA => {
           // For Auditlog
           if (newCOA) {
@@ -151,7 +152,7 @@ const COAsTable = () => {
               null,
               "Create Category",
               "Category", 
-              (newCOA as Category)._id,
+              newCOA._id,
               {},
               newCOA
             );

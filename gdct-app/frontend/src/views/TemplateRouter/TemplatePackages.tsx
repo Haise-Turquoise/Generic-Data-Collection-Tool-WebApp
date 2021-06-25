@@ -231,13 +231,14 @@ const TemplatePackages = () => {
   const editable = useMemo(
     () => ({
       onRowAdd: (templatePackage: TemplatePackageMT) =>
-        new Promise((resolve, reject) => {
+        new Promise<TemplatePackage | undefined>((resolve, reject) => {
           recordUpdate(templatePackage);
           templatePackage = { ...templatePackage, templateIds: [], programIds: [] };
           templatePackage.creationDate = moment().format();
-          controllerAddRow(templatePackageController, setTemplatePackages, templatePackage).then((res: boolean) => {
+          controllerAddRow(templatePackageController, setTemplatePackages, templatePackage)
+            .then((res?: TemplatePackage) => {
             if (res) {
-              resolve(templatePackage)
+              resolve(res)
             }
             reject()
           })
@@ -248,7 +249,7 @@ const TemplatePackages = () => {
               null,
               "Create Template Package",
               "TemplatePackage",
-              (newTemplatePackage as TemplatePackage)._id,
+              newTemplatePackage._id,
               {},
               newTemplatePackage
             );
@@ -258,7 +259,6 @@ const TemplatePackages = () => {
       onRowUpdate: (templatePackage: TemplatePackageMT) =>
         new Promise((resolve, reject) => {
           recordUpdate(templatePackage);
-          console.log(templatePackage);
           // Find the old value before updating in order to Auditlog
           (async () => { 
             const oldTemplatePackage = await templatePackageController.fetchTemplatePackage(templatePackage._id);
@@ -287,7 +287,7 @@ const TemplatePackages = () => {
           CreateAuditLog(null, "Delete Template Package", "TemplatePackage", templatePackage._id, templatePackage_trim, {});
         }),
     }),
-    [dispatch],
+    [],
   );
 
   useEffect(() => {
@@ -295,7 +295,6 @@ const TemplatePackages = () => {
     dispatch(getSubmissionPeriodsRequest());
 
     return () => {
-      dispatch(TemplatePackagesStoreActions.RESET());
       dispatch(StatusesStore.actions.RESET());
       dispatch(SubmissionPeriodsStore.actions.RESET());
     };

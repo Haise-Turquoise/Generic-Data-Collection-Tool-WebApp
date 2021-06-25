@@ -147,15 +147,16 @@ const ColumnNamesTable = () => {
   const editable = useMemo(
     () => ({
       onRowAdd: (columnName: Attribute) =>
-        new Promise((resolve, reject) => {
+        new Promise<Attribute | undefined>((resolve, reject) => {
           recordUpdate(columnName);
           // dispatch(createColumnNameRequest(columnName, resolve, reject));
-          controllerAddRow(columnNameController, setColumnNames, columnName).then((res: Attribute) => {
-            if (res) {
-              resolve(columnName)
-            }
-            reject()
-          })
+          controllerAddRow(columnNameController, setColumnNames, columnName)
+            .then((res: Attribute) => {
+              if (res) {
+                resolve(res)
+              }
+              reject()
+            })
         }).then(newColumnName => {
           // For Auditlog
           if (newColumnName) {
@@ -163,7 +164,7 @@ const ColumnNamesTable = () => {
               null,
               "Create Attribute",
               "Attribute",
-              (newColumnName as Attribute)._id,
+              newColumnName._id,
               {},
               newColumnName
             );
