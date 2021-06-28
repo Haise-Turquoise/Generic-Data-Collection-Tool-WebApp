@@ -222,12 +222,16 @@ const OrganizationForm = (props: OrgFormProps) => {
     props.updateState('programId', programIds)
   }, [programIds])
 
-  const onClickAdd = (_event: Event, program: Program) => {
-    setProgramIds((prevIds: string[]) => prevIds.concat(program._id));
+  const onClickAdd = (_event: Event, program: Program | Program[]) => {
+    if (!Array.isArray(program)) {
+      setProgramIds((prevIds: string[]) => prevIds.concat(program._id));
+    }
   };
 
-  const onClickDelete = (_event: Event, program: Program) => {
-    setProgramIds((prevIds: string[]) => prevIds.filter(elem => elem !== program._id))
+  const onClickDelete = (_event: Event, program: Program | Program[]) => {
+    if (!Array.isArray(program)) {
+      setProgramIds((prevIds: string[]) => prevIds.filter(elem => elem !== program._id))
+    }
   };
   
   return (
@@ -316,6 +320,11 @@ class ModifyOrganization extends React.Component<MOProps, MOState> {
   }
 
   componentDidUpdate (prevProps: MOProps, prevState: MOState) {
+    if (!prevProps.object && this.props.object) {
+      this.setState({
+        ...this.props.object
+      })
+    }
     if (prevState.id !== this.state.id) {
       if (this.state.takenIds.includes(this.state.id)) {
         this.setState({

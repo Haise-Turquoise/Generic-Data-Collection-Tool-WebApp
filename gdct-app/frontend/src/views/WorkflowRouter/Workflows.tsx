@@ -14,8 +14,13 @@ import { selectWorkflowsStore } from '../../store/WorkflowsStore/selectors';
 import { ROUTE_WORKFLOW_CREATE, ROUTE_WORKFLOW } from '../../constants/routes';
 //@ts-ignore
 import { getWorkflowsRequest, deleteWorkflowRequest } from '../../store/thunks/workflow';
-//@ts-ignore
-import { calculateOptions } from '../../tools/misc';
+import {
+  calculateOptions,
+  controllerAddRow,
+  controllerEditRow,
+  controllerDeleteRow,
+  //@ts-ignore
+} from '../../tools/misc';
 
 import moment from 'moment';
 //@ts-ignore
@@ -49,7 +54,13 @@ const Workflows = () => {
   const dispatch = useDispatch();
   const history = useHistory();
   const [readRowNum, setRowNum] = useState(1);
-  const [hasWorkflows, setHasWorkflows] = useState(false)
+  const [workflows, setWorkflows] = useState<Workflow[] | undefined>(undefined)
+
+  useEffect(() => {
+    workflowController.fetch().then((res: unknown) => {
+      setWorkflows(res as Workflow[])
+    })
+  }, [])
 
   // table vars for loading
   const preColumns: Column<WorkflowMT>[] = [{ title: 'Name', field: 'name' }]
@@ -61,14 +72,8 @@ const Workflows = () => {
     isActive: true,
   }]
 
-  const { workflows }: { workflows: Workflow[] } = useSelector(
-    state => ({
-      workflows: selectFactoryRESTResponseTableValues(selectWorkflowsStore)(state),
-    }),
-    shallowEqual,
-  );
   // Convert Date format
-  workflows.forEach(workflow => {
+  workflows?.forEach(workflow => {
     const logtime = new Date(workflow.timestamp);
     workflow.timestamp = moment(logtime).format("YYYY-MM-DD HH:mm:ss")
   });
@@ -94,7 +99,13 @@ const Workflows = () => {
       onRowDelete: (workflow: WorkflowMT) =>
         new Promise((resolve, reject) => {
           recordUpdate(workflow);
-          dispatch(deleteWorkflowRequest(workflow._id, resolve, reject));
+          controllerDeleteRow(workflowController, setWorkflows, workflow._id)
+            .then((res: boolean) => {
+              if (res) {
+                resolve(res)
+              }
+              reject()
+            })
         }).then(() => {
           (async () => {
             const oldWorkflow = await workflowController.fetchOnlyWorkflowById(workflow._id);
@@ -104,7 +115,7 @@ const Workflows = () => {
           })();
         }),
     }),
-    [dispatch],
+    [],
   );
 
   const actions: Action<WorkflowMT>[] = useMemo(
@@ -122,16 +133,8 @@ const Workflows = () => {
     [history],
   );
 
-  useEffect(() => {
-    console.log('page refresh')
-    dispatch(getWorkflowsRequest());
-  }, [dispatch]);
-
   useEffect(()=>{
-    setRowNum(workflows.length)
-    if (!hasWorkflows) {
-      setHasWorkflows(workflows.length >= 1)
-    }
+    setRowNum(workflows?.length || 1)
   }, [workflows])
 
   return (
@@ -140,11 +143,11 @@ const Workflows = () => {
       <ErrorBanner title={"You cannnot delete this workflow because it is refernced in template type."} targetStore={selectWorkflowsStore}/>
       <MaterialTable
         key={readRowNum} 
-        columns={hasWorkflows ? columns : preColumns}
-        data={hasWorkflows ? workflows : preWorkflows}
-        editable={hasWorkflows ? editable : undefined}
+        columns={!!workflows ? columns : preColumns}
+        data={!!workflows ? workflows : preWorkflows}
+        editable={!!workflows ? editable : undefined}
         options={options}
-        actions={hasWorkflows ? actions : undefined}
+        actions={!!workflows ? actions : undefined}
       />
     </div>
   );

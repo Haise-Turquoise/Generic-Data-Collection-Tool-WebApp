@@ -10,6 +10,8 @@ import { updateOrgsRequest, getOrgsRequest } from '../../../store/thunks/organiz
 import { selectOrgsStore } from '../../../store/OrganizationsStore/selectors';
 //@ts-ignore
 import { selectFactoryRESTResponseTableValues } from '../../../store/common/REST/selectors';
+//@ts-ignore
+import Loading from '../../../components/Loading'
 
 //@ts-ignore
 import orgController from '../../../controllers/organization';
@@ -69,7 +71,7 @@ const EditOrganization = ({
     redirect();
   };
 
-  return (
+  return !object ? <Loading /> : (
     <div>
       <ModifyOrganization
         title={'Edit Organization'}

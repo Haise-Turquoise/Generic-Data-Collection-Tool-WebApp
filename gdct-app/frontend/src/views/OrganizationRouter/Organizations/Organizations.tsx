@@ -15,6 +15,8 @@ import { selectOrgsStore } from '../../../store/OrganizationsStore/selectors';
 import { getOrgsRequest } from '../../../store/thunks/organization';
 //@ts-ignore
 import { calculateOptions } from '../../../tools/misc';
+//@ts-ignore
+import OrgController from '../../../controllers/organization'
 import Organization from '../../../types/organization'
 
 const HeaderActions = () => {
@@ -43,7 +45,13 @@ const OrganizationHeader = () => {
 const Organizations = ({ history }: RouterProps) => {
   const dispatch = useDispatch();
   const [readRowNum, setRowNum] = useState(1);
-  const [hasOrgs, setHasOrgs] = useState(false)
+  const [Orgs, setOrgs] = useState<Organization[] | undefined>(undefined)
+
+  useEffect(() => {
+    OrgController.fetch().then((res: unknown) => {
+      setOrgs(res as Organization[])
+    })
+  }, [])
   
   // table stuff while loading
   const preOrgs: Organization[] = [{ 
@@ -57,11 +65,6 @@ const Organizations = ({ history }: RouterProps) => {
     authorizedPerson: [''],
   }]
   const preColumns: Column<Organization>[] = [{title: 'Name', field: 'name'}]
-
-  // Prepare the data for material table
-  const { Orgs }: { Orgs: Organization[] } = useSelector(state => ({
-    Orgs: selectFactoryRESTResponseTableValues(selectOrgsStore)(state),
-  }));
 
   // Prepare the columns for material table
   const columns: Column<Organization>[] = useMemo(
@@ -96,15 +99,8 @@ const Organizations = ({ history }: RouterProps) => {
     [history],
   );
 
-  useEffect(() => {
-    dispatch(getOrgsRequest());
-  }, [dispatch]);
-
   useEffect(() => { 
-    setRowNum(Orgs.length)
-    if (!hasOrgs) {
-      setHasOrgs(Orgs.length >= 1)
-    }
+    setRowNum(Orgs?.length || 1)
   }, [Orgs])
   
   return (
@@ -112,17 +108,13 @@ const Organizations = ({ history }: RouterProps) => {
       <OrganizationHeader />
       <MaterialTable 
         key={readRowNum}
-        columns={hasOrgs ? columns : preColumns}
-        data={hasOrgs ? Orgs : preOrgs}
-        actions={hasOrgs ? actions : undefined}
+        columns={!!Orgs ? columns : preColumns}
+        data={!!Orgs ? Orgs : preOrgs}
+        actions={!!Orgs ? actions : undefined}
         options={options}
       />
     </div>
   );
-};
-
-Organizations.propTypes = {
-  history: PropTypes.object,
 };
 
 export default Organizations;
