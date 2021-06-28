@@ -32,9 +32,18 @@ import {AppResourcesStore} from '../../../store/AppResourcesStore/store';
 //@ts-ignore
 import AppRoleResourceController from '../../../controllers/AppRoleResource'
 //@ts-ignore
-import ErrorBanner from '../../ErrorBanner';
+import AppSysRoleController from '../../../controllers/AppSysRole'
 //@ts-ignore
-import { calculateOptions } from '../../../tools/misc';
+import AppResourceController from '../../../controllers/AppResource'
+//@ts-ignore
+import ErrorBanner from '../../ErrorBanner';
+import {
+  calculateOptions,
+  controllerAddRow,
+  controllerEditRow,
+  controllerDeleteRow,
+  //@ts-ignore
+} from '../../../tools/misc';
 //@ts-ignore
 import CreateAuditLog from '../../AuditLog_Global';
 import { RouteComponentProps } from 'react-router';
@@ -59,22 +68,25 @@ const AppRoleResourceHeader = () => {
 
 // Prepare the data for material table
 const AppRoleResourceTable = ({ history }: RouteComponentProps) => {
-  const dispatch = useDispatch();
   const [readRowNum, setRowNum] = useState(1);
-  const [hasAppRoleRes, setHasAppRoleRes] = useState(false)
-  // get app role resource info
-  const { appRoleResources, appSysRoles, appResources }: {
-    appRoleResources: AppRoleResource[],
-    appSysRoles: AppSysRole[],
-    appResources: AppResource[],
-  } = useSelector(
-    state => ({
-      appRoleResources: selectFactoryRESTResponseTableValues(selectAppRoleResourcesStore)(state),
-      appResources: selectFactoryRESTResponseTableValues(selectAppResourcesStore)(state),
-      appSysRoles: selectFactoryRESTResponseTableValues(selectAppSysRolesStore)(state),
-    }),
-    shallowEqual,
-  );
+  const [appRoleResources, setAppRoleResources] =
+    useState<AppRoleResource[] | undefined>(undefined)
+  const [appSysRoles, setAppSysRoles] =
+    useState<AppSysRole[] | undefined>(undefined)
+  const [appResources, setAppResources] =
+    useState<AppResource[] | undefined>(undefined)
+
+  useEffect(() => {
+    AppRoleResourceController.fetch().then((res: unknown) => {
+      setAppRoleResources(res as AppRoleResource[])
+    })
+    AppSysRoleController.fetch().then((res: unknown) => {
+      setAppSysRoles(res as AppSysRole[])
+    })
+    AppResourceController.fetch().then((res: unknown) => {
+      setAppResources(res as AppResource[])
+    })
+  }, [])
 
   // table stuff while loading
   const preColumns: Column<AppRoleResourceMT>[] = [{title: 'Name', field: 'updatedBy'}]
@@ -87,33 +99,29 @@ const AppRoleResourceTable = ({ history }: RouteComponentProps) => {
   }]
 
   useEffect(()=>{
-    setRowNum(appRoleResources.length)
-    if (!hasAppRoleRes) {
-      setHasAppRoleRes(appRoleResources.length >= 1)
-    }
+    setRowNum(appRoleResources?.length || 1)
   }, [appRoleResources])
   // Convert Date format
-  appRoleResources.forEach(appRoleResource => {
+  appRoleResources?.forEach(appRoleResource => {
     const logtime = new Date(appRoleResource.timestamp);
     appRoleResource.timestamp = moment(logtime).format("YYYY-MM-DD HH:mm:ss")
   });
   //convert appSysRoleId from object to objectId if necessary
-  appRoleResources.forEach(appRoleResource => {
+  appRoleResources?.forEach(appRoleResource => {
     if(typeof appRoleResource.appSysRoleId !== 'string'){
       appRoleResource.appSysRoleId = appRoleResource.appSysRoleId.roleId
     }
     
   })
-  const lookupSysRoles = appSysRoles.reduce(function (acc: {[key: string]: string}, sysRole: SysRole) {
+  const lookupSysRoles = appSysRoles?.reduce(function (acc: {[key: string]: string}, sysRole: SysRole) {
     acc[sysRole._id] = `${sysRole.appSys} - ${sysRole.role}`;
     return acc;
   }, {});
 
-  const lookupResources = appResources.reduce(function (acc: {[key:string]: string}, resource: AppResource) {
+  const lookupResources = appResources?.reduce(function (acc: {[key:string]: string}, resource: AppResource) {
     acc[resource._id] = resource.resourcePath;
     return acc;
   }, {});
-  
   
   // Prepare the columns for material table
   const columns: Column<AppRoleResourceMT>[] = useMemo(
@@ -152,9 +160,15 @@ const AppRoleResourceTable = ({ history }: RouteComponentProps) => {
   const editable = useMemo(
     () => ({
       onRowAdd: (appRoleResource: AppRoleResourceMT) =>
-        new Promise((resolve, reject) => {
+        new Promise<AppRoleResource | undefined>((resolve, reject) => {
           recordUpdate(appRoleResource);
-          dispatch(createAppRoleResourceRequest(appRoleResource, resolve, reject));
+          controllerAddRow(AppRoleResourceController, setAppRoleResources, appRoleResource)
+            .then((res: AppRoleResource) => {
+              if (res) {
+                resolve(res)
+              }
+              reject()
+            })
         }).then(newAppRoleResource => {
           // For Auditlog
           if (newAppRoleResource) {
@@ -162,7 +176,7 @@ const AppRoleResourceTable = ({ history }: RouteComponentProps) => {
               null,
               "Create Application Role Resource",
               "AppRoleResource",
-              (newAppRoleResource as AppRoleResource)._id,
+              newAppRoleResource._id,
               {},
               newAppRoleResource
             );
@@ -177,40 +191,39 @@ const AppRoleResourceTable = ({ history }: RouteComponentProps) => {
           CreateAuditLog(null, "Update Application Role Resource", "AppRoleResource", oldAppRoleResource._id, oldAppRoleResource, appRoleResource);
         })();
         // Do Update
-        
-        dispatch(updateAppRoleResourceRequest(appRoleResource, resolve, reject));
+        controllerEditRow(AppRoleResourceController, setAppRoleResources, appRoleResource)
+          .then((res: boolean) => {
+            if (res) {
+              resolve(res)
+            }
+            reject()
+          })
       }),
       onRowDelete: (appRoleResource: AppRoleResourceMT) =>
         new Promise((resolve, reject) => {
           recordUpdate(appRoleResource);
-          dispatch(deleteAppRoleResourceRequest(appRoleResource._id, resolve, reject));
           // For Auditlog
           const appRoleResource_trim = (({ tableData, ...o }) => o)(appRoleResource);
           CreateAuditLog(null, "Delete Application Role Resource", "AppRoleResource", appRoleResource._id, appRoleResource_trim, {});
+          controllerDeleteRow(AppRoleResourceController, setAppRoleResources, appRoleResource._id)
+            .then((res: boolean) => {
+              if (res) {
+                resolve(res)
+              }
+              reject()
+            })
         }),
     }),
-    [dispatch],
+    [],
   );
-
-  useEffect(() => {
-    dispatch(getAppRoleResourcesRequest());
-    dispatch(getAppSysRolesRequest());
-    dispatch(getAppResourcesRequest());
-    return () => {
-
-      dispatch(AppResourcesStore.actions.RESET());
-      dispatch(AppRoleResourcesStore.actions.RESET());
-      dispatch(AppSysRolesStore.actions.RESET());
-    };
-  }, [dispatch]);
 
   return (
     <MaterialTable
       key={readRowNum}
-      columns={hasAppRoleRes ? columns : preColumns}
-      actions={hasAppRoleRes ? actions : undefined}
-      data={hasAppRoleRes ? appRoleResources : preAppRoleResources}
-      editable={hasAppRoleRes ? editable : undefined}
+      columns={!!appRoleResources ? columns : preColumns}
+      actions={!!appRoleResources ? actions : undefined}
+      data={!!appRoleResources ? appRoleResources : preAppRoleResources}
+      editable={!!appRoleResources ? editable : undefined}
       options={options} />
   );
 };

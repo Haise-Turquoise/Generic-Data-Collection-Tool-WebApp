@@ -18,8 +18,15 @@ import { selectFactoryRESTResponseTableValues } from '../../../store/common/REST
 import { selectProgramsStore } from '../../../store/ProgramsStore/selectors';
 //@ts-ignore
 import { getProgramsRequest } from '../../../store/thunks/program';
+import {
+  calculateOptions,
+  controllerAddRow,
+  controllerEditRow,
+  controllerDeleteRow
+  //@ts-ignore
+} from '../../../tools/misc';
 //@ts-ignore
-import { calculateOptions } from '../../../tools/misc';
+import AppResourceController from '../../../controllers/AppResource'
 
 import AppResource from '../../../types/appresource';
 
@@ -29,15 +36,14 @@ const AppResourceList = ({ resourceId, isEditable = true, onClickAdd, onClickDel
   onClickAdd: (e: any, value: AppResource | AppResource[]) => void,
   onClickDelete: (e: any, value: AppResource | AppResource[]) => void,
 }) => {
-  const dispatch = useDispatch();
-  const [hasProgs, setHasProgs] = useState(false)
-  useEffect(() => {
-    dispatch(getAppResourcesRequest());
-  }, []);
+  const [resourceList, setResourceList] = useState<AppResource[] | undefined>(undefined)
   
-  const { resourceList }: { resourceList: AppResource[] } = useSelector(state => ({
-    resourceList: selectFactoryRESTResponseTableValues(selectAppResourcesStore)(state),
-  }));
+  useEffect(() => {
+    AppResourceController.fetch().then((res: unknown) => {
+      setResourceList(res as AppResource[])
+    })
+  }, [])
+  
   // convert resourceId into a id only array
   const resourceIdList: string[] = [];
   resourceId.forEach(resource=>{
@@ -65,17 +71,14 @@ const AppResourceList = ({ resourceId, isEditable = true, onClickAdd, onClickDel
     updatedBy: '',
   }]
   
-  const OrgProgs = () => resourceList.filter(elem => resourceIdList.includes(elem._id));
-  const nonOrgProgs = () => resourceList.filter(elem => !resourceIdList.includes(elem._id));
+  const OrgProgs = () => resourceList?.filter(elem => resourceIdList.includes(elem._id));
+  const nonOrgProgs = () => resourceList?.filter(elem => !resourceIdList.includes(elem._id));
   const [readOrgRowNum, setOrgRowNum] = useState(1);
   const [readNonOrgRowNum, setNonOrgRowNum] = useState(1);
   // needed to set these here to prevent clearing search term
   useEffect(() => {
-    setOrgRowNum(OrgProgs().length)
-    setNonOrgRowNum(nonOrgProgs().length)
-    if (!hasProgs) {
-      setHasProgs(resourceList.length >= 1)
-    }
+    setOrgRowNum(OrgProgs()?.length || 1)
+    setNonOrgRowNum(nonOrgProgs()?.length || 1)
   }, [resourceList])
 
   const columns: Column<AppResource>[] = useMemo(() => 
@@ -112,13 +115,13 @@ const AppResourceList = ({ resourceId, isEditable = true, onClickAdd, onClickDel
           title="Linked App Resource"
           // @ts-ignore
           key = {readOrgRowNum}
-          columns={hasProgs ? columns : preColumns}
-          data={hasProgs ? OrgProgs() : preOrgProgs}
+          columns={!!resourceList ? columns : preColumns}
+          data={!!resourceList ? OrgProgs()! : preOrgProgs}
           options={{
             ...orgOptions,
             actionsColumnIndex: 0
           }}
-          actions={(isEditable && hasProgs) ? left_actions : undefined}
+          actions={(isEditable && !!resourceList) ? left_actions : undefined}
         />
       </div>
       <div className="tableWrapper-other">
@@ -126,13 +129,13 @@ const AppResourceList = ({ resourceId, isEditable = true, onClickAdd, onClickDel
           title="Other App Resource"
           key = {readNonOrgRowNum}
           // @ts-ignore
-          columns={hasProgs ? columns : preColumns}
-          data={hasProgs ? nonOrgProgs() : preNonOrgProgs}
+          columns={!!resourceList ? columns : preColumns}
+          data={!!resourceList ? nonOrgProgs()! : preNonOrgProgs}
           options={{
             ...nonOrgOptions,
             actionsColumnIndex: 0
           }}
-          actions={(isEditable && hasProgs) ? right_actions : undefined}
+          actions={(isEditable && !!resourceList) ? right_actions : undefined}
         />
       </div>
     </div>
