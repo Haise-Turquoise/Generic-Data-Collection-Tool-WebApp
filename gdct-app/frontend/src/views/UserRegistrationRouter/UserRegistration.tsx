@@ -1,10 +1,11 @@
 //@ts-ignore
-import React, { lazy, useCallback, useMemo, useEffect, useState } from 'react';
+import React, { lazy, useCallback, useMemo, useEffect, useState , ChangeEventHandler, ChangeEvent} from 'react';
+import { useHistory } from 'react-router-dom';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import { Formik } from 'formik';
 //@ts-ignore
 import cloneDeep from 'clone-deep';
-
+import Swal from 'sweetalert2';
 import Paper from '@material-ui/core/Paper';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
@@ -40,6 +41,7 @@ import {
   searchOrganization,
   searchKeyChange,
   referenceChange,
+  deleteUserPermission,
   //@ts-ignore
 } from '../../store/thunks/userRegistration';
 //@ts-ignore
@@ -47,6 +49,10 @@ import UserController from '../../controllers/user';
 
 import Presubmission from '../../types/presubmission';
 import UserPermission from '../../types/userpermission';
+import AppSys from '../../types/appsys';
+import Organization from '../../types/organization';
+import Program from '../../types/program';
+import OrganizationGroup from '../../types/organizationgroup';
 
 interface PresubmissionMT extends Presubmission {
   tableData?: any;
@@ -145,6 +151,7 @@ const ButtonBox = ({
   ableToComplete,
   values,
   isValid,
+  touched,
   handleBack,
   handleNext,
   handleSubmit,
@@ -153,6 +160,7 @@ const ButtonBox = ({
   ableToComplete:boolean;
   values: object;
   isValid:boolean;
+  touched:object;
   handleNext:(values:object)=>void;
   handleBack:()=>void;
   handleSubmit:()=>void;
@@ -173,7 +181,8 @@ const ButtonBox = ({
     </Button>
 
     <Button
-      disabled={activeStep == 1 || !isValid}
+      disabled={activeStep == 1 || !isValid || Object.keys(touched).length === 0}
+      // disabled={activeStep == 1 || !isValid }
       variant="outlined"
       color="primary"
       className="register__button"
@@ -201,17 +210,17 @@ const ButtonBox = ({
 // Read the information user select and ask controller to send request to backend
 // After responsed from backend, page will be refreshed.
 const selectOrgProgram = (
-  searchKey:any,
-  reference:any,
-  organizationGroup:object,
-  organizationOptions:object[],
-  organizationGroupOptions:object[],
-  appSysOptions:object[],
-  programOptions:object[],
-  handleAppSysChange:(event:any)=>void,
-  handleOrgGroupChange:(event:any)=>void,
-  handleOrgChange:(selectedOrganization:object)=>void,
-  handleProgramChange:(selectedPrograms:object[])=>void,
+  searchKey:string,
+  reference:string,
+  organizationGroup:string,
+  organizationOptions:Organization[],
+  organizationGroupOptions:OrganizationGroup[],
+  appSysOptions:AppSys[],
+  programOptions:Program[],
+  handleAppSysChange:(event:ChangeEvent)=>void,
+  handleOrgGroupChange:(event:ChangeEvent)=>void,
+  handleOrgChange:(selectedOrganization:Organization)=>void,
+  handleProgramChange:(selectedProgams:Program[])=>void,
 ) => {
   //  if (organizationGroup !== "Health Service Providers") {
   const selectedPrograms:object[] = [];
@@ -222,6 +231,7 @@ const selectOrgProgram = (
         <Typography className="register__inputTitle"> *Application </Typography>
         <Select
           name="appSys"
+          id = "*Application"
           options={appSysOptions}
           onChange={handleAppSysChange}
           className="register__select"
@@ -231,6 +241,7 @@ const selectOrgProgram = (
         <Typography className="register__inputTitle">*Organization Groups</Typography>
         <Select
           name="organizations"
+          id = "*Organization Groups"
           options={organizationGroupOptions}
           onChange={handleOrgGroupChange}
           className="register__select"
@@ -284,24 +295,24 @@ const getStepContent = (
   activeStep:number,
   searchKey:any,
   reference:any,
-  organizationGroup:object,
+  organizationGroup:string,
   isSnackbarOpen:boolean,
-  userOrganizations:any[],
-  userPrograms:any[],
+  userOrganizations:Organization[],
+  userPrograms:Program[],
   userSubmissions:Presubmission[],
   userPermissions:UserPermission[],
-  appSysOptions:any[],
-  organizationGroupOptions:any[],
-  organizationOptions:any[],
-  programOptions:any[],
+  appSysOptions:AppSys[],
+  organizationGroupOptions:OrganizationGroup[],
+  organizationOptions:Organization[],
+  programOptions:Program[],
   ableToComplete:boolean,
-  handleOrgGroupChange:(event:any)=>void,
+  handleOrgGroupChange:(event:ChangeEvent)=>void,
   handleBack:()=>void,
-  handleNext:(values:object)=>void,
+  handleNext:(values:any)=>void,
   handleSubmit:()=>void,
-  handleAppSysChange:(event:any)=>void,
-  handleOrgChange:(selectedOrganization:object)=>void,
-  handleProgramChange:(selectedPrograms:object[])=>void,
+  handleAppSysChange:(event:ChangeEvent)=>void,
+  handleOrgChange:(selectedOrganization:Organization)=>void,
+  handleProgramChange:(selectedPrograms:Program[])=>void,
   handleChangeSubmission:()=>void,
   handleChangePermission:(rowData:object, permission:string)=>void,
   props: any,
@@ -310,7 +321,7 @@ const getStepContent = (
   const [userSubmissionsLength, setSubmissionsLength] = useState(1);
   const [userPermissionsLength, setPermissionsLength] = useState(1);
   const [maxPhoneLength, setMaxPhoneLength] = useState(10);
-
+  const dispatch = useDispatch();
   useEffect(() => {
     setSubmissionsLength(userSubmissions.length);
   }, [userSubmissions]);
@@ -318,7 +329,24 @@ const getStepContent = (
   useEffect(() => {
     setPermissionsLength(userPermissions.length);
   }, [userPermissions]);
-
+  const editable = useMemo(
+    () => ({
+      isDeleteHidden: (userPermission: UserPermission) => {
+        if (userPermission.appSys == 'unknown') {
+          return false;
+        }
+        return true;
+      },
+      onRowDelete: (userPermission: UserPermission) =>
+            new Promise<void>((resolve, reject) =>{
+                setTimeout(() =>{
+                    dispatch(deleteUserPermission(userPermission, resolve, reject));
+                    resolve();
+                }, 1000);
+      })
+    }),
+    [dispatch],
+  );
   const calculateOptions = (itemCount:number) => {
     let length = itemCount;
     if (length > 100) length = 100;
@@ -675,6 +703,7 @@ const getStepContent = (
               ableToComplete={ableToComplete}
               values={values}
               isValid={isValid}
+              touched = {touched}
               handleSubmit={handleSubmit}
               handleBack={handleBack}
               handleNext={handleNext}
@@ -747,11 +776,12 @@ const getStepContent = (
               //     backgroundColor: '#f2f5f7',
               //   },
               // }}
-              options={userPermissionsOptions}
+              options={{...userPermissionsOptions,actionsColumnIndex: 0,}}
               style={{
                 backgroundColor: '#f2f5f7',
               }}
               data={permissionList}
+              editable={editable}
             />
             <ButtonBox
               activeStep={activeStep}
@@ -760,6 +790,7 @@ const getStepContent = (
               ableToComplete={ableToComplete}
               handleSubmit={handleSubmit}
               values={values}
+              touched = {touched}
               isValid={isValid}
             />
           </div>
@@ -774,6 +805,7 @@ const getStepContent = (
 const Register_container = (props: any) => {
   console.log(props)
   const dispatch = useDispatch();
+  const history = useHistory();
   const handleOrgGroupChange = useCallback(event => {
     dispatch(orgGroupChange(event));
   }, []);
@@ -788,6 +820,18 @@ const Register_container = (props: any) => {
   }, []);
   const handleSubmit = useCallback(() => {
     dispatch(submit());
+    Swal.fire({
+      title: 'Success!',
+      text: 'Your request has been submitted',
+      icon: 'success',
+      confirmButtonColor: '#3085d6',
+      confirmButtonText: 'OK',
+    }).then(result => {
+      if (result.isConfirmed) {
+        // window.location.reload();
+        history.push('/');
+      }
+    });
   }, []);
   const handleAppSysChange = useCallback(event => {
     dispatch(appSysChange(event));

@@ -5,7 +5,7 @@ import MaterialTable, { Action, Column } from 'material-table';
 import LaunchIcon from '@material-ui/icons/Launch';
 import { Paper, Typography } from '@material-ui/core';
 
-import moment from 'moment';
+
 import {
   getTemplateTypesRequest,
   createTemplateTypeRequest,
@@ -31,6 +31,7 @@ import ErrorBanner from '../ErrorBanner';
   //@ts-ignore
   //@ts-ignore
 import { calculateOptions } from '../../tools/misc';
+//@ts-ignore
 import moment from 'moment';
   //@ts-ignore
 import CreateAuditLog from '../AuditLog_Global';

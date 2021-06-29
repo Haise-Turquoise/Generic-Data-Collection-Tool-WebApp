@@ -1,3 +1,4 @@
+//@ts-ignore
 import React, { useEffect, useCallback, useMemo, MouseEventHandler, ChangeEventHandler, ChangeEvent } from 'react';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import { RouteComponentProps, useHistory } from 'react-router-dom';
@@ -6,7 +7,7 @@ import { Formik, Form, FormikProps } from 'formik';
 import { Button, TextField, Paper, Typography,
          List, ListItem, ListItemText, ListItemSecondaryAction } from '@material-ui/core';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
-
+//@ts-ignore
 import uniqid from 'uniqid';
 //@ts-ignore
 import { selectTemplatePackagesStore } from '../../store/TemplatePackagesStore/selectors';

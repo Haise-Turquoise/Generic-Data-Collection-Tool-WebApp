@@ -17,14 +17,20 @@ import Box from '@material-ui/core/Box';
 import CircularProgress, { CircularProgressProps } from '@material-ui/core/CircularProgress';
 import Typography from '@material-ui/core/Typography';
 import './MasterValuePopulation.scss';
+//@ts-ignore
 import cloneDeep from 'clone-deep';
 import axios from 'axios';
-
+//@ts-ignore
 import Dialog from '@material-ui/core/Dialog';
+//@ts-ignore
 import MuiDialogTitle from '@material-ui/core/DialogTitle';
+//@ts-ignore
 import MuiDialogContent from '@material-ui/core/DialogContent';
+//@ts-ignore
 import MuiDialogActions from '@material-ui/core/DialogActions';
+//@ts-ignore
 import IconButton from '@material-ui/core/IconButton';
+//@ts-ignore
 import CloseIcon from '@material-ui/icons/Close';
 import {
   selectFactoryRESTResponseTableValues,
@@ -66,11 +72,17 @@ import OrganizationController from '../../controllers/organization';
 //@ts-ignore
 import COAController from '../../controllers/COA';
 import { withStyles } from '@material-ui/core/styles';
+//@ts-ignore
 import Dialog from '@material-ui/core/Dialog';
+//@ts-ignore
 import MuiDialogTitle, { DialogTitleProps } from '@material-ui/core/DialogTitle';
+//@ts-ignore
 import MuiDialogContent from '@material-ui/core/DialogContent';
+//@ts-ignore
 import MuiDialogActions from '@material-ui/core/DialogActions';
+//@ts-ignore
 import IconButton from '@material-ui/core/IconButton';
+//@ts-ignore
 import CloseIcon from '@material-ui/icons/Close';
 import Category from '../../types/category';
 import Organization from '../../types/organization';
@@ -544,22 +556,7 @@ const  FooterActions =  (props: footerActionProps) =>  {
       setAlertTitle(alertTitle)
       setOpen(true);
     };
-    const handleDialogClose = () => {
-      setAlertMessage('');
-      setAlertTitle('')
-      setOpen(false);
-  };
 
-
-
-
-
-
-  const handleDialogOpen = (alertMessage, alertTitle) => {
-    setAlertMessage(alertMessage);
-    setAlertTitle(alertTitle);
-    setOpen(true);
-  };
   const handleDialogClose = () => {
     setAlertMessage('');
     setAlertTitle('');
@@ -971,6 +968,7 @@ const MasterValuePopulation = () => {
   };
 
   return isCallInProgress ? (
+    //@ts-ignore
     <Loading />
   ) : (
     <div>

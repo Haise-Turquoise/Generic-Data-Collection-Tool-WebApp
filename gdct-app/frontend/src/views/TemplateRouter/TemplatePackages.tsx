@@ -8,6 +8,7 @@ import MaterialTable, { Action, Column, Options } from 'material-table';
 import moment from 'moment';
 
 import { useHistory } from 'react-router-dom';
+//@ts-ignore
 import Select from 'react-select';
 import {
   selectFactoryRESTResponseTableValues,
@@ -191,7 +192,7 @@ const TemplatePackages = () => {
 
             return (
               <Select
-                onChange={data => {
+                onChange={(data:any) => {
                   props.onChange(data?.value);
                 }}
                 // options={optionListForPackage}/>
@@ -202,7 +203,7 @@ const TemplatePackages = () => {
           }
           return (
             <Select
-              onChange={(data) => {
+              onChange={(data:any) => {
                 props.onChange(data?.value);
               }}
               options={optionListForPackage}

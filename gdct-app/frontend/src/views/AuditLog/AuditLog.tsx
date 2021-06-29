@@ -2,6 +2,7 @@ import React, { Fragment, useMemo, useEffect, useState } from 'react';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 
 import moment from 'moment';
+//@ts-ignore
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 
@@ -43,7 +44,7 @@ const CustomDatePicker = (props: {
         id="startDatePicker"
         selected={startDate}
         dateFormat={"yyyy-MM-dd HH:mm"}
-        onChange={(selectedDate) => {
+        onChange={(selectedDate:any) => {
           if (!selectedDate) {
             return
           } else if (Array.isArray(selectedDate)) {
@@ -55,7 +56,7 @@ const CustomDatePicker = (props: {
             selectedDate
           );
         }}
-        closeOnScroll={e => e.target === document}
+        closeOnScroll={(e:any) => e.target === document}
         showTimeSelect
         showMonthDropdown
         showYearDropdown
@@ -67,7 +68,7 @@ const CustomDatePicker = (props: {
         id="endDatePicker"
         selected={endDate}
         dateFormat={'yyyy-MM-dd HH:mm'}
-        onChange={selectedDate => {
+        onChange={(selectedDate:any) => {
           // @ts-ignore
           setEndDate(selectedDate)
           // @ts-ignore
@@ -76,7 +77,7 @@ const CustomDatePicker = (props: {
             selectedDate
           );
         }}
-        closeOnScroll={e => e.target === document}
+        closeOnScroll={(e:any) => e.target === document}
         minDate={startDate}
         showTimeSelect
         showMonthDropdown

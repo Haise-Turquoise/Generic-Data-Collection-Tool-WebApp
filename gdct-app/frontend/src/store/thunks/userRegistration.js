@@ -367,6 +367,8 @@ const submissionChange = userSubmissions => {
         input: submission.input,
         status:
           submission.submission.status == undefined ? 'pending' : submission.submission.status,
+        appSys:submission.appSys == undefined?'unknown': submission.appSys,
+        
       });
     });
   });
@@ -480,6 +482,15 @@ export const changeSubmissionInModifyPermission = () => (dispatch, getState) => 
   } = getState();
   dispatch(userRegistrationStore.actions.setAbleToComplete(true));
   const permissionList = submissionChange(userSubmissions);
+  const userSubmissionsCopy = cloneDeep(userSubmissions);
+  userSubmissionsCopy.forEach(userSubmission=>{
+    userSubmission.approve = false;
+    userSubmission.view = false;
+    userSubmission.submit = false;
+    userSubmission.input = false;
+    userSubmission.review = false;
+  })
+  dispatch(userRegistrationStore.actions.setUserSubmissionList(userSubmissionsCopy));
   const {
     UserRegistrationStore: { userPermissions },
   } = getState();
@@ -492,13 +503,37 @@ export const changeSubmissionInModifyPermission = () => (dispatch, getState) => 
 };
 
 export const changeSubmission = () => (dispatch, getState) => {
+  // const {
+  //   UserRegistrationStore: { userSubmissions },
+  // } = getState();
+  // dispatch(userRegistrationStore.actions.setAbleToComplete(true));
+  // const permissionList = submissionChange(userSubmissions);
+  // dispatch(userRegistrationStore.actions.setUserPermissionList(permissionList));
   const {
     UserRegistrationStore: { userSubmissions },
   } = getState();
   dispatch(userRegistrationStore.actions.setAbleToComplete(true));
   const permissionList = submissionChange(userSubmissions);
-  dispatch(userRegistrationStore.actions.setUserPermissionList(permissionList));
+  const userSubmissionsCopy = cloneDeep(userSubmissions);
+  userSubmissionsCopy.forEach(userSubmission=>{
+    userSubmission.approve = false;
+    userSubmission.view = false;
+    userSubmission.submit = false;
+    userSubmission.input = false;
+    userSubmission.review = false;
+  })
+  dispatch(userRegistrationStore.actions.setUserSubmissionList(userSubmissionsCopy));
+  const {
+    UserRegistrationStore: { userPermissions },
+  } = getState();
+  const userPermissionsCopy = cloneDeep(userPermissions);
+  permissionList.forEach(permission => {
+    userPermissionsCopy.push(permission);
+  });
+
+  dispatch(userRegistrationStore.actions.setUserPermissionList(userPermissionsCopy));
 };
+
 
 export const orgGroupChange = event => dispatch => {
   dispatch(userRegistrationStore.actions.setOrganizationGroup(event.value.name));
@@ -523,6 +558,7 @@ export const referenceChange = event => dispatch => {
 };
 
 export const changePermission = (rowData, permission) => (dispatch, getState) => {
+  console.log('submission change')
   const {
     UserRegistrationStore: { userSubmissions, helperState },
   } = getState();
@@ -746,10 +782,24 @@ export const stepUpdate = values => (dispatch, getState) => {
   // }
   dispatch(userRegistrationStore.actions.setActiveStep(0));
 };
-
+export const deleteUserPermission = (userPermission, resolve, reject) => (dispatch, getState) => {
+  // dispatch(userRegistrationStore.actions.REQUEST());
+  const {
+    UserRegistrationStore: { userPermissions, registrationData, userAppSys },
+  } = getState();
+  let userPermissionsCopy = [...userPermissions];
+  userPermissionsCopy = userPermissionsCopy.filter((ele)=>{
+    return !(ele.permission == userPermission.permission && 
+          ele.organization.id == userPermission.organization.id &&
+          ele.program._id == userPermission.program._id &&
+          ele.submission._id == userPermission.submission._id)
+  })
+  dispatch(userRegistrationStore.actions.setUserPermissionList(userPermissionsCopy))
+ 
+}
 export const submit = () => (dispatch, getState) => {
   const {
-    UserRegistrationStore: { userSubmissions, registrationData, userAppSys },
+    UserRegistrationStore: { userSubmissions, registrationData, userPermissions,userAppSys },
   } = getState();
   const userData = cloneDeep(registrationData);
   userData.phoneNumber = userData.phoneNumber.replace('-', '');
@@ -757,15 +807,17 @@ export const submit = () => (dispatch, getState) => {
   userData.password = bcrypt.hashSync(userData.password, bcrypt.genSaltSync(8), null);
   userData.email = userData.email.toLowerCase();
   delete userData.passwordConfirm;
-  userSubmissions.forEach(submission => {
-    handleInputSysRole(userData, 'approve', submission, userAppSys);
-    handleInputSysRole(userData, 'review', submission, userAppSys);
-    handleInputSysRole(userData, 'input', submission, userAppSys);
-    handleInputSysRole(userData, 'submit', submission, userAppSys);
-    handleInputSysRole(userData, 'view', submission, userAppSys);
-    handleInputSysRole(userData, 'viewCognos', submission, userAppSys);
+  userPermissions.forEach(userPermission => {
+    handleInputSysRole(userData, 'approve', userPermission, userAppSys);
+    handleInputSysRole(userData, 'review', userPermission, userAppSys);
+    handleInputSysRole(userData, 'input', userPermission, userAppSys);
+    handleInputSysRole(userData, 'submit', userPermission, userAppSys);
+    handleInputSysRole(userData, 'view', userPermission, userAppSys);
+    handleInputSysRole(userData, 'viewCognos', userPermission, userAppSys);
   });
-  userData.newTemplates = submissionChange(userSubmissions);
+  // userData.newTemplates = submissionChange(userSubmissions);
+  const userPermissionsCopy = cloneDeep(userPermissions)
+  userData.newTemplates = userPermissionsCopy.filter((userPermission)=>{return userPermission.appSys == 'unknown'})
   userData.newTemplates.forEach(newTemplate => {
     (newTemplate.appSys = userAppSys), (newTemplate.applierEmail = userData.email);
   });
@@ -775,34 +827,57 @@ export const submit = () => (dispatch, getState) => {
 
 export const updatePermission = () => (dispatch, getState) => {
   const {
-    UserRegistrationStore: { userSubmissions, registrationData, userAppSys, tempUserSubmissions },
+    UserRegistrationStore: { userSubmissions, userPermissions,registrationData, userAppSys, tempUserSubmissions },
   } = getState();
   const userData = cloneDeep(registrationData);
 
-  tempUserSubmissions.forEach(tempSubmission => {
-    ModifyPermissionHandleInputSysRole(userData, 'approve', tempSubmission, tempSubmission.appSys);
-    ModifyPermissionHandleInputSysRole(userData, 'review', tempSubmission, tempSubmission.appSys);
-    ModifyPermissionHandleInputSysRole(userData, 'input', tempSubmission, tempSubmission.appSys);
-    ModifyPermissionHandleInputSysRole(userData, 'submit', tempSubmission, tempSubmission.appSys);
-    ModifyPermissionHandleInputSysRole(userData, 'view', tempSubmission, tempSubmission.appSys);
-    ModifyPermissionHandleInputSysRole(
-      userData,
-      'viewCognos',
-      tempSubmission,
-      tempSubmission.appSys,
-    );
+  // tempUserSubmissions.forEach(tempSubmission => {
+  //   ModifyPermissionHandleInputSysRole(userData, 'approve', tempSubmission, tempSubmission.appSys);
+  //   ModifyPermissionHandleInputSysRole(userData, 'review', tempSubmission, tempSubmission.appSys);
+  //   ModifyPermissionHandleInputSysRole(userData, 'input', tempSubmission, tempSubmission.appSys);
+  //   ModifyPermissionHandleInputSysRole(userData, 'submit', tempSubmission, tempSubmission.appSys);
+  //   ModifyPermissionHandleInputSysRole(userData, 'view', tempSubmission, tempSubmission.appSys);
+  //   ModifyPermissionHandleInputSysRole(
+  //     userData,
+  //     'viewCognos',
+  //     tempSubmission,
+  //     tempSubmission.appSys,
+  //   );
+  // });
+  // userSubmissions.forEach(submission => {
+  //   ModifyPermissionHandleInputSysRole(userData, 'approve', submission, userAppSys);
+  //   ModifyPermissionHandleInputSysRole(userData, 'review', submission, userAppSys);
+  //   ModifyPermissionHandleInputSysRole(userData, 'input', submission, userAppSys);
+  //   ModifyPermissionHandleInputSysRole(userData, 'submit', submission, userAppSys);
+  //   ModifyPermissionHandleInputSysRole(userData, 'view', submission, userAppSys);
+  //   ModifyPermissionHandleInputSysRole(userData, 'viewCognos', submission, userAppSys);
+  // });
+
+
+
+
+  userPermissions.forEach(permission => {
+    const appSys = permission.appSys!= 'unknown'?permission.appSys:userAppSys;
+    ModifyPermissionHandleInputSysRole(userData, 'approve', permission, appSys);
+    ModifyPermissionHandleInputSysRole(userData, 'review', permission, appSys);
+    ModifyPermissionHandleInputSysRole(userData, 'input', permission, appSys);
+    ModifyPermissionHandleInputSysRole(userData, 'submit', permission, appSys);
+    ModifyPermissionHandleInputSysRole(userData, 'view', permission, appSys);
+    ModifyPermissionHandleInputSysRole(userData, 'viewCognos', permission, appSys);
   });
-  userSubmissions.forEach(submission => {
-    ModifyPermissionHandleInputSysRole(userData, 'approve', submission, userAppSys);
-    ModifyPermissionHandleInputSysRole(userData, 'review', submission, userAppSys);
-    ModifyPermissionHandleInputSysRole(userData, 'input', submission, userAppSys);
-    ModifyPermissionHandleInputSysRole(userData, 'submit', submission, userAppSys);
-    ModifyPermissionHandleInputSysRole(userData, 'view', submission, userAppSys);
-    ModifyPermissionHandleInputSysRole(userData, 'viewCognos', submission, userAppSys);
-  });
+
+
+
+
+
   const email = localStorage.getItem('currentUser');
 
-  userData.newTemplates = submissionChange(userSubmissions);
+  // userData.newTemplates = submissionChange(userSubmissions);
+  // userData.newTemplates.forEach(newTemplate => {
+  //   (newTemplate.appSys = userAppSys), (newTemplate.applierEmail = email);
+  // });
+  const userPermissionsCopy = cloneDeep(userPermissions)
+  userData.newTemplates = userPermissionsCopy.filter((userPermission)=>{return userPermission.appSys == 'unknown'})
   userData.newTemplates.forEach(newTemplate => {
     (newTemplate.appSys = userAppSys), (newTemplate.applierEmail = email);
   });

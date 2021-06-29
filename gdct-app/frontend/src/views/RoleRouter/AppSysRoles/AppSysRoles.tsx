@@ -27,7 +27,6 @@ import { selectAppSysesStore } from '../../../store/AppSysesStore/selectors';
 import { selectAppRolesStore } from '../../../store/AppRolesStore/selectors';
 //@ts-ignore
 import { calculateOptions } from '../../../tools/misc';
-import moment from 'moment';
 //@ts-ignore
 import CreateAuditLog from '../../AuditLog_Global';
 //@ts-ignore

@@ -7,6 +7,7 @@ import { Paper, Typography, Button } from '@material-ui/core';
 //@ts-ignore
 import Loading from '../../../components/Loading';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
+//@ts-ignore
 import Loading from '../../../components/Loading';
 
 import AppResourceList from '../AppResourceList';

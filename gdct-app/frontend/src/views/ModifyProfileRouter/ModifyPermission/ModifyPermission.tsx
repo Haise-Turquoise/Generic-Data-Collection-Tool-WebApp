@@ -1,4 +1,4 @@
-import React, { lazy, useCallback, useMemo, useEffect, useState } from 'react';
+import React, { lazy, useCallback, useMemo, useEffect, useState, ChangeEventHandler, ChangeEvent } from 'react';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import { Formik } from 'formik';
 //@ts-ignore
@@ -7,6 +7,7 @@ import Box from '@material-ui/core/Box';
 import Paper from '@material-ui/core/Paper';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
+import DeleteIcon from '@material-ui/icons/Delete';
 //@ts-ignore
 import Select from 'react-select';
 import Stepper from '@material-ui/core/Stepper';
@@ -22,6 +23,8 @@ import * as yup from 'yup';
 import MaterialTable from 'material-table';
 
 import { useTranslation } from 'react-i18next';
+//@ts-ignore
+import Swal from 'sweetalert2';
 //@ts-ignore
 import userRegistrationStore from '../../../store/UserRegistrationStore/store';
 import {
@@ -39,11 +42,16 @@ import {
   searchOrganization,
   searchKeyChange,
   referenceChange,
+  deleteUserPermission,
   loadModifyPermissionPage,
   //@ts-ignore
 } from '../../../store/thunks/userRegistration.js';
 import UserPermission from '../../../types/userpermission';
 import Presubmission from '../../../types/presubmission';
+import AppSys from '../../../types/appsys';
+import Organization from '../../../types/organization';
+import Program from '../../../types/program';
+import OrganizationGroup from '../../../types/organizationgroup';
 // Column for permission table.
 const columns = [
   {
@@ -69,14 +77,12 @@ const columns = [
 ];
 
 // Button on the bottom of page
-const ButtonBox = ({ activeStep, ableToComplete, values, isValid, handleBack, handleSubmit,handleNext }:{
+const ButtonBox = ({ activeStep, ableToComplete, handleBack, handleSubmit}:{
   activeStep:number;
   ableToComplete:boolean;
-  values:any;
-  isValid:boolean;
-  handleBack:any;
-  handleSubmit:any;
-  handleNext:any;
+  handleBack:()=>void;
+  handleSubmit:()=>void;
+
 }) => (
   <Box border={1} color="primary" className="modifyPermission__buttonBox" justifyContent="center">
     <Button
@@ -110,15 +116,15 @@ const ButtonBox = ({ activeStep, ableToComplete, values, isValid, handleBack, ha
 const selectOrgProgram = (
   searchKey:string,
   reference:string,
-  organizationGroup:object,
-  organizationOptions:object[],
-  organizationGroupOptions:object[],
-  appSysOptions:object[],
-  programOptions:object[],
-  handleAppSysChange:any,
-  handleOrgGroupChange:any,
-  handleOrgChange:any,
-  handleProgramChange:any,
+  organizationGroup:string,
+  organizationOptions:Organization[],
+  organizationGroupOptions:OrganizationGroup[],
+  appSysOptions:AppSys[],
+  programOptions:Program[],
+  handleAppSysChange:(event:ChangeEvent)=>void,
+  handleOrgGroupChange:(event:ChangeEvent)=>void,
+  handleOrgChange:(selectedOrganization:Organization)=>void,
+  handleProgramChange:(selectedProgams:Program[])=>void,
 ) => {
   let selectedPrograms = [];
   let selectedOrganizations:object[] = [];
@@ -190,32 +196,30 @@ const getStepContent = (
   activeStep:number,
   searchKey:string,
   reference:string,
-  organizationGroup:object,
-  isSnackbarOpen:boolean,
+  organizationGroup:string,
   userOrganizations:object[],
   userPrograms:object[],
   userSubmissions:Presubmission[],
   userPermissions:UserPermission[],
-  appSysOptions:object[],
-  organizationGroupOptions:object[],
-  organizationOptions:object[],
-  programOptions:object[],
+  appSysOptions: AppSys[],
+  organizationGroupOptions:OrganizationGroup[],
+  organizationOptions:Organization[],
+  programOptions:Program[],
   ableToComplete:boolean,
-  handleOrgGroupChange:any,
-  handleBack:any,
-  handleNext:any,
-  handleSubmit:any,
-  handleAppSysChange:any,
-  handleOrgChange:any,
-  handleProgramChange:any,
-  handleChangeSubmission:any,
-  handleChangePermission:any,
+  handleOrgGroupChange:(event:ChangeEvent)=>void,
+  handleBack:()=>void,
+  handleSubmit:()=>void,
+  handleAppSysChange:(event:ChangeEvent)=>void,
+  handleOrgChange:(selectedOrganization:Organization)=>void,
+  handleProgramChange:(selectedProgams:Program[])=>void,
+  handleChangeSubmission:()=>void,
+  handleChangePermission:(rowData:Presubmission,permission:string)=>void,
   props:any,
 ) => {
-  const { values, isValid } = props;
+  const { values} = props;
   const [userSubmissionsLength, setSubmissionsLength] = useState(1);
   const [userPermissionsLength, setPermissionsLength] = useState(1);
-
+  const dispatch = useDispatch();
   useEffect(() => {
     setSubmissionsLength(userSubmissions.length);
   }, [userSubmissions]);
@@ -243,7 +247,36 @@ const getStepContent = (
   const userPermissionsOptions = useMemo(() => calculateOptions(userPermissionsLength), [
     userPermissionsLength,
   ]);
+  const onClickDelete = (_: any, rowData:UserPermission ) => {
+    if (Array.isArray(rowData)) {
+      return
+    }
+    console.log(rowData)
+  }
 
+
+
+  const editable = useMemo(
+    () => ({
+      isDeleteHidden: (userPermission: UserPermission) => {
+        if (userPermission.appSys == 'unknown') {
+          return false;
+        }
+        return true;
+      },
+      onRowDelete: (userPermission: UserPermission) =>
+            new Promise<void>((resolve, reject) =>{
+                setTimeout(() =>{
+                    dispatch(deleteUserPermission(userPermission, resolve, reject));
+                    resolve();
+                }, 1000);
+      })
+    }),
+    [dispatch],
+  );
+
+
+  const deleteActions:any = useMemo(() => [{ icon: DeleteIcon, tooltip: 'Delete The Permission', onClick: onClickDelete }], []);
   const { t, i18n } = useTranslation();
   const checkBoxColumns = [
     { title: 'Organization', field: 'organization.name' },
@@ -328,7 +361,7 @@ const getStepContent = (
       ),
     },
   ];
-
+  
   const submissionList = cloneDeep(userSubmissions);
   const permissionList = cloneDeep(userPermissions);
   console.log('permissionList', permissionList);
@@ -394,20 +427,22 @@ const getStepContent = (
           //     backgroundColor: '#f2f5f7',
           //   },
           // }}
-          options={userPermissionsOptions}
+          options={{...userPermissionsOptions,actionsColumnIndex: 0,}}
           style={{
             backgroundColor: '#f2f5f7',
           }}
           data={permissionList}
+          editable={editable}
+          // actions={
+          //   deleteActions
+          // }
         />
         <ButtonBox
           activeStep={activeStep}
           handleBack={handleBack}
-          handleNext={handleNext}
           ableToComplete={ableToComplete}
           handleSubmit={handleSubmit}
-          values={values}
-          isValid={isValid}
+
         />
       </div>
     </div>
@@ -418,17 +453,29 @@ const getStepContent = (
 const ModifyPermission_container = (props:any) => {
   const dispatch = useDispatch();
   const handleOrgGroupChange = useCallback(event => {
+    console.log(event)
     dispatch(orgGroupChange(event));
   }, []);
 
   const handleBack = useCallback(() => {
     dispatch(stepBack());
   }, []);
-  const handleNext = useCallback(values => {
-    dispatch(stepNext(values));
-  }, []);
+  // const handleNext = useCallback(values => {
+  //   dispatch(stepNext(values));
+  // }, []);
   const handleSubmit = useCallback(() => {
     dispatch(updatePermission());
+    Swal.fire({
+      title: 'Success!',
+      text: 'Your request has been submitted',
+      icon: 'success',
+      confirmButtonColor: '#3085d6',
+      confirmButtonText: 'OK',
+    }).then(result => {
+      if (result.isConfirmed) {
+        window.location.reload();
+      }
+    });
   }, []);
   const handleAppSysChange = useCallback(event => {
     dispatch(appSysChange(event));
@@ -452,7 +499,6 @@ const ModifyPermission_container = (props:any) => {
     searchKey,
     reference,
     organizationGroup,
-    isSnackbarOpen,
     userOrganizations,
     userPrograms,
     userSubmissions,
@@ -471,7 +517,6 @@ const ModifyPermission_container = (props:any) => {
         searchKey,
         reference,
         organizationGroup,
-        isSnackbarOpen,
         userOrganizations,
         userPrograms,
         userSubmissions,
@@ -488,7 +533,6 @@ const ModifyPermission_container = (props:any) => {
       searchKey,
       reference,
       organizationGroup,
-      isSnackbarOpen,
       userOrganizations,
       userPrograms,
       userSubmissions,
@@ -528,7 +572,6 @@ const ModifyPermission_container = (props:any) => {
         searchKey,
         reference,
         organizationGroup,
-        isSnackbarOpen,
         userOrganizations,
         userPrograms,
         userSubmissions,
@@ -540,7 +583,6 @@ const ModifyPermission_container = (props:any) => {
         ableToComplete,
         handleOrgGroupChange,
         handleBack,
-        handleNext,
         handleSubmit,
         handleAppSysChange,
         handleOrgChange,

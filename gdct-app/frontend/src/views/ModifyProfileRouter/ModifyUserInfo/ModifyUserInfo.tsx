@@ -25,6 +25,7 @@ import UserController from '../../../controllers/user';
 import usersController from '../../../controllers/Users';
 //@ts-ignore
 import CreateAuditLog from '../../AuditLog_Global';
+import User from '../../../types/user';
 
 import './ModifyUserInfo.scss';
 
@@ -77,7 +78,7 @@ const ProfileSchema = (originalUsername:string) =>
   });
 
 // Button on the bottom of page
-const Buttons = ({ values, handleSubmit}:{values:object; handleSubmit:(values:any)=>void;}) => {
+const Buttons = ({ values, handleSubmit}:{values:User; handleSubmit:(values:any)=>void;}) => {
   return (
     <Box color="primary" className="modifyUserInfo__buttonBox" justifyContent="center">
       <Button variant="outlined" color="primary" href="/" style={{ marginTop: '0.8%' }}>

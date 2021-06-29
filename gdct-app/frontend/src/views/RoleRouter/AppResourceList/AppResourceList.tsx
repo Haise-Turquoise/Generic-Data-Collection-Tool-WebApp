@@ -99,16 +99,14 @@ const AppResourceList = ({ resourceId, isEditable = true, onClickAdd, onClickDel
     [],
   );
 
-  const left_actions = useMemo(
-    () => [{ icon: DeleteIcon, tooltip: 'Remove from Mapping', onClick: onClickDelete }],
-    [],
-  );
 
   const left_actions: Action<AppResource>[] = useMemo(() => [{ icon: DeleteIcon, tooltip: 'Remove from Mapping', onClick: onClickDelete }], []);
 
   const right_actions: Action<AppResource>[] = useMemo(() => [{ icon: AddIcon, tooltip: 'Add to Mapping', onClick: onClickAdd }], []);
-  const orgOptions: Options<AppResource> = useMemo(() => calculateOptions(readOrgRowNum), [readOrgRowNum]);
-  const nonOrgOptions: Options<AppResource> = useMemo(() => calculateOptions(readNonOrgRowNum), [readNonOrgRowNum]);
+  // const orgOptions: Options<AppResource> = useMemo(() => calculateOptions(readOrgRowNum), [readOrgRowNum]);
+  const orgOptions: any = useMemo(() => calculateOptions(readOrgRowNum), [readOrgRowNum]);
+  // const nonOrgOptions: Options<AppResource> = useMemo(() => calculateOptions(readNonOrgRowNum), [readNonOrgRowNum]);
+  const nonOrgOptions: any = useMemo(() => calculateOptions(readNonOrgRowNum), [readNonOrgRowNum]);
   return (
     <div className="tableContainer">
       <div className="tableWrapper-linked">

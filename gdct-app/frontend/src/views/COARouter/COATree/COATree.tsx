@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
-
+//@ts-ignore
 import SortableTree, { toggleExpandedForAll } from 'react-sortable-tree';
 import { useSelector, shallowEqual, useDispatch, batch } from 'react-redux';
 import { Paper, Typography, Button, TextField, IconButton } from '@material-ui/core';

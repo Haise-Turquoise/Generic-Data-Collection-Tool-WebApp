@@ -10,4 +10,5 @@ export default interface UserPermission {
     viewCognos:boolean;
     input:boolean;
     status:string;
+    appSys:string;
 }
