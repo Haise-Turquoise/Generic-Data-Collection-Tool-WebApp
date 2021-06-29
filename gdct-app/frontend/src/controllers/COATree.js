@@ -12,6 +12,7 @@ const COATreeController = (() => {
     // SUSPECT: NOT IN USE
     // fetchCOATree: async _id => COATreeAxios.post('/fetchCOATree', { _id }).then(res => res.data.COATree),
     fetchBySheetName: async sheetNameId => COATreeAxios.post(`/sheetName/fetchBySheetName`, { sheetNameId }).then(res => res.data.COATrees),
+    fetchBySheetNames: async sheetNameIds => COATreeAxios.post(`/sheetName/fetchBySheetNames`, { sheetNameIds }).then(res => res.data.COATrees),
     fetch: async _ => COATreeAxios.get('/fetch').then(res => res.data.COATrees),
     create: async COATree => COATreeAxios.post('/create', { COATree }).then(res => res.data.COATree),
     update: async COATree => COATreeAxios.put('/update', { COATree }),
