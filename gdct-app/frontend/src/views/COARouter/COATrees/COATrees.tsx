@@ -6,13 +6,15 @@ import LaunchIcon from '@material-ui/icons/Launch';
 import { Paper, Typography } from '@material-ui/core';
 //@ts-ignore
 import COATreeController from '../../../controllers/COATree';
+//@ts-ignore
+import SheetNameController from '../../../controllers/sheetName'
 import {
   getSheetNamesRequest,
 //@ts-ignore
 } from '../../../store/thunks/sheetName';
 import {
   getDetectEmptyTree,
-  deleteCOATreeBySheetName,
+  deleteCOATreeBySheetName
 //@ts-ignore
 } from '../../../store/thunks/DetectEmptyTree';
 //@ts-ignore
@@ -32,12 +34,26 @@ import CreateAuditLog from '../../AuditLog_Global';
 
 import CategoryTree from '../../../types/categorytree';
 import SheetName from '../../../types/sheetname';
-interface SheetNameMT extends SheetName {
-  value?: CategoryTree[]
-}
+import DetectEmptyTree from '../../../types/detectemptytree'
 
 import { RouterProps } from 'react-router';
 
+const buildDET = async (sheetNames: SheetName[]) => {
+  const DETs: DetectEmptyTree[] = []
+  const allTrees: CategoryTree[] = await COATreeController.fetchBySheetNames(sheetNames)
+  for (let sheetName of sheetNames) {
+    const treeContent = allTrees.filter(tree => tree.sheetNameId === sheetName._id)
+    DETs.push({
+      _id: sheetName._id,
+      name: sheetName.name,
+      // treeContent is an array that may be empty
+      timestamp: treeContent.length > 0 ? treeContent[0].timestamp : '',   
+      updatedBy: treeContent.length > 0 ? treeContent[0].updatedBy : 'N/A',
+      value: treeContent 
+    })
+  }
+  return DETs
+}
 
 const COATreesHeader = () => {
   return (
@@ -49,45 +65,72 @@ const COATreesHeader = () => {
 };
 
 const COATreesTable = ({ history }: RouterProps) => {
-  const dispatch = useDispatch();
   const [refresh, setRefresh] = useState(false);
-  const [hasTrees, setHasTrees] = useState(false);
+  const [sheetNames, setSheetNames] =
+    useState<SheetName[] | undefined>(undefined)
+  const [detectEmptyTree, setDetectEmptyTree] =
+    useState<DetectEmptyTree[] | undefined>(undefined)
+
+  const deleteCOATreeBySheetName = (sheetNameId: string, resolve: (val: unknown) => void) => {
+    // clear appropriate values in state
+    setDetectEmptyTree(prev => {
+      if (!prev) {
+        return prev
+      }
+      const copy = [...prev]
+      copy.forEach(det => {
+        if (det._id === sheetNameId) {
+          det.value = []
+        }
+      })
+      return copy
+    })
+
+    // delete appropriate trees from db
+    COATreeController.fetchBySheetName(sheetNameId)
+    .then((treeElementList: CategoryTree[]) => {
+      treeElementList.forEach(treeElement => {
+        COATreeController.delete(treeElement._id);
+      });
+    })
+    .then((result: unknown) => {
+      if (resolve) {
+        resolve(true);
+      }
+    });
+  }
+
+  useEffect(() => {
+    SheetNameController.fetch()
+      .then((res: unknown) => {
+        setSheetNames(res as SheetName[])
+        return buildDET(res as SheetName[])
+      })
+      .then((detectEmptyTrees: DetectEmptyTree[]) => {
+        setDetectEmptyTree(detectEmptyTrees)
+      })
+  }, [])
 
   // table stuff while loading
-  const preColumns: Column<SheetNameMT>[] = [{title: 'Name', field: 'name'}]
-  const preTrees: SheetNameMT[] = [{
+  const preColumns: Column<DetectEmptyTree>[] = [{title: 'Name', field: 'name'}]
+  const preTrees: DetectEmptyTree[] = [{
     name: 'LOADING...',
     _id: '',
-    id: 0,
-    isActive: true,
-    templateTypeId: '',
     timestamp: '',
     updatedBy: '',
+    value: [],
   }]
 
   const[readRowNum, setRowNum] = useState(1);
-  const { sheetNames }: { sheetNames: SheetName[] } = useSelector(
-    state => ({
-      sheetNames: selectFactoryRESTResponseTableValues(selectSheetNamesStore)(state),
-    }),
-    shallowEqual,
-  );
-
-  const { detectEmptyTree }: { detectEmptyTree: SheetNameMT[] } = useSelector(
-    state => ({
-      detectEmptyTree: selectFactoryRESTResponseTableValues(selectDetectEmptyTreeStore)(state),
-    }),
-    shallowEqual,
-  );
 
   // Convert Date format
-  // console.log(detectEmptyTree);
-  detectEmptyTree.forEach((detectEmptyTree: SheetNameMT) => {
+  detectEmptyTree?.forEach((detectEmptyTree: DetectEmptyTree) => {
+    //@ts-ignore
     const logtime = new Date(detectEmptyTree.timestamp);
     detectEmptyTree.timestamp = moment(logtime).format('YYYY-MM-DD HH:mm:ss');
   });
 
-  const columns: Column<SheetNameMT>[] = useMemo(
+  const columns: Column<DetectEmptyTree>[] = useMemo(
     () => [
       { title: 'Sheet Name', field: 'name' },
       {
@@ -108,18 +151,18 @@ const COATreesTable = ({ history }: RouterProps) => {
     [],
   );
 
-  const options: Options<SheetNameMT> = useMemo(() => calculateOptions(readRowNum), [readRowNum]);
+  const options: Options<DetectEmptyTree> = useMemo(() => calculateOptions(readRowNum), [readRowNum]);
 
-  useEffect(() => {
-    setRowNum(sheetNames.length);
-  }, [sheetNames]);
+  useEffect(()=>{
+    setRowNum(sheetNames?.length || 1)
+  },[sheetNames]);
 
-  const actions: Action<SheetNameMT>[] = useMemo(
+  const actions: Action<DetectEmptyTree>[] = useMemo(
     () => [
       {
         icon: LaunchIcon,
         tooltip: "View Sheet's Tree",
-        onClick: (_: any, sheetName: SheetNameMT | SheetNameMT[]) => {
+        onClick: (_: any, sheetName: DetectEmptyTree | DetectEmptyTree[]) => {
           if (!Array.isArray(sheetName)) {
             history.push(`${ROUTE_CATEGORY_TREES}/${sheetName._id}`)
           }
@@ -131,19 +174,20 @@ const COATreesTable = ({ history }: RouterProps) => {
 
   const editable = useMemo(
     () => ({
-      isDeleteHidden: (sheetName: SheetNameMT) => {
+      isDeleteHidden: (sheetName: DetectEmptyTree) => {
         if (sheetName.value?.length == 0) {
           return true;
         }
         return false;
       },
 
-      onRowDelete: (sheetName: SheetNameMT) =>
+      onRowDelete: (sheetName: DetectEmptyTree) =>
         new Promise((resolve, reject) => {
           console.log(sheetName)
           sheetName.updatedBy=localStorage.getItem('currentUser') || '';
           sheetName.timestamp = new Date().toLocaleString(); 
-          dispatch(deleteCOATreeBySheetName(sheetName, resolve, reject));
+          // deleteCOATreeBySheetName(sheetName._id, resolve);
+          deleteCOATreeBySheetName(sheetName._id, resolve)
           setRefresh(true);
         }).then(() => {
           (async () => {
@@ -154,30 +198,18 @@ const COATreesTable = ({ history }: RouterProps) => {
           })();
         }),
     }),
-    [dispatch],
+    [],
   );
-
-  useEffect(() => {
-    // console.log('Page refresh');
-    dispatch(getSheetNamesRequest());
-    dispatch(getDetectEmptyTree());
-  }, [dispatch, refresh]);
-
-  useEffect(() => {
-    if (!hasTrees) {
-      setHasTrees(detectEmptyTree.length >= 1);
-    }
-  }, [detectEmptyTree]);
 
   return (
     <MaterialTable
       key={readRowNum}
-      columns={hasTrees ? columns : preColumns}
-      actions={hasTrees ? actions : undefined}
-      data={hasTrees ? detectEmptyTree : preTrees}
+      columns={!!detectEmptyTree ? columns : preColumns}
+      actions={!!detectEmptyTree ? actions : undefined}
+      data={!!detectEmptyTree ? detectEmptyTree : preTrees}
       // @ts-ignore
       options={options}
-      editable={hasTrees ? editable : undefined}
+      editable={!!detectEmptyTree ? editable : undefined}
     />
   );
 };
