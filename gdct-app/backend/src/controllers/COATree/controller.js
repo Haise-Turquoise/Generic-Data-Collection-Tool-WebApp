@@ -29,6 +29,22 @@ const COATreeController = Service([COATreeService], service => {
         .catch(next);
     });
 
+    router.post('/COATrees/sheetName/fetchBySheetNames', (req, res, next) => {
+      const { sheetNameIds } = req.body;
+      const allTreePromises = []
+      sheetNameIds.forEach(sheetNameId => {
+        allTreePromises.push(service.findCOATree(new COATreeEntity({ sheetNameId })))
+      })
+      Promise.all(allTreePromises)
+        .then(COATrees => {
+          // need to spread out trees before returning
+          const spreadTrees = []
+          COATrees.forEach(tree => spreadTrees.push(...tree))
+          res.json({ COATrees: spreadTrees })
+        })
+        .catch(next)
+    })
+
     router.get('/COATrees/fetch', (req, res, next) => {
       service
         .findCOATree(new COATreeEntity(req.body))
