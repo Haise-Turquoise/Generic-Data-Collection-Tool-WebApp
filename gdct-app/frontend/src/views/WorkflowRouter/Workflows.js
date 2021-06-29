@@ -42,7 +42,7 @@ const Workflows = () => {
     }),
     shallowEqual,
   );
-  // Convert date format
+  // Convert Date format
   workflows.forEach(workflow => {
     const logtime = new Date(workflow.timestamp);
     workflow.timestamp = moment(logtime).format("YYYY-MM-DD HH:mm:ss")
