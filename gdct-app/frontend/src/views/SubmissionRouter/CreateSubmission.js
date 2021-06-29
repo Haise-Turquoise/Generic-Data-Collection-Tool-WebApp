@@ -6,6 +6,7 @@ import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import { useLocation } from 'react-router-dom';
 import Paper from '@material-ui/core/Paper/Paper';
+import DoneIcon from '@material-ui/icons/Done';
 import { excelImportHandler } from '../../tools/misc';
 import SubmissionNoteStore from '../../store/SubmissionNoteStore/store';
 import SubmissionWorkbookStore from '../../store/SubmissionWorkbookStore/store';
@@ -13,7 +14,6 @@ import { selectFactoryRESTResponseTableValues } from '../../store/common/REST/se
 import { selectSubmissionNoteStore } from '../../store/SubmissionNoteStore/selectors';
 import { selectSubmissionWorkbookStore } from '../../store/SubmissionWorkbookStore/selectors';
 import { updateWorkbookRequest } from '../../store/thunks/submission';
-import DoneIcon from '@material-ui/icons/Done';
 
 const SubmissionHeader = () => (
   <Paper className="header">
@@ -24,9 +24,9 @@ const SubmissionHeader = () => (
 const FileUpload = () => {
   const dispatch = useDispatch();
   const handleChange = useCallback(
-    async (event) => {
-      excelImportHandler(event, (workBookData)=>{
-        dispatch(SubmissionWorkbookStore.actions.RECEIVE(workBookData)); 
+    async event => {
+      excelImportHandler(event, workBookData => {
+        dispatch(SubmissionWorkbookStore.actions.RECEIVE(workBookData));
       });
     },
     [dispatch],
@@ -67,10 +67,9 @@ const CreateSubmission = ({ history }) => {
   );
   const backButtonAction = () => {
     history.push({
-
-      pathname: `/submission/dashboard`
-    })
-  }
+      pathname: `/submission/dashboard`,
+    });
+  };
 
   const handleCreateSubmission = useCallback(
     (submissionNote, submissionWorkbook) =>
@@ -98,16 +97,11 @@ const CreateSubmission = ({ history }) => {
           />
         </div>
 
-        <div style={{display:'flex', verticalAlign:'middle'}}>
-          <Button
-            size="large"
-            color="primary"
-            variant="contained"
-            onClick={backButtonAction}
-          >
+        <div style={{ display: 'flex', verticalAlign: 'middle' }}>
+          <Button size="large" color="primary" variant="contained" onClick={backButtonAction}>
             <ArrowBackIcon></ArrowBackIcon>
             Back
-          </Button>          
+          </Button>
           <Button
             color="primary"
             variant="contained"
@@ -117,26 +111,25 @@ const CreateSubmission = ({ history }) => {
               location.state.detail.phase === 'Approved'
             }
             onClick={() => {
-              try{
+              try {
                 handleCreateSubmission(submissionNote, submissionWorkbook);
                 setSave('visible');
                 setMessage('Sucessfully Saved!');
                 setMessageColour('green');
-              }catch(e){
+              } catch (e) {
                 setSave('visible');
                 setMessage('Fail to save workbook');
-                setMessageColour('red')
+                setMessageColour('red');
               }
             }}
           >
             Upload
           </Button>
-          
-          <div style={{visibility:showSave, color:messageColour, fontSize:16}}>
-            <DoneIcon/>
+
+          <div style={{ visibility: showSave, color: messageColour, fontSize: 16 }}>
+            <DoneIcon />
             <text>{message}</text>
           </div>
-
         </div>
       </Paper>
     </div>

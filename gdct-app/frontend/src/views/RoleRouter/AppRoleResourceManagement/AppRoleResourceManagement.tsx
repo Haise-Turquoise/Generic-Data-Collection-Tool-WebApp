@@ -7,9 +7,10 @@ import { Paper, Typography, Button } from '@material-ui/core';
 //@ts-ignore
 import Loading from '../../../components/Loading';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
+//@ts-ignore
+import Loading from '../../../components/Loading';
 
-
-import AppResourceList from '../AppResourceList'
+import AppResourceList from '../AppResourceList';
 import ProgramList from '../../OrganizationRouter/ProgramList';
 //@ts-ignore
 import { selectFactoryRESTResponseTableValues } from '../../../store/common/REST/selectors';
@@ -80,15 +81,14 @@ const AppRoleResourceManagementHeader = ({
         appRoleResource.appSysRoleId.roleName
       )
     }
-  }, [appRoleResource])
+  }, [appRoleResource]);
 
   return (
     <Paper className="header">
       <Typography variant="h5">App Role Resource Management</Typography>
-      <Typography variant='body1'>{roleName}</Typography>
+      <Typography variant="body1">{roleName}</Typography>
       {/* <HeaderActions/> */}
     </Paper>
-    
   );
 };
 
@@ -230,37 +230,34 @@ const LinkProgramTable = ({
     // // Refresh appRoleResource because dispatch makes object read-only, not allowing multiple deleting.
     // appRoleResource = Object.assign({}, appRoleResource);
   };
-  
+
   const history = useHistory();
-  const redirect = () => { history.push('/admin/role/app_role_resource_management') };
-  
+  const redirect = () => {
+    history.push('/admin/role/app_role_resource_management');
+  };
+
   return !appRoleResource ? (
-    <Loading message={"Loading..."}/>
+    <Loading message={'Loading...'} />
   ) : (
-      <div>
-        <AppResourceList
-          resourceId={appRoleResource.resourceId}
-          onClickAdd={onClickAdd}
-          onClickDelete={onClickDelete}
-        />
-        <Button
-          onClick={redirect} 
-          variant="contained" 
-          color="primary"
-          style={{marginTop: '0.8%'}}
-        >
-          <ArrowBackIcon></ArrowBackIcon>
-          Back
-        </Button>
-      </div>
-    );
+    <div>
+      <AppResourceList
+        resourceId={appRoleResource.resourceId}
+        onClickAdd={onClickAdd}
+        onClickDelete={onClickDelete}
+      />
+      <Button onClick={redirect} variant="contained" color="primary" style={{ marginTop: '0.8%' }}>
+        <ArrowBackIcon></ArrowBackIcon>
+        Back
+      </Button>
+    </div>
+  );
 };
 
 
 const AppRoleResourceManagement = (props: RouteComponentProps<propType>) => (
   <div className="templateTypePage">
     <AppRoleResourceManagementHeader {...props} />
-    
+
     <LinkProgramTable {...props} />
   </div>
 );

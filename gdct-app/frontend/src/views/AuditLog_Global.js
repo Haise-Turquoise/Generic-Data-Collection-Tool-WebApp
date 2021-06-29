@@ -1,28 +1,29 @@
-import AuditLogController from '../controllers/AuditLog'
+import AuditLogController from '../controllers/AuditLog';
 
 // A global function for all views that may generate changes to the database.
 const CreateAuditLog = async (email, activity, moduleName, recordId, oldValue, newValue) => {
-    // Get User Email for finding specific user
-    if (email === null) { // null means that the user is not currently logging in or out, which means email is in local storage
-        email = localStorage.getItem('currentUser');
-    }
-    // No need for attributes: _id and __v in objects
-    const oldValue_trim = (({ _id, __v, ...o }) => o)(oldValue);
-    const newValue_trim = (({ _id, __v, ...o }) => o)(newValue);
-    // Construct info required for this auditlogs
-    const AuditLogInfo = {
-        user: {
-            _id: localStorage.getItem('currentUserID'),
-            email: email,
-        },
-        activity: activity,
-        moduleName: moduleName,
-        recordId: recordId,
-        oldValue: oldValue_trim,
-        newValue: newValue_trim,
-    };
-    // Create Auditlog
-    await AuditLogController.create(AuditLogInfo);
-}
+  // Get User Email for finding specific user
+  if (email === null) {
+    // null means that the user is not currently logging in or out, which means email is in local storage
+    email = localStorage.getItem('currentUser');
+  }
+  // No need for attributes: _id and __v in objects
+  const oldValue_trim = (({ _id, __v, ...o }) => o)(oldValue);
+  const newValue_trim = (({ _id, __v, ...o }) => o)(newValue);
+  // Construct info required for this auditlogs
+  const AuditLogInfo = {
+    user: {
+      _id: localStorage.getItem('currentUserID'),
+      email,
+    },
+    activity,
+    moduleName,
+    recordId,
+    oldValue: oldValue_trim,
+    newValue: newValue_trim,
+  };
+  // Create Auditlog
+  await AuditLogController.create(AuditLogInfo);
+};
 
 export default CreateAuditLog;

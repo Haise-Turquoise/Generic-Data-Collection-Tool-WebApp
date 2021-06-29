@@ -1,4 +1,4 @@
-import { unauthorized_dialog } from "../../../components/Unauthorized_Dialog/Unauthorized_Dialog";
+import { unauthorized_dialog } from '../../../components/Unauthorized_Dialog/Unauthorized_Dialog';
 
 export const customRequestFactory = (store, controller, actionType) => query => dispatch => {
   dispatch(store.actions.REQUEST());
@@ -21,7 +21,7 @@ export const getRequestFactory = (store, controller) => (
 
   controller[isPopulated ? 'fetchPopulated' : 'fetch'](query)
     .then(values => {
-      if (values === "UNAUTHORIZED ACCESS") {
+      if (values === 'UNAUTHORIZED ACCESS') {
         unauthorized_dialog();
       } else {
         dispatch(store.actions.RECEIVE(values));
@@ -82,7 +82,7 @@ export const updateRequestFactory = (store, controller) => (
   dispatch(store.actions.REQUEST());
   controller[isPopulated ? 'updatePopulated' : 'update'](value)
     .then(values => {
-      if (values.data === "UNAUTHORIZED ACCESS") {
+      if (values.data === 'UNAUTHORIZED ACCESS') {
         unauthorized_dialog();
       } else {
         dispatch(store.actions.UPDATE(isPopulated ? populatedData : value));

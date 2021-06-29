@@ -14,9 +14,9 @@ import {
   //@ts-ignore
 } from '../../store/thunks/status';
 
-  //@ts-ignore
+//@ts-ignore
 import { selectFactoryRESTResponseTableValues } from '../../store/common/REST/selectors';
-  //@ts-ignore
+//@ts-ignore
 import { selectStatusesStore } from '../../store/StatusesStore/selectors';
 
 import {
@@ -27,15 +27,15 @@ import {
   //@ts-ignore
 } from '../../tools/misc';
 
-  //@ts-ignore
+//@ts-ignore
 import statusController from '../../controllers/status';
-  //@ts-ignore
+//@ts-ignore
 import CreateAuditLog from '../AuditLog_Global';
 
-import Status from '../../types/status'
+import Status from '../../types/status';
 
 interface StatusMT extends Status {
-  tableData?: any,
+  tableData?: any;
 }
 
 const StatusHeader = () => {
@@ -73,7 +73,7 @@ const StatusesTable = () => {
   // Convert Date format
   statuses?.forEach((status: Status) => {
     const logtime = new Date(status.timestamp);
-    status.timestamp = moment(logtime).format("YYYY-MM-DD HH:mm:ss")
+    status.timestamp = moment(logtime).format('YYYY-MM-DD HH:mm:ss');
   });
 
   // Prepare the columns for material table
@@ -83,20 +83,32 @@ const StatusesTable = () => {
       { title: 'Description', field: 'description' },
       { title: 'Active', type: 'boolean', field: 'isActive' },
       { title: 'For Package', type: 'boolean', field: 'forPackage' },
-      { title: 'Modified On', field: 'timestamp', editComponent: () => {return <div></div>} },
-      { title: 'Updated By', field: 'updatedBy', editComponent: () => {return <div></div>} },
+      {
+        title: 'Modified On',
+        field: 'timestamp',
+        editComponent: () => {
+          return <div></div>;
+        },
+      },
+      {
+        title: 'Updated By',
+        field: 'updatedBy',
+        editComponent: () => {
+          return <div></div>;
+        },
+      },
     ],
     [],
   );
 
   const options: Options<StatusMT> = useMemo(() => calculateOptions(readRowNum), [readRowNum]);
-  
+
   // Record who and when of the action
   function recordUpdate(status: StatusMT) {
     //get username and record in Modified By column
     status.updatedBy = localStorage.getItem('currentUser') || '';
-    //record new date and time in Modified On column 
-    status.timestamp = new Date().toLocaleString(); 
+    //record new date and time in Modified On column
+    status.timestamp = new Date().toLocaleString();
   }
   // Prepare the editing functionalities for the material table
   const editable = useMemo(
@@ -117,14 +129,14 @@ const StatusesTable = () => {
             CreateAuditLog(null, "Add Status", "Status", newStatus._id, {}, newStatus);
           }
         }),
-      
+
       onRowUpdate: (status: StatusMT) =>
         new Promise((resolve, reject) => {
           recordUpdate(status);
           // Find the old value before updating for Auditlog
           (async () => {
             const oldStatus = await statusController.fetchStatus(status._id);
-            CreateAuditLog(null, "Update Status", "Status", oldStatus._id, oldStatus, status);
+            CreateAuditLog(null, 'Update Status', 'Status', oldStatus._id, oldStatus, status);
           })();
           // Do Update
           controllerEditRow(statusController, setStatuses, status)
@@ -135,7 +147,7 @@ const StatusesTable = () => {
               reject()
             })
         }),
-      
+
       onRowDelete: (status: StatusMT) =>
         new Promise((resolve, reject) => {
           recordUpdate(status);

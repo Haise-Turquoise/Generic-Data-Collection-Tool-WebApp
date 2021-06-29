@@ -8,6 +8,7 @@ import MaterialTable, { Action, Column, Options } from 'material-table';
 import moment from 'moment';
 
 import { useHistory } from 'react-router-dom';
+//@ts-ignore
 import Select from 'react-select';
 import {
   selectFactoryRESTResponseTableValues,
@@ -118,8 +119,8 @@ const TemplatePackages = () => {
   templatePackages?.forEach(templatePackage => {
     const logtime = new Date(templatePackage.timestamp);
     const creationDate = new Date(templatePackage.creationDate);
-    templatePackage.timestamp = moment(logtime).format("YYYY-MM-DD HH:mm:ss");
-    templatePackage.creationDate = moment(creationDate).format("YYYY-MM-DD HH:mm:ss");
+    templatePackage.timestamp = moment(logtime).format('YYYY-MM-DD HH:mm:ss');
+    templatePackage.creationDate = moment(creationDate).format('YYYY-MM-DD HH:mm:ss');
   });
 
   // Prepare the actions for material table
@@ -142,7 +143,11 @@ const TemplatePackages = () => {
   const columns: Column<TemplatePackageMT>[] = useMemo(
     () => [
       { title: 'Name', field: 'name' },
-      { title: 'Submission Period ID', field: 'submissionPeriodId', lookup: lookupSubmissionPeriods },
+      {
+        title: 'Submission Period ID',
+        field: 'submissionPeriodId',
+        lookup: lookupSubmissionPeriods,
+      },
       {
         title: 'Status ID',
         field: 'statusId',
@@ -192,7 +197,7 @@ const TemplatePackages = () => {
 
             return (
               <Select
-                onChange={data => {
+                onChange={(data:any) => {
                   props.onChange(data?.value);
                 }}
                 // options={optionListForPackage}/>
@@ -203,7 +208,7 @@ const TemplatePackages = () => {
           }
           return (
             <Select
-              onChange={(data) => {
+              onChange={(data:any) => {
                 props.onChange(data?.value);
               }}
               options={optionListForPackage}
@@ -213,9 +218,27 @@ const TemplatePackages = () => {
           // return <Select  options={optionList}/>
         },
       },
-      { title: 'Creation Date', field: 'creationDate', editComponent: () => {return <div></div>} },
-      { title: 'Modified On', field: 'timestamp', editComponent: () => {return <div></div>} },
-      { title: 'Updated By', field: 'updatedBy', editComponent: () => {return <div></div>} },
+      {
+        title: 'Creation Date',
+        field: 'creationDate',
+        editComponent: () => {
+          return <div></div>;
+        },
+      },
+      {
+        title: 'Modified On',
+        field: 'timestamp',
+        editComponent: () => {
+          return <div></div>;
+        },
+      },
+      {
+        title: 'Updated By',
+        field: 'updatedBy',
+        editComponent: () => {
+          return <div></div>;
+        },
+      },
     ],
     [lookupStatuses, lookupSubmissionPeriods],
   );
@@ -260,9 +283,18 @@ const TemplatePackages = () => {
         new Promise((resolve, reject) => {
           recordUpdate(templatePackage);
           // Find the old value before updating in order to Auditlog
-          (async () => { 
-            const oldTemplatePackage = await templatePackageController.fetchTemplatePackage(templatePackage._id);
-            CreateAuditLog(null, "Update Template Package", "TemplatePackage", oldTemplatePackage._id, oldTemplatePackage, templatePackage);
+          (async () => {
+            const oldTemplatePackage = await templatePackageController.fetchTemplatePackage(
+              templatePackage._id,
+            );
+            CreateAuditLog(
+              null,
+              'Update Template Package',
+              'TemplatePackage',
+              oldTemplatePackage._id,
+              oldTemplatePackage,
+              templatePackage,
+            );
           })();
           // Do Update
           controllerEditRow(templatePackageController, setTemplatePackages, templatePackage).then((res: boolean) => {
@@ -284,7 +316,14 @@ const TemplatePackages = () => {
           })
           // For Auditlog
           const templatePackage_trim = (({ tableData, ...o }) => o)(templatePackage);
-          CreateAuditLog(null, "Delete Template Package", "TemplatePackage", templatePackage._id, templatePackage_trim, {});
+          CreateAuditLog(
+            null,
+            'Delete Template Package',
+            'TemplatePackage',
+            templatePackage._id,
+            templatePackage_trim,
+            {},
+          );
         }),
     }),
     [],
@@ -307,7 +346,10 @@ const TemplatePackages = () => {
   return (
     <div>
       <TemplatePackageHeader />
-      <ErrorBanner title={"You cannot delete the selected template package since it was already published"} targetStore={selectTemplatePackagesStore}/>
+      <ErrorBanner
+        title={'You cannot delete the selected template package since it was already published'}
+        targetStore={selectTemplatePackagesStore}
+      />
       <MaterialTable
         key={readRowNum}
         columns={!!templatePackages ? columns : preColumns}

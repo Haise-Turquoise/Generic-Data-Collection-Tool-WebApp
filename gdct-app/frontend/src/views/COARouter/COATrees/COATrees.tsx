@@ -51,7 +51,7 @@ const COATreesHeader = () => {
 const COATreesTable = ({ history }: RouterProps) => {
   const dispatch = useDispatch();
   const [refresh, setRefresh] = useState(false);
-  const [hasTrees, setHasTrees] = useState(false)
+  const [hasTrees, setHasTrees] = useState(false);
 
   // table stuff while loading
   const preColumns: Column<SheetNameMT>[] = [{title: 'Name', field: 'name'}]
@@ -84,23 +84,35 @@ const COATreesTable = ({ history }: RouterProps) => {
   // console.log(detectEmptyTree);
   detectEmptyTree.forEach((detectEmptyTree: SheetNameMT) => {
     const logtime = new Date(detectEmptyTree.timestamp);
-    detectEmptyTree.timestamp = moment(logtime).format("YYYY-MM-DD HH:mm:ss")
+    detectEmptyTree.timestamp = moment(logtime).format('YYYY-MM-DD HH:mm:ss');
   });
 
   const columns: Column<SheetNameMT>[] = useMemo(
     () => [
       { title: 'Sheet Name', field: 'name' },
-      { title: 'Modified On', field: 'timestamp', editComponent: () => {return <div></div>} },
-      { title: 'Updated By', field: 'updatedBy', editComponent: () => {return <div></div>} },
-    ], 
-    []
+      {
+        title: 'Modified On',
+        field: 'timestamp',
+        editComponent: () => {
+          return <div></div>;
+        },
+      },
+      {
+        title: 'Updated By',
+        field: 'updatedBy',
+        editComponent: () => {
+          return <div></div>;
+        },
+      },
+    ],
+    [],
   );
 
   const options: Options<SheetNameMT> = useMemo(() => calculateOptions(readRowNum), [readRowNum]);
 
-  useEffect(()=>{
-    setRowNum(sheetNames.length)
-  },[sheetNames]);
+  useEffect(() => {
+    setRowNum(sheetNames.length);
+  }, [sheetNames]);
 
   const actions: Action<SheetNameMT>[] = useMemo(
     () => [
@@ -137,7 +149,7 @@ const COATreesTable = ({ history }: RouterProps) => {
           (async () => {
             const oldSheetName = await COATreeController.fetchBySheetName(sheetName._id);
             if (oldSheetName.length === 0) {
-              CreateAuditLog(null, "Delete COA Tree", "CategoryTree", sheetName._id, sheetName, {});
+              CreateAuditLog(null, 'Delete COA Tree', 'CategoryTree', sheetName._id, sheetName, {});
             }
           })();
         }),
@@ -153,9 +165,9 @@ const COATreesTable = ({ history }: RouterProps) => {
 
   useEffect(() => {
     if (!hasTrees) {
-      setHasTrees(detectEmptyTree.length >= 1)
+      setHasTrees(detectEmptyTree.length >= 1);
     }
-  }, [detectEmptyTree])
+  }, [detectEmptyTree]);
 
   return (
     <MaterialTable

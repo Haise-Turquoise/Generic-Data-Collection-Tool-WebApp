@@ -3,6 +3,7 @@ import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 
 import MaterialTable, { Column, Options } from 'material-table';
 import { Paper, Typography } from '@material-ui/core';
+import moment from 'moment';
 import {
   getAppSysRolesRequest,
   createAppSysRoleRequest,
@@ -31,7 +32,6 @@ import {
   controllerDeleteRow,
   //@ts-ignore
 } from '../../../tools/misc';
-import moment from 'moment';
 //@ts-ignore
 import CreateAuditLog from '../../AuditLog_Global';
 //@ts-ignore
@@ -90,7 +90,7 @@ const AppSysRolesTable = () => {
   // Convert Date format
   appSysRoles?.forEach(appSysRole => {
     const logtime = new Date(appSysRole.timestamp);
-    appSysRole.timestamp = moment(logtime).format("YYYY-MM-DD HH:mm:ss")
+    appSysRole.timestamp = moment(logtime).format('YYYY-MM-DD HH:mm:ss');
   });
   const lookupSysRoles = appSyses?.reduce(function (acc: {[key:string]: string}, appSys: AppSys) {
     acc[appSys.code] = appSys.name;
@@ -109,8 +109,20 @@ const AppSysRolesTable = () => {
         field: 'appSys',
       },
       { title: 'Role', field: 'role' },
-      { title: 'Modified On', field: 'timestamp', editComponent: () => {return <div></div>} },
-      { title: 'Updated By', field: 'updatedBy', editComponent: () => {return <div></div>} },
+      {
+        title: 'Modified On',
+        field: 'timestamp',
+        editComponent: () => {
+          return <div></div>;
+        },
+      },
+      {
+        title: 'Updated By',
+        field: 'updatedBy',
+        editComponent: () => {
+          return <div></div>;
+        },
+      },
     ],
     [lookupSysRoles, lookupAppRoles],
   );
@@ -152,9 +164,16 @@ const AppSysRolesTable = () => {
         new Promise((resolve, reject) => {
           recordUpdate(appSysRole);
           // Find the old value before updating in order to Auditlog
-          (async () => { 
+          (async () => {
             const oldAppSysRole = await AppSysRoleController.fetchAppSysRole(appSysRole._id);
-            CreateAuditLog(null, "Update Application System Role", "AppSysRole", oldAppSysRole._id, oldAppSysRole, appSysRole);
+            CreateAuditLog(
+              null,
+              'Update Application System Role',
+              'AppSysRole',
+              oldAppSysRole._id,
+              oldAppSysRole,
+              appSysRole,
+            );
           })();
           // Do Update
           controllerEditRow(AppSysRoleController, setAppSysRoles, appSysRole)

@@ -17,9 +17,21 @@ import Box from '@material-ui/core/Box';
 import CircularProgress, { CircularProgressProps } from '@material-ui/core/CircularProgress';
 import Typography from '@material-ui/core/Typography';
 import './MasterValuePopulation.scss';
+//@ts-ignore
 import cloneDeep from 'clone-deep';
 import axios from 'axios';
-
+//@ts-ignore
+import Dialog from '@material-ui/core/Dialog';
+//@ts-ignore
+import MuiDialogTitle from '@material-ui/core/DialogTitle';
+//@ts-ignore
+import MuiDialogContent from '@material-ui/core/DialogContent';
+//@ts-ignore
+import MuiDialogActions from '@material-ui/core/DialogActions';
+//@ts-ignore
+import IconButton from '@material-ui/core/IconButton';
+//@ts-ignore
+import CloseIcon from '@material-ui/icons/Close';
 import {
   selectFactoryRESTResponseTableValues,
   selectFactoryRESTIsCallInProgress,
@@ -60,11 +72,17 @@ import OrganizationController from '../../controllers/organization';
 //@ts-ignore
 import COAController from '../../controllers/COA';
 import { withStyles } from '@material-ui/core/styles';
+//@ts-ignore
 import Dialog from '@material-ui/core/Dialog';
+//@ts-ignore
 import MuiDialogTitle, { DialogTitleProps } from '@material-ui/core/DialogTitle';
+//@ts-ignore
 import MuiDialogContent from '@material-ui/core/DialogContent';
+//@ts-ignore
 import MuiDialogActions from '@material-ui/core/DialogActions';
+//@ts-ignore
 import IconButton from '@material-ui/core/IconButton';
+//@ts-ignore
 import CloseIcon from '@material-ui/icons/Close';
 import Category from '../../types/category';
 import Organization from '../../types/organization';
@@ -188,7 +206,7 @@ const queryREST = async (
   const ye = ap.split('/')[0];
   const year = ye.slice(2, 4);
   const stage = ap.slice(8, 10);
-  setGetButtonDisabled(true)
+  setGetButtonDisabled(true);
 
   for (const c of category) {
     for (const h of hfk) {
@@ -248,40 +266,38 @@ const queryREST = async (
   let masterValueList: MasterValue[] = upsList;
   setGetTotal(queries.length);
   let progressCount = 0;
-  for (let i = 0;i< queries.length; i++) {
+  for (let i = 0; i < queries.length; i++) {
     console.log(`Iteration ${i} start`);
     try {
-      
       // if(i%20 == 0&& i!=0){
       //   throw `index ${i} can be divided by 20`;
       // }
       
       await axios.get(queries[i]).then((result)=>{
         results.push(result);
-      })
+      });
     } catch (e) {
-      console.log(e)
+      console.log(e);
       console.log(`Get Iteration ${i} catch block, corresponding url is ${queries[i]}`);
       results.push([]);
       const failObject = masterValueList[i];
       failObject.value = [queries[i]];
-      failedQueries.push(failObject)
-      
+      failedQueries.push(failObject);
+
       continue;
     }
 
-    try{
-      if(results[i] ==[]){
+    try {
+      if (results[i] == []) {
         throw `Get Iteration ${i} has already failed, corresponding url is ${queries[i]}`;
       // I cast manually in elif because we know it's not []
       } else if ((results[i] as resultType).data.length > 0) {
         console.log(`index ${i} has data`)
         masterValueList[i].value = (results[i] as resultType).data[0][2];            
         await addDocument(masterValueList[i]);
-        
       }
     } catch (e) {
-      console.log(e)
+      console.log(e);
       console.log(`Load Iteration ${i} catch block`);
       const failObject = masterValueList[i];
       failObject.value = [queries[i]];
@@ -289,16 +305,18 @@ const queryREST = async (
       continue;
     }
 
-    setGetCount(getCount=>getCount+1);
-    progressCount +=1;
-    
-    
+    setGetCount(getCount => getCount + 1);
+    progressCount += 1;
   }
   console.log(results);
   console.log(failedQueries);
-  const dataResume = {resumeArray:failedQueries, currentCount:progressCount, totalCount:queries.length}
-  setResumeQueries(failedQueries)
-  setGetButtonDisabled(false)
+  const dataResume = {
+    resumeArray: failedQueries,
+    currentCount: progressCount,
+    totalCount: queries.length,
+  };
+  setResumeQueries(failedQueries);
+  setGetButtonDisabled(false);
 };
 
 const DoRetrieval = (
@@ -325,7 +343,16 @@ const DoRetrieval = (
       }
     }
     if (fnd) {
-      queryREST({ category, ap, hfk, attribute: fnd },setGetCount, setGetTotal,getCount,getTotal,setResumeQueries,resumeQueries,setGetButtonDisabled);
+      queryREST(
+        { category, ap, hfk, attribute: fnd },
+        setGetCount,
+        setGetTotal,
+        getCount,
+        getTotal,
+        setResumeQueries,
+        resumeQueries,
+        setGetButtonDisabled,
+      );
     } else alert("Attribute doesn't exist in database");
   } else alert('Missing one or more parameters.');
 };
@@ -347,40 +374,37 @@ const  handleResume = async (
   
   for (let i = 0;i< resumeQueries.length; i++) {
     let resumeQuery = '';
-    let org = undefined;
-    let coa = undefined;
+    let org;
+    let coa;
     console.log(`Iteration ${i} start`);
     try {
-
-      
-      console.log(resumeQueries[i].org.id)
-      console.log(resumeQueries[i].categoryId)
-      org = await OrganizationController.fetchById(resumeQueries[i].org.id)
-      coa = await COAController.fetchCOAbyId(resumeQueries[i].categoryId)
-      console.log(coa.COAs)
+      console.log(resumeQueries[i].org.id);
+      console.log(resumeQueries[i].categoryId);
+      org = await OrganizationController.fetchById(resumeQueries[i].org.id);
+      coa = await COAController.fetchCOAbyId(resumeQueries[i].categoryId);
+      console.log(coa.COAs);
       // if target organization has been deleted
-      if(org.organizations.length == 0){
-        setGetCount(getCount=>getCount+1);
-        throw `Can not find corresponding org using this id: ${resumeQueries[i].org.id}` 
+      if (org.organizations.length == 0) {
+        setGetCount(getCount => getCount + 1);
+        throw `Can not find corresponding org using this id: ${resumeQueries[i].org.id}`;
       }
       // if target category has been deleted
-      if(coa.COAs.length == 0){
-        console.log('reach error part')
-        setGetCount(getCount=>getCount+1);
-        throw `Can not find corresponding coa using this id: ${resumeQueries[i].categoryId}` 
+      if (coa.COAs.length == 0) {
+        console.log('reach error part');
+        setGetCount(getCount => getCount + 1);
+        throw `Can not find corresponding coa using this id: ${resumeQueries[i].categoryId}`;
       }
       const idx = resumeQueries[i].value[0].indexOf('ID=');
-      resumeQuery += resumeQueries[i].value[0].substring(0,idx+3);
+      resumeQuery += resumeQueries[i].value[0].substring(0, idx + 3);
       // if COA is empty
-      if(coa.COAs.COA.length == 0){
-        resumeQuery += '-1&pa=2*'
-      }
-      else{
+      if (coa.COAs.COA.length == 0) {
+        resumeQuery += '-1&pa=2*';
+      } else {
         resumeQuery += org.organizations.id;
         resumeQuery += '&';
         resumeQuery += coa.COAs.COA;
       }
-      console.log(resumeQuery)
+      console.log(resumeQuery);
       // console.log(resumeQueries[i].value[0])
 
 
@@ -388,14 +412,16 @@ const  handleResume = async (
         results.push(result)
       })
     } catch (e) {
-      console.log(e)
-      console.log(`Get Iteration ${i} catch block, corresponding url is ${resumeQueries[i].value[0]}`);
-      results.push([])
-      console.log(resumeQueries[i])
-      const failedMasterValue = cloneDeep(resumeQueries[i])
-      failedMasterValue.value = [resumeQuery]
-      failedQueries.push(failedMasterValue)
-      
+      console.log(e);
+      console.log(
+        `Get Iteration ${i} catch block, corresponding url is ${resumeQueries[i].value[0]}`,
+      );
+      results.push([]);
+      console.log(resumeQueries[i]);
+      const failedMasterValue = cloneDeep(resumeQueries[i]);
+      failedMasterValue.value = [resumeQuery];
+      failedQueries.push(failedMasterValue);
+
       continue;
     }
 
@@ -405,18 +431,16 @@ const  handleResume = async (
         const masterValue = cloneDeep(resumeQueries[i])
         masterValue.value = (results[i] as resultType).data[0][2];            
         await addDocument(masterValue);
-        
       }
     } catch (e) {
-      console.log(e)
+      console.log(e);
       console.log(`Load Iteration ${i} catch block`);
-      const failedMasterValue = cloneDeep(resumeQueries[i])
-      failedMasterValue.value = [resumeQuery]
-      failedQueries.push(failedMasterValue)
+      const failedMasterValue = cloneDeep(resumeQueries[i]);
+      failedMasterValue.value = [resumeQuery];
+      failedQueries.push(failedMasterValue);
       continue;
     }
-    setGetCount(getCount=>getCount+1);
-    
+    setGetCount(getCount => getCount + 1);
   }
   setResumeQueries(failedQueries);
   setResumeButtonDisabled(false);
@@ -425,15 +449,14 @@ const HeaderActions = (props: headerActionsProps) => {
   return (
     <Paper className="header">
       <Typography variant="h5">Prepopulate from OHFS</Typography>
-      
+
       <Selection {...props} />
-      
     </Paper>
   );
 };
 function CircularProgressWithLabel(props: CircularProgressProps) {
   return (
-    <Box padding = "0%" position="relative" display="inline-flex">
+    <Box padding="0%" position="relative" display="inline-flex">
       <CircularProgress variant="determinate" {...props} />
       <Box
         top={0}
@@ -442,7 +465,6 @@ function CircularProgressWithLabel(props: CircularProgressProps) {
         right={0}
         position="absolute"
         display="flex"
-        
         alignItems="center"
         justifyContent="center"
       >
@@ -519,10 +541,10 @@ const  FooterActions =  (props: footerActionProps) =>  {
   const [getCount, setGetCount] = useState<number>(props.getPopulateParameters().currentCount);
   const [getTotal, setGetTotal] = useState<number>(props.getPopulateParameters().totalCount);
   const [getSuccess, setGetSuccess] = useState(false);
-  const [resumeQueries,setResumeQueries] = useState(props.getPopulateParameters().resumeArray);
-  const [getButtonDisabled,setGetButtonDisabled] = useState(false);
-  
-  const [resumeButtonDisabled,setResumeButtonDisabled] = useState(false);
+  const [resumeQueries, setResumeQueries] = useState(props.getPopulateParameters().resumeArray);
+  const [getButtonDisabled, setGetButtonDisabled] = useState(false);
+
+  const [resumeButtonDisabled, setResumeButtonDisabled] = useState(false);
   const [alertMessage, setAlertMessage] = useState('');
   const [alertTitle, setAlertTitle] = useState('');
   const dispatch = useDispatch();
@@ -534,17 +556,12 @@ const  FooterActions =  (props: footerActionProps) =>  {
       setAlertTitle(alertTitle)
       setOpen(true);
     };
-    const handleDialogClose = () => {
-      setAlertMessage('');
-      setAlertTitle('')
-      setOpen(false);
+
+  const handleDialogClose = () => {
+    setAlertMessage('');
+    setAlertTitle('');
+    setOpen(false);
   };
-
-
-
-
-
-
 
   const dialogStyles = createStyles((theme: Theme) => ({
     root: {
@@ -571,14 +588,14 @@ const  FooterActions =  (props: footerActionProps) =>  {
       </MuiDialogTitle>
     );
   });
-  
-  const DialogContent = withStyles((theme) => ({
+
+  const DialogContent = withStyles(theme => ({
     root: {
       padding: theme.spacing(2),
     },
   }))(MuiDialogContent);
-  
-  const DialogActions = withStyles((theme) => ({
+
+  const DialogActions = withStyles(theme => ({
     root: {
       margin: 0,
       padding: theme.spacing(1),
@@ -590,16 +607,12 @@ const  FooterActions =  (props: footerActionProps) =>  {
   
     return (
       <div>
-        
         <Dialog onClose={handleDialogClose} aria-labelledby="customized-dialog-title" open={open}>
           <DialogTitle id="customized-dialog-title" onClose={handleDialogClose}>
             {props.alertTitle}
           </DialogTitle>
           <DialogContent dividers>
-            <Typography gutterBottom>
-              {props.alertMessage}
-            </Typography>
-            
+            <Typography gutterBottom>{props.alertMessage}</Typography>
           </DialogContent>
           <DialogActions>
             <Button autoFocus onClick={handleDialogClose} color="primary">
@@ -609,110 +622,109 @@ const  FooterActions =  (props: footerActionProps) =>  {
         </Dialog>
       </div>
     );
-  }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+  };
 
   React.useEffect(() => {
-    if(getCount == getTotal && getCount>0){
-      setGetSuccess(true)
+    if (getCount == getTotal && getCount > 0) {
+      setGetSuccess(true);
     }
   }, [getCount]);
-  useEffect(()=>{
-    console.log('upload to database')
-    console.log(getCount)
-    console.log(getTotal)
-    if(!(getCount == 0 && getTotal == 0)){
-      
-      if(getCount == getTotal){
-        console.log('finish')
+  useEffect(() => {
+    console.log('upload to database');
+    console.log(getCount);
+    console.log(getTotal);
+    if (!(getCount == 0 && getTotal == 0)) {
+      if (getCount == getTotal) {
+        console.log('finish');
         setGetCount(0);
         setGetTotal(0);
-        setResumeQueries([])
-        const dataResumeStatues = {resumeArray:[], currentCount:0, totalCount:0}
+        setResumeQueries([]);
+        const dataResumeStatues = { resumeArray: [], currentCount: 0, totalCount: 0 };
         dispatch(updateDataResume(dataResumeStatues));
-        setTimeout(function(){ handleDialogOpen('finish progress successfully!','Result'); }, 500);
-        
-      }
-      else{
-        let alertMessage = ""
-        console.log('some cases failed')
+        setTimeout(function () {
+          handleDialogOpen('finish progress successfully!', 'Result');
+        }, 500);
+      } else {
+        let alertMessage = '';
+        console.log('some cases failed');
         console.log(resumeQueries);
-        for (let i = 0;i< resumeQueries.length; i++) {
-          alertMessage += 'organization id : '
-          alertMessage += resumeQueries[i].org.id
+        for (let i = 0; i < resumeQueries.length; i++) {
+          alertMessage += 'organization id : ';
+          alertMessage += resumeQueries[i].org.id;
           alertMessage += ' ';
           alertMessage += ', category id : ';
           alertMessage += resumeQueries[i].categoryId;
-          alertMessage += '\n'
+          alertMessage += '\n';
           // alertMessage += ' url : '
           alertMessage += resumeQueries[i].value[0];
           alertMessage += '\n';
         }
-        const dataResumeStatues = {resumeArray:resumeQueries, currentCount:getCount, totalCount:getTotal}
-        
+        const dataResumeStatues = {
+          resumeArray: resumeQueries,
+          currentCount: getCount,
+          totalCount: getTotal,
+        };
+
         dispatch(updateDataResume(dataResumeStatues));
-        
-        handleDialogOpen(alertMessage,'Some queries failed, they are :');
+
+        handleDialogOpen(alertMessage, 'Some queries failed, they are :');
       }
-      
-    }  
-  },[resumeQueries])
+    }
+  }, [resumeQueries]);
   return (
-    
     <Paper className="footer">
-      <div className = "bottomEle">
+      <div className="bottomEle">
         <Button
-          
           disabled={getButtonDisabled}
           color="primary"
           variant="contained"
           size="large"
-          onClick={() => DoRetrieval(props.getPopulateParameters(),setGetCount,setGetTotal,getCount,getTotal,setResumeQueries,resumeQueries,setGetSuccess,setGetButtonDisabled)}
+          onClick={() =>
+            DoRetrieval(
+              props.getPopulateParameters(),
+              setGetCount,
+              setGetTotal,
+              getCount,
+              getTotal,
+              setResumeQueries,
+              resumeQueries,
+              setGetSuccess,
+              setGetButtonDisabled,
+            )
+          }
         >
           Get Actuals from OHFS
         </Button>
-        
-        
       </div>
-      <div className = "bottomEle">
+      <div className="bottomEle">
         <Button
-          
-          disabled={getButtonDisabled||resumeButtonDisabled}
+          disabled={getButtonDisabled || resumeButtonDisabled}
           color="primary"
           variant="contained"
           size="large"
-          onClick={() => handleResume(setGetCount,setGetTotal,getCount,getTotal,setResumeQueries,resumeQueries,setResumeButtonDisabled)}
+          onClick={() =>
+            handleResume(
+              setGetCount,
+              setGetTotal,
+              getCount,
+              getTotal,
+              setResumeQueries,
+              resumeQueries,
+              setResumeButtonDisabled,
+            )
+          }
         >
           Resume the progress
         </Button>
-        
-        
       </div>
-      <div className = "bottomEle">Get From OHFS</div>
-      {getSuccess?<CheckIcon fontSize="large"/>:<CircularProgressWithLabel value={(getTotal == 0)?0:(getCount/getTotal*100)} />}
-      <CustomizedDialogs alertMessage = {alertMessage} alertTitle = {alertTitle}/>
-      
-      
+      <div className="bottomEle">Get From OHFS</div>
+      {getSuccess ? (
+        <CheckIcon fontSize="large" />
+      ) : (
+        <CircularProgressWithLabel value={getTotal == 0 ? 0 : (getCount / getTotal) * 100} />
+      )}
+      <CustomizedDialogs alertMessage={alertMessage} alertTitle={alertTitle} />
     </Paper>
-    
   );
 };
 
@@ -749,7 +761,6 @@ const Selection = ({ val, data, name, handleChange }: headerActionsProps) => {
   );
 };
 
-
 const MasterValuePopulation = () => {
   const dispatch = useDispatch();
 
@@ -762,8 +773,6 @@ const MasterValuePopulation = () => {
     dispatch(getReportingPeriodsRequest());
     dispatch(getDataResume());
   }, [dispatch, localStorage.getItem('dataLoadingFeedback')]);
-
-
 
   const {
     db_categoryList,
@@ -784,7 +793,7 @@ const MasterValuePopulation = () => {
     db_hfkList: selectFactoryRESTResponseTableValues(selectOrgsStore)(state),
     db_columnNamesList: selectFactoryRESTResponseTableValues(selectColumnNamesStore)(state),
     reportingPeriods: selectFactoryRESTResponseTableValues(selectReportingPeriodsStore)(state),
-    dataResumeStatues:selectFactoryRESTResponseTableValues(selectDataResumeStore)(state),
+    dataResumeStatues: selectFactoryRESTResponseTableValues(selectDataResumeStore)(state),
     isCallInProgress:
       selectFactoryRESTIsCallInProgress(selectCOAsStore)(state) ||
       selectFactoryRESTIsCallInProgress(selectOrgsStore)(state) ||
@@ -817,13 +826,12 @@ const MasterValuePopulation = () => {
   const [resumeArray, setResumeArray] = useState<MasterValue[]>([]);
 
   useEffect(() => {
-    console.log('dataResumeStatues', dataResumeStatues)
-    if(dataResumeStatues.length !=0){
+    console.log('dataResumeStatues', dataResumeStatues);
+    if (dataResumeStatues.length != 0) {
       setCurrentCount(dataResumeStatues[0].currentCount);
       setTotalCount(dataResumeStatues[0].totalCount);
       setResumeArray(dataResumeStatues[0].resumeArray);
     }
-    
   }, [dataResumeStatues]);
   useEffect(() => {
     // console.log('db_categoryList changes', db_categoryList)
@@ -867,8 +875,8 @@ const MasterValuePopulation = () => {
     () => ({
       actionsColumnIndex: -1,
       search: true,
-      maxBodyHeight:400,
-      minBodyHeight:400,
+      maxBodyHeight: 400,
+      minBodyHeight: 400,
     }),
     [],
   );
@@ -960,6 +968,7 @@ const MasterValuePopulation = () => {
   };
 
   return isCallInProgress ? (
+    //@ts-ignore
     <Loading />
   ) : (
     <div>
@@ -995,7 +1004,7 @@ const MasterValuePopulation = () => {
           />
         </div>
       </div>
-      <div className = "divider"> </div>
+      <div className="divider"> </div>
       <FooterActions getPopulateParameters={getPopulateParameters} />
       <div></div>
     </div>

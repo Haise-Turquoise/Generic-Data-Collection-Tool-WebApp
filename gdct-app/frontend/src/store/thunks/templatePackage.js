@@ -12,10 +12,22 @@ import {
   updateRequestFactory,
 } from './common/REST';
 
-export const getTemplatePackagesRequest = getRequestFactory( TemplatePackagesStore, templatePackageController);
-export const createTemplatePackageRequest = createRequestFactory(TemplatePackagesStore, templatePackageController);
-export const deleteTemplatePackageRequest = deleteRequestFactory(TemplatePackagesStore, templatePackageController);
-export const updateTemplatePackageRequest = updateRequestFactory(TemplatePackagesStore, templatePackageController);
+export const getTemplatePackagesRequest = getRequestFactory(
+  TemplatePackagesStore,
+  templatePackageController,
+);
+export const createTemplatePackageRequest = createRequestFactory(
+  TemplatePackagesStore,
+  templatePackageController,
+);
+export const deleteTemplatePackageRequest = deleteRequestFactory(
+  TemplatePackagesStore,
+  templatePackageController,
+);
+export const updateTemplatePackageRequest = updateRequestFactory(
+  TemplatePackagesStore,
+  templatePackageController,
+);
 
 export const getTemplatePackagePopulatedRequest = _id => dispatch => {
   dispatch(TemplatePackagesStoreActions.REQUEST());
@@ -23,11 +35,10 @@ export const getTemplatePackagePopulatedRequest = _id => dispatch => {
   templatePackageController
     .fetchPopulated(_id)
     .then(templatePackage => {
-      if (templatePackage === "UNAUTHORIZED ACCESS") {
+      if (templatePackage === 'UNAUTHORIZED ACCESS') {
         unauthorized_dialog();
         dispatch(TemplatePackagesStoreActions.FAIL_REQUEST());
-      }
-      else dispatch(TemplatePackagesStoreActions.RECEIVE([templatePackage]));
+      } else dispatch(TemplatePackagesStoreActions.RECEIVE([templatePackage]));
     })
     .catch(error => {
       dispatch(TemplatePackagesStoreActions.FAIL_REQUEST(error));

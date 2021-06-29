@@ -58,8 +58,8 @@ const SubmissionPeriod = () => {
   }, [])
 
   // table vars for loading
-  const preColumns = [{ title: 'Name', field: 'name' }]
-  const prePeriods = [{ name: 'LOADING...' }]
+  const preColumns = [{ title: 'Name', field: 'name' }];
+  const prePeriods = [{ name: 'LOADING...' }];
 
   const { lookupReportingPeriods }: {
     lookupReportingPeriods: {[key:string]: any}
@@ -73,7 +73,7 @@ const SubmissionPeriod = () => {
   // Convert Date format
   submissionPeriods?.forEach(submissionPeriod => {
     const logtime = new Date(submissionPeriod.timestamp);
-    submissionPeriod.timestamp = moment(logtime).format("YYYY-MM-DD HH:mm:ss")
+    submissionPeriod.timestamp = moment(logtime).format('YYYY-MM-DD HH:mm:ss');
   });
 
   const columns: Column<SubmissionPeriod>[] = useMemo(
@@ -86,8 +86,20 @@ const SubmissionPeriod = () => {
         field: 'reportingPeriodId',
         lookup: lookupReportingPeriods,
       },
-      { title: 'Modified On', field: 'timestamp', editComponent: () => {return <div></div>} },
-      { title: 'Updated By', field: 'updatedBy', editComponent: () => {return <div></div>} },
+      {
+        title: 'Modified On',
+        field: 'timestamp',
+        editComponent: () => {
+          return <div></div>;
+        },
+      },
+      {
+        title: 'Updated By',
+        field: 'updatedBy',
+        editComponent: () => {
+          return <div></div>;
+        },
+      },
     ],
     [lookupReportingPeriods],
   );
@@ -96,8 +108,8 @@ const SubmissionPeriod = () => {
   function recordUpdate(submissionPeriod: SubmissionPeriod) {
     //get username and record in Modified By column
     submissionPeriod.updatedBy = localStorage.getItem('currentUser');
-    //record new date and time in Modified On column 
-    submissionPeriod.timestamp = new Date().toLocaleString(); 
+    // record new date and time in Modified On column
+    submissionPeriod.timestamp = new Date().toLocaleString();
   }
 
   const options: Options<SubmissionPeriod> = useMemo(() => calculateOptions(readRowNum), [readRowNum]);

@@ -85,10 +85,10 @@ const AppResourceList = ({ resourceId, isEditable = true, onClickAdd, onClickDel
     [
       { title: 'ResourceName', field: 'resourceName', defaultSort: 'asc' },
       { title: 'ResourcePath', field: 'resourcePath' },
-    //   { title: 'TimeStamp', field: 'timestamp' },
-    //   { title: 'UpdatedBy', field: 'updatedBy' },
+      //   { title: 'TimeStamp', field: 'timestamp' },
+      //   { title: 'UpdatedBy', field: 'updatedBy' },
     ],
-    []
+    [],
   );
 
   const options: Options<AppResource> = useMemo(() => (
@@ -96,18 +96,20 @@ const AppResourceList = ({ resourceId, isEditable = true, onClickAdd, onClickDel
       actionsColumnIndex: -1, 
       search: false, 
       showTitle: true,
-      maxBodyHeight: "400px",
-      minBodyHeight: "400px"
+      maxBodyHeight: '400px',
+      minBodyHeight: '400px',
     }),
-    []
+    [],
   );
 
 
   const left_actions: Action<AppResource>[] = useMemo(() => [{ icon: DeleteIcon, tooltip: 'Remove from Mapping', onClick: onClickDelete }], []);
 
   const right_actions: Action<AppResource>[] = useMemo(() => [{ icon: AddIcon, tooltip: 'Add to Mapping', onClick: onClickAdd }], []);
-  const orgOptions: Options<AppResource> = useMemo(() => calculateOptions(readOrgRowNum), [readOrgRowNum]);
-  const nonOrgOptions: Options<AppResource> = useMemo(() => calculateOptions(readNonOrgRowNum), [readNonOrgRowNum]);
+  // const orgOptions: Options<AppResource> = useMemo(() => calculateOptions(readOrgRowNum), [readOrgRowNum]);
+  const orgOptions: any = useMemo(() => calculateOptions(readOrgRowNum), [readOrgRowNum]);
+  // const nonOrgOptions: Options<AppResource> = useMemo(() => calculateOptions(readNonOrgRowNum), [readNonOrgRowNum]);
+  const nonOrgOptions: any = useMemo(() => calculateOptions(readNonOrgRowNum), [readNonOrgRowNum]);
   return (
     <div className="tableContainer">
       <div className="tableWrapper-linked">
@@ -119,7 +121,7 @@ const AppResourceList = ({ resourceId, isEditable = true, onClickAdd, onClickDel
           data={!!resourceList ? OrgProgs()! : preOrgProgs}
           options={{
             ...orgOptions,
-            actionsColumnIndex: 0
+            actionsColumnIndex: 0,
           }}
           actions={(isEditable && !!resourceList) ? left_actions : undefined}
         />
@@ -127,13 +129,13 @@ const AppResourceList = ({ resourceId, isEditable = true, onClickAdd, onClickDel
       <div className="tableWrapper-other">
         <MaterialTable
           title="Other App Resource"
-          key = {readNonOrgRowNum}
+          key={readNonOrgRowNum}
           // @ts-ignore
           columns={!!resourceList ? columns : preColumns}
           data={!!resourceList ? nonOrgProgs()! : preNonOrgProgs}
           options={{
             ...nonOrgOptions,
-            actionsColumnIndex: 0
+            actionsColumnIndex: 0,
           }}
           actions={(isEditable && !!resourceList) ? right_actions : undefined}
         />

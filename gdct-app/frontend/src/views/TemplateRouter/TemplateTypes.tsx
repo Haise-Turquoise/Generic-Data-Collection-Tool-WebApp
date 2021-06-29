@@ -5,6 +5,7 @@ import MaterialTable, { Action, Column } from 'material-table';
 import LaunchIcon from '@material-ui/icons/Launch';
 import { Paper, Typography } from '@material-ui/core';
 
+
 import {
   getTemplateTypesRequest,
   createTemplateTypeRequest,
@@ -98,7 +99,7 @@ const TemplateTypesTable = ({ history }: RouterProps) => {
   // Convert Date format
   templateTypes?.forEach(templateType => {
     const logtime = new Date(templateType.timestamp);
-    templateType.timestamp = moment(logtime).format("YYYY-MM-DD HH:mm:ss")
+    templateType.timestamp = moment(logtime).format('YYYY-MM-DD HH:mm:ss');
   });
 
   // Config the lookup function for columns
@@ -123,8 +124,20 @@ const TemplateTypesTable = ({ history }: RouterProps) => {
     // { title: 'Inputtable', type: 'boolean', field: 'isInputtable' },
     // { title: 'Viewable', type: 'boolean', field: 'isViewable' },
     // { title: 'Reportable', type: 'boolean', field: 'isReportable' },
-    { title: 'Modified On', field: 'timestamp', editComponent: props => {return <div></div>} },
-    { title: 'Updated By', field: 'updatedBy', editComponent: props => {return <div></div>} },
+    {
+      title: 'Modified On',
+      field: 'timestamp',
+      editComponent: props => {
+        return <div></div>;
+      },
+    },
+    {
+      title: 'Updated By',
+      field: 'updatedBy',
+      editComponent: props => {
+        return <div></div>;
+      },
+    },
     { title: 'Active', type: 'boolean', field: 'isActive' },
   ];
 
@@ -181,9 +194,16 @@ const TemplateTypesTable = ({ history }: RouterProps) => {
         new Promise((resolve, reject) => {
           recordUpdate(templateType);
           // Find the old value before updating in order to Auditlog
-          (async () => { 
+          (async () => {
             const oldTemplateType = await templateTypeController.fetchById(templateType._id);
-            CreateAuditLog(null, "Update Template Type", "TemplateType", oldTemplateType._id, oldTemplateType, templateType);
+            CreateAuditLog(
+              null,
+              'Update Template Type',
+              'TemplateType',
+              oldTemplateType._id,
+              oldTemplateType,
+              templateType,
+            );
           })();
           // Do Update
           controllerEditRow(templateTypeController, setTemplateTypes, templateType)
@@ -206,7 +226,14 @@ const TemplateTypesTable = ({ history }: RouterProps) => {
             })
           // For Auditlog
           const templateType_trim = (({ tableData, ...o }) => o)(templateType);
-          CreateAuditLog(null, "Delete Template Type", "TemplateType", templateType._id, templateType_trim, {});
+          CreateAuditLog(
+            null,
+            'Delete Template Type',
+            'TemplateType',
+            templateType._id,
+            templateType_trim,
+            {},
+          );
         }),
     }),
     [],
@@ -227,7 +254,10 @@ const TemplateTypesTable = ({ history }: RouterProps) => {
 const TemplateType = (props: RouterProps) => (
   <div className="templateTypesPage">
     <TemplateTypeHeader />
-    <ErrorBanner title={"The template type you are trying to delete is referenced in one or more submissions"} targetStore={selectTemplateTypesStore}/>
+    <ErrorBanner
+      title={'The template type you are trying to delete is referenced in one or more submissions'}
+      targetStore={selectTemplateTypesStore}
+    />
     <TemplateTypesTable {...props} />
   </div>
 );

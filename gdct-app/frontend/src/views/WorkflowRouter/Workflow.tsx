@@ -1,5 +1,11 @@
 import React, { useEffect, useMemo, useCallback } from 'react';
-import { FlowChart, actions, REACT_FLOW_CHART, IFlowChartCallbacks, INodeDefaultProps } from '@mrblenny/react-flow-chart';
+import {
+  FlowChart,
+  actions,
+  REACT_FLOW_CHART,
+  IFlowChartCallbacks,
+  INodeDefaultProps,
+} from '@mrblenny/react-flow-chart';
 import { useSelector, shallowEqual, useDispatch } from 'react-redux';
 import { TextField, List, ListItem, Typography, Button } from '@material-ui/core';
 import { mapValues } from 'lodash';
@@ -19,7 +25,7 @@ import {
   selectSelectedNodeValue,
   selectWorkflowFilter,
   selectWorkflowName,
-//@ts-ignore
+  //@ts-ignore
 } from '../../store/WorkflowStore/selectors';
 //@ts-ignore
 import { WorkflowStoreActions } from '../../store/WorkflowStore/store';
@@ -29,33 +35,37 @@ import { submitWorkflow, updateWorkflow, loadWorkflow } from '../../store/thunks
 import { getWorkflowsRequest, deleteWorkflowRequest } from '../../store/thunks/workflow';
 import './Workflow.scss';
 
-import Status from '../../types/status'
-type actionType = 'create' | 'update'
+import Status from '../../types/status';
+type actionType = 'create' | 'update';
 
 //@ts-ignore
 import CreateAuditLog from '../AuditLog_Global';
 
-
 const Auditlog_Operation: string[] = [];
 
 // The Save button and its logic in the header
-const WorkflowHeaderActions = ({ type, id }: { type: actionType, id: string }) => {
+const WorkflowHeaderActions = ({ type, id }: { type: actionType; id: string }) => {
   const dispatch = useDispatch();
   const history = useHistory();
 
   const handleSave = useCallback(() => {
-      // removed updateworkflow since it's never used
-      dispatch(type === 'create' ? submitWorkflow() : updateWorkflow());
-      dispatch(getWorkflowsRequest());
-      
-      // For AuditLog
-      const Auditlog_Message = type === 'create' ? 'Create Workflow' : 'Update Workflow';
-      CreateAuditLog(null, Auditlog_Message, "Workflow", id, {0: "More Information In Workflow."}, Auditlog_Operation);
-      // Redirect back
-      history.push('/admin/workflow');
-    }, 
-    [dispatch]
-  );
+    // removed updateworkflow since it's never used
+    dispatch(type === 'create' ? submitWorkflow() : updateWorkflow());
+    dispatch(getWorkflowsRequest());
+
+    // For AuditLog
+    const Auditlog_Message = type === 'create' ? 'Create Workflow' : 'Update Workflow';
+    CreateAuditLog(
+      null,
+      Auditlog_Message,
+      'Workflow',
+      id,
+      { 0: 'More Information In Workflow.' },
+      Auditlog_Operation,
+    );
+    // Redirect back
+    history.push('/admin/workflow');
+  }, [dispatch]);
 
   return (
     <div>
@@ -67,7 +77,7 @@ const WorkflowHeaderActions = ({ type, id }: { type: actionType, id: string }) =
 };
 
 // The Header for workflow, including the name input field.
-const WorkflowHeader = ({ type, id }: { type: actionType, id: string }) => {
+const WorkflowHeader = ({ type, id }: { type: actionType; id: string }) => {
   const dispatch = useDispatch();
 
   let name = useSelector(state => selectWorkflowName(state), shallowEqual);
@@ -77,7 +87,7 @@ const WorkflowHeader = ({ type, id }: { type: actionType, id: string }) => {
 
       // Delete previous name change record for only auditting the newest name change
       for (let i = 0; i < Auditlog_Operation.length; i++) {
-        if (Auditlog_Operation[i].slice(0, 4) === "Name") {
+        if (Auditlog_Operation[i].slice(0, 4) === 'Name') {
           Auditlog_Operation.splice(i, 1);
         }
       }
@@ -99,7 +109,7 @@ const WorkflowHeader = ({ type, id }: { type: actionType, id: string }) => {
   );
 };
 
-const createNodeDragData = (_id: string, name: string) => 
+const createNodeDragData = (_id: string, name: string) =>
   JSON.stringify({
     type: { _id, name },
     ports: {
@@ -127,10 +137,9 @@ const StatusItems = ({ statuses }: { statuses: Status[] }) => (
         button
         draggable={true}
         onDragStart={event => {
-            event.dataTransfer.setData(REACT_FLOW_CHART, createNodeDragData(_id, name));
-            Auditlog_Operation.push(`Added Node ${name}`);
-          }
-        }
+          event.dataTransfer.setData(REACT_FLOW_CHART, createNodeDragData(_id, name));
+          Auditlog_Operation.push(`Added Node ${name}`);
+        }}
       >
         {name}
       </ListItem>
@@ -139,16 +148,20 @@ const StatusItems = ({ statuses }: { statuses: Status[] }) => (
 );
 
 // Left click on node will generate a box of potential actions that could be performed to the node under the list of statuses.
-const SelectedNodeActions = ({ value, stateActions }: 
-  { value: string, stateActions: IFlowChartCallbacks }) => (
+const SelectedNodeActions = ({
+  value,
+  stateActions,
+}: {
+  value: string;
+  stateActions: IFlowChartCallbacks;
+}) => (
   <div className="sections">
     <Typography gutterBottom>{value}</Typography>
     <Button
       onClick={() => {
-          stateActions.onDeleteKey({});
-          Auditlog_Operation.push(`Deleted Node ${value}`);
-        }
-      }
+        stateActions.onDeleteKey({});
+        Auditlog_Operation.push(`Deleted Node ${value}`);
+      }}
       color="secondary"
       variant="contained"
       fullWidth
@@ -185,10 +198,10 @@ const WorkflowStatuses = () => {
 
   // helper function for filtering valid statuses
   const filterStatus = ({ name, isActive, forPackage }: Status) => {
-    return name.toLowerCase().includes(workflowFilter.toLowerCase()) && isActive && !forPackage
-  }
+    return name.toLowerCase().includes(workflowFilter.toLowerCase()) && isActive && !forPackage;
+  };
 
-  statuses = useMemo(() => statuses.filter(filterStatus), [statuses, workflowFilter], );
+  statuses = useMemo(() => statuses.filter(filterStatus), [statuses, workflowFilter]);
 
   useEffect(() => {
     dispatch(getStatusesRequest());
@@ -231,8 +244,9 @@ const WorkflowSideBar = ({ stateActions }: { stateActions: IFlowChartCallbacks }
 );
 
 // TODO unsure about this
-const NodeInnerCustom = ({ node }: { node: any }) => 
-  <div className="workflowNode">{node.type.name}</div>;
+const NodeInnerCustom = ({ node }: { node: any }) => (
+  <div className="workflowNode">{node.type.name}</div>
+);
 
 // The flow chart of workflow
 const WorkflowPane = ({ stateActions }: { stateActions: IFlowChartCallbacks }) => {
@@ -261,7 +275,7 @@ const Workflow = () => {
     () =>
       mapValues(actions, func => (...args: any) => {
         // @ts-ignore
-        dispatch(WorkflowStoreActions.UPDATE_WORKFLOW_CHART(func(...args)))
+        dispatch(WorkflowStoreActions.UPDATE_WORKFLOW_CHART(func(...args)));
       }),
     [dispatch, actions],
   );
@@ -280,7 +294,9 @@ const WorkflowContainer = ({ type }: { type: actionType }) => {
   const dispatch = useDispatch();
   // Get the workflow id inside the url
   // @ts-ignore
-  const {params: { _id }} = useRouteMatch();
+  const {
+    params: { _id },
+  } = useRouteMatch();
 
   useEffect(() => {
     if (_id) dispatch(loadWorkflow(_id));

@@ -33,7 +33,7 @@ import workflowController from '../../controllers/workflow';
 import Workflow from '../../types/workflow';
 
 interface WorkflowMT extends Workflow {
-  tableData?: any,
+  tableData?: any;
 }
 
 const WorkflowHeader = () => {
@@ -63,36 +63,50 @@ const Workflows = () => {
   }, [])
 
   // table vars for loading
-  const preColumns: Column<WorkflowMT>[] = [{ title: 'Name', field: 'name' }]
-  const preWorkflows: WorkflowMT[] = [{
-    name: 'LOADING...',
-    _id: '',
-    timestamp: '',
-    updatedBy: '',
-    isActive: true,
-  }]
+  const preColumns: Column<WorkflowMT>[] = [{ title: 'Name', field: 'name' }];
+  const preWorkflows: WorkflowMT[] = [
+    {
+      name: 'LOADING...',
+      _id: '',
+      timestamp: '',
+      updatedBy: '',
+      isActive: true,
+    },
+  ];
 
   // Convert Date format
   workflows?.forEach(workflow => {
     const logtime = new Date(workflow.timestamp);
-    workflow.timestamp = moment(logtime).format("YYYY-MM-DD HH:mm:ss")
+    workflow.timestamp = moment(logtime).format('YYYY-MM-DD HH:mm:ss');
   });
 
   const columns: Column<WorkflowMT>[] = useMemo(
     () => [
       { title: 'Name', field: 'name' },
-      { title: 'Modified On', field: 'timestamp', editComponent: () => {return <div></div>} },
-      { title: 'Updated By', field: 'updatedBy', editComponent: () => {return <div></div>} },
+      {
+        title: 'Modified On',
+        field: 'timestamp',
+        editComponent: () => {
+          return <div></div>;
+        },
+      },
+      {
+        title: 'Updated By',
+        field: 'updatedBy',
+        editComponent: () => {
+          return <div></div>;
+        },
+      },
     ],
-    []
+    [],
   );
 
   const options: Options<WorkflowMT> = useMemo(() => calculateOptions(readRowNum), [readRowNum]);
 
-  // Record user and time when an action occurs 
+  // Record user and time when an action occurs
   function recordUpdate(workflow: WorkflowMT) {
     workflow.updatedBy = localStorage.getItem('currentUser') || '';
-    workflow.timestamp = new Date().toLocaleString(); 
+    workflow.timestamp = new Date().toLocaleString();
   }
   const editable = useMemo(
     () => ({
@@ -110,7 +124,7 @@ const Workflows = () => {
           (async () => {
             const oldWorkflow = await workflowController.fetchOnlyWorkflowById(workflow._id);
             if (oldWorkflow.length === 0) {
-              CreateAuditLog(null, "Delete Workflow", "Workflow", workflow._id, workflow, {});
+              CreateAuditLog(null, 'Delete Workflow', 'Workflow', workflow._id, workflow, {});
             }
           })();
         }),
@@ -125,7 +139,7 @@ const Workflows = () => {
         tooltip: 'Open Workflow',
         onClick: (_: any, workflow: Workflow | Workflow[]) => {
           if (!Array.isArray(workflow)) {
-            history.push(`${ROUTE_WORKFLOW}/${workflow._id}`)
+            history.push(`${ROUTE_WORKFLOW}/${workflow._id}`);
           }
         },
       },
@@ -140,7 +154,10 @@ const Workflows = () => {
   return (
     <div>
       <WorkflowHeader />
-      <ErrorBanner title={"You cannnot delete this workflow because it is refernced in template type."} targetStore={selectWorkflowsStore}/>
+      <ErrorBanner
+        title={'You cannnot delete this workflow because it is refernced in template type.'}
+        targetStore={selectWorkflowsStore}
+      />
       <MaterialTable
         key={readRowNum} 
         columns={!!workflows ? columns : preColumns}

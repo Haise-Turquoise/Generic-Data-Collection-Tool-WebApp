@@ -68,16 +68,28 @@ const AppRolesTable = () => {
   // Convert Date format
   appRoles?.forEach(appRole => {
     const logtime = new Date(appRole.timestamp);
-    appRole.timestamp = moment(logtime).format("YYYY-MM-DD HH:mm:ss")
+    appRole.timestamp = moment(logtime).format('YYYY-MM-DD HH:mm:ss');
   });
-  
+
   // Prepare the columns for material table
   const columns: Column<AppRoleMT>[] = useMemo(
     () => [
       { title: 'Code', field: 'code' },
       { title: 'Name', field: 'name' },
-      { title: 'Modified On', field: 'timestamp', editComponent: () => {return <div></div>} },
-      { title: 'Updated By', field: 'updatedBy', editComponent: () => {return <div></div>} },
+      {
+        title: 'Modified On',
+        field: 'timestamp',
+        editComponent: () => {
+          return <div></div>;
+        },
+      },
+      {
+        title: 'Updated By',
+        field: 'updatedBy',
+        editComponent: () => {
+          return <div></div>;
+        },
+      },
     ],
     [],
   );
@@ -119,9 +131,16 @@ const AppRolesTable = () => {
         new Promise((resolve, reject) => {
           recordUpdate(appRole);
           // Find the old value before updating in order to Auditlog
-          (async () => { 
+          (async () => {
             const oldAppRole = await AppRoleController.fetchAppRole(appRole._id);
-            CreateAuditLog(null, "Update Application Role", "AppRole", oldAppRole._id, oldAppRole, appRole);
+            CreateAuditLog(
+              null,
+              'Update Application Role',
+              'AppRole',
+              oldAppRole._id,
+              oldAppRole,
+              appRole,
+            );
           })();
           // Do Update
           controllerEditRow(AppRoleController, setAppRoles, appRole)

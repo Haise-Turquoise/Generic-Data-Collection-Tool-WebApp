@@ -7,6 +7,8 @@ import { Paper, Typography, Button } from '@material-ui/core';
 //@ts-ignore
 import Loading from '../../components/Loading';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
+//@ts-ignore
+import Loading from '../../components/Loading';
 
 import {
   getTemplateTypesRequest,
@@ -35,7 +37,6 @@ const TemplateTypeHeader = () => {
       <Typography variant="h5">Template Type Viewer</Typography>
       {/* <HeaderActions/> */}
     </Paper>
-    
   );
 };
 
@@ -74,7 +75,9 @@ const TemplateTypeTable = ({
     [],
   );
 
-  useEffect(() => { setRowNum(templateType.length) }, [templateType])
+  useEffect(() => {
+    setRowNum(templateType.length);
+  }, [templateType]);
 
   const options: Options<TemplateType> = useMemo(() => calculateOptions(readRowNum), [readRowNum]);
 
@@ -116,7 +119,9 @@ const LinkProgramTable = ({
     shallowEqual,
   );
 
-  const reject = () => { alert('Missing or invalid parameters') };
+  const reject = () => {
+    alert('Missing or invalid parameters');
+  };
 
   const onClickAdd = (_: any, rowData: Program | Program[]) => {
     if (Array.isArray(rowData)) {
@@ -125,7 +130,7 @@ const LinkProgramTable = ({
     templateType.programIds = templateType.programIds.concat([rowData._id]);
     dispatch(updateTemplateTypeRequest(templateType, null, reject));
     // Refresh templateType because dispatch makes object read-only, not allowing multiple adding.
-    templateType = Object.assign({}, templateType);
+    templateType = { ...templateType };
   };
 
   const onClickDelete = (_: any, rowData: Program | Program[]) => {
@@ -135,32 +140,29 @@ const LinkProgramTable = ({
     templateType.programIds = templateType.programIds.filter(elem => elem !== rowData._id);
     dispatch(updateTemplateTypeRequest(templateType, null, reject));
     // Refresh templateType because dispatch makes object read-only, not allowing multiple deleting.
-    templateType = Object.assign({}, templateType);
+    templateType = { ...templateType };
   };
-  
+
   const history = useHistory();
-  const redirect = () => { history.push('/admin/template/type') };
-  
+  const redirect = () => {
+    history.push('/admin/template/type');
+  };
+
   return !templateType ? (
-    <Loading message={"Loading..."}/>
+    <Loading message={'Loading...'} />
   ) : (
-      <div>
-        <ProgramList
-          programIds={templateType.programIds}
-          onClickAdd={onClickAdd}
-          onClickDelete={onClickDelete}
-        />
-        <Button
-          onClick={redirect} 
-          variant="contained" 
-          color="primary"
-          style={{marginTop: '0.8%'}}
-        >
-          <ArrowBackIcon></ArrowBackIcon>
-          Back
-        </Button>
-      </div>
-    ); 
+    <div>
+      <ProgramList
+        programIds={templateType.programIds}
+        onClickAdd={onClickAdd}
+        onClickDelete={onClickDelete}
+      />
+      <Button onClick={redirect} variant="contained" color="primary" style={{ marginTop: '0.8%' }}>
+        <ArrowBackIcon></ArrowBackIcon>
+        Back
+      </Button>
+    </div>
+  );
 };
 
 

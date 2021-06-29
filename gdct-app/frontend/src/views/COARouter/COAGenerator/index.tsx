@@ -1,1 +1,1 @@
-export { default } from './COAGenerator'
+export { default } from './COAGenerator';

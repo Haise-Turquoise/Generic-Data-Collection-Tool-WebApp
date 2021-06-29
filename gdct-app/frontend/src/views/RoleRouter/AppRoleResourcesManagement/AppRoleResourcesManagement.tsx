@@ -104,7 +104,7 @@ const AppRoleResourceTable = ({ history }: RouteComponentProps) => {
   // Convert Date format
   appRoleResources?.forEach(appRoleResource => {
     const logtime = new Date(appRoleResource.timestamp);
-    appRoleResource.timestamp = moment(logtime).format("YYYY-MM-DD HH:mm:ss")
+    appRoleResource.timestamp = moment(logtime).format('YYYY-MM-DD HH:mm:ss');
   });
   //convert appSysRoleId from object to objectId if necessary
   appRoleResources?.forEach(appRoleResource => {
@@ -127,8 +127,20 @@ const AppRoleResourceTable = ({ history }: RouteComponentProps) => {
   const columns: Column<AppRoleResourceMT>[] = useMemo(
     () => [
       { title: 'Application System Role', field: 'appSysRoleId', lookup: lookupSysRoles },
-      { title: 'Modified On', field: 'timestamp', editComponent: () => {return <div></div>} },
-      { title: 'Updated By', field: 'updatedBy', editComponent: () => {return <div></div>} },
+      {
+        title: 'Modified On',
+        field: 'timestamp',
+        editComponent: () => {
+          return <div></div>;
+        },
+      },
+      {
+        title: 'Updated By',
+        field: 'updatedBy',
+        editComponent: () => {
+          return <div></div>;
+        },
+      },
       // {title: 'IsActive', field: 'isActive'}
     ],
     [lookupSysRoles, lookupResources],
@@ -231,7 +243,12 @@ const AppRoleResourceTable = ({ history }: RouteComponentProps) => {
 const AppRoleResourcesManagement = (props: RouteComponentProps) => (
   <div className="appRoleResourcePage">
     <AppRoleResourceHeader />
-    <ErrorBanner title={"The AppRoleResource type you are trying to delete is referenced in one or more appSysRole"} targetStore={selectAppRoleResourcesStore }/>
+    <ErrorBanner
+      title={
+        'The AppRoleResource type you are trying to delete is referenced in one or more appSysRole'
+      }
+      targetStore={selectAppRoleResourcesStore}
+    />
     <AppRoleResourceTable {...props} />
   </div>
 );

@@ -1,1 +1,1 @@
-export { default } from './AppRoleResourceManagement'
+export { default } from './AppRoleResourceManagement';

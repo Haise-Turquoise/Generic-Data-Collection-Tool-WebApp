@@ -90,7 +90,7 @@ export const getCOATreesBySheetNameRequest = (sheetName, isTreeComponent = false
   dispatch(COATreesStore.actions.REQUEST());
   COAController.fetch()
     .then(result => {
-      if (result === "UNAUTHORIZED ACCESS") unauthorized_dialog();
+      if (result === 'UNAUTHORIZED ACCESS') unauthorized_dialog();
       dispatch(COAsStore.actions.RECEIVE(result));
     })
     .then(result => {
@@ -179,10 +179,10 @@ export const updateCOATreesBySheetNameRequest = sheetNameId => (dispatch, getSta
   dispatch(COATreesStore.actions.REQUEST());
 
   const normalizedTrees = normalizeTrees(treeCopy);
-  //add timestamp and updatedBy attributes to normalizedTree obj 
+  // add timestamp and updatedBy attributes to normalizedTree obj
   normalizedTrees.forEach(normalizedTree => {
-    normalizedTree["timestamp"] = new Date();
-    normalizedTree["updatedBy"] = localStorage.getItem('currentUser');
+    normalizedTree.timestamp = new Date();
+    normalizedTree.updatedBy = localStorage.getItem('currentUser');
   });
   COATreeController.updateBySheetName(normalizedTrees, sheetNameId)
     .then(_COATrees => {

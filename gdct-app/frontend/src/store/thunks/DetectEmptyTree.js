@@ -11,13 +11,13 @@ export const getDetectEmptyTree = () => dispatch => {
       promiseQuery.push(
         // getting data from CategoryTree collection based on SheetName
         COATreeController.fetchBySheetName(sheetName._id).then(treeContent => {
-          return { 
-            _id: sheetName._id, 
-            name: sheetName.name, 
+          return {
+            _id: sheetName._id,
+            name: sheetName.name,
             // treeContent is an array that may be empty
-            timestamp: treeContent.length > 0 ? treeContent[0].timestamp : '',   
+            timestamp: treeContent.length > 0 ? treeContent[0].timestamp : '',
             updatedBy: treeContent.length > 0 ? treeContent[0].updatedBy : 'N/A',
-            value: treeContent 
+            value: treeContent,
           };
         }),
       );
