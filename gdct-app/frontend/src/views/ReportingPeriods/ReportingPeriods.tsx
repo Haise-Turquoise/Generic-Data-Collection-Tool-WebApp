@@ -17,8 +17,13 @@ import {
 import { selectFactoryRESTResponseTableValues } from '../../store/common/REST/selectors';
   //@ts-ignore
 import { selectReportingPeriodsStore } from '../../store/ReportingPeriodsStore/selectors';
+import {
+  calculateOptions,
+  controllerAddRow,
+  controllerEditRow,
+  controllerDeleteRow,
   //@ts-ignore
-import { calculateOptions } from '../../tools/misc'
+} from '../../tools/misc'
 
   //@ts-ignore
 import ErrorBanner from '../ErrorBanner';
@@ -45,7 +50,14 @@ const ReportingPeriodHeader = () => {
 const ReportingPeriodsTable = () => {
   const dispatch = useDispatch();
   const [readRowNum, setRowNum] = useState(1);
-  const [hasPeriods, setHasPeriods] = useState(false)
+  const [reportingPeriods, setReportingPeriods] =
+    useState<ReportingPeriod[] | undefined>(undefined)
+
+  useEffect(() => {
+    reportingPeriodController.fetch().then((res: unknown) => {
+      setReportingPeriods(res as ReportingPeriod[])
+    })
+  }, [])
 
   // table vars for loading
   const preColumns: Column<ReportingPeriodMT>[] = [{ title: 'Name', field: 'name' }]
@@ -58,21 +70,11 @@ const ReportingPeriodsTable = () => {
     updatedBy: '',
   }]
 
-  // Prepare the data for material table
-  const { reportingPeriods }: { reportingPeriods: ReportingPeriod[] } = useSelector(
-    state => ({
-      reportingPeriods: selectFactoryRESTResponseTableValues(selectReportingPeriodsStore)(state),
-    }),
-    shallowEqual,
-  );
   useEffect(()=>{
-    setRowNum(reportingPeriods.length)
-    if (!hasPeriods) {
-      setHasPeriods(reportingPeriods.length >= 1)
-    }
+    setRowNum(reportingPeriods?.length || 1)
   }, [reportingPeriods])
   // Convert Date format
-  reportingPeriods.forEach((reportingPeriod: ReportingPeriod) => {
+  reportingPeriods?.forEach((reportingPeriod: ReportingPeriod) => {
     const logtime = new Date(reportingPeriod.timestamp);
     reportingPeriod.timestamp = moment(logtime).format("YYYY-MM-DD HH:mm:ss")
   });
@@ -100,9 +102,15 @@ const ReportingPeriodsTable = () => {
   const editable = useMemo(
     () => ({
       onRowAdd: (reportingPeriod: ReportingPeriodMT) =>
-        new Promise((resolve, reject) => {
+        new Promise<ReportingPeriod | undefined>((resolve, reject) => {
           recordUpdate(reportingPeriod);
-          dispatch(createReportingPeriodRequest(reportingPeriod, resolve, reject));
+          controllerAddRow(reportingPeriodController, setReportingPeriods, reportingPeriod)
+            .then((res?: ReportingPeriod) => {
+              if (res) {
+                resolve(res)
+              }
+              reject()
+            })
         }).then(newReportingPeriod => {
           // For Auditlog
           if (newReportingPeriod) {
@@ -110,7 +118,7 @@ const ReportingPeriodsTable = () => {
               null,
               "Create Reporting Period",
               "ReportingPeriod",
-              (newReportingPeriod as ReportingPeriod)._id,
+              newReportingPeriod._id,
               {},
               newReportingPeriod
             );
@@ -125,30 +133,38 @@ const ReportingPeriodsTable = () => {
             CreateAuditLog(null, "Update Reporting Period", "ReportingPeriod", oldReportingPeriod._id, oldReportingPeriod, reportingPeriod);
           })();
           // Do Update
-          dispatch(updateReportingPeriodRequest(reportingPeriod, resolve, reject));
+          controllerEditRow(reportingPeriodController, setReportingPeriods, reportingPeriod)
+            .then((res: boolean) => {
+              if (res) {
+                resolve(res)
+              }
+              reject()
+            })
         }),
       onRowDelete: (reportingPeriod: ReportingPeriodMT) =>
         new Promise((resolve, reject) => {
           recordUpdate(reportingPeriod);
-          dispatch(deleteReportingPeriodRequest(reportingPeriod._id, resolve, reject));
           // For Auditlog
           const reportingPeriod_trim = (({ tableData, ...o }) => o)(reportingPeriod);
           CreateAuditLog(null, "Delete Reporting Period", "ReportingPeriod", reportingPeriod._id, reportingPeriod_trim, {})
+          controllerDeleteRow(reportingPeriodController, setReportingPeriods, reportingPeriod._id)
+            .then((res: boolean) => {
+              if (res) {
+                resolve(res)
+              }
+              reject()
+            })
         }),
     }),
     [dispatch],
   );
 
-  useEffect(() => {
-    dispatch(getReportingPeriodsRequest());
-  }, [dispatch]);
-
   return (
     <MaterialTable
       key={readRowNum}
-      columns={hasPeriods ? columns : preColumns}
-      data={hasPeriods ? reportingPeriods : prePeriods}
-      editable={hasPeriods ? editable : undefined}
+      columns={!!reportingPeriods ? columns : preColumns}
+      data={!!reportingPeriods ? reportingPeriods : prePeriods}
+      editable={!!reportingPeriods ? editable : undefined}
       options={options}
     />
   );

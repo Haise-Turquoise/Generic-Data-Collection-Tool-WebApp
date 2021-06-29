@@ -16,8 +16,14 @@ import {
 import { selectFactoryRESTResponseTableValues } from '../../store/common/REST/selectors';
   //@ts-ignore
 import { selectProgramsStore } from '../../store/ProgramsStore/selectors';
+import {
+  calculateOptions,
+  checkDuplicates,
+  controllerAddRow,
+  controllerEditRow,
+  controllerDeleteRow,
   //@ts-ignore
-import { calculateOptions, checkDuplicates } from '../../tools/misc'
+} from '../../tools/misc'
 
   //@ts-ignore
 import ErrorBanner from '../ErrorBanner';
@@ -43,7 +49,13 @@ const ProgramHeader = () => {
 const ProgramsTable = () => {
   const dispatch = useDispatch();
   const [readRowNum, setRowNum] = useState(1);
-  const [hasPrograms, setHasPrograms] = useState(false)
+  const [programs, setPrograms] = useState<Program[] | undefined>(undefined)
+
+  useEffect(() => {
+    ProgramController.fetch().then((res: unknown) => {
+      setPrograms(res as Program[])
+    })
+  }, [])
 
   // table vars for loading
   const preColumns: Column<ProgramMT>[] = [{ title: 'Name', field: 'name' }]
@@ -57,15 +69,8 @@ const ProgramsTable = () => {
     timestamp: '',
   }]
 
-  // Prepare the data for material table
-  const { programs }: { programs: Program[] } = useSelector(
-    state => ({
-      programs: selectFactoryRESTResponseTableValues(selectProgramsStore)(state),
-    }),
-    shallowEqual,
-  );
   // Convert Date format
-  programs.forEach((program: Program) => {
+  programs?.forEach((program: Program) => {
     const logtime = new Date(program.timestamp);
     program.timestamp = moment(logtime).format("YYYY-MM-DD HH:mm:ss")
   });
@@ -95,13 +100,19 @@ const ProgramsTable = () => {
   const editable = useMemo(
     () => ({
       onRowAdd: (program: ProgramMT) =>
-        new Promise((resolve, reject) => {
+        new Promise<Program | undefined>((resolve, reject) => {
           recordUpdate(program);
-          dispatch(createProgramsRequest(program, resolve, reject));
+          controllerAddRow(ProgramController, setPrograms, program)
+            .then((res?: Program) => {
+              if (res) {
+                resolve(res)
+              }
+              reject()
+            })
         }).then(newProgram => {
           // For Auditlog
           if (newProgram) {
-            CreateAuditLog(null, "Create Program", "Program", (newProgram as Program)._id, {}, newProgram);
+            CreateAuditLog(null, "Create Program", "Program", newProgram._id, {}, newProgram);
           }
         }),
       
@@ -114,38 +125,43 @@ const ProgramsTable = () => {
             CreateAuditLog(null, "Update Program", "Program", oldProgram._id, oldProgram, program);
           })();
           // Do Update
-          dispatch(updateProgramsRequest(program, resolve, reject));
+          controllerEditRow(ProgramController, setPrograms, program)
+            .then((res: boolean) => {
+              if (res) {
+                resolve(res)
+              }
+              reject()
+            })
         }),
       
       onRowDelete: (program: ProgramMT) =>
         new Promise((resolve, reject) => {
           recordUpdate(program);
-          dispatch(deleteProgramsRequest(program._id, resolve, reject));
           // For Auditlog
           const program_trim = (({ tableData, ...o }) => o)(program);
           CreateAuditLog(null, "Delete Program", "Program", program._id, program_trim, {});
+          controllerDeleteRow(ProgramController, setPrograms, program._id)
+            .then((res: boolean) => {
+              if (res) {
+                resolve(res)
+              }
+              reject()
+            })
         }),
     }),
-    [dispatch],
+    [],
   );
 
-  useEffect(() => {
-    dispatch(getProgramsRequest());
-  }, [dispatch]);
-
   useEffect(()=>{
-    setRowNum(programs.length)
-    if (!hasPrograms) {
-      setHasPrograms(programs.length >= 1)
-    }
+    setRowNum(programs?.length || 1)
   }, [programs])
 
   return (
     <MaterialTable
       key={readRowNum}
-      columns={hasPrograms ? columns : preColumns}
-      data={hasPrograms ? programs : prePrograms}
-      editable={hasPrograms ? editable : undefined}
+      columns={!!programs ? columns : preColumns}
+      data={!!programs ? programs : prePrograms}
+      editable={!!programs ? editable : undefined}
       options={options}
     />
   );

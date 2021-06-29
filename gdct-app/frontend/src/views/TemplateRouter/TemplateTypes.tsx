@@ -27,14 +27,21 @@ import { WorkflowStoreActions } from '../../store/WorkflowStore/store';
 import TemplateTypesStore from '../../store/TemplateTypesStore/store';
   //@ts-ignore
 import ErrorBanner from '../ErrorBanner';
-  //@ts-ignore
-  //@ts-ignore
-import { calculateOptions } from '../../tools/misc';
+//@ts-ignore
+import {
+    calculateOptions,
+    controllerAddRow,
+    controllerEditRow,
+    controllerDeleteRow,
+    //@ts-ignore
+} from '../../tools/misc';
 import moment from 'moment';
   //@ts-ignore
 import CreateAuditLog from '../AuditLog_Global';
   //@ts-ignore
 import templateTypeController from '../../controllers/templateType';
+//@ts-ignore
+import WorkflowController from '../../controllers/workflow'
 
 import TemplateType from '../../types/templatetype';
 import Workflow from '../../types/workflow';
@@ -55,9 +62,20 @@ const TemplateTypeHeader = () => {
 
 // Prepare the data for material table
 const TemplateTypesTable = ({ history }: RouterProps) => {
-  const dispatch = useDispatch();
   const [readRowNum, setRowNum] = useState(1);
-  const [hasTypes, setHasTypes] = useState(false)
+  const [templateTypes, setTemplateTypes] =
+    useState<TemplateType[] | undefined>(undefined)
+  const [workflows, setWorkflows] =
+    useState<Workflow[] | undefined>(undefined)
+
+  useEffect(() => {
+    templateTypeController.fetch().then((res: unknown) => {
+      setTemplateTypes(res as TemplateType[])
+    })
+    WorkflowController.fetch().then((res: unknown) => {
+      setWorkflows(res as Workflow[])
+    })
+  }, [])
 
   const preColumns: Column<TemplateTypeMT>[] = [{ title: 'Name', field: 'name' }]
   const preTypes: TemplateTypeMT[] = [{
@@ -77,34 +95,20 @@ const TemplateTypesTable = ({ history }: RouterProps) => {
     updatedAt: '',
     updatedBy: '',
   }]
-
-  const { templateTypes, workflows }: {
-    templateTypes: TemplateType[],
-    workflows: Workflow[],
-  } = useSelector(
-    state => ({
-      templateTypes: selectFactoryRESTResponseTableValues(selectTemplateTypesStore)(state),
-      workflows: selectFactoryRESTResponseTableValues(selectWorkflowsStore)(state),
-    }),
-    shallowEqual,
-  );
   // Convert Date format
-  templateTypes.forEach(templateType => {
+  templateTypes?.forEach(templateType => {
     const logtime = new Date(templateType.timestamp);
     templateType.timestamp = moment(logtime).format("YYYY-MM-DD HH:mm:ss")
   });
 
   // Config the lookup function for columns
-  const lookupWorkflows = workflows.reduce(function (acc: {[key: string]: string}, workflow) {
+  const lookupWorkflows = workflows?.reduce(function (acc: {[key: string]: string}, workflow) {
     acc[workflow._id] = `${workflow.name}`;
     return acc;
   }, {});
 
   useEffect(()=>{
-    setRowNum(templateTypes.length)
-    if (!hasTypes) {
-      setHasTypes(templateTypes.length >= 1)
-    }
+    setRowNum(templateTypes?.length || 1)
   }, [templateTypes])
   
   // Prepare the columns for material table
@@ -151,9 +155,15 @@ const TemplateTypesTable = ({ history }: RouterProps) => {
   const editable = useMemo(
     () => ({
       onRowAdd: (templateType: TemplateTypeMT) =>
-        new Promise((resolve, reject) => {
+        new Promise<TemplateType | undefined>((resolve, reject) => {
           recordUpdate(templateType);
-          dispatch(createTemplateTypeRequest(templateType, resolve, reject));
+          controllerAddRow(templateTypeController, setTemplateTypes, templateType)
+            .then((res?: TemplateType) => {
+              if (res) {
+                resolve(res)
+              }
+              reject()
+            })
         }).then(newTemplateType => {
           // For Auditlog
           if (newTemplateType) {
@@ -161,7 +171,7 @@ const TemplateTypesTable = ({ history }: RouterProps) => {
               null,
               "Create Template Type",
               "TemplateType",
-              (newTemplateType as TemplateType)._id,
+              newTemplateType._id,
               {},
               newTemplateType
             );
@@ -176,37 +186,39 @@ const TemplateTypesTable = ({ history }: RouterProps) => {
             CreateAuditLog(null, "Update Template Type", "TemplateType", oldTemplateType._id, oldTemplateType, templateType);
           })();
           // Do Update
-          dispatch(updateTemplateTypeRequest(templateType, resolve, reject));
+          controllerEditRow(templateTypeController, setTemplateTypes, templateType)
+            .then((res: boolean) => {
+              if (res) {
+                resolve(templateType)
+              }
+              reject()
+            })
         }),
       onRowDelete: (templateType: TemplateTypeMT) =>
         new Promise((resolve, reject) => {
           recordUpdate(templateType);
-          dispatch(deleteTemplateTypeRequest(templateType._id, resolve, reject));
+          controllerDeleteRow(templateTypeController, setTemplateTypes, templateType._id)
+            .then((res: boolean) => {
+              if (res) {
+                resolve(templateType)
+              }
+              reject()
+            })
           // For Auditlog
           const templateType_trim = (({ tableData, ...o }) => o)(templateType);
           CreateAuditLog(null, "Delete Template Type", "TemplateType", templateType._id, templateType_trim, {});
         }),
     }),
-    [dispatch],
+    [],
   );
-
-  useEffect(() => {
-    dispatch(getWorkflowsRequest());
-    dispatch(getTemplateTypesRequest());
-
-    return () => {
-      dispatch(WorkflowStoreActions.RESET());
-      dispatch(TemplateTypesStore.actions.RESET());
-    };
-  }, [dispatch]);
 
   return (
     <MaterialTable
       key={readRowNum}
-      columns={hasTypes ? columns : preColumns}
-      actions={hasTypes ? actions : undefined}
-      data={hasTypes ? templateTypes : preTypes} 
-      editable={hasTypes ? editable : undefined}
+      columns={!!templateTypes ? columns : preColumns}
+      actions={!!templateTypes ? actions : undefined}
+      data={!!templateTypes ? templateTypes : preTypes} 
+      editable={!!templateTypes ? editable : undefined}
       options={options}
     />
   );

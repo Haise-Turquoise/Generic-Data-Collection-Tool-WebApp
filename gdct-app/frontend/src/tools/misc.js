@@ -575,3 +575,63 @@ export const checkDuplicates = (rowData, tableData, field) => {
   const duplicate = vals.find(val => val === rowData[field] && val !== current)
   return duplicate ? `Duplicate ${field} not allowed` : true
 }
+
+// add a row using a controller in material-table
+export const controllerAddRow = async (Controller, setState, data) => {
+  try {
+    const newData = await Controller.create(data)
+    if (!newData) {
+      return undefined
+    }
+    // prev may be undefined
+    setState(prev => prev ? prev.concat(newData) : prev)
+    return newData
+  } catch (e) {
+    console.log('an error has occurred')
+    return undefined
+  }
+}
+
+// edit a row using a controller in material-table
+export const controllerEditRow = async (Controller, setState, data) => {
+  try {
+    // res has type AxiosResponse
+    const res = await Controller.update(data)
+    if (res.status !== 200) {
+      return false
+    }
+    setState(prev => {
+      if (prev) {
+        const copy = [...prev]
+        const index = prev.findIndex(el => el._id === data._id)
+        if (index >= 0) {
+          copy[index] = data
+        }
+        return copy
+      }
+      return prev
+    })
+  } catch (e) {
+    console.log('an error has occurred')
+    return false
+  } finally {
+    return true
+  }
+}
+
+// delete a row using a controller in material-table
+export const controllerDeleteRow = async (Controller, setState, _id) => {
+  try {
+    // res has type AxiosResponse
+    const res = await Controller.delete(_id)
+    if (res.status !== 200) {
+      return false
+    }
+    setState(prev => prev ? prev.filter(el => el._id !== _id) : prev)
+  } catch (e) {
+    console.log('an error has occurred')
+    return false
+  } finally {
+    return true
+  }
+}

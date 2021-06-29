@@ -25,8 +25,15 @@ import { selectSubmissionPeriodsStore } from '../../store/SubmissionPeriodsStore
 import { selectReportingPeriodsStore } from '../../store/ReportingPeriodsStore/selectors';
 //@ts-ignore
 import { getReportingPeriodsRequest } from '../../store/thunks/reportingPeriod';
+import {
+  calculateOptions,
+  controllerAddRow,
+  controllerEditRow,
+  controllerDeleteRow,
+  //@ts-ignore
+} from '../../tools/misc'
 //@ts-ignore
-import { calculateOptions } from '../../tools/misc'
+import SubmissionPeriodController from '../../controllers/submissionPeriod'
 
 import SubmissionPeriod from '../../types/submissionperiod';
 
@@ -41,25 +48,30 @@ const SubmissionPeriodHeader = () => {
 const SubmissionPeriod = () => {
   const dispatch = useDispatch();
   const [readRowNum, setRowNum] = useState(1);
-  const [hasPeriods, setHasPeriods] = useState(false)
+  const [submissionPeriods, setSubmissionPeriods] =
+    useState<SubmissionPeriod[] | undefined>(undefined)
+
+  useEffect(() => {
+    SubmissionPeriodController.fetch().then((res: unknown) => {
+      setSubmissionPeriods(res as SubmissionPeriod[])
+    })
+  }, [])
 
   // table vars for loading
   const preColumns = [{ title: 'Name', field: 'name' }]
   const prePeriods = [{ name: 'LOADING...' }]
 
-  const { submissionPeriods, lookupReportingPeriods }: {
-    submissionPeriods: SubmissionPeriod[],
+  const { lookupReportingPeriods }: {
     lookupReportingPeriods: {[key:string]: any}
   } = useSelector(
     state => ({
-      submissionPeriods: selectFactoryRESTResponseTableValues(selectSubmissionPeriodsStore)(state),
       lookupReportingPeriods: selectFactoryRESTLookup(selectReportingPeriodsStore)(state),
     }),
     shallowEqual,
   );
 
   // Convert Date format
-  submissionPeriods.forEach(submissionPeriod => {
+  submissionPeriods?.forEach(submissionPeriod => {
     const logtime = new Date(submissionPeriod.timestamp);
     submissionPeriod.timestamp = moment(logtime).format("YYYY-MM-DD HH:mm:ss")
   });
@@ -95,32 +107,46 @@ const SubmissionPeriod = () => {
       onRowAdd: (submissionPeriod: SubmissionPeriod) =>
         new Promise((resolve, reject) => {
           recordUpdate(submissionPeriod);
-          dispatch(createSubmissionPeriodRequest(submissionPeriod, resolve, reject));
+          controllerAddRow(SubmissionPeriodController, setSubmissionPeriods, submissionPeriod)
+            .then((res?: SubmissionPeriod) => {
+              if (res) {
+                resolve(res)
+              }
+              reject()
+            })
         }),
       onRowUpdate: (submissionPeriod: SubmissionPeriod) =>
         new Promise((resolve, reject) => {
           recordUpdate(submissionPeriod);
-          dispatch(updateSubmissionPeriodRequest(submissionPeriod, resolve, reject));
+          controllerEditRow(SubmissionPeriodController, setSubmissionPeriods, submissionPeriod)
+            .then((res: boolean) => {
+              if (res) {
+                resolve(res)
+              }
+              reject()
+            })
         }),
       onRowDelete: (submissionPeriod: SubmissionPeriod) =>
         new Promise((resolve, reject) => {
           recordUpdate(submissionPeriod);
-          dispatch(deleteSubmissionPeriodRequest(submissionPeriod._id, resolve, reject));
+          controllerDeleteRow(SubmissionPeriodController, setSubmissionPeriods, submissionPeriod._id)
+            .then((res: boolean) => {
+              if (res) {
+                resolve(res)
+              }
+              reject()
+            })
         }),
     }),
-    [dispatch],
+    [],
   );
 
   useEffect(() => {
-    dispatch(getSubmissionPeriodsRequest());
     dispatch(getReportingPeriodsRequest());
   }, [dispatch]);
 
   useEffect(()=>{
-    setRowNum(submissionPeriods.length)
-    if (!hasPeriods) {
-      setHasPeriods(submissionPeriods.length >= 1)
-    }
+    setRowNum(submissionPeriods?.length || 1)
   }, [submissionPeriods])
 
   return (
@@ -128,9 +154,9 @@ const SubmissionPeriod = () => {
       <SubmissionPeriodHeader />
       <MaterialTable
         key={readRowNum}
-        columns={hasPeriods ? columns : preColumns}
-        data={hasPeriods ? submissionPeriods : prePeriods}
-        editable={hasPeriods ? editable : undefined}
+        columns={!!submissionPeriods ? columns : preColumns}
+        data={!!submissionPeriods ? submissionPeriods : prePeriods}
+        editable={!!submissionPeriods ? editable : undefined}
         options={options}
       />
     </div>
