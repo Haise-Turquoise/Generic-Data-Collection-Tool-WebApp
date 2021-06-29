@@ -41,7 +41,7 @@ const StatusesTable = () => {
     }),
     shallowEqual,
   );
-  // Convert date format
+  // Convert Date format
   statuses.forEach(status => {
     const logtime = new Date(status.timestamp);
     status.timestamp = moment(logtime).format("YYYY-MM-DD HH:mm:ss")

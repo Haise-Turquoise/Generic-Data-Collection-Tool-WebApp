@@ -59,7 +59,7 @@ const Workflows = () => {
 
   const options = useMemo(() => calculateOptions(readRowNum), [readRowNum]);
 
-  // Record user and time when an action occurs.
+  // Record user and time when an action occurs
   function recordUpdate(workflow) {
     workflow.updatedBy = localStorage.getItem('currentUser');
     workflow.timestamp = new Date().toLocaleString(); 
