@@ -17,8 +17,14 @@ import {
 import { selectFactoryRESTResponseTableValues } from '../../../store/common/REST/selectors';
 //@ts-ignore
 import { selectAppResourcesStore } from '../../../store/AppResourcesStore/selectors';
-//@ts-ignore
-import { calculateOptions, checkDuplicates } from '../../../tools/misc'
+import {
+  calculateOptions,
+  checkDuplicates,
+  controllerAddRow,
+  controllerEditRow,
+  controllerDeleteRow,
+  //@ts-ignore
+} from '../../../tools/misc'
 //@ts-ignore
 import CreateAuditLog from '../../AuditLog_Global';
 //@ts-ignore
@@ -40,9 +46,14 @@ const AppResourcesHeader = () => {
 };
 
 const AppResourcesTable = () => {
-  const dispatch = useDispatch();
   const [readRowNum, setRowNum] = useState(1);
-  const [hasAppRes, setHasAppRes] = useState(false);
+  const [appResources, setAppResources] = useState<AppResource[] | undefined>(undefined)
+
+  useEffect(() => {
+    AppResourceController.fetch().then((res: unknown) => {
+      setAppResources(res as AppResource[])
+    })
+  }, [])
 
   // table stuff while loading
   const preColumns: Column<AppResourceMT>[] = [{title: 'Name', field: 'resourceName'}]
@@ -55,16 +66,8 @@ const AppResourcesTable = () => {
     timestamp: '',
     updatedBy: '',
   }]
-  
-  // Prepare the data for material table
-  const { appResources }: { appResources: AppResource[] } = useSelector(
-    state => ({
-      appResources: selectFactoryRESTResponseTableValues(selectAppResourcesStore)(state),
-    }),
-    shallowEqual,
-  );
   // Convert Date format
-  appResources.forEach(appResource => {
+  appResources?.forEach(appResource => {
     const logtime = new Date(appResource.timestamp);
     appResource.timestamp = moment(logtime).format('YYYY-MM-DD HH:mm:ss');
   });
@@ -121,10 +124,16 @@ const AppResourcesTable = () => {
   const editable = useMemo(
     () => ({
       onRowAdd: (appResource: AppResourceMT) =>
-        new Promise((resolve, reject) => {
-          appResource.id = readRowNum + 1;
+        new Promise<AppResource>((resolve, reject) => {
+          appResource.id = readRowNum + 1
           recordUpdate(appResource);
-          dispatch(createAppResourceRequest(appResource, resolve, reject));
+          controllerAddRow(AppResourceController, setAppResources, appResource)
+            .then((res: AppResource) => {
+              if (res) {
+                resolve(res)
+              }
+              reject()
+            })
         }).then(newAppResource => {
           // For Auditlog
           if (newAppResource) {
@@ -132,7 +141,7 @@ const AppResourcesTable = () => {
               null,
               "Create Application Resource",
               "AppResource",
-              (newAppResource as AppResource)._id,
+              newAppResource._id,
               {},
               newAppResource
             );
@@ -155,7 +164,13 @@ const AppResourcesTable = () => {
             );
           })();
           // Do Update
-          dispatch(updateAppResourceRequest(appResource, resolve, reject));
+          controllerEditRow(AppResourceController, setAppResources, appResource)
+            .then((res: boolean) => {
+              if (res) {
+                resolve(appResource)
+              }
+              reject()
+            })
         }),
 
       onRowDelete: (appResource: AppResourceMT) =>
@@ -163,37 +178,29 @@ const AppResourcesTable = () => {
           recordUpdate(appResource);
           // For Auditlog
           const appResource_trim = (({ tableData, ...o }) => o)(appResource);
-          CreateAuditLog(
-            null,
-            'Delete Application Resource',
-            'AppResource',
-            appResource._id,
-            appResource_trim,
-            {},
-          );
-          dispatch(deleteAppResourceRequest(appResource._id, resolve, reject));
+          CreateAuditLog(null, "Delete Application Resource", "AppResource", appResource._id, appResource_trim, {});
+          controllerDeleteRow(AppResourceController, setAppResources, appResource._id)
+            .then((res: boolean) => {
+              if (res) {
+                resolve(res)
+              }
+              reject()
+            })
         }),
     }),
-    [dispatch, readRowNum],
+    [readRowNum],
   );
 
-  useEffect(() => {
-    dispatch(getAppResourcesRequest());
-  }, [dispatch]);
-
-  useEffect(() => {
-    setRowNum(appResources.length);
-    if (!hasAppRes) {
-      setHasAppRes(appResources.length >= 1);
-    }
+  useEffect(()=>{
+    setRowNum(appResources?.length || 1)
   }, [appResources]);
 
   return (
     <MaterialTable
       key={readRowNum}
-      columns={hasAppRes ? columns : preColumns}
-      data={hasAppRes ? appResources : preAppResources}
-      editable={hasAppRes ? editable : undefined}
+      columns={!!appResources ? columns : preColumns}
+      data={!!appResources ? appResources : preAppResources}
+      editable={!!appResources ? editable : undefined}
       options={options}
     />
   );

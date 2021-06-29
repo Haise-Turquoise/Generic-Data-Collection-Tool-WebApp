@@ -34,7 +34,6 @@ export const deleteCOATreeBySheetName = (sheetName, resolve, reject) => (dispatc
     DetectEmptyTreeStore: { response },
   } = getState();
   const newResponse = cloneDeep(response);
-  // console.log(newResponse);
   for (const ele of newResponse.Values) {
     if (ele._id == sheetName._id) {
       ele.value = [];

@@ -14,8 +14,13 @@ import AppResourceList from '../AppResourceList';
 import ProgramList from '../../OrganizationRouter/ProgramList';
 //@ts-ignore
 import { selectFactoryRESTResponseTableValues } from '../../../store/common/REST/selectors';
-//@ts-ignore
-import { calculateOptions } from '../../../tools/misc';
+import {
+  calculateOptions,
+  controllerAddRow,
+  controllerEditRow,
+  controllerDeleteRow,
+  //@ts-ignore
+} from '../../../tools/misc';
 //
 //@ts-ignore
 import{selectAppRoleResourcesStore} from '../../../store/AppRoleResourcesStore/selectors';
@@ -41,9 +46,16 @@ import {
     updateAppRoleResourceRequest,
 //@ts-ignore
   } from '../../../store/thunks/AppRoleResource';
+//@ts-ignore
+import AppRoleResourceController from '../../../controllers/AppRoleResource'
+//@ts-ignore
+import AppSysRoleController from '../../../controllers/AppSysRole'
+//@ts-ignore
+import AppResourceController from '../../../controllers/AppResource'
 
 import AppRoleResource from '../../../types/approleresource';
 import AppResource from '../../../types/appresource';
+import { AxiosResponse } from 'axios';
 type propType = { _id: string }
 
 const AppRoleResourceManagementHeader = ({
@@ -146,6 +158,18 @@ const LinkProgramTable = ({
   },
 }: RouteComponentProps<propType>) => {
   const dispatch = useDispatch();
+  const [appRoleResource, setAppRoleResource] =
+    useState<AppRoleResource | undefined>(undefined)
+
+  useEffect(() => {
+    AppRoleResourceController.fetchAppRoleResource(_id)
+      .then((res: AppRoleResource | undefined) => {
+        console.log(res)
+        if (res) {
+          setAppRoleResource(res)
+        }
+      })
+  }, [])
   // useEffect(() => {
   //   dispatch(getTemplateTypesRequest());
   //   return () => {
@@ -173,37 +197,38 @@ const LinkProgramTable = ({
   //   shallowEqual,
   // );
 
-  let { appRoleResource }: { appRoleResource: AppRoleResource } = useSelector(
-    state => ({
-      appRoleResource: (selectFactoryRESTResponseTableValues(selectAppRoleResourcesStore)(state).filter(
-        (elem: AppRoleResource) => elem._id === _id,
-      ) || [{}])[0],
-    }),
-    shallowEqual,
-  );
-
-  const reject = () => {
-    alert('Missing or invalid parameters');
-  };
+  const reject = () => { alert('Missing or invalid parameters') };
 
   const onClickAdd = (_: any, rowData: AppResource | AppResource[]) => {
-    if (Array.isArray(rowData)) {
+    if (Array.isArray(rowData) || !appRoleResource) {
       return
     }
-    appRoleResource.resourceId = appRoleResource.resourceId.concat([{id:rowData._id, resourceName:rowData.resourceName}]);
-    dispatch(updateAppRoleResourceRequest(appRoleResource, null, reject));
-    // Refresh appRoleResource because dispatch makes object read-only, not allowing multiple adding.
-    appRoleResource = { ...appRoleResource };
+    const appRoleResCopy: AppRoleResource = {...appRoleResource}
+    appRoleResCopy.resourceId = appRoleResCopy.resourceId.concat([{id:rowData._id, resourceName:rowData.resourceName}]);
+    AppRoleResourceController.update(appRoleResCopy).then((res: AxiosResponse) => {
+      if (res.status === 200) {
+        setAppRoleResource(appRoleResCopy)
+      }
+    })
+    // dispatch(updateAppRoleResourceRequest(appRoleResource, null, reject));
+    // // Refresh appRoleResource because dispatch makes object read-only, not allowing multiple adding.
+    // appRoleResource = Object.assign({}, appRoleResource);
   };
 
   const onClickDelete = (_: any, rowData: AppResource | AppResource[]) => {
-    if (Array.isArray(rowData)) {
+    if (Array.isArray(rowData) || !appRoleResource) {
       return
     }
-    appRoleResource.resourceId = appRoleResource.resourceId.filter(elem => elem.id !== rowData._id);
-    dispatch(updateAppRoleResourceRequest(appRoleResource, null, reject));
-    // Refresh appRoleResource because dispatch makes object read-only, not allowing multiple deleting.
-    appRoleResource = { ...appRoleResource };
+    const appRoleResCopy: AppRoleResource = {...appRoleResource}
+    appRoleResCopy.resourceId = appRoleResCopy.resourceId.filter(elem => elem.id !== rowData._id);
+    AppRoleResourceController.update(appRoleResCopy).then((res: AxiosResponse) => {
+      if (res.status === 200) {
+        setAppRoleResource(appRoleResCopy)
+      }
+    })
+    // dispatch(updateAppRoleResourceRequest(appRoleResource, null, reject));
+    // // Refresh appRoleResource because dispatch makes object read-only, not allowing multiple deleting.
+    // appRoleResource = Object.assign({}, appRoleResource);
   };
 
   const history = useHistory();

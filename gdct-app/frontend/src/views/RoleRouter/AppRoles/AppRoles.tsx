@@ -17,8 +17,13 @@ import {
 import { selectFactoryRESTResponseTableValues } from '../../../store/common/REST/selectors';
 //@ts-ignore
 import { selectAppRolesStore } from '../../../store/AppRolesStore/selectors';
-//@ts-ignore
-import { calculateOptions } from '../../../tools/misc';
+import {
+  calculateOptions,
+  controllerAddRow,
+  controllerEditRow,
+  controllerDeleteRow,
+  //@ts-ignore
+} from '../../../tools/misc';
 //@ts-ignore
 import CreateAuditLog from '../../AuditLog_Global';
 //@ts-ignore
@@ -41,7 +46,13 @@ const AppRolesHeader = () => {
 const AppRolesTable = () => {
   const dispatch = useDispatch();
   const [readRowNum, setRowNum] = useState(1);
-  const [hasAppRoles, setHasAppRoles] = useState(false);
+  const [appRoles, setAppRoles] = useState<AppRole[] | undefined>(undefined)
+
+  useEffect(() => {
+    AppRoleController.fetch().then((res: unknown) => {
+      setAppRoles(res as AppRole[])
+    })
+  }, [])
 
   // table stuff while loading
   const preColumns: Column<AppRoleMT>[] = [{title: 'Name', field: 'name'}]
@@ -53,16 +64,9 @@ const AppRolesTable = () => {
     timestamp: '',
     updatedBy: '',
   }]
-  
-  // Prepare the data for material table
-  const { appRoles }: { appRoles: AppRoleMT[] } = useSelector(
-    state => ({
-      appRoles: selectFactoryRESTResponseTableValues(selectAppRolesStore)(state),
-    }),
-    shallowEqual,
-  );
+
   // Convert Date format
-  appRoles.forEach(appRole => {
+  appRoles?.forEach(appRole => {
     const logtime = new Date(appRole.timestamp);
     appRole.timestamp = moment(logtime).format('YYYY-MM-DD HH:mm:ss');
   });
@@ -100,9 +104,15 @@ const AppRolesTable = () => {
   const editable = useMemo(
     () => ({
       onRowAdd: (appRole: AppRoleMT) =>
-        new Promise((resolve, reject) => {
+        new Promise<AppRole | undefined>((resolve, reject) => {
           recordUpdate(appRole);
-          dispatch(createAppRoleRequest(appRole, resolve, reject));
+          controllerAddRow(AppRoleController, setAppRoles, appRole)
+            .then((res: AppRole) => {
+              if (res) {
+                resolve(res)
+              }
+              reject()
+            })
         }).then(newAppRole => {
           // For Auditlog
           if (newAppRole) {
@@ -110,7 +120,7 @@ const AppRolesTable = () => {
               null,
               "Create Application Role",
               "AppRole",
-              (newAppRole as AppRole)._id,
+              newAppRole._id,
               {},
               newAppRole
             );
@@ -133,39 +143,44 @@ const AppRolesTable = () => {
             );
           })();
           // Do Update
-          dispatch(updateAppRoleRequest(appRole, resolve, reject));
+          controllerEditRow(AppRoleController, setAppRoles, appRole)
+            .then((res: boolean) => {
+              if (res) {
+                resolve(res)
+              }
+              reject()
+            })
         }),
 
       onRowDelete: (appRole: AppRoleMT) =>
         new Promise((resolve, reject) => {
           recordUpdate(appRole);
-          dispatch(deleteAppRoleRequest(appRole._id, resolve, reject));
           // For Auditlog
           const appRole_trim = (({ tableData, ...o }) => o)(appRole);
-          CreateAuditLog(null, 'Delete Application Role', 'AppRole', appRole._id, appRole_trim, {});
+          CreateAuditLog(null, "Delete Application Role", "AppRole", appRole._id, appRole_trim, {});
+          controllerDeleteRow(AppRoleController, setAppRoles, appRole._id)
+            .then((res: boolean) => {
+              if (res) {
+                resolve(res)
+              }
+              reject()
+            })
         }),
     }),
-    [dispatch],
+    [],
   );
 
-  useEffect(() => {
-    dispatch(getAppRolesRequest());
-  }, [dispatch]);
-
-  useEffect(() => {
-    setRowNum(appRoles.length);
-    if (!hasAppRoles) {
-      setHasAppRoles(appRoles.length >= 1);
-    }
-  }, [appRoles]);
+  useEffect(()=>{
+    setRowNum(appRoles?.length || 1)
+  }, [appRoles])
 
   // @ts-ignore
   return (
     <MaterialTable
       key={readRowNum}
-      columns={hasAppRoles ? columns : preColumns}
-      data={hasAppRoles ? appRoles : preAppRoles}
-      editable={hasAppRoles ? editable : undefined}
+      columns={!!appRoles ? columns : preColumns}
+      data={!!appRoles ? appRoles : preAppRoles}
+      editable={!!appRoles ? editable : undefined}
       options={options}
     />
   );

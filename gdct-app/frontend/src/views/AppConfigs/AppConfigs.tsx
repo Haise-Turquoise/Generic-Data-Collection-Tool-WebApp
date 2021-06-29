@@ -24,7 +24,15 @@ import { selectAppSysesStore } from '../../store/AppSysesStore/selectors';
 //@ts-ignore
 import AppConfigController from '../../controllers/AppConfig';
 //@ts-ignore
+import AppSysController from '../../controllers/AppSys';
+//@ts-ignore
 import CreateAuditLog from '../AuditLog_Global';
+import {
+  controllerAddRow,
+  controllerEditRow,
+  controllerDeleteRow,
+  //@ts-ignore
+} from '../../tools/misc'
 
 import AppConfig from '../../types/appconfig';
 import AppSys from '../../types/appsys';
@@ -44,7 +52,17 @@ const AppConfigsHeader = () => {
 
 const AppConfigsTable = () => {
   const dispatch = useDispatch();
-  const [hasConfigs, setHasConfigs] = useState(false);
+  const [appConfigs, setAppConfigs] = useState<AppConfig[] | undefined>(undefined)
+  const [appSyses, setAppSyses] = useState<AppSys[] | undefined>(undefined)
+
+  useEffect(() => {
+    AppConfigController.fetch().then((res: unknown) => {
+      setAppConfigs(res as AppConfig[])
+    })
+    AppSysController.fetch().then((res: unknown) => {
+      setAppSyses(res as AppSys[])
+    })
+  }, [])
 
   // table vars for loading
   const preColumns: Column<AppConfigMT>[] = [{ title: 'Name', field: 'value' }];
@@ -60,21 +78,13 @@ const AppConfigsTable = () => {
     },
   ];
 
-  // Prepare the data for the material table
-  const { appConfigs, appSyses } = useSelector(
-    state => ({
-      appConfigs: selectFactoryRESTResponseTableValues(selectAppConfigsStore)(state),
-      appSyses: selectFactoryRESTResponseTableValues(selectAppSysesStore)(state),
-    }),
-    shallowEqual,
-  );
   // Convert Date format
-  appConfigs.forEach((appConfig: AppConfig) => {
+  appConfigs?.forEach((appConfig: AppConfig) => {
     const logtime = new Date(appConfig.timestamp);
     appConfig.timestamp = moment(logtime).format('YYYY-MM-DD HH:mm:ss');
   });
   // Assign code as name
-  const lookupSysRoles = appSyses.reduce(function (acc: { [key: string]: string }, appSys: AppSys) {
+  const lookupSysRoles = appSyses?.reduce(function (acc: {[key:string]: string}, appSys: AppSys) {
     acc[appSys.code] = appSys.name;
     return acc;
   }, {});
@@ -125,17 +135,23 @@ const AppConfigsTable = () => {
   const editable = useMemo(
     () => ({
       onRowAdd: (appConfig: AppConfigMT) =>
-        new Promise((resolve, reject) => {
+        new Promise<AppConfig | undefined>((resolve, reject) => {
           recordUpdate(appConfig);
-          dispatch(createAppConfigRequest(appConfig, resolve, reject));
+          controllerAddRow(AppConfigController, setAppConfigs, appConfig)
+            .then((res: AppConfig) => {
+              if (res) {
+                resolve(res)
+              }
+              reject()
+            })
         }).then(newAppConfig => {
           // For Auditlog
           if (newAppConfig) {
             CreateAuditLog(
               null,
-              'Add Application Configuration',
-              'AppConfig',
-              (newAppConfig as AppConfig)._id,
+              "Add Application Configuration",
+              "AppConfig",
+              newAppConfig._id,
               {},
               newAppConfig,
             );
@@ -158,44 +174,38 @@ const AppConfigsTable = () => {
             );
           })();
           // Do Update
-          dispatch(updateAppConfigRequest(appConfig, resolve, reject));
+          controllerEditRow(AppConfigController, setAppConfigs, appConfig)
+            .then((res: boolean) => {
+              if (res) {
+                resolve(res)
+              }
+              reject()
+            })
         }),
 
       onRowDelete: (appConfig: AppConfigMT) =>
         new Promise((resolve, reject) => {
           recordUpdate(appConfig);
-          dispatch(deleteAppConfigRequest(appConfig._id, resolve, reject));
           // For Auditlog
           const appConfig_trim = (({ tableData, ...o }) => o)(appConfig);
-          CreateAuditLog(
-            null,
-            'Delete Application Configuration',
-            'AppConfig',
-            appConfig._id,
-            appConfig_trim,
-            {},
-          );
+          CreateAuditLog(null, "Delete Application Configuration", "AppConfig", appConfig._id, appConfig_trim, {});
+          controllerDeleteRow(AppConfigController, setAppConfigs, appConfig._id)
+            .then((res: boolean) => {
+              if (res) {
+                resolve(res)
+              }
+              reject()
+            })
         }),
     }),
-    [dispatch],
+    [],
   );
-
-  useEffect(() => {
-    dispatch(getAppSysesRequest());
-    dispatch(getAppConfigsRequest());
-  }, [dispatch]);
-
-  useEffect(() => {
-    if (!hasConfigs) {
-      setHasConfigs(appConfigs.length >= 1);
-    }
-  }, [appConfigs]);
 
   return (
     <MaterialTable
-      columns={hasConfigs ? columns : preColumns}
-      data={hasConfigs ? appConfigs : preConfigs}
-      editable={hasConfigs ? editable : undefined}
+      columns={!!appConfigs ? columns : preColumns}
+      data={!!appConfigs ? appConfigs : preConfigs}
+      editable={!!appConfigs ? editable : undefined}
       options={options}
     />
   );

@@ -17,6 +17,8 @@ import { selectFactoryRESTResponseTableValues } from '../../store/common/REST/se
 import { getAuditLogRequest } from '../../store/thunks/AuditLog';
 //@ts-ignore
 import { selectAuditLogStore } from '../../store/AuditLogStore/selectors';
+//@ts-ignore
+import AuditLogController from '../../controllers/AuditLog'
 
 import AuditLog from '../../types/auditlog';
 
@@ -91,7 +93,13 @@ const CustomDatePicker = (props: {
 // Table contents
 const AuditLogTable = () => {
   const dispatch = useDispatch();
-  const [hasLogs, setHasLogs] = useState(false);
+  const [auditlogs, setAuditLogs] = useState<AuditLog[] | undefined>(undefined)
+
+  useEffect(() => {
+    AuditLogController.fetch().then((res: unknown) => {
+      setAuditLogs(res as AuditLog[])
+    })
+  })
 
   // table vars for loading
   const preColumns: Column<AuditLog>[] = [{ title: 'Name', field: 'moduleName' }]
@@ -149,16 +157,10 @@ const AuditLogTable = () => {
   //= =================================================================================================
 
   // Prepare the data for MaterialTable
-  let { auditlogs }: { auditlogs: AuditLog[] } = useSelector(
-    state => ({
-      auditlogs: selectFactoryRESTResponseTableValues(selectAuditLogStore)(state),
-    }),
-    shallowEqual,
-  );
   // Convert Auditlogs' time format
-  auditlogs.forEach(auditlog => {
-    auditlog.timestamp = moment(auditlog.timestamp).format('YYYY-MM-DD HH:mm:ss');
-  });
+  auditlogs?.forEach(auditlog => {
+    auditlog.timestamp = moment(auditlog.timestamp).format("YYYY-MM-DD HH:mm:ss")
+  })
 
   //= =================================================================================================
 
@@ -195,46 +197,37 @@ const AuditLogTable = () => {
     }
   ]
 
-  // Dispatch GET on load
-  useEffect(() => {
-    dispatch(getAuditLogRequest());
-  }, [dispatch]);
+  //==================================================================================================
 
-  useEffect(() => {
-    if (!hasLogs) {
-      setHasLogs(auditlogs.length >= 1);
-    }
-  }, [auditlogs]);
-
-  return (
-    <Fragment>
-      <MaterialTable
-        columns={hasLogs ? columns : preColumns}
-        data={hasLogs ? auditlogs : preLogs}
-        options={options}
-        actions={hasLogs ? actions : undefined}
-      />
-      <Dialog
-        open={open}
-        onClose={handleClose}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
-        fullWidth
-        maxWidth={'md'}
-      >
-        <DialogTitle id="alert-dialog-title">{'Detailed Audit Information:'}</DialogTitle>
-        <DialogContent>
-          <DialogContentText style={{ whiteSpace: 'pre-wrap' }}>{detail}</DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose} color="primary">
-            OK
-          </Button>
-        </DialogActions>
-      </Dialog>
-    </Fragment>
-  );
-}; // End of defining Table contents
+  return <Fragment>
+            <MaterialTable 
+              columns={!!auditlogs ? columns : preColumns} 
+              data={!!auditlogs ? auditlogs : preLogs} 
+              options={options} 
+              actions={!!auditlogs ? actions : undefined} 
+            />
+            <Dialog
+              open={open}
+              onClose={handleClose}
+              aria-labelledby="alert-dialog-title"
+              aria-describedby="alert-dialog-description"
+              fullWidth
+              maxWidth={"md"}
+            >
+              <DialogTitle id="alert-dialog-title">{"Detailed Audit Information:"}</DialogTitle>
+              <DialogContent>
+                <DialogContentText style={{whiteSpace: 'pre-wrap'}}> 
+                  {detail}
+                </DialogContentText>
+              </DialogContent>
+              <DialogActions>
+                <Button onClick={handleClose} color="primary">
+                  OK
+                </Button>
+              </DialogActions>
+            </Dialog>
+          </Fragment>
+} // End of defining Table contents
 
 // any type since props unused
 const AuditLog = (props: any) => (

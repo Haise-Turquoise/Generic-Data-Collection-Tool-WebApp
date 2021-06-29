@@ -123,14 +123,20 @@ const LinkProgramTable = ({
     alert('Missing or invalid parameters');
   };
 
-  const onClickAdd = (_: any, rowData: Program) => {
+  const onClickAdd = (_: any, rowData: Program | Program[]) => {
+    if (Array.isArray(rowData)) {
+      return
+    }
     templateType.programIds = templateType.programIds.concat([rowData._id]);
     dispatch(updateTemplateTypeRequest(templateType, null, reject));
     // Refresh templateType because dispatch makes object read-only, not allowing multiple adding.
     templateType = { ...templateType };
   };
 
-  const onClickDelete = (_: any, rowData: Program) => {
+  const onClickDelete = (_: any, rowData: Program | Program[]) => {
+    if (Array.isArray(rowData)) {
+      return
+    }
     templateType.programIds = templateType.programIds.filter(elem => elem !== rowData._id);
     dispatch(updateTemplateTypeRequest(templateType, null, reject));
     // Refresh templateType because dispatch makes object read-only, not allowing multiple deleting.

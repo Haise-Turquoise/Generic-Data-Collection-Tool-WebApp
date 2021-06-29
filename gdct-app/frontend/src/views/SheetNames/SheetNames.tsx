@@ -19,8 +19,14 @@ import DetectEmptySheet from './DetectEmptySheet';
 import { selectFactoryRESTResponseTableValues } from '../../store/common/REST/selectors';
 //@ts-ignore
 import { selectSheetNamesStore } from '../../store/SheetNamesStore/selectors';
-//@ts-ignore
-import { calculateOptions, checkDuplicates } from '../../tools/misc';
+import {
+  calculateOptions,
+  checkDuplicates,
+  controllerAddRow,
+  controllerEditRow,
+  controllerDeleteRow,
+  //@ts-ignore
+} from '../../tools/misc';
 //@ts-ignore
 import sheetNameController from '../../controllers/sheetName';
 //@ts-ignore
@@ -44,7 +50,13 @@ const SheetNameHeader = () => {
 const SheetNamesTable = () => {
   const dispatch = useDispatch();
   const [readRowNum, setRowNum] = useState(1);
-  const [hasSheets, setHasSheets] = useState(false);
+  const [sheetNames, setSheetNames] = useState<SheetName[] | undefined>(undefined)
+
+  useEffect(() => {
+    sheetNameController.fetch().then((res: unknown) => {
+      setSheetNames(res as SheetName[])
+    })
+  }, [])
 
   // table vars while loading data
   const preColumns: Column<SheetNameMT>[] = [{ title: 'Name', field: 'name' }];
@@ -60,15 +72,8 @@ const SheetNamesTable = () => {
     },
   ];
 
-  // Prepare the data for material table
-  const { sheetNames }: { sheetNames: SheetName[] } = useSelector(
-    state => ({
-      sheetNames: selectFactoryRESTResponseTableValues(selectSheetNamesStore)(state),
-    }),
-    shallowEqual,
-  );
   // Convert Date format
-  sheetNames.forEach((sheetName: SheetName) => {
+  sheetNames?.forEach((sheetName: SheetName) => {
     const logtime = new Date(sheetName.timestamp);
     sheetName.timestamp = moment(logtime).format('YYYY-MM-DD HH:mm:ss');
   });
@@ -121,18 +126,24 @@ const SheetNamesTable = () => {
   const editable = useMemo(
     () => ({
       onRowAdd: (sheetName: SheetNameMT) =>
-        new Promise((resolve, reject) => {
-          sheetName.id = readRowNum;
+        new Promise<SheetName | undefined>((resolve, reject) => {
+          sheetName.id = readRowNum
           recordUpdate(sheetName);
-          dispatch(createSheetNameRequest(sheetName, resolve, reject));
+          controllerAddRow(sheetNameController, setSheetNames, sheetName)
+            .then((res?: SheetName) => {
+              if (res) {
+                resolve(res)
+              }
+              reject()
+            })
         }).then(newSheetName => {
           // For Auditlog
           if (newSheetName) {
             CreateAuditLog(
               null,
-              'Create Sheet',
-              'SheetName',
-              (newSheetName as SheetName)._id,
+              "Create Sheet",
+              "SheetName",
+              newSheetName._id,
               {},
               newSheetName,
             );
@@ -154,7 +165,13 @@ const SheetNamesTable = () => {
             );
           })();
           // Do Update
-          dispatch(updateSheetNameRequest(sheetName, resolve, reject));
+          controllerEditRow(sheetNameController, setSheetNames, sheetName)
+            .then((res: boolean) => {
+              if (res) {
+                resolve(res)
+              }
+              reject()
+            })
         }),
       onRowDelete: (sheetName: SheetNameMT) =>
         new Promise((resolve, reject) => {
@@ -163,7 +180,13 @@ const SheetNamesTable = () => {
           DetectEmptySheet(sheetName._id).then((hiddenValue: boolean) => {
             //if hiddenValue is true, the categoryTree is empty and the sheetname will be delete-able
             if (hiddenValue === true) {
-              dispatch(deleteSheetNameRequest(sheetName._id, resolve, reject));
+              controllerDeleteRow(sheetNameController, setSheetNames, sheetName._id)
+                .then((res: boolean) => {
+                  if (res) {
+                    resolve(res)
+                  }
+                  reject()
+                })
               // For Auditlog
               const sheetName_trim = (({ tableData, ...o }) => o)(sheetName);
               CreateAuditLog(null, 'Delete Sheet', 'SheetName', sheetName._id, sheetName_trim, {});
@@ -186,28 +209,19 @@ const SheetNamesTable = () => {
           });
         }),
     }),
-    [dispatch, readRowNum],
+    [readRowNum],
   );
 
-  useEffect(() => {
-    // console.log('Page Refresh')
-    dispatch(getSheetNamesRequest());
-  }, [dispatch]);
-
-  useEffect(() => {
-    setRowNum(sheetNames.length);
-    if (!hasSheets) {
-      setHasSheets(sheetNames.length >= 1);
-    }
-  }, [sheetNames]);
+  useEffect(()=>{
+    setRowNum(sheetNames?.length || 1)
+  }, [sheetNames])
 
   return (
-    // @ts-ignore
     <MaterialTable
       key={readRowNum}
-      columns={hasSheets ? columns : preColumns}
-      data={hasSheets ? sheetNames : preSheets}
-      editable={hasSheets ? editable : undefined}
+      columns={!!sheetNames ? columns : preColumns}
+      data={!!sheetNames ? sheetNames : preSheets}
+      editable={!!sheetNames ? editable : undefined}
       options={options}
     />
   );

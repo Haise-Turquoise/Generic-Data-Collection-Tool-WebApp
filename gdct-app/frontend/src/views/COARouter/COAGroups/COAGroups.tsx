@@ -19,8 +19,14 @@ import ErrorBanner from '../../ErrorBanner'
 import { selectFactoryRESTResponseTableValues } from '../../../store/common/REST/selectors';
   //@ts-ignore
 import { selectCOAGroupsStore } from '../../../store/COAGroupsStore/selectors';
+import { 
+  calculateOptions,
+  checkDuplicates,
+  controllerAddRow,
+  controllerEditRow,
+  controllerDeleteRow
   //@ts-ignore
-import { calculateOptions, checkDuplicates } from '../../../tools/misc';
+} from '../../../tools/misc';
   //@ts-ignore
 import CreateAuditLog from '../../AuditLog_Global';
   //@ts-ignore
@@ -45,7 +51,13 @@ const COAGroupsHeader = () => {
 const COAGroupsTable = () => {
   const dispatch = useDispatch();
   const [readRowNum, setRowNum] = useState(1);
-  const [hasGroups, setHasGroups] = useState(false);
+  const [COAGroups, setCOAGroups] = useState<CategoryGroup[] | undefined>(undefined)
+
+  useEffect(() => {
+    COAGroupController.fetch().then((res: unknown) => {
+      setCOAGroups(res as CategoryGroup[])
+    })
+  }, [])
 
   // table stuff while loading
   const preColumns: Column<CategoryGroupMT>[] = [{title: 'Name', field: 'name'}]
@@ -54,16 +66,9 @@ const COAGroupsTable = () => {
     _id: '',
     timestamp: '',
   }]
-  
-  // Prepare the data for material table
-  const { COAGroups }: { COAGroups: CategoryGroup[] } = useSelector(
-    state => ({
-      COAGroups: selectFactoryRESTResponseTableValues(selectCOAGroupsStore)(state),
-    }),
-    shallowEqual,
-  );
+
   // Convert Date format
-  COAGroups.forEach((COAGroup: CategoryGroup) => {
+  COAGroups?.forEach((COAGroup: CategoryGroup) => {
     const logtime = new Date(COAGroup.timestamp);
     COAGroup.timestamp = moment(logtime).format('YYYY-MM-DD HH:mm:ss');
   });
@@ -106,9 +111,15 @@ const COAGroupsTable = () => {
   const editable = useMemo(
     () => ({
       onRowAdd: (COAGroup: CategoryGroupMT) =>
-        new Promise((resolve, reject) => {
+        new Promise<CategoryGroup | undefined>((resolve, reject) => {
           recordUpdate(COAGroup);
-          dispatch(createCOAGroupRequest(COAGroup, resolve, reject));
+          controllerAddRow(COAGroupController, setCOAGroups, COAGroup)
+            .then((res: CategoryGroup) => {
+              if (res) {
+                resolve(res)
+              }
+              reject()
+            })
         }).then(newCOAGroup => {
           // For Auditlog
           if (newCOAGroup) {
@@ -116,7 +127,7 @@ const COAGroupsTable = () => {
               null,
               "Create Category Group",
               "CategoryGroup",
-              (newCOAGroup as CategoryGroup)._id,
+              newCOAGroup._id,
               {},
               newCOAGroup
             );
@@ -139,13 +150,25 @@ const COAGroupsTable = () => {
             );
           })();
           // Do Update
-          dispatch(updateCOAGroupRequest(COAGroup, resolve, reject));
+          controllerEditRow(COAGroupController, setCOAGroups, COAGroup)
+            .then((res: boolean) => {
+              if (res) {
+                resolve(COAGroup)
+              }
+              reject()
+            })
         }),
 
       onRowDelete: (COAGroup: CategoryGroupMT) =>
         new Promise((resolve, reject) => {
           recordUpdate(COAGroup);
-          dispatch(deleteCOAGroupRequest(COAGroup._id, resolve, reject));
+          controllerDeleteRow(COAGroupController, setCOAGroups, COAGroup._id)
+            .then((res: boolean) => {
+              if (res) {
+                resolve(COAGroup)
+              }
+              reject()
+            })
           // For Auditlog
           const COAGroup_trim = (({ tableData, ...o }) => o)(COAGroup);
           CreateAuditLog(
@@ -161,24 +184,17 @@ const COAGroupsTable = () => {
     [dispatch],
   );
 
-  useEffect(() => {
-    dispatch(getCOAGroupsRequest());
-  }, [dispatch]);
-
-  useEffect(() => {
-    setRowNum(COAGroups.length);
-    if (!hasGroups) {
-      setHasGroups(COAGroups.length >= 1);
-    }
+  useEffect(() => { 
+    setRowNum(COAGroups?.length || 1)
   }, [COAGroups]);
 
   return (
     <MaterialTable
       key={readRowNum}
-      columns={hasGroups ? columns : preColumns}
-      data={hasGroups ? COAGroups : preGroups}
-      editable={hasGroups ? editable : undefined}
-      options={options}
+      columns={!!COAGroups ? columns : preColumns}
+      data={!!COAGroups ? COAGroups : preGroups}
+      editable={!!COAGroups ? editable : undefined}
+      options={options} 
     />
   );
 };

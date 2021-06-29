@@ -44,7 +44,7 @@ import SubmissionPeriodsStore from '../../store/SubmissionPeriodsStore/store';
   //@ts-ignore
 import ErrorBanner from '../ErrorBanner';
   //@ts-ignore
-import { calculateOptions } from '../../tools/misc';
+import { calculateOptions, controllerAddRow, controllerEditRow, controllerDeleteRow } from '../../tools/misc';
   //@ts-ignore
 import CreateAuditLog from '../AuditLog_Global';
   //@ts-ignore
@@ -53,6 +53,7 @@ import templatePackageController from '../../controllers/templatePackage';
 import TemplatePackage from '../../types/templatepackage';
 import Status from '../../types/status';
 import SubmissionPeriod from '../../types/submissionperiod';
+import { AxiosResponse } from 'axios';
 
 interface TemplatePackageMT extends TemplatePackage {
   tableData?: any,
@@ -72,7 +73,14 @@ const TemplatePackages = () => {
   const dispatch = useDispatch();
   const history = useHistory();
   const [readRowNum, setRowNum] = useState(1);
-  const [hasPackages, setHasPackages] = useState(false);
+  const [templatePackages, setTemplatePackages] = 
+    useState<TemplatePackage[] | undefined>(undefined)
+
+  useEffect(() => {
+    templatePackageController.fetch().then((res: unknown) => {
+      setTemplatePackages(res as TemplatePackage[])
+    })
+  }, [])
 
   // table vars while loading
   const preColumns: Column<TemplatePackageMT>[] = [{ title: 'Name', field: 'name' }]
@@ -90,19 +98,16 @@ const TemplatePackages = () => {
 
   // Prepare the data for material table
   const {
-    templatePackages,
     lookupStatuses,
     lookupSubmissionPeriods,
     WholeLookupStatuses,
   }: {
-    templatePackages: TemplatePackage[],
     lookupStatuses: {[key: string]: string},
     lookupSubmissionPeriods: {[key: string]: string},
     WholeLookupStatuses: Status[],
   } = useSelector(
     state => ({
       isCallInProgress: selectFactoryRESTIsCallInProgress(selectTemplatePackagesStore)(state),
-      templatePackages: selectFactoryRESTResponseTableValues(selectTemplatePackagesStore)(state),
       lookupStatuses: selectFactoryRESTLookup(selectStatusesStore)(state),
       lookupSubmissionPeriods: selectFactoryRESTLookup(selectSubmissionPeriodsStore)(state),
       WholeLookupStatuses: selectFactoryRESTResponseTableValues(selectStatusesStore)(state),
@@ -111,7 +116,7 @@ const TemplatePackages = () => {
   );
 
   // Convert Date format
-  templatePackages.forEach(templatePackage => {
+  templatePackages?.forEach(templatePackage => {
     const logtime = new Date(templatePackage.timestamp);
     const creationDate = new Date(templatePackage.creationDate);
     templatePackage.timestamp = moment(logtime).format('YYYY-MM-DD HH:mm:ss');
@@ -249,11 +254,17 @@ const TemplatePackages = () => {
   const editable = useMemo(
     () => ({
       onRowAdd: (templatePackage: TemplatePackageMT) =>
-        new Promise((resolve, reject) => {
+        new Promise<TemplatePackage | undefined>((resolve, reject) => {
           recordUpdate(templatePackage);
           templatePackage = { ...templatePackage, templateIds: [], programIds: [] };
           templatePackage.creationDate = moment().format();
-          dispatch(createTemplatePackageRequest(templatePackage, resolve, reject));
+          controllerAddRow(templatePackageController, setTemplatePackages, templatePackage)
+            .then((res?: TemplatePackage) => {
+            if (res) {
+              resolve(res)
+            }
+            reject()
+          })
         }).then(newTemplatePackage => {
           // For Auditlog
           if (newTemplatePackage) {
@@ -261,7 +272,7 @@ const TemplatePackages = () => {
               null,
               "Create Template Package",
               "TemplatePackage",
-              (newTemplatePackage as TemplatePackage)._id,
+              newTemplatePackage._id,
               {},
               newTemplatePackage
             );
@@ -271,7 +282,6 @@ const TemplatePackages = () => {
       onRowUpdate: (templatePackage: TemplatePackageMT) =>
         new Promise((resolve, reject) => {
           recordUpdate(templatePackage);
-          console.log(templatePackage);
           // Find the old value before updating in order to Auditlog
           (async () => {
             const oldTemplatePackage = await templatePackageController.fetchTemplatePackage(
@@ -287,13 +297,23 @@ const TemplatePackages = () => {
             );
           })();
           // Do Update
-          dispatch(updateTemplatePackageRequest(templatePackage, resolve, reject));
+          controllerEditRow(templatePackageController, setTemplatePackages, templatePackage).then((res: boolean) => {
+            if (res) {
+              resolve(templatePackage)
+            }
+            reject()
+          })
         }),
         
       onRowDelete: (templatePackage: TemplatePackageMT) =>
         new Promise((resolve, reject) => {
           recordUpdate(templatePackage);
-          dispatch(deleteTemplatePackageRequest(templatePackage._id, resolve, reject));
+          controllerDeleteRow(templatePackageController, setTemplatePackages, templatePackage._id).then((res: boolean) => {
+            if (res) {
+              resolve(res)
+            }
+            reject()
+          })
           // For Auditlog
           const templatePackage_trim = (({ tableData, ...o }) => o)(templatePackage);
           CreateAuditLog(
@@ -306,27 +326,22 @@ const TemplatePackages = () => {
           );
         }),
     }),
-    [dispatch],
+    [],
   );
 
   useEffect(() => {
-    dispatch(getTemplatePackagesRequest());
     dispatch(getStatusesRequest());
     dispatch(getSubmissionPeriodsRequest());
 
     return () => {
-      dispatch(TemplatePackagesStoreActions.RESET());
       dispatch(StatusesStore.actions.RESET());
       dispatch(SubmissionPeriodsStore.actions.RESET());
     };
   }, [dispatch]);
 
-  useEffect(() => {
-    setRowNum(templatePackages.length);
-    if (!hasPackages) {
-      setHasPackages(templatePackages.length >= 1);
-    }
-  }, [templatePackages]);
+  useEffect(()=>{
+    setRowNum(templatePackages?.length || 1)
+  }, [templatePackages])
 
   return (
     <div>
@@ -337,12 +352,12 @@ const TemplatePackages = () => {
       />
       <MaterialTable
         key={readRowNum}
-        columns={hasPackages ? columns : preColumns}
-        data={hasPackages ? templatePackages : prePackages}
-        editable={hasPackages ? editable : undefined}
+        columns={!!templatePackages ? columns : preColumns}
+        data={!!templatePackages ? templatePackages : prePackages}
+        editable={!!templatePackages ? editable : undefined}
         // @ts-ignore
         options={options}
-        actions={hasPackages ? actions : undefined}
+        actions={!!templatePackages ? actions : undefined}
       />
     </div>
   );

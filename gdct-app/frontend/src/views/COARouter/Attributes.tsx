@@ -26,7 +26,7 @@ import CreateAuditLog from '../AuditLog_Global';
   //@ts-ignore
 import columnNameController from '../../controllers/columnName';
   //@ts-ignore
-import { checkDuplicates } from '../../tools/misc'
+import { checkDuplicates, controllerAddRow, controllerEditRow, controllerDeleteRow } from '../../tools/misc'
 
 import Attribute from '../../types/attrubute';
 
@@ -91,7 +91,13 @@ const AlertSign = () => {
 const ColumnNamesTable = () => {
   const dispatch = useDispatch();
   const [readRowNum, setRowNum] = useState(1);
-  const [hasCols, setHasCols] = useState(false);
+  const [columnNames, setColumnNames] = useState<Attribute[] | undefined>(undefined)
+
+  useEffect(() => {
+    columnNameController.fetch().then((res: unknown) => {
+      setColumnNames(res as Attribute[])
+    })
+  }, [])
 
   // table stuff while loading
   const preColumns: Column<Attribute>[] = [{title: 'Name', field: 'name'}]
@@ -102,14 +108,8 @@ const ColumnNamesTable = () => {
     timestamp: '',
   }]
 
-  const { columnNames }: { columnNames: Attribute[] } = useSelector(
-    state => ({
-      columnNames: selectFactoryRESTResponseTableValues(selectColumnNamesStore)(state),
-    }),
-    shallowEqual,
-  );
   // Convert Date format
-  columnNames.forEach((columnName: Attribute) => {
+  columnNames?.forEach((columnName: Attribute) => {
     const logtime = new Date(columnName.timestamp);
     columnName.timestamp = moment(logtime).format('YYYY-MM-DD HH:mm:ss');
   });
@@ -117,11 +117,7 @@ const ColumnNamesTable = () => {
   // Prepare the columns for material table
   const columns: Column<Attribute>[] = useMemo(
     () => [
-      {
-        title: 'ID',
-        field: 'id',
-        validate: rowData => checkDuplicates(rowData, columnNames, 'id'),
-      },
+      { title: 'ID', field: 'id', validate: rowData => checkDuplicates(rowData, columnNames, 'id') || true },
       { title: 'Name', field: 'name' },
       { title: 'Description', field: 'description' },
       { title: 'Active', type: 'boolean', field: 'isActive' },
@@ -163,9 +159,16 @@ const ColumnNamesTable = () => {
   const editable = useMemo(
     () => ({
       onRowAdd: (columnName: Attribute) =>
-        new Promise((resolve, reject) => {
+        new Promise<Attribute | undefined>((resolve, reject) => {
           recordUpdate(columnName);
-          dispatch(createColumnNameRequest(columnName, resolve, reject));
+          // dispatch(createColumnNameRequest(columnName, resolve, reject));
+          controllerAddRow(columnNameController, setColumnNames, columnName)
+            .then((res: Attribute) => {
+              if (res) {
+                resolve(res)
+              }
+              reject()
+            })
         }).then(newColumnName => {
           // For Auditlog
           if (newColumnName) {
@@ -173,7 +176,7 @@ const ColumnNamesTable = () => {
               null,
               "Create Attribute",
               "Attribute",
-              (newColumnName as Attribute)._id,
+              newColumnName._id,
               {},
               newColumnName
             );
@@ -197,13 +200,25 @@ const ColumnNamesTable = () => {
             );
           })();
           // Do Update
-          dispatch(updateColumnNameRequest(columnName, resolve, reject));
+          // dispatch(updateColumnNameRequest(columnName, resolve, reject));
+          controllerEditRow(columnNameController, setColumnNames, columnName).then((res: boolean) => {
+            if (res) {
+              resolve(columnName)
+            }
+            reject()
+          })
         }),
 
       onRowDelete: (columnName: Attribute) =>
         new Promise((resolve, reject) => {
           recordUpdate(columnName);
-          dispatch(deleteColumnNameRequest(columnName._id, resolve, reject));
+          // dispatch(deleteColumnNameRequest(columnName._id, resolve, reject));
+          controllerDeleteRow(columnNameController, setColumnNames, columnName._id).then((res: boolean) => {
+            if (res) {
+              resolve(columnName)
+            }
+            reject()
+          })
         }).then(() => {
           // For Auditlog
           (async () => {
@@ -218,28 +233,17 @@ const ColumnNamesTable = () => {
     [dispatch],
   );
 
-  useEffect(() => {
-    setRowNum(columnNames.length);
-    if (!hasCols) {
-      setHasCols(columnNames.length >= 1);
-    }
+  useEffect(()=>{
+    setRowNum(columnNames?.length || 1)
   }, [columnNames]);
-
-  useEffect(() => {
-    dispatch(getColumnNamesRequest());
-
-    return () => {
-      dispatch(ColumnNamesActions.RESET());
-    };
-  }, [dispatch]);
 
   return (
     // @ts-ignore
     <MaterialTable
       key={readRowNum}
-      columns={hasCols ? columns : preColumns}
-      data={hasCols ? columnNames : preCols}
-      editable={hasCols ? editable : undefined}
+      columns={!!columnNames ? columns : preColumns}
+      data={!!columnNames ? columnNames : preCols}
+      editable={!!columnNames ? editable : undefined}
       options={options}
     />
   );

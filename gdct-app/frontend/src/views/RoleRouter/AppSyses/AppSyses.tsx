@@ -17,8 +17,13 @@ import {
 import { selectFactoryRESTResponseTableValues } from '../../../store/common/REST/selectors';
 //@ts-ignore
 import { selectAppSysesStore } from '../../../store/AppSysesStore/selectors';
-//@ts-ignore
-import { calculateOptions } from '../../../tools/misc'
+import {
+  calculateOptions,
+  controllerAddRow,
+  controllerEditRow,
+  controllerDeleteRow,
+  //@ts-ignore
+} from '../../../tools/misc'
 
 //@ts-ignore
 import AppSysController from '../../../controllers/AppSys'
@@ -42,7 +47,13 @@ const AppSysesHeader = () => {
 const AppSysesTable = () => {
   const dispatch = useDispatch();
   const [readRowNum, setRowNum] = useState(1);
-  const [hasAppSys, setHasAppSys] = useState(false);
+  const [appSyses, setAppSyses] = useState<AppSys[] | undefined>(undefined)
+
+  useEffect(() => {
+    AppSysController.fetch().then((res: unknown) => {
+      setAppSyses(res as AppSys[])
+    })
+  }, [])
 
   // table stuff while loading
   const preColumns: Column<AppSysMT>[] = [{title: 'Name', field: 'name'}]
@@ -53,16 +64,9 @@ const AppSysesTable = () => {
     isActive: false,
     timestamp: '',
   }]
-  
-  const { appSyses }: { appSyses: AppSys[] } = useSelector(
-    state => ({
-      appSyses: selectFactoryRESTResponseTableValues(selectAppSysesStore)(state),
-    }),
-    shallowEqual,
-  );
 
   // Convert Date format
-  appSyses.forEach(appSys => {
+  appSyses?.forEach(appSys => {
     const logtime = new Date(appSys.timestamp);
     appSys.timestamp = moment(logtime).format('YYYY-MM-DD HH:mm:ss');
   });
@@ -102,9 +106,15 @@ const AppSysesTable = () => {
   const editable = useMemo(
     () => ({
       onRowAdd: (appSys: AppSys) => 
-        new Promise((resolve, reject) => {
+        new Promise<AppSys | undefined>((resolve, reject) => {
           recordUpdate(appSys);
-          dispatch(createAppSysRequest(appSys, resolve, reject));
+          controllerAddRow(AppSysController, setAppSyses, appSys)
+            .then((res: AppSys) => {
+              if (res) {
+                resolve(res)
+              }
+              reject()
+            })
         }).then(newAppSys => {
           // For Auditlog
           if (newAppSys) {
@@ -112,7 +122,7 @@ const AppSysesTable = () => {
               null,
               "Add Application System",
               "AppSys",
-              (newAppSys as AppSys)._id,
+              newAppSys._id,
               {},
               newAppSys
             );
@@ -135,39 +145,44 @@ const AppSysesTable = () => {
             );
           })();
           // Do Update
-          dispatch(updateAppSysRequest(appSys, resolve, reject));
+          controllerEditRow(AppSysController, setAppSyses, appSys)
+            .then((res: boolean) => {
+              if (res) {
+                resolve(res)
+              }
+              reject()
+            })
         }),
         
       onRowDelete: (appSys: AppSysMT) =>
         new Promise((resolve, reject) => {
           recordUpdate(appSys);
-          dispatch(deleteAppSysRequest(appSys._id, resolve, reject));
           // onRowDelete will add a "tableData" attribute in the Object, which we don't need for Auditlog
-          const appSys_trim = (({ tableData, ...o }) => o)(appSys);
-          CreateAuditLog(null, 'Delete Application System', 'AppSys', appSys._id, appSys_trim, {});
+          const appSys_trim = (({ tableData, ...o }) => o)(appSys)
+          CreateAuditLog(null, "Delete Application System", "AppSys", appSys._id, appSys_trim, {});
+          controllerDeleteRow(AppSysController, setAppSyses, appSys._id)
+            .then((res: boolean) => {
+              if (res) {
+                resolve(res)
+              }
+              reject()
+            })
         }),
     }),
-    [dispatch],
+    [],
   );
 
-  useEffect(() => {
-    dispatch(getAppSysesRequest());
-  }, [dispatch]);
-
-  useEffect(() => {
-    setRowNum(appSyses.length);
-    if (!hasAppSys) {
-      setHasAppSys(appSyses.length >= 1);
-    }
-  }, [appSyses]);
+  useEffect(()=>{
+    setRowNum(appSyses?.length || 1)
+  }, [appSyses])
 
   return (
     <MaterialTable
       key={readRowNum}
-      columns={hasAppSys ? columns : preColumns}
-      data={hasAppSys ? appSyses : preAppSys}
-      editable={hasAppSys ? editable : undefined}
-      options={options}
+      columns={!!appSyses ? columns : preColumns}
+      data={!!appSyses ? appSyses : preAppSys}
+      editable={!!appSyses ? editable : undefined}
+      options={options} 
     />
   );
 };

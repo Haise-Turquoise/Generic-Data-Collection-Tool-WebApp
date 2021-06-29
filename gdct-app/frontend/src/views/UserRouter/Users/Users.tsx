@@ -13,12 +13,14 @@ import { selectFactoryRESTResponseTableValues } from '../../../store/common/REST
 //@ts-ignore
 import { selectUsersStore } from '../../../store/UsersStore/selectors';
 //@ts-ignore
-import { calculateOptions } from '../../../tools/misc'
+import { calculateOptions, controllerEditRow } from '../../../tools/misc'
 import {
   getUsersRequest,
   updateUsersRequest,
 //@ts-ignore
 } from '../../../store/thunks/users';
+//@ts-ignore
+import { unauthorized_dialog } from '../../../components/Unauthorized_Dialog/Unauthorized_Dialog'
 
 //@ts-ignore
 import usersController from '../../../controllers/Users';
@@ -38,7 +40,6 @@ const UsersHeader = () => {
 };
 
 const UsersTable = () => {
-  const dispatch = useDispatch();
   const history = useHistory();
 
   // For Custom Filter Header
@@ -48,7 +49,13 @@ const UsersTable = () => {
   const [orgId, setOrgId] = useState('');
   const [orgName, setOrgName] = useState('');
   const [readRowNum, setRowNum] = useState(1);
-  const [hasUsers, setHasUsers] = useState(false);
+  const [users, setUsers] = useState<User[] | undefined>(undefined)
+
+  useEffect(() => {
+    usersController.fetch().then((res: unknown) => {
+      setUsers(res as User[])
+    })
+  }, [])
 
   // table vars for loading
   const preColumns: Column<User>[] = [{ title: 'Name', field: 'username' }]
@@ -90,25 +97,24 @@ const UsersTable = () => {
     orgId !== '' ? (o = orgId) : '';
     orgName !== '' ? (n = orgName) : '';
 
-    dispatch(
-      getUsersRequest({
-        params: {
-          username: u,
-          lastName: l,
-          firstName: f,
-          'sysRole.org.orgId': o,
-          'sysRole.org.orgName': n,
-        },
-      }),
-    );
+    usersController.fetch({
+      params: {
+        username: u,
+        lastName: l,
+        firstName: f,
+        'sysRole.org.orgId': o,
+        'sysRole.org.orgName': n,
+      },
+    }).then((res: unknown) => {
+      if (res === 'UNAUTHORIZED ACCESS') {
+        unauthorized_dialog()
+      } else {
+        setUsers(res as User[])
+      }
+    })
   };
-
-  // Prepare the data for material table
-  const { users }: { users: User[] } = useSelector(state => ({
-    users: selectFactoryRESTResponseTableValues(selectUsersStore)(state),
-  }));
   // Convert Date format
-  users.forEach(user => {
+  users?.forEach(user => {
     const logtime = new Date(user.timestamp);
     user.timestamp = moment(logtime).format('YYYY-MM-DD HH:mm:ss');
   });
@@ -173,10 +179,16 @@ const UsersTable = () => {
             CreateAuditLog(null, 'Update User', 'User', oldUser._id, oldUser, user);
           })();
           // Do Update
-          dispatch(updateUsersRequest(user, resolve, reject));
-        }),
+          controllerEditRow(usersController, setUsers, user)
+            .then((res: boolean) => {
+              if (res) {
+                resolve(res)
+              }
+              reject()
+            })
+        })
     }),
-    [dispatch],
+    [],
   );
 
   // Prepare the actions for material table
@@ -193,15 +205,8 @@ const UsersTable = () => {
   ];
 
   useEffect(() => {
-    dispatch(getUsersRequest());
-  }, [dispatch]);
-
-  useEffect(() => {
-    setRowNum(users.length);
-    if (!hasUsers) {
-      setHasUsers(users.length >= 1);
-    }
-  }, [users]);
+    setRowNum(users?.length || 1)
+  }, [users])
 
   return (
     <div>
@@ -234,11 +239,11 @@ const UsersTable = () => {
       </Paper>
       <MaterialTable
         key={readRowNum}
-        columns={hasUsers ? columns : preColumns}
-        data={hasUsers ? users : preUsers}
-        editable={hasUsers ? editable : undefined}
+        columns={!!users ? columns : preColumns}
+        data={!!users ? users : preUsers}
+        editable={!!users ? editable : undefined}
         options={options}
-        actions={hasUsers ? actions : undefined}
+        actions={!!users ? actions : undefined}
         localization={localization}
       />
     </div>

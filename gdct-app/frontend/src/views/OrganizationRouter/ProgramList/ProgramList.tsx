@@ -1,4 +1,4 @@
-import React, { useMemo, useEffect } from 'react';
+import React, { useMemo, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import MaterialTable, { Action, Column } from 'material-table';
@@ -12,30 +12,45 @@ import { selectFactoryRESTResponseTableValues } from '../../../store/common/REST
 import { selectProgramsStore } from '../../../store/ProgramsStore/selectors';
 //@ts-ignore
 import { getProgramsRequest } from '../../../store/thunks/program';
-import Program from '../../../types/program';
+//@ts-ignore
+import ProgController from '../../../controllers/Program'
+import Program from '../../../types/program'
 
 interface ProgListProps {
   programIds: string[],
   isEditable?: boolean,
-  onClickAdd: (event: Event, program: Program) => void,
-  onClickDelete: (event: Event, program: Program) => void,
+  onClickAdd: (event: Event, program: Program | Program[]) => void,
+  onClickDelete: (event: Event, program: Program | Program[]) => void,
 }
 
 const ProgList = ({ programIds, onClickAdd, onClickDelete, isEditable = true }: ProgListProps) => {
-  const dispatch = useDispatch();
+  const [programList, setProgramList] = useState<Program[] | undefined>(undefined)
+
   useEffect(() => {
-    dispatch(getProgramsRequest());
-  }, []);
+    ProgController.fetch().then((res: unknown) => {
+      setProgramList(res as Program[])
+    })
+  }, [])
 
-  const { programList } = useSelector(state => ({
-    programList: selectFactoryRESTResponseTableValues(selectProgramsStore)(state),
-  }));
+  const preColumns: Column<Program>[] = [{
+    title: 'Name',
+    field: 'name'
+  }]
+  const preProgs: Program[] = [{
+    _id: '',
+    code: '',
+    isActive: false,
+    name: 'LOADING...',
+    timestamp: '',
+    updatedAt: '',
+    updatedBy: '',
+  }]
 
-  const OrgProgs = () => programList.filter((elem: Program) => programIds.includes(elem._id));
-  const nonOrgProgs = () => programList.filter((elem: Program) => !programIds.includes(elem._id));
+  const OrgProgs = () => programList?.filter((elem: Program) => programIds?.includes(elem._id));
+  const nonOrgProgs = () => programList?.filter((elem: Program) => !programIds?.includes(elem._id));
 
-  const columns: Column<{ title: string; field: string; [key: string]: any }>[] = useMemo(
-    () => [
+  const columns: Column<Program>[] = useMemo(() => 
+    [
       { title: 'Name', field: 'name' },
       { title: 'Code', field: 'code' },
       { title: 'Active', type: 'boolean', field: 'isActive' },
@@ -54,15 +69,9 @@ const ProgList = ({ programIds, onClickAdd, onClickDelete, isEditable = true }: 
     [],
   );
 
-  const left_actions: Action<any>[] = useMemo(
-    () => [{ icon: DeleteIcon, tooltip: 'Remove from Organization', onClick: onClickDelete }],
-    [],
-  );
+  const left_actions: Action<Program>[] = useMemo(() => [{ icon: DeleteIcon, tooltip: 'Remove from Organization', onClick: onClickDelete }], []);
 
-  const right_actions: Action<any>[] = useMemo(
-    () => [{ icon: AddIcon, tooltip: 'Add to Organization', onClick: onClickAdd }],
-    [],
-  );
+  const right_actions: Action<Program>[] = useMemo(() => [{ icon: AddIcon, tooltip: 'Add to Organization', onClick: onClickAdd }], []);
 
   return (
     <div className="tableContainer">
@@ -70,31 +79,24 @@ const ProgList = ({ programIds, onClickAdd, onClickDelete, isEditable = true }: 
         <MaterialTable
           title="Linked Programs"
           // @ts-ignore
-          columns={columns}
-          data={OrgProgs()}
+          columns={!!programList ? columns : preColumns}
+          data={!!programList ? OrgProgs()! : preProgs}
           options={options}
-          actions={isEditable ? left_actions : undefined}
+          actions={(isEditable && !!programList) ? left_actions : undefined}
         />
       </div>
       <div className="tableWrapper-other">
         <MaterialTable
           title="Available Programs"
           // @ts-ignore
-          columns={columns}
-          data={nonOrgProgs()}
+          columns={!!programList ? columns : preColumns}
+          data={!!programList ? nonOrgProgs()! : preProgs}
           options={options}
-          actions={isEditable ? right_actions : undefined}
+          actions={(isEditable && !!programList) ? right_actions : undefined}
         />
       </div>
     </div>
   );
-};
-
-ProgList.propTypes = {
-  programIds: PropTypes.array.isRequired,
-  isEditable: PropTypes.bool,
-  onClickAdd: PropTypes.func.isRequired,
-  onClickDelete: PropTypes.func.isRequired,
 };
 
 export default ProgList;
