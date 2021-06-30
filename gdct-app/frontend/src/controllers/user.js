@@ -9,14 +9,20 @@ const userController = (() => {
   });
 
   return {
-    create: async userData => 
+    create: async userData =>
       userAxios.post('/users/registerUser', { userData }).then(res => res.data),
-    updatePopulated: async userData => 
+    updatePopulated: async userData =>
       userAxios.put('/updatePopulatedUser', { userData }).then(res => res.data),
-    fetchUserByUserName: async username => 
+    updateToBeApproved: async userData =>
+      userAxios.put('/updateToBeApprovedUser', { userData }).then(res => res.data),
+    updatePendingPermissions: async userData =>
+      userAxios.put('/updatePendingPermissions', { userData }).then(res => res.data),
+    fetchUserByUserName: async username =>
       userAxios.post('/fetchUserByUserName', { username }).then(res => res.data),
     updatePermissionByUserEmail: async (email, permissionData) =>
       userAxios.post(`/users/updatePermission`, {email, permissionData}).then(res => res.data),
+    deletePermissionByUserEmail: async (email, permissionData) =>
+      userAxios.post(`/users/deletePermission`, {email, permissionData}).then(res => res.data),
   };
 })();
 

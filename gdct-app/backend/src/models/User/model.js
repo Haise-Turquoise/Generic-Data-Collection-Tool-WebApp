@@ -23,7 +23,7 @@ const User = new Schema(
     newTemplates:[],
     toBeApproved:{type: Array},
     phoneNumber: { type: String, default: '' },
-    
+    pendingPermissions:{type:Array},
     password: String,
     sysRole: [
       {
@@ -91,7 +91,7 @@ User.methods.setHashedPassword = function (password) {
 };
 
 User.methods.validatePassword = function (password) {
-  console.log(bcrypt.compareSync(password, this.password));
+  // console.log("password match: " + bcrypt.compareSync(password, this.password));
   return bcrypt.compareSync(password, this.password);
 };
 

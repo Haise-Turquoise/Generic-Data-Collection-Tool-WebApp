@@ -16,11 +16,6 @@ import ReportingPeriodRepository from '../../repositories/ReportingPeriod';
 import { mastervalueExtraction } from '../../utils/mastervalue/mastervalueExtraction';
 import { mastervaluePrepopulation } from '../../utils/mastervalue/mastervaluePrepopulation';
 import {ObjectId} from 'mongodb';
-import Organization from '../../entities/Organization';
-import { template } from '@babel/core';
-import { isExpressionWithTypeArguments } from 'typescript';
-const mongoose = require('mongoose');
-mongoose.Promise = require('bluebird');
 
 // @Service()
 export default class SubmissionService {
@@ -41,22 +36,36 @@ export default class SubmissionService {
     this.submissionPeriodRepository = Container.get(SubmissionPeriodRepository);
   }
 
-  checkUserRole(userInfo, submission, permission) {
-    userInfo.sysRole.forEach(sysRole => {
-    if (sysRole.org[0]){
-        sysRole.org[0].program.forEach(program => {
-          if (
-            sysRole.org[0].orgId == submission.orgId &&
-            program.programId.toString() == submission.programId.toString()
-          ) {
-            permission.push(sysRole.role);
+  // checkUserRole(userInfo, submission, permission) {
+  //   userInfo.sysRole.forEach(sysRole => {
+  //   if (sysRole.org[0]){
+  //       sysRole.org[0].program.forEach(program => {
+  //         if (
+  //           sysRole.org[0].orgId == submission.orgId &&
+  //           program.programId.toString() == submission.programId.toString()
+  //         ) {
+  //           console.log('first case')
+  //           permission.push(sysRole.role);
+  //         }
+  //       });
+  //   }
+  //   else{
+  //     console.log('second case')
+  //     permission.push(sysRole.role);
+  //   }
+  //   });
+  //   console.log('permission', permission)
+  // }
+  checkUserRole(userInfo, submission, permission){
+    userInfo.sysRole.forEach(sysRole=>{
+      sysRole.org.forEach(org=>{
+        org.program.forEach(program=>{
+          if(org.orgId == submission.orgId && program.programId.toString() == submission.programId.toString()){
+            permission.push(sysRole.role)
           }
-        });
-    }
-    else{
-      permission.push(sysRole.role);
-    }
-    });
+        })
+      })
+    })
   }
 
   async findReportingPeriod(_id){
@@ -146,7 +155,7 @@ export default class SubmissionService {
     return this.findSubmissionById(id).then(submission => {
       if (!submission) throw 'Submission id does not exist';
       return this.orgRepository.findById(submission.orgId).then(org => {
-        const orgConst = { id: org[0].id, name: org[0].name };
+        const orgConst = { id: org.id, name: org.name };
         return this.programRepository.findById(submission.programId).then(program => {
           const programConst = { _id: program._id, name: program.name };
           return this.templateRepository.findById(submission.templateId).then(template => {
@@ -312,12 +321,14 @@ export default class SubmissionService {
     const programAndTempTypes = [];
     const programIds = [];
     const orgMapping = {};
+
+    // Generate org Mappings to find out which submissions are missing
     if (orgId){
       userInfo.sysRole.forEach(sysRole => {
         sysRole.org.forEach(organization => {
-          orgMapping[organization.orgId] = [];
+          if (!orgMapping[organization.orgId]) orgMapping[organization.orgId] = [];
           organization.program.forEach(program => {
-            orgMapping[organization.orgId].push(program.programId);
+            orgMapping[organization.orgId].push(String(program.programId));
             if (!programIds.includes(program.programId)){
               programAndTempTypes.push({ program: program.programId, templateTypes: program.template });
               programIds.push(program.programId);
@@ -326,15 +337,15 @@ export default class SubmissionService {
         });
       });
 
-
     }else{
       const programID = await this.programRepository.find({})
       programID.forEach(element=>{programIds.push(element._id)})
     }
-    
+    // Find template packages base on programs and template types
     return this.findTemplatePackage(programAndTempTypes).then(templatePackages => {
       const name = 'Unsubmitted';
       const inProgressName ='in progress';
+      // Filter out in progress template packages
       return this.statusRepository.findByName(name).then(status => {
         return this.statusRepository.findByName(inProgressName).then(inProgress=>{
           const promiseQuery1 = [];
@@ -344,45 +355,55 @@ export default class SubmissionService {
               this.submissionRepository
                 .findByTemplatePackageId(templatePackage._id)
                 .then(submissions => {
-                  // console.log('submissions',submissions)
-                  if (!submissions[0]) {
-                    const { templateIds } = templatePackage;
-                    const promiseQuery3 = [];
-                    if (templateIds !== undefined) {
-                      templateIds.forEach(templateId => {
-                        if (templatePackage.programIds !== undefined) {
-                          templatePackage.programIds.forEach(programId => {
-                            programAndTempTypes.forEach(element => {
-                              if (element.program.toString() == programId.toString()) {
-                              Object.keys(orgMapping).forEach(organizationId=>{
-                                if (orgMapping[organizationId].includes(element.program)){
-                                  const orgId = organizationId;
-                                    promiseQuery3.push(
-                                    this.createSubmissionBaseOnTemplatePackage({
-                                      orgId,
-                                      templateId,
-                                      templatePackageId: templatePackage._id,
-                                      submissionPeriodId: templatePackage.submissionPeriodId,
-                                      programId,
-                                      statusId: status[0]._id,
-                                      version: 0,
-                                      isLatest: true,
-                                    }),
-                                  );
-                                }
-                              });
+                  
+                  const newOrgMapping = JSON.parse(JSON.stringify(orgMapping));
+                  submissions.forEach(submission => {
+                    const orgId = submission.orgId;
+                    const programId = submission.programId;
+                    if(newOrgMapping[orgId]){
+                      newOrgMapping[orgId] = newOrgMapping[orgId].filter(e => 
+                        e.toString() !== programId.toString()
+                     );
+                     newOrgMapping[orgId] = newOrgMapping[orgId].map(e=>String(e))
+                    }
+                  });
+                  const { templateIds } = templatePackage;
+                  const promiseQuery3 = [];
+                  if (templateIds !== undefined) {
+                    templateIds.forEach(templateId => {
+                      if (templatePackage.programIds !== undefined) {
+                        templatePackage.programIds.forEach(programId => {
+                          programAndTempTypes.forEach(element => {
+                            if (element.program.toString() == programId.toString()) {
+                            Object.keys(newOrgMapping).forEach(organizationId=>{
+                              if (newOrgMapping[organizationId].includes(String(element.program))){
+                                const orgId = organizationId;
+                                  promiseQuery3.push(
+                                  this.createSubmissionBaseOnTemplatePackage({
+                                    orgId,
+                                    templateId,
+                                    templatePackageId: templatePackage._id,
+                                    submissionPeriodId: templatePackage.submissionPeriodId,
+                                    programId,
+                                    statusId: status[0]._id,
+                                    version: 0,
+                                    isLatest: true,
+                                  }),
+                                );
                               }
                             });
+                            }
                           });
-                        }
-                      });
-                      // console.log(promiseQuery3)
-                      // count+=1;
-                      return Promise.all(promiseQuery3);
+                        });
+                      }
+                    });
+                    // console.log(promiseQuery3)
+                    // count+=1;
+                    return Promise.all(promiseQuery3);
 
-                      // return Promise.all(promiseQuery3);
-                    }
+                    // return Promise.all(promiseQuery3);
                   }
+                  
                 }),
             );
           });
@@ -395,7 +416,20 @@ export default class SubmissionService {
             const templatePkgSet = new Map();
             const statusSet = new Map();
 
-            const submissionArr = await this.submissionRepository.findByOrgIdAndProgramId(Object.keys(orgMapping), programIds);
+
+            Object.keys(orgMapping).forEach(e=>{
+              orgMapping[e] = orgMapping[e].map(id=>String(id));
+            })
+
+            const rawSubmissionArr = await this.submissionRepository.findByOrgIdAndProgramId(Object.keys(orgMapping), programIds);
+
+            // if orgId is undefined, then it must be an admin, so the filter will not filter
+            // the submissions
+            const submissionArr = orgId? rawSubmissionArr.filter(submission=>{
+              return orgMapping[submission.orgId].includes(String(submission.programId))
+            }
+            ) : rawSubmissionArr;
+            
 
             // Generate a the sets of look up tables to prevent dupllicate entries and provide
             // ease of access later in the code
@@ -445,7 +479,6 @@ export default class SubmissionService {
             
             // Assemble each the object for transfer
             submissionArr.forEach(submission => {
-
               const programData = programSet.get(String(submission.programId));
               const periodName = periodSet.get(String(submission.submissionPeriodId)).name;
               const statusName = statusSet.get(String(submission.statusId)).name;
@@ -468,9 +501,11 @@ export default class SubmissionService {
 
               changedSubmissions.push(changedSubmission)
             });
+
+            
             return changedSubmissions
 
-            /* Note the below code is a faster implementation, but might not scale well 
+            /* Note the below code is a faster implementation at small scale, but might not scale well (not sure)
             * It uses mongoDB's pipeline to reduce complexity, but it might be resouce
             * intensive when there are a lot of submissions*/
 

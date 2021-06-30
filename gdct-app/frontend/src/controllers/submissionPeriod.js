@@ -8,8 +8,12 @@ const submissionPeriodController = (() => {
     withCredentials: true,
   });
   return {
-    fetch: async query => submissionPeriodAxios.get('/fetch').then(res => res.data.submissionPeriods),
-    create: async submissionPeriod => submissionPeriodAxios.post('/create', { submissionPeriod }).then(res => res.data.submissionPeriod),
+    fetch: async query =>
+      submissionPeriodAxios.get('/fetch').then(res => res.data.submissionPeriods),
+    create: async submissionPeriod =>
+      submissionPeriodAxios
+        .post('/create', { submissionPeriod })
+        .then(res => res.data.submissionPeriod),
     update: async submissionPeriod => submissionPeriodAxios.put('/update', { submissionPeriod }),
     delete: async _id => submissionPeriodAxios.post('/delete', { _id }),
   };

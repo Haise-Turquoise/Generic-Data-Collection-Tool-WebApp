@@ -13,14 +13,16 @@ import CreateOutlinedIcon from '@material-ui/icons/CreateOutlined';
 import ExpansionPanel from '@material-ui/core/ExpansionPanel';
 import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import StatusController from '../../controllers/status';
 
 import Typography from '@material-ui/core/Typography';
 import { getSubmissionsRequest } from '../../store/thunks/submission';
 import { selectSubmissionsStore } from '../../store/SubmissionsStore/selectors';
 import { selectFactoryRESTResponseTableValues } from '../../store/common/REST/selectors';
 import { calculateOptions } from '../../tools/misc'
-import StatusController from '../../controllers/status'
+import UsersController from '../../controllers/Users';
 import './SubmissionDashboard.scss'
+import { set } from 'lodash';
 
 const useStyles = makeStyles((theme) => ({
   formControl: {
@@ -44,15 +46,43 @@ const SubmissionDashboard = ({ history }) => {
 
   const [readFilterFrom, setFilterFrom] = useState('All');
   const [readFilterTo, setFilterTo] = useState('All');
+  const [readMessage, setMessage] = useState('Loading submissions...');
 
-  const [statuses, setStatuses] = useState([])
+  const [statuses, setStatuses] = useState([]);
+  const [programFilter, setFilter] = useState([]);
+  const currRole = localStorage.getItem('currentRole');
 
-  useEffect(() => {
-    StatusController.fetch().then(res => {
-      const valid = res.filter(status => status.isActive && !status.forPackage)
-      setStatuses(valid.map(status => status.name))
-    })
-  }, [])
+  let allowedGrouping;
+
+  switch(currRole){
+    case('Inputter'):
+      allowedGrouping = ['Inputted', 'Unsubmitted'];
+      break;
+
+    case('Submitter'):
+      allowedGrouping = ['Unsubmitted', 'Inputted', 'Submitted', 'review', 'Approved' ,'Returned', 'Rejected'];
+      break;
+
+    case('Reviewer'):
+      allowedGrouping = ['Submitted', 'Returned', 'Approved', 'review'];
+      break;
+
+    case('Submission Approver'):
+       allowedGrouping = ['Submitted', 'Returned', 'Approved', 'review', 'Rejected'];
+      break;
+
+    default:
+      allowedGrouping = ['Unsubmitted', 'Inputted', 'Submitted', 'Approved',
+      'pre_view', 'review', 'Returned', 'Rejected'];
+      break;
+  }
+
+  // StatusController.fetch().then(res => {
+  //     const valid = res
+  //       .filter(status => status.isActive && !status.forPackage)
+  //       .sort((a, b) => a.order - b.order)
+  //     setStatuses(valid.map(status => status.name));
+  //   })
 
   const timeOption = { year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric' };
   let { submissions } = useSelector(
@@ -61,13 +91,39 @@ const SubmissionDashboard = ({ history }) => {
     }),
     shallowEqual,
   )
+
+   useEffect(() => {
+    
+    const submissionGroups = submissions.map(e=>e.phase);
+    const allowedStatus = allowedGrouping.filter(e=>submissionGroups.includes(e));
+    setStatuses(allowedStatus);
+    UsersController.fetchByEmail(localStorage.getItem('currentUser')).then(res=>{
+      let filter = [];
+      res.sysRole.forEach(role => {
+        if (role.role === currRole && currRole !== 'Business Admin'){
+          role.org.forEach(orginfo => {
+            filter = filter.concat(orginfo.program.map(e=>String(e.programId)))
+          });
+        }
+      });
+      setFilter(filter);
+    });
+  }, [submissions])
+
   let submitterFlag = false;
 
   if (!Array.isArray(submissions)) {
     submissions = [];
-    dispatch(getSubmissionsRequest());
+    dispatch(getSubmissionsRequest(()=>{setMessage('Nothing to show');}));
   }
+
+
   if (submissions[0] !== undefined) {
+    if (localStorage.getItem('currentRole') !== 'Business Admin'){
+      submissions = submissions.filter(submission=>
+        programFilter.includes(String(submission.programId))
+      );
+    }
     submissions.forEach(submission => {
       const createdAt = new Date(submission.createdAt);
       const modifiedAt = new Date(submission.updatedAt);
@@ -78,20 +134,8 @@ const SubmissionDashboard = ({ history }) => {
       if (!submissionPeriod[submission.period]) {
         submissionPeriod[submission.period] = 1;
       }
-      let filterFrom = submission.period.split(' ')[2];
-      let filterTo = filterFrom;
 
-      if (readFilterFrom != 'All') {
-        filterFrom = readFilterFrom.split(' ')[2];
-      }
-
-      if (readFilterTo != 'All') {
-        filterTo = readFilterTo.split(' ')[2];
-      }
-
-      if (submission !== undefined &&
-        (submission.period.split(' ')[2] >= filterFrom && submission.period.split(' ')[2] <= filterTo)) {
-
+      if (submission !== undefined) {
         if (
           submission.permission.find(
             permission => permission === 'Submitter' || permission === 'Inputter',
@@ -132,7 +176,6 @@ const SubmissionDashboard = ({ history }) => {
     ],
     [],
   );
-
   const notEditableActions = useMemo(
     () => [
       {
@@ -172,10 +215,18 @@ const SubmissionDashboard = ({ history }) => {
   );
 
   useEffect(() => {
-    dispatch(getSubmissionsRequest());
+    dispatch(getSubmissionsRequest(()=>{setMessage('Nothing to show')}));
   }, [dispatch]);
 
+  const getSubmissionsInRange = (status) => submissions.filter(
+    (submission) =>
+      // get submissions for given status and selected period 
+      submission.phase === status && 
+      (readFilterFrom === 'All' || submission.period >= readFilterFrom) && 
+      (readFilterTo === 'All' || submission.period <= readFilterTo)
+    )
 
+  console.log('status', statuses)
   return (
     <div className="submissions">
       <SubmissionHeader />
@@ -207,31 +258,35 @@ const SubmissionDashboard = ({ history }) => {
           })}
         </Select>
       </FormControl>
-
-      {statuses.map(status => {
-        const data = submissions.filter(submission => submission.phase === status)
-        const options = calculateOptions(data.length)
-        return (
-          <ExpansionPanel>
-            <ExpansionPanelSummary 
-              expandIcon={<ExpandMoreIcon />}
-              aria-controls="panel1a-content"
-              id="panel1a-header"
-            >
-              <Typography>{status === 'Unsubmitted' ? 'To-do' : status}</Typography>
-            </ExpansionPanelSummary>
-            <div className="MuiTableContainer">
-              <MaterialTable
-                key={data.length}
-                columns={checkBoxColumns}
-                options={options}
-                data={data}
-                actions={submitterFlag ? actions : notEditableActions}
-              />
-            </div>
-          </ExpansionPanel>
-        )
-      })}
+      {statuses.length > 0 ? 
+        statuses.map(status => {
+          console.log('status', status)
+          const data = getSubmissionsInRange(status)
+          const options = calculateOptions(data.length)
+          return (
+            <ExpansionPanel>
+              <ExpansionPanelSummary 
+                expandIcon={<ExpandMoreIcon />}
+                aria-controls="panel1a-content"
+                id="panel1a-header"
+              >
+                <Typography>{status === 'Unsubmitted' ? 'To-do' : status}</Typography>
+              </ExpansionPanelSummary>
+              <div className="MuiTableContainer">
+                <MaterialTable
+                  key={data.length}
+                  columns={checkBoxColumns}
+                  options={options}
+                  data={data}
+                  actions={submitterFlag ? actions : notEditableActions}
+                />
+              </div>
+            </ExpansionPanel>
+          )
+        }):(<Typography variant="h6" align='center'>
+              {readMessage}
+            </Typography>)
+      }
     </div>
   );
 };

@@ -11,11 +11,6 @@
     "fix": "yarn --cwd gdct-app fix",
     "test": "jest"
   },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged"
-    }
-  },
   "lint-staged": {
     "./**/*.{js,ts}": [
       "yarn fix"

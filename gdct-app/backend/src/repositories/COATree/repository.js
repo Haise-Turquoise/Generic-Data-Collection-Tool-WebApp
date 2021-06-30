@@ -16,8 +16,18 @@ export default class ReportPeriodRepository extends BaseRepository {
 
   async create(COATree) {
     return COATreeModel.create(COATree)
-      .then(COATree => COATree.populate('categoryGroupId').execPopulate())
-      .then(COATree => new COATreeEntity(COATree.toObject()));
+      .then(COATree => {
+        if (Array.isArray(COATree)) {
+          return COATree
+        }
+        return COATree.populate('categoryGroupId').execPopulate()
+      })
+      .then(COATree => {
+        if (Array.isArray(COATree)) {
+          return COATree.map(tree => new COATreeEntity(tree.toObject()))
+        }
+        new COATreeEntity(COATree.toObject())
+      });
   }
 
   async update(id, COATree) {

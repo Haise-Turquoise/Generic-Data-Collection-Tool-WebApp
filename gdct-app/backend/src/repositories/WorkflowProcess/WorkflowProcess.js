@@ -56,7 +56,13 @@ export default class WorkflowProcessRepository extends BaseRepository {
   async deleteMany(workflowId) {
     return WorkflowProcessModel.deleteMany({ workflowId });
   }
-
+  async findProcessesByWorkflowId(workflowId) {
+    // console.log(workflowId)
+    // return WorkflowModel.find()
+    return WorkflowProcessModel.find({'workflowId':workflowId}).then(workflowProcesses =>
+      workflowProcesses.map(workflowProcess => new WorkflowProcessEntity(workflowProcess.toObject())),
+    );
+  }
   async find(query) {
     const realQuery = {};
 

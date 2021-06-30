@@ -1,4 +1,4 @@
-import { unauthorized_dialog } from "../../../components/Unauthorized_Dialog/Unauthorized_Dialog";
+import { unauthorized_dialog } from '../../../components/Unauthorized_Dialog/Unauthorized_Dialog';
 
 export const customRequestFactory = (store, controller, actionType) => query => dispatch => {
   dispatch(store.actions.REQUEST());
@@ -21,9 +21,12 @@ export const getRequestFactory = (store, controller) => (
 
   controller[isPopulated ? 'fetchPopulated' : 'fetch'](query)
     .then(values => {
-      if (values === "UNAUTHORIZED ACCESS") unauthorized_dialog();
-      dispatch(store.actions.RECEIVE(values));
-      if (resolve) resolve();
+      if (values === 'UNAUTHORIZED ACCESS') {
+        unauthorized_dialog();
+      } else {
+        dispatch(store.actions.RECEIVE(values));
+        if (resolve) resolve();
+      }
     })
     .catch(error => {
       dispatch(store.actions.FAIL_REQUEST(error));
@@ -37,7 +40,6 @@ export const createRequestFactory = (store, controller) => (
   reject,
   isPopulated = false,
 ) => dispatch => {
-  console.log(value)
   dispatch(store.actions.REQUEST());
 
   controller[isPopulated ? 'createPopulated' : 'create'](value)
@@ -79,9 +81,13 @@ export const updateRequestFactory = (store, controller) => (
 ) => dispatch => {
   dispatch(store.actions.REQUEST());
   controller[isPopulated ? 'updatePopulated' : 'update'](value)
-    .then(() => {
-      dispatch(store.actions.UPDATE(isPopulated ? populatedData : value));
-      if (resolve) resolve(value);
+    .then(values => {
+      if (values.data === 'UNAUTHORIZED ACCESS') {
+        unauthorized_dialog();
+      } else {
+        dispatch(store.actions.UPDATE(isPopulated ? populatedData : value));
+        if (resolve) resolve(value);
+      }
     })
     .catch(error => {
       dispatch(store.actions.FAIL_REQUEST(error));

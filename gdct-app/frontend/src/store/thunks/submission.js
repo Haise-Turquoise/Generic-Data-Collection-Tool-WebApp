@@ -2,24 +2,22 @@ import submissionController from '../../controllers/submission';
 import AuthController from '../../controllers/Auth';
 import SubmissionsStore from '../SubmissionsStore/store';
 
-import {
-  deleteRequestFactory,
-  updateRequestFactory,
-} from './common/REST';
+import { deleteRequestFactory, updateRequestFactory } from './common/REST';
 import { extractReactAndWorkbookState } from '../../tools/excel';
 
-export const getSubmissionsRequest = () => dispatch => {
+export const getSubmissionsRequest = callback => dispatch => {
   dispatch(SubmissionsStore.actions.REQUEST());
 
   AuthController.profile().then(profile => {
-    console.log(profile.data.email);
     submissionController
       .fetchAndCreate(profile.data.email)
       .then(values => {
         dispatch(SubmissionsStore.actions.RECEIVE(values));
+        callback();
       })
       .catch(error => {
         dispatch(SubmissionsStore.actions.FAIL_REQUEST(error));
+        callback();
       });
   });
 };
@@ -118,7 +116,6 @@ export const updateSubmissionStatusRequest = (
   role,
   newProcessId,
 ) => async dispatch => {
-
   const updatedBy = localStorage.getItem('currentUser');
 
   const newSubmission = {
@@ -140,4 +137,3 @@ export const updateSubmissionStatusRequest = (
     });
   return true;
 };
-

@@ -21,6 +21,27 @@ const UserController = Service([UserService], service => {
         .catch(next);
     });
 
+    
+    // User toBeApproved Array Update
+    router.put(`/updateToBeApprovedUser`, (req, res, next) => {
+      const { userData } = req.body;
+      const _id = userData._id;
+      
+      service
+        .modifyUserToBeApproved(_id, userData)
+        .catch(next);
+    });
+
+    // User PendingPermissions Array Update
+    router.put(`/updatePendingPermissions`, (req, res, next) => {
+      const { userData } = req.body;
+      const _id = userData._id;
+          
+      service
+        .modifyUserPendingPermissions(_id, userData)
+        .catch(next);
+    });
+
     router.post(`/fetchUserByUserName`, (req, res, next) => {
       const { username } = req.body;
 
@@ -43,6 +64,15 @@ const UserController = Service([UserService], service => {
       service
         .sendUserPermissionActiveEmail(approve, _id, orgId)
         .then(res.json({ message: 'You have processed the email' }))
+        .catch(next);
+    });
+
+    router.post(`/users/deletePermission`, (req, res, next) => {
+      const { email, permissionData } = req.body;
+      console.log(email, permissionData)
+      service
+        .deleteUserPermission(email, permissionData)
+        .then(res.json({ message: 'Permission successfully deleted' }))
         .catch(next);
     });
 

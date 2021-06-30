@@ -84,7 +84,12 @@ const _createWorkflow = (dispatch, getState) => {
     );
 
   // Create the data structure of workflow process
-  const workflow = { name: workflowName, _id: workflowId, timestamp: workflowTimestamp, updatedBy: workflowUpdatedBy };
+  const workflow = {
+    name: workflowName,
+    _id: workflowId,
+    timestamp: workflowTimestamp,
+    updatedBy: workflowUpdatedBy,
+  };
   const workflowProcessesData = [];
   const statusData = [];
 

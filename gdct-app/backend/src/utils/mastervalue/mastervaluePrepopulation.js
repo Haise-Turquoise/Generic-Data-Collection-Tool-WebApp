@@ -50,7 +50,7 @@ export const extractCategoryIds = (sheet)=>{
 */
 export async function mastervaluePrepopulation(workbook, submission){
   
-  const {orgId, submissionPeriodId } = submission;
+  const { orgId, submissionPeriodId } = submission;
   const reportingPeriodInfo = await submissionPeriodRepository.findById(submissionPeriodId);
 
   for(let i = 0; i < workbook.length; i++){
@@ -65,7 +65,6 @@ export async function mastervaluePrepopulation(workbook, submission){
 
     // Find the corresponding attributes in the DB, any of the mapping is empty, skip the DB query
     const res = categoryList.length > 0 && attributeList.length > 0 ? await masterValueRepository.batchFind(attributeList, categoryList, orgId) : [];
-
     // populate the sheet with master values according to the mappings
     const colMap = new Map();
     const colList = []
@@ -73,14 +72,14 @@ export async function mastervaluePrepopulation(workbook, submission){
     for (const item in res) {
 
       let masterValueItem = res[item];
-      let ri = categoryMap[masterValueItem.CategoryId];
-      let ci = attributeMap[masterValueItem.AttributeId];
+      let ri = categoryMap[masterValueItem.categoryId];
+      let ci = attributeMap[masterValueItem.attributeId];
       if (!sheet.rows[ri].cells[ci]) sheet.rows[ri].cells[ci] = {};
       sheet.rows[ri].cells[ci].text = masterValueItem.value;
       sheet.rows[ri].cells[ci].editable = false;
 
-      if (!colMap.has(masterValueItem.CategoryId)){
-        colMap.set(masterValueItem.CategoryId, 1);
+      if (!colMap.has(masterValueItem.categoryId)){ 
+        colMap.set(masterValueItem.categoryId, 1);
         colList.push(ci);
       };
     }
@@ -113,12 +112,15 @@ export async function mastervaluePrepopulation(workbook, submission){
       }else{
 
         // add objects if they are undefined
+        if (!sheetRows[4]) sheetRows[4] = {cells:{1:{text:''}}};
         if (!sheetRows[3]) sheetRows[3] = {cells:{1:{text:''}}};
         if (!sheetRows[2]) sheetRows[2] = {cells:{1:{text:''}}};
 
+        if (!sheetRows[4].cells[1]) sheetRows[4].cells[1] = {text:''};
         if (!sheetRows[3].cells[1]) sheetRows[3].cells[1] = {text:''};
         if (!sheetRows[2].cells[1]) sheetRows[2].cells[1] = {text:''};
 
+        sheetRows[4].cells[1].text = 'Reporting Period: ' + reportingPeriodInfo.name;
         sheetRows[3].cells[1].text = 'Facility ID: ' + orgInfo.id;
         sheetRows[2].cells[1].text = 'Hospital Name: ' + orgInfo.name;
       }
@@ -129,10 +131,24 @@ export async function mastervaluePrepopulation(workbook, submission){
     for (let i = 0; i < firstAttributeCol; i++) colList.push(i);
     if (colList.length > 0) colList.push(1);
     lockSheet(colList, colList.length > 0 ? [9, 0]: [0], sheet);
+
+    // Hide the 1st row and col if it has any attributeIDs and categoryIDs
+    // This is to insure that the submitter and approver cannot change the
+    // IDs.
+    if ( attributeList.length > 0 || categoryList.length > 0){
+
+      // Handles the cases where the field may be undefined
+      if (!sheet.cols[0]) sheet.cols[0] = {};
+      if (!sheet.rows[0]) sheet.rows[0] = {};
+
+      // Set hide to true
+      sheet.cols[0].hide = true;
+      sheet.rows[0].hide = true;
+
+    }
   }
 
   return workbook;
-
 }
 
 

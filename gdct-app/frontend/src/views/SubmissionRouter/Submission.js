@@ -8,7 +8,7 @@ import Loading from '../../components/Loading/Loading';
 import { getSubmissionRequest } from '../../store/thunks/submission';
 
 import CustomSnackbarContent from '../../components/CustomSnackbarContent/CustomSnackbarContent';
-import SubmissionSpreadSheet from './SubmissionSpreadSheet'
+import SubmissionSpreadSheet from './SubmissionSpreadSheet';
 
 const Submission = ({
   match: {
@@ -30,7 +30,6 @@ const Submission = ({
     setSnackBar(false);
   };
 
-
   useEffect(() => {
     // If fetch fails, push back to /tempaltes
     dispatch(getSubmissionRequest(_id));
@@ -41,7 +40,7 @@ const Submission = ({
     <Loading />
   ) : (
     <div>
-      <SubmissionSpreadSheet sheetID= {_id}/>
+      <SubmissionSpreadSheet sheetID={_id} />
 
       <Snackbar
         anchorOrigin={{

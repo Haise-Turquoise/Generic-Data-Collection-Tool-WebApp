@@ -27,15 +27,11 @@ export const middlewares = app => {
   app.use(cookieParser());
   app.use(json({ limit: '50mb' }));
   app.use(urlencoded({ extended: true }));
-
   app.use(cors({ credentials: true, origin: process.env.CLIENT_SERVER }));
-
   app.use(compression());
-
   app.use(customLogger);
 
   const CookieStore = mongoStore(session);
-  
   app.use(
     session({
       secret: process.env.COOKIE_SECRET,
@@ -48,29 +44,20 @@ export const middlewares = app => {
     }),
   );
   
-  app.use(passport.initialize());
-  app.use(passport.session());
-
-  app.use((req, res, next) => {
-    // res.cookie('lang', 'fr');
-    i18n.init(req, res);
-    res.locals.__ = res.__;
-    const currentLocale = i18n.getLocales();
-    return next();
-  });
-
   let allowedUrls = [];
   let isLoggedIn = false;
   app.use('/', async (req, res, next) => {
     const requestUrl = req.originalUrl;
-    // Allow all requests before completing login
-    if (!isLoggedIn && requestUrl !== '/login') return next();
-
+    
     // During the logging in process, fetch all allowed requestUrls for this user
-    if (!isLoggedIn && requestUrl === '/login' && req.body.selectedRole !== "") {
+    if (!isLoggedIn && requestUrl === '/login' && req.body.selectedRole !== undefined) {
       // Fetching
       const user = await UserModel.findOne({ email: req.body.email });
-      const loggedInSysRole = user.sysRole.find(sysRole => sysRole.role === req.body.selectedRole);
+      let loggedInSysRole = user.sysRole.find(sysRole => sysRole.role === req.body.selectedRole);
+      // *** Set the role to be the first available role for this user as the default role 
+      // *** because autofill feature would make the user role empty
+      if (!loggedInSysRole) loggedInSysRole = user.sysRole[0];
+
       const loggedInAs = loggedInSysRole.appSys + ' ' + loggedInSysRole.role;
       const allowedRoleResource = await AppRoleResourceModel.findOne({ 'appSysRoleId.roleName': loggedInAs });
       const allowedResources = allowedRoleResource.toObject().resourceId;
@@ -89,11 +76,11 @@ export const middlewares = app => {
 
     // Check whether a logged in user is allowed to access requestUrls
     if (isLoggedIn && requestUrl !== '/login') {
-      console.log(allowedUrls.length);
       if (allowedUrls.includes(requestUrl)) {
-        console.log("ALLOWED");
+        // console.log("ALLOWED");
       } else {
-        console.log("NOT ALLOWED");
+        // If the user is not authenticated
+        console.log(`NOT ALLOWED for request url: ${requestUrl}`);
         return res.send("UNAUTHORIZED ACCESS");
       }
     };
@@ -109,6 +96,17 @@ export const middlewares = app => {
     //   console.log(cookieID);
     // }
     next();
+  });
+  
+  app.use(passport.initialize());
+  app.use(passport.session());
+
+  app.use((req, res, next) => {
+    // res.cookie('lang', 'fr');
+    i18n.init(req, res);
+    res.locals.__ = res.__;
+    const currentLocale = i18n.getLocales();
+    return next();
   });
 
   dbUtil.connect();

@@ -79,11 +79,10 @@ export default class UserRepository extends BaseRepository {
   }
 
   async update(_id, user) {
-    return UserModel.findOneAndUpdate({ _id }, { user });
+    return UserModel.findOneAndUpdate({ _id}, { user });
   }
 
   async modifyUserInfo(_id, userData) {
-    console.log(userData)
     return UserModel.findOneAndUpdate({ _id: _id }, 
       { title: userData.title, 
         firstName: userData.firstName, 
@@ -92,7 +91,22 @@ export default class UserRepository extends BaseRepository {
         username: userData.username,
         phoneNumber: userData.phoneNumber,
         ext: userData.ext,
+      }
+    );
+  }
+  async modifyUserToBeApproved(_id, userData) {
+    return UserModel.findOneAndUpdate({ _id: _id }, 
+      { 
         toBeApproved: userData.toBeApproved,
+      }
+    );
+  }
+  async modifyUserPendingPermissions(_id, userData) {
+    return UserModel.findOneAndUpdate({ _id: _id }, 
+      { 
+        sysRole:userData.sysRole,
+        isActive: userData.isActive,
+        pendingPermissions: userData.pendingPermissions,
       }
     );
   }
@@ -100,7 +114,6 @@ export default class UserRepository extends BaseRepository {
   async updatePermissionByUserEmail(email,permissionData,orgList) {
     const sysRole = permissionData.sysRole;
     const newTemplates = permissionData.newTemplates
-    console.log(sysRole)
     return UserModel.findOne({email}).then(user=>{
       sendPermissionChangeUserVerficationEmail(user.username, user.email)
       const hashedUsername = user.hashedUsername;

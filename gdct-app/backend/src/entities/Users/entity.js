@@ -17,6 +17,8 @@ export default class UsersEntity {
     ext,
     timestamp,
     updatedBy,
+    pendingPermissions,
+    toBeApproved,
   }) {
     this._id = _id;
     this.username = username;
@@ -35,5 +37,8 @@ export default class UsersEntity {
     this.ext = ext;
     this.timestamp = timestamp;
     this.updatedBy = updatedBy;
+    this.pendingPermissions = pendingPermissions;
+    this.toBeApproved = toBeApproved;
+
   }
 }
