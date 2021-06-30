@@ -331,7 +331,6 @@ const EditSubmission = ({ history }) => {
     history.push({
       pathname: `/admin/submission/submissions/${submission._id}`,  
       // @ts-ignore
-      state: { detail: location.state.detail },
     });
   }
 

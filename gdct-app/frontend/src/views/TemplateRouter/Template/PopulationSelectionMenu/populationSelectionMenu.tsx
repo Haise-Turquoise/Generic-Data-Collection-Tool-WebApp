@@ -19,7 +19,7 @@ class populationSelectionMenu extends Component<MenuProps>{
 
   componentDidMount(){
     // @ts-ignore
-    spreadSheetController.fetchOrg().then((data: {orgs:OrgsData[]})=>{this.orgList = data.orgs});
+    spreadSheetController.fetchOrg().then((data: {orgs:OrgsData[]})=>{this.orgList = data.orgs; console.log(data)});
   }
    
    notifySelection(){

@@ -5,6 +5,7 @@
 import React, { useEffect, useCallback, useState } from 'react';
 
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
+import { useHistory } from 'react-router-dom';
 import { Button, Chip } from '@material-ui/core';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
@@ -78,8 +79,7 @@ const Template = ({
   },
 }) => {
   const dispatch = useDispatch();
-  let sheet = undefined;
-
+  const history = useHistory();
   const { template } = useSelector(
     state => ({
       template: selectFactoryValueById(selectTemplatesStore)(_id)(state),
@@ -106,7 +106,7 @@ const Template = ({
     <div>
       <TemplatePhases template={template} />
      
-      <Spreadsheet templateID={_id} name={template.name}/>
+      <Spreadsheet templateID={_id} name={template.name} backButton={()=>history.push('/admin/template/design')}/>
     </div>
   ) : (
     <Loading />

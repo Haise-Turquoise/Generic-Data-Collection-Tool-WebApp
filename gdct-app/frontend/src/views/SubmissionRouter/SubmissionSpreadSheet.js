@@ -61,6 +61,7 @@ class SubmissionSpreadSheet extends Component{
       this.clearComponentChild = this.clearComponentChild.bind(this);
       this.insertOrg = this.insertOrg.bind(this);
       this.disable = this.props.disable;
+      console.log(this.state.data)
     }
 
     // After component mount, initailize spreadsheet and load data from DB
@@ -172,6 +173,9 @@ class SubmissionSpreadSheet extends Component{
             <div style={{display:'flex'}}>
               <Button variant="outlined" color="primary" onClick={this.saveTemplate}>
                 Save
+              </Button>
+               <Button variant="outlined" color="primary" onClick={this.saveTemplate}>
+                back
               </Button>
               
             </div>

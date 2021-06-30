@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback, useMemo, MouseEventHandler, ChangeEventHandler, ChangeEvent } from 'react';
+import React, { useEffect, useCallback, useMemo, MouseEventHandler } from 'react';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import { RouteComponentProps, useHistory } from 'react-router-dom';
 
@@ -149,10 +149,16 @@ const ThirdSection = ({ values, handleRemoveProgram }: {
     dispatch(DialogsStoreActions.OPEN_PROGRAM_DIALOG());
   }, [dispatch]);
 
+  console.log(values.programIds)
+
+  const sortedPrograms = values.programIds.slice().sort((a, b)=>
+    b.name.localeCompare(a.name)
+  );
+
   return (
     <CustomField label="Programs" handleClick={handleOpenTemplateDialog} addButton>
       <List>
-        {values.programIds.map(program => (
+        {sortedPrograms.map(program => (
           <ListItem key={uniqid()}>
             <ListItemText className="mr-5" primary={program.name} />
             <ListItemSecondaryAction>
