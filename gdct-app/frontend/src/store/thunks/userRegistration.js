@@ -369,7 +369,6 @@ const submissionChange = userSubmissions => {
           submission.submission.status == undefined ? 'pending' : submission.submission.status,
         appSys:submission.appSys == undefined?'unknown': submission.appSys,
         
-        
       });
     });
   });
@@ -591,7 +590,7 @@ export const loadModifyPermissionPage = () => async (dispatch, getState) => {
 
   const user = await usersController.fetchByEmail(email);
   //
-  console.log(user)
+
   if (user.sysRole && tempUserSubmissions.length == 0) {
     let UserSysRole = [];
     // if there is no pending templates in the database
@@ -621,7 +620,6 @@ export const loadModifyPermissionPage = () => async (dispatch, getState) => {
         viewAvailable: true,
         viewCognosAvailable: true,
         appSys: null,
-        
       };
       // assign appSys for each userSubmission
       userSubmission.appSys = sysRole.appSys;
@@ -657,7 +655,6 @@ export const loadModifyPermissionPage = () => async (dispatch, getState) => {
             name: programInfo.name,
             code: programInfo.code,
             _id: programInfo._id,
-
           };
           // loop over each template
           for (const template of program.template) {
@@ -665,7 +662,6 @@ export const loadModifyPermissionPage = () => async (dispatch, getState) => {
               name: template.templateCode,
               _id: template.templateTypeId,
               status: template.status,
-              timestamp:template.timestamp,
             };
             const userSubmissionCopy = cloneDeep(userSubmission);
             // get specific template information
