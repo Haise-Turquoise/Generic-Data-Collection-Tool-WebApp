@@ -1,20 +1,17 @@
 import React, { useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
-//@ts-ignore
 import AuthController from '../controllers/Auth';
-//@ts-ignore
 import CreateAuditLog from './AuditLog_Global';
-//@ts-ignore
 import UserStore from '../store/UserStore/store';
 
-export default function Logout({ setLoggedIn }:{setLoggedIn:(flag:boolean)=>void}) {
+export default function Logout({ setLoggedIn }) {
   const history = useHistory();
 
   // Get User Email
   const email = localStorage.getItem('currentUser');
   useEffect(() => {
-    AuthController.logout(email).then((res:{status:string}) => {
+    AuthController.logout(email).then(res => {
       if (res.status === 'ok') {
         // Audit Logout
         CreateAuditLog(email, 'Logout', 'Logout', null, {}, {});
@@ -28,3 +25,4 @@ export default function Logout({ setLoggedIn }:{setLoggedIn:(flag:boolean)=>void
   dispatch(UserStore.actions.LOGOUT(false));
   return null;
 }
+
