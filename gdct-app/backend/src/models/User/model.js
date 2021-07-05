@@ -44,6 +44,7 @@ const User = new Schema(
                     templateTypeId: { type: ObjectId, ref: 'templateType' },
                     templateCode: { type: String, default: '' },
                     status:{type:String, default:'approved'},
+                    timestamp:{type:Date},
                   },
                 ],
               },

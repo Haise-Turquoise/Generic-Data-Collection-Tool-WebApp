@@ -16,7 +16,7 @@ const MenuHeader = () => {
     });
   }, []);
   return (
-    <>
+    <div>
       {config.map((item, index) => {
         const { type, name, icon, url } = item;
         return item.type !== 'drawer' && item.type !== 'topmenu' ? (
@@ -41,7 +41,7 @@ const MenuHeader = () => {
           <DrawerItem key={`${type}-${name}-${index}`} {...item} option="main" />
         );
       })}
-    </>
+    </div>
   );
 };
 

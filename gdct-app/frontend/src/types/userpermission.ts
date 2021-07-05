@@ -1,7 +1,7 @@
 export default interface UserPermission {
     organization:{id:number, name:string, authorizedPerson:{name:string, email:string}};
     program:{name:string, code:string, _id:string};
-    submission:{name:string, _id:string};
+    submission:{name:string, _id:string, timestamp?:Date;};
     permission:string;
     approve:boolean;
     review:boolean;
@@ -11,4 +11,5 @@ export default interface UserPermission {
     input:boolean;
     status:string;
     appSys:string;
+    
 }

@@ -22,11 +22,14 @@ export const getUserInfoPopulatedRequest = email => dispatch => {
 };
 
 const handleInputTemplate = (rowData, template) => {
+  const newTimestamp = new Date().toLocaleString();
   const newTemplate = {
     templateTypeId: rowData.submission._id,
     templateCode: rowData.submission.name,
     status: 'approved',
+    timestamp:newTimestamp,
   };
+  console.log(newTemplate)
   template.push(newTemplate);
 };
 
@@ -135,6 +138,7 @@ export const approvePermission = (rowData, applierUser, user, resolve, reject) =
       resolve();
     }
   });
+  console.log(applierUserCopy)
   userController.updatePendingPermissions(applierUserCopy).then(result => {
     if (resolve) {
       resolve();

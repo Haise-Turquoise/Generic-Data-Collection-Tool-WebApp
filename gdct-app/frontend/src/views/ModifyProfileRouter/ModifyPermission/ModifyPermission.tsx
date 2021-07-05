@@ -21,7 +21,7 @@ import './ModifyPermission.scss';
 //@ts-ignore
 import * as yup from 'yup';
 import MaterialTable from 'material-table';
-
+import moment from 'moment';
 import { useTranslation } from 'react-i18next';
 //@ts-ignore
 import Swal from 'sweetalert2';
@@ -74,6 +74,12 @@ const columns = [
     title: "Authoritative Person's Email",
     field: 'organization.authorizedPerson.email',
   },
+  {
+    title:"Approved time",
+    //@ts-ignore
+    render: (rowData:UserPermission) => rowData.submission.timestamp?`${moment(new Date(rowData.submission.timestamp)).format('YYYY-MM-DD HH:mm:ss')}`:<div></div>,
+  },
+  
 ];
 
 // Button on the bottom of page
