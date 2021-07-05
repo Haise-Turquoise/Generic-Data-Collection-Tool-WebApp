@@ -48,6 +48,9 @@ const TemplateHeader = () => {
 const TemplatesTable = ({ history }) => {
   const dispatch = useDispatch();
   const [readRowNum, setRowNum] = useState(1);
+  const [readIndex, setIndex] = useState();
+  const [readTemplate, setTemplate] = useState();
+  const [readIndexName, setIndexName] = useState();
   const { templates, lookupTemplateTypes, workflowProcesses } = useSelector(
     state => ({
       templates: selectFactoryRESTResponseTableValues(selectTemplatesStore)(state),
@@ -60,13 +63,54 @@ const TemplatesTable = ({ history }) => {
     acc[value._id] = value.statusId.name;
     return acc;
   }, {});
+
+  useEffect(()=>{
+    
+    const keys = Object.keys(lookupTemplateTypes);
+
+    const nameArray = [];
+
+    keys.forEach(key=>{
+      nameArray.push(lookupTemplateTypes[key]);
+    });
+
+    const sortedNameArray = nameArray.sort();
+    
+    const IdToIndex = new Map();
+    const IndexToId = {};
+    const IndexToName = {};
+
+    keys.forEach(key=>{
+      const index = sortedNameArray.indexOf(lookupTemplateTypes[key]);
+      IdToIndex.set(String(key), index);
+      IndexToId[index]=String(key);
+      IndexToName[index]=lookupTemplateTypes[key];
+    })
+
+    const modifiedTemplates = [];
+
+    templates.forEach(template=>{
+      const Id = String(template.templateTypeId);
+      const modifiedTemplate = Object.assign({}, template)
+      modifiedTemplate.templateTypeId = IdToIndex.get(Id);
+      modifiedTemplates.push(modifiedTemplate);
+    });
+    
+    setTemplate(modifiedTemplates);
+    setIndex(IndexToId);
+    setIndexName(IndexToName);
+  
+  }, [templates, lookupTemplateTypes]);
+  
+
+  
   const columns = useMemo(
     () => [
       { title: 'Name', field: 'name' },
       {
         title: 'Template Type ID',
         field: 'templateTypeId',
-        lookup: lookupTemplateTypes,
+        lookup: readIndexName,
       },
       {
         title: 'Creation Date',
@@ -120,8 +164,10 @@ const TemplatesTable = ({ history }) => {
           template.updatedBy = localStorage.getItem('currentUser');
           // record new date and time in Modified On column
           const event = new Date();
-          template.timestamp = event.toLocaleString();
-          dispatch(createTemplateRequest(template, resolve, reject));
+          template.timestamp = event.toLocaleString(); 
+          const convertedTemplate = Object.assign({}, template);
+          convertedTemplate.templateTypeId = readIndex[template.templateTypeId];
+          dispatch(createTemplateRequest(convertedTemplate, resolve, reject));
         }),
       onRowUpdate: template =>
         new Promise((resolve, reject) => {
@@ -131,7 +177,9 @@ const TemplatesTable = ({ history }) => {
           const event = new Date();
           template.timestamp = event.toLocaleString();
           delete template.templateData;
-          dispatch(updateTemplateRequest(template, resolve, reject));
+          const convertedTemplate = Object.assign({}, template);
+          convertedTemplate.templateTypeId = readIndex[template.templateTypeId];
+          dispatch(updateTemplateRequest(convertedTemplate, resolve, reject));
         }),
       onRowDelete: template =>
         new Promise((resolve, reject) => {
@@ -139,11 +187,13 @@ const TemplatesTable = ({ history }) => {
           template.updatedBy = localStorage.getItem('currentUser');
           // record new date and time in Modified On column
           const event = new Date();
-          template.timestamp = event.toLocaleString();
-          dispatch(deleteTemplateRequest(template._id, resolve, reject));
+          template.timestamp = event.toLocaleString(); 
+          const convertedTemplate = Object.assign({}, template);
+          convertedTemplate.templateTypeId = readIndex[template.templateTypeId];
+          dispatch(deleteTemplateRequest(convertedTemplate._id, resolve, reject));
         }),
     }),
-    [dispatch],
+    [dispatch, readIndex],
   );
 
   // Convert Date format
@@ -179,7 +229,7 @@ const TemplatesTable = ({ history }) => {
       key={readRowNum}
       columns={columns}
       actions={actions}
-      data={templates}
+      data={readTemplate}
       editable={editable}
       options={options}
     />

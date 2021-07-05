@@ -1,4 +1,4 @@
-import React, { useMemo, useEffect, useState, useRef } from 'react';
+import React, { useMemo, useEffect, useState, ChangeEvent, MouseEvent } from 'react';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 
 import MenuItem from '@material-ui/core/MenuItem';
@@ -13,16 +13,22 @@ import CreateOutlinedIcon from '@material-ui/icons/CreateOutlined';
 import ExpansionPanel from '@material-ui/core/ExpansionPanel';
 import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import StatusController from '../../controllers/status';
 
+import { History } from 'history';
+import { Submission } from '../../types/submissions'
+import  User  from '../../types/user';
 import Typography from '@material-ui/core/Typography';
+// @ts-ignore
 import { getSubmissionsRequest } from '../../store/thunks/submission';
+// @ts-ignore
 import { selectSubmissionsStore } from '../../store/SubmissionsStore/selectors';
+// @ts-ignore
 import { selectFactoryRESTResponseTableValues } from '../../store/common/REST/selectors';
+// @ts-ignore
 import { calculateOptions } from '../../tools/misc'
+// @ts-ignore
 import UsersController from '../../controllers/Users';
 import './SubmissionDashboard.scss'
-import { set } from 'lodash';
 
 const useStyles = makeStyles((theme) => ({
   formControl: {
@@ -38,9 +44,9 @@ const SubmissionHeader = () => (
   </Paper>
 );
 
-const SubmissionDashboard = ({ history }) => {
+const SubmissionDashboard = ({ history }:{history:History}) => {
   const dispatch = useDispatch();
-  const submissionPeriod = {};
+  const submissionPeriod:{[index:string]:number} = {};
   const styleFactor = '0.2%';
   const classTheme = useStyles();
 
@@ -48,11 +54,11 @@ const SubmissionDashboard = ({ history }) => {
   const [readFilterTo, setFilterTo] = useState('All');
   const [readMessage, setMessage] = useState('Loading submissions...');
 
-  const [statuses, setStatuses] = useState([]);
-  const [programFilter, setFilter] = useState([]);
+  const [statuses, setStatuses] = useState<string[]>([]);
+  const [programFilter, setFilter] = useState<string[]>([]);
   const currRole = localStorage.getItem('currentRole');
 
-  let allowedGrouping;
+  let allowedGrouping:string[];
 
   switch(currRole){
     case('Inputter'):
@@ -85,20 +91,22 @@ const SubmissionDashboard = ({ history }) => {
   //   })
 
   const timeOption = { year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric' };
-  let { submissions } = useSelector(
+  let { submissions }:{submissions:Submission[]} = useSelector(
     state => ({
       submissions: selectFactoryRESTResponseTableValues(selectSubmissionsStore)(state),
     }),
     shallowEqual,
   )
 
+  console.log(submissions)
+
    useEffect(() => {
     
     const submissionGroups = submissions.map(e=>e.phase);
     const allowedStatus = allowedGrouping.filter(e=>submissionGroups.includes(e));
     setStatuses(allowedStatus);
-    UsersController.fetchByEmail(localStorage.getItem('currentUser')).then(res=>{
-      let filter = [];
+    UsersController.fetchByEmail(localStorage.getItem('currentUser')).then((res:User)=>{
+      let filter:string[] = [];
       res.sysRole.forEach(role => {
         if (role.role === currRole && currRole !== 'Business Admin'){
           role.org.forEach(orginfo => {
@@ -150,11 +158,11 @@ const SubmissionDashboard = ({ history }) => {
   }
 
 
-  const handleFilterFrom = (event) => {
+  const handleFilterFrom = (event:ChangeEvent<{ value: any; }>) => {
     setFilterFrom(event.target.value);
   }
 
-  const handleFilterTo = (event) => {
+  const handleFilterTo = (event:ChangeEvent<{ value: any; }>) => {
     setFilterTo(event.target.value);
   }
 
@@ -181,10 +189,10 @@ const SubmissionDashboard = ({ history }) => {
       {
         icon: CreateOutlinedIcon,
         tooltip: 'View/Edit Submission',
-        onClick: (_event, submission) =>
+        onClick: (_event:MouseEvent, submission:Submission) =>
           history.push({
             pathname: `/submission/dashboard/editSubmission/${submission._id}`,
-            state: { detail: submission, submissionList: submissions },
+            state: { detail: submission, submissionList: submissions, history },
           }),
       },
     ],
@@ -195,7 +203,7 @@ const SubmissionDashboard = ({ history }) => {
       {
         icon: LaunchIcon,
         tooltip: 'Upload Submission',
-        onClick: (_event, submission) =>
+        onClick: (_event:MouseEvent, submission:Submission) =>
           history.push({
             pathname: `/submission/createSubmission/${submission._id}`,
             state: { detail: submission },
@@ -204,7 +212,7 @@ const SubmissionDashboard = ({ history }) => {
       {
         icon: CreateOutlinedIcon,
         tooltip: 'View/Edit Submission',
-        onClick: (_event, submission) =>
+        onClick: (_event:MouseEvent, submission:Submission) =>
           history.push({
             pathname: `/submission/dashboard/editSubmission/${submission._id}`,
             state: { detail: submission },
@@ -218,7 +226,7 @@ const SubmissionDashboard = ({ history }) => {
     dispatch(getSubmissionsRequest(()=>{setMessage('Nothing to show')}));
   }, [dispatch]);
 
-  const getSubmissionsInRange = (status) => submissions.filter(
+  const getSubmissionsInRange = (status:string) => submissions.filter(
     (submission) =>
       // get submissions for given status and selected period 
       submission.phase === status && 
@@ -278,6 +286,7 @@ const SubmissionDashboard = ({ history }) => {
                   columns={checkBoxColumns}
                   options={options}
                   data={data}
+                  //@ts-ignore
                   actions={submitterFlag ? actions : notEditableActions}
                 />
               </div>
