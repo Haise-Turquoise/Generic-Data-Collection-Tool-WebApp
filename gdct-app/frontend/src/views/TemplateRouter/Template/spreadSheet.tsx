@@ -11,8 +11,6 @@ import spreadSheetController from '../../../controllers/spreadSheet';
 //@ts-ignore
 import PopulationSelectionMenu from './PopulationSelectionMenu';
 //@ts-ignore
-import OrgController from '../../../controllers/organization';
-//@ts-ignore
 import VarianceInsertionMenu from './InsertVarianceMenu'
 import Button from '@material-ui/core/Button';
 import { digitToAlpha,
@@ -24,7 +22,7 @@ import { digitToAlpha,
 import appConfigController from '../../../controllers/AppConfig';
 //@ts-ignore
 import { ObjectId } from 'mongoose';
-import {PreviewData, Coordinate, SpreadSheetProps, CategorySelection, IdMapping, OrgPreviewData} from '../../../types/spreadsheetTypes/spreadSheetTypes';
+import {PreviewData, Coordinate, SpreadSheetProps, CategorySelection, IdMapping} from '../../../types/spreadsheetTypes/spreadSheetTypes';
 import { MasterValue } from '../../../types/mastervalue';
 import Template from '../../../types/template';
 import AppConfig from '../../../types/appconfig';
@@ -72,19 +70,16 @@ class SpreadSheet extends Component<SpreadSheetProps>{
   id: ObjectId;
   workBookName: string;
   currentCoord: Coordinate;
-  insertedPreview: (PreviewData|OrgPreviewData)[];
+  insertedPreview: PreviewData[];
   prevVarianceSelection: string;
   validationThreshold: number;
   attrbuteRow: number;
-  backButton:Function;
   sheet: any;
 
   constructor(props:SpreadSheetProps) {
     super(props);
     this.sheet = null;
     this.id = this.props.templateID;
-    this.backButton = this.props.backButton;
-    this.openUploadMenu = this.openUploadMenu.bind(this);
     this.saveTemplate = this.saveTemplate.bind(this);
     this.handleSave = this.handleSave.bind(this);
     this.insertCategory = this.insertCategory.bind(this);
@@ -245,56 +240,27 @@ class SpreadSheet extends Component<SpreadSheetProps>{
   }
 
   // This function handles enable preview feature
-  async enablePreview(orgID:number){
-    const orgInfo = await OrgController.fetchById(orgID);
+  enablePreview(orgID:number){
     const currentSheetIndex = this.sheet.getCurrentSheetIndex();
 
     // Generate mappings
     const categoryMapping = this.sheet.datas[currentSheetIndex].rowLookUpTable(0);
     const attributeMapping = this.sheet.datas[currentSheetIndex].colLookUpTable(0);
-    console.log(this.sheet.datas[currentSheetIndex])
 
     const categories = Object.keys(categoryMapping);
     const attributes = Object.keys(attributeMapping);
 
-    const productOfLength = categories.length* attributes.length;
-
     // Get the master values from DB
-    const masterValueData:MasterValue[] = productOfLength > 0 ? await spreadSheetController.fetchByOrgID(orgID, categories, attributes):[];
-
-    // Insert mastervalue preview
-    masterValueData.forEach(element => {
-      const COAID = element["categoryId"];
-      const attributeId = element["attributeId"];
-      const value = element['value'];
-      this.sheet.cellText(categoryMapping[COAID], attributeMapping[attributeId], value, currentSheetIndex);
-      this.insertedPreview.push({COAID, attributeId, currentSheetIndex});
+    spreadSheetController.fetchByOrgID(orgID, categories, attributes).then((data:MasterValue[])=>{
+      data.forEach(element => {
+        const COAID = element["categoryId"];
+        const attributeId = element["attributeId"];
+        const value = element['value'];
+        this.sheet.cellText(categoryMapping[COAID], attributeMapping[attributeId], value, currentSheetIndex);
+        this.insertedPreview.push({COAID, attributeId, currentSheetIndex});
+      });
+      this.sheet.reRender();
     });
-
-    // Insert org info
-    const sheetName = this.sheet.datas[currentSheetIndex].name;
-
-    // Since org info is located differently in some sheets, we need to check for sheet names
-    if (sheetName.toLowerCase() !== 'identification'){
-      this.sheet.cellText(3, 1, 'Facility ID: ' + orgInfo.id, currentSheetIndex);
-      this.sheet.cellText(2, 1, 'Hospital Name: ' + orgInfo.name, currentSheetIndex);
-
-      this.insertedPreview.push({row:3, col:1, originalValue:'Facility ID:' ,currentSheetIndex});
-      this.insertedPreview.push({row:2, col:1, originalValue:'Hospital Name:' ,currentSheetIndex});
-
-    }else{
-      this.sheet.cellText(8, 3, orgInfo.id, currentSheetIndex);
-      this.sheet.cellText(9, 3, orgInfo.IFISNum, currentSheetIndex);
-      this.sheet.cellText(12, 3, orgInfo.name, currentSheetIndex);
-      this.sheet.cellText(13, 3, orgInfo.legalName, currentSheetIndex);
-
-      this.insertedPreview.push({row:8, col:3, originalValue:'' ,currentSheetIndex});
-      this.insertedPreview.push({row:9, col:3, originalValue:'' ,currentSheetIndex});
-      this.insertedPreview.push({row:12, col:3, originalValue:'' ,currentSheetIndex});
-      this.insertedPreview.push({row:13, col:3, originalValue:'' ,currentSheetIndex});
-    }
-
-    this.sheet.reRender();
   }
 
   getCurrentSheet(){
@@ -315,13 +281,8 @@ class SpreadSheet extends Component<SpreadSheetProps>{
     // delete the previews for all the sheets
     // Coord is the object in the inserted preview array
     this.insertedPreview.forEach(coord=>{
-      if ('COAID' in coord){
-        let {COAID, attributeId, currentSheetIndex} = coord;
-        this.sheet.cellText(categoryMapping[currentSheetIndex][COAID], attributeMapping[currentSheetIndex][attributeId], '', currentSheetIndex);
-      }else{
-        let {row, col, currentSheetIndex, originalValue} = coord;
-        this.sheet.cellText(row, col, originalValue, currentSheetIndex)
-      }
+      let {COAID, attributeId, currentSheetIndex} = coord;
+      this.sheet.cellText(categoryMapping[currentSheetIndex][COAID], attributeMapping[currentSheetIndex][attributeId], '', currentSheetIndex);
     });
 
     this.insertedPreview = [];
@@ -358,11 +319,6 @@ class SpreadSheet extends Component<SpreadSheetProps>{
     this.sheet.reRender();
   }
 
-  openUploadMenu(){
-    const targetElement = document.getElementById('upload-button') as HTMLInputElement;
-    targetElement.click();
-  }
-
   // This is the function for handling the import
   // It reads the file from client's computer and converts it into Json array that
   // x-data-spreadsheet can understand. At the end we are saving this Json array 
@@ -395,17 +351,7 @@ class SpreadSheet extends Component<SpreadSheetProps>{
                 type="file"
                 accept=".xlsx, .xlsm"
                 onChange={(e) => this.fileImportHandler(e)}
-                hidden
-                id='upload-button'
               />
-             
-              <Button variant="outlined" color="primary" onClick={()=>this.openUploadMenu()}>
-                Upload Template
-              </Button>
-             
-              <Button variant="outlined" color="primary" onClick={()=>this.backButton()}>
-                Go Back
-              </Button>
             </div>
             <div id="x-spreadsheet"></div>
             <a id="download" style={{display:'none'}}></a>

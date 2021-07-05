@@ -4,13 +4,6 @@ export interface PreviewData{
   currentSheetIndex:number;
 }
 
-export interface OrgPreviewData{
-  row:number;
-  col:number;
-  currentSheetIndex:number;
-  originalValue:string;
-}
-
 export interface Coordinate{
   row:number;
   col:number;
@@ -19,7 +12,6 @@ export interface Coordinate{
 export interface SpreadSheetProps{
   templateID:string;
   name:string;
-  backButton:Function;
 }
 
 export interface CategorySelection{
