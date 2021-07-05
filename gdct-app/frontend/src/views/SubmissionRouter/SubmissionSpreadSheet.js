@@ -1,4 +1,6 @@
+import { withRouter } from 'react-router';
 import React, { Component } from "react";
+import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import Spreadsheet from 'x-data-spreadsheet';
 import submissionController from '../../controllers/submission';
 import statusController from '../../controllers/status';
@@ -60,8 +62,7 @@ class SubmissionSpreadSheet extends Component{
       this.orginalValue = null;
       this.clearComponentChild = this.clearComponentChild.bind(this);
       this.insertOrg = this.insertOrg.bind(this);
-      this.disable = this.props.disable;
-      console.log(this.state.data)
+      this.history = this.props.history;
     }
 
     // After component mount, initailize spreadsheet and load data from DB
@@ -174,7 +175,8 @@ class SubmissionSpreadSheet extends Component{
               <Button variant="outlined" color="primary" onClick={this.saveTemplate}>
                 Save
               </Button>
-               <Button variant="outlined" color="primary" onClick={this.saveTemplate}>
+               <Button variant="outlined" color="primary" onClick={()=>{this.history.goBack()}}>
+               <ArrowBackIcon></ArrowBackIcon>
                 back
               </Button>
               
@@ -185,4 +187,4 @@ class SubmissionSpreadSheet extends Component{
     }
 }
 
-export default SubmissionSpreadSheet;
+export default withRouter(SubmissionSpreadSheet);
