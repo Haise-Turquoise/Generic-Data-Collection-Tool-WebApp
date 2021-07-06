@@ -27,5 +27,5 @@ export interface CategorySelection{
 }
 
 export interface IdMapping{
-  [Id:string]:number
+  [Id:string]:number,
 }

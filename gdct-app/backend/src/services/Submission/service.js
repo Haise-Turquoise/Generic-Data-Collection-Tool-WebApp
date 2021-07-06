@@ -113,7 +113,7 @@ export default class SubmissionService {
                   .concat('_', program.name, '_', template.name);
                 submission.workflowProcessId = initialNode;
                 submission.workbookData = template.templateData;
-
+                submission.templateName = template.name;
                 submission.workflowId = templateType.submissionWorkflowId;
                 
                 return this.submissionRepository.create(submission);
@@ -205,7 +205,7 @@ export default class SubmissionService {
 
 
   
-  async updateStatus(submission, submissionNote, role, nextProcessId,updatedBy) {
+  async updateStatus(submission, submissionNote, role, nextProcessId, updatedBy) {
     
     const submissionNotes = {
       note: submissionNote,
@@ -214,7 +214,6 @@ export default class SubmissionService {
       updatedBy,
       role,
     };
-
     const currentStatus = await this.statusRepository.findById(ObjectId(submission.statusId));
     if (currentStatus.name == 'Approved') {
       submissionNotes.role = 'Approved';
@@ -227,6 +226,7 @@ export default class SubmissionService {
       return this.submissionNoteRepository.create(submissionNotes);
     }
     await this.submissionNoteRepository.create(submissionNotes);
+
     return this.statusRepository.findByName(role).then(status => {
       submission.statusId =  status[0].id;
       submission.workflowProcessId = nextProcessId;
@@ -241,6 +241,7 @@ export default class SubmissionService {
           return this.submissionRepository.create(submission);
         });
       }
+      if (role === 'Approved') submission.approver = updatedBy;
       submission.isLatest = true;
       return this.submissionRepository.update(submission._id, submission).then(submission => {
         if (role === 'Approved') return this.phaseSubmission(submission._id);

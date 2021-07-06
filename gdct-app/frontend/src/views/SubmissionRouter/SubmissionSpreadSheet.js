@@ -1,4 +1,6 @@
-import React, { Component } from 'react';
+import { withRouter } from 'react-router';
+import React, { Component } from "react";
+import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import Spreadsheet from 'x-data-spreadsheet';
 import submissionController from '../../controllers/submission';
 import statusController from '../../controllers/status';
@@ -46,7 +48,7 @@ const sheetOption = {
 
 // Created by Sheldon Su 2021/01/20
 // We use compoenent instead of hooks since hooks will cause undefined behavior
-class SubmissionSpreadSheet extends Component {
+class SubmissionSpreadSheet extends Component{
   constructor(props) {
     super(props);
     this.sheet = null;
@@ -59,7 +61,7 @@ class SubmissionSpreadSheet extends Component {
     this.orginalValue = null;
     this.clearComponentChild = this.clearComponentChild.bind(this);
     this.insertOrg = this.insertOrg.bind(this);
-    this.disable = this.props.disable;
+    this.history = this.props.history;
   }
 
   // After component mount, initailize spreadsheet and load data from DB
@@ -172,18 +174,23 @@ class SubmissionSpreadSheet extends Component {
     }
   };
 
-  render() {
-    return (
-      <div>
-        <div style={{ display: 'flex' }}>
-          <Button variant="outlined" color="primary" onClick={this.saveTemplate}>
-            Save
-          </Button>
-        </div>
-        <div id="x-spreadsheet"></div>
-      </div>
-    );
-  }
+    render(){
+        return (
+          <div>
+            <div style={{display:'flex'}}>
+              <Button variant="outlined" color="primary" onClick={this.saveTemplate}>
+                Save
+              </Button>
+               <Button variant="outlined" color="primary" onClick={()=>{this.history.goBack()}}>
+               <ArrowBackIcon></ArrowBackIcon>
+                back
+              </Button>
+              
+            </div>
+            <div id="x-spreadsheet"></div>
+          </div>
+        )
+    }
 }
 
-export default SubmissionSpreadSheet;
+export default withRouter(SubmissionSpreadSheet);
