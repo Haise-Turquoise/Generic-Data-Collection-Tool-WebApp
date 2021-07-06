@@ -33,9 +33,14 @@ import { WorkflowStoreActions } from '../../store/WorkflowStore/store';
 import { submitWorkflow, updateWorkflow, loadWorkflow } from '../../store/thunks/workflow';
 //@ts-ignore
 import { getWorkflowsRequest, deleteWorkflowRequest } from '../../store/thunks/workflow';
+//@ts-ignore
+import SubmissionController from '../../controllers/submission'
 import './Workflow.scss';
 
+import Swal from 'sweetalert2'
+
 import Status from '../../types/status';
+import Submission from '../../types/submission'
 type actionType = 'create' | 'update';
 
 //@ts-ignore
@@ -48,23 +53,47 @@ const WorkflowHeaderActions = ({ type, id }: { type: actionType; id: string }) =
   const dispatch = useDispatch();
   const history = useHistory();
 
-  const handleSave = useCallback(() => {
-    // removed updateworkflow since it's never used
-    dispatch(type === 'create' ? submitWorkflow() : updateWorkflow());
-    dispatch(getWorkflowsRequest());
+  const setWorkflows = async () => {
+    // check if workflow is referenced in submission before updating
+    if (type === 'update') {
+      const res: Submission[] | null = await SubmissionController.fetch({ workflowId: id })
+      // needs testing
+      if (res && res!.length >= 1) {
+        Swal.fire({
+          title: 'Error updating workflow',
+          text: 'Workflow is already referenced in submissions',
+          icon: 'warning'
+        })
+        return false
+      } else {
+        updateWorkflow()
+        return true
+      }
+    } else {
+      submitWorkflow()
+      return true
+    }
+  }
 
-    // For AuditLog
-    const Auditlog_Message = type === 'create' ? 'Create Workflow' : 'Update Workflow';
-    CreateAuditLog(
-      null,
-      Auditlog_Message,
-      'Workflow',
-      id,
-      { 0: 'More Information In Workflow.' },
-      Auditlog_Operation,
-    );
-    // Redirect back
-    history.push('/admin/workflow');
+  const handleSave = useCallback(() => {
+    setWorkflows().then(res => {
+      if (!res) {
+        return
+      }
+      dispatch(getWorkflowsRequest())
+      // For AuditLog
+      const Auditlog_Message = type === 'create' ? 'Create Workflow' : 'Update Workflow';
+      CreateAuditLog(
+        null,
+        Auditlog_Message,
+        'Workflow',
+        id,
+        { 0: 'More Information In Workflow.' },
+        Auditlog_Operation,
+      );
+      // Redirect back
+      history.push('/admin/workflow');
+    })
   }, [dispatch]);
 
   return (
@@ -296,7 +325,7 @@ const WorkflowContainer = ({ type }: { type: actionType }) => {
   // @ts-ignore
   const {
     params: { _id },
-  } = useRouteMatch();
+  }: {params: {_id: string}} = useRouteMatch();
 
   useEffect(() => {
     if (_id) dispatch(loadWorkflow(_id));
