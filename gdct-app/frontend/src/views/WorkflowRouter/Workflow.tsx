@@ -40,7 +40,6 @@ type actionType = 'create' | 'update';
 
 //@ts-ignore
 import CreateAuditLog from '../AuditLog_Global';
-import { ExtractRouteParams } from 'react-router';
 
 const Auditlog_Operation: string[] = [];
 
@@ -297,7 +296,7 @@ const WorkflowContainer = ({ type }: { type: actionType }) => {
   // @ts-ignore
   const {
     params: { _id },
-  }: { params: { _id: string }} = useRouteMatch();
+  } = useRouteMatch();
 
   useEffect(() => {
     if (_id) dispatch(loadWorkflow(_id));
