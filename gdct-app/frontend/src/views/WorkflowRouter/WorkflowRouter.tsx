@@ -13,7 +13,7 @@ const WorkflowRouter = () => (
       render={routeProps => <Workflow {...routeProps} type="create" />}
     />
     <Route exact path={ROUTE_WORKFLOW} component={Workflows} />
-    <Route exact path={`${ROUTE_WORKFLOW}/:_id`} component={Workflow} />
+    <Route exact path={`${ROUTE_WORKFLOW}/:_id`} component={() => <Workflow type="update" />} />
   </Switch>
 );
 

@@ -154,4 +154,8 @@ export default class SubmissionRepository extends BaseRepository {
   async findOneByTemplateIDs(templateIDs) {
     return SubmissionModel.findOne({ templateId:{$in:templateIDs}}, {_id:1});
   }
+
+  async findQuery(query) {
+    return SubmissionModel.find(query)
+  }
 }

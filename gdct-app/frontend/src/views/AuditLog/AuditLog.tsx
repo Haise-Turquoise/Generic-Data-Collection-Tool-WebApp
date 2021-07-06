@@ -96,7 +96,7 @@ const AuditLogTable = () => {
     AuditLogController.fetch().then((res: unknown) => {
       setAuditLogs(res as AuditLog[])
     })
-  })
+  }, [])
 
   // table vars for loading
   const preColumns: Column<AuditLog>[] = [{ title: 'Name', field: 'moduleName' }]
