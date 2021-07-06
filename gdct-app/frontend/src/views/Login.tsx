@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect,ChangeEvent } from 'react';
 import {
   Avatar,
   Button,
@@ -24,17 +24,24 @@ import MuiAlert from '@material-ui/lab/Alert';
 import { useDispatch } from 'react-redux';
 import moment from 'moment';
 import Swal from 'sweetalert2';
+//@ts-ignore
 import { host } from '../constants/domain';
+//@ts-ignore
 import AuthController from '../controllers/Auth';
-
+//@ts-ignore
 import CreateAuditLog from './AuditLog_Global';
+//@ts-ignore
 import SessionController from '../controllers/Session';
+//@ts-ignore
 import AppConfigController from '../controllers/AppConfig';
-
+//@ts-ignore
 import usersController from '../controllers/Users';
-
+//@ts-ignore
 import UserStore from '../store/UserStore/store';
 
+
+import SysRole from '../types/sysrole';
+import User from '../types/user';
 function Copyright() {
   return (
     <Typography variant="body2" color="textSecondary" align="center">
@@ -47,7 +54,8 @@ function Copyright() {
     </Typography>
   );
 }
-function Alert(props) {
+function Alert(props:{onClose:(event:any, reason:string)=>void, severity:any, children:string}) {
+  //@ts-ignore
   return <MuiAlert elevation={6} variant="filled" {...props} />;
 }
 const useStyles = makeStyles(theme => ({
@@ -90,13 +98,13 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const validEmailRegex = /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/;
-const validateForm = errors => {
+const validateForm = (errors:Object) => {
   let valid = true;
   Object.values(errors).forEach(val => val.length > 0 && (valid = false));
   return valid;
 };
 
-export default function Login({ setLoggedIn }) {
+export default function Login({ setLoggedIn }:{setLoggedIn:(flag:boolean)=>void}) {
   const classes = useStyles();
   const dispatch = useDispatch();
   const [email, setEmail] = useState('');
@@ -112,7 +120,7 @@ export default function Login({ setLoggedIn }) {
     setOpen(true);
   };
 
-  const handleClose = (event, reason) => {
+  const handleClose = (event:any, reason:string) => {
     if (reason === 'clickaway') {
       return;
     }
@@ -120,7 +128,7 @@ export default function Login({ setLoggedIn }) {
     setOpen(false);
   };
 
-  const handleChange = e => {
+  const handleChange = (e:ChangeEvent<{name?: string, value: string}>) => {
     const { name, value } = e.target;
     const updatedErrors = { ...errors };
 
@@ -141,9 +149,9 @@ export default function Login({ setLoggedIn }) {
     }
   };
 
-  let sessionID = null;
+  let sessionID:number|null = null;
   // onSubmit for sign in button
-  const handleSubmit = async e => {
+  const handleSubmit = async (e:any) => {
     e.preventDefault();
 
     let checkLogin;
@@ -152,7 +160,7 @@ export default function Login({ setLoggedIn }) {
         // logic to verify validity of submitter role
         const { sysRole } = await usersController.fetchByEmail(email);
 
-        const possibleRoles = sysRole.reduce((acc, curr) => acc.concat(curr.role), []);
+        const possibleRoles = sysRole.reduce((acc:any, curr:SysRole) => acc.concat(curr.role), []);
         let currentRole = selectedRole;
         if (possibleRoles.length < 2) {
           currentRole = sysRole[0].role;
@@ -163,7 +171,7 @@ export default function Login({ setLoggedIn }) {
         }
 
         checkLogin = await AuthController.login({ email, password, selectedRole })
-          .then(data => {
+          .then((data:undefined|{data:{email:string, _id:string, sessionID:number}, status:string}) => {
             if (data === undefined) {
               return false;
             }
@@ -180,7 +188,7 @@ export default function Login({ setLoggedIn }) {
               return true;
             }
           })
-          .catch(err => {
+          .catch((err:any) => {
             console.log(err);
           });
       }
@@ -198,7 +206,8 @@ export default function Login({ setLoggedIn }) {
   const handleUpdateRoles = () => {
     usersController
       .fetchByEmail(email)
-      .then(data => {
+      .then((data:User) => {
+        //@ts-ignore
         setRoles(data.sysRole.map(role => role.role));
         // set selected role manually if only one available
         if (data.sysRole.length >= 1) {
@@ -216,7 +225,7 @@ export default function Login({ setLoggedIn }) {
     while (i < 60) {
       (function (i) {
         setTimeout(function () {
-          SessionController.fetchById(sessionID).then(session => {
+          SessionController.fetchById(sessionID).then((session:{expires:string}) => {
             if (session !== null) {
               const expirationTime = session.expires;
               const currentTime = moment();
@@ -328,7 +337,7 @@ export default function Login({ setLoggedIn }) {
                 id="role-selector"
                 name="role"
                 value={selectedRole}
-                onChange={e => setSelectedRole(e.target.value.toString())} // toString for consistent types
+                onChange={(e:any) => setSelectedRole(e.target.value.toString())} // toString for consistent types
               >
                 {roles.map((role, index) => (
                   <MenuItem value={role} key={index}>
