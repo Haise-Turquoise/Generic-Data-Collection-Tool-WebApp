@@ -121,7 +121,7 @@ const EditSubmission = ({ history }) => {
 
   const roleButtonMap = {
     Viewer: ['Download'],
-    Imputer: ['Download', 'inputted'],
+    Inputter: ['Download', 'inputted'],
     Submitter: ['Download', 'Submitted', 'inputted'],
     'Submission Approver': ['Rejected', 'Approved', 'Reviewed', 'Returned'],
     Reviewer: ['Rejected', 'Approved', 'Reviewed', 'Returned'],
