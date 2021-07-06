@@ -374,13 +374,14 @@ const EditSubmission = ({ history }) => {
   };
   // decide button display base on current Status
   const handleButtonDisplayByStatus = (button, visitedWorkFlowProcesses, status) => {
+    // console.log(button, visitedWorkFlowProcesses, status)
     const StatusAndBannedActions = {
-      Submitted: ['Submitted', 'Inputted'],
-      inputted: ['Inputted', 'Approved', 'Rejected', 'Returned', 'Reviewed'],
-      Approved: ['Approved', 'Rejected', 'Submitted', 'Inputted', 'Returned', 'Reviewed'],
-      Rejected: ['Approved', 'Rejected', 'Submitted', 'Inputted', 'Returned', 'Reviewed'],
-      Reviewed: ['Returned', 'Reviewed', 'Submitted', 'Inputted', 'Approved', 'Rejected'],
-      Returned: ['Returned', 'Reviewed', 'Submitted', 'Inputted', 'Approved', 'Rejected'],
+      Submitted: ['Submitted', 'inputted'],
+      inputted: ['inputted', 'Approved', 'Rejected', 'Returned', 'Reviewed'],
+      Approved: ['Approved', 'Rejected', 'Submitted', 'inputted', 'Returned', 'Reviewed'],
+      Rejected: ['Approved', 'Rejected', 'Submitted', 'inputted', 'Returned', 'Reviewed'],
+      Reviewed: ['Returned', 'Reviewed', 'Submitted', 'inputted', 'Approved', 'Rejected'],
+      Returned: ['Returned', 'Reviewed', 'Submitted', 'inputted', 'Approved', 'Rejected'],
     };
     // remove the possible avaiable button from the banned list
     if (visitedWorkFlowProcesses.length > 0 && status) {
@@ -395,6 +396,7 @@ const EditSubmission = ({ history }) => {
         }
       }
     }
+    console.log(button, visitedWorkFlowProcesses, status, StatusAndBannedActions)
     if (status in StatusAndBannedActions) {
       if (StatusAndBannedActions[status].includes(button)) {
         return true;
