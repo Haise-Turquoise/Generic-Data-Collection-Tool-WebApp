@@ -2,9 +2,8 @@ import MenuController from '../../controllers/Menu';
 import iconMap from './iconMap';
 
 const createUserNavigation = async () => {
-  
   const menus = await MenuController.fetch();
-  
+
   return menus
     .filter(e => !e.isSubMenu)
     .map(e => {
@@ -15,7 +14,7 @@ const createUserNavigation = async () => {
           type: e.type,
           icon: iconMap[e.name],
           orderID: e.orderId,
-        }
+        };
       }
       let children = e.items.map(item => {
         return {

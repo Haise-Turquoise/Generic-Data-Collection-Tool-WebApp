@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect } from 'react';
-import { useHistory } from 'react-router-dom';
-
+import { useHistory, useParams } from 'react-router-dom';
+//@ts-ignore
 import SortableTree, { toggleExpandedForAll } from 'react-sortable-tree';
 import { useSelector, shallowEqual, useDispatch, batch } from 'react-redux';
 import { Paper, Typography, Button, TextField, IconButton } from '@material-ui/core';
@@ -8,8 +8,6 @@ import { Paper, Typography, Button, TextField, IconButton } from '@material-ui/c
 import DeleteIcon from '@material-ui/icons/Delete';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import AddIcon from '@material-ui/icons/Add';
-
-import { useParams } from 'react-router-dom';
 
 import {
   updateCOATreesBySheetNameRequest,
@@ -54,36 +52,34 @@ const COATreeActions = ({ sheetNameId }: { sheetNameId: string }) => {
     dispatch(DialogsStore.actions.OPEN_COA_GROUP_DIALOG());
   }, [dispatch]);
 
-  const handleSave = useCallback(
-    () => {
-      dispatch(updateCOATreesBySheetNameRequest(sheetNameId));
-      (async () => {
-        const sheet = await sheetNameController.fetchById(sheetNameId);
-        // Auditlog (At least one change is made)
-        if (Auditlog_Operations.length > 0) {
-          CreateAuditLog(null, 
-                         "Update COA Tree", 
-                         "CategoryTree", 
-                         sheetNameId, 
-                         {"0":`Changes happened on Sheet: ${sheet.name}`}, 
-                         Auditlog_Operations
-                        );
-          Auditlog_Operations = [];
-        }
-      })();
-      // Redirect back
-      history.push('/admin/coa/tree');
-    },
-    [dispatch],
-  );
+  const handleSave = useCallback(() => {
+    dispatch(updateCOATreesBySheetNameRequest(sheetNameId));
+    (async () => {
+      const sheet = await sheetNameController.fetchById(sheetNameId);
+      // Auditlog (At least one change is made)
+      if (Auditlog_Operations.length > 0) {
+        CreateAuditLog(
+          null,
+          'Update COA Tree',
+          'CategoryTree',
+          sheetNameId,
+          { 0: `Changes happened on Sheet: ${sheet.name}` },
+          Auditlog_Operations,
+        );
+        Auditlog_Operations = [];
+      }
+    })();
+    // Redirect back
+    history.push('/admin/coa/tree');
+  }, [dispatch]);
 
   return (
     <div className="header__actions">
       <TextField className="searchBar" variant="outlined" placeholder="Search node" />
-      <Button variant="contained" color="primary" onClick={handleOpenGroupDialog} >
+      <Button variant="contained" color="primary" onClick={handleOpenGroupDialog}>
         Add Group
       </Button>
-      <Button variant="contained" color="primary" onClick={handleSave} >
+      <Button variant="contained" color="primary" onClick={handleSave}>
         Save
       </Button>
       <GroupDialog sheetNameId={sheetNameId} Auditlog_Operations={Auditlog_Operations} />
@@ -122,11 +118,12 @@ const COATreeTreeStructure = ({ sheetNameId }: { sheetNameId: string }) => {
         dispatch(COATreeStore.actions.DELETE_COA_TREE_UI({ node: nodeProps }));
         if (nodeProps.node.content) {
           Auditlog_Operations.push(`Deleted Group: ${nodeProps.node.title}`);
+        } else {
+          Auditlog_Operations.push(
+            `Deleted Node: ${nodeProps.node.title} under ${nodeProps.parentNode.title}`,
+          );
         }
-        else {
-          Auditlog_Operations.push(`Deleted Node: ${nodeProps.node.title} under ${nodeProps.parentNode.title}`);
-        }
-      }
+      };
       const handleOpenCOADialog = () => {
         batch(() => {
           dispatch(DialogsStore.actions.OPEN_COA_DIALOG());
@@ -175,7 +172,12 @@ const COATree = () => {
     <div className="COATree">
       <COATreeHeader sheetNameId={sheetNameId} />
       <COATreeTreeStructure sheetNameId={sheetNameId} />
-      <Button variant="outlined" color="primary" href="/admin/coa/tree" style={{marginTop: '0.8%'}}>
+      <Button
+        variant="outlined"
+        color="primary"
+        href="/admin/coa/tree"
+        style={{ marginTop: '0.8%' }}
+      >
         <ArrowBackIcon></ArrowBackIcon>
         Back
       </Button>

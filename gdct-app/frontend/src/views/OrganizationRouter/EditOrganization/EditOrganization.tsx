@@ -17,14 +17,14 @@ import Loading from '../../../components/Loading'
 import orgController from '../../../controllers/organization';
 //@ts-ignore
 import CreateAuditLog from '../../AuditLog_Global';
-import Organization from '../../../types/organization'
+import Organization from '../../../types/organization';
 
 interface EditOrgProps {
   match: {
     params: {
-      _id: string,
-    }
-  }
+      _id: string;
+    };
+  };
 }
 
 const EditOrganization = ({
@@ -46,21 +46,34 @@ const EditOrganization = ({
     ) || [{}])[0],
   }));
 
-  const redirect = () => { history.push('/admin/organization/org') };
+  const redirect = () => {
+    history.push('/admin/organization/org');
+  };
 
-  const accept = () => { redirect() };
+  const accept = () => {
+    redirect();
+  };
 
-  const reject = () => { alert('Missing or invalid parameters') };
+  const reject = () => {
+    alert('Missing or invalid parameters');
+  };
 
-  const submit = (newOrganization: Organization & {tableData: any}) => { 
+  const submit = (newOrganization: Organization & { tableData: any }) => {
     // we let tableData be any since we are just trimming it
     // This newOrgnization does not contain "_id" required for update (it does contain the artificial "id")
     (async () => {
       // Find the old value before updating in order to Auditlog
       const oldOrganization = await orgController.fetchById(newOrganization.id);
-      CreateAuditLog(null, "Update Organization", "Organization", oldOrganization._id, oldOrganization, newOrganization);
+      CreateAuditLog(
+        null,
+        'Update Organization',
+        'Organization',
+        oldOrganization._id,
+        oldOrganization,
+        newOrganization,
+      );
       // Add _id and trim tableData created by Material Table
-      newOrganization["_id"] = oldOrganization._id;
+      newOrganization['_id'] = oldOrganization._id;
       const organization_trim = (({ tableData, ...o }) => o)(newOrganization);
       // Update
       dispatch(updateOrgsRequest(organization_trim, accept, reject));

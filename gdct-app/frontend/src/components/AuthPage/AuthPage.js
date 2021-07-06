@@ -3,8 +3,22 @@ import { Link } from 'react-router-dom';
 import clsx from 'clsx';
 
 import { makeStyles, useTheme } from '@material-ui/core/styles';
-import { AppBar, Drawer, Chip, Toolbar, List, CssBaseline, Typography, IconButton,
-         ListItem, ListItemIcon, ListItemText, Collapse, Switch, FormControlLabel } from '@material-ui/core'
+import {
+  AppBar,
+  Drawer,
+  Chip,
+  Toolbar,
+  List,
+  CssBaseline,
+  Typography,
+  IconButton,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+  Collapse,
+  Switch,
+  FormControlLabel,
+} from '@material-ui/core';
 import MenuIcon from '@material-ui/icons/Menu';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
@@ -98,15 +112,15 @@ const useStyles = makeStyles(theme => ({
   },
   chip: {
     padding: '20px 15px',
-    textAlign: 'center'
+    textAlign: 'center',
   },
   chipTitle: {
-    fontSize: '0.9rem'
+    fontSize: '0.9rem',
   },
   chipSubtitle: {
     fontSize: '0.75rem',
-    color: 'gray'
-  }
+    color: 'gray',
+  },
 }));
 
 const HeaderHandle = ({ open, classes, handleDrawerOpen, isTopMenu }) => {
@@ -132,9 +146,9 @@ const HeaderTitle = ({ title }) => (
 );
 
 const checkRole = () => {
-  const currRole = localStorage.getItem('currentRole')
-  return currRole && currRole !== 'undefined' && currRole !== 'null'
-}
+  const currRole = localStorage.getItem('currentRole');
+  return currRole && currRole !== 'undefined' && currRole !== 'null';
+};
 
 const Header = ({
   title,
@@ -164,16 +178,20 @@ const Header = ({
         <HeaderTitle title={title} />
       </Link>
       {isTopMenu && <TopItemList config={config} classes={classes} isMobile={isMobile} />}
-      <Chip label={
+      <Chip
+        label={
           <span>
-            <span className={classes.chipTitle}>{localStorage.getItem('currentUser')}</span><br/>
+            <span className={classes.chipTitle}>{localStorage.getItem('currentUser')}</span>
+            <br />
             {/* subtitle to show if user has a roles */}
-            {
-              checkRole() && 
+            {checkRole() && (
               <span className={classes.chipSubtitle}>{localStorage.getItem('currentRole')}</span>
-            }
+            )}
           </span>
-        } id='MuiChip-label-Authpage' className={classes.chip} />
+        }
+        id="MuiChip-label-Authpage"
+        className={classes.chip}
+      />
       <FormControlLabel
         className={classes.flexItem}
         control={
@@ -206,7 +224,12 @@ const DrawerHandle = ({ title, classes, handleDrawerClose, theme }) => (
 const MenuItemIcon = ({ icon }) => <ListItemIcon>{icon}</ListItemIcon>;
 
 const MenuItemLink = ({ name, icon, url, type, level }) => (
-  <ListItem component={url && Link} button to={url} id={window.location.pathname.includes(url) ? "active" : ""}>
+  <ListItem
+    component={url && Link}
+    button
+    to={url}
+    id={window.location.pathname.includes(url) ? 'active' : ''}
+  >
     <MenuItemIcon icon={icon} />
     {level === '2' ? (
       <ListItemText
@@ -214,14 +237,15 @@ const MenuItemLink = ({ name, icon, url, type, level }) => (
           <Typography style={{ fontSize: '0.8rem', marginLeft: '1.5rem' }}>{name}</Typography>
         }
       />
-    ) : type === 'topmenu' ? (<ListItemText primary={name} />)
-      : (
-        <ListItemText
-          primary={
-            <Typography style={{ fontSize: '0.9rem', marginLeft: '1.2rem' }}>{name}</Typography>
-          }
-        />
-      )}
+    ) : type === 'topmenu' ? (
+      <ListItemText primary={name} />
+    ) : (
+      <ListItemText
+        primary={
+          <Typography style={{ fontSize: '0.9rem', marginLeft: '1.2rem' }}>{name}</Typography>
+        }
+      />
+    )}
   </ListItem>
 );
 

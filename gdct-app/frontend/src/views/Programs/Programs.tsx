@@ -12,9 +12,9 @@ import {
   updateProgramsRequest,
   //@ts-ignore
 } from '../../store/thunks/program';
-  //@ts-ignore
+//@ts-ignore
 import { selectFactoryRESTResponseTableValues } from '../../store/common/REST/selectors';
-  //@ts-ignore
+//@ts-ignore
 import { selectProgramsStore } from '../../store/ProgramsStore/selectors';
 import {
   calculateOptions,
@@ -25,16 +25,16 @@ import {
   //@ts-ignore
 } from '../../tools/misc'
 
-  //@ts-ignore
+//@ts-ignore
 import ErrorBanner from '../ErrorBanner';
-  //@ts-ignore
-import ProgramController from '../../controllers/Program'
-  //@ts-ignore
-import CreateAuditLog from '../AuditLog_Global'
-import Program from '../../types/program'
+//@ts-ignore
+import ProgramController from '../../controllers/Program';
+//@ts-ignore
+import CreateAuditLog from '../AuditLog_Global';
+import Program from '../../types/program';
 
 interface ProgramMT extends Program {
-  tableData?: any,
+  tableData?: any;
 }
 
 const ProgramHeader = () => {
@@ -58,43 +58,61 @@ const ProgramsTable = () => {
   }, [])
 
   // table vars for loading
-  const preColumns: Column<ProgramMT>[] = [{ title: 'Name', field: 'name' }]
-  const prePrograms: ProgramMT[] = [{
-    name: 'LOADING... ',
-    _id: '',
-    code: '',
-    isActive: true,
-    updatedAt: '',
-    updatedBy: '',
-    timestamp: '',
-  }]
+  const preColumns: Column<ProgramMT>[] = [{ title: 'Name', field: 'name' }];
+  const prePrograms: ProgramMT[] = [
+    {
+      name: 'LOADING... ',
+      _id: '',
+      code: '',
+      isActive: true,
+      updatedAt: '',
+      updatedBy: '',
+      timestamp: '',
+    },
+  ];
 
   // Convert Date format
   programs?.forEach((program: Program) => {
     const logtime = new Date(program.timestamp);
-    program.timestamp = moment(logtime).format("YYYY-MM-DD HH:mm:ss")
+    program.timestamp = moment(logtime).format('YYYY-MM-DD HH:mm:ss');
   });
 
   // Prepare the columns for material table
   const columns: Column<ProgramMT>[] = useMemo(
     () => [
       { title: 'Name', field: 'name' },
-      { title: 'Code', field: 'code', validate: (rowData: Program) => checkDuplicates(rowData, programs, 'code') },
-      { title: 'Modified On', field: 'timestamp', editComponent: () => {return <div></div>} },
-      { title: 'Updated By', field: 'updatedBy', editComponent: () => {return <div></div>} },
+      {
+        title: 'Code',
+        field: 'code',
+        validate: (rowData: Program) => checkDuplicates(rowData, programs, 'code'),
+      },
+      {
+        title: 'Modified On',
+        field: 'timestamp',
+        editComponent: () => {
+          return <div></div>;
+        },
+      },
+      {
+        title: 'Updated By',
+        field: 'updatedBy',
+        editComponent: () => {
+          return <div></div>;
+        },
+      },
       { title: 'Active', type: 'boolean', field: 'isActive' },
     ],
     [programs],
   );
-  
+
   const options: Options<ProgramMT> = useMemo(() => calculateOptions(readRowNum), [readRowNum]);
-  
+
   // Record who and when of the action
   function recordUpdate(program: ProgramMT) {
     //get username and record in Modified By column
     program.updatedBy = localStorage.getItem('currentUser') || '';
-    //record new date and time in Modified On column 
-    program.timestamp = new Date().toLocaleString(); 
+    //record new date and time in Modified On column
+    program.timestamp = new Date().toLocaleString();
   }
   // Prepare the editing functionalities for the material table
   const editable = useMemo(
@@ -115,14 +133,14 @@ const ProgramsTable = () => {
             CreateAuditLog(null, "Create Program", "Program", newProgram._id, {}, newProgram);
           }
         }),
-      
+
       onRowUpdate: (program: ProgramMT) =>
         new Promise((resolve, reject) => {
           recordUpdate(program);
           // Find the old value before updating in order to Auditlog
           (async () => {
             const oldProgram: Program = await ProgramController.fetchById(program._id);
-            CreateAuditLog(null, "Update Program", "Program", oldProgram._id, oldProgram, program);
+            CreateAuditLog(null, 'Update Program', 'Program', oldProgram._id, oldProgram, program);
           })();
           // Do Update
           controllerEditRow(ProgramController, setPrograms, program)
@@ -133,7 +151,7 @@ const ProgramsTable = () => {
               reject()
             })
         }),
-      
+
       onRowDelete: (program: ProgramMT) =>
         new Promise((resolve, reject) => {
           recordUpdate(program);
@@ -171,7 +189,10 @@ const ProgramsTable = () => {
 const Program = (props: any) => (
   <div className="programsPage">
     <ProgramHeader />
-    <ErrorBanner title={"Cannot delete the selected program since it is referenced in the master value table"} targetStore={selectProgramsStore}/>
+    <ErrorBanner
+      title={'Cannot delete the selected program since it is referenced in the master value table'}
+      targetStore={selectProgramsStore}
+    />
     <ProgramsTable {...props} />
   </div>
 );

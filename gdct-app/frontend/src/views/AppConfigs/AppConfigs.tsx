@@ -34,11 +34,11 @@ import {
   //@ts-ignore
 } from '../../tools/misc'
 
-import AppConfig from '../../types/appconfig'
-import AppSys from '../../types/appsys'
+import AppConfig from '../../types/appconfig';
+import AppSys from '../../types/appsys';
 
 interface AppConfigMT extends AppConfig {
-  tableData?: any,
+  tableData?: any;
 }
 
 const AppConfigsHeader = () => {
@@ -65,21 +65,23 @@ const AppConfigsTable = () => {
   }, [])
 
   // table vars for loading
-  const preColumns: Column<AppConfigMT>[] = [{ title: 'Name', field: 'value' }]
-  const preConfigs: AppConfigMT[] = [{ 
-    value: 'LOADING...',
-    _id: '',
-    key: '',
-    appSys: '',
-    sys: '',
-    timestamp: '',
-    updatedBy: '',
-  }]
+  const preColumns: Column<AppConfigMT>[] = [{ title: 'Name', field: 'value' }];
+  const preConfigs: AppConfigMT[] = [
+    {
+      value: 'LOADING...',
+      _id: '',
+      key: '',
+      appSys: '',
+      sys: '',
+      timestamp: '',
+      updatedBy: '',
+    },
+  ];
 
   // Convert Date format
   appConfigs?.forEach((appConfig: AppConfig) => {
     const logtime = new Date(appConfig.timestamp);
-    appConfig.timestamp = moment(logtime).format("YYYY-MM-DD HH:mm:ss")
+    appConfig.timestamp = moment(logtime).format('YYYY-MM-DD HH:mm:ss');
   });
   // Assign code as name
   const lookupSysRoles = appSyses?.reduce(function (acc: {[key:string]: string}, appSys: AppSys) {
@@ -93,31 +95,41 @@ const AppConfigsTable = () => {
       { title: 'Key', field: 'key' },
       { title: 'Value', field: 'value' },
       { title: 'System', field: 'appSys', lookup: lookupSysRoles },
-      { title: 'Modified On', field: 'timestamp', editComponent: () => {return <div></div>} },
-      { title: 'Updated By', field: 'updatedBy', editComponent: () => {return <div></div>} },
+      {
+        title: 'Modified On',
+        field: 'timestamp',
+        editComponent: () => {
+          return <div></div>;
+        },
+      },
+      {
+        title: 'Updated By',
+        field: 'updatedBy',
+        editComponent: () => {
+          return <div></div>;
+        },
+      },
     ],
     [lookupSysRoles],
   );
 
   // Prepare the options
   const options: Options<AppConfigMT> = useMemo(
-    () => (
-      {
-        actionsColumnIndex: -1,
-        search: true,
-        showTitle: false,
-        addRowPosition: "first",
-      }
-    ), 
-    []
+    () => ({
+      actionsColumnIndex: -1,
+      search: true,
+      showTitle: false,
+      addRowPosition: 'first',
+    }),
+    [],
   );
 
   // Record who and when of the action
   function recordUpdate(appConfig: AppConfigMT) {
     //get username and record in Modified By column
     appConfig.updatedBy = localStorage.getItem('currentUser') || '';
-    //record new date and time in Modified On column 
-    appConfig.timestamp = new Date().toLocaleString(); 
+    //record new date and time in Modified On column
+    appConfig.timestamp = new Date().toLocaleString();
   }
   // Prepare the editing functionalities for the material table
   const editable = useMemo(
@@ -141,7 +153,7 @@ const AppConfigsTable = () => {
               "AppConfig",
               newAppConfig._id,
               {},
-              newAppConfig
+              newAppConfig,
             );
           }
         }),
@@ -152,7 +164,14 @@ const AppConfigsTable = () => {
           // Find the old value before updating for Auditlog
           (async () => {
             const oldAppConfig = await AppConfigController.fetchAppConfig(appConfig._id);
-            CreateAuditLog(null, "Update Application Configuration", "AppConfig", appConfig._id, oldAppConfig, appConfig);
+            CreateAuditLog(
+              null,
+              'Update Application Configuration',
+              'AppConfig',
+              appConfig._id,
+              oldAppConfig,
+              appConfig,
+            );
           })();
           // Do Update
           controllerEditRow(AppConfigController, setAppConfigs, appConfig)
@@ -163,7 +182,7 @@ const AppConfigsTable = () => {
               reject()
             })
         }),
-        
+
       onRowDelete: (appConfig: AppConfigMT) =>
         new Promise((resolve, reject) => {
           recordUpdate(appConfig);

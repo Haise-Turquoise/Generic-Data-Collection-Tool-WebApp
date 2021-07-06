@@ -1,10 +1,11 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Dialog from '@material-ui/core/Dialog';
 // @ts-ignore
 import spreadSheetController from '../../../../controllers/spreadSheet'
 import { MenuProps, OrgsData} from '../../../../types/spreadsheetTypes/insertMenuTypes'
 import Button from '@material-ui/core/Button';
+
 
 class populationSelectionMenu extends Component<MenuProps>{
   callBack: Function;
@@ -14,29 +15,35 @@ class populationSelectionMenu extends Component<MenuProps>{
     this.callBack = this.props.callback;
     this.notifySelection = this.notifySelection.bind(this);
     this.orgList = [];
-    this.state = {open:false};
+    this.state = { open: false };
   }
 
   componentDidMount(){
     // @ts-ignore
-    spreadSheetController.fetchOrg().then((data: {orgs:OrgsData[]})=>{this.orgList = data.orgs});
+    spreadSheetController.fetchOrg().then((data: {orgs:OrgsData[]})=>{this.orgList = data.orgs; console.log(data)});
   }
-   
-   notifySelection(){
-     let input_fields = document.getElementById('orgs');
-      // @ts-ignore
-      if (input_fields.selectedIndex){
-        // @ts-ignore
-        let id = input_fields[input_fields.selectedIndex].id;
-        this.callBack(id);
-      }
-      this.setState({open:false});
-   }
 
-  render(){
+  notifySelection() {
+    const input_fields = document.getElementById('orgs');
+    // @ts-ignore
+    if (input_fields.selectedIndex) {
+      // @ts-ignore
+      const { id } = input_fields[input_fields.selectedIndex];
+      this.callBack(id);
+    }
+    this.setState({ open: false });
+  }
+
+  render() {
     return (
       <div>
-        <Button variant="outlined" color="primary" onClick={()=>{this.setState({open:true})}}>
+        <Button
+          variant="outlined"
+          color="primary"
+          onClick={() => {
+            this.setState({ open: true });
+          }}
+        >
           Enable preview
         </Button>
         <Dialog onClose={()=>{this.setState({open:false})}} aria-labelledby="simple-dialog-title" open={//@ts-ignore
@@ -57,7 +64,6 @@ class populationSelectionMenu extends Component<MenuProps>{
           </form>
           <button onClick={this.notifySelection}>Confirm</button>
         </Dialog>
-      
       </div>
     );
   }

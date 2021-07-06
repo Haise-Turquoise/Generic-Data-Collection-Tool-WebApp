@@ -14,10 +14,12 @@ const COATreeController = (() => {
     fetchBySheetName: async sheetNameId => COATreeAxios.post(`/sheetName/fetchBySheetName`, { sheetNameId }).then(res => res.data.COATrees),
     fetchBySheetNames: async sheetNameIds => COATreeAxios.post(`/sheetName/fetchBySheetNames`, { sheetNameIds }).then(res => res.data.COATrees),
     fetch: async _ => COATreeAxios.get('/fetch').then(res => res.data.COATrees),
-    create: async COATree => COATreeAxios.post('/create', { COATree }).then(res => res.data.COATree),
+    create: async COATree =>
+      COATreeAxios.post('/create', { COATree }).then(res => res.data.COATree),
     update: async COATree => COATreeAxios.put('/update', { COATree }),
     delete: async _id => COATreeAxios.post('/delete', { _id }),
-    updateBySheetName: async (COATrees, sheetNameId) => COATreeAxios.put(`/sheetName/updateBySheetName`, { sheetNameId, COATrees }),
+    updateBySheetName: async (COATrees, sheetNameId) =>
+      COATreeAxios.put(`/sheetName/updateBySheetName`, { sheetNameId, COATrees }),
   };
 })();
 

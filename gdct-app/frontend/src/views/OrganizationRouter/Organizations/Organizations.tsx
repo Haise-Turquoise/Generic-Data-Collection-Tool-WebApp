@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 
 import MaterialTable, { Column, Action } from 'material-table';
-import { Paper, Button, Typography }from '@material-ui/core';
+import { Paper, Button, Typography } from '@material-ui/core';
 
 import { BrowserRouter, Route, Router, RouterProps, useHistory } from 'react-router-dom';
 import EditIcon from '@material-ui/icons/Edit';
@@ -54,17 +54,19 @@ const Organizations = ({ history }: RouterProps) => {
   }, [])
   
   // table stuff while loading
-  const preOrgs: Organization[] = [{ 
-    name: 'LOADING...',
-    _id: '',
-    id: 0,
-    effectiveDate: '',
-    IFISNum: '',
-    organizationGroupId: [''],
-    programId: [''],
-    authorizedPerson: [''],
-  }]
-  const preColumns: Column<Organization>[] = [{title: 'Name', field: 'name'}]
+  const preOrgs: Organization[] = [
+    {
+      name: 'LOADING...',
+      _id: '',
+      id: 0,
+      effectiveDate: '',
+      IFISNum: '',
+      organizationGroupId: [''],
+      programId: [''],
+      authorizedPerson: [''],
+    },
+  ];
+  const preColumns: Column<Organization>[] = [{ title: 'Name', field: 'name' }];
 
   // Prepare the columns for material table
   const columns: Column<Organization>[] = useMemo(
@@ -91,7 +93,7 @@ const Organizations = ({ history }: RouterProps) => {
         onClick: (_: any, org: Organization | Organization[]) => {
           if (!Array.isArray(org)) {
             // previously only this behaviour is specified - ill keep that
-            history.push(`/admin/organization/edit/${org._id}`)
+            history.push(`/admin/organization/edit/${org._id}`);
           }
         },
       },
@@ -106,7 +108,7 @@ const Organizations = ({ history }: RouterProps) => {
   return (
     <div className="organizations">
       <OrganizationHeader />
-      <MaterialTable 
+      <MaterialTable
         key={readRowNum}
         columns={!!Orgs ? columns : preColumns}
         data={!!Orgs ? Orgs : preOrgs}

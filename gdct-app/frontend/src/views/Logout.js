@@ -1,12 +1,12 @@
 import React, { useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
-import AuthController from '../controllers/Auth';
-import CreateAuditLog from './AuditLog_Global'
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
-import UserStore from '../store/UserStore/store'
+import AuthController from '../controllers/Auth';
+import CreateAuditLog from './AuditLog_Global';
+import UserStore from '../store/UserStore/store';
+
 export default function Logout({ setLoggedIn }) {
   const history = useHistory();
-
 
   // Get User Email
   const email = localStorage.getItem('currentUser');
@@ -22,6 +22,7 @@ export default function Logout({ setLoggedIn }) {
     });
   }, []);
   const dispatch = useDispatch();
-  dispatch(UserStore.actions.LOGOUT(false))
+  dispatch(UserStore.actions.LOGOUT(false));
   return null;
 }
+

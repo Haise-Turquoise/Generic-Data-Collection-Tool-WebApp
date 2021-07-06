@@ -68,15 +68,27 @@ const AppSysesTable = () => {
   // Convert Date format
   appSyses?.forEach(appSys => {
     const logtime = new Date(appSys.timestamp);
-    appSys.timestamp = moment(logtime).format("YYYY-MM-DD HH:mm:ss")
+    appSys.timestamp = moment(logtime).format('YYYY-MM-DD HH:mm:ss');
   });
 
   const columns: Column<AppSysMT>[] = useMemo(
     () => [
       { title: 'Code', field: 'code' },
       { title: 'Name', field: 'name' },
-      { title: 'Modified On', field: 'timestamp', editComponent: () => {return <div></div>} },
-      { title: 'Updated By', field: 'updatedBy', editComponent: () => {return <div></div>} },
+      {
+        title: 'Modified On',
+        field: 'timestamp',
+        editComponent: () => {
+          return <div></div>;
+        },
+      },
+      {
+        title: 'Updated By',
+        field: 'updatedBy',
+        editComponent: () => {
+          return <div></div>;
+        },
+      },
     ],
     [],
   );
@@ -119,11 +131,18 @@ const AppSysesTable = () => {
 
       onRowUpdate: (appSys: AppSysMT) => 
         new Promise((resolve, reject) => {
-          recordUpdate(appSys); 
+          recordUpdate(appSys);
           // Find the old value before updating for Auditlog
           (async () => {
             const oldAppSys = await AppSysController.fetchAppSys(appSys._id);
-            CreateAuditLog(null, "Update Application System", "AppSys", appSys._id, oldAppSys, appSys);
+            CreateAuditLog(
+              null,
+              'Update Application System',
+              'AppSys',
+              appSys._id,
+              oldAppSys,
+              appSys,
+            );
           })();
           // Do Update
           controllerEditRow(AppSysController, setAppSyses, appSys)

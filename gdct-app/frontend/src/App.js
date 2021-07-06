@@ -13,7 +13,7 @@ import GDCTMenu from './views/GDCTMenu';
 import ModifyProfileRouter from './views/ModifyProfileRouter';
 import Programs from './views/Programs';
 import Statuses from './views/Statuses';
-import RequestManagement from './views/RequestManagement'
+import RequestManagement from './views/RequestManagement';
 
 import ReportingPeriods from './views/ReportingPeriods/ReportingPeriods';
 import AppConfigs from './views/AppConfigs';
@@ -29,7 +29,7 @@ import WorkflowRouter from './views/WorkflowRouter';
 import Register from './views/UserRegistrationRouter';
 import MasterValuePopulation from './views/MasterValuePopulation';
 import AuditLog from './views/AuditLog';
-import TransferStatus from './views/TransferStatus/TransferStatus'
+import TransferStatus from './views/TransferStatus/TransferStatus';
 import { ROUTE_WORKFLOW, ROUTE_TEMPLATE_PCKGS, ROUTE_CATEGORY } from './constants/routes';
 
 import './App.scss';
@@ -63,7 +63,11 @@ const PrivateRouter = ({ setLoggedIn }) => {
       {/* <Route path="/submission_manager" component={SubmissionRouter} /> */}
       <Route exact path="/admin/sheetName" component={SheetNames} />
       {/* <Route path={ROUTE_COLUMN_NAMES} component={ColumnNames} /> */}
-      <Route exact path="/logout" render={props => <Logout {...props} setLoggedIn={setLoggedIn} />}/>
+      <Route
+        exact
+        path="/logout"
+        render={props => <Logout {...props} setLoggedIn={setLoggedIn} />}
+      />
       <Redirect from="*" to="/" />
     </Switch>
   );
@@ -91,7 +95,7 @@ const App = () => {
         setLoggedIn(false);
       });
   }, []);
-  
+
   return (
     <div className="appContainer">
       {isLoggedIn === null ? (
@@ -101,12 +105,12 @@ const App = () => {
           </Grid>
         </Grid>
       ) : isLoggedIn ? (
-          <AuthPage>
-            <PrivateRouter setLoggedIn={setLoggedIn} />
-          </AuthPage>
+        <AuthPage>
+          <PrivateRouter setLoggedIn={setLoggedIn} />
+        </AuthPage>
       ) : (
-            <PublicRouter setLoggedIn={setLoggedIn} />
-          )}
+        <PublicRouter setLoggedIn={setLoggedIn} />
+      )}
     </div>
   );
 };

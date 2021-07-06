@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback, useMemo, MouseEventHandler, ChangeEventHandler, ChangeEvent } from 'react';
+import React, { useEffect, useCallback, useMemo, MouseEventHandler } from 'react';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import { RouteComponentProps, useHistory } from 'react-router-dom';
 
@@ -6,7 +6,7 @@ import { Formik, Form, FormikProps } from 'formik';
 import { Button, TextField, Paper, Typography,
          List, ListItem, ListItemText, ListItemSecondaryAction } from '@material-ui/core';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
-
+//@ts-ignore
 import uniqid from 'uniqid';
 //@ts-ignore
 import { selectTemplatePackagesStore } from '../../store/TemplatePackagesStore/selectors';
@@ -149,10 +149,16 @@ const ThirdSection = ({ values, handleRemoveProgram }: {
     dispatch(DialogsStoreActions.OPEN_PROGRAM_DIALOG());
   }, [dispatch]);
 
+  console.log(values.programIds)
+
+  const sortedPrograms = values.programIds.slice().sort((a, b)=>
+    b.name.localeCompare(a.name)
+  );
+
   return (
     <CustomField label="Programs" handleClick={handleOpenTemplateDialog} addButton>
       <List>
-        {values.programIds.map(program => (
+        {sortedPrograms.map(program => (
           <ListItem key={uniqid()}>
             <ListItemText className="mr-5" primary={program.name} />
             <ListItemSecondaryAction>
@@ -210,7 +216,6 @@ const Content = ({ setFieldValue, handleChange, values }: FormProps) => {
 
     return selected;
   }, [values]);
-
 
   const selectedPrograms = useMemo(() => {
     const selected: {[key: string]: boolean} = {};
@@ -293,18 +298,25 @@ const Content = ({ setFieldValue, handleChange, values }: FormProps) => {
 const Buttons = ({ handleSubmit }: FormProps) => {
   // Redirect to the list of template packages page
   const history = useHistory();
-  const redirect = () => { history.push('/admin/template/package') };
+  const redirect = () => {
+    history.push('/admin/template/package');
+  };
   return (
     <div>
-      <Button onClick={redirect} variant="contained" color="primary" style={{marginTop: '0.8%'}}>
+      <Button onClick={redirect} variant="contained" color="primary" style={{ marginTop: '0.8%' }}>
         <ArrowBackIcon></ArrowBackIcon>
         Back
       </Button>
-      <Button onClick={handleSubmit} variant="contained" color="primary" style={{marginLeft: '1%', marginTop: '0.8%'}}>
+      <Button
+        onClick={handleSubmit}
+        variant="contained"
+        color="primary"
+        style={{ marginLeft: '1%', marginTop: '0.8%' }}
+      >
         Save
       </Button>
     </div>
-  )
+  );
 };
 
 const init: TemplateValues = {
@@ -375,7 +387,7 @@ const TemplatePackage = ({
             <Content {...props} />
             <Buttons {...props} />
           </Form>
-        )
+        );
       }}
     </Formik>
   );

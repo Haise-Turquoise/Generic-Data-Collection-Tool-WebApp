@@ -38,49 +38,49 @@ const COAsHeader = () => {
 
 // The Alert Sign
 const AlertSign = () => {
-  let [showingAlert, setShowingAlert] = useState(false);
+  const [showingAlert, setShowingAlert] = useState(false);
 
   const { errors } = useSelector(
     state => ({
-      errors: selectFactoryRESTError(selectCOAsStore)(state)
+      errors: selectFactoryRESTError(selectCOAsStore)(state),
     }),
     shallowEqual,
   );
 
   useEffect(() => {
-    if (errors){
+    if (errors) {
       setShowingAlert(true);
     }
   }, [errors]);
 
   useEffect(() => {
-    if (showingAlert){
-      setTimeout(()=>{
-        setShowingAlert(false)
-      }, 5000)
+    if (showingAlert) {
+      setTimeout(() => {
+        setShowingAlert(false);
+      }, 5000);
     }
   }, [showingAlert]);
 
   return (
     <Collapse in={showingAlert}>
-    <Alert
-      severity="error"
-      action={
-        <IconButton
-          aria-label="close"
-          color="inherit"
-          size="small"
-          onClick={() => {
-            setShowingAlert(false);
-          }}
-        >
-          <CloseIcon fontSize="inherit" />
-        </IconButton>
-      }
-    >
-      This Category is referenced, can't be removed
-    </Alert>
-  </Collapse>
+      <Alert
+        severity="error"
+        action={
+          <IconButton
+            aria-label="close"
+            color="inherit"
+            size="small"
+            onClick={() => {
+              setShowingAlert(false);
+            }}
+          >
+            <CloseIcon fontSize="inherit" />
+          </IconButton>
+        }
+      >
+        This Category is referenced, can't be removed
+      </Alert>
+    </Collapse>
   );
 };
 
@@ -110,7 +110,7 @@ const COAsTable = () => {
   // Convert Date format
   COAs?.forEach((COA: Category) => {
     const logtime = new Date(COA.timestamp);
-    COA.timestamp = moment(logtime).format("YYYY-MM-DD HH:mm:ss");
+    COA.timestamp = moment(logtime).format('YYYY-MM-DD HH:mm:ss');
   });
 
   // Prepare the columns for material table
@@ -119,8 +119,20 @@ const COAsTable = () => {
       { title: 'ID', field: 'id', validate: rowData => checkDuplicates(rowData, COAs, 'id') },
       { title: 'Name', field: 'name' },
       { title: 'OHFS Mapping', field: 'COA' },
-      { title: 'Modified On', field: 'timestamp', editComponent: () => {return <div></div>} },
-      { title: 'Updated By', field: 'updatedBy', editComponent: () => {return <div></div>} },
+      {
+        title: 'Modified On',
+        field: 'timestamp',
+        editComponent: () => {
+          return <div></div>;
+        },
+      },
+      {
+        title: 'Updated By',
+        field: 'updatedBy',
+        editComponent: () => {
+          return <div></div>;
+        },
+      },
     ],
     [COAs],
   );
@@ -162,9 +174,9 @@ const COAsTable = () => {
         new Promise((resolve, reject) => {
           recordUpdate(COA);
           // Find the old value before updating in order to Auditlog
-          (async () => { 
+          (async () => {
             const oldCOA = await COAController.fetchCOAbyId(COA._id);
-            CreateAuditLog(null, "Update Category", "Category", oldCOA.COAs._id, oldCOA.COAs, COA);
+            CreateAuditLog(null, 'Update Category', 'Category', oldCOA.COAs._id, oldCOA.COAs, COA);
           })();
           // Do Update
           controllerEditRow(COAController, setCOAs, COA).then((res: boolean) => {
@@ -190,7 +202,7 @@ const COAsTable = () => {
             const oldCOA = await COAController.fetchCOAbyId(COA._id);
             // Actually Deleted (Category might not be deleted because it is referenced in master value table)
             if (oldCOA.COAs.length === 0) {
-              CreateAuditLog(null, "Delete Category", "Category", COA._id, COA, {});
+              CreateAuditLog(null, 'Delete Category', 'Category', COA._id, COA, {});
             }
           })();
         }),

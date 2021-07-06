@@ -28,7 +28,7 @@ import SubmissionWorkbookStore from './SubmissionWorkbookStore/store';
 import COATreeStore from './COATreeStore/store';
 import COATreesStore from './COATreesStore/store';
 import DetectEmptyTreeStore from './DetectEmptyTreeStore/store';
-import DataResumeStore from './DataResumeStore/store'
+import DataResumeStore from './DataResumeStore/store';
 import SheetNamesStore from './SheetNamesStore/store';
 import ColumnNamesStore from './ColumnNamesStore/store';
 import OrgsStore from './OrganizationsStore/store';
@@ -79,15 +79,15 @@ export const appReducer = combineReducers({
   WorkflowStore: WorkflowStore.reducer,
   WorkflowsStore: WorkflowsStore.reducer,
   WorkflowProcessesStore: WorkflowProcessesStore.reducer,
-  TransferStatusStore:TransferStatusStore.reducer,
+  TransferStatusStore: TransferStatusStore.reducer,
 
   ui,
 });
 const rootReducer = (state, action) => {
   // console.log('action', action)
   if (action.type === 'USER/LOGOUT') {
-    state = undefined
+    state = undefined;
   }
-  return appReducer(state, action)
-}
+  return appReducer(state, action);
+};
 export default rootReducer;

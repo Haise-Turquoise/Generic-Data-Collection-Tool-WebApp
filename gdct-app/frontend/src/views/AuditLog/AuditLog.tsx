@@ -2,8 +2,9 @@ import React, { Fragment, useMemo, useEffect, useState } from 'react';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 
 import moment from 'moment';
-import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
+//@ts-ignore
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 
 import MaterialTable, { Action, Column, EditCellColumnDef, Filter, Options } from 'material-table';
 import { Paper, Typography, Button,
@@ -41,10 +42,11 @@ const CustomDatePicker = (props: {
   return (
     <Fragment>
       <label>From:</label>
-      <DatePicker id="startDatePicker"
+      <DatePicker
+        id="startDatePicker"
         selected={startDate}
         dateFormat={"yyyy-MM-dd HH:mm"}
-        onChange={(selectedDate) => {
+        onChange={(selectedDate:any) => {
           if (!selectedDate) {
             return
           } else if (Array.isArray(selectedDate)) {
@@ -56,18 +58,19 @@ const CustomDatePicker = (props: {
             selectedDate
           );
         }}
-        closeOnScroll={e => e.target === document}
+        closeOnScroll={(e:any) => e.target === document}
         showTimeSelect
         showMonthDropdown
         showYearDropdown
         dropdownMode="select"
       />
-      <br/>
+      <br />
       <label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;To:</label>
-      <DatePicker id="endDatePicker"
+      <DatePicker
+        id="endDatePicker"
         selected={endDate}
-        dateFormat={"yyyy-MM-dd HH:mm"}
-        onChange={(selectedDate) => {
+        dateFormat={'yyyy-MM-dd HH:mm'}
+        onChange={(selectedDate:any) => {
           // @ts-ignore
           setEndDate(selectedDate)
           // @ts-ignore
@@ -76,7 +79,7 @@ const CustomDatePicker = (props: {
             selectedDate
           );
         }}
-        closeOnScroll={e => e.target === document}
+        closeOnScroll={(e:any) => e.target === document}
         minDate={startDate}
         showTimeSelect
         showMonthDropdown
@@ -111,15 +114,14 @@ const AuditLogTable = () => {
     timestamp: '',
   }]
 
-  //==================================================================================================
-  
   // Prepare the table columns for MaterialTable
   const columns: Column<AuditLog>[] = useMemo(
     () => [
-      { title: 'Time', 
-        field: 'timestamp', 
+      {
+        title: 'Time',
+        field: 'timestamp',
         // Use Datepicker as filter
-        filterComponent: (props) => <CustomDatePicker {...props}/>,
+        filterComponent: props => <CustomDatePicker {...props} />,
         // must have "term" as an input even it is not used
         customFilterAndSearch: (_term, rowData) => {
           const startDate = document.getElementById("startDatePicker")!.getAttribute("value")
@@ -132,13 +134,13 @@ const AuditLogTable = () => {
       },
       { title: 'User Email', field: 'user.email' },
       { title: 'Activity', field: 'activity' },
-      { title: 'Module Name', field: 'moduleName', filtering: false},
+      { title: 'Module Name', field: 'moduleName', filtering: false },
     ],
     [],
   );
-  
-  //==================================================================================================
-  
+
+  //= =================================================================================================
+
   // Prepare the options for MaterialTable
   const options: Options<AuditLog> = useMemo(
     () => (
@@ -152,7 +154,7 @@ const AuditLogTable = () => {
     []
   );
 
-  //==================================================================================================
+  //= =================================================================================================
 
   // Prepare the data for MaterialTable
   // Convert Auditlogs' time format
@@ -160,11 +162,11 @@ const AuditLogTable = () => {
     auditlog.timestamp = moment(auditlog.timestamp).format("YYYY-MM-DD HH:mm:ss")
   })
 
-  //==================================================================================================
+  //= =================================================================================================
 
   // Prepare the action for the MaterialTable
   const [open, setOpen] = React.useState(false);
-  const [detail, setDetail] = React.useState("");
+  const [detail, setDetail] = React.useState('');
   // onClick function for action
   const handleClickOpen = (rowData: AuditLog) => {
     setOpen(true);
@@ -175,10 +177,10 @@ const AuditLogTable = () => {
       FOR DOCUMENT: ${rowData.recordId}
       IN COLLECTION: ${rowData.moduleName}
       ==============================================
-      the previous value for the document was: ${JSON.stringify(rowData.oldValue, null, "\t")}
+      the previous value for the document was: ${JSON.stringify(rowData.oldValue, null, '\t')}
       ==============================================
-      now the new value for the document is: ${JSON.stringify(rowData.newValue, null, "\t")}`
-    )
+      now the new value for the document is: ${JSON.stringify(rowData.newValue, null, '\t')}`,
+    );
   };
   const handleClose = () => {
     setOpen(false);

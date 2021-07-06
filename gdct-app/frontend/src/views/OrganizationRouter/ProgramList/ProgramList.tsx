@@ -55,18 +55,18 @@ const ProgList = ({ programIds, onClickAdd, onClickDelete, isEditable = true }: 
       { title: 'Code', field: 'code' },
       { title: 'Active', type: 'boolean', field: 'isActive' },
     ],
-    []
+    [],
   );
 
-  const options = useMemo(() => (
-    { 
-      actionsColumnIndex: -1, 
-      search: false, 
+  const options = useMemo(
+    () => ({
+      actionsColumnIndex: -1,
+      search: false,
       showTitle: true,
-      maxBodyHeight: "400px",
-      minBodyHeight: "400px"
+      maxBodyHeight: '400px',
+      minBodyHeight: '400px',
     }),
-    []
+    [],
   );
 
   const left_actions: Action<Program>[] = useMemo(() => [{ icon: DeleteIcon, tooltip: 'Remove from Organization', onClick: onClickDelete }], []);

@@ -116,7 +116,7 @@ const UsersTable = () => {
   // Convert Date format
   users?.forEach(user => {
     const logtime = new Date(user.timestamp);
-    user.timestamp = moment(logtime).format("YYYY-MM-DD HH:mm:ss")
+    user.timestamp = moment(logtime).format('YYYY-MM-DD HH:mm:ss');
   });
 
   // Prepare the columns for material table
@@ -128,8 +128,20 @@ const UsersTable = () => {
       { title: 'Email', field: 'email' },
       { title: 'Phone Number', field: 'phoneNumber' },
       { title: 'Active', type: 'boolean', field: 'isActive' },
-      { title: 'Modified On', field: 'timestamp', editComponent: () => {return <div></div>} },
-      { title: 'Updated By', field: 'updatedBy', editComponent: () => {return <div></div>} },
+      {
+        title: 'Modified On',
+        field: 'timestamp',
+        editComponent: () => {
+          return <div></div>;
+        },
+      },
+      {
+        title: 'Updated By',
+        field: 'updatedBy',
+        editComponent: () => {
+          return <div></div>;
+        },
+      },
     ],
     [],
   );
@@ -162,9 +174,9 @@ const UsersTable = () => {
           // Find the old value before updating in order to Auditlog
           (async () => {
             // seems redundant, but we cannot put user._id directly into an object
-            const _id = user._id;
+            const { _id } = user;
             const oldUser = await usersController.fetchById({ _id });
-            CreateAuditLog(null, "Update User", "User", oldUser._id, oldUser, user);
+            CreateAuditLog(null, 'Update User', 'User', oldUser._id, oldUser, user);
           })();
           // Do Update
           controllerEditRow(usersController, setUsers, user)

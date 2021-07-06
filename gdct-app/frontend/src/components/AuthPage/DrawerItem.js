@@ -36,7 +36,7 @@ export default function DrawerItem(props) {
   const handleClose = () => {
     if (isSubMenu && closeParent) {
       // close all parent menus also
-      closeParent()
+      closeParent();
     }
     setAnchorEl(null);
   };
@@ -61,7 +61,14 @@ export default function DrawerItem(props) {
         {children.map(item => {
           const { name, type, url, icon } = item;
           if (type === 'drawer') {
-            return <DrawerItem key={`${type}-${name}`} {...item} isSubMenu={true} closeParent={handleClose} />;
+            return (
+              <DrawerItem
+                key={`${type}-${name}`}
+                {...item}
+                isSubMenu={true}
+                closeParent={handleClose}
+              />
+            );
           }
           return (
             <ListItem key={name} component={url && Link} button to={url} onClick={handleClose}>

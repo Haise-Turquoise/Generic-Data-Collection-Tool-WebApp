@@ -69,18 +69,44 @@ const AppResourcesTable = () => {
   // Convert Date format
   appResources?.forEach(appResource => {
     const logtime = new Date(appResource.timestamp);
-    appResource.timestamp = moment(logtime).format("YYYY-MM-DD HH:mm:ss")
+    appResource.timestamp = moment(logtime).format('YYYY-MM-DD HH:mm:ss');
   });
-  
+
   // Prepare the columns for material table
   const columns: Column<AppResourceMT>[] = useMemo(
     () => [
-      { title: "ID", field: "id", editComponent: () => {return <div></div>}},
-      { title: 'Resource Name', field: 'resourceName', validate: rowData => checkDuplicates(rowData, appResources, 'resourceName') },
-      { title: 'Resource Path', field: 'resourcePath', validate: rowData => checkDuplicates(rowData, appResources, 'resourcePath') },
+      {
+        title: 'ID',
+        field: 'id',
+        editComponent: () => {
+          return <div></div>;
+        },
+      },
+      {
+        title: 'Resource Name',
+        field: 'resourceName',
+        validate: rowData => checkDuplicates(rowData, appResources, 'resourceName'),
+      },
+      {
+        title: 'Resource Path',
+        field: 'resourcePath',
+        validate: rowData => checkDuplicates(rowData, appResources, 'resourcePath'),
+      },
       { title: 'Protection', field: 'isProtected' },
-      { title: 'Modified On', field: 'timestamp', editComponent: () => {return <div></div>} },
-      { title: 'Updated By', field: 'updatedBy', editComponent: () => {return <div></div>} },
+      {
+        title: 'Modified On',
+        field: 'timestamp',
+        editComponent: () => {
+          return <div></div>;
+        },
+      },
+      {
+        title: 'Updated By',
+        field: 'updatedBy',
+        editComponent: () => {
+          return <div></div>;
+        },
+      },
     ],
     [appResources],
   );
@@ -126,9 +152,16 @@ const AppResourcesTable = () => {
         new Promise((resolve, reject) => {
           recordUpdate(appResource);
           // Find the old value before updating in order to Auditlog
-          (async () => { 
+          (async () => {
             const oldAppResource = await AppResourceController.fetchAppResource(appResource._id);
-            CreateAuditLog(null, "Update Application Resource", "AppResource", oldAppResource._id, oldAppResource, appResource);
+            CreateAuditLog(
+              null,
+              'Update Application Resource',
+              'AppResource',
+              oldAppResource._id,
+              oldAppResource,
+              appResource,
+            );
           })();
           // Do Update
           controllerEditRow(AppResourceController, setAppResources, appResource)

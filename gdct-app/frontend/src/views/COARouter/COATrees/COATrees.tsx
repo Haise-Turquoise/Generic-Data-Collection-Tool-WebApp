@@ -127,16 +127,28 @@ const COATreesTable = ({ history }: RouterProps) => {
   detectEmptyTree?.forEach((detectEmptyTree: DetectEmptyTree) => {
     //@ts-ignore
     const logtime = new Date(detectEmptyTree.timestamp);
-    detectEmptyTree.timestamp = moment(logtime).format("YYYY-MM-DD HH:mm:ss")
+    detectEmptyTree.timestamp = moment(logtime).format('YYYY-MM-DD HH:mm:ss');
   });
 
   const columns: Column<DetectEmptyTree>[] = useMemo(
     () => [
       { title: 'Sheet Name', field: 'name' },
-      { title: 'Modified On', field: 'timestamp', editComponent: () => {return <div></div>} },
-      { title: 'Updated By', field: 'updatedBy', editComponent: () => {return <div></div>} },
-    ], 
-    []
+      {
+        title: 'Modified On',
+        field: 'timestamp',
+        editComponent: () => {
+          return <div></div>;
+        },
+      },
+      {
+        title: 'Updated By',
+        field: 'updatedBy',
+        editComponent: () => {
+          return <div></div>;
+        },
+      },
+    ],
+    [],
   );
 
   const options: Options<DetectEmptyTree> = useMemo(() => calculateOptions(readRowNum), [readRowNum]);
@@ -181,7 +193,7 @@ const COATreesTable = ({ history }: RouterProps) => {
           (async () => {
             const oldSheetName = await COATreeController.fetchBySheetName(sheetName._id);
             if (oldSheetName.length === 0) {
-              CreateAuditLog(null, "Delete COA Tree", "CategoryTree", sheetName._id, sheetName, {});
+              CreateAuditLog(null, 'Delete COA Tree', 'CategoryTree', sheetName._id, sheetName, {});
             }
           })();
         }),
