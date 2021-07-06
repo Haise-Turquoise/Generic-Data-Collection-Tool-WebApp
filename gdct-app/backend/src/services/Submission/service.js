@@ -68,6 +68,10 @@ export default class SubmissionService {
     })
   }
 
+  async findQuery(query) {
+    return await this.submissionRepository.findQuery(query)
+  }
+
   async findReportingPeriod(_id){
     const submission = await this.submissionRepository.findById(_id);
     const submissionPeriod = await this.submissionPeriodRepository.findById(submission.submissionPeriodId);

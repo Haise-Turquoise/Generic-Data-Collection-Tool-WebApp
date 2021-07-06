@@ -31,7 +31,7 @@ const submissionController = (() => {
       submissionAxios
         .post('/findSubmissionByParentId', { parentId })
         .then(res => res.data.submission),
-    fetch: async query => submissionAxios.get('').then(res => res.data.submissions),
+    fetch: async query => submissionAxios.post('/findQuery', { query }).then(res => res.data.submissions),
     delete: async _id => submissionAxios.post('/delete', { _id }),
   };
 })();
