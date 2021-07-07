@@ -2,6 +2,8 @@ import { Service } from 'typedi';
 import { Router } from 'express';
 import COATreeService from '../../services/COATree';
 import COATreeEntity from '../../entities/COATree';
+import { CategoryTreeDoc } from '../../types/categorytree';
+import { Schema } from 'mongoose'
 
 const COATreeController = Service([COATreeService], service => {
   const router = Router();
@@ -23,22 +25,25 @@ const COATreeController = Service([COATreeService], service => {
       service
         // @ts-ignore
         .findCOATree(new COATreeEntity({ sheetNameId }))
-        .then(COATrees =>
+        .then((COATrees: CategoryTreeDoc[]) =>
           res.json({ COATrees: COATrees.map(COATree => ({ ...COATree, COATreeData: undefined })) }),
         )
         .catch(next);
     });
 
     router.post('/COATrees/sheetName/fetchBySheetNames', (req, res, next) => {
-      const { sheetNameIds } = req.body;
-      const allTreePromises = []
+      const { sheetNameIds }: { sheetNameIds: string[] } = req.body;
+      const allTreePromises: Promise<CategoryTreeDoc>[] = []
       sheetNameIds.forEach(sheetNameId => {
-        allTreePromises.push(service.findCOATree(new COATreeEntity({ sheetNameId })))
+        // TODO is this working? SUPER weird..
+        allTreePromises.push(service.findCOATree({ sheetNameId: new Schema.Types.ObjectId(sheetNameId) }))
       })
       Promise.all(allTreePromises)
         .then(COATrees => {
           // need to spread out trees before returning
-          const spreadTrees = []
+          const spreadTrees: CategoryTreeDoc[] = []
+          // TODO test this to see how to proceed
+          //@ts-ignore
           COATrees.forEach(tree => spreadTrees.push(...tree))
           res.json({ COATrees: spreadTrees })
         })
@@ -48,7 +53,7 @@ const COATreeController = Service([COATreeService], service => {
     router.get('/COATrees/fetch', (req, res, next) => {
       service
         .findCOATree(new COATreeEntity(req.body))
-        .then(COATrees =>
+        .then((COATrees: CategoryTreeDoc[]) =>
           res.json({ COATrees: COATrees.map(COATree => ({ ...COATree, COATreeData: undefined })) }),
         )
         .catch(next);
