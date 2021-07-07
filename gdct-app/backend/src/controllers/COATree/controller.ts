@@ -3,7 +3,6 @@ import { Router } from 'express';
 import COATreeService from '../../services/COATree';
 import COATreeEntity from '../../entities/COATree';
 import { CategoryTreeDoc } from '../../types/categorytree';
-import { Schema } from 'mongoose'
 
 const COATreeController = Service([COATreeService], service => {
   const router = Router();
@@ -32,18 +31,16 @@ const COATreeController = Service([COATreeService], service => {
     });
 
     router.post('/COATrees/sheetName/fetchBySheetNames', (req, res, next) => {
-      const { sheetNameIds }: { sheetNameIds: string[] } = req.body;
-      const allTreePromises: Promise<CategoryTreeDoc>[] = []
+      const { sheetNameIds }: { sheetNameIds: CategoryTreeDoc[] } = req.body;
+      const allTreePromises: Promise<any>[] = []
       sheetNameIds.forEach(sheetNameId => {
-        // TODO is this working? SUPER weird..
-        allTreePromises.push(service.findCOATree({ sheetNameId: new Schema.Types.ObjectId(sheetNameId) }))
+        allTreePromises.push(service.findCOATree(new COATreeEntity(sheetNameId)))
       })
       Promise.all(allTreePromises)
         .then(COATrees => {
           // need to spread out trees before returning
-          const spreadTrees: CategoryTreeDoc[] = []
-          // TODO test this to see how to proceed
-          //@ts-ignore
+          //TODO improve this function
+          const spreadTrees: any[] = []
           COATrees.forEach(tree => spreadTrees.push(...tree))
           res.json({ COATrees: spreadTrees })
         })
