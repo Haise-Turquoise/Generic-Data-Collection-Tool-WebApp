@@ -8,6 +8,7 @@ export default interface SubmissionPeriod {
   endDate: Date,
   timestamp: Date,
   updatedBy: string,
+  programId: ObjectId[];
 }
 
 export interface SubmissionPeriodDoc extends SubmissionPeriod, Document {}

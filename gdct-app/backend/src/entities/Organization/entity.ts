@@ -1,4 +1,29 @@
+import { ObjectId } from "mongodb";
+import { OrganizationDoc } from "../../types/organization";
+
 export default class OrgEntity {
+  public _id: ObjectId;
+  public id: number;
+  public IFISNum: string;
+  public code: string;
+  public name: string;
+  public legalName: string;
+  public address: string;
+  public province: string;
+  public city: string;
+  public postalCode: string;
+  public location: string[];
+  public organizationGroupId: ObjectId[];
+  public active: boolean;
+  public managerUserIds: ObjectId[];
+  public contactUserId: string;
+  public authorizedUserId: string;
+  public programId: ObjectId[];
+  public effectiveDate: Date;
+  public expiryDate: Date;
+  public timestamp: Date;
+  public updatedBy: string;
+
   constructor({
     _id,
     id,
@@ -21,7 +46,7 @@ export default class OrgEntity {
     expiryDate,
     timestamp,
     updatedBy,
-  }) {
+  }: OrganizationDoc) {
     this._id = _id;
     this.id = id;
     this.IFISNum = IFISNum;

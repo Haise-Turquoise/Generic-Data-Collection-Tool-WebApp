@@ -1,4 +1,25 @@
+import { ObjectId } from "mongodb";
+import { UserDoc } from "../../types/user";
+
 export default class UsersEntity {
+  public _id: ObjectId;
+  public username: string;
+  public email: string;
+  public title: string;
+  public firstName: string;
+  public lastName: string;
+  public phoneNumber: string;
+  public sysRole: UserDoc["sysRole"];
+  public toBeApproved: any[];
+  public isActive: boolean;
+  public isEmailVerified: boolean;
+  public creationDate: Date;
+  public approvedDate: Date;
+  public ext: string;
+  public timestamp: Date;
+  public updatedBy: string;
+  public pendingPermissions: any[];
+
   constructor({
     _id,
     username,
@@ -7,10 +28,8 @@ export default class UsersEntity {
     firstName,
     lastName,
     phoneNumber,
-    organizations,
     isActive,
     isEmailVerified,
-    isApproved,
     sysRole,
     creationDate,
     approvedDate,
@@ -19,7 +38,7 @@ export default class UsersEntity {
     updatedBy,
     pendingPermissions,
     toBeApproved,
-  }) {
+  }: UserDoc) {
     this._id = _id;
     this.username = username;
     this.email = email;
@@ -27,10 +46,8 @@ export default class UsersEntity {
     this.firstName = firstName;
     this.lastName = lastName;
     this.phoneNumber = phoneNumber;
-    this.organizations = organizations;
     this.isActive = isActive;
     this.isEmailVerified = isEmailVerified;
-    this.isApproved = isApproved;
     this.sysRole = sysRole;
     this.creationDate = creationDate;
     this.approvedDate = approvedDate;
@@ -39,6 +56,5 @@ export default class UsersEntity {
     this.updatedBy = updatedBy;
     this.pendingPermissions = pendingPermissions;
     this.toBeApproved = toBeApproved;
-
   }
 }

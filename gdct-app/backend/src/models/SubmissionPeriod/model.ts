@@ -1,13 +1,13 @@
 import { Schema, model } from 'mongoose';
-
+import { SubmissionPeriodDoc } from '../../types/submissionperiod';
 const { ObjectId } = Schema.Types;
 
-const SubmissionPeriodModel = model(
+const SubmissionPeriodModel = model<SubmissionPeriodDoc>(
   'SubmissionPeriod',
-  new Schema(
+  new Schema<SubmissionPeriodDoc>(
     {
       reportingPeriodId: { type: ObjectId, ref: 'ReportingPeriod' },
-      programId: { type: ObjectId, ref: 'Program' },
+      programId: [{ type: ObjectId, ref: 'Program' }],
       name: { type: String },
       startDate: { type: Date },
       endDate: { type: Date },

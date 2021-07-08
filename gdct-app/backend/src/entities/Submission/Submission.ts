@@ -1,4 +1,29 @@
+import { ObjectId } from "mongodb";
+import { SubmissionDoc } from "../../types/submission";
+
 export default class SubmissionEntity {
+  public _id: ObjectId;
+  public id: number;
+  public name: string;
+  public orgId: number;
+  public templateId: ObjectId;
+  public templatePackageId: ObjectId;
+  public submittedDate: Date;
+  public programId: ObjectId;
+  public workbookData: any;
+  public workflowProcessId: ObjectId;
+  public workflowId: ObjectId;
+  public statusId: ObjectId;
+  public year: string;
+  public submissionPeriodId: ObjectId;
+  public createdAt: Date;
+  public updatedAt: Date;
+  public updatedBy: ObjectId;
+  public isPublished: boolean;
+  public version: number;
+  public isLatest: boolean;
+  public parentId: ObjectId;
+
   constructor({
     _id,
     id,
@@ -14,7 +39,6 @@ export default class SubmissionEntity {
     statusId,
     year,
     submissionPeriodId,
-    phase,
     createdAt,
     updatedAt,
     updatedBy,
@@ -22,8 +46,7 @@ export default class SubmissionEntity {
     version,
     isLatest,
     parentId,
-    googleSheetId,
-  }) {
+  }: SubmissionDoc) {
     this._id = _id;
     this.id = id;
     this.name = name;
@@ -35,7 +58,6 @@ export default class SubmissionEntity {
     this.submittedDate = submittedDate;
     this.year = year;
     this.submissionPeriodId = submissionPeriodId;
-    this.phase = phase;
     this.statusId = statusId;
     this.createdAt = createdAt;
     this.updatedAt = updatedAt;
@@ -46,6 +68,5 @@ export default class SubmissionEntity {
     this.version = version;
     this.isLatest = isLatest;
     this.parentId = parentId;
-    this.googleSheetId = googleSheetId;
    }
 }
