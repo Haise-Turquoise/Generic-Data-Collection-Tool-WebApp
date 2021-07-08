@@ -50,10 +50,8 @@ export default class BaseRepository<T extends Document> {
     });
   }
 
-
-  async validateMany(ids: string[]) {
-    // TODO what is a filterquery and why doesn't this work?
-    //@ts-ignore
+  async validateMany(ids: any[]) {
+    //@ts-ignore having trouble creating the right type
     const filter: FilterQuery<T> = { _id: { $in: ids }}
     return this._model.find(filter)
       .then((documents: T[]) => {

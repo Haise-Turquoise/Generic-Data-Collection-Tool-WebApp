@@ -2,6 +2,7 @@ import COAEntity from '../../entities/COA';
 import BaseRepository from '../repository';
 import COAModel from '../../models/COA';
 import { CategoryDoc } from '../../types/category';
+import { FilterQuery } from 'mongoose';
 
 export default class COARepository extends BaseRepository<CategoryDoc> {
   constructor() {
@@ -27,10 +28,11 @@ export default class COARepository extends BaseRepository<CategoryDoc> {
     return COAModel.findByIdAndUpdate(id, COA).then((COA: CategoryDoc) => new COAEntity(COA));
   }
 
-  async find(query: {[key: string]: any}) {
-    const realQuery: {[key: string]: any} = {};
+  async find(query: Partial<CategoryDoc>) {
+    const realQuery: FilterQuery<CategoryDoc> = {};
 
-    for (const key in query) {
+    let key: keyof CategoryDoc
+    for (key in query) {
       if (query[key]) realQuery[key] = query[key];
     }
 
@@ -54,7 +56,7 @@ export default class COARepository extends BaseRepository<CategoryDoc> {
   }
 
   // TODO this one too
-  async batchFindFull(query: any){
+  async batchFindFull(query: any[]){
     return COAModel.find({ id: { $in : query }});
   }
 
@@ -64,7 +66,6 @@ export default class COARepository extends BaseRepository<CategoryDoc> {
         return [];
       }
       else {
-        // TODO does this work??? Why bother with toObject then???????
         return new COAEntity(result[0]);
       }
     });

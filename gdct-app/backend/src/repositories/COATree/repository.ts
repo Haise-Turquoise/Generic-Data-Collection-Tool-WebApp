@@ -3,6 +3,7 @@ import BaseRepository from '../repository';
 import COATreeModel from '../../models/COATree';
 import { CategoryTreeDoc } from '../../types/categorytree';
 import {ObjectId} from 'mongodb';
+import { FilterQuery } from 'mongoose';
 
 export default class ReportPeriodRepository extends BaseRepository<CategoryTreeDoc> {
   constructor() {
@@ -49,14 +50,12 @@ export default class ReportPeriodRepository extends BaseRepository<CategoryTreeD
   }
 
   async find(query: Partial<CategoryTreeDoc>) {
-    const realQuery: Partial<CategoryTreeDoc> = {};
+    const realQuery: FilterQuery<CategoryTreeDoc> = {};
     let key: keyof CategoryTreeDoc
     for (key in query) {
       if (query[key]) realQuery[key] = query[key];
     }
     
-    //TODO issue with base repository
-    //@ts-ignore
     return COATreeModel.find(realQuery)
       .populate('categoryGroupId')
       .exec()
@@ -78,9 +77,6 @@ export default class ReportPeriodRepository extends BaseRepository<CategoryTreeD
     return COATreeModel.find({ categoryId: { "$in" : query }, sheetNameId: sheetTitleId})
   }
   
-
-
-
   async findOneByCategoryGroupId(groupId: string){
     const newId = new ObjectId(groupId)
     //@ts-ignore having trouble with these queries

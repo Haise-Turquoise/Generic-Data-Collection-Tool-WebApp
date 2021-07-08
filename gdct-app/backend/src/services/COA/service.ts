@@ -12,7 +12,7 @@ export default class COAService {
     this.masterValueRepository = Container.get(MasterValueRepository);
   }
 
-  async createCOA(COA: CategoryDoc) {
+  async createCOA(COA: CategoryDoc | CategoryDoc[]) {
     return this.COARepository.create(COA);
   }
 
