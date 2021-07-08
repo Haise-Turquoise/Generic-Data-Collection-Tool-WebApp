@@ -1,14 +1,14 @@
 import i18n from 'i18n';
-import { Model, Document, FilterQuery } from 'mongoose';
+import { Model, Document, FilterQuery, QueryOptions } from 'mongoose';
 import AppError from '../utils/AppError';
 
 export default class BaseRepository<T extends Document> {
-  private _model: Model<T>
+  protected _model: Model<T>
   constructor(model: Model<T>) {
     this._model = model;
   }
 
-  find(item: Partial<T>) {
+  find(item: FilterQuery<T>) {
     const message = `${i18n.__('MethodNotImplemented')} ${{ item }}`;
     throw new AppError(message);
   }
@@ -23,8 +23,9 @@ export default class BaseRepository<T extends Document> {
     throw new AppError(message);
   }
 
-  async findAll() {
-    return this._model.find().then((result: T[]) => {
+  async findAll(option?: QueryOptions) {
+    // TODO test this
+    return this._model.find({}, option).then((result: T[]) => {
       if (!result) throw new AppError(i18n.__('idDoesNotExist'));
       return result;
     });

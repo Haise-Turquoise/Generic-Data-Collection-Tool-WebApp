@@ -28,10 +28,10 @@ export default class COARepository extends BaseRepository<CategoryDoc> {
     return COAModel.findByIdAndUpdate(id, COA).then((COA: CategoryDoc) => new COAEntity(COA));
   }
 
-  async find(query: Partial<CategoryDoc>) {
+  async find(query: FilterQuery<CategoryDoc>) {
     const realQuery: FilterQuery<CategoryDoc> = {};
 
-    let key: keyof CategoryDoc
+    let key: keyof FilterQuery<CategoryDoc>
     for (key in query) {
       if (query[key]) realQuery[key] = query[key];
     }

@@ -1,10 +1,10 @@
 import { Schema, model } from 'mongoose';
-import { AppResourceDoc } from '../../types/appresource';
+import { AppRoleResourceDoc } from '../../types/approleresource';
 const { ObjectId } = Schema.Types;
 
-const AppRoleResourceModel = model<AppResourceDoc>(
+const AppRoleResourceModel = model<AppRoleResourceDoc>(
   'AppRoleResource',
-  new Schema<AppResourceDoc>(
+  new Schema<AppRoleResourceDoc>(
     {
       appResourceId: { type: Object, ref: 'AppResource' },
       appSysRoleId: { type: Object, ref: 'AppSysRole' ,roleId:{type:ObjectId}, roleName:{type:String}},

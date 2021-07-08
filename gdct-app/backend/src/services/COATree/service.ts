@@ -1,3 +1,4 @@
+import { FilterQuery } from 'mongoose';
 import Container from 'typedi';
 import COATreeRepository from '../../repositories/COATree';
 import { CategoryTreeDoc } from '../../types/categorytree';
@@ -25,7 +26,7 @@ export default class COATreeService {
     return this.COATreeRepository.updateBySheet(sheetNameId, COATrees);
   }
 
-  async findCOATree(COATree: Partial<CategoryTreeDoc>) {
+  async findCOATree(COATree: FilterQuery<CategoryTreeDoc>) {
     return this.COATreeRepository.find(COATree);
   }
 }

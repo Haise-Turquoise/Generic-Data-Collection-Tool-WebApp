@@ -1,12 +1,12 @@
-import { Document } from "mongoose";
+import { Document, ObjectId } from "mongoose";
 import AppResource from "./appresource";
 import AppSysRole from "./appsysrole";
 
 export default interface AppRoleResource {
   appResourceId: AppResource,
-  appSysRoleId: AppSysRole,
+  appSysRoleId: {roleId: ObjectId, rolename: string},
   timestamp: Date,
-  resourceId: {_id: AppResource["_id"], resourceName: AppResource["resourceName"]}[]
+  resourceId: {id: AppResource["_id"], resourceName: AppResource["resourceName"]}[]
   updatedBy: string,
 }
 

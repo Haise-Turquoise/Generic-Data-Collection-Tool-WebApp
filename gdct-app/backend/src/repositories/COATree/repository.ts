@@ -49,9 +49,9 @@ export default class ReportPeriodRepository extends BaseRepository<CategoryTreeD
       });
   }
 
-  async find(query: Partial<CategoryTreeDoc>) {
+  async find(query: FilterQuery<CategoryTreeDoc>) {
     const realQuery: FilterQuery<CategoryTreeDoc> = {};
-    let key: keyof CategoryTreeDoc
+    let key: keyof FilterQuery<CategoryTreeDoc>
     for (key in query) {
       if (query[key]) realQuery[key] = query[key];
     }

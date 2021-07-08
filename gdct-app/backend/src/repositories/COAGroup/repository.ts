@@ -2,6 +2,7 @@ import COAGroupEntity from '../../entities/COAGroup';
 import BaseRepository from '../repository';
 import COAGroupModel from '../../models/COAGroup';
 import { CategoryGroupDoc } from '../../types/categorygroup';
+import { FilterQuery } from 'mongoose';
 
 export default class COAGroupRepository extends BaseRepository<CategoryGroupDoc> {
   constructor() {
@@ -23,15 +24,13 @@ export default class COAGroupRepository extends BaseRepository<CategoryGroupDoc>
     );
   }
 
-  async find(query: Partial<CategoryGroupDoc>) {
-    const realQuery: Partial<CategoryGroupDoc> = {};
+  async find(query: FilterQuery<CategoryGroupDoc>) {
+    const realQuery: FilterQuery<CategoryGroupDoc> = {};
 
-    let key: keyof CategoryGroupDoc
+    let key: keyof FilterQuery<CategoryGroupDoc>
     for (key in query) {
       if (query[key]) realQuery[key] = query[key];
     }
-    // TODO an issue with baserepository i think
-    //@ts-ignore
     return COAGroupModel.find(realQuery).then((COAGroups: CategoryGroupDoc[]) =>
       COAGroups.map(COAGroup => new COAGroupEntity(COAGroup)),
     );

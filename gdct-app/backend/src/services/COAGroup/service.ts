@@ -1,3 +1,4 @@
+import { FilterQuery } from 'mongoose';
 import Container from 'typedi';
 import COAGroupRepository from '../../repositories/COAGroup';
 import COATreeRepository from '../../repositories/COATree';
@@ -26,7 +27,7 @@ export default class COAGroupService {
     return this.COAGroupRepository.update(id, COAGroup);
   }
 
-  async findCOAGroup(COAGroup: Partial<CategoryGroupDoc>) {
+  async findCOAGroup(COAGroup: FilterQuery<CategoryGroupDoc>) {
     return this.COAGroupRepository.find(COAGroup);
   }
 

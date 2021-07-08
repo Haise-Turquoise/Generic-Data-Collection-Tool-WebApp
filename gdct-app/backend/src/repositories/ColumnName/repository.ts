@@ -2,7 +2,7 @@ import ColumnNameEntity from '../../entities/ColumnName/ColumnName';
 import BaseRepository from '../repository';
 import ColumnNameModel from '../../models/ColumnName';
 import { AttributeDoc } from '../../types/attribute';
-import { FilterQuery } from 'mongoose';
+import { FilterQuery, QueryOptions } from 'mongoose';
 
 export default class ColumnNameRepository extends BaseRepository<AttributeDoc> {
   constructor() {
@@ -28,10 +28,10 @@ export default class ColumnNameRepository extends BaseRepository<AttributeDoc> {
   }
 
   //should be Partial<AttributeDoc> but ts is not a fan
-  async find(query: Partial<AttributeDoc>) {
+  async find(query: FilterQuery<AttributeDoc>) {
     const realQuery: FilterQuery<AttributeDoc> = {};
 
-    let key: keyof AttributeDoc
+    let key: keyof FilterQuery<AttributeDoc>
     for (key in query) {
       if (query[key]) realQuery[key] = query[key];
     }
@@ -47,9 +47,8 @@ export default class ColumnNameRepository extends BaseRepository<AttributeDoc> {
     return ColumnNameModel.find({ id: { $in : attributeIds }}, option).then((values: unknown) => {return values});
   }
 
-  // TODO I'm unsure about this
-  //@ts-ignore
-  async findAll(option: any) {
+  // TODO test this
+  async findAll(option?: QueryOptions) {
     return ColumnNameModel.find({}, option);
   }
 

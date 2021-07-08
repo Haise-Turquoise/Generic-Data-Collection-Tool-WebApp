@@ -1,3 +1,4 @@
+import { FilterQuery } from 'mongoose';
 import Container from 'typedi';
 import ColumnNameRepository from '../../repositories/ColumnName';
 import MasterValueRepository from '../../repositories/MasterValue';
@@ -30,7 +31,7 @@ export default class ColumnNameService {
     return this.columnNameRepository.update(id, columnName);
   }
 
-  async findColumnName(columnName: Partial<AttributeDoc>) {
+  async findColumnName(columnName: FilterQuery<AttributeDoc>) {
     return this.columnNameRepository.find(columnName);
   }
 

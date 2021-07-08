@@ -3,13 +3,15 @@ import AppSysRoleEntity from '../../entities/AppSysRole';
 import BaseRepository from '../repository';
 import AppSysRoleModel from '../../models/AppSysRole';
 import AppError from '../../utils/AppError';
+import { AppSysRoleDoc } from '../../types/appsysrole';
+import { FilterQuery } from 'mongoose';
 
-export default class AppSysRoleRepository extends BaseRepository {
+export default class AppSysRoleRepository extends BaseRepository<AppSysRoleDoc> {
   constructor() {
     super(AppSysRoleModel);
   }
 
-  async delete(id) {
+  async delete(id: string) {
     const appSysRole = await AppSysRoleModel.findById(id);
     if (appSysRole) {
       appSysRole.isActive = false;
@@ -17,35 +19,35 @@ export default class AppSysRoleRepository extends BaseRepository {
     return this.update(id, appSysRole);
   }
 
-  async create(AppSysRole) {
+  async create(AppSysRole: AppSysRoleDoc) {
     AppSysRole.isActive = true;
     return AppSysRoleModel.create(AppSysRole).then(
-      AppSysRole => new AppSysRoleEntity(AppSysRole.toObject()),
+      AppSysRole => new AppSysRoleEntity(AppSysRole),
     );
   }
 
-  async update(id, AppSysRole) {
+  async update(id: string, AppSysRole: AppSysRoleDoc) {
     return AppSysRoleModel.findByIdAndUpdate(id, AppSysRole).then(
-      AppSysRole => new AppSysRoleEntity(AppSysRole.toObject()),
+      (AppSysRole: AppSysRoleDoc) => new AppSysRoleEntity(AppSysRole),
     );
   }
 
-  async find(query) {
+  async find(query: FilterQuery<AppSysRoleDoc>) {
     // TODO: filter to be active
-    return AppSysRoleModel.find(query).then(AppSysRoles =>
-      AppSysRoles.map(AppSysRole => new AppSysRoleEntity(AppSysRole.toObject())),
+    return AppSysRoleModel.find(query).then((AppSysRoles: AppSysRoleDoc[]) =>
+      AppSysRoles.map(AppSysRole => new AppSysRoleEntity(AppSysRole)),
     );
   }
 
-  async findById(id) {
-    return this._model.findById(id).then(result => {
+  async findById(id: string) {
+    return this._model.findById(id).then((result: AppSysRoleDoc) => {
       if (!result) throw new AppError(i18n.__('idDoesNotExist'));
       return result.toObject();
     });
   }
 
-  async findAndCreateAppSysRole(appSys, role) {
-    return AppSysRoleModel.findOne({ appSys, role }).then(appSysRole => {
+  async findAndCreateAppSysRole(appSys: string, role: string) {
+    return AppSysRoleModel.findOne({ appSys, role }).then((appSysRole: AppSysRoleDoc) => {
       if (appSysRole) return appSysRole;
       return AppSysRoleModel.create({
         role,

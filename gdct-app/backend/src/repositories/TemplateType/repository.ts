@@ -63,10 +63,10 @@ export default class TemplateTypeRepository extends BaseRepository<TemplateTypeD
       .then(templateType => new TemplateTypeEntity(templateType));
   }
 
-  async find(query: Partial<TemplateTypeDoc>) {
+  async find(query: FilterQuery<TemplateTypeDoc>) {
     const realQuery: FilterQuery<TemplateTypeDoc> = {};
 
-    let key: keyof TemplateTypeDoc
+    let key: keyof FilterQuery<TemplateTypeDoc>
     for (key in query) {
       if (query[key]) realQuery[key] = query[key];
     }

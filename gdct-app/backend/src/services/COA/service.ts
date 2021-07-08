@@ -1,3 +1,4 @@
+import { FilterQuery } from 'mongoose';
 import Container from 'typedi';
 import COARepository from '../../repositories/COA';
 import MasterValueRepository from '../../repositories/MasterValue';
@@ -34,7 +35,7 @@ export default class COAService {
     return this.COARepository.update(id, COA);
   }
 
-  async findCOA(COA: Partial<CategoryDoc>) {
+  async findCOA(COA: FilterQuery<CategoryDoc>) {
     return this.COARepository.find(COA);
   }
 }

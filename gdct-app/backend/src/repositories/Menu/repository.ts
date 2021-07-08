@@ -1,13 +1,15 @@
 import MenuEntity from '../../entities/Menu';
 import BaseRepository from '../repository';
 import MenuModel from '../../models/Menu';
+import { MenuDoc } from '../../types/menu';
+import { FilterQuery } from 'mongoose';
 
-export default class MenuRepository extends BaseRepository {
+export default class MenuRepository extends BaseRepository<MenuDoc> {
   constructor() {
     super(MenuModel);
   }
 
-  async delete(id) {
+  async delete(id: string) {
     const menu = await MenuModel.findById(id);
     if (menu) {
       menu.isActive = false;
@@ -15,21 +17,21 @@ export default class MenuRepository extends BaseRepository {
     return this.update(id, menu);
   }
 
-  async create(Menu) {
+  async create(Menu: MenuDoc) {
     return MenuModel.create(Menu).then(Menu => {
-      return new MenuEntity(Menu.toObject());
+      return new MenuEntity(Menu);
     });
   }
 
-  async update(id, Menu) {
-    return MenuModel.findByIdAndUpdate(id, Menu).then(Menu => new MenuEntity(Menu.toObject()));
+  async update(id: string, Menu: MenuDoc) {
+    return MenuModel.findByIdAndUpdate(id, Menu).then((Menu: MenuDoc) => new MenuEntity(Menu));
   }
 
-  async find(query) {
-    return MenuModel.find(query).then(Menus => Menus.map(Menu => new MenuEntity(Menu.toObject())));
+  async find(query: FilterQuery<MenuDoc>) {
+    return MenuModel.find(query).then((Menus: MenuDoc[]) => Menus.map(Menu => new MenuEntity(Menu)));
   }
 
-  async populate(name) {
+  async populate(name: unknown) {
     const key = typeof name === 'string' ? 'name' : 'unknown';
     const value = typeof name === 'string' ? name : undefined;
     return MenuModel.find({ [key]: value })
@@ -44,6 +46,6 @@ export default class MenuRepository extends BaseRepository {
           },
         },
       ])
-      .then(Menus => Menus.map(Menu => new MenuEntity(Menu.toObject())));
+      .then((Menus: MenuDoc[]) => Menus.map(Menu => new MenuEntity(Menu)));
   }
 }
