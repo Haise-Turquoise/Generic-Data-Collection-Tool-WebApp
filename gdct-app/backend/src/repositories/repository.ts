@@ -51,7 +51,7 @@ export default class BaseRepository<T extends Document> {
   }
 
   async validateMany(ids: any[]) {
-    //@ts-ignore having trouble creating the right type
+    //@ts-ignore
     const filter: FilterQuery<T> = { _id: { $in: ids }}
     return this._model.find(filter)
       .then((documents: T[]) => {
