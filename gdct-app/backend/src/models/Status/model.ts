@@ -1,4 +1,4 @@
-import { Schema, model } from 'mongoose';
+import { Schema, model, Model, CallbackError } from 'mongoose';
 import { StatusDoc } from '../../types/status';
 
 const Status = new Schema<StatusDoc>(
@@ -14,10 +14,9 @@ const Status = new Schema<StatusDoc>(
   { minimize: false, timestamps: true },
 )
 
-Status.pre(/^find/, function (next) {
-  //@ts-ignore
+Status.pre(/^find/, function (this: Model<StatusDoc>, next: (err: CallbackError) => void) {
   this.find({ isActive: { $ne: false } });
-  next();
+  next(null);
 });
 
 const StatusModel = model<StatusDoc>('Status', Status, 'Status');

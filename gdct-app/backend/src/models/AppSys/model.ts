@@ -1,4 +1,4 @@
-import { Schema, model } from 'mongoose';
+import { Schema, model, Model, CallbackError } from 'mongoose';
 import { AppSysDoc } from '../../types/appsys';
 
 const AppSys = new Schema<AppSysDoc>(
@@ -17,10 +17,9 @@ const AppSys = new Schema<AppSysDoc>(
   { minimize: false },
 );
 
-AppSys.pre(/^find/, function (next) {
-  //@ts-ignore
+AppSys.pre(/^find/, function (this: Model<AppSysDoc>, next: (err: CallbackError) => void) {
   this.find({ isActive: { $ne: false } });
-  next();
+  next(null);
 });
 
 const AppSysModel = model<AppSysDoc>('AppSys', AppSys, 'AppSys');

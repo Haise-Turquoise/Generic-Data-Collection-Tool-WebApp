@@ -1,4 +1,4 @@
-import { Schema, model } from 'mongoose';
+import { Schema, model, Model, CallbackError } from 'mongoose';
 import { ProgramDoc } from '../../types/program';
 
 const Program = new Schema<ProgramDoc>(
@@ -12,10 +12,9 @@ const Program = new Schema<ProgramDoc>(
   { minimize: false, timestamps: true },
 )
 
-Program.pre(/^find/, function (next) {
-  //@ts-ignore
+Program.pre(/^find/, function (this: Model<ProgramDoc>, next: (err: CallbackError) => void) {
   this.find({ isActive: { $ne: false } });
-  next();
+  next(null);
 });
 
 const ProgramModel = model<ProgramDoc>('Program', Program, 'Program');

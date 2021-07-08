@@ -1,4 +1,4 @@
-import { Schema, model } from 'mongoose';
+import { Schema, model, Model, CallbackError } from 'mongoose';
 import { MenuItemDoc } from '../../types/menuitem';
 
 const MenuItemSchema = new Schema<MenuItemDoc>(
@@ -25,10 +25,9 @@ const MenuItemSchema = new Schema<MenuItemDoc>(
   { minimize: false, timestamps: true },
 );
 
-MenuItemSchema.pre(/^find/, function (next) {
-  //@ts-ignore
+MenuItemSchema.pre(/^find/, function (this: Model<MenuItemDoc>, next: (err: CallbackError) => void) {
   this.find({ isActive: { $ne: false } });
-  next();
+  next(null);
 });
 
 const MenuItem = model<MenuItemDoc>('MenuItem', MenuItemSchema);

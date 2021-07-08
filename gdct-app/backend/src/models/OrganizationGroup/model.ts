@@ -1,4 +1,4 @@
-import { Schema, model } from 'mongoose';
+import { Schema, model, Model, CallbackError } from 'mongoose';
 import { OrganizationGroupDoc } from '../../types/organizationgroup';
 
 const OrgSchema = new Schema<OrganizationGroupDoc>(
@@ -10,10 +10,9 @@ const OrgSchema = new Schema<OrganizationGroupDoc>(
   { minimize: false },
 )
 
-OrgSchema.pre(/^find/, function (next) {
-  //@ts-ignore
+OrgSchema.pre(/^find/, function (this: Model<OrganizationGroupDoc>, next: (err: CallbackError) => void) {
   this.find({ isActive: { $ne: false } });
-  next();
+  next(null);
 });
 
 const OrgGroupModel = model<OrganizationGroupDoc>('OrganizationGroup', OrgSchema, 'OrganizationGroup');

@@ -1,4 +1,4 @@
-import { Schema, model } from 'mongoose';
+import { Schema, model, Model, CallbackError } from 'mongoose';
 import { TemplateTypeDoc } from '../../types/templatetype';
 
 const { ObjectId } = Schema.Types;
@@ -23,10 +23,9 @@ const TemplateType = new Schema<TemplateTypeDoc>(
   { minimize: false, timestamps: true },
 )
 
-TemplateType.pre(/^find/, function (next) {
-  //@ts-ignore unsure about this
+TemplateType.pre(/^find/, function (this: Model<TemplateTypeDoc>, next: (err: CallbackError) => void) {
   this.find({ isActive: { $ne: false } });
-  next();
+  next(null);
 });
 
 const TemplateTypeModel = model<TemplateTypeDoc>('TemplateType', TemplateType, 'TemplateType');

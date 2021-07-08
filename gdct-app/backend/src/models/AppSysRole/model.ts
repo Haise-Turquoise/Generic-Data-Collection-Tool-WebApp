@@ -1,4 +1,4 @@
-import { Schema, model } from 'mongoose';
+import { Schema, model, Model, CallbackError } from 'mongoose';
 import { AppSysRoleDoc } from '../../types/appsysrole';
 
 const AppSysRole = new Schema<AppSysRoleDoc>(
@@ -14,10 +14,9 @@ const AppSysRole = new Schema<AppSysRoleDoc>(
   { minimize: false },
 );
 
-AppSysRole.pre(/^find/, function (next) {
-  //@ts-ignore
+AppSysRole.pre(/^find/, function (this: Model<AppSysRoleDoc>, next: (err: CallbackError) => void) {
   this.find({ isActive: { $ne: false } });
-  next();
+  next(null);
 });
 
 const AppSysRoleModel = model<AppSysRoleDoc>('AppSysRole', AppSysRole, 'AppSysRole');

@@ -1,4 +1,5 @@
 import { ObjectId } from 'mongodb';
+import { Document } from 'mongoose';
 
 export default interface Menu {
   name: string;

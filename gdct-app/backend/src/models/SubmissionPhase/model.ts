@@ -1,4 +1,4 @@
-import { Schema, model } from 'mongoose';
+import { Schema, model, Model, CallbackError } from 'mongoose';
 import { SubmissionPhaseDoc } from '../../types/submissionphase';
 
 const SubmissionPhase = new Schema<SubmissionPhaseDoc>(
@@ -10,10 +10,9 @@ const SubmissionPhase = new Schema<SubmissionPhaseDoc>(
   { minimize: false, autoIndex: true },
 )
 
-SubmissionPhase.pre(/^find/, function (next) {
-  //@ts-ignore
+SubmissionPhase.pre(/^find/, function (this: Model<SubmissionPhaseDoc>, next: (err: CallbackError) => void) {
   this.find({ isActive: { $ne: false } });
-  next();
+  next(null);
 });
 
 const SubmissionPhaseModel = model<SubmissionPhaseDoc>('SubmissionPhase', SubmissionPhase, 'SubmissionPhase');

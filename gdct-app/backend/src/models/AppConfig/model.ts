@@ -1,4 +1,4 @@
-import { Schema, model } from 'mongoose';
+import { Schema, model, Model, CallbackError } from 'mongoose';
 import { AppConfigDoc } from '../../types/appconfig';
 
 const AppConfig = new Schema<AppConfigDoc>(
@@ -17,10 +17,9 @@ const AppConfig = new Schema<AppConfigDoc>(
   { minimize: false },
 );
 
-AppConfig.pre(/^find/, function (next) {
-  //@ts-ignore
+AppConfig.pre(/^find/, function (this: Model<AppConfigDoc>, next: (err: CallbackError) => void) {
   this.find({ isActive: { $ne: false } });
-  next();
+  next(null);
 });
 
 const AppConfigModel = model<AppConfigDoc>('AppConfig', AppConfig, 'AppConfig');

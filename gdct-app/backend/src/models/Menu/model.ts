@@ -1,8 +1,9 @@
-import { Schema, model } from 'mongoose';
+import { Schema, model, Model, CallbackError } from 'mongoose';
+import { MenuDoc } from '../../types/menu';
 
 const { ObjectId } = Schema.Types;
 
-const MenuSchema = new Schema(
+const MenuSchema = new Schema<MenuDoc>(
   {
     name: { type: String, unique: true },
     items: [{ type: ObjectId, ref: 'MenuItem' }],
@@ -26,12 +27,11 @@ const MenuSchema = new Schema(
   { minimize: false, timestamps: true },
 );
 
-MenuSchema.pre(/^find/, function (next) {
-  //@ts-ignore
+MenuSchema.pre(/^find/, function (this: Model<MenuDoc>, next: (err: CallbackError) => void) {
   this.find({ isActive: { $ne: false } });
-  next();
+  next(null);
 });
 
-const MenuModel = model('Menu', MenuSchema);
+const MenuModel = model<MenuDoc>('Menu', MenuSchema);
 
 export default MenuModel;

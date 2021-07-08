@@ -1,4 +1,4 @@
-import { Schema, model } from 'mongoose';
+import { Schema, model, Model, CallbackError } from 'mongoose';
 import { WorkflowDoc } from '../../types/workflow';
 
 const Workflow = new Schema<WorkflowDoc>(
@@ -15,10 +15,9 @@ const Workflow = new Schema<WorkflowDoc>(
   { minimize: false, autoIndex: true },
 )
 
-Workflow.pre(/^find/, function (next) {
-  //@ts-ignore
+Workflow.pre(/^find/, function (this: Model<WorkflowDoc>, next: (err: CallbackError) => void) {
   this.find({ isActive: { $ne: false } });
-  next();
+  next(null);
 });
 
 const WorkflowModel = model<WorkflowDoc>('Workflow', Workflow, 'Workflow');

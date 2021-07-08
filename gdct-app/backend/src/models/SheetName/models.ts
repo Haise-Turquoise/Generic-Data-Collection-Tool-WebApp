@@ -1,4 +1,4 @@
-import { Schema, model } from 'mongoose';
+import { Schema, model, Model, CallbackError } from 'mongoose';
 import { SheetNameDoc } from '../../types/sheetname';
 
 const SheetName = new Schema<SheetNameDoc>(
@@ -12,10 +12,9 @@ const SheetName = new Schema<SheetNameDoc>(
   { minimize: false },
 )
 
-SheetName.pre(/^find/, function (next) {
-  //@ts-ignore
+SheetName.pre(/^find/, function (this: Model<SheetNameDoc>, next: (err: CallbackError) => void) {
   this.find({ isActive: { $ne: false } });
-  next();
+  next(null);
 });
 
 const SheetNameModel = model<SheetNameDoc>('SheetName', SheetName, 'SheetName');
