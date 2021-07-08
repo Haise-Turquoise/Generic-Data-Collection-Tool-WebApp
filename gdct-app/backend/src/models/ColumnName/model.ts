@@ -1,9 +1,10 @@
 import { ObjectID } from 'mongodb';
 import { Schema, model } from 'mongoose';
+import { AttributeDoc as Attribute } from '../../types/attribute';
 
-const ColumnNameModel = model(
+const ColumnNameModel = model<Attribute>(
   'Attribute',
-  new Schema(
+  new Schema<Attribute>(
     {
       name: { type: String, required: true },
       id: { type: String, required: true, unique: true },

@@ -56,8 +56,6 @@ import { getCOAsRequest } from '../../store/thunks/COA';
 //@ts-ignore
 import { getOrgsRequest } from '../../store/thunks/organization';
 //@ts-ignore
-import MasterValueModel from '../../../../backend/src/models/MasterValue';
-//@ts-ignore
 import MasterValueController from '../../controllers/MasterValue';
 
 //@ts-ignore
