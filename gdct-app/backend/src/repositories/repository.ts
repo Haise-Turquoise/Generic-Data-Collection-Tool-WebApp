@@ -1,4 +1,5 @@
 import i18n from 'i18n';
+import { ObjectId } from 'mongodb';
 import { Model, Document, FilterQuery, QueryOptions } from 'mongoose';
 import AppError from '../utils/AppError';
 
@@ -38,14 +39,14 @@ export default class BaseRepository<T extends Document> {
     });
   }
 
-  async findById(id: string) {
+  async findById(id: string | number | ObjectId) {
     return this._model.findById(id).then((result: T | null) => {
       if (!result) {;throw new AppError(i18n.__('idDoesNotExist'));} // throw new Error('_id does not exist');
       return result.toObject();
     });
   }
 
-  async validate(id: string) {
+  async validate(id: string | ObjectId) {
     return this._model.findById(id).then((document: T | null) => {
       if (!document) throw `${this._model.collection.name} not found`;
     });

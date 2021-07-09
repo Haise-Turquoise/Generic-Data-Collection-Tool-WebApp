@@ -1,6 +1,8 @@
 import TransferStatusModel from '../../models/TransferStatus';
 import BaseRepository from '../repository';
-export default class TransferStatusRepository extends BaseRepository {
+import { TransferStatusDoc } from '../../types/transferstatus';
+
+export default class TransferStatusRepository extends BaseRepository<TransferStatusDoc> {
   constructor() {
     super(TransferStatusModel);
   }
@@ -9,7 +11,7 @@ export default class TransferStatusRepository extends BaseRepository {
     return TransferStatusModel.findOne({name:"mongoToSql"});
   }
 
-  async updateTimerID(time, state){
+  async updateTimerID(time: number, state: boolean){
     return TransferStatusModel.updateOne({name:"mongoToSql"}, {$set:{isActive:state, interval:time}})
   }
   

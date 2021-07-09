@@ -8,12 +8,20 @@ import TemplatePackageEntity from '../../entities/TemplatePackage';
 import StatusRepository from '../Status';
 import UsersRepository from '../Users';
 import TemplateModel from '../../models/Template';
+import { TemplatePackageDoc } from '../../types/templatepackage';
+import { FilterQuery } from 'mongoose';
 
 const populatedParams = 'submissionPeriodId templateIds statusId programIds';
 
 // MongoDB implementation
 // @Service()
-export default class TemplatePackageRepository extends BaseRepository {
+export default class TemplatePackageRepository extends BaseRepository<TemplatePackageDoc> {
+  private submissionPeriodRepository: SubmissionPeriodRepository;
+  private usersRepository: UsersRepository;
+  private userRepository: UserRepository;
+  private templateRepository: TemplateRepository;
+  private statusRepository: StatusRepository;
+
   constructor() {
     super(TemplatePackageModel);
 
@@ -34,7 +42,7 @@ export default class TemplatePackageRepository extends BaseRepository {
     programIds,
     updatedBy,
     timestamp,
-  }) {
+  }: TemplatePackageDoc) {
     return this.submissionPeriodRepository
       .validate(submissionPeriodId)
       .then(() => this.templateRepository.validateMany(templateIds))
@@ -52,16 +60,16 @@ export default class TemplatePackageRepository extends BaseRepository {
           timestamp,
         }),
       )
-      .then(templatePackage => new TemplatePackageEntity(templatePackage.toObject()));
+      .then(templatePackage => new TemplatePackageEntity(templatePackage));
   }
 
   async update(
-    id,
-    { name, submissionPeriodId, templateIds, statusId, creationDate, userCreatorId, programIds, updatedBy, timestamp, },
-    isPopulated,
+    id: string,
+    { name, submissionPeriodId, templateIds, statusId, creationDate, userCreatorId, programIds, updatedBy, timestamp, }: Partial<TemplatePackageDoc>,
+    isPopulated?: boolean,
   ) {
     // console.log('programIds', programIds)
-    return (statusId ? this.statusRepository.validate(statusId) : new Promise(resolve => resolve()))
+    return (statusId ? this.statusRepository.validate(statusId) : new Promise<void>(resolve => resolve()))
       .then(() => {
         if (templateIds) return this.templateRepository.validateMany(templateIds);
       })
@@ -86,19 +94,19 @@ export default class TemplatePackageRepository extends BaseRepository {
           { upsert: true, new: true },
         ).populate(isPopulated ? populatedParams : ''),
       )
-      .then(templatePackage => new TemplatePackageEntity(templatePackage.toObject()));
+      .then(templatePackage => new TemplatePackageEntity(templatePackage));
   }
 
-  async findByProgramId(programId) {
-    return TemplatePackageModel.find({ programIds: programId });
+  async findByProgramId(programId: string) {
+    return TemplatePackageModel.find({ programIds: programId } as FilterQuery<TemplatePackageDoc>);
   }
 
-  async findByName(name) {
+  async findByName(name: string) {
     return TemplatePackageModel.find({ name });
   }
 
-  async find(query, isPopulated) {
-    const realQuery = {};
+  async find(query: FilterQuery<TemplatePackageDoc>, isPopulated?: boolean) {
+    const realQuery: FilterQuery<TemplatePackageDoc> = {};
 
     for (const key in query) {
       if (query[key]) realQuery[key] = query[key];
@@ -109,29 +117,29 @@ export default class TemplatePackageRepository extends BaseRepository {
     );
 
     return templatePackages.map(
-      templatePackage => new TemplatePackageEntity(templatePackage.toObject()),
+      (templatePackage: TemplatePackageDoc) => new TemplatePackageEntity(templatePackage),
     );
   }
 
-  async delete(id) {
+  async delete(id: string) {
     return TemplatePackageModel.findByIdAndDelete(id).then(
-      templatePackage => new TemplatePackageEntity(templatePackage.toObject()),
+      (templatePackage: TemplatePackageDoc) => new TemplatePackageEntity(templatePackage),
     );
   }
 
-  async findByIds(ids){
-    const templatePackages = await TemplatePackageModel.find({ _id: { $in: ids } });
+  async findByIds(ids: string[]){
+    const templatePackages: TemplatePackageDoc[] = await TemplatePackageModel.find({ _id: { $in: ids } });
     
     return templatePackages.map(
-      templatePackage => new TemplatePackageEntity(templatePackage.toObject()),
+      templatePackage => new TemplatePackageEntity(templatePackage),
     );
   }
 
-  async findStatusById(id){
-    const statusID = await TemplatePackageModel.findById(id, {_id:0, statusId:1});
-    return this.statusRepository.findById({_id:statusID.statusId}, {name:1});
+  async findStatusById(id: string){
+    const statusID: TemplatePackageDoc = await TemplatePackageModel.findById(id, {_id:0, statusId:1});
+    return this.statusRepository.findById(statusID.statusId);
   }
-  async findByUpdateBy(updatedBy) {
+  async findByUpdateBy(updatedBy: string) {
     return TemplatePackageModel.find({ updatedBy });
   }
 }

@@ -3,7 +3,7 @@ import TemplateTypeEntity from '../../entities/TemplateType';
 import BaseRepository from '../repository';
 import TemplateTypeModel from '../../models/TemplateType/model';
 import ProgramRepository from '../Program';
-import {Condition, ObjectId} from 'mongodb';
+import {ObjectId} from 'mongodb';
 import {FilterQuery, ObjectId as ObjectIdType} from 'mongoose';
 import { TemplateTypeDoc } from '../../types/templatetype';
 

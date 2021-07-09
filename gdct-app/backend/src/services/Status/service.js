@@ -29,7 +29,7 @@ export default class StatusService {
   }
 
   async findByID(id){
-    return this.statusRepository.findOneByID(new ObjectId(id));
+    return this.statusRepository.findByID(new ObjectId(id));
 
   }
 }

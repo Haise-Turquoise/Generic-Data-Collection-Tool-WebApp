@@ -11,7 +11,7 @@ export default interface User {
   firstName: string;
   lastName: string;
   newPermissionPending: boolean;
-  tempSysRole: [];
+  tempSysRole: User["sysRole"];
   newTemplates: [];
   toBeApproved: any[];
   phoneNumber: string;
@@ -35,7 +35,7 @@ export default interface User {
         }[];
       }[];
     }[];
-  };
+  }[];
   facebook: {
     id: string;
     token: string;
