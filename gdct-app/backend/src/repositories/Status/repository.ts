@@ -18,7 +18,7 @@ export default class StatusRepository extends BaseRepository<StatusDoc> {
     return StatusModel.create(status).then(status => new StatusEntity(status));
   }
 
-  async update(id: string, status: StatusDoc) {
+  async update(id: string, status: Partial<StatusDoc>) {
     return StatusModel.findByIdAndUpdate(id, status).then((status: StatusDoc) => new StatusEntity(status));
   }
 
@@ -30,10 +30,10 @@ export default class StatusRepository extends BaseRepository<StatusDoc> {
     return StatusModel.findById(id);
   }
 
-  async find(query: FilterQuery<StatusDoc>) {
+  async find(query: StatusDoc) {
     const realQuery: FilterQuery<StatusDoc> = {};
-
-    for (const key in query) {
+    let key: keyof StatusDoc;
+    for (key in query) {
       if (query[key]) realQuery[key] = query[key];
     }
 

@@ -4,7 +4,7 @@ import BaseRepository from '../repository';
 import TemplateTypeModel from '../../models/TemplateType/model';
 import ProgramRepository from '../Program';
 import {ObjectId} from 'mongodb';
-import {FilterQuery, ObjectId as ObjectIdType} from 'mongoose';
+import {FilterQuery } from 'mongoose';
 import { TemplateTypeDoc } from '../../types/templatetype';
 
 // @Service()
@@ -52,21 +52,21 @@ export default class TemplateTypeRepository extends BaseRepository<TemplateTypeD
       .then(templateType => new TemplateTypeEntity(templateType));
   }
 
-  async findByProgramIds(programIds: ObjectIdType[]) {
+  async findByProgramIds(programIds: ObjectId[]) {
     return TemplateTypeModel.find({ programIds: { $in: programIds } });
   }
 
-  async update(id: string, templateType: TemplateTypeDoc) {
+  async update(id: string, templateType: Partial<TemplateTypeDoc>) {
     return this.programRepository
-      .validateMany(templateType.programIds)
+      .validateMany(templateType.programIds || [])
       .then(() => TemplateTypeModel.findByIdAndUpdate(id, templateType))
       .then(templateType => new TemplateTypeEntity(templateType));
   }
 
-  async find(query: FilterQuery<TemplateTypeDoc>) {
+  async find(query: TemplateTypeDoc) {
     const realQuery: FilterQuery<TemplateTypeDoc> = {};
-
-    let key: keyof FilterQuery<TemplateTypeDoc>
+  
+    let key: keyof TemplateTypeDoc
     for (key in query) {
       if (query[key]) realQuery[key] = query[key];
     }

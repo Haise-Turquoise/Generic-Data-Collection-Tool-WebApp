@@ -5,6 +5,7 @@ import TemplateRepository from '../Template';
 import SheetNameEntity from '../../entities/SheetName';
 import { SheetNameDoc } from '../../types/sheetname';
 import { FilterQuery } from 'mongoose';
+import { ObjectId } from 'mongodb'
 
 // @Service()
 export default class SheetNameRepository extends BaseRepository<SheetNameDoc> {
@@ -48,7 +49,7 @@ export default class SheetNameRepository extends BaseRepository<SheetNameDoc> {
     return SheetNameModel.findByIdAndDelete(id).then((sheetName: SheetNameDoc) => new SheetNameEntity(sheetName));
   }
 
-  async batchFind(query: string[]){
+  async batchFind(query: ObjectId[] | string[]){
     return SheetNameModel.find({ _id: { "$in" : query }})
   }
 }

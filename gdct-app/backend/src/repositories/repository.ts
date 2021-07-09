@@ -9,7 +9,7 @@ export default class BaseRepository<T extends Document> {
     this._model = model;
   }
 
-  find(item: FilterQuery<T>) {
+  find(item: T) {
     const message = `${i18n.__('MethodNotImplemented')} ${{ item }}`;
     throw new AppError(message);
   }

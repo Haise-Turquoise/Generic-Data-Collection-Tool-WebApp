@@ -3,6 +3,7 @@ import BaseRepository from '../repository';
 import AppRoleResourceModel from '../../models/AppRoleResource';
 import { AppRoleResourceDoc } from '../../types/approleresource';
 import { FilterQuery } from 'mongoose';
+import { ObjectId } from 'mongodb'
 export default class AppRoleResourceRepository extends BaseRepository<AppRoleResourceDoc> {
   constructor() {
     super(AppRoleResourceModel);
@@ -53,7 +54,7 @@ export default class AppRoleResourceRepository extends BaseRepository<AppRoleRes
     });
   }
 
-  async findByAppSysRoleId(RoleId: string) {
+  async findByAppSysRoleId(RoleId: string | ObjectId) {
     return AppRoleResourceModel.findOne({ 'appSysRoleId.roleId': RoleId }).then((appRoleResource: AppRoleResourceDoc) => {
       return new AppRoleResouceEntity(appRoleResource);
     });

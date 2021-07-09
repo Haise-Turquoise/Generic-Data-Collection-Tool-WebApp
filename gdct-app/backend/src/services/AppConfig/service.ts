@@ -1,13 +1,16 @@
 import Container from 'typedi';
 import AppConfigRepository from '../../repositories/AppConfig';
+import { AppConfigDoc } from '../../types/appconfig';
 
 // @Service()
 export default class AppConfigService {
+  private AppConfigRepository: AppConfigRepository;
+
   constructor() {
     this.AppConfigRepository = Container.get(AppConfigRepository);
   }
 
-  async createAppConfig(AppConfig) {
+  async createAppConfig(AppConfig: AppConfigDoc) {
     return this.AppConfigRepository.create(AppConfig);
   }
 
@@ -19,19 +22,19 @@ export default class AppConfigService {
     return this.AppConfigRepository.findOne({key: "app.SRI.AttributeRow"});
   }
 
-  async deleteAppConfig(id) {
+  async deleteAppConfig(id: string) {
     return this.AppConfigRepository.delete(id);
   }
 
-  async updateAppConfig(id, AppConfig) {
+  async updateAppConfig(id: string, AppConfig: AppConfigDoc) {
     return this.AppConfigRepository.update(id, AppConfig);
   }
 
-  async findAppConfig(AppConfig) {
-    return this.AppConfigRepository.find(AppConfig);
+  async findAppConfig(AppConfig: AppConfigDoc) {
+    return this.AppConfigRepository.find(AppConfig.toObject());
   }
 
-  async findAppConfigById(id) {
+  async findAppConfigById(id: string) {
     return this.AppConfigRepository.findById(id);
   }
 

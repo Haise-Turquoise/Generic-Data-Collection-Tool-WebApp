@@ -5,12 +5,14 @@ import TransferStatusModel from '../../models/TransferStatus'
 
 // @Service()
 class TemplateTypeService {
+  private transferStatusRepository: TransferStatusRepository;
+  private currentTimer: null | NodeJS.Timeout;
   constructor() {
     this.transferStatusRepository = Container.get(TransferStatusRepository);
     this.currentTimer = null;
   }
 
-  async startTransferProccess(time){
+  async startTransferProccess(time: number){
     if (time <= 0) throw new Error("Cannot set transfer to less or equal to 0 minutes")
     const millis = time*1000*60;
 
@@ -25,7 +27,9 @@ class TemplateTypeService {
     console.log('Test point 4')
     return this.transferStatusRepository.updateTimerID(time, true)
     .catch(err=>{
-      clearInterval(this.currentTimer);
+      if (this.currentTimer) {
+        clearInterval(this.currentTimer);
+      }
       this.currentTimer = null;
     })
   }
@@ -38,7 +42,8 @@ class TemplateTypeService {
   async closeCurrentTransferProcess(){
     if (this.currentTimer){
       clearInterval(this.currentTimer);
-      return this.transferStatusRepository.updateTimerID(false);
+      // TODO double check this
+      return this.transferStatusRepository.updateTimerID(0, false);
     }
     throw new Error('There are no currently running transfer Process')
   }

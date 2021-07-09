@@ -105,10 +105,10 @@ export default class TemplatePackageRepository extends BaseRepository<TemplatePa
     return TemplatePackageModel.find({ name });
   }
 
-  async find(query: FilterQuery<TemplatePackageDoc>, isPopulated?: boolean) {
+  async find(query: TemplatePackageDoc, isPopulated?: boolean) {
     const realQuery: FilterQuery<TemplatePackageDoc> = {};
-
-    for (const key in query) {
+    let key: keyof TemplatePackageDoc
+    for (key in query) {
       if (query[key]) realQuery[key] = query[key];
     }
 

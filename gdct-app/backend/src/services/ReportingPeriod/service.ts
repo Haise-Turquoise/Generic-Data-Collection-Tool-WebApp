@@ -1,19 +1,22 @@
 import Container from 'typedi';
 import ReportingPeriodRepository from '../../repositories/ReportingPeriod';
 import MasterValueRepository from '../../repositories/MasterValue';
+import { ReportingPeriodDoc } from '../../types/reportingperiod';
 
 // @Service()
 export default class ReportingPeriodService {
+  private reportingPeriodRepository: ReportingPeriodRepository;
+  private masterValueRepository: MasterValueRepository;
   constructor() {
     this.reportingPeriodRepository = Container.get(ReportingPeriodRepository);
     this.masterValueRepository = Container.get(MasterValueRepository);
   }
 
-  async createReportingPeriod(reportingPeriod) {
+  async createReportingPeriod(reportingPeriod: ReportingPeriodDoc) {
     return this.reportingPeriodRepository.create(reportingPeriod);
   }
 
-  async deleteReportingPeriod(id) {
+  async deleteReportingPeriod(id: string) {
     // Apply business rule: 
     // if the reporting period is referenced in mastervalue table, the delete operation wiil not perform
     const name = await this.reportingPeriodRepository.findById(id);
@@ -23,15 +26,15 @@ export default class ReportingPeriodService {
     return this.reportingPeriodRepository.delete(id);
   }
 
-  async updateReportingPeriod(id, reportingPeriod) {
+  async updateReportingPeriod(id: string, reportingPeriod: ReportingPeriodDoc) {
     return this.reportingPeriodRepository.update(id, reportingPeriod);
   }
 
-  async findReportingPeriod(reportingPeriod) {
-    return this.reportingPeriodRepository.find(reportingPeriod);
+  async findReportingPeriod(reportingPeriod: ReportingPeriodDoc) {
+    return this.reportingPeriodRepository.find(reportingPeriod.toObject());
   }
 
-  async findReportingPeriodById(id) {
+  async findReportingPeriodById(id: string) {
     return this.reportingPeriodRepository.findById(id);
   }
 }

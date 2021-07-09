@@ -1,35 +1,37 @@
 import Container from 'typedi';
 import StatusRepository from '../../repositories/Status';
 import {ObjectId} from 'mongodb';
+import { StatusDoc } from '../../types/status';
 
 export default class StatusService {
+  private statusRepository: StatusRepository;
+
   constructor() {
     this.statusRepository = Container.get(StatusRepository);
   }
 
-  async createStatus(status) {
+  async createStatus(status: StatusDoc) {
     return this.statusRepository.create(status);
   }
 
-  async deleteStatus(id) {
+  async deleteStatus(id: string) {
     return this.statusRepository.delete(id);
   }
 
-  async updateStatus(id, status) {
+  async updateStatus(id: string, status: Partial<StatusDoc>) {
     return this.statusRepository.update(id, status);
   }
 
-  async findStatus(status) {
+  async findStatus(status: StatusDoc) {
     return this.statusRepository.find(status);
   }
 
 
-  async findStatusById(id) {
+  async findStatusById(id: string) {
     return this.statusRepository.findById(id);
   }
 
-  async findByID(id){
-    return this.statusRepository.findByID(new ObjectId(id));
-
+  async findByID(id: string){
+    return this.statusRepository.findById(new ObjectId(id));
   }
 }

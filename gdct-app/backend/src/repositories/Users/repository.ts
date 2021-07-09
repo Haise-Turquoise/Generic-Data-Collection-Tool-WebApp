@@ -38,10 +38,10 @@ export default class UsersRepository extends BaseRepository<UserDoc> {
     }).then((user: UserDoc) => new UserModel(user));
   }
 
-  async find(query: FilterQuery<UserDoc>) {
+  async find(query: UserDoc) {
     const realQuery: FilterQuery<UserDoc> = {};
-
-    for (const key in query) {
+    let key: keyof UserDoc
+    for (key in query) {
       if (query[key]) realQuery[key] = query[key];
     }
 

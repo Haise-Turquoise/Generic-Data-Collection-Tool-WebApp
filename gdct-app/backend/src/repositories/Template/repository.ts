@@ -67,7 +67,7 @@ export default class TemplateRepository extends BaseRepository<TemplateDoc> {
       workflowProcessId,
       updatedBy,
       timestamp,
-    }: TemplateDoc,
+    }: Partial<TemplateDoc>,
   ) {
     const formattedTemplate: Partial<TemplateDoc> = {
       name,
@@ -115,10 +115,10 @@ export default class TemplateRepository extends BaseRepository<TemplateDoc> {
       .then(template => new TemplateEntity(template));
   }
 
-  async find(query: FilterQuery<TemplateDoc>) {
+  async find(query: TemplateDoc) {
     const realQuery: FilterQuery<TemplateDoc> = {};
-
-    for (const key in query) {
+    let key: keyof TemplateDoc
+    for (key in query) {
       if (query[key]) realQuery[key] = query[key];
     }
     //console.log(TemplateModel.find(realQuery))

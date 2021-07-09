@@ -1,23 +1,29 @@
 import passport from 'passport';
 import Container from 'typedi';
-import mongodb from 'mongodb';
+import mongodb, { ObjectId, ObjectID } from 'mongodb';
 import UserModel from '../../models/User/model';
 import { returnNormalJson, returnErrorJson } from '../../utils';
 import UserRepository from '../../repositories/User';
 import AppRoleResourceRepository from '../../repositories/AppRoleResource';
 import AppResourceRepository from '../../repositories/AppResource';
 import AppSysRoleModel from '../../models/AppSysRole';
-
-const { ObjectID } = mongodb;
+import { Request, Response, NextFunction } from 'express'
+import User, { UserDoc } from '../../types/user';
+import { CallbackError } from 'mongoose';
+import { AppSysRoleDoc } from '../../types/appsysrole';
 
 export default class AuthService {
+  private UserRepository: UserRepository;
+  private AppRoleResourceRepository: AppRoleResourceRepository;
+  private AppResourceRepository: AppResourceRepository;
+
   constructor() {
     this.UserRepository = Container.get(UserRepository);
     this.AppRoleResourceRepository = Container.get(AppRoleResourceRepository);
     this.AppResourceRepository = Container.get(AppResourceRepository);
   }
 
-  authenticate(req, res, next) {
+  authenticate(req: Request, res: Response, next: NextFunction) {
     try {
       const { method } = req.params;
       passport.authenticate(method, { scope: 'email' })(req, res, next);
@@ -26,7 +32,7 @@ export default class AuthService {
     }
   }
 
-  authenticateCallback(req, res, next) {
+  authenticateCallback(req: Request, res: Response, next: NextFunction) {
     try {
       const { method } = req.params;
       console.log(method)
@@ -46,14 +52,19 @@ export default class AuthService {
         successRedirect: process.env.CLIENT_SERVER, // redirect to home page
         failureRedirect: `${process.env.CLIENT_SERVER}/auth/error`, // redirect to error page
       })(req, res, async () => {
-        console.log(res.headers)
-        const { email } = req.user;
-        const user = await this.UserRepository.findByEmail(email);
+        //@ts-ignore
+        console.log('HEADERS', res.headers)
+        const { email } = (req.user as UserDoc);
+        const user: UserDoc = await this.UserRepository.findByEmail(email);
         if (user) {
+          //@ts-ignore 
           req.session.isAdmin = Boolean(user.sysRole.find(e => e.role === 'Business Admin'));
+          //@ts-ignore
           req.session.resources = [];
+          //@ts-ignore
           if (!req.session.isAdmin) {
             this.getRoles(user).then(data => {
+              //@ts-ignore
               req.session.resources = data;
               if (req.user) {
                 return next();
@@ -61,6 +72,7 @@ export default class AuthService {
               return returnErrorJson(res, 'Bad request');
             });
           } else {
+            //@ts-ignore
             req.session.resources = [];
             next();
           }
@@ -71,12 +83,13 @@ export default class AuthService {
     }
   }
 
-  logout(req, res, next) {
+  logout(req: Request, res: Response, next: NextFunction) {
     try {
+      //@ts-ignore
       const email = req.session.user
       // If anyone knows what req.logout does, please contact David Yang
       req.logout();
-      req.session.destroy();
+      req.session.destroy(() => {});
       //For Audit Log
       const authService = new AuthService();
       authService.UserRepository.findByEmail(email).then(data => { returnNormalJson(res, data) })
@@ -85,11 +98,12 @@ export default class AuthService {
     }
   }
 
-  profile(req, res, next) {
+  profile(req: Request, res: Response, next: NextFunction) {
     
     try {
       if (req.user) {
         const authService = new AuthService();
+        //@ts-ignore
         authService.UserRepository.findByEmail(req.user.email)
           .then(data => {
               data.sessionID = req.sessionID;
@@ -103,7 +117,7 @@ export default class AuthService {
     }
   }
 
-  createUser(req, res, next) {
+  createUser(req: Request, res: Response, next: NextFunction) {
     try {
       const {
         body: { email, password, firstName, lastName, username, title, phoneNumber, ext, sysRoles },
@@ -124,10 +138,10 @@ export default class AuthService {
           },
         });
       }
-      const appsysRole = [];
+      const appsysRole: {appSys: string, role: string, appSysRoleId: ObjectId, _id: ObjectId}[] = [];
 
-      sysRoles.forEach(role => {
-        AppSysRoleModel.findById(role, (err, appsysrole) => {
+      sysRoles.forEach((role: UserDoc["sysRole"]) => {
+        AppSysRoleModel.findById(role, (_err: CallbackError, appsysrole: AppSysRoleDoc) => {
           appsysRole.push({
             appSys: appsysrole.appSys,
             role: appsysrole.role,
@@ -167,13 +181,14 @@ export default class AuthService {
     }
   }
 
-  getArrDataFromSet(set) {
+  // getting from JSON string
+  getArrDataFromSet(set: Set<string>) {
     return Array.from(set).map(e => JSON.parse(e));
   }
 
-  getRoles(user) {
+  getRoles(user: UserDoc) {
     return new Promise(async (resolve, reject) => {
-      const dataSet = new Set();
+      const dataSet = new Set<string>();
       for (const sysRole of user.sysRole) {
         const roleResouce = await this.AppRoleResourceRepository.findByAppSysRoleId(
           sysRole.appSysRoleId,
@@ -188,17 +203,20 @@ export default class AuthService {
     });
   }
 
-  processPassport(req, res, next) {
+  processPassport(req: Request, res: Response, next: NextFunction) {
     try {
       const authService = new AuthService();
       return passport.authenticate('local')(req, res, async () => {
-        const { email } = req.user;
+        const { email } = (req.user as UserDoc);
         const user = await authService.UserRepository.findByEmail(email);
 
+        //@ts-ignore
         req.session.isAdmin = false;
         if (user) {
           const selectedRole = req.body.selectedRole || user.sysRole[0].role;
+          //@ts-ignore
           req.session.role = selectedRole;
+          //@ts-ignore
           req.session.isAdmin = (selectedRole === 'Business Admin');
           
           return next();

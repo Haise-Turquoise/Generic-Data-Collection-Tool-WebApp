@@ -5,6 +5,7 @@ import AppSysRoleModel from '../../models/AppSysRole';
 import AppError from '../../utils/AppError';
 import { AppSysRoleDoc } from '../../types/appsysrole';
 import { FilterQuery } from 'mongoose';
+import { ObjectId } from 'mongodb';
 
 export default class AppSysRoleRepository extends BaseRepository<AppSysRoleDoc> {
   constructor() {
@@ -39,7 +40,7 @@ export default class AppSysRoleRepository extends BaseRepository<AppSysRoleDoc> 
     );
   }
 
-  async findById(id: string) {
+  async findById(id: string | ObjectId) {
     return this._model.findById(id).then((result: AppSysRoleDoc) => {
       if (!result) throw new AppError(i18n.__('idDoesNotExist'));
       return result.toObject();
