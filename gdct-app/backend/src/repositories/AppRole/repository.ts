@@ -1,10 +1,10 @@
 import AppRoleEntity from '../../entities/AppRole';
 import BaseRepository from '../repository';
 import AppRoleModel from '../../models/AppRole';
-import { AppRoleDoc } from '../../types/approle';
+import AppRole, { AppRoleDoc } from '../../types/approle';
 import { FilterQuery } from 'mongoose';
 
-export default class AppRoleRepository extends BaseRepository<AppRoleDoc> {
+export default class AppRoleRepository extends BaseRepository<AppRole, AppRoleDoc> {
   constructor() {
     super(AppRoleModel);
   }
@@ -17,16 +17,16 @@ export default class AppRoleRepository extends BaseRepository<AppRoleDoc> {
     return this.update(id, appRole);
   }
 
-  async create(AppRole: AppRoleDoc) {
+  async create(AppRole: AppRole) {
     AppRole.isActive = true;
     return AppRoleModel.create(AppRole).then(AppRole => new AppRoleEntity(AppRole));
   }
 
-  async update(id: string, AppRole: AppRoleDoc) {
+  async update(id: string, AppRole: Partial<AppRole>) {
     return AppRoleModel.findByIdAndUpdate(id, AppRole);
   }
 
-  async find(query: FilterQuery<AppRoleDoc>) {
+  async find(query: AppRole) {
     return AppRoleModel.find(query).then((AppRoles: AppRoleDoc[]) =>
       AppRoles.map(AppRole => new AppRoleEntity(AppRole)),
     );

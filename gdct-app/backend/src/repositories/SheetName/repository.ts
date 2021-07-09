@@ -3,32 +3,32 @@ import BaseRepository from '../repository';
 import SheetNameModel from '../../models/SheetName';
 import TemplateRepository from '../Template';
 import SheetNameEntity from '../../entities/SheetName';
-import { SheetNameDoc } from '../../types/sheetname';
+import SheetName, { SheetNameDoc } from '../../types/sheetname';
 import { FilterQuery } from 'mongoose';
 import { ObjectId } from 'mongodb'
 
 // @Service()
-export default class SheetNameRepository extends BaseRepository<SheetNameDoc> {
+export default class SheetNameRepository extends BaseRepository<SheetName, SheetNameDoc> {
   private templateRepository: TemplateRepository
   constructor() {
     super(SheetNameModel);
     this.templateRepository = Container.get(TemplateRepository);
   }
 
-  async create(sheetName: SheetNameDoc) {
+  async create(sheetName: SheetName) {
     return SheetNameModel.create(sheetName)
       .then(sheetName => new SheetNameEntity(sheetName));
   }
 
-  async update(id: string, sheetName: Partial<SheetNameDoc>) {
+  async update(id: string, sheetName: Partial<SheetName>) {
     return SheetNameModel.findByIdAndUpdate(id, sheetName)
       .then((sheetName: SheetNameDoc) => new SheetNameEntity(sheetName));
   }
 
-  async find(query: FilterQuery<SheetNameDoc>) {
+  async find(query: Partial<SheetName>) {
     const realQuery: FilterQuery<SheetNameDoc> = {};
-
-    for (const key in query) {
+    let key: keyof SheetName
+    for (key in query) {
       if (query[key]) realQuery[key] = query[key];
     }
 

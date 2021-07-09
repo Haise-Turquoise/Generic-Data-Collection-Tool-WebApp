@@ -1,10 +1,10 @@
 import BaseRepository from '../repository';
 import OrgModel from '../../models/Organization';
 import OrgEntity from '../../entities/Organization';
-import { OrganizationDoc } from '../../types/organization';
+import Organization, { OrganizationDoc } from '../../types/organization';
 import { FilterQuery } from 'mongoose';
 
-export default class OrgRepository extends BaseRepository<OrganizationDoc> {
+export default class OrgRepository extends BaseRepository<Organization, OrganizationDoc> {
   constructor() {
     super(OrgModel);
   }
@@ -13,19 +13,20 @@ export default class OrgRepository extends BaseRepository<OrganizationDoc> {
     return OrgModel.findByIdAndDelete(id).then((Org: OrganizationDoc) => new OrgEntity(Org));
   }
 
-  async create(Org: OrganizationDoc) {
+  async create(Org: Organization) {
     return OrgModel.create(Org).then(Org => new OrgModel(Org));
   }
 
-  async update(id: string, Org: Partial<OrganizationDoc>) {
+  async update(id: string, Org: Partial<Organization>) {
     return OrgModel.findByIdAndUpdate(id, Org, { new: true }).then(
       (org: OrganizationDoc) => new OrgEntity(org),
     );
   }
 
-  async find(query: FilterQuery<OrganizationDoc>) {
+  async find(query: Partial<Organization>) {
     const realQuery: FilterQuery<OrganizationDoc> = {};
-    for (const key in query) {
+    let key: keyof Organization
+    for (key in query) {
       if (query[key]) realQuery[key] = query[key];
     }
     return OrgModel.find({}).then((Orgs: OrganizationDoc[]) => Orgs.map(Org => new OrgEntity(Org)));

@@ -3,7 +3,7 @@ import WorkflowProcessEntity from '../../entities/WorkflowProcess/WorkflowProces
 import BaseRepository from '../repository';
 import WorkflowProcessModel from '../../models/WorkflowProcess/WorkflowProcess';
 import StatusRepository from '../Status';
-import { WorkflowProcessDoc } from '../../types/workflowprocess';
+import WorkflowProcess, { WorkflowProcessDoc } from '../../types/workflowprocess';
 import { FilterQuery } from 'mongoose';
 
 const populateStatusId = {
@@ -18,7 +18,7 @@ const populateTo = {
   },
 };
 
-export default class WorkflowProcessRepository extends BaseRepository<WorkflowProcessDoc> {
+export default class WorkflowProcessRepository extends BaseRepository<WorkflowProcess, WorkflowProcessDoc> {
   private statusRepository: StatusRepository;
 
   constructor() {
@@ -33,22 +33,22 @@ export default class WorkflowProcessRepository extends BaseRepository<WorkflowPr
     );
   }
 
-  async create(workflowProcess: WorkflowProcessDoc) {
+  async create(workflowProcess: WorkflowProcess) {
     return this.statusRepository
       .validate(workflowProcess.statusId)
       .then(() => WorkflowProcessModel.create(workflowProcess))
       .then(workflowProcess => new WorkflowProcessEntity(workflowProcess));
   }
 
-  async createMany(workflowProcesses: WorkflowProcessDoc[]) {
+  async createMany(workflowProcesses: WorkflowProcess[]) {
     return this.statusRepository
-      .validateMany(workflowProcesses.map(({ statusId }: WorkflowProcessDoc) => statusId))
+      .validateMany(workflowProcesses.map(({ statusId }: WorkflowProcess) => statusId))
       .then(() => WorkflowProcessModel.create(workflowProcesses))
       .then(workflowProcess => new WorkflowProcessEntity(workflowProcess)
       );
   }
 
-  async update(id: string, workflowProcess: WorkflowProcessDoc) {
+  async update(id: string, workflowProcess: Partial<WorkflowProcess>) {
     return WorkflowProcessModel.findByIdAndUpdate(id, workflowProcess).then(
       (workflowProcess: WorkflowProcessDoc) => new WorkflowProcessEntity(workflowProcess),
     );
@@ -64,10 +64,10 @@ export default class WorkflowProcessRepository extends BaseRepository<WorkflowPr
       workflowProcesses.map((workflowProcess) => new WorkflowProcessEntity(workflowProcess)),
     );
   }
-  async find(query: FilterQuery<WorkflowProcessDoc>) {
+  async find(query: Partial<WorkflowProcess>) {
     const realQuery: FilterQuery<WorkflowProcessDoc> = {};
-
-    for (const key in query) {
+    let key: keyof WorkflowProcess
+    for (key in query) {
       if (query[key]) realQuery[key] = query[key];
     }
 

@@ -1,8 +1,8 @@
 import BaseRepository from '../repository';
 import OrgGroupModel from '../../models/OrganizationGroup';
-import { OrganizationGroupDoc } from '../../types/organizationgroup';
+import OrganizationGroup, { OrganizationGroupDoc } from '../../types/organizationgroup';
 
-export default class OrgGroupRepository extends BaseRepository<OrganizationGroupDoc> {
+export default class OrgGroupRepository extends BaseRepository<OrganizationGroup, OrganizationGroupDoc> {
   constructor() {
     super(OrgGroupModel);
   }

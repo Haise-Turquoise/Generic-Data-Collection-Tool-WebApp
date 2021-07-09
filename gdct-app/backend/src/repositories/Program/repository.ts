@@ -3,10 +3,10 @@ import BaseRepository from '../repository';
 import ProgramModel from '../../models/Program';
 import OrgModel from '../../models/Organization';
 import TemplateTypeModel from '../../models/TemplateType';
-import { ProgramDoc } from '../../types/program';
+import Program, { ProgramDoc } from '../../types/program';
 import { FilterQuery } from 'mongoose';
 
-export default class ProgramRepository extends BaseRepository<ProgramDoc> {
+export default class ProgramRepository extends BaseRepository<Program, ProgramDoc> {
   constructor() {
     super(ProgramModel);
   }
@@ -25,18 +25,19 @@ export default class ProgramRepository extends BaseRepository<ProgramDoc> {
     });
   }
 
-  async create(program: ProgramDoc) {
+  async create(program: Program) {
     return ProgramModel.create(program);
   }
 
-  async update(id: string, program: Partial<ProgramDoc>) {
+  async update(id: string, program: Partial<Program>) {
     return ProgramModel.findByIdAndUpdate(id, program);
   }
 
-  async find(query: FilterQuery<ProgramDoc>) {
+  async find(query: Partial<Program>) {
     const realQuery: FilterQuery<ProgramDoc> = {};
 
-    for (const key in query) {
+    let key: keyof Program
+    for (key in query) {
       if (query[key]) realQuery[key] = query[key];
     }
     return ProgramModel.find(realQuery);

@@ -1,8 +1,8 @@
 import TransferStatusModel from '../../models/TransferStatus';
 import BaseRepository from '../repository';
-import { TransferStatusDoc } from '../../types/transferstatus';
+import TransferStatus, { TransferStatusDoc } from '../../types/transferstatus';
 
-export default class TransferStatusRepository extends BaseRepository<TransferStatusDoc> {
+export default class TransferStatusRepository extends BaseRepository<TransferStatus, TransferStatusDoc> {
   constructor() {
     super(TransferStatusModel);
   }

@@ -1,10 +1,10 @@
 import ColumnNameEntity from '../../entities/ColumnName/ColumnName';
 import BaseRepository from '../repository';
 import ColumnNameModel from '../../models/ColumnName';
-import { AttributeDoc } from '../../types/attribute';
+import Attribute, { AttributeDoc } from '../../types/attribute';
 import { FilterQuery, QueryOptions } from 'mongoose';
 
-export default class ColumnNameRepository extends BaseRepository<AttributeDoc> {
+export default class ColumnNameRepository extends BaseRepository<Attribute, AttributeDoc> {
   constructor() {
     super(ColumnNameModel);
   }
@@ -15,23 +15,23 @@ export default class ColumnNameRepository extends BaseRepository<AttributeDoc> {
     );
   }
 
-  async create(columnName: AttributeDoc) {
+  async create(columnName: Attribute) {
     return ColumnNameModel.create(columnName).then(
       createdColumnName => new ColumnNameEntity(createdColumnName),
     );
   }
 
-  async update(id: string, columnName: Partial<AttributeDoc>) {
+  async update(id: string, columnName: Partial<Attribute>) {
     return ColumnNameModel.findByIdAndUpdate(id, columnName).then(
       (updatedColumnName: AttributeDoc) => new ColumnNameEntity(updatedColumnName),
     );
   }
 
   //should be Partial<AttributeDoc> but ts is not a fan
-  async find(query: FilterQuery<AttributeDoc>) {
+  async find(query: Partial<Attribute>) {
     const realQuery: FilterQuery<AttributeDoc> = {};
 
-    let key: keyof FilterQuery<AttributeDoc>
+    let key: keyof Attribute
     for (key in query) {
       if (query[key]) realQuery[key] = query[key];
     }

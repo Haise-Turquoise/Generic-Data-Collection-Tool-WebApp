@@ -1,10 +1,10 @@
 import ReportingPeriodEntity from '../../entities/ReportingPeriod';
 import BaseRepository from '../repository';
 import ReportingPeriodModel from '../../models/ReportingPeriod';
-import { ReportingPeriodDoc } from '../../types/reportingperiod';
+import ReportingPeriod, { ReportingPeriodDoc } from '../../types/reportingperiod';
 import { FilterQuery } from 'mongoose';
 
-export default class ReportPeriodRepository extends BaseRepository<ReportingPeriodDoc> {
+export default class ReportPeriodRepository extends BaseRepository<ReportingPeriod, ReportingPeriodDoc> {
   constructor() {
     super(ReportingPeriodModel);
   }
@@ -14,22 +14,23 @@ export default class ReportPeriodRepository extends BaseRepository<ReportingPeri
     );
   }
 
-  async create(reportingPeriod: ReportingPeriodDoc) {
+  async create(reportingPeriod: ReportingPeriod) {
     return ReportingPeriodModel.create(reportingPeriod).then(
       reportingPeriod => new ReportingPeriodEntity(reportingPeriod),
     );
   }
 
-  async update(id: string, reportingPeriod: Partial<ReportingPeriodDoc>) {
+  async update(id: string, reportingPeriod: Partial<ReportingPeriod>) {
     return ReportingPeriodModel.findByIdAndUpdate(id, reportingPeriod).then(
       (reportingPeriod: ReportingPeriodDoc) => new ReportingPeriodEntity(reportingPeriod),
     );
   }
 
-  async find(query: FilterQuery<ReportingPeriodDoc>) {
+  async find(query: Partial<ReportingPeriod>) {
     const realQuery: FilterQuery<ReportingPeriodDoc> = {};
 
-    for (const key in query) {
+    let key: keyof ReportingPeriod
+    for (key in query) {
       if (query[key]) realQuery[key] = query[key];
     }
 

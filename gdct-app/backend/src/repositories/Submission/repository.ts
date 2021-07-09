@@ -1,11 +1,11 @@
 import SubmissionEntity from '../../entities/Submission/Submission';
 import BaseRepository from '../repository';
 import SubmissionModel from '../../models/Submission';
-import { SubmissionDoc } from '../../types/submission';
+import Submission, { SubmissionDoc } from '../../types/submission';
 import { ObjectId } from 'mongodb';
 import { FilterQuery } from 'mongoose';
 
-export default class SubmissionRepository extends BaseRepository<SubmissionDoc> {
+export default class SubmissionRepository extends BaseRepository<Submission, SubmissionDoc> {
   constructor() {
     super(SubmissionModel);
   }
@@ -16,13 +16,13 @@ export default class SubmissionRepository extends BaseRepository<SubmissionDoc> 
     );
   }
 
-  async create(submission: SubmissionDoc) {
+  async create(submission: Submission) {
     return SubmissionModel.create(submission).then(
       submission => new SubmissionEntity(submission),
     );
   }
 
-  async update(id: string, submission: SubmissionDoc) {
+  async update(id: string, submission: Partial<Submission>) {
     return SubmissionModel.findByIdAndUpdate(id, submission).then(
       (submission: SubmissionDoc) => new SubmissionEntity(submission),
     ); 
@@ -158,7 +158,7 @@ export default class SubmissionRepository extends BaseRepository<SubmissionDoc> 
     return SubmissionModel.findOne({ templateId:{$in:templateIDs}}, {_id:1});
   }
 
-  async findQuery(query: FilterQuery<SubmissionDoc>) {
+  async findQuery(query: Submission) {
     return SubmissionModel.find(query)
   }
 }

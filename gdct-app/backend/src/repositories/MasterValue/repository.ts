@@ -1,9 +1,9 @@
 import BaseRepository from '../repository';
 import MasterValueModel from '../../models/MasterValue';
-import { MasterValueDoc } from '../../types/mastervalue';
+import MasterValue, { MasterValueDoc } from '../../types/mastervalue';
 import { ObjectID } from 'mongodb';
 
-export default class MasterValueRepository extends BaseRepository<MasterValueDoc> {
+export default class MasterValueRepository extends BaseRepository<MasterValue, MasterValueDoc> {
   constructor() {
     super(MasterValueModel);
   }

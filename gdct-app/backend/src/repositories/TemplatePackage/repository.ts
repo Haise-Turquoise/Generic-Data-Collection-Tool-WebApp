@@ -8,14 +8,14 @@ import TemplatePackageEntity from '../../entities/TemplatePackage';
 import StatusRepository from '../Status';
 import UsersRepository from '../Users';
 import TemplateModel from '../../models/Template';
-import { TemplatePackageDoc } from '../../types/templatepackage';
+import TemplatePackage, { TemplatePackageDoc } from '../../types/templatepackage';
 import { FilterQuery } from 'mongoose';
 
 const populatedParams = 'submissionPeriodId templateIds statusId programIds';
 
 // MongoDB implementation
 // @Service()
-export default class TemplatePackageRepository extends BaseRepository<TemplatePackageDoc> {
+export default class TemplatePackageRepository extends BaseRepository<TemplatePackage, TemplatePackageDoc> {
   private submissionPeriodRepository: SubmissionPeriodRepository;
   private usersRepository: UsersRepository;
   private userRepository: UserRepository;
@@ -42,7 +42,7 @@ export default class TemplatePackageRepository extends BaseRepository<TemplatePa
     programIds,
     updatedBy,
     timestamp,
-  }: TemplatePackageDoc) {
+  }: TemplatePackage) {
     return this.submissionPeriodRepository
       .validate(submissionPeriodId)
       .then(() => this.templateRepository.validateMany(templateIds))
@@ -65,7 +65,7 @@ export default class TemplatePackageRepository extends BaseRepository<TemplatePa
 
   async update(
     id: string,
-    { name, submissionPeriodId, templateIds, statusId, creationDate, userCreatorId, programIds, updatedBy, timestamp, }: Partial<TemplatePackageDoc>,
+    { name, submissionPeriodId, templateIds, statusId, creationDate, userCreatorId, programIds, updatedBy, timestamp, }: Partial<TemplatePackage>,
     isPopulated?: boolean,
   ) {
     // console.log('programIds', programIds)
@@ -105,9 +105,9 @@ export default class TemplatePackageRepository extends BaseRepository<TemplatePa
     return TemplatePackageModel.find({ name });
   }
 
-  async find(query: TemplatePackageDoc, isPopulated?: boolean) {
+  async find(query: Partial<TemplatePackage>, isPopulated?: boolean) {
     const realQuery: FilterQuery<TemplatePackageDoc> = {};
-    let key: keyof TemplatePackageDoc
+    let key: keyof TemplatePackage
     for (key in query) {
       if (query[key]) realQuery[key] = query[key];
     }

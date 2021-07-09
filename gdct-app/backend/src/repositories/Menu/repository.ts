@@ -1,10 +1,10 @@
 import MenuEntity from '../../entities/Menu';
 import BaseRepository from '../repository';
 import MenuModel from '../../models/Menu';
-import { MenuDoc } from '../../types/menu';
+import Menu, { MenuDoc } from '../../types/menu';
 import { FilterQuery } from 'mongoose';
 
-export default class MenuRepository extends BaseRepository<MenuDoc> {
+export default class MenuRepository extends BaseRepository<Menu, MenuDoc> {
   constructor() {
     super(MenuModel);
   }
@@ -17,17 +17,17 @@ export default class MenuRepository extends BaseRepository<MenuDoc> {
     return this.update(id, menu);
   }
 
-  async create(Menu: MenuDoc) {
+  async create(Menu: Menu) {
     return MenuModel.create(Menu).then(Menu => {
       return new MenuEntity(Menu);
     });
   }
 
-  async update(id: string, Menu: MenuDoc) {
+  async update(id: string, Menu: Partial<Menu>) {
     return MenuModel.findByIdAndUpdate(id, Menu).then((Menu: MenuDoc) => new MenuEntity(Menu));
   }
 
-  async find(query: FilterQuery<MenuDoc>) {
+  async find(query: Partial<Menu>) {
     return MenuModel.find(query).then((Menus: MenuDoc[]) => Menus.map(Menu => new MenuEntity(Menu)));
   }
 

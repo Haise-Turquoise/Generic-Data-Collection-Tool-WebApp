@@ -1,10 +1,10 @@
 import WorkflowEntity from '../../entities/Workflow/Workflow';
 import BaseRepository from '../repository';
 import WorkflowModel from '../../models/Workflow/Workflow';
-import { WorkflowDoc } from '../../types/workflow';
+import Workflow, { WorkflowDoc } from '../../types/workflow';
 import { FilterQuery } from 'mongoose';
 
-export default class WorkflowRepository extends BaseRepository<WorkflowDoc> {
+export default class WorkflowRepository extends BaseRepository<Workflow, WorkflowDoc> {
   constructor() {
     super(WorkflowModel);
   }
@@ -15,11 +15,11 @@ export default class WorkflowRepository extends BaseRepository<WorkflowDoc> {
     );
   }
 
-  async create(workflow: WorkflowDoc) {
+  async create(workflow: Workflow) {
     return WorkflowModel.create(workflow).then(workflow => new WorkflowEntity(workflow));
   }
 
-  async update(id: string, workflow: WorkflowDoc) {
+  async update(id: string, workflow: Partial<Workflow>) {
     const newWorkflow: Partial<WorkflowDoc> = { ...workflow };
     delete workflow._id;
     return WorkflowModel.findByIdAndUpdate(id, workflow).then(
@@ -27,11 +27,11 @@ export default class WorkflowRepository extends BaseRepository<WorkflowDoc> {
     );
   }
 
-  async find(query: FilterQuery<WorkflowDoc>) {
+  async find(query: Partial<Workflow>) {
     console.log(query)
     const realQuery: FilterQuery<WorkflowDoc> = {};
-
-    for (const key in query) {
+    let key: keyof Workflow
+    for (key in query) {
       if (query[key]) realQuery[key] = query[key];
     }
 

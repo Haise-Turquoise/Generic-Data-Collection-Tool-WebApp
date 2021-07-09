@@ -1,10 +1,10 @@
 import AppRoleResouceEntity from '../../entities/AppRoleResource';
 import BaseRepository from '../repository';
 import AppRoleResourceModel from '../../models/AppRoleResource';
-import { AppRoleResourceDoc } from '../../types/approleresource';
+import AppRoleResource, { AppRoleResourceDoc } from '../../types/approleresource';
 import { FilterQuery } from 'mongoose';
 import { ObjectId } from 'mongodb'
-export default class AppRoleResourceRepository extends BaseRepository<AppRoleResourceDoc> {
+export default class AppRoleResourceRepository extends BaseRepository<AppRoleResource, AppRoleResourceDoc> {
   constructor() {
     super(AppRoleResourceModel);
   }
@@ -19,7 +19,7 @@ export default class AppRoleResourceRepository extends BaseRepository<AppRoleRes
     return AppRoleResourceModel.findByIdAndDelete(id).then((appRoleResource: AppRoleResourceDoc)=> new AppRoleResouceEntity(appRoleResource))
   }
 
-  async create(appRoleResource: AppRoleResourceDoc) {
+  async create(appRoleResource: AppRoleResource) {
     const mongoose = require('mongoose');
     appRoleResource.appSysRoleId.roleId = mongoose.Types.ObjectId(appRoleResource.appSysRoleId.roleId);
     return AppRoleResourceModel.create(appRoleResource).then(
@@ -28,10 +28,12 @@ export default class AppRoleResourceRepository extends BaseRepository<AppRoleRes
     );
   }
 
-  async update(id: string, appRoleResource: AppRoleResourceDoc) {
+  async update(id: string, appRoleResource: Partial<AppRoleResource>) {
     const mongoose = require('mongoose');
-    appRoleResource.appSysRoleId.roleId = mongoose.Types.ObjectId(appRoleResource.appSysRoleId.roleId);
-    appRoleResource.resourceId.forEach(resource=>{
+    if (appRoleResource.appSysRoleId) {
+      appRoleResource.appSysRoleId.roleId = new ObjectId(appRoleResource.appSysRoleId.roleId);
+    }
+    appRoleResource.resourceId?.forEach(resource=>{
       resource.id = mongoose.Types.ObjectId(resource.id);
     })
 
@@ -40,7 +42,7 @@ export default class AppRoleResourceRepository extends BaseRepository<AppRoleRes
     );
   }
 
-  async find(query: FilterQuery<AppRoleResourceDoc>) {
+  async find(query: Partial<AppRoleResource>) {
     return AppRoleResourceModel.find(query).then((appRoleResources: AppRoleResourceDoc[]) => {
       return appRoleResources.map(
         appRoleResource => new AppRoleResouceEntity(appRoleResource),

@@ -3,23 +3,23 @@ import BaseRepository from '../repository';
 import DataResumeModel from '../../models/DataResume';
 // import TemplateRepository from '../Template';
 import DataResumeEntity from '../../entities/DataResume';
-import { DataResumeDoc } from '../../types/dataresume';
+import DataResume, { DataResumeDoc } from '../../types/dataresume';
 import { FilterQuery } from 'mongoose';
 
 // @Service()
-export default class DataResumeRepository extends BaseRepository<DataResumeDoc> {
+export default class DataResumeRepository extends BaseRepository<DataResume, DataResumeDoc> {
   constructor() {
     super(DataResumeModel);
   }
 
   // TODO destructuring didn't seem appropriate.. test further @julien
-  async create(dataResume: DataResumeDoc) {
+  async create(dataResume: DataResume) {
     return DataResumeModel.create({
         dataResume
     }).then(result => new DataResumeEntity(result));
   }
 
-  async update(id: string, dataResume: DataResumeDoc) {
+  async update(id: string, dataResume: Partial<DataResume>) {
     const key = {
       totalCount: dataResume.totalCount,
     };
@@ -37,10 +37,10 @@ export default class DataResumeRepository extends BaseRepository<DataResumeDoc> 
     // ).then(dataResume => new DataResumeEntity(dataResume.toObject()));
   }
 
-  async find(query: FilterQuery<DataResumeDoc>) {
+  async find(query: Partial<DataResume>) {
     const realQuery: FilterQuery<DataResumeDoc> = {};
-
-    for (const key in query) {
+    let key: keyof DataResume
+    for (key in query) {
       if (query[key]) realQuery[key] = query[key];
     }
 

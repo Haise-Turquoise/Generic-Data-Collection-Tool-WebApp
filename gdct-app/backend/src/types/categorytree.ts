@@ -2,7 +2,7 @@ import { Document } from 'mongoose';
 import { ObjectId } from 'mongodb';
 
 export default interface CategoryTree {
-  _id: string;
+  _id: ObjectId;
   parentId: ObjectId;
   categoryGroupId: ObjectId;
   categoryId: ObjectId[];
@@ -11,11 +11,6 @@ export default interface CategoryTree {
   updatedBy: string;
 }
 
-export interface CategoryTreeDoc extends Document {
-  parentId: ObjectId;
-  categoryGroupId: ObjectId;
-  categoryId: ObjectId[];
-  sheetNameId: ObjectId;
-  timestamp: Date;
-  updatedBy: string;
+export interface CategoryTreeDoc extends CategoryTree, Document {
+  _id: ObjectId;
 }

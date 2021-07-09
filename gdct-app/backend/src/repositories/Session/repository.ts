@@ -1,9 +1,9 @@
 import BaseRepository from '../repository';
 import SessionModel from '../../models/Session';
-import { SessionDoc } from '../../types/session';
+import Session, { SessionDoc } from '../../types/session';
 
 // @Service()
-export default class SessionRepository extends BaseRepository<SessionDoc> {
+export default class SessionRepository extends BaseRepository<Session, SessionDoc> {
   constructor() {
     super(SessionModel);
   }

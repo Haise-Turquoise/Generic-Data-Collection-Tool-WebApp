@@ -1,14 +1,14 @@
 import SubmissionNoteEntity from '../../entities/SubmissionNote/SubmissionNote';
 import BaseRepository from '../repository';
 import SubmissionNoteModel from '../../models/SubmissionNote';
-import { SubmissionNoteDoc } from '../../types/submissionnote';
+import SubmissionNote, { SubmissionNoteDoc } from '../../types/submissionnote';
 
-export default class SubmissionNoteRepository extends BaseRepository<SubmissionNoteDoc> {
+export default class SubmissionNoteRepository extends BaseRepository<SubmissionNote, SubmissionNoteDoc> {
   constructor() {
     super(SubmissionNoteModel);
   }
 
-  async create(submissionNote: SubmissionNoteDoc) {
+  async create(submissionNote: SubmissionNote) {
     console.log(submissionNote);
     return SubmissionNoteModel.create(submissionNote);
   }

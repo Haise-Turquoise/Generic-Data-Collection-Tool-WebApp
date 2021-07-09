@@ -6,15 +6,15 @@ import UserModel from '../../models/User';
 import AppError from '../../utils/AppError';
 const _ = require('lodash'); 
 import {sendPermissionChangeUserVerficationEmail,sendPermissionChangeAdminVerficationEmail} from '../../middlewares/mail/mail'
-import { UserDoc } from '../../types/user';
-import { OrganizationDoc } from '../../types/organization';
+import User, { UserDoc } from '../../types/user';
+import Organization from '../../types/organization';
 
-export default class UserRepository extends BaseRepository<UserDoc> {
+export default class UserRepository extends BaseRepository<User, UserDoc> {
   constructor() {
     super(UserModel);
   }
 
-  async create(user: UserDoc) {
+  async create(user: User) {
     const userCopy = cloneDeep(user);
     return UserModel.create(userCopy);
   }
@@ -60,10 +60,10 @@ export default class UserRepository extends BaseRepository<UserDoc> {
       });
   }
 
-  async updateSysRole(_id: string, sysRole: UserDoc["sysRole"]) {
+  async updateSysRole(_id: string, sysRole: User["sysRole"]) {
     return UserModel.findOneAndUpdate({ _id }, { sysRole});
   }
-  async updateSysRoleFromTempSysRole(_id: string, sysRole: UserDoc["sysRole"]) {
+  async updateSysRoleFromTempSysRole(_id: string, sysRole: User["sysRole"]) {
     
     // walk through the whole sysRole, make sure each pending state for templates is false
     sysRole.forEach((sys)=>{
@@ -82,11 +82,11 @@ export default class UserRepository extends BaseRepository<UserDoc> {
     return UserModel.findOneAndUpdate({ _id }, { isActive: true });
   }
 
-  async update(_id: string, user: UserDoc) {
+  async update(_id: string, user: User) {
     return UserModel.findOneAndUpdate({ _id}, { user });
   }
 
-  async modifyUserInfo(_id: string, userData: UserDoc) {
+  async modifyUserInfo(_id: string, userData: User) {
     return UserModel.findOneAndUpdate({ _id: _id }, 
       { title: userData.title, 
         firstName: userData.firstName, 
@@ -98,14 +98,14 @@ export default class UserRepository extends BaseRepository<UserDoc> {
       }
     );
   }
-  async modifyUserToBeApproved(_id: string, userData: UserDoc) {
+  async modifyUserToBeApproved(_id: string, userData: User) {
     return UserModel.findOneAndUpdate({ _id: _id }, 
       { 
         toBeApproved: userData.toBeApproved,
       }
     );
   }
-  async modifyUserPendingPermissions(_id: string, userData: UserDoc) {
+  async modifyUserPendingPermissions(_id: string, userData: User) {
     return UserModel.findOneAndUpdate({ _id: _id }, 
       { 
         sysRole:userData.sysRole,
@@ -115,7 +115,7 @@ export default class UserRepository extends BaseRepository<UserDoc> {
     );
   }
 
-  async updatePermissionByUserEmail(email: string, permissionData: UserDoc, orgList: OrganizationDoc[]) {
+  async updatePermissionByUserEmail(email: string, permissionData: User, orgList: Organization[]) {
     return UserModel.findOne({email}).then((user: UserDoc)=>{
       sendPermissionChangeUserVerficationEmail(user.username, user.email)
       const hashedUsername = user.hashedUsername;

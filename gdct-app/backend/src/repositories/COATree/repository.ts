@@ -1,11 +1,11 @@
 import COATreeEntity from '../../entities/COATree';
 import BaseRepository from '../repository';
 import COATreeModel from '../../models/COATree';
-import { CategoryTreeDoc } from '../../types/categorytree';
+import CategoryTree, { CategoryTreeDoc } from '../../types/categorytree';
 import {ObjectId} from 'mongodb';
 import { FilterQuery } from 'mongoose';
 
-export default class ReportPeriodRepository extends BaseRepository<CategoryTreeDoc> {
+export default class ReportPeriodRepository extends BaseRepository<CategoryTree, CategoryTreeDoc> {
   constructor() {
     super(COATreeModel);
   }
@@ -16,7 +16,7 @@ export default class ReportPeriodRepository extends BaseRepository<CategoryTreeD
     );
   }
 
-  async create(COATree: CategoryTreeDoc) {
+  async create(COATree: CategoryTree) {
     return COATreeModel.create(COATree)
       .then(COATree => {
         if (Array.isArray(COATree)) {
@@ -28,17 +28,17 @@ export default class ReportPeriodRepository extends BaseRepository<CategoryTreeD
         if (Array.isArray(COATree)) {
           return COATree.map(tree => new COATreeEntity(tree))
         }
-        new COATreeEntity(COATree)
+        return new COATreeEntity(COATree)
       });
   }
 
-  async update(id: string, COATree: Partial<CategoryTreeDoc>) {
+  async update(id: string, COATree: Partial<CategoryTree>) {
     return COATreeModel.findByIdAndUpdate(id, COATree).then(
       (COATree: CategoryTreeDoc) => new COATreeEntity(COATree),
     );
   }
 
-  async updateBySheet(sheetNameId: string, COATrees: CategoryTreeDoc[]) {
+  async updateBySheet(sheetNameId: string, COATrees: CategoryTree[]) {
     return COATreeModel.deleteMany({
       sheetNameId,
     })
@@ -49,9 +49,9 @@ export default class ReportPeriodRepository extends BaseRepository<CategoryTreeD
       });
   }
 
-  async find(query: FilterQuery<CategoryTreeDoc>) {
+  async find(query: Partial<CategoryTree>) {
     const realQuery: FilterQuery<CategoryTreeDoc> = {};
-    let key: keyof FilterQuery<CategoryTreeDoc>
+    let key: keyof CategoryTree
     for (key in query) {
       if (query[key]) realQuery[key] = query[key];
     }
@@ -64,8 +64,7 @@ export default class ReportPeriodRepository extends BaseRepository<CategoryTreeD
       });
   }
 
-  // TODO unsure about this one
-  async batchFindByCategoryIdWithoutSheetName(query: string[]) {
+  async batchFindByCategoryIdWithoutSheetName(query: ObjectId[]) {
     return COATreeModel.find({ categoryId: { $in: query } });
   }
 

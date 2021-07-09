@@ -6,13 +6,13 @@ import TemplateTypeRepository from '../TemplateType';
 import BaseRepository from '../repository';
 import WorkflowProcessRepository from '../WorkflowProcess/WorkflowProcess';
 import {ObjectId} from 'mongodb';
-import { TemplateDoc } from '../../types/template';
+import Template, { TemplateDoc } from '../../types/template';
 import { WorkflowProcessDoc } from '../../types/workflowprocess';
 import { FilterQuery } from 'mongoose';
 
 // MongoDB implementation
 // @Service()
-export default class TemplateRepository extends BaseRepository<TemplateDoc> {
+export default class TemplateRepository extends BaseRepository<Template, TemplateDoc> {
   private userRepository: UserRepository;
   private templateTypeRepository: TemplateTypeRepository;
   private workflowProcessRepository: WorkflowProcessRepository;
@@ -36,9 +36,9 @@ export default class TemplateRepository extends BaseRepository<TemplateDoc> {
     googleSheetId,
     updatedBy,
     timestamp,
-  }: TemplateDoc) {
+  }: Template) {
     return this.templateTypeRepository
-      .validate(templateTypeId)
+      .validate(templateTypeId || [])
       .then(() =>
         TemplateModel.create({
           name,
@@ -67,9 +67,9 @@ export default class TemplateRepository extends BaseRepository<TemplateDoc> {
       workflowProcessId,
       updatedBy,
       timestamp,
-    }: Partial<TemplateDoc>,
+    }: Partial<Template>,
   ) {
-    const formattedTemplate: Partial<TemplateDoc> = {
+    const formattedTemplate: Partial<Template> = {
       name,
       templateTypeId,
       userCreatorId,
@@ -110,14 +110,15 @@ export default class TemplateRepository extends BaseRepository<TemplateDoc> {
 
   async updateWorkflowProcess(_id: string, workflowProcessId: string) {
     return this.workflowProcessRepository
+      //@ts-ignore Unsure about this
       .validate(workflowProcessId)
       .then(() => TemplateModel.findByIdAndUpdate(_id, { workflowProcessId }))
-      .then(template => new TemplateEntity(template));
+      .then((template: TemplateDoc) => new TemplateEntity(template));
   }
 
-  async find(query: TemplateDoc) {
+  async find(query: Partial<Template>) {
     const realQuery: FilterQuery<TemplateDoc> = {};
-    let key: keyof TemplateDoc
+    let key: keyof Template
     for (key in query) {
       if (query[key]) realQuery[key] = query[key];
     }

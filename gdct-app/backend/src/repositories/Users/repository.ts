@@ -5,11 +5,11 @@ import UserModel from '../../models/User';
 import TemplateRepository from '../Template';
 import UsersEntity from '../../entities/Users';
 import AppError from '../../utils/AppError';
-import { UserDoc } from '../../types/user';
+import User, { UserDoc } from '../../types/user';
 import { FilterQuery } from 'mongoose';
 
 // @Service()
-export default class UsersRepository extends BaseRepository<UserDoc> {
+export default class UsersRepository extends BaseRepository<User, UserDoc> {
   private templateRepository: TemplateRepository
 
   constructor() {
@@ -17,7 +17,7 @@ export default class UsersRepository extends BaseRepository<UserDoc> {
     this.templateRepository = Container.get(TemplateRepository);
   }
 
-  async create({ firstName, lastName, isActive }: UserDoc) {
+  async create({ firstName, lastName, isActive }: User) {
     return UserModel.create({
       firstName,
       lastName,
@@ -25,7 +25,7 @@ export default class UsersRepository extends BaseRepository<UserDoc> {
     }).then(user => new UsersEntity(user));
   }
 
-  async update(id: string, { username, firstName, lastName, email, phoneNumber, isActive, timestamp, updatedBy, }: Partial<UserDoc>) {
+  async update(id: string, { username, firstName, lastName, email, phoneNumber, isActive, timestamp, updatedBy, }: Partial<User>) {
     return UserModel.findByIdAndUpdate(id, {
       username,
       firstName,
@@ -38,9 +38,9 @@ export default class UsersRepository extends BaseRepository<UserDoc> {
     }).then((user: UserDoc) => new UserModel(user));
   }
 
-  async find(query: UserDoc) {
+  async find(query: Partial<User>) {
     const realQuery: FilterQuery<UserDoc> = {};
-    let key: keyof UserDoc
+    let key: keyof User
     for (key in query) {
       if (query[key]) realQuery[key] = query[key];
     }

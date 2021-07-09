@@ -1,10 +1,10 @@
 import AppResouceEntity from '../../entities/AppResource';
 import BaseRepository from '../repository';
 import AppResourceModel from '../../models/AppResource';
-import { AppResourceDoc } from '../../types/appresource';
+import AppResource, { AppResourceDoc } from '../../types/appresource';
 import { FilterQuery } from 'mongoose';
 
-export default class AppResourceRepository extends BaseRepository<AppResourceDoc> {
+export default class AppResourceRepository extends BaseRepository<AppResource, AppResourceDoc> {
   constructor() {
     super(AppResourceModel);
   }
@@ -17,17 +17,17 @@ export default class AppResourceRepository extends BaseRepository<AppResourceDoc
     return this.update(id, appResource);
   }
 
-  async create(appResource: AppResourceDoc) {
+  async create(appResource: AppResource) {
     return AppResourceModel.create(appResource);
   }
 
-  async update(id: string, appResource: AppResourceDoc) {
+  async update(id: string, appResource: Partial<AppResource>) {
     return AppResourceModel.findByIdAndUpdate(id, appResource).then(
       (appResource: AppResourceDoc) => new AppResouceEntity(appResource),
     );
   }
 
-  async find(query: FilterQuery<AppResourceDoc>) {
+  async find(query: Partial<AppResource>) {
     return AppResourceModel.find(query).then((appRoleResources: AppResourceDoc[]) => {
       return appRoleResources.map(appResource => new AppResouceEntity(appResource));
     });

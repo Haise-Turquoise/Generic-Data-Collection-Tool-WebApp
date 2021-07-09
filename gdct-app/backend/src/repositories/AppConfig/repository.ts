@@ -1,10 +1,9 @@
 import AppConfigEntity from '../../entities/AppConfig';
 import BaseRepository from '../repository';
 import AppConfigModel from '../../models/AppConfig';
-import { AppConfigDoc } from '../../types/appconfig';
-import { FilterQuery } from 'mongoose';
+import AppConfig, { AppConfigDoc } from '../../types/appconfig';
 
-export default class AppConfigRepository extends BaseRepository<AppConfigDoc> {
+export default class AppConfigRepository extends BaseRepository<AppConfig, AppConfigDoc> {
   constructor() {
     super(AppConfigModel);
   }
@@ -28,7 +27,7 @@ export default class AppConfigRepository extends BaseRepository<AppConfigDoc> {
     );
   }
 
-  async find(query: FilterQuery<AppConfigDoc>) {
+  async find(query: Partial<AppConfig>) {
     return AppConfigModel.find(query).then((AppConfigs: AppConfigDoc[]) =>
       AppConfigs.map(AppConfig => new AppConfigEntity(AppConfig)),
     );
@@ -46,7 +45,7 @@ export default class AppConfigRepository extends BaseRepository<AppConfigDoc> {
     return AppConfigModel.findOne({ key: "Session Timer Checking Interval" });
   }
 
-  async findOne(param: FilterQuery<AppConfigDoc>){
+  async findOne(param: Partial<AppConfig>){
     return AppConfigModel.findOne(param);
   }
 }
