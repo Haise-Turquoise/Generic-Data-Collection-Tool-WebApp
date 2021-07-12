@@ -2,6 +2,7 @@ import { ObjectId } from 'mongodb';
 import { Document } from 'mongoose';
 
 export default interface TemplatePackage {
+  _id: ObjectId;
   name: string;
   submissionPeriodId: ObjectId;
   statusId: ObjectId;
@@ -14,4 +15,6 @@ export default interface TemplatePackage {
   updatedBy: string;
 }
 
-export interface TemplatePackageDoc extends TemplatePackage, Document {}
+export interface TemplatePackageDoc extends TemplatePackage, Document {
+  _id: ObjectId;
+}

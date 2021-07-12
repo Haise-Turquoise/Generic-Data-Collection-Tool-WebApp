@@ -1,6 +1,6 @@
 import Container from 'typedi';
 import AuditLogRepository from '../../repositories/AuditLog';
-import { AuditLogDoc } from '../../types/auditlog';
+import AuditLog from '../../types/auditlog';
 
 // @Service()
 export default class AuditLogService {
@@ -14,7 +14,7 @@ export default class AuditLogService {
     return this.AuditLogRepository.findAll();
   }
 
-  async createAuditLog(AuditLogInfo: AuditLogDoc) {
+  async createAuditLog(AuditLogInfo: AuditLog) {
     return this.AuditLogRepository.create(AuditLogInfo);
   }
 }

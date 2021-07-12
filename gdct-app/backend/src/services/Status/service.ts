@@ -1,7 +1,7 @@
 import Container from 'typedi';
 import StatusRepository from '../../repositories/Status';
 import {ObjectId} from 'mongodb';
-import { StatusDoc } from '../../types/status';
+import Status from '../../types/status';
 
 export default class StatusService {
   private statusRepository: StatusRepository;
@@ -10,7 +10,7 @@ export default class StatusService {
     this.statusRepository = Container.get(StatusRepository);
   }
 
-  async createStatus(status: StatusDoc) {
+  async createStatus(status: Status) {
     return this.statusRepository.create(status);
   }
 
@@ -18,11 +18,11 @@ export default class StatusService {
     return this.statusRepository.delete(id);
   }
 
-  async updateStatus(id: string, status: Partial<StatusDoc>) {
+  async updateStatus(id: string, status: Partial<Status>) {
     return this.statusRepository.update(id, status);
   }
 
-  async findStatus(status: StatusDoc) {
+  async findStatus(status: Partial<Status>) {
     return this.statusRepository.find(status);
   }
 

@@ -108,7 +108,7 @@ export default class TemplateRepository extends BaseRepository<Template, Templat
     );
   }
 
-  async updateWorkflowProcess(_id: string, workflowProcessId: string) {
+  async updateWorkflowProcess(_id: string, workflowProcessId: ObjectId) {
     return this.workflowProcessRepository
       //@ts-ignore Unsure about this
       .validate(workflowProcessId)

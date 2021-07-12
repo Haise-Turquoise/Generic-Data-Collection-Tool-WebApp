@@ -2,7 +2,7 @@ import Container from 'typedi';
 import TemplateTypeRepository from '../../repositories/TemplateType';
 import SubmissionRepository from '../../repositories/Submission';
 import TemplateRepository from '../../repositories/Template';
-import { TemplateTypeDoc } from '../../types/templatetype';
+import TemplateType from '../../types/templatetype';
 import { ObjectId } from 'mongodb'
 
 // @Service()
@@ -17,23 +17,23 @@ export default class TemplateTypeService {
     this.templateRepository = Container.get(TemplateRepository);
   }
 
-  async createTemplateType(templateType: TemplateTypeDoc) {
+  async createTemplateType(templateType: TemplateType) {
     return this.templateTypeRepository.create(templateType);
   }
 
   async deleteTemplateType(id: string) {
     const templates = await this.templateRepository.findTemplateIDByTypeID(id);
-    templates.map((template: TemplateTypeDoc)=>template._id);
+    templates.map((template: TemplateType)=>template._id);
     const submission = await this.submissionRepository.findOneByTemplateIDs(templates);
     if (submission != null) throw new Error('Template types already referenced');
     return this.templateTypeRepository.delete(id);
   }
 
-  async updateTemplateType(id: string, templateType: Partial<TemplateTypeDoc>) {
+  async updateTemplateType(id: string, templateType: Partial<TemplateType>) {
     return this.templateTypeRepository.update(id, templateType);
   }
 
-  async findTemplateType(templateType: TemplateTypeDoc) {
+  async findTemplateType(templateType: Partial<TemplateType>) {
     return this.templateTypeRepository.find(templateType);
   }
 

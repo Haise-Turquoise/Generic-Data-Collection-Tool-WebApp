@@ -1,4 +1,5 @@
 import { Container } from 'typedi';
+import { Application } from 'express'
 import TemplateController from './Template';
 import StatusController from './Status';
 import ProgramController from './Program';
@@ -34,7 +35,7 @@ import TransferStatusController from './TransferStatus';
 import SessionController from '../controllers/Session/Session';
 import PackageStatusController from './PackageStatus/controller';
 
-export const routerManager = app => {
+export const routerManager = (app: Application) => {
   app.use('/', Container.get(AuthController));
   app.use('/', Container.get(MenuController));
   app.use('/admin/user_management', Container.get(UsersController));

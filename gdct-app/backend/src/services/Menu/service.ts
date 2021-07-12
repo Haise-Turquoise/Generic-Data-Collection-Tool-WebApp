@@ -3,7 +3,7 @@ import i18n from 'i18n';
 import MenuRepository from '../../repositories/Menu';
 import MenuItemRepository from '../../repositories/MenuItem';
 import AppError from '../../utils/AppError';
-import { MenuDoc } from '../../types/menu';
+import Menu from '../../types/menu';
 
 export default class MenuService {
   private MenuRepository: MenuRepository;
@@ -14,7 +14,7 @@ export default class MenuService {
     this.MenuItemRepository = Container.get(MenuItemRepository);
   }
 
-  async createMenu(Menu: MenuDoc) {
+  async createMenu(Menu: Menu) {
     return this.MenuRepository.create(Menu);
   }
 
@@ -25,7 +25,7 @@ export default class MenuService {
     return this.MenuRepository.delete(id);
   }
 
-  async updateMenu(id: string, Menu: MenuDoc) {
+  async updateMenu(id: string, Menu: Partial<Menu>) {
     return this.MenuRepository.update(id, Menu);
   }
 

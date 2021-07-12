@@ -16,12 +16,12 @@ export default class AppConfigRepository extends BaseRepository<AppConfig, AppCo
     return this.update(id, appConfig);
   }
 
-  async create(AppConfig: AppConfigDoc) {
+  async create(AppConfig: AppConfig) {
     AppConfig.isActive = true;
     return AppConfigModel.create(AppConfig).then(AppConfig => new AppConfigEntity(AppConfig));
   }
 
-  async update(id: string, AppConfig: AppConfigDoc) {
+  async update(id: string, AppConfig: Partial<AppConfig>) {
     return AppConfigModel.findByIdAndUpdate(id, AppConfig).then(
       (AppConfig: AppConfigDoc) => new AppConfigEntity(AppConfig),
     );

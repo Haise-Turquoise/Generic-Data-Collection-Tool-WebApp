@@ -1,7 +1,8 @@
+import { ObjectId } from 'mongodb';
 import Category, { CategoryDoc } from '../../types/category';
 
 export default class COAEntity {
-  public _id: string;
+  public _id: ObjectId;
   public id: string;
   public name: string;
   public COA: string;

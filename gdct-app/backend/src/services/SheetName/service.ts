@@ -1,6 +1,6 @@
 import Container from 'typedi';
 import SheetNameRepository from '../../repositories/SheetName';
-import { SheetNameDoc } from '../../types/sheetname';
+import SheetName from '../../types/sheetname';
 
 // @Service()
 export default class SheetNameService {
@@ -9,7 +9,7 @@ export default class SheetNameService {
     this.sheetNameRepository = Container.get(SheetNameRepository);
   }
 
-  async createSheetName(sheetName: SheetNameDoc) {
+  async createSheetName(sheetName: SheetName) {
     return this.sheetNameRepository.create(sheetName);
   }
 
@@ -17,12 +17,12 @@ export default class SheetNameService {
     return this.sheetNameRepository.delete(id);
   }
 
-  async updateSheetName(id: string, sheetName: SheetNameDoc) {
+  async updateSheetName(id: string, sheetName: Partial<SheetName>) {
     return this.sheetNameRepository.update(id, sheetName);
   }
 
-  async findSheetName(sheetName: SheetNameDoc) {
-    return this.sheetNameRepository.find(sheetName.toObject());
+  async findSheetName(sheetName: Partial<SheetName>) {
+    return this.sheetNameRepository.find(sheetName);
   }
 
   async findById(id: string) {

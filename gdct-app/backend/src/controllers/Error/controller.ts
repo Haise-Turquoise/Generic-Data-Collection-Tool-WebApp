@@ -1,8 +1,10 @@
+import { NextFunction, Request, Response, Errback } from 'express';
 import CONSTANTS from '../../configs/constants';
 import errorHandler from '../../configs/errorHandler';
+import AppError from '../../utils/AppError';
 import { log } from '../../utils/log/winston';
 
-const errorHandlerController = (err, req, res, next) => {
+const errorHandlerController = (err: AppError, req: Request, res: Response, next: NextFunction) => {
   if (err) {
     console.log(err)
     err.statusCode = err.statusCode || 500;
@@ -12,6 +14,7 @@ const errorHandlerController = (err, req, res, next) => {
     if (isProduction) {
       if (err.isDetail) {
         if (err.name === CONSTANTS.CAST_ERROR) err = errorHandler.handleCastErrorDB(err);
+        //@ts-ignore
         if (err.code === CONSTANTS.DUPLICATE_FIELD_ERROR)
           err = errorHandler.handleDuplicateFieldsDB(err);
         if (err.name === CONSTANTS.VALIDATION_ERROR)

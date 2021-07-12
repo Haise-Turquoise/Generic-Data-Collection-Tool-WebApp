@@ -1,6 +1,6 @@
 import Container from 'typedi';
 import AppSysRoleRepository from '../../repositories/AppSysRole';
-import { AppSysRoleDoc } from '../../types/appsysrole';
+import AppSysRole from '../../types/appsysrole';
 
 // @Service()
 export default class AppSysRoleService {
@@ -10,7 +10,7 @@ export default class AppSysRoleService {
     this.AppSysRoleRepository = Container.get(AppSysRoleRepository);
   }
 
-  async createAppSysRole(AppSysRole: AppSysRoleDoc) {
+  async createAppSysRole(AppSysRole: AppSysRole) {
     return this.AppSysRoleRepository.create(AppSysRole);
   }
 
@@ -18,12 +18,12 @@ export default class AppSysRoleService {
     return this.AppSysRoleRepository.delete(id);
   }
 
-  async updateAppSysRole(id: string, AppSysRole: AppSysRoleDoc) {
+  async updateAppSysRole(id: string, AppSysRole: Partial<AppSysRole>) {
     return this.AppSysRoleRepository.update(id, AppSysRole);
   }
 
-  async findAppSysRole(AppSysRole: AppSysRoleDoc) {
-    return this.AppSysRoleRepository.find(AppSysRole.toObject());
+  async findAppSysRole(AppSysRole: Partial<AppSysRole>) {
+    return this.AppSysRoleRepository.find(AppSysRole);
   }
 
   async findById(id: string) {

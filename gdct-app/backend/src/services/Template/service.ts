@@ -3,8 +3,8 @@ import TemplateRepository from '../../repositories/Template';
 import TemplateTypeRepository from '../../repositories/TemplateType';
 import WorkflowProcessRepository from '../../repositories/WorkflowProcess/WorkflowProcess';
 import StatusRepository from '../../repositories/Status';
-import { TemplateDoc } from '../../types/template';
-import { WorkflowProcessDoc } from '../../types/workflowprocess';
+import Template from '../../types/template';
+import WorkflowProcess from '../../types/workflowprocess';
 import { ObjectId } from 'mongodb'
 
 // @Service()
@@ -20,10 +20,10 @@ export default class TemplateService {
     this.statusRepository = Container.get(StatusRepository);
   }
 
-  async createTemplate(template: TemplateDoc) {
+  async createTemplate(template: Template) {
     const templateType = await this.templateTypeRepository.findById(template.templateTypeId);
 
-    const workflowProcesses: WorkflowProcessDoc[] = await this.workflowProcessRepository.find({
+    const workflowProcesses: WorkflowProcess[] = await this.workflowProcessRepository.find({
       workflowId: templateType.templateWorkflowId,
     });
 
@@ -66,21 +66,21 @@ export default class TemplateService {
     return this.templateRepository.delete(id);
   }
 
-  async updateTemplate(id: string, template: Partial<TemplateDoc>) {
+  async updateTemplate(id: string, template: Partial<Template>) {
     return this.templateRepository.update(id, template);
   }
   
   //TODO test changed logic - I think this is what was meant to be written
-  async updateTemplateSheetData(id: string, template: TemplateDoc) {
-    return this.templateRepository.updateSheetData(id, template.templateData);
+  async updateTemplateSheetData(id: string, template: Partial<Template>) {
+    return this.templateRepository.updateSheetData(id, template.templateData || []);
   }
 
   //TODO test this too - same situation
-  async updateTemplateWorkflowProcess(id: string, workflowProcess: WorkflowProcessDoc) {
-    return this.templateRepository.updateWorkflowProcess(id, workflowProcess._id);
+  async updateTemplateWorkflowProcess(id: string, workflowProcess: Partial<WorkflowProcess>) {
+    return this.templateRepository.updateWorkflowProcess(id, workflowProcess._id!);
   }
 
-  async findTemplate(template: TemplateDoc) {
+  async findTemplate(template: Partial<Template>) {
     return this.templateRepository.find(template);
   }
 

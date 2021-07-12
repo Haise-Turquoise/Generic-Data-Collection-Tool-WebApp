@@ -1,6 +1,6 @@
 import Container from 'typedi';
 import AppConfigRepository from '../../repositories/AppConfig';
-import { AppConfigDoc } from '../../types/appconfig';
+import AppConfig from '../../types/appconfig';
 
 // @Service()
 export default class AppConfigService {
@@ -10,7 +10,7 @@ export default class AppConfigService {
     this.AppConfigRepository = Container.get(AppConfigRepository);
   }
 
-  async createAppConfig(AppConfig: AppConfigDoc) {
+  async createAppConfig(AppConfig: AppConfig) {
     return this.AppConfigRepository.create(AppConfig);
   }
 
@@ -26,12 +26,12 @@ export default class AppConfigService {
     return this.AppConfigRepository.delete(id);
   }
 
-  async updateAppConfig(id: string, AppConfig: AppConfigDoc) {
+  async updateAppConfig(id: string, AppConfig: Partial<AppConfig>) {
     return this.AppConfigRepository.update(id, AppConfig);
   }
 
-  async findAppConfig(AppConfig: AppConfigDoc) {
-    return this.AppConfigRepository.find(AppConfig.toObject());
+  async findAppConfig(AppConfig: Partial<AppConfig>) {
+    return this.AppConfigRepository.find(AppConfig);
   }
 
   async findAppConfigById(id: string) {

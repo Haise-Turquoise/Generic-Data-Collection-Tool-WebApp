@@ -26,7 +26,7 @@ export default class AppRoleRepository extends BaseRepository<AppRole, AppRoleDo
     return AppRoleModel.findByIdAndUpdate(id, AppRole);
   }
 
-  async find(query: AppRole) {
+  async find(query: Partial<AppRole>) {
     return AppRoleModel.find(query).then((AppRoles: AppRoleDoc[]) =>
       AppRoles.map(AppRole => new AppRoleEntity(AppRole)),
     );

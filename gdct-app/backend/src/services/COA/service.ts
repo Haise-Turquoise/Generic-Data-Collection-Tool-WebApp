@@ -1,8 +1,7 @@
-import { FilterQuery } from 'mongoose';
 import Container from 'typedi';
 import COARepository from '../../repositories/COA';
 import MasterValueRepository from '../../repositories/MasterValue';
-import { CategoryDoc } from '../../types/category';
+import Category from '../../types/category';
 
 // @Service()
 export default class COAService {
@@ -13,7 +12,7 @@ export default class COAService {
     this.masterValueRepository = Container.get(MasterValueRepository);
   }
 
-  async createCOA(COA: CategoryDoc | CategoryDoc[]) {
+  async createCOA(COA: Category | Category[]) {
     return this.COARepository.create(COA);
   }
 
@@ -31,11 +30,11 @@ export default class COAService {
     }
   }
 
-  async updateCOA(id: string, COA: Partial<CategoryDoc>) {
+  async updateCOA(id: string, COA: Partial<Category>) {
     return this.COARepository.update(id, COA);
   }
 
-  async findCOA(COA: FilterQuery<CategoryDoc>) {
+  async findCOA(COA: Partial<Category>) {
     return this.COARepository.find(COA);
   }
 }

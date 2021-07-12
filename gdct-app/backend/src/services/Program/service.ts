@@ -2,7 +2,7 @@ import Container from 'typedi';
 
 import ProgramRepository from '../../repositories/Program';
 import MasterValueRepository from '../../repositories/MasterValue'
-import { ProgramDoc } from '../../types/program';
+import Program from '../../types/program';
 
 export default class ProgramService {
   private programRepository: ProgramRepository;
@@ -13,7 +13,7 @@ export default class ProgramService {
     this.masterValueRepository = Container.get(MasterValueRepository);
   }
 
-  async createProgram(program: ProgramDoc) {
+  async createProgram(program: Program) {
     return this.programRepository.create(program);
   }
 
@@ -26,12 +26,12 @@ export default class ProgramService {
     return this.programRepository.delete(id);
   }
 
-  async updateProgram(id: string, program: Partial<ProgramDoc>) {
+  async updateProgram(id: string, program: Partial<Program>) {
     return this.programRepository.update(id, program);
   }
 
-  async findProgram(program: ProgramDoc) {
-    return this.programRepository.find(program.toObject());
+  async findProgram(program: Partial<Program>) {
+    return this.programRepository.find(program);
   }
 
   async findProgramByIds(ids: string[]) {
