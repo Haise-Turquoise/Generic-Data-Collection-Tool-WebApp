@@ -1,32 +1,51 @@
 import { shallowEqual, useDispatch, useSelector } from 'react-redux';
-import React, { useMemo, useEffect, useState } from 'react';
+import React, { useMemo, useEffect, useState, ChangeEvent } from 'react';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import Paper from '@material-ui/core/Paper';
+// @ts-ignore
 import cloneDeep from 'clone-deep';
 import { useLocation } from 'react-router-dom';
 import MaterialTable from 'material-table';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import { makeStyles } from '@material-ui/core/styles';
+// @ts-ignore
 import { length } from 'file-loader';
+// @ts-ignore
 import { excelImportHandler, templateDownloader } from '../../tools/misc';
+// @ts-ignore
 import { getSubmissionNoteRequest } from '../../store/thunks/submissionNote';
+// @ts-ignore
 import SubmissionNoteStore from '../../store/SubmissionNoteStore/store';
+// @ts-ignore
 import SubmissionWorkbookStore from '../../store/SubmissionWorkbookStore/store';
+// @ts-ignore
 import SubmissionController from '../../controllers/submission';
+// @ts-ignore
 import { selectFactoryRESTResponseTableValues } from '../../store/common/REST/selectors';
+// @ts-ignore
 import { selectSubmissionsStore } from '../../store/SubmissionsStore/selectors';
+// @ts-ignore
 import { selectSubmissionNoteStore } from '../../store/SubmissionNoteStore/selectors';
 import {
   getSubmissionByIdRequest,
   updateSubmissionStatusRequest,
+  // @ts-ignore
 } from '../../store/thunks/submission';
 // import DOWNLOAD from '../../store/reducers/ui/excel/commands/DOWNLOAD';
+// @ts-ignore
 import { selectSubmissionNoteHistoryStore } from '../../store/SubmissionNoteHistoryStore/selectors';
+// @ts-ignore
 import workflowController from '../../controllers/workflow';
+// @ts-ignore
 import statusController from '../../controllers/status';
-
+import { History } from 'history';
+import WorkflowProcess from '../../types/workflowprocess';
+import Status from '../../types/status';
+import VisitedNode from '../../types/visitednode';
+import SubmissionNote from '../../types/submissionnote';
+import { Submission } from '../../types/submissions';
 const timeOption = {
   year: 'numeric',
   month: 'numeric',
@@ -42,26 +61,24 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-const EditSubmission = ({ history }) => {
+const EditSubmission = ({ history }:{history:History}) => {
   const dispatch = useDispatch();
-  const [submitUnavailable, setSubmitUnavailable] = useState(true);
-  const [approveUnavailable, setApproveUnavailable] = useState(true);
-  const [rejectUnavailable, setRejectUnavailable] = useState(true);
-  const [isSubmitterOrInputter, setIsSubmitterOrInputter] = useState(false);
+  // const [submitUnavailable, setSubmitUnavailable] = useState(true);
+  // const [approveUnavailable, setApproveUnavailable] = useState(true);
+  // const [rejectUnavailable, setRejectUnavailable] = useState(true);
+  // const [isSubmitterOrInputter, setIsSubmitterOrInputter] = useState(false);
   const [isReviewerOrApprover, setIsReviewerOrApprover] = useState(false);
-  const [hasBeenSubmitted, setHasBeenSubmitted] = useState(false);
-  const [hasBeenApproved, setHasBeenApproved] = useState(false);
-  const [submitId, setSubmitId] = useState('');
-  const [approveId, setApproveId] = useState('');
-  const [rejectId, setRejectId] = useState('');
+  // const [hasBeenSubmitted, setHasBeenSubmitted] = useState(false);
+  // const [hasBeenApproved, setHasBeenApproved] = useState(false);
+  // const [submitId, setSubmitId] = useState('');
+  // const [approveId, setApproveId] = useState('');
+  // const [rejectId, setRejectId] = useState('');
   const [cursor, setCursor] = useState('standard');
   const [userFeedback, setUserFeedback] = useState('');
   const [refresh, setRefresh] = useState(false);
-
-  const [visitStatusNode, setVisitStatusNode] = useState([]);
   const [visitedWorkFlowProcesses, setVisitedWorkFlowProcesses] = useState([]);
-  const [currentRole, setCurrentRole] = useState('');
-  const [statusAndBannedActions, setStatusAndBannedActions] = useState({});
+  const [buttonList, setButtonList] = useState([]);
+  const [currentRole, setCurrentRole] = useState([]);
   // const [downloadUnavailable, setDownloadUnavailable] = useState(true);
   const [nextStepIdMap, setNextStepIdMap] = useState({});
   const [submissionHasBeen, setSubmissionHasBeen] = useState(undefined);
@@ -84,11 +101,28 @@ const EditSubmission = ({ history }) => {
 
   const options = useMemo(() => ({ actionsColumnIndex: -1, search: false, showTitle: true }), []);
 
-  const handleNoteChange = event => {
+  const handleNoteChange = (event:ChangeEvent<{ value: string }>) => {
     dispatch(SubmissionNoteStore.actions.RECEIVE(event.target.value));
   };
-
-  const location = useLocation();
+  const findTheHeadNode = (visitedWorkFlowProcesses:VisitedNode[])=>{
+    const refenceMap:any = {};
+    for(const visitedWorkFlowProcess of visitedWorkFlowProcesses){
+      refenceMap[visitedWorkFlowProcess.statusName] = false
+    }
+    for(const visitedWorkFlowProcess of visitedWorkFlowProcesses){
+      if(visitedWorkFlowProcess.toStatusesName.length >0){
+        for(const toStatusesName of visitedWorkFlowProcess.toStatusesName){
+          refenceMap[toStatusesName] = true;
+        }
+      }
+    }
+    for (let key in refenceMap) {
+      if(!refenceMap[key]){
+        return key;
+      }
+    }
+  }
+  const location:any = useLocation();
 
   const { submission, submissionNote, submissionNoteHistory } = useSelector(
     state => ({
@@ -132,16 +166,13 @@ const EditSubmission = ({ history }) => {
     // @ts-ignore
 
     if (location.state.detail) {
-      // console.log('detail', location.state.detail)
       workflowController
         .fetchProcessesByWorkflowId(location.state.detail.workflowId)
-        .then(workflowProcesses => {
-          const promiseQuery1 = [];
+        .then((workflowProcesses:WorkflowProcess[]) => {
           const promiseQuery2 = [];
           for (const workflowProcess of workflowProcesses) {
-            promiseQuery1.push(statusController.fetchStatus(workflowProcess.statusId));
             promiseQuery2.push(
-              statusController.fetchStatus(workflowProcess.statusId).then(status => {
+              statusController.fetchStatus(workflowProcess.statusId).then((status:Status) => {
                 const workflowProcessCopy = cloneDeep(workflowProcess);
                 workflowProcessCopy.statusName = status.name;
                 workflowProcessCopy.toStatusesName = [];
@@ -150,87 +181,51 @@ const EditSubmission = ({ history }) => {
             );
           }
           Promise.all(promiseQuery2).then(workflowProcesses => {
-            const statusMap = {};
+            const statusMap:{ [name: string]: string } = {};
             for (const workflowProcess of workflowProcesses) {
               statusMap[workflowProcess._id] = workflowProcess.statusName;
             }
-            const workflowProcessesList = workflowProcesses.filter(ele => {
-              return ele.statusName != 'Start' && ele.statusName != 'Unsubmitted';
-            });
+            const workflowProcessesList = cloneDeep(workflowProcesses)
             for (const workflowProcesses of workflowProcessesList) {
               for (const toStatus of workflowProcesses.to) {
                 workflowProcesses.toStatusesName.push(statusMap[toStatus]);
               }
             }
-            console.log(workflowProcessesList);
+            // determinte which node is head node.
+            const headStatusName = findTheHeadNode(workflowProcessesList)
             setVisitedWorkFlowProcesses(workflowProcessesList);
+            const buttonArray = workflowProcessesList.filter((ele:VisitedNode)=>ele.statusName!=headStatusName);
+            setButtonList(buttonArray);
           });
         });
       setCurrentRole(location.state.detail.permission);
-      if (
-        // @ts-ignore
-        location.state.detail.permission.find(
-          permission =>
-            permission === 'Submitter' ||
-            permission === 'Inputter' ||
-            permission == 'Business Admin',
-        ) !== undefined
-      )
-        setIsSubmitterOrInputter(true);
-      if (
-        // @ts-ignore
-        location.state.detail.permission.find(
-          permission =>
-            permission === 'Reviewer' ||
-            permission === 'Submission Approver' ||
-            permission == 'Business Admin',
-        ) !== undefined
-      )
-        setIsReviewerOrApprover(true);
-      // check has the submission status.
-      // SubmissionController.fetchSubmissionByParentId(location.state.detail._id).then(childrenSubmissions=>{
-      //   console.log(childrenSubmissions)
-      //   if(childrenSubmissions.length > 0){
-      //     let submitted = false;
-      //     childrenSubmissions.forEach(childrenSubmission=>{
-      //       statusController.fetchStatus(childrenSubmission.statusId).then(status=>{
-      //         // check the status is Submitted or not.
-      //         if(status.name == 'Submitted'){
-      //           setHasBeenSubmitted(true)
-      //           setSubmissionHasBeen(status.name)
-      //         }
-      //         // check the status after the phrase Submitted
-      //         else{
-      //           SubmissionController.fetchSubmission(location.state.detail._id).then(submission=>{
-      //             statusController.fetchStatus(submission.statusId).then(status=>{
-      //               console.log(status)
-      //               setSubmissionHasBeen(status.name)
-      //             })
-      //           })
-      //         }
-      //       })
-      //     })
-      //   }
-      //   // check the status before the phrase Submitted
-      //   else{
-      //     SubmissionController.fetchSubmission(location.state.detail._id).then(submission=>{
-      //       console.log(submission)
-      //       statusController.fetchStatus(submission.statusId).then(status=>{
-      //         console.log(status)
-      //         setSubmissionHasBeen(status.name)
-      //       })
-      //     })
-      //   }
-
-      // })
+      // if (
+      //   // @ts-ignore
+      //   location.state.detail.permission.find(
+      //     permission =>
+      //       permission === 'Submitter' ||
+      //       permission === 'Inputter' ||
+      //       permission == 'Business Admin',
+      //   ) !== undefined
+      // )
+      //   setIsSubmitterOrInputter(true);
+      // if (
+      //   // @ts-ignore
+      //   location.state.detail.permission.find(
+      //     permission =>
+      //       permission === 'Reviewer' ||
+      //       permission === 'Submission Approver' ||
+      //       permission == 'Business Admin',
+      //   ) !== undefined
+      // )
+      //   setIsReviewerOrApprover(true);
 
       workflowController
         // @ts-ignore
         .fetchProcess(location.state.detail.workflowProcessId)
-        .then(workflowProcess => {
+        .then((workflowProcess:WorkflowProcess) => {
           if (workflowProcess !== undefined)
-            workflowProcess.to.forEach(process => {
-              // console.log(process.statusId.name)
+            workflowProcess.to.forEach((process:any) => {
               const nextStepIdMapCopy = cloneDeep(nextStepIdMap);
               nextStepIdMapCopy[process.statusId.name] = process._id;
               setNextStepIdMap(nextStepIdMapCopy);
@@ -285,49 +280,15 @@ const EditSubmission = ({ history }) => {
           const status = await statusController.fetchStatus(submission.statusId);
           setSubmissionHasBeen(status.name);
         }
-        // SubmissionController.fetchSubmissionByParentId(location.state.detail._id).then(childrenSubmissions=>{
-        //   console.log(childrenSubmissions)
-        //   if(childrenSubmissions.length > 0){
-        //     let submitted = false;
-        //     childrenSubmissions.forEach(childrenSubmission=>{
-        //       statusController.fetchStatus(childrenSubmission.statusId).then(status=>{
-        //         // check the status is Submitted or not.
-        //         if(status.name == 'Submitted'){
-        //           setHasBeenSubmitted(true)
-        //           setSubmissionHasBeen(status.name)
-        //         }
-        //         // check the status after the phrase Submitted
-        //         else{
-        //           SubmissionController.fetchSubmission(location.state.detail._id).then(submission=>{
-        //             statusController.fetchStatus(submission.statusId).then(status=>{
-        //               console.log(status)
-        //               setSubmissionHasBeen(status.name)
-        //             })
-        //           })
-        //         }
-        //       })
-        //     })
-        //   }
-        //   // check the status before the phrase Submitted
-        //   else{
-        //     SubmissionController.fetchSubmission(location.state.detail._id).then(submission=>{
-        //       console.log(submission)
-        //       statusController.fetchStatus(submission.statusId).then(status=>{
-        //         console.log(status)
-        //         setSubmissionHasBeen(status.name)
-        //       })
-        //     })
-        //   }
-
-        // })
       } catch (e) {}
     })();
   }, [location, dispatch, refresh]);
 
-  submissionNotes = submissionNoteHistory.filter(note => note.note !== undefined);
+  submissionNotes = submissionNoteHistory.filter((note:SubmissionNote) => note.note !== undefined);
   // @ts-ignore
   submissionNotes.forEach(
-    note => (note.updatedDate = new Date(note.updatedDate).toLocaleDateString('en-US', timeOption)),
+    // @ts-ignore
+    (note:any) => (note.updatedDate = new Date(note.updatedDate).toLocaleDateString('en-US', timeOption)),
   );
 
   const handleOpenTemplate = () => {
@@ -343,13 +304,14 @@ const EditSubmission = ({ history }) => {
     });
   };
 
-  const UserFeedback = feedback => {
+  const UserFeedback = (feedback:string) => {
     setUserFeedback(feedback);
   };
 
   const handleDownloadWorkbook = () => {
     setUserFeedback('Downloading !');
     setCursor('progress');
+    // @ts-ignore
     DOWNLOAD(convertStateToReactState(submission.workbookData), UserFeedback);
 
     setTimeout(function () {
@@ -362,7 +324,7 @@ const EditSubmission = ({ history }) => {
     }, 4000);
   };
   // decide button display base on current role.
-  const handleButtonDisplayByRole = (button, role, map) => {
+  const handleButtonDisplayByRole = (button:string, role:string[], map:{ [key: string]: string }) => {
     if (role.length == 0) {
       role[0] = 'Business Admin';
     }
@@ -373,41 +335,29 @@ const EditSubmission = ({ history }) => {
     return false;
   };
   // decide button display base on current Status
-  const handleButtonDisplayByStatus = (button, visitedWorkFlowProcesses, status) => {
-    // console.log(button, visitedWorkFlowProcesses, status)
-    const StatusAndBannedActions = {
-      Submitted: ['Submitted', 'inputted'],
-      inputted: ['inputted', 'Approved', 'Rejected', 'Returned', 'Reviewed'],
-      Approved: ['Approved', 'Rejected', 'Submitted', 'inputted', 'Returned', 'Reviewed'],
-      Rejected: ['Approved', 'Rejected', 'Submitted', 'inputted', 'Returned', 'Reviewed'],
-      Reviewed: ['Returned', 'Reviewed', 'Submitted', 'inputted', 'Approved', 'Rejected'],
-      Returned: ['Returned', 'Reviewed', 'Submitted', 'inputted', 'Approved', 'Rejected'],
-    };
-    // remove the possible avaiable button from the banned list
+  const handleButtonDisplayByStatus = (button:string, visitedWorkFlowProcesses:VisitedNode[], status:string|undefined) => {
+    // the map represent the clickable button
+    let StatusAndActions:{ [key: string]: string[] } = {};
+    for(const visitedWorkFlowProcess of visitedWorkFlowProcesses){
+      StatusAndActions[visitedWorkFlowProcess.statusName] = [];
+    }
     if (visitedWorkFlowProcesses.length > 0 && status) {
+      // add the possible buttons to each status.
       for (const workFlowProcesses of visitedWorkFlowProcesses) {
-        if (workFlowProcesses.statusName == status) {
-          for (const toName of workFlowProcesses.toStatusesName) {
-            const index = StatusAndBannedActions[status].indexOf(toName);
-            if (index > -1) {
-              StatusAndBannedActions[status].splice(index, 1);
-            }
-          }
+        for (const toName of workFlowProcesses.toStatusesName) {
+          StatusAndActions[workFlowProcesses.statusName].push(toName)
         }
       }
     }
-    console.log(button, visitedWorkFlowProcesses, status, StatusAndBannedActions)
-    if (status in StatusAndBannedActions) {
-      if (StatusAndBannedActions[status].includes(button)) {
-        return true;
+    if (status && status in StatusAndActions) {
+      if (StatusAndActions[status].includes(button)) {
+        return false;
       }
-      return false;
+      return true;
     }
-    return false;
+    return true;
   };
-  const handleChangeStatus = async (submission, submissionNote, role, newProcessId) => {
-    // setCursor('progress');
-
+  const handleChangeStatus = async (submission:Submission, submissionNote:SubmissionNote, role:string, newProcessId:string) => {
     const result = await dispatch(
       updateSubmissionStatusRequest(submission, submissionNote, role, newProcessId),
     );
@@ -513,13 +463,15 @@ const EditSubmission = ({ history }) => {
           >
             Submit
           </Button> */}
-          {visitedWorkFlowProcesses.map(status => {
-            const buttonDisplayBaseOnRole = handleButtonDisplayByRole(
+          {buttonList.map((status:VisitedNode) => {
+            // @ts-ignore
+            const buttonDisplayBaseOnRole:boolean = handleButtonDisplayByRole(
               status.statusName,
               currentRole,
+              // @ts-ignore
               roleButtonMap,
             );
-            const buttonDisplayBaseOnStatus = handleButtonDisplayByStatus(
+            const buttonDisplayBaseOnStatus:boolean = handleButtonDisplayByStatus(
               status.statusName,
               visitedWorkFlowProcesses,
               submissionHasBeen,
@@ -537,6 +489,7 @@ const EditSubmission = ({ history }) => {
                     submission,
                     submissionNote,
                     status.statusName,
+                    // @ts-ignore
                     nextStepIdMap[status.statusName],
                   );
                 }}
@@ -550,6 +503,7 @@ const EditSubmission = ({ history }) => {
             variant="contained"
             size="large"
             style={{ cursor }}
+            // @ts-ignore
             onClick={() => handleChangeStatus(submission, submissionNote)}
           >
             Change Notes
