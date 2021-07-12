@@ -3,7 +3,7 @@ import i18n from 'i18n';
 import AppRoleRepository from '../../repositories/AppRole';
 import AppSysRoleRepository from '../../repositories/AppSysRole';
 import APPError from '../../utils/AppError';
-import { AppRoleDoc } from '../../types/approle';
+import AppRole from '../../types/approle';
 // @Service()
 export default class AppRoleService {
   private AppRoleRepository: AppRoleRepository;
@@ -14,7 +14,7 @@ export default class AppRoleService {
     this.AppSysRoleRepository = Container.get(AppSysRoleRepository);
   }
 
-  async createAppRole(AppRole: AppRoleDoc) {
+  async createAppRole(AppRole: AppRole) {
     return this.AppRoleRepository.create(AppRole);
   }
 
@@ -25,12 +25,12 @@ export default class AppRoleService {
     return this.AppRoleRepository.delete(id);
   }
 
-  async updateAppRole(id: string, AppRole: AppRoleDoc) {
+  async updateAppRole(id: string, AppRole: Partial<AppRole>) {
     return this.AppRoleRepository.update(id, AppRole);
   }
 
-  async findAppRole(AppRole: AppRoleDoc) {
-    return this.AppRoleRepository.find(AppRole.toObject());
+  async findAppRole(AppRole: Partial<AppRole>) {
+    return this.AppRoleRepository.find(AppRole);
   }
 
   async isRefered(id: string) {

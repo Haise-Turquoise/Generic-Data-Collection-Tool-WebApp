@@ -8,7 +8,7 @@ import AppRoleResourceRepository from '../../repositories/AppRoleResource';
 import AppResourceRepository from '../../repositories/AppResource';
 import AppSysRoleModel from '../../models/AppSysRole';
 import { Request, Response, NextFunction } from 'express'
-import User, { UserDoc } from '../../types/user';
+import User from '../../types/user';
 import { CallbackError } from 'mongoose';
 import { AppSysRoleDoc } from '../../types/appsysrole';
 
@@ -54,8 +54,8 @@ export default class AuthService {
       })(req, res, async () => {
         //@ts-ignore
         console.log('HEADERS', res.headers)
-        const { email } = (req.user as UserDoc);
-        const user: UserDoc = await this.UserRepository.findByEmail(email);
+        const { email } = (req.user as User);
+        const user: User = await this.UserRepository.findByEmail(email);
         if (user) {
           //@ts-ignore 
           req.session.isAdmin = Boolean(user.sysRole.find(e => e.role === 'Business Admin'));
@@ -140,7 +140,7 @@ export default class AuthService {
       }
       const appsysRole: {appSys: string, role: string, appSysRoleId: ObjectId, _id: ObjectId}[] = [];
 
-      sysRoles.forEach((role: UserDoc["sysRole"]) => {
+      sysRoles.forEach((role: User["sysRole"]) => {
         AppSysRoleModel.findById(role, (_err: CallbackError, appsysrole: AppSysRoleDoc) => {
           appsysRole.push({
             appSys: appsysrole.appSys,
@@ -186,7 +186,7 @@ export default class AuthService {
     return Array.from(set).map(e => JSON.parse(e));
   }
 
-  getRoles(user: UserDoc) {
+  getRoles(user: User) {
     return new Promise(async (resolve, reject) => {
       const dataSet = new Set<string>();
       for (const sysRole of user.sysRole) {
@@ -207,7 +207,7 @@ export default class AuthService {
     try {
       const authService = new AuthService();
       return passport.authenticate('local')(req, res, async () => {
-        const { email } = (req.user as UserDoc);
+        const { email } = (req.user as User);
         const user = await authService.UserRepository.findByEmail(email);
 
         //@ts-ignore

@@ -1,7 +1,6 @@
 import Container from 'typedi';
 import TransferStatusRepository from '../../repositories/TransferStatus'
 import startTransfer from '../../mongoToSql'
-import TransferStatusModel from '../../models/TransferStatus'
 
 // @Service()
 class TemplateTypeService {

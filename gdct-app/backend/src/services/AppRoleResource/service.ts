@@ -2,7 +2,8 @@ import Container from 'typedi';
 import AppRoleResourceRepository from '../../repositories/AppRoleResource';
 import AppSysRoleRepository from '../../repositories/AppSysRole';
 import AppRoleRepository from '../../repositories/AppRole'
-import { AppRoleResourceDoc } from '../../types/approleresource';
+import AppRoleResource from '../../types/approleresource';
+import { ObjectId } from 'mongodb';
 // @Service()
 export default class AppRoleResourceService {
   private AppRoleResourceRepository: AppRoleResourceRepository;
@@ -15,7 +16,7 @@ export default class AppRoleResourceService {
     this.AppRoleRepository = Container.get(AppRoleRepository)
   }
 
-  async createAppRoleResource(appRoleResource: AppRoleResourceDoc) {
+  async createAppRoleResource(appRoleResource: AppRoleResource) {
     let appSysRole = await this.AppSysRoleRepository.findById(appRoleResource.appSysRoleId.roleId)
 
     const roleId = appRoleResource.appSysRoleId.roleId;
@@ -28,23 +29,23 @@ export default class AppRoleResourceService {
     return this.AppRoleResourceRepository.delete(id);
   }
 
-  async updateAppRoleResource(id: string, appRoleResource: AppRoleResourceDoc) {
+  async updateAppRoleResource(id: string, appRoleResource: Partial<AppRoleResource>) {
     // update the resourceId
-    if(appRoleResource.appSysRoleId.roleId){
+    if(appRoleResource.appSysRoleId?.roleId){
       return this.AppRoleResourceRepository.update(id, appRoleResource);
     }
     // update the appSysRoleId
     else{
       // replace the ObjectId with the object contains more information
-      let appSysRole = await this.AppSysRoleRepository.findById(appRoleResource.appSysRoleId.roleId)
-      const roleId = appRoleResource.appSysRoleId.roleId;
+      let appSysRole = await this.AppSysRoleRepository.findById(appRoleResource.appSysRoleId!.roleId || '')
+      const roleId = appRoleResource.appSysRoleId!.roleId;
       appRoleResource.appSysRoleId = { roleId, roleName: appSysRole.appSys + " " + appSysRole.role }
       return this.AppRoleResourceRepository.update(id, appRoleResource);
     }
   }
 
-  async findAppRoleResource(appRoleResource: AppRoleResourceDoc) {
-    return this.AppRoleResourceRepository.find(appRoleResource.toObject());
+  async findAppRoleResource(appRoleResource: Partial<AppRoleResource>) {
+    return this.AppRoleResourceRepository.find(appRoleResource);
   }
 
   async findById(id: string) {

@@ -1,6 +1,6 @@
 import Container from 'typedi';
 import UsersRepository from '../../repositories/Users';
-import { UserDoc } from '../../types/user';
+import User from '../../types/user';
 
 // @Service()
 export default class UserService {
@@ -10,7 +10,7 @@ export default class UserService {
     this.UsersRepository = Container.get(UsersRepository);
   }
 
-  async createUser(User: UserDoc) {
+  async createUser(User: User) {
     return this.UsersRepository.create(User);
   }
 
@@ -18,11 +18,11 @@ export default class UserService {
     return this.UsersRepository.delete(id);
   }
 
-  async updateUser(id: string, User: Partial<UserDoc>) {
+  async updateUser(id: string, User: Partial<User>) {
     return this.UsersRepository.update(id, User);
   }
 
-  async findUser(User: UserDoc) {
+  async findUser(User: Partial<User>) {
     return this.UsersRepository.find(User);
   }
 

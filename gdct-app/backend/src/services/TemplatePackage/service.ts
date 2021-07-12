@@ -1,7 +1,7 @@
 import Container from 'typedi';
 import TemplatePackageRepository from '../../repositories/TemplatePackage';
 import StatusRepository from '../../repositories/Status';
-import { TemplatePackageDoc } from '../../types/templatepackage';
+import TemplatePackage from '../../types/templatepackage';
 
 // @Service()
 export default class TemplatePackageService {
@@ -13,7 +13,7 @@ export default class TemplatePackageService {
     this.statusRepository = Container.get(StatusRepository)
   }
 
-  async createTemplatePackage(templatePackage: TemplatePackageDoc) {
+  async createTemplatePackage(templatePackage: TemplatePackage) {
     return this.templatePackageRepository.create(templatePackage);
   }
 
@@ -23,12 +23,12 @@ export default class TemplatePackageService {
     return this.templatePackageRepository.delete(id);
   }
 
-  async updateTemplatePackage(id: string, templatePackage: TemplatePackageDoc, isPopulated = false) {
+  async updateTemplatePackage(id: string, templatePackage: Partial<TemplatePackage>, isPopulated = false) {
     
     return this.templatePackageRepository.update(id, templatePackage, isPopulated);
   }
 
-  async findTemplatePackage(templatePackage: TemplatePackageDoc, isPopulated = false) {
+  async findTemplatePackage(templatePackage: Partial<TemplatePackage>, isPopulated = false) {
     return this.templatePackageRepository.find(templatePackage, isPopulated);
   }
 }

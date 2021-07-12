@@ -1,7 +1,7 @@
 import Container from 'typedi';
 import ReportingPeriodRepository from '../../repositories/ReportingPeriod';
 import MasterValueRepository from '../../repositories/MasterValue';
-import { ReportingPeriodDoc } from '../../types/reportingperiod';
+import ReportingPeriod from '../../types/reportingperiod';
 
 // @Service()
 export default class ReportingPeriodService {
@@ -12,7 +12,7 @@ export default class ReportingPeriodService {
     this.masterValueRepository = Container.get(MasterValueRepository);
   }
 
-  async createReportingPeriod(reportingPeriod: ReportingPeriodDoc) {
+  async createReportingPeriod(reportingPeriod: ReportingPeriod) {
     return this.reportingPeriodRepository.create(reportingPeriod);
   }
 
@@ -26,12 +26,12 @@ export default class ReportingPeriodService {
     return this.reportingPeriodRepository.delete(id);
   }
 
-  async updateReportingPeriod(id: string, reportingPeriod: ReportingPeriodDoc) {
+  async updateReportingPeriod(id: string, reportingPeriod: Partial<ReportingPeriod>) {
     return this.reportingPeriodRepository.update(id, reportingPeriod);
   }
 
-  async findReportingPeriod(reportingPeriod: ReportingPeriodDoc) {
-    return this.reportingPeriodRepository.find(reportingPeriod.toObject());
+  async findReportingPeriod(reportingPeriod: Partial<ReportingPeriod>) {
+    return this.reportingPeriodRepository.find(reportingPeriod);
   }
 
   async findReportingPeriodById(id: string) {

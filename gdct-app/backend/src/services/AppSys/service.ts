@@ -2,7 +2,7 @@ import i18n from 'i18n';
 import Container from 'typedi';
 import AppSysRepository from '../../repositories/AppSys';
 import AppSysRoleRepository from '../../repositories/AppSysRole';
-import { AppSysDoc } from '../../types/appsys';
+import AppSys from '../../types/appsys';
 import AppError from '../../utils/AppError';
 
 // @Service()
@@ -15,7 +15,7 @@ export default class AppSysService {
     this.AppSysRoleRepository = Container.get(AppSysRoleRepository);
   }
 
-  async createAppSys(AppSys: AppSysDoc) {
+  async createAppSys(AppSys: AppSys) {
     return this.AppSysRepository.create(AppSys);
   }
 
@@ -26,7 +26,7 @@ export default class AppSysService {
     return this.AppSysRepository.delete(id);
   }
 
-  async updateAppSys(id: string, AppSys: AppSysDoc) {
+  async updateAppSys(id: string, AppSys: Partial<AppSys>) {
     return this.AppSysRepository.update(id, AppSys);
   }
 

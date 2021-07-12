@@ -1,6 +1,6 @@
 import Container from 'typedi';
 import AppResourceRepository from '../../repositories/AppResource';
-import { AppResourceDoc } from '../../types/appresource';
+import AppResource from '../../types/appresource';
 
 // @Service()
 export default class AppResourceService {
@@ -10,7 +10,7 @@ export default class AppResourceService {
     this.appResourceRepository = Container.get(AppResourceRepository);
   }
 
-  async createAppResource(appResource: AppResourceDoc) {
+  async createAppResource(appResource: AppResource) {
     return this.appResourceRepository.create(appResource);
   }
 
@@ -18,12 +18,12 @@ export default class AppResourceService {
     return this.appResourceRepository.delete(id);
   }
 
-  async updateAppResource(id: string, appResource: AppResourceDoc) {
+  async updateAppResource(id: string, appResource: Partial<AppResource>) {
     return this.appResourceRepository.update(id, appResource);
   }
 
-  async findAppResource(appResource: AppResourceDoc) {
-    return this.appResourceRepository.find(appResource.toObject());
+  async findAppResource(appResource: Partial<AppResource>) {
+    return this.appResourceRepository.find(appResource);
   }
 
   async findById(id: string) {

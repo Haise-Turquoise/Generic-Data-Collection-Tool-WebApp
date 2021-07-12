@@ -1,6 +1,6 @@
 import Container, { Service } from 'typedi';
 import SubmissionNoteRepository from '../../repositories/SubmissionNote';
-import { SubmissionNoteDoc } from '../../types/submissionnote';
+import SubmissionNote from '../../types/submissionnote';
 
 // @Service()
 export default class SubmissionNoteService {
@@ -14,7 +14,7 @@ export default class SubmissionNoteService {
     return this.submissionNoteRepository.findBySubmissionId(submissionId);
   }
 
-  async createSubmissionNote(submissionNote: SubmissionNoteDoc) {
+  async createSubmissionNote(submissionNote: SubmissionNote) {
     return this.submissionNoteRepository.create(submissionNote);
   }
 }

@@ -2,7 +2,7 @@ import { FilterQuery } from 'mongoose';
 import Container from 'typedi';
 import ColumnNameRepository from '../../repositories/ColumnName';
 import MasterValueRepository from '../../repositories/MasterValue';
-import { AttributeDoc } from '../../types/attribute';
+import Attribute from '../../types/attribute';
 
 // @Service()
 export default class ColumnNameService {
@@ -13,7 +13,7 @@ export default class ColumnNameService {
     this.masterValueRepository = Container.get(MasterValueRepository);
   }
 
-  async createColumnName(columnName: AttributeDoc) {
+  async createColumnName(columnName: Attribute) {
     return this.columnNameRepository.create(columnName);
   }
 
@@ -27,11 +27,11 @@ export default class ColumnNameService {
     }
   }
 
-  async updateColumnName(id: string, columnName: Partial<AttributeDoc>) {
+  async updateColumnName(id: string, columnName: Partial<Attribute>) {
     return this.columnNameRepository.update(id, columnName);
   }
 
-  async findColumnName(columnName: FilterQuery<AttributeDoc>) {
+  async findColumnName(columnName: Partial<Attribute>) {
     return this.columnNameRepository.find(columnName);
   }
 

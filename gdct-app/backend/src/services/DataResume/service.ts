@@ -1,6 +1,6 @@
 import Container from 'typedi';
 import DataResumeRepository from '../../repositories/DataResume';
-import { DataResumeDoc } from '../../types/dataresume';
+import DataResume from '../../types/dataresume';
 
 // @Service()
 export default class DataResumeService {
@@ -10,7 +10,7 @@ export default class DataResumeService {
     this.dataResumeRepository = Container.get(DataResumeRepository);
   }
 
-  async createDataResume(dataResume: DataResumeDoc) {
+  async createDataResume(dataResume: DataResume) {
     return this.dataResumeRepository.create(dataResume);
   }
 
@@ -18,11 +18,11 @@ export default class DataResumeService {
     return this.dataResumeRepository.delete(id);
   }
 
-  async updateDataResume(dataResume: DataResumeDoc) {
-    return this.dataResumeRepository.update(dataResume._id, dataResume);
+  async updateDataResume(dataResume: Partial<DataResume>) {
+    return this.dataResumeRepository.update(dataResume._id!, dataResume);
   }
 
-  async findDataResume(dataResume: DataResumeDoc) {
-    return this.dataResumeRepository.find(dataResume.toObject());
+  async findDataResume(dataResume: Partial<DataResume>) {
+    return this.dataResumeRepository.find(dataResume);
   }
 }
