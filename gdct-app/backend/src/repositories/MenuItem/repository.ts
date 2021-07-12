@@ -20,7 +20,7 @@ export default class MenuRepository extends BaseRepository<MenuItem, MenuItemDoc
     return MenuItemModel.create(MenuItem).then(MenuItem => new MenuItemEntity(MenuItem));
   }
 
-  async update(id: string, MenuItem: MenuItemDoc) {
+  async update(id: string, MenuItem: Partial<MenuItem>) {
     return MenuItemModel.findByIdAndUpdate(id, MenuItem).then(
       (MenuItem: MenuItemDoc) => new MenuItemEntity(MenuItem),
     );

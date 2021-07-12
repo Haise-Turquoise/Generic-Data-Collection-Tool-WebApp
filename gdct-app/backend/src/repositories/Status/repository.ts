@@ -30,7 +30,7 @@ export default class StatusRepository extends BaseRepository<Status, StatusDoc> 
     return StatusModel.findById(id);
   }
 
-  async find(query: Status) {
+  async find(query: Partial<Status>) {
     const realQuery: FilterQuery<StatusDoc> = {};
     let key: keyof Status;
     for (key in query) {

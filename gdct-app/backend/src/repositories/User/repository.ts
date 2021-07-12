@@ -82,11 +82,11 @@ export default class UserRepository extends BaseRepository<User, UserDoc> {
     return UserModel.findOneAndUpdate({ _id }, { isActive: true });
   }
 
-  async update(_id: string, user: User) {
+  async update(_id: string, user: Partial<User>) {
     return UserModel.findOneAndUpdate({ _id}, { user });
   }
 
-  async modifyUserInfo(_id: string, userData: User) {
+  async modifyUserInfo(_id: string, userData: Partial<User>) {
     return UserModel.findOneAndUpdate({ _id: _id }, 
       { title: userData.title, 
         firstName: userData.firstName, 
@@ -98,19 +98,19 @@ export default class UserRepository extends BaseRepository<User, UserDoc> {
       }
     );
   }
-  async modifyUserToBeApproved(_id: string, userData: User) {
+  async modifyUserToBeApproved(_id: string, { toBeApproved }: User) {
     return UserModel.findOneAndUpdate({ _id: _id }, 
       { 
-        toBeApproved: userData.toBeApproved,
+        toBeApproved: toBeApproved,
       }
     );
   }
-  async modifyUserPendingPermissions(_id: string, userData: User) {
+  async modifyUserPendingPermissions(_id: string, { sysRole, isActive, pendingPermissions }: User) {
     return UserModel.findOneAndUpdate({ _id: _id }, 
       { 
-        sysRole:userData.sysRole,
-        isActive: userData.isActive,
-        pendingPermissions: userData.pendingPermissions,
+        sysRole: sysRole,
+        isActive: isActive,
+        pendingPermissions: pendingPermissions,
       }
     );
   }
