@@ -127,7 +127,6 @@ const SubmissionDashboard = ({ history }:{history:History}) => {
 
 
   if (submissions[0] !== undefined) {
-    console.log(submissions)
     if (localStorage.getItem('currentRole') !== 'Business Admin'){
       submissions = submissions.filter(submission=>
         programFilter.includes(String(submission.programId))

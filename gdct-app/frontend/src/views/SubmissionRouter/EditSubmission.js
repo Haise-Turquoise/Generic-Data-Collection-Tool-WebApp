@@ -43,17 +43,12 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const EditSubmission = ({ history }) => {
+  const location = useLocation();
   const dispatch = useDispatch();
-  const [submitUnavailable, setSubmitUnavailable] = useState(true);
-  const [approveUnavailable, setApproveUnavailable] = useState(true);
-  const [rejectUnavailable, setRejectUnavailable] = useState(true);
+  const [submissionId, setSubmissionId] = useState(location.state.detail._id);
+  const [reRenderFlag, setRenderFlag] = useState(true);
   const [isSubmitterOrInputter, setIsSubmitterOrInputter] = useState(false);
   const [isReviewerOrApprover, setIsReviewerOrApprover] = useState(false);
-  const [hasBeenSubmitted, setHasBeenSubmitted] = useState(false);
-  const [hasBeenApproved, setHasBeenApproved] = useState(false);
-  const [submitId, setSubmitId] = useState('');
-  const [approveId, setApproveId] = useState('');
-  const [rejectId, setRejectId] = useState('');
   const [cursor, setCursor] = useState('standard');
   const [userFeedback, setUserFeedback] = useState('');
   const [refresh, setRefresh] = useState(false);
@@ -88,7 +83,6 @@ const EditSubmission = ({ history }) => {
     dispatch(SubmissionNoteStore.actions.RECEIVE(event.target.value));
   };
 
-  const location = useLocation();
 
   const { submission, submissionNote, submissionNoteHistory } = useSelector(
     state => ({
@@ -255,11 +249,15 @@ const EditSubmission = ({ history }) => {
         });
     }
     dispatch(SubmissionNoteStore.actions.RECEIVE(''));
-    // @ts-ignore
-    dispatch(getSubmissionByIdRequest(location.state.detail._id));
-    // @ts-ignore
-    dispatch(getSubmissionNoteRequest(location.state.detail.parentId));
   }, [location, dispatch, refresh]);
+
+  useEffect(()=>{
+    dispatch(getSubmissionByIdRequest(submissionId));
+  }, [submissionId])
+
+  useEffect(()=>{
+    dispatch(getSubmissionNoteRequest(submission._id));
+  }, [submission])
 
   useEffect(() => {
     (async function () {
@@ -280,11 +278,11 @@ const EditSubmission = ({ history }) => {
               setSubmissionHasBeen(status.name);
             }
           }
-        } else {
-          const submission = await SubmissionController.fetchSubmission(location.state.detail._id);
-          const status = await statusController.fetchStatus(submission.statusId);
-          setSubmissionHasBeen(status.name);
-        }
+        }else{
+            const submission = await SubmissionController.fetchSubmission(location.state.detail._id);
+            const status = await statusController.fetchStatus(submission.statusId);
+            setSubmissionHasBeen(status.name)
+          }
         // SubmissionController.fetchSubmissionByParentId(location.state.detail._id).then(childrenSubmissions=>{
         //   console.log(childrenSubmissions)
         //   if(childrenSubmissions.length > 0){
@@ -347,20 +345,6 @@ const EditSubmission = ({ history }) => {
     setUserFeedback(feedback);
   };
 
-  const handleDownloadWorkbook = () => {
-    setUserFeedback('Downloading !');
-    setCursor('progress');
-    DOWNLOAD(convertStateToReactState(submission.workbookData), UserFeedback);
-
-    setTimeout(function () {
-      UserFeedback('Download successfully !');
-    }, 2000);
-
-    setCursor('standard');
-    setTimeout(function () {
-      setUserFeedback('');
-    }, 4000);
-  };
   // decide button display base on current role.
   const handleButtonDisplayByRole = (button, role, map) => {
     if (role.length == 0) {

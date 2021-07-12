@@ -209,7 +209,7 @@ export default class SubmissionService {
     
     const submissionNotes = {
       note: submissionNote,
-      submissionId: submission.parentId ? submission.parentId : submission._id,
+      submissionId: submission._id,
       updatedDate: new Date(),
       updatedBy,
       role,
@@ -227,26 +227,67 @@ export default class SubmissionService {
     }
     await this.submissionNoteRepository.create(submissionNotes);
 
-    return this.statusRepository.findByName(role).then(status => {
-      submission.statusId =  status[0].id;
-      submission.workflowProcessId = nextProcessId;
-      submission.updatedDate = new Date();
+    const status = await this.statusRepository.findByName(role);
 
-      if (role == 'Submitted') {
-        submission.version += 1;
-        submission.isLatest = true;
-        submission.parentId = submission.parentId ? submission.parentId : submission._id;
-        return this.submissionRepository.findAndSetFalse(submission._id).then(() => {
-          delete submission._id;
-          return this.submissionRepository.create(submission);
-        });
-      }
-      if (role === 'Approved') submission.approver = updatedBy;
+    submission.statusId = status[0].id;
+    submission.workflowProcessId = nextProcessId;
+    submission.updatedDate = new Date();
+
+    if (role == 'Submitted') {
+      submission.version += 1;
       submission.isLatest = true;
-      return this.submissionRepository.update(submission._id, submission).then(submission => {
-        if (role === 'Approved') return this.phaseSubmission(submission._id);
-      });
-    });
+      submission.parentId = submission.parentId ? submission.parentId : submission._id;
+      const oldSubmissionId = submission._id;
+      await this.submissionRepository.findAndSetFalse(submission._id);
+
+      delete submission._id;
+        const newSubmission = await this.submissionRepository.create(submission);
+
+        await this.submissionNoteRepository.updateNoteToNewSubmission(oldSubmissionId, newSubmission._id);
+        return newSubmission;
+
+      // return this.submissionRepository.findAndSetFalse(submission._id).then(async() => {
+      //   delete submission._id;
+      //   const newSubmission = await this.submissionRepository.create(submission);
+
+      //   await this.submissionNoteRepository.updateNoteToNewSubmission(oldSubmissionId, newSubmission._id);
+      //   return newSubmission;
+      // });
+    }
+
+    if (role === 'Approved') submission.approver = updatedBy;
+
+    submission.isLatest = true;
+
+    const newSubmission = this.submissionRepository.update(submission._id, submission);
+    if (role === 'Approved') this.phaseSubmission(newSubmission._id);
+
+    return newSubmission;
+
+    // return this.statusRepository.findByName(role).then(status => {
+    //   submission.statusId = status[0].id;
+    //   submission.workflowProcessId = nextProcessId;
+    //   submission.updatedDate = new Date();
+
+    //   if (role == 'Submitted') {
+    //     submission.version += 1;
+    //     submission.isLatest = true;
+    //     submission.parentId = submission.parentId ? submission.parentId : submission._id;
+    //     const oldSubmissionId = submission._id;
+    //     return this.submissionRepository.findAndSetFalse(submission._id).then(async() => {
+    //       delete submission._id;
+    //       const newSubmission = await this.submissionRepository.create(submission);
+
+    //       await this.submissionNoteRepository.updateNoteToNewSubmission(oldSubmissionId, newSubmission._id);
+    //       return newSubmission;
+    //     });
+    //   }
+    //   if (role === 'Approved') submission.approver = updatedBy;
+    //   submission.isLatest = true;
+    //   return this.submissionRepository.update(submission._id, submission).then(submission => {
+    //     if (role === 'Approved') return this.phaseSubmission(submission._id);
+    //   });
+    // });
   }
 
   async findTemplatePackage(programAndTempTypes) {

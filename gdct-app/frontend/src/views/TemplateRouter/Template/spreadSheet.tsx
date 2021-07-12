@@ -68,6 +68,7 @@ const sheetOption = {
 }
 
 // We use compoenent instead of hooks since hooks will cause undefined behavior
+
 class SpreadSheet extends Component<SpreadSheetProps>{
 
   id: ObjectId;
