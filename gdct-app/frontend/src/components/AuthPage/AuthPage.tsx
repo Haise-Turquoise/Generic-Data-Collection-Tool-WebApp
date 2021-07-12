@@ -2,7 +2,7 @@ import React, { useState, Fragment, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import clsx from 'clsx';
 
-import { makeStyles, useTheme } from '@material-ui/core/styles';
+import { makeStyles, useTheme, Theme} from '@material-ui/core/styles';
 import {
   AppBar,
   Drawer,
@@ -24,11 +24,15 @@ import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import ExpandMore from '@material-ui/icons/ExpandMore';
 import ExpandLess from '@material-ui/icons/ExpandLess';
-
+//@ts-ignore
 import createUserNavigation from './createUserNavigation';
+//@ts-ignore
 import TopItemList from './TopItemList';
 import './_chip.scss';
 import './_listitem.scss';
+import Usernavigation from '../../types/usernavigation';
+
+
 
 const drawerWidth = 240;
 const headerHeight = 55;
@@ -123,7 +127,12 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-const HeaderHandle = ({ open, classes, handleDrawerOpen, isTopMenu }) => {
+const HeaderHandle = ({ open, classes, handleDrawerOpen, isTopMenu }:{
+  open:boolean,
+  classes:any,
+  handleDrawerOpen:()=>void,
+  isTopMenu:boolean,
+}) => {
   return (
     !isTopMenu && (
       <IconButton
@@ -139,7 +148,9 @@ const HeaderHandle = ({ open, classes, handleDrawerOpen, isTopMenu }) => {
   );
 };
 
-const HeaderTitle = ({ title }) => (
+const HeaderTitle = ({ title }:{
+  title:string
+}) => (
   <Typography variant="h6" noWrap>
     {title}
   </Typography>
@@ -160,6 +171,16 @@ const Header = ({
   isTopMenu,
   setTopMenu,
   isMobile,
+}:{
+  title:string,
+  classes:any,
+  config:any,
+  open:boolean,
+  setOpen:(flag:boolean)=>void,
+  handleDrawerOpen:()=>void,
+  isTopMenu:boolean,
+  setTopMenu:(flag:boolean)=>void,
+  isMobile:boolean,
 }) => (
   <AppBar
     position="fixed"
@@ -168,6 +189,8 @@ const Header = ({
     })}
   >
     <Toolbar className={classes.flex}>
+      
+      {/*@ts-ignore*/}
       <HeaderHandle
         open={open}
         classes={classes}
@@ -210,7 +233,12 @@ const Header = ({
   </AppBar>
 );
 
-const DrawerHandle = ({ title, classes, handleDrawerClose, theme }) => (
+const DrawerHandle = ({ title, classes, handleDrawerClose, theme }:{
+  title:string,
+  classes:any,
+  handleDrawerClose:()=>void,
+  theme:Theme,
+}) => (
   <div className={classes.toolbar}>
     <Typography className={classes.toolbarTitle}>{title}</Typography>
     <div className={classes.drawerHeader}>
@@ -221,9 +249,17 @@ const DrawerHandle = ({ title, classes, handleDrawerClose, theme }) => (
   </div>
 );
 
-const MenuItemIcon = ({ icon }) => <ListItemIcon>{icon}</ListItemIcon>;
+const MenuItemIcon = ({ icon }:{
+  icon:string,
+}) => <ListItemIcon>{icon}</ListItemIcon>;
 
-const MenuItemLink = ({ name, icon, url, type, level }) => (
+const MenuItemLink = ({ name, icon, url, type, level }:{
+  name:string,
+  icon:string,
+  url:any,
+  type:string,
+  level:string|number
+}) => (
   <ListItem
     component={url && Link}
     button
@@ -249,8 +285,11 @@ const MenuItemLink = ({ name, icon, url, type, level }) => (
   </ListItem>
 );
 
-const MenuItems = ({ menuItems, level }) => {
-  return menuItems.map((menuItem, index) => {
+const MenuItems = ({ menuItems, level }:{
+  menuItems:any,
+  level:string|number,
+}) => {
+  return menuItems.map((menuItem:any, index:number) => {
     if (menuItem.type === 'drawer') {
       return (
         <MenuDrawer key={`${menuItem.type}-${menuItem.name}-${index}`} {...menuItem} level="2" />
@@ -266,19 +305,33 @@ const MenuItems = ({ menuItems, level }) => {
   });
 };
 
-const MenuItemsList = ({ menuItems, level }) => (
+const MenuItemsList = ({ menuItems, level }:{
+  menuItems:any,
+  level:string|number,
+}) => (
   <List component="div" disablePadding>
     <MenuItems menuItems={menuItems} level={level} />
   </List>
 );
 
-const MenuDrawerItems = ({ menuItems, open, level }) => (
+const MenuDrawerItems = ({ menuItems, open, level }:{
+  menuItems:any,
+  open:boolean,
+  level:string|number,
+}) => (
   <Collapse in={open} timeout="auto" unmountOnExit style={{ minHeight: '1' }}>
     <MenuItemsList menuItems={menuItems} level={level} />
   </Collapse>
 );
 
-const MenuDrawerTitle = ({ button = true, name, icon, open, handleClick, level }) => (
+const MenuDrawerTitle = ({ button = true, name, icon, open, handleClick, level }:{
+  button:true,
+  name:string,
+  icon:any,
+  open:boolean,
+  handleClick:(target:any)=>void,
+  level:string|number,
+}) => (
   <ListItem button={button} onClick={handleClick}>
     {icon && <MenuItemIcon icon={icon} />}
     {level === '2' ? (
@@ -294,22 +347,28 @@ const MenuDrawerTitle = ({ button = true, name, icon, open, handleClick, level }
   </ListItem>
 );
 
-const MenuDrawer = ({ name, icon, children, level = 1 }) => {
+const MenuDrawer = ({ name, icon, children, level = 1 }:{
+  name:string,
+  icon:any,
+  children:Object,
+  level:number|string,
+}) => {
   const [open, setOpen] = useState(false);
 
   const handleToggle = useCallback(target => setOpen(!open), [open]);
-
+  //@ts-ignore
   return (
+    //@ts-ignore
     <Fragment>
-      <MenuDrawerTitle name={name} icon={icon} handleClick={handleToggle} level={level} />
+      <MenuDrawerTitle name={name} icon={icon} handleClick={handleToggle} level={level} open={open} button={true}/>
       <MenuDrawerItems open={open} menuItems={children} level={level} />
     </Fragment>
   );
 };
 
-const NavigationContent = ({ config }) => {
+const NavigationContent = ({ config }:{config:any}) => {
   // console.log('config', config);
-  return config.map((item, index) => {
+  return config.map((item:Usernavigation, index:number) => {
     let Component;
 
     const { type, name } = item;
@@ -325,7 +384,14 @@ const NavigationContent = ({ config }) => {
   });
 };
 
-const NavigationDrawer = ({ title, open, theme, config, classes, handleDrawerClose }) => (
+const NavigationDrawer = ({ title, open, theme, config, classes, handleDrawerClose }:{
+  title:string,
+  open:boolean,
+  theme:Theme,
+  config:any,
+  classes:any,
+  handleDrawerClose:()=>void,
+}) => (
   <Drawer
     className={classes.drawer}
     variant="persistent"
@@ -351,6 +417,10 @@ const AuthPage = ({
   drawerTitle = 'MOH - OHFS Budgeting and Forecasting',
 
   children,
+}:{
+  headerTitle:string,
+  drawerTitle:string,
+  children:Object,
 }) => {
   const classes = useStyles();
   const theme = useTheme();
@@ -358,12 +428,11 @@ const AuthPage = ({
   const [open, setOpen] = useState(false);
   const [isTopMenu, setTopMenu] = useState(true);
   const [isMobile, setMobile] = useState(window.matchMedia('(max-width: 1000px)').matches);
-
   useEffect(() => {
-    const handler = e => setMobile(e.matches);
+    const handler = (e:any) => setMobile(e.matches);
     window.matchMedia('(max-width: 1000px)').addListener(handler);
     setTopMenu(!isMobile);
-    createUserNavigation().then(res => {
+    createUserNavigation().then((res:any) => {
       setConfig(res);
     });
   }, [isMobile]);
@@ -385,6 +454,7 @@ const AuthPage = ({
         config={config}
         isTopMenu={isTopMenu}
         setTopMenu={setTopMenu}
+        isMobile = {isMobile}
       />
       <NavigationDrawer
         title={drawerTitle}
