@@ -2,7 +2,7 @@ import { ObjectId } from 'mongodb';
 import { Document } from 'mongoose';
 
 export default interface WorkflowProcess {
-  _id: string;
+  _id: ObjectId;
   workflowId: ObjectId;
   statusId: ObjectId;
   to: ObjectId[];
@@ -10,5 +10,5 @@ export default interface WorkflowProcess {
 }
 
 export interface WorkflowProcessDoc extends WorkflowProcess, Document {
-  id: string;
+  _id: ObjectId;
 }

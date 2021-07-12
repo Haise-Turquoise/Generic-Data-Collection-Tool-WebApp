@@ -8,10 +8,10 @@ const TemplatePackageController = Service([TemplatePackageService], service => {
   return (() => {
     router.get('/templatePackages/fetch', (req, res, next) => {
       service
-        .findTemplatePackage(new TemplatePackage(req.body))
+        .findTemplatePackage(req.body)
         .then(templatePackages =>
           res.json(
-            templatePackages.map(templatePackage => ({
+            templatePackages.map((templatePackage: TemplatePackage) => ({
               ...templatePackage,
               templatePackageData: undefined,
             })),
@@ -21,10 +21,10 @@ const TemplatePackageController = Service([TemplatePackageService], service => {
     });
 
     router.post('/templatePackages/fetchTemplatePackage', (req, res, next) => {
-      const { _id } = req.body;
+      const { _id }: TemplatePackage = req.body;
 
       service
-        .findTemplatePackage(new TemplatePackage({ _id }))
+        .findTemplatePackage({ _id })
         .then(([templatePackage]) => res.json({ templatePackage }))
         .catch(next);
     });
@@ -59,7 +59,7 @@ const TemplatePackageController = Service([TemplatePackageService], service => {
       const { _id } = req.body;
 
       service
-        .findTemplatePackage(new TemplatePackage({ _id }), true)
+        .findTemplatePackage({ _id }, true)
         .then(([templatePackage]) => res.json( templatePackage ))
         .catch(next);
     });

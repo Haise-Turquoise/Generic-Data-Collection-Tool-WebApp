@@ -10,7 +10,7 @@ const TemplateController = Service([TemplateService], service => {
       service
         .findTemplate(new Template(req.body))
         .then(templates =>
-          res.json( templates.map(template => ({ ...template, templateData: undefined })) ),
+          res.json( templates.map((template: Template) => ({ ...template, templateData: undefined })) ),
         )
         .catch(next);
     });

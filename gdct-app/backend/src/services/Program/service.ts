@@ -30,7 +30,7 @@ export default class ProgramService {
     return this.programRepository.update(id, program);
   }
 
-  async findProgram(program: Program) {
+  async findProgram(program: Partial<Program>) {
     return this.programRepository.find(program);
   }
 

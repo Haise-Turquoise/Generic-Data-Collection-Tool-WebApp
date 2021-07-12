@@ -33,7 +33,7 @@ export default class TemplateTypeService {
     return this.templateTypeRepository.update(id, templateType);
   }
 
-  async findTemplateType(templateType: TemplateType) {
+  async findTemplateType(templateType: Partial<TemplateType>) {
     return this.templateTypeRepository.find(templateType);
   }
 

@@ -21,7 +21,7 @@ export default class UserEntity {
   public updatedBy: string;
   public newPermissionPending: boolean;
   public pendingPermissions: any[];
-  public tempSysRole: [];
+  public tempSysRole: UserDoc["sysRole"];
 
   constructor({
     _id,
