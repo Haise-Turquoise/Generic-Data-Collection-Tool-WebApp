@@ -1,4 +1,4 @@
-import React, { useMemo, useEffect, useState, ChangeEvent, MouseEvent, ChangeEvent } from 'react';
+import React, { useMemo, useEffect, useState, ChangeEvent, MouseEvent} from 'react';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 
 import MenuItem from '@material-ui/core/MenuItem';
