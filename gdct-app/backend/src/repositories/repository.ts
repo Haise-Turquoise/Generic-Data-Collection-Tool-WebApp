@@ -1,3 +1,4 @@
+// @ts-ignore
 import i18n from 'i18n';
 import { Model, Document, FilterQuery } from 'mongoose';
 import AppError from '../utils/AppError';

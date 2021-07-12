@@ -30,6 +30,7 @@ import createUserNavigation from './createUserNavigation';
 import TopItemList from './TopItemList';
 import './_chip.scss';
 import './_listitem.scss';
+//@ts-ignore
 import Usernavigation from '../../types/usernavigation';
 
 
