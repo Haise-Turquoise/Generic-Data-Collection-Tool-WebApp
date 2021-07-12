@@ -1,8 +1,9 @@
 import { Schema, model } from 'mongoose';
+import { CategoryGroupDoc as CategoryGroup, CategoryGroupDoc } from '../../types/categorygroup';
 
-const COAGroupModel = model(
+const COAGroupModel = model<CategoryGroupDoc>(
   'CategoryGroup',
-  new Schema(
+  new Schema<CategoryGroupDoc>(
     {
       name: { type: String },
       code: { type: String },

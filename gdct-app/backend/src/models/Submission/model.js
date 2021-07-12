@@ -14,6 +14,8 @@ const SubmissionModel = model(
       programId: { type: ObjectId, ref: 'Program' },
       submittedDate: { type: Date, default: Date.now },
       workbookData: { type: Object },
+      templateName: { type: String },
+      approver: {type: String},
       workflowProcessId: { type: ObjectId },
       workflowId: { type: ObjectId },
       statusId: { type: ObjectId, ref: 'Status' },

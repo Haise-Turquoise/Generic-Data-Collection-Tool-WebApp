@@ -127,6 +127,7 @@ const SubmissionDashboard = ({ history }:{history:History}) => {
 
 
   if (submissions[0] !== undefined) {
+    console.log(submissions)
     if (localStorage.getItem('currentRole') !== 'Business Admin'){
       submissions = submissions.filter(submission=>
         programFilter.includes(String(submission.programId))
@@ -172,7 +173,7 @@ const SubmissionDashboard = ({ history }:{history:History}) => {
       { title: 'Period', field: 'period', headerStyle: { padding: styleFactor }, cellStyle: { padding: styleFactor } },
       { title: 'Submission', field: 'name', headerStyle: { padding: styleFactor }, cellStyle: { padding: styleFactor } },
       { title: 'Program', field: 'programName', headerStyle: { padding: styleFactor }, cellStyle: { padding: styleFactor } },
-      { title: 'Approver', field: 'approver' },
+      { title: 'Approver', field: 'approver' , headerStyle: { padding: styleFactor }, cellStyle: { padding: styleFactor } },
       { title: 'Health Service Provider', field: 'orgId', headerStyle: { padding: styleFactor }, cellStyle: { padding: styleFactor } },
       { title: 'Template Package Name', field: 'templatePackageName', headerStyle: { padding: styleFactor }, cellStyle: { padding: styleFactor } },
       { title: 'Status', field: 'phase', headerStyle: { padding: styleFactor }, cellStyle: { padding: styleFactor } },
@@ -180,7 +181,7 @@ const SubmissionDashboard = ({ history }:{history:History}) => {
       { title: 'Modified By', field: 'updatedBy', headerStyle: { padding: styleFactor }, cellStyle: { padding: styleFactor } },
       { title: 'Modified on', field: 'updatedAt', headerStyle: { padding: styleFactor }, cellStyle: { padding: styleFactor } },
       { title: 'version', field: 'version', headerStyle: { padding: styleFactor }, cellStyle: { padding: styleFactor } },
-      { title: 'Template Name', field: 'workbookData.name', headerStyle: { padding: styleFactor }, cellStyle: { padding: styleFactor } },
+      { title: 'Template Name', field: 'templateName', headerStyle: { padding: styleFactor }, cellStyle: { padding: styleFactor } },
     ],
     [],
   );
@@ -192,7 +193,7 @@ const SubmissionDashboard = ({ history }:{history:History}) => {
         onClick: (_event:MouseEvent, submission:Submission) =>
           history.push({
             pathname: `/submission/dashboard/editSubmission/${submission._id}`,
-            state: { detail: submission, submissionList: submissions, history },
+            state: { detail: submission, submissionList: submissions},
           }),
       },
     ],
@@ -234,7 +235,6 @@ const SubmissionDashboard = ({ history }:{history:History}) => {
       (readFilterTo === 'All' || submission.period <= readFilterTo)
     )
 
-  console.log('status', statuses)
   return (
     <div className="submissions">
       <SubmissionHeader />
@@ -268,7 +268,6 @@ const SubmissionDashboard = ({ history }:{history:History}) => {
       </FormControl>
       {statuses.length > 0 ? 
         statuses.map(status => {
-          console.log('status', status)
           const data = getSubmissionsInRange(status)
           const options = calculateOptions(data.length)
           return (

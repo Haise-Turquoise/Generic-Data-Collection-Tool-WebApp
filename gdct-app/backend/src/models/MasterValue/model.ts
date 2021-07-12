@@ -1,10 +1,10 @@
 import { Schema, model } from 'mongoose';
-
+import { MasterValueDoc } from '../../types/mastervalue';
 const { ObjectId, Number } = Schema.Types;
 
-const MasterValueModel = model(
+const MasterValueModel = model<MasterValueDoc>(
   'MasterValue',
-  new Schema(
+  new Schema<MasterValueDoc>(
     {
       submission: {
         _id: { type: ObjectId, ref: 'Submission' },
@@ -23,10 +23,7 @@ const MasterValueModel = model(
         _id: { type: ObjectId, ref: 'TemplateType' },
         name: { type: String },
       },
-      template: {
-        // _id: { type: ObjectId, ref: 'Template' },
-        // name: { type: String },
-      },
+      template: { type: String },
 
       COATreeId: { type: ObjectId, ref: 'CategoryTree' },
 

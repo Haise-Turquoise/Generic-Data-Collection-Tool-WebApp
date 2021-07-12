@@ -1,10 +1,11 @@
 import { Schema, model } from 'mongoose';
+import { CategoryTreeDoc as CategoryTree } from '../../types/categorytree';
 
 const { ObjectId } = Schema.Types;
 
-const COATreeModel = model(
+const COATreeModel = model<CategoryTree>(
   'CategoryTree',
-  new Schema(
+  new Schema<CategoryTree>(
     {
       parentId: { type: ObjectId, ref: 'CategoryTree' },
       categoryGroupId: { type: ObjectId, ref: 'CategoryGroup' },

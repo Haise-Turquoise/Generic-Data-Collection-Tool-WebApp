@@ -15,6 +15,5 @@ export default interface Presubmission {
     view:boolean;
     Reporter?:boolean;
     viewCognos:boolean;
-    index?:number;
-    timestamp?:Date;
+    index?:number
 }
