@@ -15,7 +15,7 @@ const submissionController = (() => {
     update: async submission => 
       submissionAxios.put(`/updateSubmission`, { submission }),
     updateStatus: async (submission, submissionNote, role, nextProcessId, updatedBy) =>
-      submissionAxios.put(`/updateSubmissionStatus`, {submission, submissionNote, role, nextProcessId, updatedBy}),
+      submissionAxios.put(`/updateSubmissionStatus`, {submission, submissionNote, role, nextProcessId, updatedBy}).then(res=>res.data.updatedSubmission),
     fetchSubmission: async _id => 
       submissionAxios.post('/findSubmission', { _id }).then(res => res.data.submission),
     fetchSubmissionReportingPeriod: async _id =>
