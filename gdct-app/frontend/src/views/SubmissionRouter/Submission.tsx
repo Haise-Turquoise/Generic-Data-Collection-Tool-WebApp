@@ -1,20 +1,24 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, MouseEvent} from 'react';
 
 import { useDispatch, useSelector } from 'react-redux';
 
 import Snackbar from '@material-ui/core/Snackbar';
+// @ts-ignore
 import Loading from '../../components/Loading/Loading';
-
+// @ts-ignore
 import { getSubmissionRequest } from '../../store/thunks/submission';
-
+// @ts-ignore
 import CustomSnackbarContent from '../../components/CustomSnackbarContent/CustomSnackbarContent';
+// @ts-ignore
 import SubmissionSpreadSheet from './SubmissionSpreadSheet';
 
 const Submission = ({
   match: {
     params: { _id },
   },
-}) => {
+}:{match:{
+  params:{_id:string}
+}}) => {
   const dispatch = useDispatch();
   const [snackBar, setSnackBar] = useState(false);
 
@@ -23,7 +27,7 @@ const Submission = ({
     ({ SubmissionsStore: { isCallInProgress } }) => isCallInProgress,
   );
 
-  const handleSnackbarClose = (event, reason) => {
+  const handleSnackbarClose = (event:MouseEvent, reason:string) => {
     if (reason === 'clickaway') {
       return;
     }
@@ -50,6 +54,7 @@ const Submission = ({
         open={snackBar}
         autoHideDuration={6000}
         color="primary"
+        // @ts-ignore
         onClose={handleSnackbarClose}
       >
         <CustomSnackbarContent

@@ -483,6 +483,7 @@ export const changeSubmissionInModifyPermission = () => (dispatch, getState) => 
   dispatch(userRegistrationStore.actions.setAbleToComplete(true));
   const permissionList = submissionChange(userSubmissions);
   const userSubmissionsCopy = cloneDeep(userSubmissions);
+  // grey-out all selected box
   userSubmissionsCopy.forEach(userSubmission=>{
     userSubmission.approve = false;
     userSubmission.view = false;
