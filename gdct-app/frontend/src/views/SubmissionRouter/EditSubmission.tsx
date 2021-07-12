@@ -78,8 +78,8 @@ const EditSubmission = ({ history }:{history:History}) => {
   const [cursor, setCursor] = useState('standard');
   const [userFeedback, setUserFeedback] = useState('');
   const [refresh, setRefresh] = useState(false);
-  const [visitedWorkFlowProcesses, setVisitedWorkFlowProcesses] = useState([]);
-  const [buttonList, setButtonList] = useState([]);
+  const [visitedWorkFlowProcesses, setVisitedWorkFlowProcesses] = useState<VisitedNode[]>([]);
+  const [buttonList, setButtonList] = useState<VisitedNode[]>([]);
   const [currentRole, setCurrentRole] = useState([]);
   // const [downloadUnavailable, setDownloadUnavailable] = useState(true);
   const [nextStepIdMap, setNextStepIdMap] = useState({});
@@ -174,7 +174,7 @@ const EditSubmission = ({ history }:{history:History}) => {
           for (const workflowProcess of workflowProcesses) {
             promiseQuery2.push(
               statusController.fetchStatus(workflowProcess.statusId).then((status:Status) => {
-                const workflowProcessCopy = cloneDeep(workflowProcess);
+                const workflowProcessCopy = cloneDeep(workflowProcess) as VisitedNode;
                 workflowProcessCopy.statusName = status.name;
                 workflowProcessCopy.toStatusesName = [];
                 return workflowProcessCopy;
@@ -227,7 +227,7 @@ const EditSubmission = ({ history }:{history:History}) => {
         .then((workflowProcess:WorkflowProcess) => {
           if (workflowProcess !== undefined)
             workflowProcess.to.forEach((process:any) => {
-              const nextStepIdMapCopy = cloneDeep(nextStepIdMap);
+              const nextStepIdMapCopy: { [index:string]: string } = cloneDeep(nextStepIdMap);
               nextStepIdMapCopy[process.statusId.name] = process._id;
               setNextStepIdMap(nextStepIdMapCopy);
               // switch (process.statusId.name) {
