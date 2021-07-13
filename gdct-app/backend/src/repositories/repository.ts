@@ -1,3 +1,4 @@
+// @ts-ignore
 import i18n from 'i18n';
 import { ObjectId } from 'mongodb';
 import { Model, Document, FilterQuery, QueryOptions } from 'mongoose';
