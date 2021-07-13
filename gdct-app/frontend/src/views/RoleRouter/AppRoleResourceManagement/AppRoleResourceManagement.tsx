@@ -203,12 +203,11 @@ const LinkProgramTable = ({
     if (Array.isArray(rowData) || !appRoleResource) {
       return
     }
-    const appRoleResCopy: AppRoleResource = {...appRoleResource}
-    appRoleResCopy.resourceId = appRoleResCopy.resourceId.concat([{id:rowData._id, resourceName:rowData.resourceName}]);
-    AppRoleResourceController.update(appRoleResCopy).then((res: AxiosResponse) => {
-      if (res.status === 200) {
-        setAppRoleResource(appRoleResCopy)
-      }
+    setAppRoleResource(prev => {
+      const copy: AppRoleResource = {...prev!}
+      copy.resourceId = copy.resourceId.concat([{id: rowData._id, resourceName: rowData.resourceName}])
+      AppRoleResourceController.update(copy)
+      return copy
     })
     // dispatch(updateAppRoleResourceRequest(appRoleResource, null, reject));
     // // Refresh appRoleResource because dispatch makes object read-only, not allowing multiple adding.
@@ -225,6 +224,12 @@ const LinkProgramTable = ({
       if (res.status === 200) {
         setAppRoleResource(appRoleResCopy)
       }
+    })
+    setAppRoleResource(prev => {
+      const copy: AppRoleResource = {...prev!}
+      copy.resourceId = copy.resourceId.filter(elem => elem.id !== rowData._id)
+      AppRoleResourceController.update(copy)
+      return copy
     })
     // dispatch(updateAppRoleResourceRequest(appRoleResource, null, reject));
     // // Refresh appRoleResource because dispatch makes object read-only, not allowing multiple deleting.

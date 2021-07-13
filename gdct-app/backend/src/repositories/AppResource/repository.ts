@@ -10,11 +10,7 @@ export default class AppResourceRepository extends BaseRepository<AppResource, A
   }
 
   async delete(id: string) {
-    const appResource = await AppResourceModel.findById(id);
-    if (appResource) {
-      appResource.isActive = false;
-    }
-    return this.update(id, appResource);
+    return AppResourceModel.findByIdAndDelete(id)
   }
 
   async create(appResource: AppResource) {
