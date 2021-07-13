@@ -26,7 +26,6 @@ export default class BaseRepository<T, U extends T & Document> {
   }
 
   async findAll(option?: QueryOptions) {
-    // TODO test this
     return this._model.find({}, null, option).then((result: U[]) => {
       if (!result) throw new AppError(i18n.__('idDoesNotExist'));
       return result;
