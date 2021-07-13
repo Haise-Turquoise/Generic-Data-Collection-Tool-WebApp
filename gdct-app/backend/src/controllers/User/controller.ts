@@ -55,7 +55,7 @@ const UserController = Service([UserService], service => {
       const { approve, _id, hashedUsername, orgId } = req.query;
       service
         .sendActiveEmail(approve, _id, orgId)
-        .then(res.json({ message: 'You have processed the email' }))
+        .then(() => res.json({ message: 'You have processed the email' }))
         .catch(next);
     });
 
@@ -63,7 +63,7 @@ const UserController = Service([UserService], service => {
       const { approve, _id, hashedUsername, orgId } = req.query;
       service
         .sendUserPermissionActiveEmail(approve, _id, orgId)
-        .then(res.json({ message: 'You have processed the email' }))
+        .then(() => res.json({ message: 'You have processed the email' }))
         .catch(next);
     });
 
@@ -72,7 +72,7 @@ const UserController = Service([UserService], service => {
       console.log(email, permissionData)
       service
         .deleteUserPermission(email, permissionData)
-        .then(res.json({ message: 'Permission successfully deleted' }))
+        .then(() => res.json({ message: 'Permission successfully deleted' }))
         .catch(next);
     });
 
@@ -86,7 +86,7 @@ const UserController = Service([UserService], service => {
       const { _id, hashedUsername } = req.query;
       service
         .activeUser(_id)
-        .then(res.json({ message: 'You have activated the account' }))
+        .then(() => res.json({ message: 'You have activated the account' }))
         .catch(next);
     });
 

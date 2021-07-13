@@ -1,6 +1,8 @@
 import Container, { Service } from 'typedi';
 import UserRepository from '../../repositories/User';
 import AppSysRoleRepository from '../../repositories/AppSysRole';
+import User,{UserDoc} from '../../types/user';
+//@ts-ignore
 import cloneDeep from 'clone-deep';
 import {
   sendUserVerficationEmail,
@@ -9,18 +11,22 @@ import {
   sendUserActiveEmail,
   sendUserRejectEmail,
 } from '../../middlewares/mail/mail';
-
+import { ObjectId } from 'mongoose';
+import { ParsedQs } from 'qs';
+type queryParam = string | string[] | ParsedQs | ParsedQs[] | undefined
 // @Service()
 export default class UserService {
+  private UserRepository:UserRepository;
+  private AppSysRoleReposiotry:AppSysRoleRepository;
   constructor() {
     this.UserRepository = Container.get(UserRepository);
     this.AppSysRoleReposiotry = Container.get(AppSysRoleRepository);
   }
 
-  async register(registerData) {
+  async register(registerData:User) {
     // JS User object
 
-    const promiseQuery = [];
+    const promiseQuery: Promise<any>[] = [];
     registerData.sysRole.forEach(sysRole => {
       // eslint-disable-next-line default-case
       switch (sysRole.role) {
@@ -123,15 +129,16 @@ export default class UserService {
     // });
   }
 
-  login(username) {
+  login(username:string) {
+    //@ts-ignore
     this.UserRepository.findActiveUserByUsername(username);
   }
 
   logout() {}
 
-  async sendActiveEmail(approve, _id, orgId) {
+  async sendActiveEmail(approve:queryParam, _id:queryParam, orgId:queryParam) {
     let checkActive = true;
-    this.UserRepository.findById(_id).then(user => {
+    this.UserRepository.findById(_id?.toString() || '').then((user:UserDoc) => {
       if (approve == 'true') {
         user.sysRole.forEach(sysRole => {
           sysRole.org.forEach(org => {
@@ -142,7 +149,7 @@ export default class UserService {
         if (checkActive) {
           sendUserActiveEmail(user);
         }
-        this.UserRepository.updateSysRole(_id, user.sysRole).then(model => {});
+        this.UserRepository.updateSysRole(_id?.toString() || '', user.sysRole).then(model => {});
         return 'You have approved the user. The user will active the account by email.';
       }
       sendUserRejectEmail(user);
@@ -152,10 +159,10 @@ export default class UserService {
 
 
 
-  async sendUserPermissionActiveEmail(approve, _id, orgId) {
+  async sendUserPermissionActiveEmail(approve:queryParam, _id:queryParam, orgId:queryParam) {
     // need to finish the logic, replace appSys with tempAppSys, clean the tempAppSys, newTemplates. Set the newPermissionPending to false
     let checkActive = true;
-    this.UserRepository.findById(_id).then(user => {
+    this.UserRepository.findById(_id?.toString() || '').then(user => {
       if (approve == 'true') {
         // user.sysRole.forEach(sysRole => {
         //   sysRole.org.forEach(org => {
@@ -167,7 +174,7 @@ export default class UserService {
           sendUserActiveEmail(user);
         }
         
-        this.UserRepository.updateSysRoleFromTempSysRole(_id, user.tempSysRole);
+        this.UserRepository.updateSysRoleFromTempSysRole(_id?.toString() || '', user.tempSysRole);
         return 'You have approved the user. The user will active the account by email.';
       }
       sendUserRejectEmail(user);
@@ -176,50 +183,50 @@ export default class UserService {
   }
 
 
-  async activeUser(_id) {
-    this.UserRepository.findById({ _id }).then(model => {
+  async activeUser(_id:queryParam) {
+    this.UserRepository.findById(_id?.toString() || '').then(model => {
       console.log(model);
     });
-    this.UserRepository.activeUser({ _id }).then(model => {
+    this.UserRepository.activeUser(_id?.toString() || '').then(model => {
       return 'The account active';
     });
   }
 
   changePassword() {}
 
-  async findById(id) {
+  async findById(id:string) {
     return this.UserRepository.findById(id);
   }
 
-  async modifyUserInfo(_id, userData) {
+  async modifyUserInfo(_id:string, userData:User) {
     return this.UserRepository.modifyUserInfo(_id, userData);
   }
 
-  async modifyUserToBeApproved(_id, userData) {
+  async modifyUserToBeApproved(_id:string, userData:User) {
     return this.UserRepository.modifyUserToBeApproved(_id, userData);
   }
 
-  async modifyUserPendingPermissions(_id, userData) {
+  async modifyUserPendingPermissions(_id:string, userData:User) {
     return this.UserRepository.modifyUserPendingPermissions(_id, userData);
   }
 
-  async fetchUserByUserName(username) {
+  async fetchUserByUserName(username:string) {
     return this.UserRepository.findByUserName(username);
   }
 
-  async deleteUserPermission(email, permissionData) {
-    const userCopy = await this.UserRepository.findByEmail(email)
+  async deleteUserPermission(email:string, permissionData:any) {
+    const userCopy: User = await this.UserRepository.findByEmail(email)
     if (!userCopy) {
       return null
     }
     // see what data and roles are present
-    const foundRole = userCopy.sysRole
+    const foundRole= userCopy.sysRole
       .find(role => role.role === permissionData.role)
-    const foundOrg = foundRole.org
+    const foundOrg = foundRole?.org
       .find(org => org.orgId === permissionData.orgId)
-    const foundProg = foundOrg.program
+    const foundProg = foundOrg?.program
       .find(prog => prog.programCode === permissionData.programCode)
-    const foundTemplate = foundProg.template
+    const foundTemplate = foundProg?.template
       .find(template => template.templateCode === permissionData.templateCode)
 
     if (
@@ -229,7 +236,7 @@ export default class UserService {
       !foundTemplate
     ) {
       console.log('ERROR OCCURED -- mismatch data in user service')
-      return user
+      return userCopy
     }
 
     const roleIndex = userCopy.sysRole.indexOf(foundRole)
@@ -256,12 +263,12 @@ export default class UserService {
     return userCopy
   }
 
-  async updatePermissionByUserEmail(email,permissionData){
+  async updatePermissionByUserEmail(email:string,permissionData:User){
 
     
     let registerData = permissionData;
     // console.log(registerData)
-    const promiseQuery = [];
+    const promiseQuery : Promise<any>[]= [];
     registerData.sysRole.forEach(sysRole => {
  
       switch (sysRole.role) {
