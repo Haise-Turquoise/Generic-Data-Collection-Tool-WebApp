@@ -2,7 +2,7 @@ import { ObjectId } from "mongodb";
 import { UserDoc } from "../../types/user";
 
 export default class UserEntity {
-  public _id: ObjectId;
+  public _id: string;
   public username: string;
   public email: string;
   public title: string;
