@@ -233,6 +233,7 @@ const selectOrgProgram = (
           name="appSys"
           id = "*Application"
           options={appSysOptions}
+          //@ts-ignore
           onChange={handleAppSysChange}
           className="register__select"
         />
@@ -243,6 +244,7 @@ const selectOrgProgram = (
           name="organizations"
           id = "*Organization Groups"
           options={organizationGroupOptions}
+          //@ts-ignore
           onChange={handleOrgGroupChange}
           className="register__select"
         />

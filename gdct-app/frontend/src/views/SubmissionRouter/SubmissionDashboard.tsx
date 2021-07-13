@@ -1,4 +1,4 @@
-import React, { useMemo, useEffect, useState, ChangeEvent, MouseEvent} from 'react';
+import React, { useMemo, useEffect, useState, MouseEvent, ChangeEvent } from 'react';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 
 import MenuItem from '@material-ui/core/MenuItem';
@@ -127,7 +127,6 @@ const SubmissionDashboard = ({ history }:{history:History}) => {
 
 
   if (submissions[0] !== undefined) {
-    console.log(submissions)
     if (localStorage.getItem('currentRole') !== 'Business Admin'){
       submissions = submissions.filter(submission=>
         programFilter.includes(String(submission.programId))

@@ -50,7 +50,7 @@ const SubmissionController = Service([SubmissionService], service => {
 
       service
         .updateStatus(submission, submissionNote, role, nextProcessId, updatedBy)
-        .then(() => res.end())
+        .then((data) => res.json({updatedSubmission:data}))
         .catch(next);
     });
 

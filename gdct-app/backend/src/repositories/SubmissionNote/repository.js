@@ -15,4 +15,8 @@ export default class SubmissionNoteRepository extends BaseRepository {
   async findBySubmissionId(submissionId) {
     return SubmissionNoteModel.find({ submissionId });
   }
+
+  async updateNoteToNewSubmission(oldSubmissionId, newSubmissionId){
+    return SubmissionNoteModel.updateMany({submissionId:oldSubmissionId}, {$set:{submissionId:newSubmissionId}});
+  }
 }

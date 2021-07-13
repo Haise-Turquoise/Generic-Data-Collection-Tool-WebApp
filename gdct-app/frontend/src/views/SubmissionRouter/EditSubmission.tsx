@@ -63,6 +63,8 @@ const useStyles = makeStyles(theme => ({
 
 const EditSubmission = ({ history }:{history:History}) => {
   const dispatch = useDispatch();
+  const location:any = useLocation();
+  const [submissionId, setSubmissionId] = useState(location.state.detail._id);
   // const [submitUnavailable, setSubmitUnavailable] = useState(true);
   // const [approveUnavailable, setApproveUnavailable] = useState(true);
   // const [rejectUnavailable, setRejectUnavailable] = useState(true);
@@ -76,8 +78,8 @@ const EditSubmission = ({ history }:{history:History}) => {
   const [cursor, setCursor] = useState('standard');
   const [userFeedback, setUserFeedback] = useState('');
   const [refresh, setRefresh] = useState(false);
-  const [visitedWorkFlowProcesses, setVisitedWorkFlowProcesses] = useState([]);
-  const [buttonList, setButtonList] = useState([]);
+  const [visitedWorkFlowProcesses, setVisitedWorkFlowProcesses] = useState<VisitedNode[]>([]);
+  const [buttonList, setButtonList] = useState<VisitedNode[]>([]);
   const [currentRole, setCurrentRole] = useState([]);
   // const [downloadUnavailable, setDownloadUnavailable] = useState(true);
   const [nextStepIdMap, setNextStepIdMap] = useState({});
@@ -122,7 +124,6 @@ const EditSubmission = ({ history }:{history:History}) => {
       }
     }
   }
-  const location:any = useLocation();
 
   const { submission, submissionNote, submissionNoteHistory } = useSelector(
     state => ({
@@ -173,7 +174,7 @@ const EditSubmission = ({ history }:{history:History}) => {
           for (const workflowProcess of workflowProcesses) {
             promiseQuery2.push(
               statusController.fetchStatus(workflowProcess.statusId).then((status:Status) => {
-                const workflowProcessCopy = cloneDeep(workflowProcess);
+                const workflowProcessCopy = cloneDeep(workflowProcess) as VisitedNode;
                 workflowProcessCopy.statusName = status.name;
                 workflowProcessCopy.toStatusesName = [];
                 return workflowProcessCopy;
@@ -226,7 +227,7 @@ const EditSubmission = ({ history }:{history:History}) => {
         .then((workflowProcess:WorkflowProcess) => {
           if (workflowProcess !== undefined)
             workflowProcess.to.forEach((process:any) => {
-              const nextStepIdMapCopy = cloneDeep(nextStepIdMap);
+              const nextStepIdMapCopy: { [index:string]: string } = cloneDeep(nextStepIdMap);
               nextStepIdMapCopy[process.statusId.name] = process._id;
               setNextStepIdMap(nextStepIdMapCopy);
               // switch (process.statusId.name) {
@@ -250,11 +251,15 @@ const EditSubmission = ({ history }:{history:History}) => {
         });
     }
     dispatch(SubmissionNoteStore.actions.RECEIVE(''));
-    // @ts-ignore
-    dispatch(getSubmissionByIdRequest(location.state.detail._id));
-    // @ts-ignore
-    dispatch(getSubmissionNoteRequest(location.state.detail.parentId));
   }, [location, dispatch, refresh]);
+
+  useEffect(()=>{
+    dispatch(getSubmissionByIdRequest(submissionId));
+  }, [submissionId])
+
+  useEffect(()=>{
+    dispatch(getSubmissionNoteRequest(submission._id));
+  }, [submission])
 
   useEffect(() => {
     (async function () {
@@ -308,21 +313,6 @@ const EditSubmission = ({ history }:{history:History}) => {
     setUserFeedback(feedback);
   };
 
-  const handleDownloadWorkbook = () => {
-    setUserFeedback('Downloading !');
-    setCursor('progress');
-    // @ts-ignore
-    DOWNLOAD(convertStateToReactState(submission.workbookData), UserFeedback);
-
-    setTimeout(function () {
-      UserFeedback('Download successfully !');
-    }, 2000);
-
-    setCursor('standard');
-    setTimeout(function () {
-      setUserFeedback('');
-    }, 4000);
-  };
   // decide button display base on current role.
   const handleButtonDisplayByRole = (button:string, role:string[], map:{ [key: string]: string }) => {
     if (role.length == 0) {
