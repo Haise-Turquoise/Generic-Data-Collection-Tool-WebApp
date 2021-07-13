@@ -29,7 +29,7 @@ export default class MenuService {
     return this.MenuRepository.update(id, Menu);
   }
 
-  async findMenu(id: string) {
+  async findMenu(id?: string) {
     return this.MenuRepository.populate(id);
   }
 
@@ -46,8 +46,7 @@ export default class MenuService {
     if (!role) {
       throw new AppError(i18n.__('Auth.service.profile.NotAuthenticated'), 400);
     }
-    //TODO changed logic double check this
-    return this.findAllMenu().then(menus => {
+    return this.findMenu().then(menus => {
       const filteredMenus = [];
       for (const menu of menus) {
         const menuItems = menu.items;
