@@ -1,9 +1,10 @@
 import COAGroupEntity from '../../entities/COAGroup';
 import BaseRepository from '../repository';
 import COAGroupModel from '../../models/COAGroup';
-import { CategoryGroupDoc } from '../../types/categorygroup';
+import CategoryGroup, { CategoryGroupDoc } from '../../types/categorygroup';
+import { FilterQuery } from 'mongoose';
 
-export default class COAGroupRepository extends BaseRepository<CategoryGroupDoc> {
+export default class COAGroupRepository extends BaseRepository<CategoryGroup, CategoryGroupDoc> {
   constructor() {
     super(COAGroupModel);
   }
@@ -13,25 +14,23 @@ export default class COAGroupRepository extends BaseRepository<CategoryGroupDoc>
     );
   }
 
-  async create(COAGroup: CategoryGroupDoc) {
+  async create(COAGroup: CategoryGroup) {
     return COAGroupModel.create(COAGroup).then(COAGroup => new COAGroupEntity(COAGroup));
   }
 
-  async update(id: string, COAGroup: Partial<CategoryGroupDoc>) {
+  async update(id: string, COAGroup: Partial<CategoryGroup>) {
     return COAGroupModel.findByIdAndUpdate(id, COAGroup).then(
       (COAGroup: CategoryGroupDoc) => new COAGroupEntity(COAGroup),
     );
   }
 
-  async find(query: Partial<CategoryGroupDoc>) {
-    const realQuery: Partial<CategoryGroupDoc> = {};
+  async find(query: Partial<CategoryGroup>) {
+    const realQuery: FilterQuery<CategoryGroupDoc> = {};
 
-    let key: keyof CategoryGroupDoc
+    let key: keyof CategoryGroup
     for (key in query) {
       if (query[key]) realQuery[key] = query[key];
     }
-    // TODO an issue with baserepository i think
-    //@ts-ignore
     return COAGroupModel.find(realQuery).then((COAGroups: CategoryGroupDoc[]) =>
       COAGroups.map(COAGroup => new COAGroupEntity(COAGroup)),
     );

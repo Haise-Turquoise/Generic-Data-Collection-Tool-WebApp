@@ -125,7 +125,7 @@ export default class SubmissionService {
   }
 
   async uploadSubmissionWorkbook(submission, workbookData, submissionNote) {
-    const currentStatus = await this.statusRepository.findOneByID(submission.statusId);
+    const currentStatus = await this.statusRepository.findByID(submission.statusId);
     if (currentStatus.name == 'Approved' || currentStatus.name == 'Submitted') return;
     submission.workbookData = await mastervaluePrepopulation(workbookData, submission);
     submission.updatedDate = new Date();

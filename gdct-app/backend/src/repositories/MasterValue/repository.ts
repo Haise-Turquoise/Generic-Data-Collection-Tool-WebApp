@@ -1,15 +1,15 @@
 import BaseRepository from '../repository';
 import MasterValueModel from '../../models/MasterValue';
-import { MasterValueDoc } from '../../types/mastervalue';
+import MasterValue, { MasterValueDoc } from '../../types/mastervalue';
 import { ObjectID } from 'mongodb';
 
-export default class MasterValueRepository extends BaseRepository<MasterValueDoc> {
+export default class MasterValueRepository extends BaseRepository<MasterValue, MasterValueDoc> {
   constructor() {
     super(MasterValueModel);
   }
 
   // TODO test this one
-  async bulkUpdate(submission: any, masterValues: MasterValueDoc[]) {
+  async bulkUpdate(submission: any, masterValues: MasterValue[]) {
     return MasterValueModel.deleteMany({ submission }).then(() =>
       MasterValueModel.create(masterValues),
     );
@@ -44,7 +44,7 @@ export default class MasterValueRepository extends BaseRepository<MasterValueDoc
     return MasterValueModel.findOne({reportingPeriod: reportingPeriodName},{_id: 1})
   }
 
-  async addDocument(masterValue: MasterValueDoc) {
+  async addDocument(masterValue: MasterValue) {
     // console.log('masterValue at Repository', masterValue)
     const key = {
       categoryId: masterValue.categoryId,

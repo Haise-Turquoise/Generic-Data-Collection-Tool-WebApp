@@ -1,15 +1,14 @@
-import { Document, ObjectId } from 'mongoose';
+import { ObjectId } from 'mongodb';
+import { Document } from 'mongoose';
 export default interface Attribute {
-  _id: string;
+  _id: ObjectId;
   name: string;
   id: string;
   timestamp: Date;
   updatedBy: string;
 }
 
-export interface AttributeDoc extends Document {
-  name: string;
+export interface AttributeDoc extends Attribute, Document {
+  _id: ObjectId;
   id: string;
-  timestamp: Date;
-  updatedBy: string;
 }

@@ -1,10 +1,10 @@
 import COAEntity from '../../entities/COA';
 import BaseRepository from '../repository';
 import COAModel from '../../models/COA';
-import { CategoryDoc } from '../../types/category';
+import Category, { CategoryDoc } from '../../types/category';
 import { FilterQuery } from 'mongoose';
 
-export default class COARepository extends BaseRepository<CategoryDoc> {
+export default class COARepository extends BaseRepository<Category, CategoryDoc> {
   constructor() {
     super(COAModel);
   }
@@ -13,7 +13,7 @@ export default class COARepository extends BaseRepository<CategoryDoc> {
     return COAModel.findByIdAndDelete(id).then((COA: CategoryDoc) => new COAEntity(COA));
   }
 
-  async create(COA: CategoryDoc | CategoryDoc[]) {
+  async create(COA: Category | Category[]) {
     return COAModel.create(COA).then(COA => {
       if (Array.isArray(COA)) {
         // handles adding multiple COA objects
@@ -24,14 +24,13 @@ export default class COARepository extends BaseRepository<CategoryDoc> {
     });
   }
 
-  async update(id: string, COA: Partial<CategoryDoc>) {
+  async update(id: string, COA: Partial<Category>) {
     return COAModel.findByIdAndUpdate(id, COA).then((COA: CategoryDoc) => new COAEntity(COA));
   }
 
-  async find(query: Partial<CategoryDoc>) {
+  async find(query: Partial<Category>) {
     const realQuery: FilterQuery<CategoryDoc> = {};
-
-    let key: keyof CategoryDoc
+    let key: keyof Category
     for (key in query) {
       if (query[key]) realQuery[key] = query[key];
     }

@@ -1,7 +1,8 @@
+import { ObjectId } from "mongodb";
 import { CategoryGroupDoc } from "../../types/categorygroup";
 
 export default class COAGroupEntity {
-  public _id: string;
+  public _id: ObjectId;
   public name: string;
   public code: string;
   public timestamp: Date;
