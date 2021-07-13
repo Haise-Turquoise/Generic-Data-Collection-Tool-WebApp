@@ -205,7 +205,7 @@ const LinkProgramTable = ({
     }
     setAppRoleResource(prev => {
       const copy: AppRoleResource = {...prev!}
-      copy.resourceId = copy.resourceId.concat([{id:rowData._id, resourceName:rowData.resourceName}])
+      copy.resourceId = copy.resourceId.concat([{id: rowData._id, resourceName: rowData.resourceName}])
       AppRoleResourceController.update(copy)
       return copy
     })
@@ -218,6 +218,12 @@ const LinkProgramTable = ({
     if (Array.isArray(rowData) || !appRoleResource) {
       return
     }
+    setAppRoleResource(prev => {
+      const copy: AppRoleResource = {...prev!}
+      copy.resourceId = copy.resourceId.filter(elem => elem.id !== rowData._id)
+      AppRoleResourceController.update(copy)
+      return copy
+    })
     setAppRoleResource(prev => {
       const copy: AppRoleResource = {...prev!}
       copy.resourceId = copy.resourceId.filter(elem => elem.id !== rowData._id)

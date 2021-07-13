@@ -4,6 +4,12 @@ import MenuRepository from '../../repositories/Menu';
 import MenuItemRepository from '../../repositories/MenuItem';
 import AppError from '../../utils/AppError';
 import Menu from '../../types/menu';
+import { QueryOptions } from 'mongoose';
+import MenuItem from '../../types/menuitem';
+
+interface PopulatedMenu extends Omit<Menu, 'items'> {
+  items: MenuItem[];
+}
 
 export default class MenuService {
   private MenuRepository: MenuRepository;
@@ -46,20 +52,19 @@ export default class MenuService {
     if (!role) {
       throw new AppError(i18n.__('Auth.service.profile.NotAuthenticated'), 400);
     }
-    return this.findMenu().then(menus => {
+    return this.findMenu().then((menus: PopulatedMenu[]) => {
       const filteredMenus = [];
       for (const menu of menus) {
-        const menuItems = menu.items;
-        menu.items = new Set();
-        for (const menuItem of menuItems) {
+        const menuItems = new Set<MenuItem>();
+        for (const menuItem of menu.items) {
           for (const itemRole of menuItem.role) {
             const myRole = itemRole.split('-')[1].toLowerCase();
             if (role.toLowerCase() === myRole) {
-              menu.items.add(menuItem);
+              menuItems.add(menuItem);
             }
           }
         }
-        menu.items = [...menu.items];
+        menu.items = [...menuItems];
         if (menu.items.length > 0) {
           filteredMenus.push(menu);
         }
