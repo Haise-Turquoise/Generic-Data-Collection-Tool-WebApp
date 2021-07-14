@@ -1,4 +1,5 @@
 import Container from 'typedi';
+//@ts-ignore
 import cloneDeep from 'clone-deep';
 import SubmissionRepository from '../../repositories/Submission';
 import SubmissionNoteRepository from '../../repositories/SubmissionNote';
@@ -17,8 +18,28 @@ import { mastervalueExtraction } from '../../utils/mastervalue/mastervalueExtrac
 import { mastervaluePrepopulation } from '../../utils/mastervalue/mastervaluePrepopulation';
 import {ObjectId} from 'mongodb';
 
+import User ,{UserDoc} from '../../types/user'
+import Program, {ProgramDoc} from '../../types/program';
+import TemplatePackage from '../../types/templatepackage';
+import Submission from '../../types/submission';
+import Status from '../../types/status';
+import WorkflowProcess from '../../types/workflowprocess';
 // @Service()
 export default class SubmissionService {
+  private submissionRepository:SubmissionRepository;
+  private submissionNoteRepository : SubmissionNoteRepository;
+  private templateRepository : TemplateRepository;
+  private statusRepository : StatusRepository;
+  private templatePackageRepository : TemplatePackageRepository;
+  private masterValueRepository : MasterValueRepository;
+  private programRepository : ProgramRepository;
+  private orgRepository : OrgRepository;
+  private templateTypeRepository : TemplateTypeRepository;
+  private workflowProcessRepository : WorkflowProcessRepository;
+  private submissionPeriodRepository : SubmissionPeriodRepository;
+  private usersRepository : UsersRepository;
+  private reportingPeriodRepository : ReportingPeriodRepository;
+  
   constructor() {
     this.submissionRepository = Container.get(SubmissionRepository);
     this.submissionNoteRepository = Container.get(SubmissionNoteRepository);
@@ -33,7 +54,7 @@ export default class SubmissionService {
     this.submissionPeriodRepository = Container.get(SubmissionPeriodRepository);
     this.usersRepository = Container.get(UsersRepository);
     this.reportingPeriodRepository = Container.get(ReportingPeriodRepository);
-    this.submissionPeriodRepository = Container.get(SubmissionPeriodRepository);
+    // this.submissionPeriodRepository = Container.get(SubmissionPeriodRepository);
   }
 
   // checkUserRole(userInfo, submission, permission) {
@@ -56,11 +77,11 @@ export default class SubmissionService {
   //   });
   //   console.log('permission', permission)
   // }
-  checkUserRole(userInfo, submission, permission){
+  checkUserRole(userInfo:User, submission:Submission, permission:string[]){
     userInfo.sysRole.forEach(sysRole=>{
       sysRole.org.forEach(org=>{
         org.program.forEach(program=>{
-          if(org.orgId == submission.orgId && program.programId.toString() == submission.programId.toString()){
+          if(org.orgId.toString() == submission.orgId.toString() && program.programId.toString() == submission.programId.toString()){
             permission.push(sysRole.role)
           }
         })
@@ -68,25 +89,29 @@ export default class SubmissionService {
     })
   }
 
-  async findQuery(query) {
+  async findQuery(query:Partial<Submission>) {
     return await this.submissionRepository.findQuery(query)
   }
 
-  async findReportingPeriod(_id){
+  async findReportingPeriod(_id:string){
     const submission = await this.submissionRepository.findById(_id);
+    //@ts-ignore
     const submissionPeriod = await this.submissionPeriodRepository.findById(submission.submissionPeriodId);
+    //@ts-ignore
     return this.reportingPeriodRepository.findById(submissionPeriod.reportingPeriodId);
   }
 
-  async createSubmissionBaseOnTemplatePackage(submission) {
+  async createSubmissionBaseOnTemplatePackage(submission:any) {
     // Clone the tempalte's workbook data to be used by the user
-    return this.programRepository.findById(submission.programId).then(program => {
+    return this.programRepository.findById(submission.programId.toString()).then(program => {
+      //@ts-ignore
       return this.templateRepository.findById(submission.templateId).then(template => {
         return mastervaluePrepopulation(template.templateData, submission).then(workbook => {
-          return this.templateTypeRepository.findById(template.templateTypeId).then(templateType => {
+          //@ts-ignore
+          return this.templateTypeRepository.findById(template.templateTypeId).then((templateType:any) => {
             return this.workflowProcessRepository
               .find({ workflowId: templateType.submissionWorkflowId })
-              .then(workflowProcesses => {
+              .then((workflowProcesses:WorkflowProcess[]) => {
                 const nodes = new Set();
   
                 const visitedNodes = new Set();
@@ -124,7 +149,8 @@ export default class SubmissionService {
     });
   }
 
-  async uploadSubmissionWorkbook(submission, workbookData, submissionNote) {
+  async uploadSubmissionWorkbook(submission:any, workbookData:Submission['workbookData'], submissionNote:any) {
+    //@ts-ignore
     const currentStatus = await this.statusRepository.findOneByID(submission.statusId);
     if (currentStatus.name == 'Approved' || currentStatus.name == 'Submitted') return;
     submission.workbookData = await mastervaluePrepopulation(workbookData, submission);
@@ -139,40 +165,48 @@ export default class SubmissionService {
     };
 
     return this.submissionRepository.update(submission._id, submission).then(() => {
+      //@ts-ignore
       return this.submissionNoteRepository.create(submissionNotes);
     });
   }
 
-  async findSubmissionById(id) {
+  async findSubmissionById(id:string) {
     return this.submissionRepository.findById(id);
   }
-  async findSubmissionByParentId(parentId) {
+  async findSubmissionByParentId(parentId:string) {
     return this.submissionRepository.findByParentId(parentId);
   }
 
-  async findProgramById(id) {
+  async findProgramById(id:string) {
     return this.programRepository.findById(id);
   }
 
   // 
-  async phaseSubmission(id) {
+  async phaseSubmission(id:string) {
     return this.findSubmissionById(id).then(submission => {
       if (!submission) throw 'Submission id does not exist';
       return this.orgRepository.findById(submission.orgId).then(org => {
         const orgConst = { id: org.id, name: org.name };
         return this.programRepository.findById(submission.programId).then(program => {
           const programConst = { _id: program._id, name: program.name };
+          //@ts-ignore
           return this.templateRepository.findById(submission.templateId).then(template => {
             const templateConst = { _id: template._id, name: template.name };
             return this.templateTypeRepository
+            //@ts-ignore
               .findById(template.templateTypeId)
+              //@ts-ignore
               .then(templateType => {
                 const templateTypeConst = { _id: templateType._id, name: templateType.name };
                 return this.submissionPeriodRepository
+                //@ts-ignore
                 .findById(submission.submissionPeriodId)
+                //@ts-ignore
                 .then(submissionPeriod => {
                   return this.reportingPeriodRepository
+                  //@ts-ignore
                   .findById(submissionPeriod.reportingPeriodId)
+                  //@ts-ignore
                   .then(reportingPeriod => {
                     const reportingPeriodConst = { name: reportingPeriod.name };
                     mastervalueExtraction(
@@ -193,19 +227,19 @@ export default class SubmissionService {
     });
   }
 
-  async deleteSubmission(id) {
+  async deleteSubmission(id:string) {
     return this.submissionRepository.delete(id);
   }
 
-  async updateSubmission(submission) {
-    return this.submissionRepository.update(submission._id, submission).then(submission => {
+  async updateSubmission(submission:Submission) {
+    return this.submissionRepository.update(submission._id.toString(), submission).then(submission => {
       if (submission.phase === 'Approved') return this.phaseSubmission(submission._id);
     });
   }
 
 
   
-  async updateStatus(submission, submissionNote, role, nextProcessId, updatedBy) {
+  async updateStatus(submission:Submission, submissionNote:any, role:string, nextProcessId:string, updatedBy:string) {
     
     const submissionNotes = {
       note: submissionNote,
@@ -214,36 +248,41 @@ export default class SubmissionService {
       updatedBy,
       role,
     };
+    //@ts-ignore
     const currentStatus = await this.statusRepository.findById(ObjectId(submission.statusId));
     if (currentStatus.name == 'Approved') {
       submissionNotes.role = 'Approved';
+      //@ts-ignore
       return this.submissionNoteRepository.create(submissionNotes);
     }
 
 
     if (role == undefined) {
       submissionNotes.role = currentStatus.name;
+      //@ts-ignore
       return this.submissionNoteRepository.create(submissionNotes);
     }
+    //@ts-ignore
     await this.submissionNoteRepository.create(submissionNotes);
 
     const status = await this.statusRepository.findByName(role);
 
     submission.statusId = status[0].id;
-    submission.workflowProcessId = nextProcessId;
+    //@ts-ignore
+    submission.workflowProcessId = ObjectId(nextProcessId);
     submission.updatedDate = new Date();
 
     if (role == 'Submitted') {
       submission.version += 1;
       submission.isLatest = true;
       submission.parentId = submission.parentId ? submission.parentId : submission._id;
-      const oldSubmissionId = submission._id;
+      const oldSubmissionId = submission._id.toString();
       await this.submissionRepository.findAndSetFalse(submission._id);
-
+      //@ts-ignore
       delete submission._id;
         const newSubmission = await this.submissionRepository.create(submission);
 
-        await this.submissionNoteRepository.updateNoteToNewSubmission(oldSubmissionId, newSubmission._id);
+        await this.submissionNoteRepository.updateNoteToNewSubmission(oldSubmissionId, newSubmission._id.toString());
         return newSubmission;
 
       // return this.submissionRepository.findAndSetFalse(submission._id).then(async() => {
@@ -254,12 +293,13 @@ export default class SubmissionService {
       //   return newSubmission;
       // });
     }
-
+    //@ts-ignore
     if (role === 'Approved') submission.approver = updatedBy;
 
     submission.isLatest = true;
 
-    const newSubmission = this.submissionRepository.update(submission._id, submission);
+    const newSubmission = this.submissionRepository.update(submission._id.toString(), submission);
+    //@ts-ignore
     if (role === 'Approved') this.phaseSubmission(newSubmission._id);
 
     return newSubmission;
@@ -290,30 +330,31 @@ export default class SubmissionService {
     // });
   }
 
-  async findTemplatePackage(programAndTempTypes) {
-    const promiseQuery1 = [];
-    const newTemplatePackages = [];
+  async findTemplatePackage(programAndTempTypes:{program:ObjectId, templateTypes:any}[]) {
+    const promiseQuery1 :Promise<any>[]= [];
+    const newTemplatePackages:TemplatePackage[] = [];
     programAndTempTypes.forEach(element => {
       promiseQuery1.push(
-        this.templatePackageRepository.findByProgramId(element.program).then(templatePackages => {
-          const templatePackagesCopy = [];
+        this.templatePackageRepository.findByProgramId(element.program.toString()).then((templatePackages:any[]) => {
+          const templatePackagesCopy:any[] = [];
           templatePackages.forEach(templatePackage => {
             templatePackagesCopy.filter(ele => ele._id !== templatePackage._id);
             templatePackagesCopy.push(templatePackage);
           });
-          const promiseQuery3 = [];
+          const promiseQuery3 :Promise<any>[]= [];
           templatePackagesCopy.forEach(templatePackage => {
-            const promiseQuery2 = [];
+            const promiseQuery2 :Promise<any>[]= [];
             const newTempPackage = {
               ...templatePackage._doc,
               templateIds: [],
             };
-            templatePackage.templateIds.forEach(templateId => {
+            templatePackage.templateIds.forEach((templateId:string) => {
               promiseQuery2.push(
+                //@ts-ignore
                 this.templateRepository.findById(templateId).then(template => {
                   if (
                     element.templateTypes.find(
-                      templateType =>
+                      (templateType:any) =>
                         templateType.templateTypeId.toString() ===
                         template.templateTypeId.toString(),
                     ) !== undefined
@@ -339,7 +380,7 @@ export default class SubmissionService {
 
     return Promise.all(promiseQuery1).then(() => {
       
-      const uniqueNewTemplatePackages = [];
+      const uniqueNewTemplatePackages :TemplatePackage[]= [];
       newTemplatePackages.forEach(newTemplatePackage => {
        
         let duplicate = false;
@@ -358,15 +399,15 @@ export default class SubmissionService {
   }
 
   // This is specified one user can only belongs to organization
-  async findSubmission(email) {
-    const userInfo = await this.usersRepository.findByEmail(email);
+  async findSubmission(email:any) {
+    const userInfo: User = await this.usersRepository.findByEmail(email);
     
     const org = userInfo.sysRole[0].org[0];
     // Update By Sheldon Su in Jan to make it work for admins
     const orgId = org? org.orgId: undefined;
-    const programAndTempTypes = [];
-    const programIds = [];
-    const orgMapping = {};
+    const programAndTempTypes:{program:ObjectId, templateTypes:any}[] = [];
+    const programIds:String[] = [];
+    const orgMapping:{[key:string]:string[]} = {};
 
     // Generate org Mappings to find out which submissions are missing
     if (orgId){
@@ -375,46 +416,46 @@ export default class SubmissionService {
           if (!orgMapping[organization.orgId]) orgMapping[organization.orgId] = [];
           organization.program.forEach(program => {
             orgMapping[organization.orgId].push(String(program.programId));
-            if (!programIds.includes(program.programId)){
+            if (!programIds.includes(program.programId?.toString())){
               programAndTempTypes.push({ program: program.programId, templateTypes: program.template });
-              programIds.push(program.programId);
+              programIds.push(program.programId?.toString());
             }
           });
         });
       });
 
     }else{
-      const programID = await this.programRepository.find({})
-      programID.forEach(element=>{programIds.push(element._id)})
+      const programID:Program[] = await this.programRepository.find({})
+      programID.forEach(element=>{programIds.push(element._id?.toString())})
     }
     // Find template packages base on programs and template types
-    return this.findTemplatePackage(programAndTempTypes).then(templatePackages => {
+    return this.findTemplatePackage(programAndTempTypes).then((templatePackages:TemplatePackage[]) => {
       const name = 'Unsubmitted';
       const inProgressName ='in progress';
       // Filter out in progress template packages
       return this.statusRepository.findByName(name).then(status => {
         return this.statusRepository.findByName(inProgressName).then(inProgress=>{
-          const promiseQuery1 = [];
+          const promiseQuery1 :Promise<any>[]= [];
           templatePackages.forEach(templatePackage => {
             if (templatePackage.statusId.toString() !=inProgress[0]._id.toString())
             promiseQuery1.push(
               this.submissionRepository
                 .findByTemplatePackageId(templatePackage._id)
-                .then(submissions => {
+                .then((submissions:Submission[]) => {
                   
                   const newOrgMapping = JSON.parse(JSON.stringify(orgMapping));
                   submissions.forEach(submission => {
                     const orgId = submission.orgId;
                     const programId = submission.programId;
                     if(newOrgMapping[orgId]){
-                      newOrgMapping[orgId] = newOrgMapping[orgId].filter(e => 
+                      newOrgMapping[orgId] = newOrgMapping[orgId].filter((e:ObjectId) => 
                         e.toString() !== programId.toString()
                      );
-                     newOrgMapping[orgId] = newOrgMapping[orgId].map(e=>String(e))
+                     newOrgMapping[orgId] = newOrgMapping[orgId].map((e:ObjectId)=>String(e))
                     }
                   });
                   const { templateIds } = templatePackage;
-                  const promiseQuery3 = [];
+                  const promiseQuery3 :Promise<any>[]= [];
                   if (templateIds !== undefined) {
                     templateIds.forEach(templateId => {
                       if (templatePackage.programIds !== undefined) {
@@ -454,7 +495,7 @@ export default class SubmissionService {
             );
           });
           return Promise.all(promiseQuery1).then(async () => {
-            const changedSubmissions = [];
+            const changedSubmissions:Submission[] = [];
 
             // Generate all the maps
             const periodSet = new Map();
@@ -466,8 +507,8 @@ export default class SubmissionService {
             Object.keys(orgMapping).forEach(e=>{
               orgMapping[e] = orgMapping[e].map(id=>String(id));
             })
-
-            const rawSubmissionArr = await this.submissionRepository.findByOrgIdAndProgramId(Object.keys(orgMapping), programIds);
+            //@ts-ignore
+            const rawSubmissionArr: Submission[] = await this.submissionRepository.findByOrgIdAndProgramId(Object.keys(orgMapping), programIds);
 
             // if orgId is undefined, then it must be an admin, so the filter will not filter
             // the submissions
@@ -484,41 +525,48 @@ export default class SubmissionService {
               const programId = String(submission.programId);
               const templatePackageId = String(submission.templatePackageId);
               const statusId = String(submission.statusId)
-
+              //@ts-ignore
               if (!periodSet.has(submissionPeriodId)) periodSet.set(submissionPeriodId);
+              //@ts-ignore
               if (!programSet.has(programId)) programSet.set(programId);
+              //@ts-ignore
               if (!templatePkgSet.has(templatePackageId)) templatePkgSet.set(templatePackageId);
+              //@ts-ignore
               if (!statusSet.has(statusId)) statusSet.set(statusId);
             });
             
             // Retrieve related data from templatePkg repo
+            //@ts-ignore
             await this.templatePackageRepository.find({_id: {$in: [...templatePkgSet.keys()]}})
             .then(templateData=>{
-              templateData.forEach(e => {
+              templateData.forEach((e:TemplatePackage) => {
                 templatePkgSet.set(String(e._id), e);
               });
             });
 
             // Retrieve related data from submissionPeriod repo
+            //@ts-ignore
             await this.submissionPeriodRepository.find({_id: {$in: [...periodSet.keys()]}})
             .then(periodData=>{
-              periodData.forEach(e => {
+              periodData.forEach((e:any) => {
                 periodSet.set(String(e._id), e);
               });
             });
 
             // Retrieve related data from programRepository repo
+            //@ts-ignore
             await this.programRepository.find({_id: {$in: [...programSet.keys()]}})
             .then(programData=>{
-              programData.forEach(e => {
+              programData.forEach((e:Program) => {
                 programSet.set(String(e._id), e);
               });
             });
 
             // Retrieve related data from status repo
+            //@ts-ignore
             await this.statusRepository.find({_id: {$in: [...statusSet.keys()]}})
             .then(statusData=>{
-              statusData.forEach(e => {
+              statusData.forEach((e:Status) => {
                 statusSet.set(String(e._id), e);
               });
             });
@@ -530,9 +578,10 @@ export default class SubmissionService {
               const statusName = statusSet.get(String(submission.statusId)).name;
               const templateData = templatePkgSet.get(String(submission.templatePackageId));
 
-              const permission = []
+              const permission:string[] = []
               this.checkUserRole(userInfo, submission, permission);
-              const changedSubmission = {
+              const changedSubmission : Submission = {
+                //@ts-ignore
                 ...submission._doc,
                 programName: programData.name,
                 programId: programData._id,

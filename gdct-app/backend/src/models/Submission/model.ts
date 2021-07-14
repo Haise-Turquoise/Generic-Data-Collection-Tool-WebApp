@@ -1,10 +1,11 @@
 import { Schema, model } from 'mongoose';
+import { SubmissionDoc } from '../../types/submission';
 
 const { ObjectId } = Schema.Types;
 
-const SubmissionModel = model(
+const SubmissionModel = model<SubmissionDoc>(
   'Submission',
-  new Schema(
+  new Schema<SubmissionDoc>(
     {
       id: { type: Number },
       templateId: { type: ObjectId, ref: 'Template' },

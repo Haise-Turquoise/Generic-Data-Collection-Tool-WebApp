@@ -2,7 +2,7 @@ import { ObjectId } from 'mongodb';
 import { Document } from 'mongoose';
 
 export default interface Submission {
-  id: number;
+  _id: ObjectId;
   templateId: ObjectId;
   templatePackageId: ObjectId;
   name: string;
@@ -12,7 +12,7 @@ export default interface Submission {
   workbookData: any;
   templateName: string;
   approved: string;
-  workflowProcessId: ObjectId;
+  workflowProcessId: ObjectId|null;
   workflowId: ObjectId;
   statusId: ObjectId;
   year: string;
@@ -24,8 +24,9 @@ export default interface Submission {
   version: number;
   isLatest: boolean;
   parentId: ObjectId;
+  updatedDate:Date;
 }
 
 export interface SubmissionDoc extends Submission, Document {
-  id: number;
+  _id: ObjectId;
 }

@@ -11,6 +11,7 @@ import {sendPermissionChangeUserVerficationEmail,sendPermissionChangeAdminVerfic
 import User, { UserDoc } from '../../types/user';
 //@ts-ignore
 import Organization from '../../types/organization';
+import { ObjectId } from 'mongoose';
 
 export default class UserRepository extends BaseRepository<UserDoc> {
   constructor() {
@@ -108,7 +109,8 @@ export default class UserRepository extends BaseRepository<UserDoc> {
       }
     );
   }
-  async modifyUserPendingPermissions(_id: string, { sysRole, isActive, pendingPermissions }: User) {
+  async modifyUserPendingPermissions(_id: any, { sysRole, isActive, pendingPermissions }: User) {
+
     return UserModel.findOneAndUpdate({ _id: _id }, 
       { 
         sysRole: sysRole,

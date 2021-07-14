@@ -1,13 +1,15 @@
 // import bcrypt from 'bcrypt';
 import dotenv from 'dotenv';
 import { Schema, model } from 'mongoose';
+import { UserDoc } from '../../types/user';
 //@ts-ignore
 import bcrypt from 'bcrypt-nodejs';
-import { UserDoc} from '../../types/user';
+
 const { ObjectId } = Schema.Types;
+
 dotenv.config();
 
-const User = new Schema <UserDoc>(
+const User = new Schema<UserDoc>(
   {
     username: { type: String, lowercase: true, required: true },
     hashedUsername: { type: String, default: '' },
@@ -86,7 +88,7 @@ User.post('save', async function (doc, next) {
 });
 
 User.methods.setHashedPassword = function (password) {
-  this.password = bcrypt.hashSync(password, bcrypt.genSaltSync(8), null);
+  this.password = bcrypt.hashSync(password, bcrypt.genSaltSync(8));
 };
 
 User.methods.validatePassword = function (password) {

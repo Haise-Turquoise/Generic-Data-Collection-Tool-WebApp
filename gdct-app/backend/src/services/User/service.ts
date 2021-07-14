@@ -206,7 +206,7 @@ export default class UserService {
     return this.UserRepository.modifyUserToBeApproved(_id, userData);
   }
 
-  async modifyUserPendingPermissions(_id:string, userData:User) {
+  async modifyUserPendingPermissions(_id:ObjectId, userData:User) {
     return this.UserRepository.modifyUserPendingPermissions(_id, userData);
   }
 

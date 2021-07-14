@@ -1,35 +1,38 @@
 import SubmissionEntity from '../../entities/Submission/Submission';
 import BaseRepository from '../repository';
 import SubmissionModel from '../../models/Submission';
+import Submission, { SubmissionDoc } from '../../types/submission';
+import { ObjectId } from 'mongodb';
+import { FilterQuery } from 'mongoose';
 
-export default class SubmissionRepository extends BaseRepository {
+export default class SubmissionRepository extends BaseRepository<SubmissionDoc> {
   constructor() {
     super(SubmissionModel);
   }
 
-  async delete(id) {
+  async delete(id: string) {
     return SubmissionModel.findByIdAndDelete(id).then(
-      submission => new SubmissionEntity(submission.toObject()),
+      (submission: SubmissionDoc) => new SubmissionEntity(submission),
     );
   }
 
-  async create(submission) {
+  async create(submission: Submission) {
     return SubmissionModel.create(submission).then(
-      submission => new SubmissionEntity(submission.toObject()),
+      submission => new SubmissionEntity(submission),
     );
   }
 
-  async update(id, submission) {
+  async update(id: string, submission: Partial<Submission>) {
     return SubmissionModel.findByIdAndUpdate(id, submission).then(
-      submission => new SubmissionEntity(submission.toObject()),
+      (submission: SubmissionDoc) => new SubmissionEntity(submission),
     ); 
   }
 
-  async findByTemplatePackageId(templatePackageId) {
+  async findByTemplatePackageId(templatePackageId: ObjectId) {
     return SubmissionModel.find({ templatePackageId });
   }
 
-  async findByTemplatePackageIds(templatePackageIds) {
+  async findByTemplatePackageIds(templatePackageIds: ObjectId[]) {
     return SubmissionModel.find({ templatePackageId: {$in:templatePackageIds}});
   }
 
@@ -44,7 +47,7 @@ export default class SubmissionRepository extends BaseRepository {
    * @param {Array<Object>} programIds 
    * @returns An array of objects
    */
-  async fetchAllInfo(orgIds, programIds){
+  async fetchAllInfo(orgIds: number[], programIds: ObjectId[]){
     const aggratePipeLine = [
       {
         $match: { 
@@ -123,8 +126,8 @@ export default class SubmissionRepository extends BaseRepository {
     return SubmissionModel.aggregate(aggratePipeLine);
   }
 
-  async findByParentId(parentId) {
-    return SubmissionModel.find({ parentId }).then(submission=>{
+  async findByParentId(parentId: string) {
+    return SubmissionModel.find({ parentId }).then((submission: SubmissionDoc)=>{
       if(submission == undefined){return {}}
       else{
         return submission
@@ -132,7 +135,7 @@ export default class SubmissionRepository extends BaseRepository {
     });
   }
 
-  async findAndSetFalse(id) {
+  async findAndSetFalse(id: ObjectId) {
     return SubmissionModel.findOneAndUpdate({ _id: id }, { isLatest: false });
   }
 
@@ -140,22 +143,22 @@ export default class SubmissionRepository extends BaseRepository {
     return SubmissionModel.find({ isLatest: true });
   }
 
-  async findByOrgIdAndProgramId(orgIds, programIds) {
+  async findByOrgIdAndProgramId(orgIds: number[], programIds: string[]) {
     if (orgIds.length == 0) return SubmissionModel.find({ programId: { $in: programIds }, isLatest: true });
-    return SubmissionModel.find({ orgId: {$in: orgIds}, programId: { $in: programIds }, isLatest: true });
+    return SubmissionModel.find({ orgId: {$in: orgIds}, programId: { $in: programIds }, isLatest: true } as FilterQuery<SubmissionDoc>);
   }
 
   // Created on Nov 27, 2020
   // Updates submission with new workkbook
-  async updateWorkbook(_id, workbookData){
+  async updateWorkbook(_id: string, workbookData: any){
     return SubmissionModel.findByIdAndUpdate( _id, { workbookData })
   }
 
-  async findOneByTemplateIDs(templateIDs) {
+  async findOneByTemplateIDs(templateIDs: ObjectId[]) {
     return SubmissionModel.findOne({ templateId:{$in:templateIDs}}, {_id:1});
   }
 
-  async findQuery(query) {
+  async findQuery(query: Partial<Submission>) {
     return SubmissionModel.find(query)
   }
 }

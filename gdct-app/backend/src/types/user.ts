@@ -2,7 +2,7 @@ import { ObjectId } from 'mongodb';
 import { Document } from 'mongoose';
 
 export default interface User {
-  _id: string,
+  _id: ObjectId,
   username: string;
   hashedUsername: string;
   email: string;
@@ -60,5 +60,5 @@ export default interface User {
 }
 
 export interface UserDoc extends User, Document {
-  _id: string,
+  _id: ObjectId,
 }
