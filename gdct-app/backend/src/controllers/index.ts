@@ -33,7 +33,7 @@ import DataResumeController from './DataResume/controller';
 import SpreadsheetApisController from './GoogleApis';
 import TransferStatusController from './TransferStatus';
 import SessionController from '../controllers/Session/Session';
-import PackageStatusController from './PackageStatus'
+import SubmissionStatusController from './SubmissionStatus'
 
 export const routerManager = (app: Application) => {
   app.use('/', Container.get(AuthController));
@@ -85,7 +85,7 @@ export const routerManager = (app: Application) => {
   
   app.use('/transferManager', Container.get(TransferStatusController));
 
-  app.use('/report', Container.get(PackageStatusController))
+  app.use('/report', Container.get(SubmissionStatusController))
 
 };
 

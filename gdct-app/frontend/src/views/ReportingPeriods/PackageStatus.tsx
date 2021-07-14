@@ -1,9 +1,10 @@
 import React, { useMemo, useEffect, useState } from 'react';
-
 import moment from 'moment';
 
-import MaterialTable, { Column, Options } from 'material-table';
-import { Paper, Typography } from '@material-ui/core';
+import FindInPageIcon from '@material-ui/icons/FindInPage';
+import MaterialTable, { Action, Column, Options } from 'material-table';
+import { Paper, Typography, Dialog, DialogActions, DialogContent, 
+  DialogContentText, DialogTitle, Button } from '@material-ui/core';
 //@ts-ignore
 import { selectProgramsStore } from '../../store/ProgramsStore/selectors';
 import {
@@ -13,42 +14,72 @@ import {
 
 //@ts-ignore
 import ErrorBanner from '../ErrorBanner';
-import PackageStatusController from '../../controllers/PackageStatus';
-import PackageStatus from '../../types/packagestatus';
+import SubmissionStatusController from '../../controllers/PackageStatus';
+//@ts-ignore
+import SubmissionNoteController from '../../controllers/submissionNote'
+import SubmissionStatus from '../../types/packagestatus';
+import SubmissionNote from '../../types/submissionnote';
 
-const PackageStatusHeader = () => {
+const SubmissionStatusHeader = () => {
   return (
     <Paper className="header">
-      <Typography variant="h5">Package Status</Typography>
+      <Typography variant="h5">Submission Status Report</Typography>
       {/* <HeaderActions/> */}
     </Paper>
   );
 };
 
-const PackageStatusTable = () => {
+const SubmissionStatusTable = () => {
   const [readRowNum, setRowNum] = useState(1);
-  const [packageStatus, setPackageStatus] = useState<PackageStatus[] | undefined>(undefined)
+  const [submissionStatus, setSubmissionStatus] = useState<SubmissionStatus[] | undefined>(undefined)
+  const [open, setOpen] = useState(false)
+  const [detail, setDetail] = useState('')
+
+  const handleOpen = (rowData: SubmissionStatus) => {
+    if (!rowData.status || !rowData.submission || !rowData.submissionNote.submissionId) {
+      return
+    }
+    // get all submission notes
+    (async () => {
+      const noteFilter: string[] = []
+      const notes: SubmissionNote[] = await SubmissionNoteController.fetchBySubmissionId(rowData.submissionNote.submissionId)
+      notes
+        .sort((a, b) => Date.parse(a.updatedDate) - Date.parse(b.updatedDate))
+        .filter(note => !noteFilter.includes(note.role))
+      setDetail(notes.reduce((acc, curr) => {
+        const logtime = new Date(curr.updatedDate);
+        curr.updatedDate = moment(logtime).format('YYYY-MM-DD HH:mm:ss');
+        return acc.concat(`- ${curr.role} by ${curr.updatedBy} on ${curr.updatedDate}\n`)
+      }, ''))
+      setOpen(true)
+    })()
+  }
+
+  const handleClose = () => {
+    setOpen(false)
+    setDetail('Loading...')
+  }
 
   const statusLookup: {[key: string]: string} = {}
 
   useEffect(() => {
-    PackageStatusController.fetch().then((res: unknown) => {
-      (res as PackageStatus[]).forEach((pkgStat) => {
-        if (!pkgStat.subIndex) {
-          pkgStat.submission = { name: 'Not Submitted' }
-          pkgStat.status = { name: 'Not Opened' }
+    SubmissionStatusController.fetch().then((res: unknown) => {
+      (res as SubmissionStatus[]).forEach((subStat) => {
+        if (!subStat.subIndex) {
+          subStat.submission = { name: 'Not Submitted' }
+          subStat.status = { name: 'Not Opened' }
         }
-        if (!statusLookup[pkgStat.status!.name]) {
-          statusLookup[pkgStat.status!.name] = pkgStat.status!.name
+        if (!statusLookup[subStat.status!.name]) {
+          statusLookup[subStat.status!.name] = subStat.status!.name
         }
       })
-      setPackageStatus(res as PackageStatus[])
+      setSubmissionStatus(res as SubmissionStatus[])
     })
   }, [])
 
   // table vars for loading
-  const preColumns: Column<PackageStatus>[] = [{ title: 'Name', field: 'name', filtering: false }];
-  const prePackageStatus: PackageStatus[] = [
+  const preColumns: Column<SubmissionStatus>[] = [{ title: 'Name', field: 'name', filtering: false }];
+  const prePackageStatus: SubmissionStatus[] = [
     {
       name: 'LOADING... ',
       _id: '',
@@ -62,6 +93,7 @@ const PackageStatusTable = () => {
       },
       subIndex: null,
       submissionNote: {
+        submissionId: '',
         updatedBy: '',
         updatedDate: '',
       },
@@ -78,16 +110,16 @@ const PackageStatusTable = () => {
   ];
 
   // Convert Date format
-  packageStatus?.forEach((pkgStatus: PackageStatus)  => {
-    if (pkgStatus.submissionNote.updatedDate === "") {
+  submissionStatus?.forEach((subStatus: SubmissionStatus)  => {
+    if (subStatus.submissionNote.updatedDate === "") {
       return
     }
-    const logtime = new Date(pkgStatus.submissionNote.updatedDate);
-    pkgStatus.submissionNote.updatedDate = moment(logtime).format('YYYY-MM-DD HH:mm:ss');
+    const logtime = new Date(subStatus.submissionNote.updatedDate);
+    subStatus.submissionNote.updatedDate = moment(logtime).format('YYYY-MM-DD HH:mm:ss');
   });
 
   // Prepare the columns for material table
-  const columns: Column<PackageStatus>[] = useMemo(
+  const columns: Column<SubmissionStatus>[] = useMemo(
     () => [
       { title: 'Package', field: 'name' },
       { title: 'Template', field: 'template.name' },
@@ -102,32 +134,68 @@ const PackageStatusTable = () => {
     [],
   );
 
-  const options: Options<PackageStatus> = useMemo(() => ({...calculateOptions(readRowNum), filtering: true}), [readRowNum]);
+  const options: Options<SubmissionStatus> = useMemo(() => ({...calculateOptions(readRowNum), filtering: true}), [readRowNum]);
+
+  const actions: ((rowData: SubmissionStatus) => Action<SubmissionStatus>)[] = [
+    (actionRowData: SubmissionStatus) => ({
+      icon: () => <FindInPageIcon />, 
+      tooltip: "Detail Information",
+      onClick: (_: any, rowData: SubmissionStatus | SubmissionStatus[]) => {
+        if (!Array.isArray(rowData)) {
+          handleOpen(rowData);
+        }
+      },
+      hidden: !actionRowData.status || actionRowData.status.name === 'Not Opened'
+    })
+  ]
 
   useEffect(()=>{
-    setRowNum(packageStatus?.length || 1)
-  }, [packageStatus])
+    setRowNum(submissionStatus?.length || 1)
+  }, [submissionStatus])
 
   return (
-    <MaterialTable
-      key={readRowNum}
-      columns={!!packageStatus ? columns : preColumns}
-      data={!!packageStatus ? packageStatus : prePackageStatus}
-      options={options}
-    />
+    <div>
+      <MaterialTable
+        key={readRowNum}
+        columns={!!submissionStatus ? columns : preColumns}
+        data={!!submissionStatus ? submissionStatus : prePackageStatus}
+        actions={!!submissionStatus ? actions : undefined}
+        options={options}
+      />
+      <Dialog
+        open={open}
+        onClose={() => setOpen(false)}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+        fullWidth
+        maxWidth={"md"}
+      >
+        <DialogTitle id="alert-dialog-title">{"Detailed Submission Information:"}</DialogTitle>
+        <DialogContent>
+          <DialogContentText style={{whiteSpace: 'pre-wrap'}}> 
+            {detail}
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose} color="primary">
+            OK
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </div>
   );
 };
 
 // any type since no props used in table
-const PackageStatuses = (props: any) => (
+const SubmissionStatuses = (props: any) => (
   <div className="programsPage">
-    <PackageStatusHeader />
+    <SubmissionStatusHeader />
     <ErrorBanner
       title={'Cannot delete the selected program since it is referenced in the master value table'}
       targetStore={selectProgramsStore}
     />
-    <PackageStatusTable {...props} />
+    <SubmissionStatusTable {...props} />
   </div>
 );
 
-export default PackageStatuses;
+export default SubmissionStatuses;
