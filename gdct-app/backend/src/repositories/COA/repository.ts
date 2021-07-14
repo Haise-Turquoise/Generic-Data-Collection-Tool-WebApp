@@ -17,7 +17,6 @@ export default class COARepository extends BaseRepository<Category, CategoryDoc>
     return COAModel.create(COA).then(COA => {
       if (Array.isArray(COA)) {
         // handles adding multiple COA objects
-        //TODO TEST THIS PLES JULIEN
         return COA.map(category => new COAEntity(category))
       }
       return new COAEntity(COA)
@@ -37,25 +36,12 @@ export default class COARepository extends BaseRepository<Category, CategoryDoc>
 
     return COAModel.find({}).then((COAs: CategoryDoc[]) => COAs.map(COA => new COAEntity(COA)));
   }
-  
-  // Last Updated: Nov 27, 2020
-  // Used to find COAs through their ID
-  // TODO ask about what this should be
-  async findByIDNumber(query: any){
-    return COAModel.find(query);
-  }
-
-  // TODO same with this
-  async findAllCoaId(query: any) {
-    return COAModel.find({}).then((COAs: CategoryDoc[]) => COAs.map(COA => parseInt(COA.id)));
-  }
 
   async batchFind(categoryIds: string[], option={ name: 0, _id: 0, COA: 0, __v: 0, unitOfMeassure: 0}) {
     return COAModel.find({ id: { $in : categoryIds }}, option);
   }
 
-  // TODO this one too
-  async batchFindFull(query: any[]){
+  async batchFindFull(query: string[]){
     return COAModel.find({ id: { $in : query }});
   }
 
