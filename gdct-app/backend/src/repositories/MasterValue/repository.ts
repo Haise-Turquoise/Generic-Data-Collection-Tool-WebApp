@@ -8,8 +8,7 @@ export default class MasterValueRepository extends BaseRepository<MasterValue, M
     super(MasterValueModel);
   }
 
-  // TODO test this one
-  async bulkUpdate(submission: any, masterValues: MasterValue[]) {
+  async bulkUpdate(submission: string, masterValues: MasterValue[]) {
     return MasterValueModel.deleteMany({ submission }).then(() =>
       MasterValueModel.create(masterValues),
     );

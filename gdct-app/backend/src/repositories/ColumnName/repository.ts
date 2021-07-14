@@ -47,7 +47,6 @@ export default class ColumnNameRepository extends BaseRepository<Attribute, Attr
     return ColumnNameModel.find({ id: { $in : attributeIds }}, option).then((values: unknown) => {return values});
   }
 
-  // TODO test this
   async findAll(option?: QueryOptions) {
     return ColumnNameModel.find({}, option);
   }

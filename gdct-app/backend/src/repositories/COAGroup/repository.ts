@@ -3,6 +3,7 @@ import BaseRepository from '../repository';
 import COAGroupModel from '../../models/COAGroup';
 import CategoryGroup, { CategoryGroupDoc } from '../../types/categorygroup';
 import { FilterQuery } from 'mongoose';
+import { ObjectId } from 'mongodb';
 
 export default class COAGroupRepository extends BaseRepository<CategoryGroup, CategoryGroupDoc> {
   constructor() {
@@ -36,8 +37,7 @@ export default class COAGroupRepository extends BaseRepository<CategoryGroup, Ca
     );
   }
 
-  // TODO ask about this one
-  async batchFind(query: any){
+  async batchFind(query: ObjectId[]){
     return COAGroupModel.find({ _id: { "$in" : query }})
 
   }
