@@ -6,8 +6,6 @@ import moment from 'moment';
 
 import ModifyOrganization from '../ModifyOrganization';
 //@ts-ignore
-import OrgEntity from '../../../../../backend/src/entities/Organization/entity';
-//@ts-ignore
 import { createOrgsRequest } from '../../../store/thunks/organization';
 //@ts-ignore
 import CreateAuditLog from '../../AuditLog_Global';
@@ -17,13 +15,12 @@ const CreateOrganization = () => {
   const history = useHistory();
   const dispatch = useDispatch();
 
-  // @ts-ignore
-  const initialState = new OrgEntity({
+  const initialState: Partial<Organization> = {
     active: true,
     programId: [],
     effectiveDate: moment().format(),
     expiryDate: null,
-  });
+  }
 
   // After successfully create the organization, the new info will be store to the database and push back to the main
   // page of organization with new data showing on page.

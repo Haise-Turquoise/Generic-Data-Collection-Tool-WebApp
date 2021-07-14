@@ -11,19 +11,24 @@ import {
   sendUserActiveEmail,
   sendUserRejectEmail,
 } from '../../middlewares/mail/mail';
-import { ObjectId } from 'mongoose';
+import { AppSysRoleDoc } from '../../types/appsysrole';
 import { ParsedQs } from 'qs';
+import { Request } from 'express';
+import { ObjectId } from 'mongodb';
+
 type queryParam = string | string[] | ParsedQs | ParsedQs[] | undefined
+
 // @Service()
 export default class UserService {
-  private UserRepository:UserRepository;
-  private AppSysRoleReposiotry:AppSysRoleRepository;
+  private UserRepository: UserRepository
+  private AppSysRoleRepository: AppSysRoleRepository
+
   constructor() {
     this.UserRepository = Container.get(UserRepository);
-    this.AppSysRoleReposiotry = Container.get(AppSysRoleRepository);
+    this.AppSysRoleRepository = Container.get(AppSysRoleRepository);
   }
 
-  async register(registerData:User) {
+  async register(registerData: User) {
     // JS User object
 
     const promiseQuery: Promise<any>[] = [];
@@ -58,8 +63,8 @@ export default class UserService {
           break;
       }
       promiseQuery.push(
-        this.AppSysRoleReposiotry.findAndCreateAppSysRole(sysRole.appSys, sysRole.role).then(
-          appSysRole => {
+        this.AppSysRoleRepository.findAndCreateAppSysRole(sysRole.appSys, sysRole.role).then(
+          (appSysRole: AppSysRoleDoc) => {
             sysRole.appSysRoleId = appSysRole._id;
             sysRole._id = appSysRole._id;
           },
@@ -73,7 +78,7 @@ export default class UserService {
 
     const newTemplates = registerData.newTemplates;
     for (const template of newTemplates) {
-      const appSysRole = await this.AppSysRoleReposiotry.findAndCreateAppSysRole(template.appSys, template.permission)
+      const appSysRole = await this.AppSysRoleRepository.findAndCreateAppSysRole(template.appSys, template.permission)
       template.appSysRoleId = appSysRole._id;
       const orgApproverName = template.organization.authorizedPerson.name;
       const orgApprover = await this.fetchUserByUserName(orgApproverName);
@@ -129,18 +134,11 @@ export default class UserService {
     // });
   }
 
-  login(username:string) {
-    //@ts-ignore
-    this.UserRepository.findActiveUserByUsername(username);
-  }
-
-  logout() {}
-
-  async sendActiveEmail(approve:queryParam, _id:queryParam, orgId:queryParam) {
+  async sendActiveEmail(approve: queryParam, _id: queryParam, orgId: queryParam) {
     let checkActive = true;
-    this.UserRepository.findById(_id?.toString() || '').then((user:UserDoc) => {
+    this.UserRepository.findById(_id?.toString() || '').then(user => {
       if (approve == 'true') {
-        user.sysRole.forEach(sysRole => {
+        user.sysRole.forEach((sysRole: User["sysRole"][0]) => {
           sysRole.org.forEach(org => {
             if (org.orgId == orgId) org.IsActive = true;
             checkActive = checkActive && org.IsActive;
@@ -159,7 +157,7 @@ export default class UserService {
 
 
 
-  async sendUserPermissionActiveEmail(approve:queryParam, _id:queryParam, orgId:queryParam) {
+  async sendUserPermissionActiveEmail(approve: queryParam, _id: queryParam, orgId: queryParam) {
     // need to finish the logic, replace appSys with tempAppSys, clean the tempAppSys, newTemplates. Set the newPermissionPending to false
     let checkActive = true;
     this.UserRepository.findById(_id?.toString() || '').then(user => {
@@ -182,8 +180,8 @@ export default class UserService {
     });
   }
 
-
-  async activeUser(_id:queryParam) {
+  //TODO test this too
+  async activeUser(_id: queryParam) {
     this.UserRepository.findById(_id?.toString() || '').then(model => {
       console.log(model);
     });
@@ -194,27 +192,29 @@ export default class UserService {
 
   changePassword() {}
 
-  async findById(id:string) {
+  async findById(id: string) {
     return this.UserRepository.findById(id);
   }
 
-  async modifyUserInfo(_id:string, userData:User) {
+  async modifyUserInfo(_id: string, userData: User) {
     return this.UserRepository.modifyUserInfo(_id, userData);
   }
 
-  async modifyUserToBeApproved(_id:string, userData:User) {
+  async modifyUserToBeApproved(_id: string, userData: User) {
     return this.UserRepository.modifyUserToBeApproved(_id, userData);
   }
 
-  async modifyUserPendingPermissions(_id:ObjectId, userData:User) {
+  async modifyUserPendingPermissions(_id: ObjectId, userData: User) {
     return this.UserRepository.modifyUserPendingPermissions(_id, userData);
   }
 
-  async fetchUserByUserName(username:string) {
+  async fetchUserByUserName(username: string) {
     return this.UserRepository.findByUserName(username);
   }
 
-  async deleteUserPermission(email:string, permissionData:any) {
+  //TODO not sure what permissionData is here
+  async deleteUserPermission(email: string, permissionData: any) {
+    console.log(permissionData)
     const userCopy: User = await this.UserRepository.findByEmail(email)
     if (!userCopy) {
       return null
@@ -263,13 +263,12 @@ export default class UserService {
     return userCopy
   }
 
-  async updatePermissionByUserEmail(email:string,permissionData:User){
-
+  async updatePermissionByUserEmail(email: string,permissionData: User){
     
     let registerData = permissionData;
     // console.log(registerData)
-    const promiseQuery : Promise<any>[]= [];
-    registerData.sysRole.forEach(sysRole => {
+    const promiseQuery: Promise<any>[] = [];
+    registerData.sysRole.forEach((sysRole) => {
  
       switch (sysRole.role) {
         case 'approve': {
@@ -300,7 +299,7 @@ export default class UserService {
           break;
       }
       promiseQuery.push(
-        this.AppSysRoleReposiotry.findAndCreateAppSysRole(sysRole.appSys, sysRole.role).then(
+        this.AppSysRoleRepository.findAndCreateAppSysRole(sysRole.appSys, sysRole.role).then(
           appSysRole => {
             sysRole.appSysRoleId = appSysRole._id;
             sysRole._id = appSysRole._id;
@@ -309,10 +308,9 @@ export default class UserService {
       );
     });
     await Promise.all(promiseQuery);
-    const orgList = [];
     const newTemplates = permissionData.newTemplates;
     for (const template of newTemplates) {
-      const appSysRole = await this.AppSysRoleReposiotry.findAndCreateAppSysRole(template.appSys, template.permission)
+      const appSysRole = await this.AppSysRoleRepository.findAndCreateAppSysRole(template.appSys, template.permission)
       template.appSysRoleId = appSysRole._id;
       const orgApproverName = template.organization.authorizedPerson.name;
       const orgApprover = await this.fetchUserByUserName(orgApproverName);

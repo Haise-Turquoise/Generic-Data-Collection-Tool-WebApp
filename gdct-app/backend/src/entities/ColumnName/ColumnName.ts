@@ -1,7 +1,8 @@
+import { ObjectId } from "mongodb";
 import { AttributeDoc } from "../../types/attribute";
 
 export default class ColumnName {
-  public _id: string;
+  public _id: ObjectId;
   public id: string;
   public name: string;
   public timestamp: Date;

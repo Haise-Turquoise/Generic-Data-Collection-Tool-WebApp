@@ -1,7 +1,7 @@
 import Container from 'typedi';
 import COAGroupRepository from '../../repositories/COAGroup';
 import COATreeRepository from '../../repositories/COATree';
-import { CategoryGroupDoc } from '../../types/categorygroup';
+import CategoryGroup from '../../types/categorygroup';
 
 // @Service()
 export default class COAGroupService {
@@ -12,7 +12,7 @@ export default class COAGroupService {
     this.COATreeRepository = Container.get(COATreeRepository)
   }
 
-  async createCOAGroup(COAGroup: CategoryGroupDoc) {
+  async createCOAGroup(COAGroup: CategoryGroup) {
     return this.COAGroupRepository.create(COAGroup);
   }
 
@@ -22,11 +22,11 @@ export default class COAGroupService {
     return this.COAGroupRepository.delete(id);
   }
 
-  async updateCOAGroup(id: string, COAGroup: Partial<CategoryGroupDoc>) {
+  async updateCOAGroup(id: string, COAGroup: Partial<CategoryGroup>) {
     return this.COAGroupRepository.update(id, COAGroup);
   }
 
-  async findCOAGroup(COAGroup: Partial<CategoryGroupDoc>) {
+  async findCOAGroup(COAGroup: Partial<CategoryGroup>) {
     return this.COAGroupRepository.find(COAGroup);
   }
 

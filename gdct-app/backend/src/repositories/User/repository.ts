@@ -13,7 +13,7 @@ import User, { UserDoc } from '../../types/user';
 import Organization from '../../types/organization';
 import { ObjectId } from 'mongoose';
 
-export default class UserRepository extends BaseRepository<UserDoc> {
+export default class UserRepository extends BaseRepository<User, UserDoc> {
   constructor() {
     super(UserModel);
   }
@@ -26,7 +26,7 @@ export default class UserRepository extends BaseRepository<UserDoc> {
   async checkAuthenticate(email: string, password: string) {
     return UserModel.findOne({ email })
       .select('+password')
-      // TODO test this.. likely should be user.validatePassword and user should be schema
+      // TODO test this
       .then(async (user: any) => {
         if (!user || !(await user.checkPassword(password, user.password))) {
           throw new AppError(i18n.__('User.Repository.checkAuthenticate.WrongInput'), 400);
@@ -141,12 +141,3 @@ export default class UserRepository extends BaseRepository<UserDoc> {
     })
   }
 }
-
-
-
-
-
-
-      
-
-

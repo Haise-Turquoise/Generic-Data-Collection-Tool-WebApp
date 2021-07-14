@@ -12,13 +12,13 @@ export default interface User {
   lastName: string;
   newPermissionPending: boolean;
   tempSysRole: User["sysRole"];
-  newTemplates: any;
+  newTemplates: any[];
   toBeApproved: any[];
   phoneNumber: string;
   pendingPermissions: any[];
   password: string;
   sysRole: {
-    _id:ObjectId;
+    _id: ObjectId;
     appSys: string;
     role: string;
     appSysRoleId: ObjectId;

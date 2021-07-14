@@ -1,6 +1,7 @@
+import { ObjectId } from 'mongodb';
 import { Document } from 'mongoose';
 export default interface CategoryGroup {
-  _id: string;
+  _id: ObjectId;
   name: string;
   code: string;
   timestamp: Date;
@@ -8,10 +9,6 @@ export default interface CategoryGroup {
   isActive: boolean;
 }
 
-export interface CategoryGroupDoc extends Document {
-  name: string;
-  code: string;
-  timestamp: Date;
-  updatedBy: string;
-  isActive: boolean;
+export interface CategoryGroupDoc extends CategoryGroup, Document {
+  _id: ObjectId
 }

@@ -5,7 +5,7 @@ import Submission, { SubmissionDoc } from '../../types/submission';
 import { ObjectId } from 'mongodb';
 import { FilterQuery } from 'mongoose';
 
-export default class SubmissionRepository extends BaseRepository<SubmissionDoc> {
+export default class SubmissionRepository extends BaseRepository<Submission, SubmissionDoc> {
   constructor() {
     super(SubmissionModel);
   }

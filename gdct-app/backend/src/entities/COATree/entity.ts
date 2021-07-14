@@ -1,8 +1,8 @@
-import { ObjectId } from "mongoose";
+import { ObjectId } from "mongodb";
 import { CategoryTreeDoc } from "../../types/categorytree";
 
 export default class COATreeEntity {
-  public _id: string;
+  public _id: ObjectId;
   public parentId: ObjectId;
   public categoryGroupId: ObjectId;
   public categoryId: ObjectId[];
