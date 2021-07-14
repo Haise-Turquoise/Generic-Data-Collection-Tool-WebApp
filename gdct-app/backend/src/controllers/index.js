@@ -32,6 +32,7 @@ import DataResumeController from './DataResume/controller';
 import SpreadsheetApisController from './GoogleApis';
 import TransferStatusController from './TransferStatus';
 import SessionController from '../controllers/Session/Session';
+import RoleWorkflowStatusController from '../controllers/RoleWorkflowStatus'
 
 export const routerManager = app => {
   app.use('/', Container.get(AuthController));
@@ -82,6 +83,10 @@ export const routerManager = app => {
   // Use to handle transfer control
   
   app.use('/transferManager', Container.get(TransferStatusController));
+
+  // Created by Sheldon on 2021/07/13
+  // Use to handle roleWorkflowStatus
+  app.use('/roleWorkflowStatus', Container.get(RoleWorkflowStatusController));
 
 };
 

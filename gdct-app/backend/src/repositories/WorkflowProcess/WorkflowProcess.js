@@ -63,6 +63,17 @@ export default class WorkflowProcessRepository extends BaseRepository {
       workflowProcesses.map(workflowProcess => new WorkflowProcessEntity(workflowProcess.toObject())),
     );
   }
+
+  async findProcessesByWorkflowIds(workflowIds){
+    return WorkflowProcessModel.find({workflowId:{$in:workflowIds}})
+    .populate('statusId')
+    .then(workflowProcesses=> 
+      workflowProcesses.map(workflowProcess => 
+        new WorkflowProcessEntity(workflowProcess.toObject())
+      )
+    );
+  }
+
   async find(query) {
     const realQuery = {};
 
