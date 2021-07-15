@@ -28,6 +28,11 @@ const workflowController = (() => {
         .then(res => res.data.data),
     fetchProcessesByIds: async ids =>
       workflowAxios.post('/fetchProcessByIds', { ids }).then(res => res.data.data),
+
+    fetchProcessesByWorkflowIds: async workflowIds =>
+    workflowAxios
+      .post('/fetchWorkflowProcessesByWorkflowIds', { workflowIds })
+      .then(res => res.data.data),
   };
 })();
 

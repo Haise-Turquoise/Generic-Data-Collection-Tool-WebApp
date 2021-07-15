@@ -25,3 +25,4 @@ export default function Logout({ setLoggedIn }) {
   dispatch(UserStore.actions.LOGOUT(false));
   return null;
 }
+

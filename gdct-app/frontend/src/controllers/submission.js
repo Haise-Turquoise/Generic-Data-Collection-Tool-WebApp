@@ -16,14 +16,8 @@ const submissionController = (() => {
         .then(res => res.data.submission),
     update: async submission => submissionAxios.put(`/updateSubmission`, { submission }),
     updateStatus: async (submission, submissionNote, role, nextProcessId, updatedBy) =>
-      submissionAxios.put(`/updateSubmissionStatus`, {
-        submission,
-        submissionNote,
-        role,
-        nextProcessId,
-        updatedBy,
-      }),
-    fetchSubmission: async _id =>
+      submissionAxios.put(`/updateSubmissionStatus`, {submission, submissionNote, role, nextProcessId, updatedBy}).then(res=>res.data.updatedSubmission),
+    fetchSubmission: async _id => 
       submissionAxios.post('/findSubmission', { _id }).then(res => res.data.submission),
     fetchSubmissionReportingPeriod: async _id =>
       submissionAxios.post('/findReportingPeriod', { _id }).then(res => res.data.reportingPeriod),
@@ -31,7 +25,7 @@ const submissionController = (() => {
       submissionAxios
         .post('/findSubmissionByParentId', { parentId })
         .then(res => res.data.submission),
-    fetch: async query => submissionAxios.get('').then(res => res.data.submissions),
+    fetch: async query => submissionAxios.post('/findQuery', { query }).then(res => res.data.submissions),
     delete: async _id => submissionAxios.post('/delete', { _id }),
   };
 })();

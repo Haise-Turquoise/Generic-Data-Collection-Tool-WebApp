@@ -68,6 +68,10 @@ export default class SubmissionService {
     })
   }
 
+  async findQuery(query) {
+    return await this.submissionRepository.findQuery(query)
+  }
+
   async findReportingPeriod(_id){
     const submission = await this.submissionRepository.findById(_id);
     const submissionPeriod = await this.submissionPeriodRepository.findById(submission.submissionPeriodId);
@@ -109,7 +113,7 @@ export default class SubmissionService {
                   .concat('_', program.name, '_', template.name);
                 submission.workflowProcessId = initialNode;
                 submission.workbookData = template.templateData;
-
+                submission.templateName = template.name;
                 submission.workflowId = templateType.submissionWorkflowId;
                 
                 return this.submissionRepository.create(submission);
@@ -121,7 +125,7 @@ export default class SubmissionService {
   }
 
   async uploadSubmissionWorkbook(submission, workbookData, submissionNote) {
-    const currentStatus = await this.statusRepository.findOneByID(submission.statusId);
+    const currentStatus = await this.statusRepository.findByID(submission.statusId);
     if (currentStatus.name == 'Approved' || currentStatus.name == 'Submitted') return;
     submission.workbookData = await mastervaluePrepopulation(workbookData, submission);
     submission.updatedDate = new Date();
@@ -201,16 +205,15 @@ export default class SubmissionService {
 
 
   
-  async updateStatus(submission, submissionNote, role, nextProcessId,updatedBy) {
+  async updateStatus(submission, submissionNote, role, nextProcessId, updatedBy) {
     
     const submissionNotes = {
       note: submissionNote,
-      submissionId: submission.parentId ? submission.parentId : submission._id,
+      submissionId: submission._id,
       updatedDate: new Date(),
       updatedBy,
       role,
     };
-
     const currentStatus = await this.statusRepository.findById(ObjectId(submission.statusId));
     if (currentStatus.name == 'Approved') {
       submissionNotes.role = 'Approved';
@@ -223,25 +226,68 @@ export default class SubmissionService {
       return this.submissionNoteRepository.create(submissionNotes);
     }
     await this.submissionNoteRepository.create(submissionNotes);
-    return this.statusRepository.findByName(role).then(status => {
-      submission.statusId =  status[0].id;
-      submission.workflowProcessId = nextProcessId;
-      submission.updatedDate = new Date();
 
-      if (role == 'Submitted') {
-        submission.version += 1;
-        submission.isLatest = true;
-        submission.parentId = submission.parentId ? submission.parentId : submission._id;
-        return this.submissionRepository.findAndSetFalse(submission._id).then(() => {
-          delete submission._id;
-          return this.submissionRepository.create(submission);
-        });
-      }
+    const status = await this.statusRepository.findByName(role);
+
+    submission.statusId = status[0].id;
+    submission.workflowProcessId = nextProcessId;
+    submission.updatedDate = new Date();
+
+    if (role == 'Submitted') {
+      submission.version += 1;
       submission.isLatest = true;
-      return this.submissionRepository.update(submission._id, submission).then(submission => {
-        if (role === 'Approved') return this.phaseSubmission(submission._id);
-      });
-    });
+      submission.parentId = submission.parentId ? submission.parentId : submission._id;
+      const oldSubmissionId = submission._id;
+      await this.submissionRepository.findAndSetFalse(submission._id);
+
+      delete submission._id;
+        const newSubmission = await this.submissionRepository.create(submission);
+
+        await this.submissionNoteRepository.updateNoteToNewSubmission(oldSubmissionId, newSubmission._id);
+        return newSubmission;
+
+      // return this.submissionRepository.findAndSetFalse(submission._id).then(async() => {
+      //   delete submission._id;
+      //   const newSubmission = await this.submissionRepository.create(submission);
+
+      //   await this.submissionNoteRepository.updateNoteToNewSubmission(oldSubmissionId, newSubmission._id);
+      //   return newSubmission;
+      // });
+    }
+
+    if (role === 'Approved') submission.approver = updatedBy;
+
+    submission.isLatest = true;
+
+    const newSubmission = this.submissionRepository.update(submission._id, submission);
+    if (role === 'Approved') this.phaseSubmission(newSubmission._id);
+
+    return newSubmission;
+
+    // return this.statusRepository.findByName(role).then(status => {
+    //   submission.statusId = status[0].id;
+    //   submission.workflowProcessId = nextProcessId;
+    //   submission.updatedDate = new Date();
+
+    //   if (role == 'Submitted') {
+    //     submission.version += 1;
+    //     submission.isLatest = true;
+    //     submission.parentId = submission.parentId ? submission.parentId : submission._id;
+    //     const oldSubmissionId = submission._id;
+    //     return this.submissionRepository.findAndSetFalse(submission._id).then(async() => {
+    //       delete submission._id;
+    //       const newSubmission = await this.submissionRepository.create(submission);
+
+    //       await this.submissionNoteRepository.updateNoteToNewSubmission(oldSubmissionId, newSubmission._id);
+    //       return newSubmission;
+    //     });
+    //   }
+    //   if (role === 'Approved') submission.approver = updatedBy;
+    //   submission.isLatest = true;
+    //   return this.submissionRepository.update(submission._id, submission).then(submission => {
+    //     if (role === 'Approved') return this.phaseSubmission(submission._id);
+    //   });
+    // });
   }
 
   async findTemplatePackage(programAndTempTypes) {

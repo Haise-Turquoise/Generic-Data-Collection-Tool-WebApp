@@ -1,0 +1,72 @@
+import { ObjectId } from "mongodb";
+import { OrganizationDoc } from "../../types/organization";
+
+export default class OrgEntity {
+  public _id: ObjectId;
+  public id: number;
+  public IFISNum: string;
+  public code: string;
+  public name: string;
+  public legalName: string;
+  public address: string;
+  public province: string;
+  public city: string;
+  public postalCode: string;
+  public location: string[];
+  public organizationGroupId: ObjectId[];
+  public active: boolean;
+  public managerUserIds: ObjectId[];
+  public contactUserId: string;
+  public authorizedUserId: string;
+  public programId: ObjectId[];
+  public effectiveDate: Date;
+  public expiryDate: Date;
+  public timestamp: Date;
+  public updatedBy: string;
+
+  constructor({
+    _id,
+    id,
+    IFISNum,
+    code,
+    name,
+    legalName,
+    address,
+    province,
+    city,
+    postalCode,
+    location,
+    organizationGroupId,
+    active,
+    managerUserIds,
+    contactUserId,
+    authorizedUserId,
+    programId,
+    effectiveDate,
+    expiryDate,
+    timestamp,
+    updatedBy,
+  }: OrganizationDoc) {
+    this._id = _id;
+    this.id = id;
+    this.IFISNum = IFISNum;
+    this.code = code;
+    this.name = name;
+    this.legalName = legalName;
+    this.address = address;
+    this.province = province;
+    this.city = city;
+    this.postalCode = postalCode;
+    this.location = location;
+    this.organizationGroupId = organizationGroupId;
+    this.active = active;
+    this.managerUserIds = managerUserIds;
+    this.contactUserId = contactUserId;
+    this.authorizedUserId = authorizedUserId;
+    this.programId = programId;
+    this.effectiveDate = effectiveDate;
+    this.expiryDate = expiryDate;
+    this.timestamp = timestamp;
+    this.updatedBy = updatedBy;
+  }
+}

@@ -92,7 +92,7 @@ const AppResourcesTable = () => {
         field: 'resourcePath',
         validate: rowData => checkDuplicates(rowData, appResources, 'resourcePath'),
       },
-      { title: 'Protection', field: 'isProtected' },
+      { title: 'Protection', field: 'isProtected', lookup: {'FALSE': 'FALSE', 'TRUE': 'TRUE'} },
       {
         title: 'Modified On',
         field: 'timestamp',

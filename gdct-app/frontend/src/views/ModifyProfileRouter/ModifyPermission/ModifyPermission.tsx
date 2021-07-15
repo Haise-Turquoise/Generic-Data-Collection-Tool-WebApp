@@ -135,6 +135,7 @@ const selectOrgProgram = (
         <Select
           name="appSys"
           options={appSysOptions}
+          //@ts-ignore
           onChange={handleAppSysChange}
           className="modifyPermission__select"
         />
@@ -144,6 +145,7 @@ const selectOrgProgram = (
         <Select
           name="organizations"
           options={organizationGroupOptions}
+          //@ts-ignore
           onChange={handleOrgGroupChange}
           className="modifyPermission__select"
         />
