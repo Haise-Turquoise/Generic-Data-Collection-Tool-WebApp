@@ -5,7 +5,7 @@ import {RoleWorkflowStatusDoc} from '../../types/RoleWorkflowStatus';
 
 // Created by Sheldon on 2021/07/13
 // Repository for RoleWorkflowStatus
-export default class RoleWorkflowStatusRepository extends BaseRepository<RoleWorkflowStatusDoc>{
+export default class RoleWorkflowStatusRepository extends BaseRepository<RoleWorkflowStatus, RoleWorkflowStatusDoc>{
   constructor(){
     super(RoleWorkflowStatusModel)
   }
