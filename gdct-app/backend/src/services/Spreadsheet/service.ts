@@ -9,10 +9,21 @@ import COARepository from '../../repositories/COA';
 import ColumnNameRepository from '../../repositories/ColumnName';
 import MasterValueRepository from '../../repositories/MasterValue'
 import SheetNameRepository from '../../repositories/SheetName'
+import MasterValue from '../../types/mastervalue';
+import { MasterValueOrg } from '../../types/mastervalue';
 
 
 // @Service()
 export default class SpreadsheetApisService {
+
+  templateRepository: TemplateRepository;
+  COATreeRepository: COATreeRepository;
+  COAGroupRepository: COAGroupRepository;
+  COARepository: COARepository;
+  ColumnNameRepository: ColumnNameRepository;
+  masterValueRepository: MasterValueRepository;
+  sheetNameRepository: SheetNameRepository;
+
   constructor() {
     this.templateRepository = Container.get(TemplateRepository);
     this.COATreeRepository = Container.get(COATreeRepository);
@@ -43,7 +54,7 @@ export default class SpreadsheetApisService {
     let COATreeData = await this.COATreeRepository.findAll();
     const AttributeData = await this.ColumnNameRepository.findAll();
     // JSON object that will contain all the CategoryTrees and Attributes
-    let dataToSend  = {'Categories':[], 'Attributes':[]};
+    let dataToSend = {Categories:[], Attributes:[]};
 
     const sheetNameList = [];
     const categoryGroupList = [];
@@ -73,14 +84,14 @@ export default class SpreadsheetApisService {
 
 
   async findOrgWithMasterValueEntries(){
-    return this.masterValueRepository.findAll().then(entries=>{
-      const organizations = [];
-      const hashTable = {};
+    return this.masterValueRepository.findAll().then((entries:MasterValue[])=>{
+      const organizations:MasterValueOrg[] = [];
+      const hashTable = new Map<number, string>();
       entries.forEach(entry=>{
         const {id, name} = entry.org;
-        if (hashTable[id] === undefined){
+        if (!hashTable.has(id)){
           organizations.push(entry.org)
-          hashTable[id] = name;
+          hashTable.set(id, name);
         }
       });
       return organizations
