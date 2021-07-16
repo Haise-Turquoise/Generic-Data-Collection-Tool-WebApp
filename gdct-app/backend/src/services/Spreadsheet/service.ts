@@ -1,7 +1,9 @@
 // Created Nov 5, 2020
+// Updated by Sheldon Su on 
 // The GoogleApi Service is responsible for handling all API requests between the GDCT server and Google
 
 import Container from 'typedi';
+
 import TemplateRepository from '../../repositories/Template';
 import COATreeRepository from '../../repositories/COATree';
 import COAGroupRepository from '../../repositories/COAGroup';
@@ -9,8 +11,18 @@ import COARepository from '../../repositories/COA';
 import ColumnNameRepository from '../../repositories/ColumnName';
 import MasterValueRepository from '../../repositories/MasterValue'
 import SheetNameRepository from '../../repositories/SheetName'
+
+import Attribute from '../../types/attribute'; 
+import Category from '../../types/category';
+import CategoryAndAttributeTransferObject from '../../types/spreadsheet';
+import CategoryGroup from '../../types/categorygroup';
 import MasterValue from '../../types/mastervalue';
+import { CategoryDataObject } from '../../types/spreadsheet';
+import { OrganizedCategoryTree } from '../../types/categorytree';
 import { MasterValueOrg } from '../../types/mastervalue';
+import { SheetNameDoc } from '../../types/sheetName';
+
+import { ObjectId } from 'mongodb';
 
 
 // @Service()
@@ -51,20 +63,20 @@ export default class SpreadsheetApisService {
   */
   async sendAttributeAndCatagory(){
     // Retrieve all CategoryTrees and Attributes from the database
-    let COATreeData = await this.COATreeRepository.findAll();
-    const AttributeData = await this.ColumnNameRepository.findAll();
+    let COATreeData:OrganizedCategoryTree[] = await this.COATreeRepository.findAll();
+    const AttributeData:Attribute[] = await this.ColumnNameRepository.findAll();
     // JSON object that will contain all the CategoryTrees and Attributes
-    let dataToSend = {Categories:[], Attributes:[]};
+    let dataToSend:CategoryAndAttributeTransferObject = {Categories:[], Attributes:[]};
 
     const sheetNameList = [];
     const categoryGroupList = [];
-    const categoryList = [];
+    const categoryList:string[] = [];
 
     for (let item in COATreeData){
       sheetNameList.push(COATreeData[item].sheetNameId)
       categoryGroupList.push(COATreeData[item].categoryGroupId)
       for (let category in COATreeData[item].categoryId){
-        categoryList.push(COATreeData[item].categoryId[category])
+        categoryList.push(String(COATreeData[item].categoryId[category]))
       }
     }
 
@@ -102,15 +114,15 @@ export default class SpreadsheetApisService {
 }
 
 // Insert all the Attributes to the JSON Object
-function pushAttributes(dataToSend, AttributeData){
+function pushAttributes(dataToSend:CategoryAndAttributeTransferObject, AttributeData:Attribute[]){
   for (let i = 0; i < AttributeData.length; i++){
-    dataToSend.Attributes.push({'name': AttributeData[i].name, 'id':AttributeData[i].id})
+    dataToSend.Attributes.push({name: AttributeData[i].name, id:AttributeData[i].id})
   }
 };
 
 // Some COATrees in the database are a child of another COA tree
 // This function moves child COATrees into a childCategory array
-function organizeCOATree(COATreeData){
+function organizeCOATree(COATreeData:OrganizedCategoryTree[]){
   for (let i = 0; i < COATreeData.length; i++){
     // Runs if a Category Tree has a parent
     if (COATreeData[i].parentId){
@@ -119,6 +131,7 @@ function organizeCOATree(COATreeData){
       // Pushes the Category Tree into the childCategories array
       if (pos){
         pos.push(COATreeData[i]);
+        // @ts-ignore
         COATreeData[i] = {_id: null};
       }
     }
@@ -126,19 +139,20 @@ function organizeCOATree(COATreeData){
 }
 
 // Recursive algorithm for searching for a CategoryTree
-function searchColumn(tree, parentId, firstIteration = true){
+function searchColumn(tree:OrganizedCategoryTree[], parentId:ObjectId):any[]|undefined{
   for (let i = 0; i < tree.length; i++){
     const treeItem = tree[i];
     // Runs if CategoryTree with the parentId is found
     if (treeItem._id && treeItem._id.toString() === parentId.toString()){
       // Runs if the tree does not have any childCategory array
-      if (!treeItem.childCategories){
+      if (!treeItem.hasOwnProperty('childCategories')){
         // Adds the array
-        treeItem.childCategories = [];
+        Object.assign(treeItem, {childCategories: []});
       }
       // Returns the array
       return treeItem.childCategories;
-    } else if (treeItem.childCategories){
+
+    } else if (treeItem.hasOwnProperty('childCategories') && treeItem.childCategories){
       // Runs if the CategoryTree does not match the parentId but it has childCategories.
       const childCategoryArray = searchColumn(treeItem.childCategories, parentId);
       if (childCategoryArray){
@@ -149,7 +163,8 @@ function searchColumn(tree, parentId, firstIteration = true){
 }
 
 // Insert all the Attributes to the JSON Object
-async function pushCategory(dataToSend, COATreeData, fullCategoryGroupList, fullCategoryList, fullSheetNamelist){
+async function pushCategory(dataToSend:CategoryDataObject[], COATreeData:OrganizedCategoryTree[], 
+  fullCategoryGroupList:CategoryGroup[], fullCategoryList:Category[], fullSheetNamelist:SheetNameDoc[]){
   for (let i = 0; i < COATreeData.length; i++){
     const COATree = COATreeData[i];
     if (COATree._id){
@@ -162,13 +177,13 @@ async function pushCategory(dataToSend, COATreeData, fullCategoryGroupList, full
       let sheetName = {name: "Not Assigned"};
 
       for (let item in fullCategoryGroupList){
-        if (fullCategoryGroupList[item]._id.toString() === id.toString()){
+        if (String(fullCategoryGroupList[item]._id) === String(id)){
           categoryGroup = fullCategoryGroupList[item]
         }
       }
       id = COATree.sheetNameId;
       for (let item in fullSheetNamelist){
-        if (id && fullSheetNamelist[item]._id.toString() === id.toString()){
+        if (id && String(fullSheetNamelist[item]._id) === String(id)){
           sheetName = fullSheetNamelist[item]
         }
       }
@@ -176,17 +191,22 @@ async function pushCategory(dataToSend, COATreeData, fullCategoryGroupList, full
       let categories = [];
       for (let item in COATree.categoryId){
         for (let secondItem in fullCategoryList){
-          if (fullCategoryList[secondItem].id === COATree.categoryId[item]){
+          if (fullCategoryList[secondItem].id === String(COATree.categoryId[item])){
             categories.push(fullCategoryList[secondItem])
           }
         }
       }
-      dataToSend.push({
-        categoryGroup: categoryGroup.name,
-        categories: categories, 
-        sheetName: sheetName.name,
-        childCategory: []
-      });
+
+      if (categoryGroup){
+        dataToSend.push({
+          categoryGroup: categoryGroup.name,
+          categories: categories, 
+          sheetName: sheetName.name,
+          childCategory: []
+        });
+      }else{
+        throw new Error(`Category Group with _id: ${id} is missing`);
+      }
 
       if (COATree.childCategories){
         // This loop runs if the COATree has child COATrees

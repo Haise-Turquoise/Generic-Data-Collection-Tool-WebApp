@@ -5,6 +5,8 @@ import WorkflowProcessRepository from '../../repositories/WorkflowProcess/Workfl
 import StatusRepository from '../../repositories/Status';
 import Template from '../../types/template';
 import WorkflowProcess from '../../types/workflowprocess';
+
+import { SheetData } from '../../types/template';
 import { ObjectId } from 'mongodb'
 
 // @Service()
@@ -71,8 +73,8 @@ export default class TemplateService {
   }
   
   //TODO test changed logic - I think this is what was meant to be written
-  async updateTemplateSheetData(id: string, template: Partial<Template>) {
-    return this.templateRepository.updateSheetData(id, template.templateData || []);
+  async updateTemplateSheetData(id: string, template: SheetData[]) {
+    return this.templateRepository.updateSheetData(id, template);
   }
 
   //TODO test this too - same situation
