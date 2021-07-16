@@ -10,7 +10,7 @@ export default class COATreeService {
     this.COATreeRepository = Container.get(COATreeRepository);
   }
 
-  async createCOATree(COATree: CategoryTree) {
+  async createCOATree(COATree: CategoryTree | CategoryTree[]) {
     return this.COATreeRepository.create(COATree);
   }
 

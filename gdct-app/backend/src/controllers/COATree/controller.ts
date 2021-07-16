@@ -2,7 +2,8 @@ import { Service } from 'typedi';
 import { Router } from 'express';
 import COATreeService from '../../services/COATree';
 import COATreeEntity from '../../entities/COATree';
-import { CategoryTreeDoc } from '../../types/categorytree';
+import CategoryTree, { CategoryTreeDoc } from '../../types/categorytree';
+import SheetName from '../../types/sheetname';
 
 const COATreeController = Service([COATreeService], service => {
   const router = Router();
@@ -31,10 +32,10 @@ const COATreeController = Service([COATreeService], service => {
     });
 
     router.post('/COATrees/sheetName/fetchBySheetNames', (req, res, next) => {
-      const { sheetNameIds }: { sheetNameIds: CategoryTreeDoc[] } = req.body;
+      const { sheetNameIds }: { sheetNameIds: SheetName[] } = req.body;
       const allTreePromises: Promise<any>[] = []
       sheetNameIds.forEach(sheetNameId => {
-        allTreePromises.push(service.findCOATree(new COATreeEntity(sheetNameId)))
+        allTreePromises.push(service.findCOATree({sheetNameId: sheetNameId._id}))
       })
       Promise.all(allTreePromises)
         .then(COATrees => {
