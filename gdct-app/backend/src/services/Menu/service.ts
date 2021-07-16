@@ -1,4 +1,5 @@
 import Container from 'typedi';
+//@ts-ignore
 import i18n from 'i18n';
 import MenuRepository from '../../repositories/Menu';
 import MenuItemRepository from '../../repositories/MenuItem';

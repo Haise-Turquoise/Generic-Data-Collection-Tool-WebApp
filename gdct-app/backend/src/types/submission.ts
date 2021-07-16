@@ -23,6 +23,8 @@ export default interface Submission {
   isPublished: boolean;
   version: number;
   isLatest: boolean;
+  approver:string;
+  _doc:any;
   parentId: ObjectId;
   updatedDate:Date;
 }

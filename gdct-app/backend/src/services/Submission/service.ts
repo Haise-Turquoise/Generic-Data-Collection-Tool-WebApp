@@ -22,8 +22,12 @@ import User ,{UserDoc} from '../../types/user'
 import Program, {ProgramDoc} from '../../types/program';
 import TemplatePackage from '../../types/templatepackage';
 import Submission from '../../types/submission';
+import SubmissionNote from '../../types/submissionnote';
+import SubmissionPeriod from '../../types/submissionperiod';
 import Status from '../../types/status';
 import WorkflowProcess from '../../types/workflowprocess';
+import TemplateType from '../../types/templatetype';
+import Template from '../../types/template';
 // @Service()
 export default class SubmissionService {
   private submissionRepository:SubmissionRepository;
@@ -95,20 +99,20 @@ export default class SubmissionService {
 
   async findReportingPeriod(_id:string){
     const submission = await this.submissionRepository.findById(_id);
-    //@ts-ignore
+    
     const submissionPeriod = await this.submissionPeriodRepository.findById(submission.submissionPeriodId);
-    //@ts-ignore
+    
     return this.reportingPeriodRepository.findById(submissionPeriod.reportingPeriodId);
   }
 
   async createSubmissionBaseOnTemplatePackage(submission:any) {
     // Clone the tempalte's workbook data to be used by the user
-    return this.programRepository.findById(submission.programId.toString()).then(program => {
-      //@ts-ignore
+    return this.programRepository.findById(submission.programId).then(program => {
+      
       return this.templateRepository.findById(submission.templateId).then(template => {
         return mastervaluePrepopulation(template.templateData, submission).then(workbook => {
-          //@ts-ignore
-          return this.templateTypeRepository.findById(template.templateTypeId).then((templateType:any) => {
+          
+          return this.templateTypeRepository.findById(template.templateTypeId).then((templateType:TemplateType) => {
             return this.workflowProcessRepository
               .find({ workflowId: templateType.submissionWorkflowId })
               .then((workflowProcesses:WorkflowProcess[]) => {
@@ -149,7 +153,7 @@ export default class SubmissionService {
     });
   }
 
-  async uploadSubmissionWorkbook(submission:any, workbookData:Submission['workbookData'], submissionNote:any) {
+  async uploadSubmissionWorkbook(submission:any, workbookData:Submission['workbookData'], submissionNote:SubmissionNote) {
     //@ts-ignore
     const currentStatus = await this.statusRepository.findOneByID(submission.statusId);
     if (currentStatus.name == 'Approved' || currentStatus.name == 'Submitted') return;
@@ -157,7 +161,7 @@ export default class SubmissionService {
     submission.updatedDate = new Date();
     submission.parentId = submission.parentId ? submission.parentId : submission._id;
 
-    const submissionNotes = {
+    const submissionNotes :any= {
       note: submissionNote,
       submissionId: submission.parentId,
       updatedDate: submission.updatedDate,
@@ -165,7 +169,6 @@ export default class SubmissionService {
     };
 
     return this.submissionRepository.update(submission._id, submission).then(() => {
-      //@ts-ignore
       return this.submissionNoteRepository.create(submissionNotes);
     });
   }
@@ -189,24 +192,23 @@ export default class SubmissionService {
         const orgConst = { id: org.id, name: org.name };
         return this.programRepository.findById(submission.programId).then(program => {
           const programConst = { _id: program._id, name: program.name };
-          //@ts-ignore
           return this.templateRepository.findById(submission.templateId).then(template => {
             const templateConst = { _id: template._id, name: template.name };
             return this.templateTypeRepository
-            //@ts-ignore
+            
               .findById(template.templateTypeId)
-              //@ts-ignore
+              
               .then(templateType => {
                 const templateTypeConst = { _id: templateType._id, name: templateType.name };
                 return this.submissionPeriodRepository
-                //@ts-ignore
+                
                 .findById(submission.submissionPeriodId)
-                //@ts-ignore
+                
                 .then(submissionPeriod => {
                   return this.reportingPeriodRepository
-                  //@ts-ignore
+                  
                   .findById(submissionPeriod.reportingPeriodId)
-                  //@ts-ignore
+                  
                   .then(reportingPeriod => {
                     const reportingPeriodConst = { name: reportingPeriod.name };
                     mastervalueExtraction(
@@ -239,37 +241,37 @@ export default class SubmissionService {
 
 
   
-  async updateStatus(submission:Submission, submissionNote:any, role:string, nextProcessId:string, updatedBy:string) {
+  async updateStatus(submission:Submission, submissionNote:SubmissionNote, role:string, nextProcessId:string, updatedBy:string) {
     
-    const submissionNotes = {
+    const submissionNotes :any= {
       note: submissionNote,
       submissionId: submission._id,
       updatedDate: new Date(),
       updatedBy,
       role,
     };
-    //@ts-ignore
-    const currentStatus = await this.statusRepository.findById(ObjectId(submission.statusId));
+
+    const currentStatus = await this.statusRepository.findById(new ObjectId(submission.statusId));
     if (currentStatus.name == 'Approved') {
       submissionNotes.role = 'Approved';
-      //@ts-ignore
+      
       return this.submissionNoteRepository.create(submissionNotes);
     }
 
 
     if (role == undefined) {
       submissionNotes.role = currentStatus.name;
-      //@ts-ignore
+      
       return this.submissionNoteRepository.create(submissionNotes);
     }
-    //@ts-ignore
+  
     await this.submissionNoteRepository.create(submissionNotes);
 
     const status = await this.statusRepository.findByName(role);
 
     submission.statusId = status[0].id;
-    //@ts-ignore
-    submission.workflowProcessId = ObjectId(nextProcessId);
+  
+    submission.workflowProcessId = new ObjectId(nextProcessId);
     submission.updatedDate = new Date();
 
     if (role == 'Submitted') {
@@ -293,7 +295,7 @@ export default class SubmissionService {
       //   return newSubmission;
       // });
     }
-    //@ts-ignore
+    
     if (role === 'Approved') submission.approver = updatedBy;
 
     submission.isLatest = true;
@@ -329,13 +331,12 @@ export default class SubmissionService {
     //   });
     // });
   }
-
-  async findTemplatePackage(programAndTempTypes:{program:ObjectId, templateTypes:any}[]) {
+  async findTemplatePackage(programAndTempTypes:{program:ObjectId, templateTypes:any[]}[]) {
     const promiseQuery1 :Promise<any>[]= [];
     const newTemplatePackages:TemplatePackage[] = [];
     programAndTempTypes.forEach(element => {
       promiseQuery1.push(
-        this.templatePackageRepository.findByProgramId(element.program.toString()).then((templatePackages:any[]) => {
+        this.templatePackageRepository.findByProgramId(element.program.toString()).then((templatePackages:TemplatePackage[]) => {
           const templatePackagesCopy:any[] = [];
           templatePackages.forEach(templatePackage => {
             templatePackagesCopy.filter(ele => ele._id !== templatePackage._id);
@@ -350,7 +351,7 @@ export default class SubmissionService {
             };
             templatePackage.templateIds.forEach((templateId:string) => {
               promiseQuery2.push(
-                //@ts-ignore
+                
                 this.templateRepository.findById(templateId).then(template => {
                   if (
                     element.templateTypes.find(
@@ -405,7 +406,13 @@ export default class SubmissionService {
     const org = userInfo.sysRole[0].org[0];
     // Update By Sheldon Su in Jan to make it work for admins
     const orgId = org? org.orgId: undefined;
-    const programAndTempTypes:{program:ObjectId, templateTypes:any}[] = [];
+    const programAndTempTypes:{program:ObjectId, 
+      templateTypes:{
+        templateTypeId: ObjectId;
+        templateCode: string;
+        status: string;
+      }[]
+  }[] = [];
     const programIds:String[] = [];
     const orgMapping:{[key:string]:string[]} = {};
 
@@ -548,7 +555,7 @@ export default class SubmissionService {
             //@ts-ignore
             await this.submissionPeriodRepository.find({_id: {$in: [...periodSet.keys()]}})
             .then(periodData=>{
-              periodData.forEach((e:any) => {
+              periodData.forEach((e:SubmissionPeriod) => {
                 periodSet.set(String(e._id), e);
               });
             });
@@ -581,7 +588,7 @@ export default class SubmissionService {
               const permission:string[] = []
               this.checkUserRole(userInfo, submission, permission);
               const changedSubmission : Submission = {
-                //@ts-ignore
+                
                 ...submission._doc,
                 programName: programData.name,
                 programId: programData._id,

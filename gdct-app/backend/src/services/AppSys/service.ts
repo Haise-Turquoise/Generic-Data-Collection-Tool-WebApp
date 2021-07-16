@@ -1,3 +1,4 @@
+//@ts-ignore
 import i18n from 'i18n';
 import Container from 'typedi';
 import AppSysRepository from '../../repositories/AppSys';

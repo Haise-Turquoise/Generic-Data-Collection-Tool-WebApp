@@ -1,5 +1,5 @@
-import { Document, ObjectId } from 'mongoose';
-
+import { Document} from 'mongoose';
+import { ObjectId } from "mongodb";
 export default interface Program {
   _id:ObjectId;
   name: string;

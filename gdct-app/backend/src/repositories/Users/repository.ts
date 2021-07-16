@@ -1,4 +1,5 @@
 import Container from 'typedi';
+//@ts-ignore
 import i18n from 'i18n';
 import BaseRepository from '../repository';
 import UserModel from '../../models/User';
