@@ -1,5 +1,5 @@
 import axios from 'axios';
-
+import AuditLog from '../types/auditlog';
 import { host } from '../constants/domain';
 
 const AuditLogController = (() => {
@@ -10,8 +10,8 @@ const AuditLogController = (() => {
   });
 
   return {
-    fetch: async () => AuditLogAxios.get('/fetchAllAuditLogs').then(res => res.data),
-    create: async AuditLogInfo =>
+    fetch: async (): Promise<AuditLog[]> => AuditLogAxios.get('/fetchAllAuditLogs').then(res => res.data),
+    create: async (AuditLogInfo: AuditLog): Promise<AuditLog> =>
       AuditLogAxios.post('/createAuditLog', { AuditLogInfo }).then(res => res.data),
   };
 })();

@@ -1,5 +1,5 @@
 import axios from 'axios';
-
+import { Menu } from '../types/menu'
 import { host } from '../constants/domain';
 
 const MenuController = (() => {
@@ -8,7 +8,7 @@ const MenuController = (() => {
     withCredentials: true,
   });
   return {
-    fetch: async _ => MenuAxios.get('').then(res => res.data.Menus),
+    fetch: async (): Promise<Menu[]> => MenuAxios.get('').then(res => res.data.Menus),
   };
 })();
 

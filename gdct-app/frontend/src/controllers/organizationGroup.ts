@@ -1,5 +1,5 @@
 import axios from 'axios';
-
+import OrganizationGroup from '../types/organizationgroup';
 import { host } from '../constants/domain';
 
 const organizationGroupController = (() => {
@@ -8,7 +8,7 @@ const organizationGroupController = (() => {
     withCredentials: true,
   });
   return {
-    fetch: async () =>
+    fetch: async (): Promise<OrganizationGroup[]> =>
       organizationGroupAxios.get(`/searchOrganizationGroup`).then(res => res.data.orgGroups),
   };
 })();

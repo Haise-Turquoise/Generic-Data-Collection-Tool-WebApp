@@ -1,5 +1,5 @@
 import axios from 'axios';
-
+import AppSysRole from '../types/appsysrole';
 import { host } from '../constants/domain';
 
 const AppSysRoleController = (() => {
@@ -9,13 +9,13 @@ const AppSysRoleController = (() => {
   });
 
   return {
-    fetch: async _ => AppSysRoleAxios.get('/fetch').then(res => res.data),
-    fetchAppSysRole: async _id =>
+    fetch: async (): Promise<AppSysRole[]> => AppSysRoleAxios.get('/fetch').then(res => res.data),
+    fetchAppSysRole: async (_id: string): Promise<AppSysRole> =>
       AppSysRoleAxios.post('/fetchAppSysRole', { _id }).then(res => res.data),
-    create: async AppSysRole =>
+    create: async (AppSysRole: AppSysRole): Promise<AppSysRole> =>
       AppSysRoleAxios.post('/create', { AppSysRole }).then(res => res.data.AppSysRole),
-    update: async AppSysRole => AppSysRoleAxios.put('/update', { AppSysRole }),
-    delete: async _id => AppSysRoleAxios.post('/delete', { _id }),
+    update: async (AppSysRole: Partial<AppSysRole>) => AppSysRoleAxios.put('/update', { AppSysRole }),
+    delete: async (_id: string) => AppSysRoleAxios.post('/delete', { _id }),
   };
 })();
 
