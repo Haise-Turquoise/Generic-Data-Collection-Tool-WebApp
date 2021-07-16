@@ -149,7 +149,7 @@ export default function Login({ setLoggedIn }:{setLoggedIn:(flag:boolean)=>void}
     }
   };
 
-  let sessionID:number|null = null;
+  let sessionID:string|null = null;
   // onSubmit for sign in button
   const handleSubmit = async (e:any) => {
     e.preventDefault();
@@ -171,7 +171,7 @@ export default function Login({ setLoggedIn }:{setLoggedIn:(flag:boolean)=>void}
         }
 
         checkLogin = await AuthController.login({ email, password, selectedRole })
-          .then((data:undefined|{data:{email:string, _id:string, sessionID:number}, status:string}) => {
+          .then((data:undefined|{data:{email:string, _id:string, sessionID:string}, status:string}) => {
             if (data === undefined) {
               return false;
             }
@@ -225,7 +225,7 @@ export default function Login({ setLoggedIn }:{setLoggedIn:(flag:boolean)=>void}
     while (i < 60) {
       (function (i) {
         setTimeout(function () {
-          SessionController.fetchById(sessionID).then((session:{expires:string}) => {
+          SessionController.fetchById(sessionID || '').then((session:{expires:string}) => {
             if (session !== null) {
               const expirationTime = session.expires;
               const currentTime = moment();
@@ -253,7 +253,7 @@ export default function Login({ setLoggedIn }:{setLoggedIn:(flag:boolean)=>void}
                   })
                   .then(result => {
                     if (result.isConfirmed) {
-                      SessionController.updateExpiration(sessionID);
+                      SessionController.updateExpiration(sessionID || '');
                       swalWithBootstrapButtons.fire(
                         'Reset!',
                         'Your session has been reset',
@@ -282,7 +282,7 @@ export default function Login({ setLoggedIn }:{setLoggedIn:(flag:boolean)=>void}
               }
             }
           });
-        }, period * 60 * 1000 * i);
+        }, +period * 60 * 1000 * i);
       })(i++);
     }
   };

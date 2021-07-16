@@ -224,7 +224,9 @@ const ColumnNamesTable = () => {
           (async () => {
             const oldColumnName = await columnNameController.fetchAttribute(columnName._id);
             // Actually Deleted (Attribute might not be deleted because it is referenced in master value table)
-            if (oldColumnName.length === 0) {
+            //@ts-ignore test this
+            console.log('OCN', oldColumnName)
+            if (oldColumnName) {
               CreateAuditLog(null, 'Delete Attribute', 'Attribute', columnName._id, columnName, {});
             }
           })();

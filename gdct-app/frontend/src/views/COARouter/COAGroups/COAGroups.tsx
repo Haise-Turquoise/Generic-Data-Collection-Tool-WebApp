@@ -139,7 +139,7 @@ const COAGroupsTable = () => {
           recordUpdate(COAGroup);
           // Find the old value before updating in order to Auditlog
           (async () => {
-            const oldCOAGroup = await COAGroupController.fetchCOAGroup(COAGroup._id);
+            const oldCOAGroup = await COAGroupController.fetchCOAGroup(COAGroup._id || '');
             CreateAuditLog(
               null,
               'Update Category Group',

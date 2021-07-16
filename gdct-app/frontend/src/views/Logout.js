@@ -11,7 +11,7 @@ export default function Logout({ setLoggedIn }) {
   // Get User Email
   const email = localStorage.getItem('currentUser');
   useEffect(() => {
-    AuthController.logout(email).then(res => {
+    AuthController.logout().then(res => {
       if (res.status === 'ok') {
         // Audit Logout
         CreateAuditLog(email, 'Logout', 'Logout', null, {}, {});

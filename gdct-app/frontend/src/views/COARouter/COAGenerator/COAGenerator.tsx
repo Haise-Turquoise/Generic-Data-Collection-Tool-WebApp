@@ -19,13 +19,8 @@ let workbook = new ExcelJS.Workbook();
 
 const ignoreSheets = ['Main Menu', 'Identification'];
 
-type NewCatType = {
-  id: number,
-  name: string,
-  unit: string,
-}
 type CatIDType = {
-  [key: string]: NewCatType[]
+  [key: string]: Category[]
 }
 type AllDataType = {
   [key: string]: CatIDType
@@ -81,13 +76,13 @@ const processData = async (file: File, cb: (allData: AllDataType) => void) => {
           groupName = groupName.replace('Total ', '');
         }
         const name: string | undefined = row.getCell(constants.NAME).value?.toString();
-        const unit: string = row.getCell(constants.UNIT).value?.toString() || '';
+        const unitOfMeasure: string = row.getCell(constants.UNIT).value?.toString() || '';
         if (id && typeof id === 'number' && groupName && name) {
           if (!categoryIds[groupName]) {
             categoryIds[groupName] = [];
           }
           if (name.split(' ')[0].toLowerCase() !== 'total') {
-            categoryIds[groupName].push({ id, name, unit });
+            categoryIds[groupName].push({ id: id.toString(), name, unitOfMeasure, COA: "", timestamp: (new Date()).toString() });
           }
         }
       });
@@ -103,7 +98,7 @@ const buildObjects = async (data: AllDataType) => {
   const groups: CategoryGroup[] = await COAGroupController.fetch();
   const sheets: SheetName[] = await SheetNameController.fetch();
   const categories: Category[] = await COAController.fetch();
-  const allNewCategories: NewCatType[] = [];
+  const allNewCategories: Category[] = [];
   for (let sheetName of Object.keys(data)) {
     // get ID from existing sheetName
     const foundSheet = sheets.find(sheet => sheet.name === 'Medical Staff Remuneration');
@@ -114,7 +109,7 @@ const buildObjects = async (data: AllDataType) => {
       sheetNameId = foundSheet._id;
     }
     for (let ctgGroup of Object.keys(data[sheetName])) {
-      const newCategories: NewCatType[] = data[sheetName][ctgGroup];
+      const newCategories: Category[] = data[sheetName][ctgGroup];
       // add new categories to a list that will be added to DB later
       newCategories.forEach(category => {
         const inAllCat = allNewCategories.find(cat => cat.id.toString() === category.id.toString());
@@ -131,8 +126,8 @@ const buildObjects = async (data: AllDataType) => {
       if (!foundGroup) {
         foundGroup = await COAGroupController.create({
           name: ctgGroup,
-          isActive: true,
-          updatedBy: localStorage.getItem('currentUser'),
+          timestamp: (new Date()).toString(),
+          updatedBy: localStorage.getItem('currentUser') || '',
         });
       }
       const categoryGroupId = foundGroup?._id || '';
