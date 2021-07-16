@@ -80,6 +80,16 @@ export default class WorkflowProcessRepository extends BaseRepository<WorkflowPr
       );
   }
 
+  async findProcessesByWorkflowIds(workflowIds:string[]){
+    return WorkflowProcessModel.find({workflowId:{$in:workflowIds}})
+    .populate('statusId')
+    .then((workflowProcesses:WorkflowProcessDoc[])=> 
+      workflowProcesses.map(workflowProcess => 
+        new WorkflowProcessEntity(workflowProcess)
+      )
+    );
+  }
+
   async findMany(ids: string, isPopulated = false) {
     return WorkflowProcessModel.find()
       .populate(isPopulated ? populateTo : '')

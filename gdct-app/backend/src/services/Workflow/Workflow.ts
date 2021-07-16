@@ -4,44 +4,45 @@ import Container from 'typedi';
 import WorkflowRepository from '../../repositories/Workflow/Workflow';
 import WorkflowProcessRepository from '../../repositories/WorkflowProcess/WorkflowProcess';
 import TemplateTypeRepository from '../../repositories/TemplateType';
-
-
-import User ,{UserDoc} from '../../types/user'
-import Program, {ProgramDoc} from '../../types/program';
-import TemplatePackage from '../../types/templatepackage';
-import Submission from '../../types/submission';
-import SubmissionNote from '../../types/submissionnote';
-import SubmissionPeriod from '../../types/submissionperiod';
-import Status from '../../types/status';
 import WorkflowProcess from '../../types/workflowprocess';
-import TemplateType from '../../types/templatetype';
-import Template from '../../types/template';
-import Workflow, { WorkflowDoc } from '../../types/workflow';
+import Workflow from '../../types/workflow';
+
+
 
 const objectId = mongoose.Types.ObjectId;
 
 // eslint-disable-next-line no-unused-vars
-// const markVisitableNodes = (startingNode, linkMapSet, visited) => {
-//   visited.add(startingNode);
-//   const adjacentNodes = linkMapSet[startingNode];
+// any types since function unused -- should probably be deleted
+const markVisitableNodes = (startingNode: any, linkMapSet: any, visited: any) => {
+  visited.add(startingNode);
+  const adjacentNodes: any = linkMapSet[startingNode];
 
-//   if (adjacentNodes) {
-//     adjacentNodes.forEach(adjacentNode => {
-//       if (!visited.has(adjacentNode)) markVisitableNodes(adjacentNode, linkMapSet, visited);
-//     });
-//   }
-// };
+  if (adjacentNodes) {
+    adjacentNodes.forEach((adjacentNode: any) => {
+      if (!visited.has(adjacentNode)) markVisitableNodes(adjacentNode, linkMapSet, visited);
+    });
+  }
+};
 
 interface WorkflowData {
-  workflow:Workflow,
-  workflowProcessesData:{id:string, to:any[]}[],
-  statusData:{id:string,statusId:string, position:any}[],
+  workflow: Omit<Workflow, 'isActive'>;
+  workflowProcessesData: {
+    id: string,
+    statusId: string,
+    to: {
+      id: string,
+      statusId: string,
+    }[],
+  }[];
+  statusData: {
+    id: string,
+    statusId: string,
+    position: WorkflowProcess["position"],
+  }[];
 }
-
-
-const getWorkflowProcesses = (workflowData:WorkflowData) => {
+const getWorkflowProcesses = (workflowData: WorkflowData): WorkflowProcess[] => {
   const { workflow, workflowProcessesData, statusData } = workflowData;
-  const workflowProcessesMap:any = {};
+  const workflowProcessesMap: any = {};
 
   if (statusData.length < 2) throw 'There must be at least two node';
   if (!workflowProcessesData.length) throw 'There must be at least one link';
@@ -64,7 +65,7 @@ const getWorkflowProcesses = (workflowData:WorkflowData) => {
   // Link the workflow processes
   for (const item of workflowProcessesData) {
     const { id, to } = item;
-    workflowProcessesMap[id].to = to.map(({ id }) => workflowProcessesMap[id]._id);
+    workflowProcessesMap[id].to = to.map(({ id }: { id: any }) => workflowProcessesMap[id]._id);
   }
 
   return Object.values(workflowProcessesMap);
@@ -73,36 +74,37 @@ const getWorkflowProcesses = (workflowData:WorkflowData) => {
 // TODO : Validate links - make sure there is only one starting node and connected graph
 // @Service()
 export default class WorkflowService {
-  private workflowRepository : WorkflowRepository;
-  private workflowProcessesRepository : WorkflowProcessRepository;
-  private templateTypeRepository : TemplateTypeRepository;
+  private workflowRepository: WorkflowRepository
+  private workflowProcessesRepository: WorkflowProcessRepository
+  private templateTypeRepository: TemplateTypeRepository
+
   constructor() {
     this.workflowRepository = Container.get(WorkflowRepository);
     this.workflowProcessesRepository = Container.get(WorkflowProcessRepository);
     this.templateTypeRepository = Container.get(TemplateTypeRepository);
   }
 
-  async createWorkflow(workflowData:WorkflowData) {
-    const workflowProcesses:any = getWorkflowProcesses(workflowData);
+  async createWorkflow(workflowData: any) {
+    const workflowProcesses = getWorkflowProcesses(workflowData);
 
     return this.workflowRepository
       .create(workflowData.workflow)
       .then(() => this.workflowProcessesRepository.createMany(workflowProcesses));
   }
 
-  async findOnlyWorkflowById(id:ObjectId|undefined) {
-    return this.workflowRepository.find({ _id: id });
+  async findOnlyWorkflowById(id: string) {
+    return this.workflowRepository.find({ _id: new ObjectId(id) });
   }
 
-  async findWorkflowById(id:any) {
+  async findWorkflowById(id: string) {
     return this.workflowRepository.findById(id).then(async workflow => {
       return this.workflowProcessesRepository
-        .find({ workflowId: id })
+        .find({ workflowId: new ObjectId(id) })
         .then(workflowProcesses => ({ workflow, workflowProcesses }));
     });
   }
 
-  async findOutwardProcessesPopulated(processId:string) {
+  async findOutwardProcessesPopulated(processId: string) {
     // console.log('hi', processId)
     const workflowProcess = await this.workflowProcessesRepository.findById(processId);
 
@@ -111,7 +113,7 @@ export default class WorkflowService {
     return workflowProcess;
   }
 
-  async deleteWorkflow(workflowId:string) {
+  async deleteWorkflow(workflowId: string) {
     const templateType = await this.templateTypeRepository.findOneByWorkFlowID(workflowId);
     if (templateType != null) throw new Error("Workflow referenced in template type.");
     return this.workflowRepository
@@ -119,33 +121,36 @@ export default class WorkflowService {
       .then(() => this.workflowProcessesRepository.deleteMany(workflowId));
   }
 
-  async updateWorkflow(id:string, workflowData:WorkflowData) {
-    const workflowProcesses:any = getWorkflowProcesses(workflowData);
+  async updateWorkflow(id: string, workflowData: any) {
+    const workflowProcesses = getWorkflowProcesses(workflowData);
     return this.workflowProcessesRepository
       .deleteMany(id)
       .then(() => this.workflowRepository.update(id, workflowData.workflow))
       .then(() => this.workflowProcessesRepository.createMany(workflowProcesses));
   }
 
-  async findWorkflow(workflow:Workflow) {
+  async findWorkflow(workflow: Partial<Workflow>) {
     return this.workflowRepository.find(workflow);
   }
 
-  async findWorkflowProessByStatus(statusId:string){
+  async findWorkflowProessByStatus(statusId: string){
     return this.workflowProcessesRepository.find({statusId:objectId(statusId)});
   }
 
-  async findWorkflowProessesById(ids:string[]){
+  async findWorkflowProessesById(ids: string[]){
     //@ts-ignore
-    return this.workflowProcessesRepository.find({_id: {$in:ids}});
+    return this.workflowProcessesRepository.find({_id: {$in: ids.map(id => new ObjectId(id))}});
   }
 
   async findProcesses() {
-    //@ts-ignore
-    return this.workflowProcessesRepository.find();
+    return this.workflowProcessesRepository.find({});
   }
 
-  async findProcessesByWorkflowId(workflowId:string) {
+  async findProcessesByWorkflowId(workflowId: string) {
     return this.workflowProcessesRepository.findProcessesByWorkflowId(workflowId);
+  }
+
+  async findProcessesByWorkFlowIds(workflowIds:string[]){
+    return this.workflowProcessesRepository.findProcessesByWorkflowIds(workflowIds);
   }
 }

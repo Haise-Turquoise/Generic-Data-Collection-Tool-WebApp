@@ -66,11 +66,11 @@ const WorkflowHeaderActions = ({ type, id }: { type: actionType; id: string }) =
         })
         return false
       } else {
-        updateWorkflow()
+        dispatch(updateWorkflow())
         return true
       }
     } else {
-      submitWorkflow()
+      dispatch(submitWorkflow())
       return true
     }
   }
