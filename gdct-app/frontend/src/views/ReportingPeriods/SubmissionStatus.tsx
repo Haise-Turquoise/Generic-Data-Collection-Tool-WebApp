@@ -42,8 +42,8 @@ const SubmissionStatusTable = () => {
     // get all submission notes
     (async () => {
       const noteFilter: string[] = []
-      const notes: SubmissionNote[] = await SubmissionNoteController.fetchBySubmissionId(rowData.submissionNote.submissionId)
-      notes
+      let notes: SubmissionNote[] = await SubmissionNoteController.fetchBySubmissionId(rowData.submissionNote.submissionId)
+      notes = notes
         .sort((a, b) => Date.parse(a.updatedDate) - Date.parse(b.updatedDate))
         .filter(note => !noteFilter.includes(note.role))
       setDetail(notes.reduce((acc, curr) => {
