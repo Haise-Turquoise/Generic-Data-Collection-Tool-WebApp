@@ -2,7 +2,7 @@ import { Document } from 'mongoose';
 import { ObjectId } from 'mongodb';
 
 export default interface CategoryTree {
-  _id: ObjectId;
+  _id: ObjectId|null;
   parentId: ObjectId;
   categoryGroupId: ObjectId;
   categoryId: ObjectId[];
@@ -13,4 +13,8 @@ export default interface CategoryTree {
 
 export interface CategoryTreeDoc extends CategoryTree, Document {
   _id: ObjectId;
+}
+
+export interface OrganizedCategoryTree extends CategoryTree{
+  childCategories?:OrganizedCategoryTree[];
 }

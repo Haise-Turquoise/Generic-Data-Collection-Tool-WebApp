@@ -1,3 +1,4 @@
+//@ts-ignore
 import i18n from 'i18n';
 import AppSysRoleEntity from '../../entities/AppSysRole';
 import BaseRepository from '../repository';

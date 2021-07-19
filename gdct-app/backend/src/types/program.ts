@@ -1,6 +1,7 @@
-import { Document } from 'mongoose';
-
+import { Document} from 'mongoose';
+import { ObjectId } from "mongodb";
 export default interface Program {
+  _id:ObjectId;
   name: string;
   code: string;
   timestamp: Date;
@@ -8,4 +9,6 @@ export default interface Program {
   isActive: boolean;
 }
 
-export interface ProgramDoc extends Program, Document {}
+export interface ProgramDoc extends Program, Document {
+    _id:ObjectId
+}

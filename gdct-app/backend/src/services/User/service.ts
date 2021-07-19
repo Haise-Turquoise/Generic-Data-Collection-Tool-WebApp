@@ -1,6 +1,8 @@
 import Container, { Service } from 'typedi';
 import UserRepository from '../../repositories/User';
 import AppSysRoleRepository from '../../repositories/AppSysRole';
+import User,{UserDoc} from '../../types/user';
+//@ts-ignore
 import cloneDeep from 'clone-deep';
 import {
   sendUserVerficationEmail,
@@ -9,7 +11,6 @@ import {
   sendUserActiveEmail,
   sendUserRejectEmail,
 } from '../../middlewares/mail/mail';
-import User from '../../types/user';
 import { AppSysRoleDoc } from '../../types/appsysrole';
 import { ParsedQs } from 'qs';
 import { Request } from 'express';
@@ -219,7 +220,7 @@ export default class UserService {
       return null
     }
     // see what data and roles are present
-    const foundRole = userCopy.sysRole
+    const foundRole= userCopy.sysRole
       .find(role => role.role === permissionData.role)
     const foundOrg = foundRole?.org
       .find(org => org.orgId === permissionData.orgId)

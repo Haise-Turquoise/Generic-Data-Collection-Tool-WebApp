@@ -1,4 +1,6 @@
+//@ts-ignore
 import i18n from 'i18n';
+//@ts-ignore
 import cloneDeep from 'clone-deep';
 import UserEntity from '../../entities/User';
 import BaseRepository from '../repository';
@@ -7,8 +9,9 @@ import AppError from '../../utils/AppError';
 const _ = require('lodash'); 
 import {sendPermissionChangeUserVerficationEmail,sendPermissionChangeAdminVerficationEmail} from '../../middlewares/mail/mail'
 import User, { UserDoc } from '../../types/user';
+//@ts-ignore
 import Organization from '../../types/organization';
-import { ObjectId } from 'mongodb';
+import { ObjectId } from 'mongoose';
 
 export default class UserRepository extends BaseRepository<User, UserDoc> {
   constructor() {
@@ -106,7 +109,8 @@ export default class UserRepository extends BaseRepository<User, UserDoc> {
       }
     );
   }
-  async modifyUserPendingPermissions(_id: ObjectId, { sysRole, isActive, pendingPermissions }: User) {
+  async modifyUserPendingPermissions(_id: any, { sysRole, isActive, pendingPermissions }: User) {
+
     return UserModel.findOneAndUpdate({ _id: _id }, 
       { 
         sysRole: sysRole,

@@ -1,5 +1,5 @@
 import { Schema, model, Model, CallbackError } from 'mongoose';
-import { SheetNameDoc } from '../../types/sheetname';
+import { SheetNameDoc } from '../../types/sheetName';
 
 const SheetName = new Schema<SheetNameDoc>(
   {

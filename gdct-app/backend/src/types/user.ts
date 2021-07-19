@@ -55,6 +55,8 @@ export default interface User {
   endDate: Date;
   timestamp: Date;
   updatedBy: string;
+  organizations:any;
+  isApproved:boolean;
 }
 
 export interface UserDoc extends User, Document {
