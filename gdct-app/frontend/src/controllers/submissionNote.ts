@@ -1,5 +1,5 @@
 import axios from 'axios';
-
+import SubmissionNote from '../types/submissionnote';
 import { host } from '../constants/domain';
 
 const submissionNoteController = (() => {
@@ -8,11 +8,11 @@ const submissionNoteController = (() => {
     withCredentials: true,
   });
   return {
-    fetchBySubmissionId: async submissionId =>
+    fetchBySubmissionId: async (submissionId: string): Promise<SubmissionNote[]> =>
       submissionNoteAxios
         .post(`/findSubmissionNoteBySubmissionId`, { submissionId })
         .then(res => res.data.submissionNote),
-    create: async submissionNote =>
+    create: async (submissionNote: SubmissionNote): Promise<SubmissionNote> =>
       submissionNoteAxios
         .post(`/createSubmissionNote`, { submissionNote })
         .then(res => res.data.submissionNote),

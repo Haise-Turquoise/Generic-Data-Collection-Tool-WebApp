@@ -120,7 +120,7 @@ const SubmissionDashboard = ({ history }:{history:History}) => {
     // const submissionGroups = submissions.map(e=>e.phase);
     // const allowedStatus = allowedGrouping.filter(e=>submissionGroups.includes(e));
     // setStatuses(allowedStatus);
-    UsersController.fetchByEmail(localStorage.getItem('currentUser')).then((res:User)=>{
+    UsersController.fetchByEmail(localStorage.getItem('currentUser') || '').then((res:User)=>{
       let filter:string[] = [];
       res.sysRole.forEach(role => {
         if (role.role === currRole && currRole !== 'Business Admin'){

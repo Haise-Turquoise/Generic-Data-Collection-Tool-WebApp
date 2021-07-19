@@ -175,8 +175,11 @@ const UsersTable = () => {
           (async () => {
             // seems redundant, but we cannot put user._id directly into an object
             const { _id } = user;
-            const oldUser = await usersController.fetchById({ _id });
-            CreateAuditLog(null, 'Update User', 'User', oldUser._id, oldUser, user);
+            //TODO test this
+            if (_id) {
+              const oldUser = await usersController.fetchById(_id);
+              CreateAuditLog(null, 'Update User', 'User', oldUser._id, oldUser, user);
+            }
           })();
           // Do Update
           controllerEditRow(usersController, setUsers, user)

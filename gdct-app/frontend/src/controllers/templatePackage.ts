@@ -1,5 +1,5 @@
 import axios from 'axios';
-
+import TemplatePackage from '../types/templatepackage';
 import { host } from '../constants/domain';
 
 const templatePackageController = (() => {
@@ -8,18 +8,18 @@ const templatePackageController = (() => {
     withCredentials: true,
   });
   return {
-    fetch: async _ => templatePackageAxios.get('/fetch').then(res => res.data),
-    fetchTemplatePackage: async _id =>
+    fetch: async (): Promise<TemplatePackage[]> => templatePackageAxios.get('/fetch').then(res => res.data),
+    fetchTemplatePackage: async (_id: string): Promise<TemplatePackage> =>
       templatePackageAxios.post('/fetchTemplatePackage', { _id }).then(res => res.data),
-    create: async templatePackage =>
+    create: async (templatePackage: TemplatePackage): Promise<TemplatePackage> =>
       templatePackageAxios
         .post('create', { templatePackage })
         .then(res => res.data.templatePackage),
-    update: async templatePackage => templatePackageAxios.put('/update', { templatePackage }),
-    delete: async _id => templatePackageAxios.post('/delete', { _id }),
-    fetchPopulated: async _id =>
+    update: async (templatePackage: Partial<TemplatePackage>) => templatePackageAxios.put('/update', { templatePackage }),
+    delete: async (_id: string) => templatePackageAxios.post('/delete', { _id }),
+    fetchPopulated: async (_id: string) =>
       templatePackageAxios.post('/fetchPopulated', { _id }).then(res => res.data),
-    updatePopulated: async templatePackage =>
+    updatePopulated: async (templatePackage: Partial<TemplatePackage>) =>
       templatePackageAxios
         .put('/updatePopulated', { templatePackage })
         .then(res => [res.data.templatePackage]),

@@ -26,7 +26,7 @@ interface UserSysRole extends SysRole {
 }
 
 export default interface User {
-  _id: string,
+  _id?: string,
   hashedUsername?: string,
   title: string,
   ext?: string,
@@ -52,4 +52,22 @@ export default interface User {
   google?: Object,
   updatedAt?: string,
   toBeApproved?: any[] | null,
+}
+
+export interface RawData {
+  appSys: string,
+  creationDate: string,
+  email: string,
+  firstName: string,
+  lastName: string,
+  orgId: string,
+  orgName: string,
+  phoneNumber: string,
+  programCode: string,
+  programId: string,
+  rawKey: string,
+  role: string,
+  templateCode: string,
+  templateTypeId: string,
+  username: string,
 }

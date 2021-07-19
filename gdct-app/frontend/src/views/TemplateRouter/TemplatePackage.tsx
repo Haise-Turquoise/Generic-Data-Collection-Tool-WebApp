@@ -367,8 +367,10 @@ const TemplatePackage = ({
 
     // Find the old value before updating in order to Auditlog
     (async () => { 
-      const oldTemplatePackage = await templatePackageController.fetchTemplatePackage(formattedTemplatePackage._id);
-      CreateAuditLog(null, "Update Template Package", "TemplatePackage", oldTemplatePackage._id, oldTemplatePackage, formattedTemplatePackage);
+      if (formattedTemplatePackage._id) {
+        const oldTemplatePackage = await templatePackageController.fetchTemplatePackage(formattedTemplatePackage._id);
+        CreateAuditLog(null, "Update Template Package", "TemplatePackage", oldTemplatePackage._id, oldTemplatePackage, formattedTemplatePackage);
+      }
     })();
 
     // Do Update

@@ -47,7 +47,10 @@ const ProfileSchema = (originalUsername:string) =>
       .test('Unique Username', 'Username has already been used', async function (value:string) {
         const fetchData = await UserController.fetchUserByUserName(value);
         // users can only do 1: not change the username, or 2: change the username to something new
+        console.log('F', fetchData)
         return (
+          //TODO test this
+          //@ts-ignore why is this returned?
           fetchData.user.username === originalUsername || fetchData.user.username === undefined
         );
       })
@@ -274,7 +277,7 @@ const ModifyUserInfo = () => {
 
       // Find the old value before updating in order to Auditlog
       (async () => {
-        const oldUser = await usersController.fetchByEmail(email);
+        const oldUser = await usersController.fetchByEmail(email || '');
         CreateAuditLog(null, 'Modify User Info', 'User', oldUser._id, oldUser, formattedUserInfo);
       })();
 

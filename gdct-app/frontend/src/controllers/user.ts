@@ -1,5 +1,5 @@
 import axios from 'axios';
-
+import User, { RawData } from '../types/user';
 import { host } from '../constants/domain';
 
 const userController = (() => {
@@ -9,19 +9,19 @@ const userController = (() => {
   });
 
   return {
-    create: async userData =>
+    create: async (userData: User): Promise<User> =>
       userAxios.post('/users/registerUser', { userData }).then(res => res.data),
-    updatePopulated: async userData =>
+    updatePopulated: async (userData: Partial<User>): Promise<User> =>
       userAxios.put('/updatePopulatedUser', { userData }).then(res => res.data),
-    updateToBeApproved: async userData =>
+    updateToBeApproved: async (userData: User): Promise<User> =>
       userAxios.put('/updateToBeApprovedUser', { userData }).then(res => res.data),
-    updatePendingPermissions: async userData =>
+    updatePendingPermissions: async (userData: User): Promise<User> =>
       userAxios.put('/updatePendingPermissions', { userData }).then(res => res.data),
-    fetchUserByUserName: async username =>
+    fetchUserByUserName: async (username: string): Promise<User> =>
       userAxios.post('/fetchUserByUserName', { username }).then(res => res.data),
-    updatePermissionByUserEmail: async (email, permissionData) =>
+    updatePermissionByUserEmail: async (email: string, permissionData: RawData): Promise<void> =>
       userAxios.post(`/users/updatePermission`, {email, permissionData}).then(res => res.data),
-    deletePermissionByUserEmail: async (email, permissionData) =>
+    deletePermissionByUserEmail: async (email: string, permissionData: RawData): Promise<User | null> =>
       userAxios.post(`/users/deletePermission`, {email, permissionData}).then(res => res.data),
   };
 })();

@@ -1,5 +1,4 @@
 import axios from 'axios';
-
 import { host } from '../constants/domain';
 
 const TransferStatusController = (() => {
@@ -9,7 +8,7 @@ const TransferStatusController = (() => {
   });
 
   return {
-    startTransfer: async time => transferStatusAxios.post('/startService', { time }),
+    startTransfer: async (time: string) => transferStatusAxios.post('/startService', { time }),
     stopTransfer: async () => transferStatusAxios.get('/stopService'),
     fetchStatus: async () => transferStatusAxios.get('/getServiceStatus'),
   };

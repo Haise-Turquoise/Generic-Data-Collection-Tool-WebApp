@@ -2,7 +2,7 @@ import { ObjectId } from "mongodb";
 import CategoryTree, { CategoryTreeDoc } from "../../types/categorytree";
 
 export default class COATreeEntity {
-  public _id: ObjectId;
+  public _id: ObjectId | null;
   public parentId: ObjectId;
   public categoryGroupId: ObjectId;
   public categoryId: ObjectId[];

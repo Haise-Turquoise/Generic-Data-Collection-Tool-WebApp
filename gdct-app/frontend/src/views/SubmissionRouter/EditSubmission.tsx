@@ -83,7 +83,7 @@ const EditSubmission = ({ history }:{history:History}) => {
   const [currentRole, setCurrentRole] = useState([]);
   // const [downloadUnavailable, setDownloadUnavailable] = useState(true);
   const [nextStepIdMap, setNextStepIdMap] = useState({});
-  const [submissionHasBeen, setSubmissionHasBeen] = useState(undefined);
+  const [submissionHasBeen, setSubmissionHasBeen] = useState<string | undefined>(undefined);
   const SubmissionHeader = () => (
     <Paper className="header">
       <Typography variant="h5">Submissions</Typography>

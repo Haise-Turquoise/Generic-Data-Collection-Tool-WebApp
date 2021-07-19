@@ -3,7 +3,7 @@ import { Router } from 'express';
 import COATreeService from '../../services/COATree';
 import COATreeEntity from '../../entities/COATree';
 import CategoryTree, { CategoryTreeDoc } from '../../types/categorytree';
-import SheetName from '../../types/sheetname';
+import SheetName from '../../types/sheetName';
 
 const COATreeController = Service([COATreeService], service => {
   const router = Router();

@@ -123,7 +123,8 @@ const Workflows = () => {
         }).then(() => {
           (async () => {
             const oldWorkflow = await workflowController.fetchOnlyWorkflowById(workflow._id);
-            if (oldWorkflow.length === 0) {
+            //TODO test this
+            if (oldWorkflow) {
               CreateAuditLog(null, 'Delete Workflow', 'Workflow', workflow._id, workflow, {});
             }
           })();

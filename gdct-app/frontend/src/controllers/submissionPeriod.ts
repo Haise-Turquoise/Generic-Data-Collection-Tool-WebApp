@@ -1,5 +1,5 @@
 import axios from 'axios';
-
+import SubmissionPeriod from '../types/submissionperiod';
 import { host } from '../constants/domain';
 
 const submissionPeriodController = (() => {
@@ -8,14 +8,14 @@ const submissionPeriodController = (() => {
     withCredentials: true,
   });
   return {
-    fetch: async query =>
+    fetch: async (query: Partial<SubmissionPeriod>): Promise<SubmissionPeriod[]> =>
       submissionPeriodAxios.get('/fetch').then(res => res.data.submissionPeriods),
-    create: async submissionPeriod =>
+    create: async (submissionPeriod: SubmissionPeriod): Promise<SubmissionPeriod> =>
       submissionPeriodAxios
         .post('/create', { submissionPeriod })
         .then(res => res.data.submissionPeriod),
-    update: async submissionPeriod => submissionPeriodAxios.put('/update', { submissionPeriod }),
-    delete: async _id => submissionPeriodAxios.post('/delete', { _id }),
+    update: async (submissionPeriod: Partial<SubmissionPeriod>) => submissionPeriodAxios.put('/update', { submissionPeriod }),
+    delete: async (_id: string) => submissionPeriodAxios.post('/delete', { _id }),
   };
 })();
 
