@@ -2,6 +2,7 @@ import { ObjectId } from "mongodb";
 import { Document } from "mongoose";
 
 export default interface SubmissionPeriod {
+  _id:ObjectId
   reportingPeriodId: ObjectId,
   name: string,
   startDate: Date,
@@ -11,4 +12,6 @@ export default interface SubmissionPeriod {
   programId: ObjectId[];
 }
 
-export interface SubmissionPeriodDoc extends SubmissionPeriod, Document {}
+export interface SubmissionPeriodDoc extends SubmissionPeriod, Document {
+  _id:ObjectId
+}

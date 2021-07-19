@@ -2,9 +2,9 @@ import axios from 'axios';
 //@ts-ignore
 import { host } from '../constants/domain';
 
-const PackageStatusController = (() => {
+const SubmissionStatusController = (() => {
   const MenuAxios = axios.create({
-    baseURL: `${host}/report/packageStatus`,
+    baseURL: `${host}/report/submissionStatus`,
     withCredentials: true,
   });
   return {
@@ -12,4 +12,4 @@ const PackageStatusController = (() => {
   };
 })();
 
-export default PackageStatusController;
+export default SubmissionStatusController;

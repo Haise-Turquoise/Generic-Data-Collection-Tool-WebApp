@@ -11,10 +11,7 @@ export default interface MasterValue {
     _id: ObjectId,
     name: string,
   },
-  org: {
-    id: number,
-    name: string,
-  },
+  org: MasterValueOrg,
   templateType: {
     _id: ObjectId,
     name: string,
@@ -27,6 +24,11 @@ export default interface MasterValue {
   categoryName: string,
   attributeName: string,
   value: number,
+}
+
+export interface MasterValueOrg{
+  id: number,
+  name: string,
 }
 
 export interface MasterValueDoc extends MasterValue, Document {

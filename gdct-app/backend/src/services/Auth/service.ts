@@ -89,6 +89,7 @@ export default class AuthService {
       const email = req.session.user
       // If anyone knows what req.logout does, please contact David Yang
       req.logout();
+      //@ts-ignore
       req.session.destroy(() => {});
       //For Audit Log
       const authService = new AuthService();
@@ -106,6 +107,7 @@ export default class AuthService {
         //@ts-ignore
         authService.UserRepository.findByEmail(req.user.email)
           .then(data => {
+            //@ts-ignore
               data.sessionID = req.sessionID;
               returnNormalJson(res, data);
           })

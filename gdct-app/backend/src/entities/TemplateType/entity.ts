@@ -1,4 +1,4 @@
-import { ObjectId } from "mongoose";
+import { ObjectId } from "mongodb";
 import { TemplateTypeDoc } from "../../types/templatetype";
 
 export default class TemplateTypeEntity {

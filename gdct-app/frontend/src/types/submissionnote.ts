@@ -2,7 +2,8 @@ export default interface SubmissionNote{
     _id: string,
     submissionId:string,
     note?:string,
-    updatedDate:Date,
+    updatedDate:string,
+    updatedBy: string,
     role:string,
     _v?:number,
 }

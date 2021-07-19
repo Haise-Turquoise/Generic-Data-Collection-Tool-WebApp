@@ -1,10 +1,10 @@
 import { ObjectId } from 'mongodb';
 import { Schema, model } from 'mongoose';
-import { PackageStatusDoc } from '../../types/packagestatus';
+import { SubmissionStatusDoc } from '../../types/packagestatus';
 
-const PackageStatusModel = model<PackageStatusDoc>(
+const SubmissionStatusModel = model<SubmissionStatusDoc>(
   'PackageStatus',
-  new Schema<PackageStatusDoc>(
+  new Schema<SubmissionStatusDoc>(
     {
       name: String,
       org: {
@@ -33,13 +33,14 @@ const PackageStatusModel = model<PackageStatusDoc>(
         name: String,
       },
       submissionNote: {
+        submissionId: ObjectId,
         updatedDate: String,
         updatedBy: String,
       }
     },
     { minimize: false, autoIndex: true },
   ),
-  'PackageStatus4',
+  'SubmissionStatus',
 );
 
-export default PackageStatusModel;
+export default SubmissionStatusModel;

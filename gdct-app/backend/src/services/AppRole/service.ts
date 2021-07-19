@@ -1,4 +1,5 @@
 import Container from 'typedi';
+//@ts-ignore
 import i18n from 'i18n';
 import AppRoleRepository from '../../repositories/AppRole';
 import AppSysRoleRepository from '../../repositories/AppSysRole';

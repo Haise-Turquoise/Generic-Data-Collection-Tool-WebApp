@@ -1,7 +1,7 @@
 import { ObjectId } from 'mongodb';
 import { Document } from 'mongoose';
 
-export default interface PackageStatus {
+export default interface SubmissionStatus {
   _id: ObjectId;
   name: string;
   org: {
@@ -30,11 +30,12 @@ export default interface PackageStatus {
     name: string;
   };
   submissionNote: {
+    submissionId: ObjectId;
     updatedDate: Date | '';
     updatedBy?: string;
   };
 }
 
-export interface PackageStatusDoc extends PackageStatus, Document {
+export interface SubmissionStatusDoc extends SubmissionStatus, Document {
   _id: ObjectId;
 }
