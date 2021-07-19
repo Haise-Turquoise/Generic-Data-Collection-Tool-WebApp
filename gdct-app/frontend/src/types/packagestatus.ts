@@ -1,4 +1,4 @@
-export default interface PackageStatus {
+export default interface SubmissionStatus {
   _id: string,
   name: string,
   template: {
@@ -26,6 +26,7 @@ export default interface PackageStatus {
   },
   subIndex: number | null,
   submissionNote: {
+    submissionId: string,
     updatedDate: string,
     updatedBy: string,
   }
