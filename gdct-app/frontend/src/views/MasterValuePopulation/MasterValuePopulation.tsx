@@ -712,7 +712,7 @@ const  FooterActions =  (props: footerActionProps) =>  {
             )
           }
         >
-          Resume the progress
+          Resume progress
         </Button>
       </div>
       <div className="bottomEle">Get From OHFS</div>
@@ -934,10 +934,16 @@ const MasterValuePopulation = () => {
       tooltip: 'Toggle All',
       position: 'toolbar',
       onClick: (_: any, _obj: CheckableCategory | CheckableCategory[]) => {
-        updateCategoryList(list =>
-          list.map(category => ({ ...category, checked: !categoryState })),
-        );
-        updateCategoryState(state => !state);
+        // updateCategoryList(list =>
+        //   list.map(category => ({ ...category, checked: !categoryState })),
+        // );
+        // // console.log(categoryState)
+        // console.log(categoryList)
+        // updateCategoryState(state => !state);
+        updateCategoryState(state => {
+          updateCategoryList(list => list.map(category => ({ ...category, checked: !state })));
+          return !state;
+        });
       },
     },
   ], []);
@@ -970,7 +976,7 @@ const MasterValuePopulation = () => {
     <Loading />
   ) : (
     <div>
-      <HeaderActions val={query.year} data={periodList} name={'year'} handleChange={handleChange} />
+      <HeaderActions val={query.year} data={periodList} name={'Year'} handleChange={handleChange} />
       <div className="tableContainer">
         <div className="tableWrapper">
           <MaterialTable
