@@ -48,7 +48,7 @@ export default class BaseRepository<T, U extends T & Document> {
 
   async validate(id: string | ObjectId) {
     return this._model.findById(id).then((document: T | null) => {
-      if (!document) throw `${this._model.collection.name} not found`;
+      if (!document) throw new AppError(`${this._model.collection.name} not found. Id: ${id}`);
     });
   }
 
