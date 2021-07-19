@@ -3,7 +3,7 @@
 
 import { Service } from 'typedi';
 import { Router } from 'express';
-import SpreadsheetApisService from '../../services/GoogleApi';
+import SpreadsheetApisService from '../../services/Spreadsheet';
 // Used to handle API requests from google
 const SpreadsheetApisController = Service([SpreadsheetApisService], service => {
   const router = Router();

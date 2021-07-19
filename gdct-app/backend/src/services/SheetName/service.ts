@@ -1,6 +1,6 @@
 import Container from 'typedi';
 import SheetNameRepository from '../../repositories/SheetName';
-import SheetName from '../../types/sheetname';
+import SheetName from '../../types/sheetName';
 
 // @Service()
 export default class SheetNameService {

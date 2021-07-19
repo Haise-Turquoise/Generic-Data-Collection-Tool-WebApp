@@ -33,6 +33,7 @@ class categoryInsertMenu extends React.Component<MenuProps>{
     spreadSheetController.fetchCategoryAndAttribute().then((data:AttributeAndCategoryData)=>{
     // TODO: change the hard code for balance sheet to the current sheet in the next line.
     const unsortedData = data["Categories"].filter((entry)=> entry["sheetName"] === 'Balance Sheet');
+    console.log(data)
     this.data = unsortedData.sort((a, b) => a.categoryGroup.localeCompare(b.categoryGroup));
     this.category = this.data;
     })

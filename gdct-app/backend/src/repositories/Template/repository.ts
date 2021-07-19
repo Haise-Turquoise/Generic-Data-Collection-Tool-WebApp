@@ -6,7 +6,7 @@ import TemplateTypeRepository from '../TemplateType';
 import BaseRepository from '../repository';
 import WorkflowProcessRepository from '../WorkflowProcess/WorkflowProcess';
 import {ObjectId} from 'mongodb';
-import Template, { TemplateDoc } from '../../types/template';
+import Template, { TemplateDoc, SheetData } from '../../types/template';
 import { WorkflowProcessDoc } from '../../types/workflowprocess';
 import { FilterQuery } from 'mongoose';
 
@@ -132,7 +132,7 @@ export default class TemplateRepository extends BaseRepository<Template, Templat
     return TemplateModel.findByIdAndUpdate( _id, { templateData })
   }
 
-  async updateSheetData(_id: string, sheetData: any[]){
+  async updateSheetData(_id: string, sheetData: SheetData[]){
     return TemplateModel.findByIdAndUpdate(_id, {$set:{templateData:sheetData}})
   }
   

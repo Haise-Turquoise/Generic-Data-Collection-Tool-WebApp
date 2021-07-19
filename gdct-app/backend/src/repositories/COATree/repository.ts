@@ -33,6 +33,7 @@ export default class ReportPeriodRepository extends BaseRepository<CategoryTree,
   }
 
   async update(id: string, COATree: Partial<CategoryTree>) {
+    // @ts-ignore
     return COATreeModel.findByIdAndUpdate(id, COATree).then(
       (COATree: CategoryTreeDoc) => new COATreeEntity(COATree),
     );
@@ -53,6 +54,7 @@ export default class ReportPeriodRepository extends BaseRepository<CategoryTree,
     const realQuery: FilterQuery<CategoryTreeDoc> = {};
     let key: keyof CategoryTree
     for (key in query) {
+      // @ts-ignore
       if (query[key]) realQuery[key] = query[key];
     }
     

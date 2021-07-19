@@ -1,5 +1,5 @@
 import { ObjectId } from "mongodb";
-import { SheetNameDoc } from "../../types/sheetname";
+import { SheetNameDoc } from "../../types/sheetName";
 
 export default class SheetNameEntity {
   public _id: ObjectId;
