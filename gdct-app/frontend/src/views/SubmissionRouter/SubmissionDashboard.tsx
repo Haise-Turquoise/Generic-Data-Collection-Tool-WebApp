@@ -16,7 +16,9 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
 import { History } from 'history';
 import { Submission } from '../../types/submissions'
+import RoleWorkflowStatus from '../../types/roleWorkflowStatus';
 import  User  from '../../types/user';
+import WorkflowProcess from '../../types/workflowprocess';
 import Typography from '@material-ui/core/Typography';
 // @ts-ignore
 import { getSubmissionsRequest } from '../../store/thunks/submission';
@@ -28,6 +30,11 @@ import { selectFactoryRESTResponseTableValues } from '../../store/common/REST/se
 import { calculateOptions } from '../../tools/misc'
 // @ts-ignore
 import UsersController from '../../controllers/Users';
+// @ts-ignore
+import roleWorkflowStatusController from '../../controllers/RoleWorkflowStatus';
+// @ts-ignore
+import workflowController from '../../controllers/workflow';
+
 import './SubmissionDashboard.scss'
 
 const useStyles = makeStyles((theme) => ({
@@ -57,31 +64,32 @@ const SubmissionDashboard = ({ history }:{history:History}) => {
   const [statuses, setStatuses] = useState<string[]>([]);
   const [programFilter, setFilter] = useState<string[]>([]);
   const currRole = localStorage.getItem('currentRole');
+  const [readBaseGrouping, setBaseGrouping] = useState<string[]>([]);
 
-  let allowedGrouping:string[];
+  // let allowedGrouping:string[] = [];
 
-  switch(currRole){
-    case('Inputter'):
-      allowedGrouping = ['Inputted', 'Unsubmitted'];
-      break;
+  // switch(currRole){
+  //   case('Inputter'):
+  //     allowedGrouping = ['Inputted', 'Unsubmitted'];
+  //     break;
 
-    case('Submitter'):
-      allowedGrouping = ['Unsubmitted', 'Inputted', 'Submitted', 'review', 'Approved' ,'Returned', 'Rejected'];
-      break;
+  //   case('Submitter'):
+  //     allowedGrouping = ['Unsubmitted', 'Inputted', 'Submitted', 'review', 'Approved' ,'Returned', 'Rejected'];
+  //     break;
 
-    case('Reviewer'):
-      allowedGrouping = ['Submitted', 'Returned', 'Approved', 'review'];
-      break;
+  //   case('Reviewer'):
+  //     allowedGrouping = ['Submitted', 'Returned', 'Approved', 'review'];
+  //     break;
 
-    case('Submission Approver'):
-       allowedGrouping = ['Submitted', 'Returned', 'Approved', 'review', 'Rejected'];
-      break;
+  //   case('Submission Approver'):
+  //      allowedGrouping = ['Submitted', 'Returned', 'Approved', 'review', 'Rejected'];
+  //     break;
 
-    default:
-      allowedGrouping = ['Unsubmitted', 'Inputted', 'Submitted', 'Approved',
-      'pre_view', 'review', 'Returned', 'Rejected'];
-      break;
-  }
+  //   default:
+  //     allowedGrouping = ['Unsubmitted', 'Inputted', 'Submitted', 'Approved',
+  //     'pre_view', 'review', 'Returned', 'Rejected'];
+  //     break;
+  // }
 
   // StatusController.fetch().then(res => {
   //     const valid = res
@@ -97,14 +105,21 @@ const SubmissionDashboard = ({ history }:{history:History}) => {
     }),
     shallowEqual,
   )
+  
+  useEffect(() =>{
+    const role = localStorage.getItem('currentRole');
+    roleWorkflowStatusController.fetchStatusByRole(role).then((data:RoleWorkflowStatus[]) =>{
+      setBaseGrouping(data[0].workflowStatus);
+    });
+  }, [])
 
-  console.log(submissions)
+  
 
-   useEffect(() => {
+  useEffect(() => {
     
-    const submissionGroups = submissions.map(e=>e.phase);
-    const allowedStatus = allowedGrouping.filter(e=>submissionGroups.includes(e));
-    setStatuses(allowedStatus);
+    // const submissionGroups = submissions.map(e=>e.phase);
+    // const allowedStatus = allowedGrouping.filter(e=>submissionGroups.includes(e));
+    // setStatuses(allowedStatus);
     UsersController.fetchByEmail(localStorage.getItem('currentUser')).then((res:User)=>{
       let filter:string[] = [];
       res.sysRole.forEach(role => {
@@ -125,37 +140,83 @@ const SubmissionDashboard = ({ history }:{history:History}) => {
     dispatch(getSubmissionsRequest(()=>{setMessage('Nothing to show');}));
   }
 
+  let filteredSubmission = [...submissions];
 
-  if (submissions[0] !== undefined) {
-    if (localStorage.getItem('currentRole') !== 'Business Admin'){
-      submissions = submissions.filter(submission=>
-        programFilter.includes(String(submission.programId))
-      );
+  useEffect(()=>{
+    if (filteredSubmission[0] !== undefined) {
+
+      if (localStorage.getItem('currentRole') !== 'Business Admin'){
+        filteredSubmission = filteredSubmission.filter(submission=>
+          programFilter.includes(String(submission.programId))
+        );
+      }
+
+      filteredSubmission.forEach(submission => {
+        const createdAt = new Date(submission.createdAt);
+        const modifiedAt = new Date(submission.updatedAt);
+        // @ts-ignore
+        submission.createdAt = createdAt.toLocaleDateString("en-US", timeOption);
+        // @ts-ignore
+        submission.updatedAt = modifiedAt.toLocaleDateString("en-US", timeOption);
+        if (!submissionPeriod[submission.period]) {
+          submissionPeriod[submission.period] = 1;
+        }
+
+        if (submission !== undefined) {
+          if (
+            submission.permission.find(
+              permission => permission === 'Submitter' || permission === 'Inputter',
+            ) !== undefined
+          )
+            submitterFlag = true;
+        } else {
+          // should remove invalid (undefined/out of range) submissions
+          filteredSubmission.filter(element => element !== submission)
+        }
+      });
+
+      const workFlowsArray:string[] = []
+      let filteredGrouping = [...readBaseGrouping];
+      const existingPhaseSet = new Set(filteredSubmission.map(e=>e.phase));
+      // filter out the empty section that does not exist in submissions
+      filteredGrouping = filteredGrouping.filter(e=>existingPhaseSet.has(e));
+
+
+      filteredSubmission.forEach(e => {
+        const workFlowId = String(e.workflowId)
+        if (!workFlowsArray.includes(workFlowId)){
+          workFlowsArray.push(workFlowId);
+        }
+      });
+      
+      
+      workflowController.fetchProcessesByWorkflowIds(workFlowsArray).then((workflowProcesses:WorkflowProcess[])=>{
+        const processToStausMapping = new Map<string, string>();
+        // create a new map to map id to status name mapping
+        workflowProcesses.forEach(e=>{
+          const status = e.statusId.name;
+          const id = String(e._id);
+          if(!processToStausMapping.has(id)){
+            processToStausMapping.set(id, status);
+          }
+        });
+
+        const baseGrouping = [...filteredGrouping];
+        // check if the next status is in the filtered based role group
+        workflowProcesses.forEach(workflowProcess=>{
+          const currentStatus = workflowProcess.statusId.name;
+          workflowProcess.to.forEach(nextId=>{
+            const nextStatus = processToStausMapping.get(String(nextId))!;
+            if (existingPhaseSet.has(currentStatus) && filteredGrouping.includes(nextStatus) && !baseGrouping.includes(currentStatus)){
+              const nextIndex = baseGrouping.indexOf(nextStatus)
+              baseGrouping.splice(nextIndex, 0, currentStatus);
+            }
+          });
+        });
+        setStatuses(baseGrouping);
+      });
     }
-    submissions.forEach(submission => {
-      const createdAt = new Date(submission.createdAt);
-      const modifiedAt = new Date(submission.updatedAt);
-      // @ts-ignore
-      submission.createdAt = createdAt.toLocaleDateString("en-US", timeOption);
-      // @ts-ignore
-      submission.updatedAt = modifiedAt.toLocaleDateString("en-US", timeOption);
-      if (!submissionPeriod[submission.period]) {
-        submissionPeriod[submission.period] = 1;
-      }
-
-      if (submission !== undefined) {
-        if (
-          submission.permission.find(
-            permission => permission === 'Submitter' || permission === 'Inputter',
-          ) !== undefined
-        )
-          submitterFlag = true;
-      } else {
-        // should remove invalid (undefined/out of range) submissions
-        submissions.filter(element => element !== submission)
-      }
-    });
-  }
+  }, [submissions])
 
 
   const handleFilterFrom = (event:ChangeEvent<{ value: any; }>) => {
@@ -226,7 +287,7 @@ const SubmissionDashboard = ({ history }:{history:History}) => {
     dispatch(getSubmissionsRequest(()=>{setMessage('Nothing to show')}));
   }, [dispatch]);
 
-  const getSubmissionsInRange = (status:string) => submissions.filter(
+  const getSubmissionsInRange = (status:string) => filteredSubmission.filter(
     (submission) =>
       // get submissions for given status and selected period 
       submission.phase === status && 

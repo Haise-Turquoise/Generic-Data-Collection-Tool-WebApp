@@ -30,10 +30,11 @@ import SubmissionNoteController from './SubmissionNote';
 import AuditLogController from './AuditLog';
 import MasterValueController from './MasterValue/controller';
 import DataResumeController from './DataResume/controller';
-import SpreadsheetApisController from './GoogleApis';
+import SpreadsheetApisController from './Spreadsheet';
 import TransferStatusController from './TransferStatus';
 import SessionController from '../controllers/Session/Session';
-import SubmissionStatusController from './SubmissionStatus'
+import PackageStatusController from './PackageStatus'
+import RoleWorkflowStatusController from '../controllers/RoleWorkflowStatus'
 
 export const routerManager = (app: Application) => {
   app.use('/', Container.get(AuthController));
@@ -85,7 +86,10 @@ export const routerManager = (app: Application) => {
   
   app.use('/transferManager', Container.get(TransferStatusController));
 
-  app.use('/report', Container.get(SubmissionStatusController))
+  app.use('/report', Container.get(PackageStatusController))
+  // Created by Sheldon on 2021/07/13
+  // Use to handle roleWorkflowStatus
+  app.use('/roleWorkflowStatus', Container.get(RoleWorkflowStatusController));
 
 };
 
