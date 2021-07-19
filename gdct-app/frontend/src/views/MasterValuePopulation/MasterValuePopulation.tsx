@@ -380,14 +380,14 @@ const  handleResume = async (
       console.log(resumeQueries[i].categoryId);
       org = await OrganizationController.fetchById(resumeQueries[i].org.id);
       coa = await COAController.fetchCOAbyId(resumeQueries[i].categoryId);
-      console.log(coa.COAs);
       // if target organization has been deleted
+      //@ts-ignore
       if (org.organizations.length == 0) {
         setGetCount(getCount => getCount + 1);
         throw `Can not find corresponding org using this id: ${resumeQueries[i].org.id}`;
       }
       // if target category has been deleted
-      if (coa.COAs.length == 0) {
+      if (!coa.COA) {
         console.log('reach error part');
         setGetCount(getCount => getCount + 1);
         throw `Can not find corresponding coa using this id: ${resumeQueries[i].categoryId}`;
@@ -395,12 +395,13 @@ const  handleResume = async (
       const idx = resumeQueries[i].value[0].indexOf('ID=');
       resumeQuery += resumeQueries[i].value[0].substring(0, idx + 3);
       // if COA is empty
-      if (coa.COAs.COA.length == 0) {
+      if (coa.COA.COA.length == 0) {
         resumeQuery += '-1&pa=2*';
       } else {
+        //@ts-ignore
         resumeQuery += org.organizations.id;
         resumeQuery += '&';
-        resumeQuery += coa.COAs.COA;
+        resumeQuery += coa.COA.COA;
       }
       console.log(resumeQuery);
       // console.log(resumeQueries[i].value[0])

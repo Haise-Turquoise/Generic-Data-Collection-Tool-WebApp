@@ -3,12 +3,12 @@ import axios from 'axios';
 import { host } from '../constants/domain';
 
 const SubmissionStatusController = (() => {
-  const MenuAxios = axios.create({
+  const SubmissionStatusAxios = axios.create({
     baseURL: `${host}/report/submissionStatus`,
     withCredentials: true,
   });
   return {
-    fetch: async () => MenuAxios.get('').then(res => res.data),
+    fetch: async () => SubmissionStatusAxios.get('').then(res => res.data),
   };
 })();
 

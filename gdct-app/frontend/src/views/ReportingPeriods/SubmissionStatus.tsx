@@ -14,7 +14,7 @@ import {
 
 //@ts-ignore
 import ErrorBanner from '../ErrorBanner';
-import SubmissionStatusController from '../../controllers/PackageStatus';
+import SubmissionStatusController from '../../controllers/SubmissionStatus';
 //@ts-ignore
 import SubmissionNoteController from '../../controllers/submissionNote'
 import SubmissionStatus from '../../types/packagestatus';

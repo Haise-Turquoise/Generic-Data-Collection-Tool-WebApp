@@ -8,7 +8,7 @@ const programController = (() => {
     withCredentials: true,
   });
   return {
-    fetch: async (): Promise<Program> => programAxios.get('/fetch').then(res => res.data),
+    fetch: async (): Promise<Program[]> => programAxios.get('/fetch').then(res => res.data),
     create: async (program: Program): Promise<Program> =>
       programAxios.post('/create', { program }).then(res => res.data.program),
     update: async (program: Partial<Program>) => programAxios.put('/update', { program }),

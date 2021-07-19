@@ -12,6 +12,7 @@ const submissionController = (() => {
   return {
     fetchAndCreate: async (email: string): Promise<Submission[]> =>
       submissionAxios.post(`/findSubmissions`, { email }).then(res => res.data.submissions),
+    // TODO maybe should be .submissions
     updateWorkbook: async (submission: Submission, submissionNote: SubmissionNote): Promise<Submission> =>
       submissionAxios
         .post('/uploadSubmission', { submission, submissionNote })

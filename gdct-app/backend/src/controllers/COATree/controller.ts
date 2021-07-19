@@ -23,8 +23,7 @@ const COATreeController = Service([COATreeService], service => {
       const { sheetNameId } = req.body;
 
       service
-        // @ts-ignore
-        .findCOATree(new COATreeEntity({ sheetNameId }))
+        .findCOATree({ sheetNameId })
         .then((COATrees: CategoryTreeDoc[]) =>
           res.json({ COATrees: COATrees.map(COATree => ({ ...COATree, COATreeData: undefined })) }),
         )

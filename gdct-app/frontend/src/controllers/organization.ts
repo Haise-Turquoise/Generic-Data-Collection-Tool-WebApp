@@ -12,9 +12,9 @@ const orgController = (() => {
     create: async (Org: Organization): Promise<Organization> => orgAxios.post('/create', { Org }).then(res => res.data.Org),
     update: async (Org: Partial<Organization>) => orgAxios.put('/update', { Org }),
     delete: async (_id: string) => orgAxios.post('/delete', { _id }),
-    fetchByOrgGroupId: async (orgGroupId: string) =>
+    fetchByOrgGroupId: async (orgGroupId: string): Promise<Organization[]> =>
       orgAxios.post('/fetchByOrgGroupId', { orgGroupId }).then(res => res.data.organizations),
-    fetchById: async (Id: number) => orgAxios.post('/fetchById', { Id }).then(res => res.data),
+    fetchById: async (Id: number): Promise<Organization> => orgAxios.post('/fetchById', { Id }).then(res => res.data),
   };
 })();
 

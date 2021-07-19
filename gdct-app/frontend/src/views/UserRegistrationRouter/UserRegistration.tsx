@@ -97,8 +97,6 @@ const registerSchema = () =>
       .max(20, 'Username must be 6 to 20 characters long')
       .test('Unique Username', 'Username has already been used', async function (value:string) {
         const fetchData = await UserController.fetchUserByUserName(value);
-        //TODO test this
-        //@ts-ignore is controller returning wrong type?
         if (Object.keys(fetchData.user).length === 0 && fetchData.user.constructor === Object) {
           return true;
         }
