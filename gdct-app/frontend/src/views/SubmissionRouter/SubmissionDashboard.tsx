@@ -176,13 +176,11 @@ const SubmissionDashboard = ({ history }:{history:History}) => {
       });
 
       const workFlowsArray:string[] = []
-
       let filteredGrouping = [...readBaseGrouping];
       const existingPhaseSet = new Set(filteredSubmission.map(e=>e.phase));
-      console.log(readBaseGrouping)
+      // filter out the empty section that does not exist in submissions
       filteredGrouping = filteredGrouping.filter(e=>existingPhaseSet.has(e));
 
-      console.log(filteredSubmission, filteredGrouping);
 
       filteredSubmission.forEach(e => {
         const workFlowId = String(e.workflowId)
@@ -190,10 +188,11 @@ const SubmissionDashboard = ({ history }:{history:History}) => {
           workFlowsArray.push(workFlowId);
         }
       });
-    
+      
+      
       workflowController.fetchProcessesByWorkflowIds(workFlowsArray).then((workflowProcesses:WorkflowProcess[])=>{
         const processToStausMapping = new Map<string, string>();
-
+        // create a new map to map id to status name mapping
         workflowProcesses.forEach(e=>{
           const status = e.statusId.name;
           const id = String(e._id);
@@ -203,13 +202,13 @@ const SubmissionDashboard = ({ history }:{history:History}) => {
         });
 
         const baseGrouping = [...filteredGrouping];
-
+        // check if the next status is in the filtered based role group
         workflowProcesses.forEach(workflowProcess=>{
           const currentStatus = workflowProcess.statusId.name;
           workflowProcess.to.forEach(nextId=>{
             const nextStatus = processToStausMapping.get(String(nextId))!;
-            const nextIndex = baseGrouping.indexOf(nextStatus);
-            if (existingPhaseSet.has(currentStatus) &&nextIndex > -1 && !baseGrouping.includes(currentStatus)){
+            if (existingPhaseSet.has(currentStatus) && filteredGrouping.includes(nextStatus) && !baseGrouping.includes(currentStatus)){
+              const nextIndex = baseGrouping.indexOf(nextStatus)
               baseGrouping.splice(nextIndex, 0, currentStatus);
             }
           });

@@ -3,7 +3,7 @@ import BaseRepository from '../repository';
 import SheetNameModel from '../../models/SheetName';
 import TemplateRepository from '../Template';
 import SheetNameEntity from '../../entities/SheetName';
-import SheetName, { SheetNameDoc } from '../../types/sheetname';
+import SheetName, { SheetNameDoc } from '../../types/sheetName';
 import { FilterQuery } from 'mongoose';
 import { ObjectId } from 'mongodb'
 
