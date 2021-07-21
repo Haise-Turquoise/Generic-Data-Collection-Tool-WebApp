@@ -33,14 +33,15 @@ export default class UserRepository extends BaseRepository<User, UserDoc> {
   }
 
   async findById(_id: string) {
-    return UserModel.findById(_id).then((user: UserDoc) => {
+    return UserModel.findById(_id).then((user: UserDoc|null) => {
+      if (!user) return undefined;
       return new UserEntity(user);
     });
   }
 
   async findByUserName(username: string) {
     return UserModel.findOne({ username })
-      .then((user: UserDoc) => {
+      .then((user: UserDoc|null) => {
       // console.log('user',user)
       // const feedbackUser = new UserEntity(user.toObject());
       // console.log('feedbackUser',feedbackUser)
@@ -51,9 +52,10 @@ export default class UserRepository extends BaseRepository<User, UserDoc> {
     });
   }
 
-  async findByEmail(email: string) {
+  async findByEmail(email: string):Promise<UserEntity|undefined> {
     return UserModel.findOne({ email })
-      .then((user: UserDoc) => {
+      .then((user: UserDoc|null) => {
+        if (!user) return undefined
         return new UserEntity(user);
       })
       .catch((err: Error) => {
@@ -117,8 +119,9 @@ export default class UserRepository extends BaseRepository<User, UserDoc> {
   }
 
   async updatePermissionByUserEmail(email: string, permissionData: User, orgList: Organization[]) {
-    return UserModel.findOne({email}).then((user: UserDoc)=>{
-      sendPermissionChangeUserVerficationEmail(user.username, user.email)
+    return UserModel.findOne({email}).then((user: UserDoc|null)=>{
+      if (!user) throw new AppError(`Cannot find User with email ${email}`);
+      sendPermissionChangeUserVerficationEmail(user.username, user.email);
       const hashedUsername = user.hashedUsername;
       const userId = user._id;
       const username = user.username;

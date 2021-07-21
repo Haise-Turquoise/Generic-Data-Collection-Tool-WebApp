@@ -104,7 +104,7 @@ export default class WorkflowService {
 
   async findOutwardProcessesPopulated(processId: string) {
     // console.log('hi', processId)
-    const workflowProcess = await this.workflowProcessesRepository.findById(processId);
+    const workflowProcess = await this.workflowProcessesRepository.findById(processId) as any;
 
     workflowProcess.to = await this.workflowProcessesRepository.findMany(workflowProcess.to, true);
 

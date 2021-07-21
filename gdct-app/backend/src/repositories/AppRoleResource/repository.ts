@@ -2,21 +2,17 @@ import AppRoleResouceEntity from '../../entities/AppRoleResource';
 import BaseRepository from '../repository';
 import AppRoleResourceModel from '../../models/AppRoleResource';
 import AppRoleResource, { AppRoleResourceDoc } from '../../types/approleresource';
-import { FilterQuery } from 'mongoose';
 import { ObjectId } from 'mongodb'
+import AppError from '../../utils/AppError';
 export default class AppRoleResourceRepository extends BaseRepository<AppRoleResource, AppRoleResourceDoc> {
   constructor() {
     super(AppRoleResourceModel);
   }
 
   async delete(id: string) {
-    // const appRoleResource = await AppRoleResourceModel.findById(id);
-    // if (appRoleResource) {
-    //   appRoleResource.isActive = false;
-    // }
-    // return this.update(id, appRoleResource);
-    // return COAModel.findByIdAndDelete(id).then(COA => new COAEntity(COA.toObject()));
-    return AppRoleResourceModel.findByIdAndDelete(id).then((appRoleResource: AppRoleResourceDoc)=> new AppRoleResouceEntity(appRoleResource))
+    const result = await AppRoleResourceModel.findByIdAndDelete(id);
+    if (!result) throw new AppError(`Cannot delete app role resource: ID ${id} does not exist`);
+    return new AppRoleResouceEntity(result);
   }
 
   async create(appRoleResource: AppRoleResource) {

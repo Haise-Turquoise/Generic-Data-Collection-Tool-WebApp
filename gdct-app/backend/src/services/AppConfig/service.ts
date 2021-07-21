@@ -23,7 +23,7 @@ export default class AppConfigService {
   }
 
   async deleteAppConfig(id: string) {
-    return this.AppConfigRepository.delete(id);
+    return this.AppConfigRepository.deleteById(id);
   }
 
   async updateAppConfig(id: string, AppConfig: Partial<AppConfig>) {

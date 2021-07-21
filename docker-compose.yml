@@ -8,6 +8,7 @@ services:
     image: "gdct-backend"
     ports:
       - "3000:3000"
+      
   frontend:
     env_file:
         "./gdct-app/frontend/.env"
@@ -19,11 +20,3 @@ services:
       - "3003:3003"
     links:
       - "backend"
-  
-  slate:
-    build:
-      context: ./slate
-      dockerfile: ./Dockerfile
-    image: "gdct-slate"
-    links:
-      - "frontend"
