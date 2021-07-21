@@ -333,8 +333,8 @@ const TemplatePackages = () => {
     dispatch(getSubmissionPeriodsRequest());
 
     return () => {
-      dispatch(StatusesStore.actions.RESET());
-      dispatch(SubmissionPeriodsStore.actions.RESET());
+      dispatch(StatusesStore.actions.RESET(''));
+      dispatch(SubmissionPeriodsStore.actions.RESET(''));
     };
   }, [dispatch]);
 

@@ -39,6 +39,7 @@ import Template from '../../types/template';
 import Program from '../../types/program';
 import Status from '../../types/status';
 import SubmissionPeriod from '../../types/submissionperiod';
+import { state } from '../../store/types';
 // values for the form
 interface TemplateValues {
   name: string,
@@ -335,8 +336,8 @@ const TemplatePackage = ({
   const dispatch = useDispatch();
   const history = useHistory();
 
-  const { templatePackage }: { templatePackage: TemplateValues } = useSelector(state => {
-    const templatePackage = selectFactoryValueById(selectTemplatePackagesStore)(_id)(state);
+  const { templatePackage }: { templatePackage: TemplateValues } = useSelector((state: state) => {
+    const templatePackage = selectFactoryValueById(selectTemplatePackagesStore)(_id || '')(state);
     return {
       templatePackage: templatePackage || init,
     };
@@ -347,7 +348,7 @@ const TemplatePackage = ({
       dispatch(getTemplatePackagePopulatedRequest(_id));
     }
     return () => {
-      dispatch(TemplatePackagesStoreActions.RESET());
+      dispatch(TemplatePackagesStoreActions.RESET(''));
     };
   }, [dispatch, _id]);
 

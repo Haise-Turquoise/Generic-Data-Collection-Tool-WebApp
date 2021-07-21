@@ -45,6 +45,7 @@ type actionType = 'create' | 'update';
 
 //@ts-ignore
 import CreateAuditLog from '../AuditLog_Global';
+import { state } from '../../store/types';
 
 const Auditlog_Operation: string[] = [];
 
@@ -109,7 +110,7 @@ const WorkflowHeaderActions = ({ type, id }: { type: actionType; id: string }) =
 const WorkflowHeader = ({ type, id }: { type: actionType; id: string }) => {
   const dispatch = useDispatch();
 
-  let name = useSelector(state => selectWorkflowName(state), shallowEqual);
+  let name = useSelector((state: state) => selectWorkflowName(state), shallowEqual);
   const handleChangeName = useCallback(
     ({ target: { value } }) => {
       dispatch(WorkflowStoreActions.UPDATE_WORKFLOW_NAME(value));
@@ -201,7 +202,7 @@ const SelectedNodeActions = ({
 );
 const SelectedNode = ({ stateActions }: { stateActions: IFlowChartCallbacks }) => {
   const { selectedNodeId, selectedNodeValue } = useSelector(
-    state => ({
+    (state: state) => ({
       selectedNodeId: selectSelectedNodeId(state),
       selectedNodeValue: selectSelectedNodeValue(state),
     }),
@@ -209,7 +210,7 @@ const SelectedNode = ({ stateActions }: { stateActions: IFlowChartCallbacks }) =
   );
   if (!selectedNodeId) return null;
   return (
-    selectedNodeId && <SelectedNodeActions stateActions={stateActions} value={selectedNodeValue} />
+    selectedNodeId && <SelectedNodeActions stateActions={stateActions} value={selectedNodeValue || ''} />
   );
 };
 
@@ -217,7 +218,7 @@ const SelectedNode = ({ stateActions }: { stateActions: IFlowChartCallbacks }) =
 const WorkflowStatuses = () => {
   const dispatch = useDispatch();
   let { statuses, workflowFilter } = useSelector(
-    state => ({
+    (state: state) => ({
       statuses: selectFactoryRESTResponseValues(selectStatusesStore)(state),
       workflowFilter: selectWorkflowFilter(state),
       name: selectWorkflowName,
@@ -236,7 +237,7 @@ const WorkflowStatuses = () => {
     dispatch(getStatusesRequest());
 
     return () => {
-      dispatch(StatusesStoreActions.RESET());
+      dispatch(StatusesStoreActions.RESET(''));
     };
   }, []);
 
@@ -279,7 +280,7 @@ const NodeInnerCustom = ({ node }: { node: any }) => (
 
 // The flow chart of workflow
 const WorkflowPane = ({ stateActions }: { stateActions: IFlowChartCallbacks }) => {
-  const chart = useSelector(state => selectWorkflowChart(state), shallowEqual);
+  const chart = useSelector((state: state) => selectWorkflowChart(state), shallowEqual);
 
   return (
     <FlowChart
@@ -330,7 +331,9 @@ const WorkflowContainer = ({ type }: { type: actionType }) => {
   useEffect(() => {
     if (_id) dispatch(loadWorkflow(_id));
 
-    return () => dispatch(WorkflowStoreActions.RESET());
+    return () => {
+      dispatch(WorkflowStoreActions.RESET());
+    }
   }, [dispatch]);
 
   return (

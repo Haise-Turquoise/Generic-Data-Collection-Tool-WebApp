@@ -45,7 +45,7 @@ import WorkflowProcess from '../../types/workflowprocess';
 import Status from '../../types/status';
 import VisitedNode from '../../types/visitednode';
 import SubmissionNote from '../../types/submissionnote';
-import { Submission } from '../../types/submissions';
+import Submission from '../../types/submission';
 const timeOption = {
   year: 'numeric',
   month: 'numeric',
@@ -352,6 +352,7 @@ const EditSubmission = ({ history }:{history:History}) => {
       updateSubmissionStatusRequest(submission, submissionNote, role, newProcessId),
     );
 
+    //@ts-ignore odd warning here
     if (result) {
       if (!role) {
         role = 'ChangeNote';

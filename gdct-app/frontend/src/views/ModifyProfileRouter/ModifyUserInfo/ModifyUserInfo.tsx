@@ -28,6 +28,7 @@ import CreateAuditLog from '../../AuditLog_Global';
 import User from '../../../types/user';
 
 import './ModifyUserInfo.scss';
+import { state } from '../../../store/types';
 
 // The header or the title of this page
 const Header = () => (
@@ -240,10 +241,10 @@ const init = {
 const ModifyUserInfo = () => {
   const dispatch = useDispatch();
 
-  const userID = localStorage.getItem('currentUserID');
-  const email = localStorage.getItem('currentUser');
+  const userID = localStorage.getItem('currentUserID') || '';
+  const email = localStorage.getItem('currentUser') || '';
 
-  const { user } = useSelector(state => {
+  const { user } = useSelector((state: state) => {
     const user = selectFactoryValueById(selectModifyUserInfoStore)(userID)(state);
     return { user: user || init };
   }, shallowEqual);
@@ -255,7 +256,7 @@ const ModifyUserInfo = () => {
       dispatch(getUserInfoPopulatedRequest(email));
     }
     return () => {
-      dispatch(ModifyUserInfoStoreActions.RESET());
+      dispatch(ModifyUserInfoStoreActions.RESET(''));
     };
   }, [dispatch]);
 

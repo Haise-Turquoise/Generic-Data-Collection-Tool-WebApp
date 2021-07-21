@@ -181,9 +181,9 @@ const LinkProgramTable = ({
     dispatch(getAppSysRolesRequest());
     dispatch(getAppResourcesRequest());
     return () => {
-      dispatch(AppResourcesStore.actions.RESET());
-      dispatch(AppRoleResourcesStore.actions.RESET());
-      dispatch(AppSysRolesStore.actions.RESET());
+      dispatch(AppResourcesStore.actions.RESET(''));
+      dispatch(AppRoleResourcesStore.actions.RESET(''));
+      dispatch(AppSysRolesStore.actions.RESET(''));
     };
   }, [dispatch]);
 
