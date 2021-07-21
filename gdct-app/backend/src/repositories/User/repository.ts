@@ -52,10 +52,9 @@ export default class UserRepository extends BaseRepository<User, UserDoc> {
     });
   }
 
-  async findByEmail(email: string):Promise<UserEntity|undefined> {
+  async findByEmail(email: string) {
     return UserModel.findOne({ email })
-      .then((user: UserDoc|null) => {
-        if (!user) return undefined
+      .then((user: UserDoc) => {
         return new UserEntity(user);
       })
       .catch((err: Error) => {
