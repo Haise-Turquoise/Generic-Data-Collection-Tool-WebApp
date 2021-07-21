@@ -1,3 +1,4 @@
+import { Dispatch } from 'redux';
 import { unauthorized_dialog } from '../../components/Unauthorized_Dialog/Unauthorized_Dialog';
 import templatePackageController from '../../controllers/templatePackage';
 import {
@@ -14,30 +15,34 @@ import {
 
 export const getTemplatePackagesRequest = getRequestFactory(
   TemplatePackagesStore,
+  //@ts-ignore
   templatePackageController,
 );
 export const createTemplatePackageRequest = createRequestFactory(
   TemplatePackagesStore,
+  //@ts-ignore
   templatePackageController,
 );
 export const deleteTemplatePackageRequest = deleteRequestFactory(
   TemplatePackagesStore,
+  //@ts-ignore
   templatePackageController,
 );
 export const updateTemplatePackageRequest = updateRequestFactory(
   TemplatePackagesStore,
+  //@ts-ignore
   templatePackageController,
 );
 
-export const getTemplatePackagePopulatedRequest = _id => dispatch => {
-  dispatch(TemplatePackagesStoreActions.REQUEST());
+export const getTemplatePackagePopulatedRequest = (_id: string) => (dispatch: Dispatch) => {
+  dispatch(TemplatePackagesStoreActions.REQUEST(''));
 
   templatePackageController
     .fetchPopulated(_id)
     .then(templatePackage => {
       if (templatePackage === 'UNAUTHORIZED ACCESS') {
         unauthorized_dialog();
-        dispatch(TemplatePackagesStoreActions.FAIL_REQUEST());
+        dispatch(TemplatePackagesStoreActions.FAIL_REQUEST(''));
       } else dispatch(TemplatePackagesStoreActions.RECEIVE([templatePackage]));
     })
     .catch(error => {

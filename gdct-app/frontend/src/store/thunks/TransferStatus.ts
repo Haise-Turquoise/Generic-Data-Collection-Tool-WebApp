@@ -1,8 +1,9 @@
 import TransferStatusStore from '../TransferStatusStore/store';
 import TransferStatusController from '../../controllers/TransferStatus';
+import { Dispatch } from 'redux';
 
-export const startTransferRequest = minutes => dispatch => {
-  dispatch(TransferStatusStore.actions.REQUEST());
+export const startTransferRequest = (minutes: string) => (dispatch: Dispatch) => {
+  dispatch(TransferStatusStore.actions.REQUEST(''));
 
   TransferStatusController.startTransfer(minutes)
     .then(res => {
@@ -13,8 +14,8 @@ export const startTransferRequest = minutes => dispatch => {
     });
 };
 
-export const stopTransferRequest = () => dispatch => {
-  dispatch(TransferStatusStore.actions.REQUEST());
+export const stopTransferRequest = () => (dispatch: Dispatch) => {
+  dispatch(TransferStatusStore.actions.REQUEST(''));
 
   TransferStatusController.stopTransfer()
     .then(res => {
