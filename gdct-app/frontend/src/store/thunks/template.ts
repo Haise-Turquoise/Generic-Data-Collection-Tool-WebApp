@@ -52,7 +52,7 @@ export const getTemplateRequest = (_id: string) => (dispatch: Dispatch) => {
         dispatch(TemplatesStore.actions.FAIL_REQUEST('unauthorized'));
       }
       // dispatch(setExcelData(convertStateToReactState(template.templateData)));
-      dispatch(setExcelData(template.templateData));
+      dispatch(setExcelData(template?.templateData));
       dispatch(TemplatesStore.actions.RECEIVE([template]));
     })
     .catch(error => {

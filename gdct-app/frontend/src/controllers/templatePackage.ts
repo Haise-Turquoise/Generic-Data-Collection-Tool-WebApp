@@ -9,9 +9,9 @@ const templatePackageController = (() => {
   });
   return {
     fetch: async (): Promise<TemplatePackage[]> => templatePackageAxios.get('/fetch').then(res => res.data),
-    fetchTemplatePackage: async (_id: string): Promise<TemplatePackage> =>
+    fetchTemplatePackage: async (_id: string): Promise<TemplatePackage | null> =>
       templatePackageAxios.post('/fetchTemplatePackage', { _id }).then(res => res.data),
-    create: async (templatePackage: TemplatePackage): Promise<TemplatePackage> =>
+    create: async (templatePackage: TemplatePackage): Promise<TemplatePackage | null> =>
       templatePackageAxios
         .post('create', { templatePackage })
         .then(res => res.data.templatePackage),

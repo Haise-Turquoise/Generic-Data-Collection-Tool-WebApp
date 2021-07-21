@@ -9,11 +9,11 @@ const reportingPeriodController = (() => {
   });
   return {
     fetch: async (query?: Partial<ReportingPeriod>): Promise<ReportingPeriod[]> => reportingPeriodAxios.get('/fetch').then(res => res.data),
-    fetchReportingPeriod: async (_id: string): Promise<ReportingPeriod> =>
+    fetchReportingPeriod: async (_id: string): Promise<ReportingPeriod | null> =>
       reportingPeriodAxios
         .post('/fetchReportingPeriod', { _id })
         .then(res => res.data.reportingPeriod),
-    create: async (reportingPeriod: ReportingPeriod): Promise<ReportingPeriod> =>
+    create: async (reportingPeriod: ReportingPeriod): Promise<ReportingPeriod | null> =>
       reportingPeriodAxios
         .post('/create', { reportingPeriod })
         .then(res => res.data.reportingPeriod),

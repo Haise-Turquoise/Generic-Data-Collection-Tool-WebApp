@@ -144,7 +144,7 @@ const COAGroupsTable = () => {
               null,
               'Update Category Group',
               'CategoryGroup',
-              oldCOAGroup._id,
+              oldCOAGroup?._id,
               oldCOAGroup,
               COAGroup,
             );

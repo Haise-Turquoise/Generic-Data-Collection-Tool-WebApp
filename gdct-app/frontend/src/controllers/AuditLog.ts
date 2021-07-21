@@ -11,7 +11,7 @@ const AuditLogController = (() => {
 
   return {
     fetch: async (): Promise<AuditLog[]> => AuditLogAxios.get('/fetchAllAuditLogs').then(res => res.data),
-    create: async (AuditLogInfo: AuditLog): Promise<AuditLog> =>
+    create: async (AuditLogInfo: AuditLog): Promise<AuditLog | null> =>
       AuditLogAxios.post('/createAuditLog', { AuditLogInfo }).then(res => res.data),
   };
 })();

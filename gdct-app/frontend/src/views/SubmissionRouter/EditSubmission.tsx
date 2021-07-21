@@ -173,9 +173,9 @@ const EditSubmission = ({ history }:{history:History}) => {
           const promiseQuery2 = [];
           for (const workflowProcess of workflowProcesses) {
             promiseQuery2.push(
-              statusController.fetchStatus(workflowProcess.statusId).then((status:Status) => {
+              statusController.fetchStatus(workflowProcess.statusId).then((status:Status | null) => {
                 const workflowProcessCopy = cloneDeep(workflowProcess) as VisitedNode;
-                workflowProcessCopy.statusName = status.name;
+                workflowProcessCopy.statusName = status?.name || '';
                 workflowProcessCopy.toStatusesName = [];
                 return workflowProcessCopy;
               }),
@@ -224,8 +224,8 @@ const EditSubmission = ({ history }:{history:History}) => {
       workflowController
         // @ts-ignore
         .fetchProcess(location.state.detail.workflowProcessId)
-        .then((workflowProcess:WorkflowProcess) => {
-          if (workflowProcess !== undefined)
+        .then((workflowProcess:WorkflowProcess | null) => {
+          if (workflowProcess !== undefined && workflowProcess !== null)
             workflowProcess.to.forEach((process:any) => {
               const nextStepIdMapCopy: { [index:string]: string } = cloneDeep(nextStepIdMap);
               nextStepIdMapCopy[process.statusId.name] = process._id;
@@ -270,20 +270,20 @@ const EditSubmission = ({ history }:{history:History}) => {
         if (childrenSubmissions.length > 0) {
           for (const childrenSubmission of childrenSubmissions) {
             const status = await statusController.fetchStatus(childrenSubmission.statusId);
-            if (status.name == 'Submitted') {
-              setSubmissionHasBeen(status.name);
+            if (status?.name == 'Submitted') {
+              setSubmissionHasBeen(status?.name);
             } else {
               const submission = await SubmissionController.fetchSubmission(
                 location.state.detail._id,
               );
-              const status = await statusController.fetchStatus(submission.statusId);
-              setSubmissionHasBeen(status.name);
+              const status = await statusController.fetchStatus(submission?.statusId || '');
+              setSubmissionHasBeen(status?.name);
             }
           }
         } else {
           const submission = await SubmissionController.fetchSubmission(location.state.detail._id);
-          const status = await statusController.fetchStatus(submission.statusId);
-          setSubmissionHasBeen(status.name);
+          const status = await statusController.fetchStatus(submission?.statusId || '');
+          setSubmissionHasBeen(status?.name);
         }
       } catch (e) {}
     })();

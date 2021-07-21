@@ -194,7 +194,7 @@ const ColumnNamesTable = () => {
               null,
               'Update Attribute',
               'Attribute',
-              oldColumnName._id,
+              oldColumnName?._id,
               oldColumnName,
               columnName,
             );

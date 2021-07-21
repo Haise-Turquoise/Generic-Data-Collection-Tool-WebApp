@@ -12,7 +12,7 @@ const submissionNoteController = (() => {
       submissionNoteAxios
         .post(`/findSubmissionNoteBySubmissionId`, { submissionId })
         .then(res => res.data.submissionNote),
-    create: async (submissionNote: SubmissionNote): Promise<SubmissionNote> =>
+    create: async (submissionNote: SubmissionNote): Promise<SubmissionNote | null> =>
       submissionNoteAxios
         .post(`/createSubmissionNote`, { submissionNote })
         .then(res => res.data.submissionNote),

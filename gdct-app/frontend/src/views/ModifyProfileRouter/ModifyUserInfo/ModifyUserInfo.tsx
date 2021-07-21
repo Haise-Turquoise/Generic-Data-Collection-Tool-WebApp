@@ -50,7 +50,7 @@ const ProfileSchema = (originalUsername:string) =>
         // users can only do 1: not change the username, or 2: change the username to something new
         return (
           //TODO test this
-          fetchData.user.username === originalUsername || fetchData.user.username === undefined
+          fetchData.user?.username === originalUsername || fetchData.user?.username === undefined
         );
       })
       .required('Please enter a username'),
@@ -277,7 +277,7 @@ const ModifyUserInfo = () => {
       // Find the old value before updating in order to Auditlog
       (async () => {
         const oldUser = await usersController.fetchByEmail(email || '');
-        CreateAuditLog(null, 'Modify User Info', 'User', oldUser._id, oldUser, formattedUserInfo);
+        CreateAuditLog(null, 'Modify User Info', 'User', oldUser?._id, oldUser, formattedUserInfo);
       })();
 
       // Do Update

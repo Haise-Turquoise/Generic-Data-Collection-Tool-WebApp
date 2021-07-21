@@ -10,7 +10,7 @@ const submissionPeriodController = (() => {
   return {
     fetch: async (query: Partial<SubmissionPeriod>): Promise<SubmissionPeriod[]> =>
       submissionPeriodAxios.get('/fetch').then(res => res.data.submissionPeriods),
-    create: async (submissionPeriod: SubmissionPeriod): Promise<SubmissionPeriod> =>
+    create: async (submissionPeriod: SubmissionPeriod): Promise<SubmissionPeriod | null> =>
       submissionPeriodAxios
         .post('/create', { submissionPeriod })
         .then(res => res.data.submissionPeriod),

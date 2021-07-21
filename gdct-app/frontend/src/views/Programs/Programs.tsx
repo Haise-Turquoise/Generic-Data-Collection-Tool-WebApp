@@ -139,8 +139,8 @@ const ProgramsTable = () => {
           recordUpdate(program);
           // Find the old value before updating in order to Auditlog
           (async () => {
-            const oldProgram: Program = await ProgramController.fetchById(program._id);
-            CreateAuditLog(null, 'Update Program', 'Program', oldProgram._id, oldProgram, program);
+            const oldProgram: Program | null = await ProgramController.fetchById(program._id);
+            CreateAuditLog(null, 'Update Program', 'Program', oldProgram?._id, oldProgram, program);
           })();
           // Do Update
           controllerEditRow(ProgramController, setPrograms, program)

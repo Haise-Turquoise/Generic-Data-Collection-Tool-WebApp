@@ -17,7 +17,7 @@ const COATreeController = (() => {
     fetchBySheetNames: async (sheetNameIds: SheetName[]): Promise<CategoryTree[]> => 
       COATreeAxios.post(`/sheetName/fetchBySheetNames`, { sheetNameIds }).then(res => res.data.COATrees),
     fetch: async (): Promise<CategoryTree[]> => COATreeAxios.get('/fetch').then(res => res.data.COATrees),
-    create: async (COATree: CategoryTree | CategoryTree[]): Promise<CategoryTree> =>
+    create: async (COATree: CategoryTree | CategoryTree[]): Promise<CategoryTree | null> =>
       COATreeAxios.post('/create', { COATree }).then(res => res.data.COATree),
     update: async (COATree: Partial<CategoryTree>) => COATreeAxios.put('/update', { COATree }),
     delete: async (_id: string) => COATreeAxios.post('/delete', { _id }),

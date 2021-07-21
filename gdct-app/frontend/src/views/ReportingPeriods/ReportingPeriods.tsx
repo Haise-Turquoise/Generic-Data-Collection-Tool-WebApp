@@ -152,7 +152,7 @@ const ReportingPeriodsTable = () => {
               null,
               'Update Reporting Period',
               'ReportingPeriod',
-              oldReportingPeriod._id,
+              oldReportingPeriod?._id,
               oldReportingPeriod,
               reportingPeriod,
             );

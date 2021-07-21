@@ -10,16 +10,16 @@ const workflowController = (() => {
   });
   return {
     fetch: async (): Promise<Workflow[]> => workflowAxios.get('/fetch').then(res => res.data),
-    create: async (workflowData: Workflow): Promise<Workflow> =>
+    create: async (workflowData: Workflow): Promise<Workflow | null> =>
       workflowAxios.post('/create', { workflowData }).then(res => res.data.workflow),
     update: async (workflowData: Partial<Workflow>) => workflowAxios.put('/update', { workflowData }),
     delete: async (_id: string) => workflowAxios.post('/delete', { _id }),
-    fetchById: async (_id: string): Promise<Workflow> => workflowAxios.post('/fetchById', { _id }).then(res => res.data.data),
-    fetchByStatusId: async (id: string): Promise<Workflow> =>
+    fetchById: async (_id: string): Promise<Workflow | null> => workflowAxios.post('/fetchById', { _id }).then(res => res.data.data),
+    fetchByStatusId: async (id: string): Promise<Workflow | null> =>
       workflowAxios.post('/fetchByStatusId', { id }).then(res => res.data),
-    fetchOnlyWorkflowById: async (_id: string): Promise<Workflow> =>
+    fetchOnlyWorkflowById: async (_id: string): Promise<Workflow | null> =>
       workflowAxios.post('/fetchOnlyWorkflowById', { _id }).then(res => res.data),
-    fetchProcess: async (processId: string): Promise<WorkflowProcess> =>
+    fetchProcess: async (processId: string): Promise<WorkflowProcess | null> =>
       workflowAxios.post('/fetchProcess', { processId }).then(res => res.data.data),
     fetchProcesses: async (): Promise<WorkflowProcess[]> =>
       workflowAxios.get('/workflowProcesses/fetchWorkflowProcesses').then(res => res.data.data),

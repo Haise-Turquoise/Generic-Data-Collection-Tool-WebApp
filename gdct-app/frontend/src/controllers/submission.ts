@@ -13,7 +13,7 @@ const submissionController = (() => {
     fetchAndCreate: async (email: string): Promise<Submission[]> =>
       submissionAxios.post(`/findSubmissions`, { email }).then(res => res.data.submissions),
     // TODO maybe should be .submissions
-    updateWorkbook: async (submission: Submission, submissionNote: SubmissionNote): Promise<Submission> =>
+    updateWorkbook: async (submission: Submission, submissionNote: SubmissionNote): Promise<Submission | null> =>
       submissionAxios
         .post('/uploadSubmission', { submission, submissionNote })
         .then(res => res.data.submission),
@@ -24,11 +24,11 @@ const submissionController = (() => {
       role: string | undefined,
       nextProcessId: string,
       updatedBy: string,
-    ): Promise<Submission> =>
+    ): Promise<Submission | null> =>
       submissionAxios.put(`/updateSubmissionStatus`, {submission, submissionNote, role, nextProcessId, updatedBy}).then(res=>res.data.updatedSubmission),
-    fetchSubmission: async (_id: string): Promise<Submission> => 
+    fetchSubmission: async (_id: string): Promise<Submission | null> => 
       submissionAxios.post('/findSubmission', { _id }).then(res => res.data.submission),
-    fetchSubmissionReportingPeriod: async (_id: string): Promise<SubmissionPeriod> =>
+    fetchSubmissionReportingPeriod: async (_id: string): Promise<SubmissionPeriod | null> =>
       submissionAxios.post('/findReportingPeriod', { _id }).then(res => res.data.reportingPeriod),
     fetchSubmissionByParentId: async (parentId: string): Promise<Submission[]> =>
       submissionAxios

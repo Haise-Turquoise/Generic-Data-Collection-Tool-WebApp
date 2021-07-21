@@ -290,7 +290,7 @@ const TemplatePackages = () => {
               null,
               'Update Template Package',
               'TemplatePackage',
-              oldTemplatePackage._id,
+              oldTemplatePackage?._id,
               oldTemplatePackage,
               templatePackage,
             );

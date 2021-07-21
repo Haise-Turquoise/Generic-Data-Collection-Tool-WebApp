@@ -1,6 +1,7 @@
 import axios from 'axios';
 //@ts-ignore
 import { host } from '../constants/domain';
+import SubmissionStatus from '../types/packagestatus';
 
 const SubmissionStatusController = (() => {
   const SubmissionStatusAxios = axios.create({
@@ -8,7 +9,7 @@ const SubmissionStatusController = (() => {
     withCredentials: true,
   });
   return {
-    fetch: async () => SubmissionStatusAxios.get('').then(res => res.data),
+    fetch: async (): Promise<SubmissionStatus[]> => SubmissionStatusAxios.get('').then(res => res.data),
   };
 })();
 

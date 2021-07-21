@@ -9,7 +9,7 @@ const dataResumeController = (() => {
   });
   return {
     fetch: async (): Promise<DataResume[]> => dataResumeAxios.get('/fetch').then(res => res.data.dataResume),
-    create: async (dataResume: DataResume): Promise<DataResume> =>
+    create: async (dataResume: DataResume): Promise<DataResume | null> =>
       dataResumeAxios.post('/create', { dataResume }).then(res => res.data.dataResume),
     update: async (dataResume: Partial<DataResume>) => dataResumeAxios.put('/update', { dataResume }),
     delete: async (_id: string) => dataResumeAxios.post('/delete', { _id }),

@@ -370,13 +370,13 @@ const TemplatePackage = ({
     (async () => { 
       if (formattedTemplatePackage._id) {
         const oldTemplatePackage = await templatePackageController.fetchTemplatePackage(formattedTemplatePackage._id);
-        CreateAuditLog(null, "Update Template Package", "TemplatePackage", oldTemplatePackage._id, oldTemplatePackage, formattedTemplatePackage);
+        CreateAuditLog(null, "Update Template Package", "TemplatePackage", oldTemplatePackage?._id, oldTemplatePackage, formattedTemplatePackage);
       }
     })();
 
     // Do Update
     const redirect = () => { history.push('/admin/template/package') };
-    dispatch(updateTemplatePackageRequest(formattedTemplatePackage, redirect, null, true, populatedData));
+    dispatch(updateTemplatePackageRequest(formattedTemplatePackage, redirect, () => {}, true, populatedData));
   }, [dispatch, _id]);
 
   return (

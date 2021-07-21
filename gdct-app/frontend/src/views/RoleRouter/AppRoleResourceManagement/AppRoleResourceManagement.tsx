@@ -163,7 +163,7 @@ const LinkProgramTable = ({
 
   useEffect(() => {
     AppRoleResourceController.fetchAppRoleResource(_id)
-      .then((res: AppRoleResource | undefined) => {
+      .then((res: AppRoleResource | null) => {
         console.log(res)
         if (res) {
           setAppRoleResource(res)

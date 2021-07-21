@@ -10,7 +10,7 @@ const COAController = (() => {
 
   return {
     fetch: async (): Promise<Category[]> => COAAxios.get('/fetch').then(res => res.data),
-    fetchCOAbyId: async (_id: string): Promise<{ COA: Category }> => COAAxios.post('/fetchCOAById', { _id }).then(res => res.data),
+    fetchCOAbyId: async (_id: string): Promise<{ COA: Category | null }> => COAAxios.post('/fetchCOAById', { _id }).then(res => res.data),
     create: async (COA: Category | Category[]): Promise<Category | Category[]> => COAAxios.post('/create', { COA }).then(res => res.data.COA),
     update: async (COA: Partial<Category>) => COAAxios.put('/update', { COA }),
     delete: async (_id: string) => COAAxios.post('/delete', { _id }),

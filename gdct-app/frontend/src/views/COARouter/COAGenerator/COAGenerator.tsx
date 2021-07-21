@@ -122,7 +122,7 @@ const buildObjects = async (data: AllDataType) => {
       // get categoryId
       const categoryId = newCategories.map(obj => obj.id.toString());
       // get categoryGroupId
-      let foundGroup = groups.find(group => group.name === ctgGroup);
+      let foundGroup: CategoryGroup | undefined | null = groups.find(group => group.name === ctgGroup);
       if (!foundGroup) {
         foundGroup = await COAGroupController.create({
           name: ctgGroup,

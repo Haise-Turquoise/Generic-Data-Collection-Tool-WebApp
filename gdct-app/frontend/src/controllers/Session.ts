@@ -8,7 +8,7 @@ const sessionController = (() => {
     // withCredentials: true,
   });
   return {
-    fetchById: async (_id: string) => sessionAxios.post('/fetchById', { _id }).then(res => {console.log('DATA', res.data);return res.data}),
+    fetchById: async (_id: string) => sessionAxios.post('/fetchById', { _id }).then(res => res.data),
     updateExpiration: async (_id: string) =>
       sessionAxios.put('/updateExpiration', { _id }).then(res => res.data),
   };

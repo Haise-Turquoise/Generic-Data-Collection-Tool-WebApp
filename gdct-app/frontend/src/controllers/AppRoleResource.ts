@@ -10,9 +10,9 @@ const AppRoleResourceController = (() => {
   });
   return {
     fetch: async (): Promise<AppRoleResource[]> => AppRoleResourceAxios.get('/fetch').then(res => res.data),
-    fetchAppRoleResource: async (_id: string): Promise<AppRoleResource> =>
+    fetchAppRoleResource: async (_id: string): Promise<AppRoleResource | null> =>
       AppRoleResourceAxios.post('/fetchAppRoleResource', { _id }).then(res => res.data),
-    create: async (AppRoleResource: AppRoleResource): Promise<AppRoleResource> =>
+    create: async (AppRoleResource: AppRoleResource): Promise<AppRoleResource | null> =>
       AppRoleResourceAxios.post('/create', { AppRoleResource }).then(
         res => res.data.AppRoleResource,
       ),

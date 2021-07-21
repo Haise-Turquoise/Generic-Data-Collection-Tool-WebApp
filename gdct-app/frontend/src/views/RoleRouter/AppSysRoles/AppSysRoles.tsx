@@ -170,7 +170,7 @@ const AppSysRolesTable = () => {
               null,
               'Update Application System Role',
               'AppSysRole',
-              oldAppSysRole._id,
+              oldAppSysRole?._id,
               oldAppSysRole,
               appSysRole,
             );

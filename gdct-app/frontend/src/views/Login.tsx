@@ -158,8 +158,10 @@ export default function Login({ setLoggedIn }:{setLoggedIn:(flag:boolean)=>void}
     try {
       if (email && validateForm(errors)) {
         // logic to verify validity of submitter role
-        const { sysRole } = await usersController.fetchByEmail(email);
-
+        const { sysRole } = await usersController.fetchByEmail(email) || { sysRole: null };
+        if (!sysRole) {
+          return
+        }
         const possibleRoles = sysRole.reduce((acc:any, curr:SysRole) => acc.concat(curr.role), []);
         let currentRole = selectedRole;
         if (possibleRoles.length < 2) {
@@ -206,11 +208,11 @@ export default function Login({ setLoggedIn }:{setLoggedIn:(flag:boolean)=>void}
   const handleUpdateRoles = () => {
     usersController
       .fetchByEmail(email)
-      .then((data:User) => {
+      .then((data:User | null) => {
         //@ts-ignore
         setRoles(data.sysRole.map(role => role.role));
         // set selected role manually if only one available
-        if (data.sysRole.length >= 1) {
+        if (data && data.sysRole.length >= 1) {
           setSelectedRole(data.sysRole[0].role);
         }
       })
@@ -220,6 +222,7 @@ export default function Login({ setLoggedIn }:{setLoggedIn:(flag:boolean)=>void}
   // Session Timer
   const Timer = async () => {
     const sessionCheckingPeriod = await AppConfigController.fetchSessionCheckingPeriod();
+    if (!sessionCheckingPeriod) return
     const period = sessionCheckingPeriod.value;
     let i = 0;
     while (i < 60) {

@@ -10,9 +10,9 @@ const columnNameController = (() => {
   });
   return {
     fetch: async (query?: Partial<Attribute>): Promise<Attribute[]> => columnNameAxios.get('/fetch').then(res => res.data),
-    fetchAttribute: async (_id: string): Promise<Attribute> =>
+    fetchAttribute: async (_id: string): Promise<Attribute | null> =>
       columnNameAxios.post('/fetchAttribute', { _id }).then(res => res.data),
-    create: async (columnName: Attribute): Promise<Attribute> =>
+    create: async (columnName: Attribute): Promise<Attribute | null> =>
       columnNameAxios.post('/create', { columnName }).then(res => res.data.columnName),
     update: async (columnName: Partial<Attribute>) => columnNameAxios.put('/update', { columnName }),
     delete: async (_id: string) => columnNameAxios.post('/delete', { _id }),

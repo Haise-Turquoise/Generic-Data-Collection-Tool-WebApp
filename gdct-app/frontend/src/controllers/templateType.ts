@@ -9,12 +9,12 @@ const templateTypeController = (() => {
   });
   return {
     fetch: async (): Promise<TemplateType[]> => templateTypeAxios.get('/fetch').then(res => res.data),
-    fetchById: async (_id: string): Promise<TemplateType> => templateTypeAxios.post('/fetchById', { _id }).then(res => res.data),
+    fetchById: async (_id: string): Promise<TemplateType | null> => templateTypeAxios.post('/fetchById', { _id }).then(res => res.data),
     fetchByProgramIds: async (programIds: string[]): Promise<TemplateType[]> =>
       templateTypeAxios
         .post('/fetchByProgramIds', { programIds })
         .then(res => res.data.templateTypes),
-    create: async (templateType: TemplateType): Promise<TemplateType> =>
+    create: async (templateType: TemplateType): Promise<TemplateType | null> =>
       templateTypeAxios
         .post('/create', { templateType: { ...templateType, programIds: [] } })
         .then(res => res.data.templateType),

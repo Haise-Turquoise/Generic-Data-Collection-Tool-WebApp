@@ -9,15 +9,15 @@ const userController = (() => {
   });
 
   return {
-    create: async (userData: User): Promise<User> =>
+    create: async (userData: User): Promise<User | null> =>
       userAxios.post('/users/registerUser', { userData }).then(res => res.data),
-    updatePopulated: async (userData: Partial<User>): Promise<User> =>
+    updatePopulated: async (userData: Partial<User>): Promise<User | null> =>
       userAxios.put('/updatePopulatedUser', { userData }).then(res => res.data),
-    updateToBeApproved: async (userData: User): Promise<User> =>
+    updateToBeApproved: async (userData: User): Promise<User | null> =>
       userAxios.put('/updateToBeApprovedUser', { userData }).then(res => res.data),
-    updatePendingPermissions: async (userData: User): Promise<User> =>
+    updatePendingPermissions: async (userData: User): Promise<User | null> =>
       userAxios.put('/updatePendingPermissions', { userData }).then(res => res.data),
-    fetchUserByUserName: async (username: string): Promise<{user: User}> =>
+    fetchUserByUserName: async (username: string): Promise<{user: User | null}> =>
       userAxios.post('/fetchUserByUserName', { username }).then(res => res.data),
     updatePermissionByUserEmail: async (email: string, permissionData: RawData): Promise<void> =>
       userAxios.post(`/users/updatePermission`, {email, permissionData}).then(res => res.data),
