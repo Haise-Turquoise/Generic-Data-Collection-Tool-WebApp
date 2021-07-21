@@ -3,15 +3,18 @@ import BaseRepository from '../repository';
 import ReportingPeriodModel from '../../models/ReportingPeriod';
 import ReportingPeriod, { ReportingPeriodDoc } from '../../types/reportingperiod';
 import { FilterQuery } from 'mongoose';
+import AppError from '../../utils/AppError';
 
 export default class ReportPeriodRepository extends BaseRepository<ReportingPeriod, ReportingPeriodDoc> {
   constructor() {
     super(ReportingPeriodModel);
   }
   async delete(id: string) {
-    return ReportingPeriodModel.findByIdAndDelete(id).then(
-      (reportingPeriod: ReportingPeriodDoc) => new ReportingPeriodEntity(reportingPeriod),
-    );
+    return ReportingPeriodModel.findByIdAndDelete(id)
+    .then((reportingPeriod: ReportingPeriodDoc|null) =>{
+      if (!reportingPeriod) throw new AppError(`Delete failed, Item not found for ReportingPeriod item with ID: ${id}`);
+      return new ReportingPeriodEntity(reportingPeriod);
+    });
   }
 
   async create(reportingPeriod: ReportingPeriod) {
@@ -21,9 +24,11 @@ export default class ReportPeriodRepository extends BaseRepository<ReportingPeri
   }
 
   async update(id: string, reportingPeriod: Partial<ReportingPeriod>) {
-    return ReportingPeriodModel.findByIdAndUpdate(id, reportingPeriod).then(
-      (reportingPeriod: ReportingPeriodDoc) => new ReportingPeriodEntity(reportingPeriod),
-    );
+    return ReportingPeriodModel.findByIdAndUpdate(id, reportingPeriod)
+    .then((reportingPeriod: ReportingPeriodDoc|null) => {
+      if (!reportingPeriod) throw new AppError(`Update failed, Item not found for ReportingPeriod item with ID: ${id}`);
+      return new ReportingPeriodEntity(reportingPeriod)
+    });
   }
 
   async find(query: Partial<ReportingPeriod>) {

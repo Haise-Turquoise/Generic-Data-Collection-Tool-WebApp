@@ -23,7 +23,7 @@ export default class DataResumeRepository extends BaseRepository<DataResume, Dat
     const key = {
       totalCount: dataResume.totalCount,
     };
-    return DataResumeModel.findById(id).then((res: DataResumeDoc) => {
+    return DataResumeModel.findById(id).then((res: DataResumeDoc|null) => {
       if (res) {
         
         // console.log('find the matched masterValue')

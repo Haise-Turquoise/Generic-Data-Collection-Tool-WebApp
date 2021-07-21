@@ -6,6 +6,7 @@ import StatusRepository from '../Status';
 import WorkflowProcess, { WorkflowProcessDoc } from '../../types/workflowprocess';
 import { FilterQuery } from 'mongoose';
 import { ObjectID } from 'mongodb';
+import AppError from '../../utils/AppError';
 
 const populateStatusId = {
   path: 'statusId',
@@ -29,9 +30,11 @@ export default class WorkflowProcessRepository extends BaseRepository<WorkflowPr
   }
 
   async delete(id: string) {
-    return WorkflowProcessModel.findByIdAndDelete(id).then(
-      (workflowProcess: WorkflowProcessDoc) => new WorkflowProcessEntity(workflowProcess),
-    );
+    return WorkflowProcessModel.findByIdAndDelete(id)
+    .then((workflowProcess: WorkflowProcessDoc|null) => {
+      if (!workflowProcess) throw new AppError(`Delete failed, Item not found for WorkflowProcess item with ID: ${id}`);
+      return new WorkflowProcessEntity(workflowProcess);
+    });
   }
 
   async create(workflowProcess: WorkflowProcess) {
@@ -45,14 +48,17 @@ export default class WorkflowProcessRepository extends BaseRepository<WorkflowPr
     return this.statusRepository
       .validateMany(workflowProcesses.map(({ statusId }: WorkflowProcess) => statusId))
       .then(() => WorkflowProcessModel.create(workflowProcesses))
-      .then(workflowProcess => new WorkflowProcessEntity(workflowProcess)
+      // @ts-ignore
+      .then((workflowProcess) => new WorkflowProcessEntity(workflowProcess)
       );
   }
 
   async update(id: string, workflowProcess: Partial<WorkflowProcess>) {
-    return WorkflowProcessModel.findByIdAndUpdate(id, workflowProcess).then(
-      (workflowProcess: WorkflowProcessDoc) => new WorkflowProcessEntity(workflowProcess),
-    );
+    return WorkflowProcessModel.findByIdAndUpdate(id, workflowProcess)
+    .then((workflowProcess: WorkflowProcessDoc|null) => {
+      if (!workflowProcess) throw new AppError(`Update failed for workflowProcess with ID: ${id}`);
+      return new WorkflowProcessEntity(workflowProcess);
+    });
   }
 
   async deleteMany(workflowId: string) {

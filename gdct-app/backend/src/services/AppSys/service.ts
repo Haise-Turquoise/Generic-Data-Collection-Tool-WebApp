@@ -40,7 +40,9 @@ export default class AppSysService {
 
   async isRefered(id: string) {
     const appSys = await this.AppSysRepository.findById(id);
+    if (!appSys) throw new AppError(`Cannot find AppSys with ID: ${id}`);
     const appSysRole = await this.AppSysRoleRepository.find({ appSys: appSys.code });
+    if (!appSysRole) return false;
     return appSysRole.length !== 0;
   }
 }

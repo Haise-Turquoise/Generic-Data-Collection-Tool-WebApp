@@ -1,7 +1,9 @@
 import Container from 'typedi';
+import AppResource from '../../entities/AppResource';
 import COARepository from '../../repositories/COA';
 import MasterValueRepository from '../../repositories/MasterValue';
 import Category from '../../types/category';
+import AppError from '../../utils/AppError';
 
 // @Service()
 export default class COAService {
@@ -21,9 +23,10 @@ export default class COAService {
   }
 
   async deleteCOA(id: string) {
-    let res = await this.COARepository.findById(id);
-    res = await this.masterValueRepository.findByCategoryId(res.id);
-    if (!res.length) {
+    const res = await this.COARepository.findById(id);
+    if (!res) throw new AppError(`Cannot find COA item by Id ${id}`);
+    const res2 = await this.masterValueRepository.findByCategoryId(res.id);
+    if (!res2.length) {
       return this.COARepository.delete(id);
     } else {
       throw new Error("COA exists in mastervalue");

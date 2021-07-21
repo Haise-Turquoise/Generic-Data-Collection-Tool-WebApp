@@ -3,6 +3,7 @@ import OrgModel from '../../models/Organization';
 import OrgEntity from '../../entities/Organization';
 import Organization, { OrganizationDoc } from '../../types/organization';
 import { FilterQuery } from 'mongoose';
+import AppError from '../../utils/AppError';
 
 export default class OrgRepository extends BaseRepository<Organization, OrganizationDoc> {
   constructor() {
@@ -10,7 +11,11 @@ export default class OrgRepository extends BaseRepository<Organization, Organiza
   }
 
   async delete(id: string) {
-    return OrgModel.findByIdAndDelete(id).then((Org: OrganizationDoc) => new OrgEntity(Org));
+    return OrgModel.findByIdAndDelete(id)
+    .then((Org: OrganizationDoc|null) => {
+      if (!Org) throw new AppError(`Delete failed, Item not found for Org item with ID: ${id}`);
+      return new OrgEntity(Org);
+    });
   }
 
   async create(Org: Organization) {
@@ -18,9 +23,11 @@ export default class OrgRepository extends BaseRepository<Organization, Organiza
   }
 
   async update(id: string, Org: Partial<Organization>) {
-    return OrgModel.findByIdAndUpdate(id, Org, { new: true }).then(
-      (org: OrganizationDoc) => new OrgEntity(org),
-    );
+    return OrgModel.findByIdAndUpdate(id, Org, { new: true })
+    .then((org: OrganizationDoc|null) => {
+      if (!org) throw new AppError(`Update failed, Item not found for Org item with ID: ${id}`);
+      return new OrgEntity(org);
+    });
   }
 
   async find(query: Partial<Organization>) {

@@ -35,7 +35,7 @@ export default class UsersRepository extends BaseRepository<User, UserDoc> {
       isActive,
       timestamp,
       updatedBy,
-    }).then((user: UserDoc) => new UserModel(user));
+    }).then((user: UserDoc|null) => new UserModel(user));
   }
 
   async find(query: Partial<User>) {
@@ -72,7 +72,11 @@ export default class UsersRepository extends BaseRepository<User, UserDoc> {
   }
 
   async delete(id: string) {
-    return UserModel.findByIdAndDelete(id).then((user: UserDoc) => new UsersEntity(user));
+    return UserModel.findByIdAndDelete(id)
+    .then((user: UserDoc|null) => {
+      if (!user) throw new AppError(`Delete failed, Item not found for Users item with ID: ${id}`)
+      return new UsersEntity(user)
+    });
   }
 
   async findByEmail(email: string) {

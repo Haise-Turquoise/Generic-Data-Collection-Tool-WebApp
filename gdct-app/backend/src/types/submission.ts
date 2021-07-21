@@ -2,7 +2,6 @@ import { ObjectId } from 'mongodb';
 import { Document } from 'mongoose';
 
 export default interface Submission {
-  id: number;
   templateId: ObjectId;
   templatePackageId: ObjectId;
   name: string;
@@ -27,5 +26,6 @@ export default interface Submission {
 }
 
 export interface SubmissionDoc extends Submission, Document {
+  _id:ObjectId
   id: number;
 }

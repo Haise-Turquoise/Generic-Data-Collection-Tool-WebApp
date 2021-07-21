@@ -46,7 +46,8 @@ export default class UserRepository extends BaseRepository<User, UserDoc> {
       // const feedbackUser = new UserEntity(user.toObject());
       // console.log('feedbackUser',feedbackUser)
       if (!user) {
-        return {};
+        throw new AppError(`Cannot find user with username ${username}`);
+        ;
       }
       return new UserEntity(user);
     });
@@ -54,7 +55,8 @@ export default class UserRepository extends BaseRepository<User, UserDoc> {
 
   async findByEmail(email: string) {
     return UserModel.findOne({ email })
-      .then((user: UserDoc) => {
+      .then((user: UserDoc|null) => {
+        if (!user) throw new AppError(`Query failed, User not found with email: ${email}`)
         return new UserEntity(user);
       })
       .catch((err: Error) => {
@@ -100,14 +102,14 @@ export default class UserRepository extends BaseRepository<User, UserDoc> {
       }
     );
   }
-  async modifyUserToBeApproved(_id: string, { toBeApproved }: User) {
+  async modifyUserToBeApproved(_id: string|ObjectId, { toBeApproved }: UserEntity) {
     return UserModel.findOneAndUpdate({ _id: _id }, 
       { 
         toBeApproved: toBeApproved,
       }
     );
   }
-  async modifyUserPendingPermissions(_id: ObjectId, { sysRole, isActive, pendingPermissions }: User) {
+  async modifyUserPendingPermissions(_id: ObjectId, { sysRole, isActive, pendingPermissions }: UserEntity) {
     return UserModel.findOneAndUpdate({ _id: _id }, 
       { 
         sysRole: sysRole,

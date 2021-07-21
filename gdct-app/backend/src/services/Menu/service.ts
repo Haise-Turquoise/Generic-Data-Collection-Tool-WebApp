@@ -52,6 +52,7 @@ export default class MenuService {
     if (!role) {
       throw new AppError(i18n.__('Auth.service.profile.NotAuthenticated'), 400);
     }
+    // @ts-ignore
     return this.findMenu().then((menus: PopulatedMenu[]) => {
       const filteredMenus = [];
       for (const menu of menus) {

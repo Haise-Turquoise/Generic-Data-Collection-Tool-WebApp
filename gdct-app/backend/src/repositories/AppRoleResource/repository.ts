@@ -34,12 +34,15 @@ export default class AppRoleResourceRepository extends BaseRepository<AppRoleRes
     })
 
     return AppRoleResourceModel.findByIdAndUpdate(id, appRoleResource).then(
-      (appRoleResource: AppRoleResourceDoc) => new AppRoleResouceEntity(appRoleResource),
-    );
+      (appRoleResource: AppRoleResourceDoc|null) => {
+        if (!appRoleResource) throw new AppError(`Update AppoleResource Failed: Cannot update ID: ${id} to ${appRoleResource} `);
+        return new AppRoleResouceEntity(appRoleResource);
+      });
   }
 
   async find(query: Partial<AppRoleResource>) {
-    return AppRoleResourceModel.find(query).then((appRoleResources: AppRoleResourceDoc[]) => {
+    return AppRoleResourceModel.find(query).then((appRoleResources: AppRoleResourceDoc[]|null) => {
+      if (!appRoleResources) throw new AppError(`Query failed for AppRoleResouece with query: ${query}`);
       return appRoleResources.map(
         appRoleResource => new AppRoleResouceEntity(appRoleResource),
       );
@@ -47,13 +50,16 @@ export default class AppRoleResourceRepository extends BaseRepository<AppRoleRes
   }
 
   async findById(_id: string) {
-    return AppRoleResourceModel.findById(_id).then((appRoleResource: AppRoleResourceDoc) => {
+    return AppRoleResourceModel.findById(_id).then((appRoleResource: AppRoleResourceDoc|null) => {
+      if (!appRoleResource) throw new AppError(`Query failed for AppRoleResouece with ID: ${_id}`);
       return new AppRoleResouceEntity(appRoleResource);
     });
   }
 
   async findByAppSysRoleId(RoleId: string | ObjectId) {
-    return AppRoleResourceModel.findOne({ 'appSysRoleId.roleId': RoleId }).then((appRoleResource: AppRoleResourceDoc) => {
+    return AppRoleResourceModel.findOne({ 'appSysRoleId.roleId': RoleId })
+    .then((appRoleResource: AppRoleResourceDoc|null) => {
+      if (!appRoleResource) throw new AppError(`Query failed for AppRoleResouece with Role ID: ${RoleId}`);
       return new AppRoleResouceEntity(appRoleResource);
     });
   }

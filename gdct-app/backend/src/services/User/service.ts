@@ -14,6 +14,8 @@ import { AppSysRoleDoc } from '../../types/appsysrole';
 import { ParsedQs } from 'qs';
 import { Request } from 'express';
 import { ObjectId } from 'mongodb';
+import AppError from '../../utils/AppError';
+import UserEntity from '../../entities/User';
 
 type queryParam = string | string[] | ParsedQs | ParsedQs[] | undefined
 
@@ -88,6 +90,7 @@ export default class UserService {
 
 
       const userInfo = await this.UserRepository.findByEmail(registerData.email)
+      if (!userInfo) throw new AppError(`Cannot find user Info with data ${registerData.email}`)
       const userInfoCopy = cloneDeep(userInfo)
       userInfoCopy.pendingPermissions.push(template)
       await this.UserRepository.modifyUserPendingPermissions(userInfo._id,userInfoCopy)
@@ -136,6 +139,7 @@ export default class UserService {
   async sendActiveEmail(approve: queryParam, _id: queryParam, orgId: queryParam) {
     let checkActive = true;
     this.UserRepository.findById(_id?.toString() || '').then(user => {
+      if (!user) throw new AppError(`User not found for user id ${_id}`);
       if (approve == 'true') {
         user.sysRole.forEach((sysRole: User["sysRole"][0]) => {
           sysRole.org.forEach(org => {
@@ -146,7 +150,8 @@ export default class UserService {
         if (checkActive) {
           sendUserActiveEmail(user);
         }
-        this.UserRepository.updateSysRole(_id?.toString() || '', user.sysRole).then(model => {});
+        //@ts-ignore
+        this.UserRepository.updateSysRole(_id?.toString() || '', user.sysRole);
         return 'You have approved the user. The user will active the account by email.';
       }
       sendUserRejectEmail(user);
@@ -160,6 +165,8 @@ export default class UserService {
     // need to finish the logic, replace appSys with tempAppSys, clean the tempAppSys, newTemplates. Set the newPermissionPending to false
     let checkActive = true;
     this.UserRepository.findById(_id?.toString() || '').then(user => {
+      if (!user) throw new AppError(`Cannot find user by ID ${_id}.`);
+      
       if (approve == 'true') {
         // user.sysRole.forEach(sysRole => {
         //   sysRole.org.forEach(org => {
@@ -213,8 +220,7 @@ export default class UserService {
 
   //TODO not sure what permissionData is here
   async deleteUserPermission(email: string, permissionData: any) {
-    console.log(permissionData)
-    const userCopy: User = await this.UserRepository.findByEmail(email)
+    const userCopy: UserEntity|void = await this.UserRepository.findByEmail(email)
     if (!userCopy) {
       return null
     }
@@ -320,6 +326,7 @@ export default class UserService {
 
 
       const userInfo = await this.UserRepository.findByEmail(email)
+      if (!userInfo) throw new AppError(`User not found with email ${email}`);
       const userInfoCopy = cloneDeep(userInfo)
       userInfoCopy.pendingPermissions.push(template)
       await this.UserRepository.modifyUserPendingPermissions(userInfo._id,userInfoCopy)

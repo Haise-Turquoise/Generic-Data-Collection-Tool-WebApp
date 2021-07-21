@@ -4,6 +4,7 @@ import SubmissionModel from '../../models/Submission';
 import Submission, { SubmissionDoc } from '../../types/submission';
 import { ObjectId } from 'mongodb';
 import { FilterQuery } from 'mongoose';
+import AppError from '../../utils/AppError';
 
 export default class SubmissionRepository extends BaseRepository<Submission, SubmissionDoc> {
   constructor() {
@@ -11,9 +12,11 @@ export default class SubmissionRepository extends BaseRepository<Submission, Sub
   }
 
   async delete(id: string) {
-    return SubmissionModel.findByIdAndDelete(id).then(
-      (submission: SubmissionDoc) => new SubmissionEntity(submission),
-    );
+    return SubmissionModel.findByIdAndDelete(id)
+    .then((submission: SubmissionDoc|null) =>{
+      if (!submission) throw new AppError(`Delete failed, Item not found for submission item with ID: ${id}`);
+      return new SubmissionEntity(submission)
+    });
   }
 
   async create(submission: Submission) {
@@ -23,9 +26,11 @@ export default class SubmissionRepository extends BaseRepository<Submission, Sub
   }
 
   async update(id: string, submission: Partial<Submission>) {
-    return SubmissionModel.findByIdAndUpdate(id, submission).then(
-      (submission: SubmissionDoc) => new SubmissionEntity(submission),
-    ); 
+    return SubmissionModel.findByIdAndUpdate(id, submission)
+    .then((submission: SubmissionDoc|null) => {
+      if (!submission) throw new AppError(`Update failed, Item not found for submission item with ID: ${id}`);
+      return new SubmissionEntity(submission)
+    }); 
   }
 
   async findByTemplatePackageId(templatePackageId: ObjectId) {
@@ -127,7 +132,7 @@ export default class SubmissionRepository extends BaseRepository<Submission, Sub
   }
 
   async findByParentId(parentId: string) {
-    return SubmissionModel.find({ parentId }).then((submission: SubmissionDoc)=>{
+    return SubmissionModel.find({ parentId }).then((submission: SubmissionDoc[])=>{
       if(submission == undefined){return {}}
       else{
         return submission
@@ -154,7 +159,7 @@ export default class SubmissionRepository extends BaseRepository<Submission, Sub
     return SubmissionModel.findByIdAndUpdate( _id, { workbookData })
   }
 
-  async findOneByTemplateIDs(templateIDs: ObjectId[]) {
+  async findOneByTemplateIDs(templateIDs: ObjectId[]|string[]) {
     return SubmissionModel.findOne({ templateId:{$in:templateIDs}}, {_id:1});
   }
 
