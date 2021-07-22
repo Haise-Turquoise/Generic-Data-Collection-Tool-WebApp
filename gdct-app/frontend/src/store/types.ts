@@ -74,19 +74,108 @@ export interface UserRegistrationStore {
   },
   snackbarMessage: string,
   activeStep: number,
-  organizationGroup: Organization[],
+  organizationGroup: [] | string,
   helperState: boolean,
   isSnackbarOpen: boolean,
-  //TODO check this
-  appSysOptions: AppSys[],
-  organizationGroupOptions: any[],
-  organizationOptions: any[],
-  programOptions: any[],
-  userOrganizations: any[],
-  userPrograms: any[],
-  userSubmissions: any[],
+  appSysOptions: {
+    label: string,
+    value: {
+      name: string,
+      _id: string,
+    }
+  }[],
+  organizationGroupOptions: {
+    label: string,
+    value: {
+      name: string,
+      _id: string,
+    }
+  }[],
+  organizationOptions: {
+    label: string,
+    value: number,
+    information: {
+      _id: string,
+      name: string,
+      id: number,
+      orgGroupId: string,
+      programId: string[],
+      authorizedPerson: {
+        name: string,
+        email: string,
+      }
+    }
+  }[],
+  programOptions: {
+    information: {
+      org: {
+        name: string,
+        id: number,
+      }
+    }
+  }[],
+  userOrganizations: { _id: string }[],
+  userPrograms: { _id: string }[],
+  userSubmissions: {
+    organization: {
+      name: string,
+      id: number,
+      authorizedPerson: {
+        name: string,
+        email: string,
+      },
+    },
+    program: {
+      name: string,
+      code: string,
+      _id: string,
+    },
+    submission: {
+      name: string,
+      _id: string,
+    },
+    approveAvailable: boolean,
+    reviewAvailable: boolean,
+    submitAvailable: boolean,
+    inputAvailable: boolean,
+    viewCognosAvailable: boolean,
+    approve: boolean,
+    review: boolean,
+    submit: boolean,
+    input: boolean,
+    view: boolean,
+    viewCognos: boolean,
+    index: number,
+  }[],
   tempUserSubmissions: any[],
-  userPermissions: any[],
+  userPermissions: {
+    organization: {
+      name: string,
+      id: number,
+      authorizedPerson: {
+        name: string,
+        email: string,
+      },
+    },
+    program: {
+      name: string,
+      code: string,
+      _id: string,
+    },
+    submission: {
+      name: string,
+      _id: string,
+    },
+    permission: string,
+    approve: boolean,
+    review: boolean,
+    submit: boolean,
+    view: boolean,
+    viewCognos: boolean,
+    input: boolean,
+    status: string,
+    appSys: string,
+  }[],
   ableToComplete: boolean,
   searchKey: string,
   userAppSys: string,

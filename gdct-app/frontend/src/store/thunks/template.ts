@@ -8,7 +8,6 @@ import { extractReactAndWorkbookState } from '../../tools/excel';
 import TemplatesStore from '../TemplatesStore/store';
 
 import { getRequestFactory, deleteRequestFactory, updateRequestFactory } from './common/REST';
-//@ts-ignore
 import { selectFactoryValueById } from '../common/REST/selectors';
 import { selectTemplatesStore } from '../TemplatesStore/selectors';
 import { unauthorized_dialog } from '../../components/Unauthorized_Dialog/Unauthorized_Dialog';

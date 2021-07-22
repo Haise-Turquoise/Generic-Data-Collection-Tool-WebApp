@@ -53,9 +53,7 @@ export const updateWorkbookRequest = (
 //   SubmissionsStore,
 //   submissionController
 // )
-//@ts-ignore
 export const deleteSubmissionRequest = deleteRequestFactory(SubmissionsStore, submissionController);
-//@ts-ignore
 export const updateSubmissionRequest = updateRequestFactory(SubmissionsStore, submissionController);
 
 // Similar to submission

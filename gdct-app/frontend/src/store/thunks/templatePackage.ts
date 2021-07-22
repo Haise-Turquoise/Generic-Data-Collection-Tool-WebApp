@@ -15,17 +15,14 @@ import {
 
 export const getTemplatePackagesRequest = getRequestFactory(
   TemplatePackagesStore,
-  //@ts-ignore
   templatePackageController,
 );
 export const createTemplatePackageRequest = createRequestFactory(
   TemplatePackagesStore,
-  //@ts-ignore
   templatePackageController,
 );
 export const deleteTemplatePackageRequest = deleteRequestFactory(
   TemplatePackagesStore,
-  //@ts-ignore
   templatePackageController,
 );
 export const updateTemplatePackageRequest = updateRequestFactory(

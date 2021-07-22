@@ -4,7 +4,7 @@ import { RestStateType, ControllerType } from '../../types';
 
 export const customRequestFactory = (
     store: Slice<RestStateType, SliceCaseReducers<RestStateType>, string>,
-    controller: ControllerType,
+    controller: { fetch: ControllerType["fetch"] },
   ) => (query: any) => (dispatch: Dispatch) => {
   dispatch(store.actions.REQUEST(''));
 
@@ -18,7 +18,7 @@ export const customRequestFactory = (
 
 export const getRequestFactory = (
     store: Slice<RestStateType, SliceCaseReducers<RestStateType>, string>,
-    controller: ControllerType,
+    controller: { fetch: ControllerType["fetch"], fetchPopulated?: ControllerType["fetchPopulated"] },
   ) => (
   query?: any,
   resolve?: () => void,
@@ -44,7 +44,7 @@ export const getRequestFactory = (
 
 export const createRequestFactory = (
     store: Slice<RestStateType, SliceCaseReducers<RestStateType>, string>,
-    controller: ControllerType,
+    controller: { create: ControllerType["create"], createPopulated?: ControllerType["createPopulated"] },
   ) => (
   value: unknown,
   resolve: (value: unknown) => void,
@@ -66,7 +66,7 @@ export const createRequestFactory = (
 
 export const deleteRequestFactory = (
     store: Slice<RestStateType, SliceCaseReducers<RestStateType>, string>,
-    controller: ControllerType,
+    controller: { delete: ControllerType["delete"], deletePopulated?: ControllerType["deletePopulated"] },
   ) => (
   _id: string,
   resolve: () => void,
@@ -88,7 +88,7 @@ export const deleteRequestFactory = (
 
 export const updateRequestFactory = (
     store: Slice<RestStateType, SliceCaseReducers<RestStateType>, string>,
-    controller: ControllerType,
+    controller: { update: ControllerType["update"], updatePopulated?: ControllerType["updatePopulated"] },
   ) => (
   value: unknown,
   resolve = (value?: any) => {},
@@ -99,7 +99,6 @@ export const updateRequestFactory = (
   dispatch(store.actions.REQUEST(''));
   controller[isPopulated && controller.updatePopulated ? 'updatePopulated' : 'update']!(value)
     .then(values => {
-      //@ts-ignore what's happening here
       if (values.data === 'UNAUTHORIZED ACCESS') {
         unauthorized_dialog();
       } else {
