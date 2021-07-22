@@ -36,7 +36,6 @@ export const deleteCOATreeBySheetName = (sheetName: SheetName, resolve: () => vo
   (dispatch: Dispatch, getState: () => state) => {
   dispatch(DetectEmptyTreeStore.actions.REQUEST(''));
   const {
-    //@ts-ignore how do we get response here
     DetectEmptyTreeStore: { response },
   } = getState();
   const newResponse = cloneDeep(response);

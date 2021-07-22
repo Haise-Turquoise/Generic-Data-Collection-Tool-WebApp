@@ -80,7 +80,6 @@ export const updateSubmissionExcelRequest = () => (dispatch: Dispatch, getState:
 
   const {
     SubmissionsStore: {
-      //@ts-ignore how do we get this
       response: { Values },
     },
     ui: {

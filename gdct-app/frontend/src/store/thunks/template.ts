@@ -64,7 +64,6 @@ export const updateTemplateExcelRequest = () => (dispatch: Dispatch, getState: (
 
   const {
     TemplatesStore: {
-      //@ts-ignore how do we get this
       response: { Values },
     },
     ui: {
