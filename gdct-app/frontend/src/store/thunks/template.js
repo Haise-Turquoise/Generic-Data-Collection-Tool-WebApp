@@ -1,5 +1,5 @@
 import cloneDeep from 'clone-deep';
-import { setExcelData } from '../actions/ui/excel/commands';
+// import { setExcelData } from '../actions/ui/excel/commands';
 
 import templateController from '../../controllers/template';
 import TemplatesStore from '../TemplatesStore/store';
@@ -43,7 +43,7 @@ export const getTemplateRequest = _id => dispatch => {
         dispatch(TemplatesStore.actions.FAIL_REQUEST());
       }
       // dispatch(setExcelData(convertStateToReactState(template.templateData)));
-      dispatch(setExcelData(template.templateData));
+      // dispatch(setExcelData(template.templateData));
       dispatch(TemplatesStore.actions.RECEIVE([template]));
     })
     .catch(error => {
