@@ -9,11 +9,12 @@ const statusController = (() => {
   });
   return {
     fetch: async _ => statusAxios.get('/fetch').then(res => res.data),
-    fetchStatus: async _id => statusAxios.post('/fetchStatus', { _id }).then(res => res.data.status),
+    fetchStatus: async _id =>
+      statusAxios.post('/fetchStatus', { _id }).then(res => res.data.status),
     create: async status => statusAxios.post('/create', { status }).then(res => res.data.status),
     update: async status => statusAxios.put('/update', { status }),
     delete: async _id => statusAxios.post('/delete', { _id }),
-    findStatusByID: async _id => statusAxios.post('/findStatusByID', { _id }).then(res => res.data)
+    findStatusByID: async _id => statusAxios.post('/findStatusByID', { _id }).then(res => res.data),
   };
 })();
 

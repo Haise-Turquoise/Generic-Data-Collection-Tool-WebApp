@@ -2,7 +2,7 @@ import axios from 'axios';
 
 import { host } from '../constants/domain';
 
-const TransferStatusController = (()=>{
+const TransferStatusController = (() => {
   const transferStatusAxios = axios.create({
     baseURL: `${host}/transferManager`,
     withCredentials: true,

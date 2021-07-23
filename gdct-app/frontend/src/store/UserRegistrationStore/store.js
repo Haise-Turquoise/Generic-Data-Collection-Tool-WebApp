@@ -30,7 +30,7 @@ const initialState = {
   userOrganizations: [],
   userPrograms: [],
   userSubmissions: [],
-  tempUserSubmissions:[],
+  tempUserSubmissions: [],
   userPermissions: [],
   ableToComplete: false,
   searchKey: '',

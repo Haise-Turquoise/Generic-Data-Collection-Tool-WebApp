@@ -53,15 +53,17 @@ export default {
   Profile: <AccountCircleIcon style={MenuItemStyle} />,
   'Submission Permissions': <EnhancedEncryptionIcon style={SubMenuItemStyle} />,
   'Personal Details': <SettingsApplicationsIcon style={SubMenuItemStyle} />,
-  'Request Management':<AccountCircleIcon style={MenuItemStyle} />,
+  'Request Management': <AccountCircleIcon style={MenuItemStyle} />,
 
   Logout: <ExitToAppIcon style={MenuItemStyle} />,
   // Main Menu Report
   Report: <ReportIcon />,
   Reports: <ReportIcon style={MenuItemStyle} />,
   // Main Menu Template Design
-  'Template Design': <FileCopyIcon style={{ fontSize: '1.4rem', marginTop: '0.1rem' }}/>,
-  'Template Designs': <FileCopyIcon style={{ fontSize: '1.2rem', marginTop: '0.1rem', marginLeft: '1.2rem' }}/>,
+  'Template Design': <FileCopyIcon style={{ fontSize: '1.4rem', marginTop: '0.1rem' }} />,
+  'Template Designs': (
+    <FileCopyIcon style={{ fontSize: '1.2rem', marginTop: '0.1rem', marginLeft: '1.2rem' }} />
+  ),
   // Main Admin
   Admin: <SupervisorAccountIcon />,
 
@@ -130,5 +132,5 @@ export default {
   Download: <CloudDownloadIcon style={MenuItemStyle} />,
   Upload: <CloudUploadIcon style={MenuItemStyle} />,
   'Business rule configure': <ForumIcon style={MenuItemStyle} />,
-  'ETL Setting': <TransitEnterexitIcon style={MenuItemStyle}/>
+  'ETL Setting': <TransitEnterexitIcon style={MenuItemStyle} />,
 };

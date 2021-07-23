@@ -10,7 +10,8 @@ const COAGroupController = (() => {
   return {
     fetch: async _ => COAGroupAxios.get('/fetch').then(res => res.data),
     fetchCOAGroup: async _id => COAGroupAxios.post('/fetchCOAGroup', { _id }).then(res => res.data),
-    create: async COAGroup => COAGroupAxios.post('/create', { COAGroup }).then(res => res.data.COAGroup),
+    create: async COAGroup =>
+      COAGroupAxios.post('/create', { COAGroup }).then(res => res.data.COAGroup),
     update: async COAGroup => COAGroupAxios.put('update', { COAGroup }),
     delete: async _id => COAGroupAxios.post('/delete', { _id }),
   };

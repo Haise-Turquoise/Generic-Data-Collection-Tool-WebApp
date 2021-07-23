@@ -15,15 +15,13 @@ const TemplateDialog = ({ selectedTemplates, shouldClose, handleChange }) => {
   const dispatch = useDispatch();
   const [readTemplates, setTemplates] = useState([]);
 
-  const { isTemplateDialogOpen, templates} = useSelector(
+  const { isTemplateDialogOpen, templates } = useSelector(
     state => ({
       isTemplateDialogOpen: selectIsTemplateDialogOpen(state),
       templates: selectFactoryRESTResponseTableValues(selectTemplatesStore)(state),
     }),
     shallowEqual,
   );
-  
-  
 
   const handleClose = useCallback(() => dispatch(DialogsStore.actions.CLOSE_TEMPLATE_DIALOG()), [
     dispatch,
@@ -41,17 +39,23 @@ const TemplateDialog = ({ selectedTemplates, shouldClose, handleChange }) => {
     if (isTemplateDialogOpen && !templates.length) dispatch(getTemplatesRequest());
   }, [dispatch, isTemplateDialogOpen]);
 
-  useEffect(()=>{
-    if (templates.length > 0){
-      StatusController.fetch().then(data=>{
-        data=data.filter(e=>e.name == 'Approved')[0];
-        workflowController.fetchByStatusId(data._id).then(item=>{
-          const itemIds=item.map(e=>String(e._id));
-          setTemplates(templates.filter(template=>itemIds.includes(String(template.workflowProcessId))));
-        })
-      })
+  useEffect(() => {
+    if (templates.length > 0) {
+      const workflowProcessArray = templates.map(e => e.workflowProcessId);
+
+      StatusController.fetch().then(data => {
+        data = data.filter(e => e.name == 'Approved')[0];
+        workflowController.fetchProcessesByIds(workflowProcessArray).then(workflowPrcesses => {
+          const endedProcesses = workflowPrcesses.filter(e => e.to.length === 0);
+          const endedIdArray = endedProcesses.map(e => String(e._id));
+
+          setTemplates(
+            templates.filter(template => endedIdArray.includes(String(template.workflowProcessId))),
+          );
+        });
+      });
     }
-  },[templates])
+  }, [templates]);
 
   const columns = useMemo(
     () => [

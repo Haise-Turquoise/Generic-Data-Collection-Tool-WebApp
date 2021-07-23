@@ -28,7 +28,6 @@ const ProgramDialog = ({ selectedPrograms, handleChange, shouldClose = true }) =
   const handleSelect = useCallback(
     data => {
       handleChange(data);
-      console.log('data changes')
       if (shouldClose) handleClose();
     },
     [dispatch, shouldClose, handleChange],
@@ -49,13 +48,16 @@ const ProgramDialog = ({ selectedPrograms, handleChange, shouldClose = true }) =
   );
 
   const getKey = selectedPrograms ? t => t._id : undefined;
+  
+  // Sort the programs alphabaticly 
+  const sortedPrograms = programs.sort((a, b)=>a.name.localeCompare(b.name))
 
   return (
     <SelectableTableDialog
       title="Program"
       columns={columns}
       isOpen={isProgramDialogOpen}
-      data={programs}
+      data={sortedPrograms}
       getKey={getKey}
       selectedKeys={selectedPrograms}
       handleClose={handleClose}

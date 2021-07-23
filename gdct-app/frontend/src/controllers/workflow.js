@@ -9,14 +9,30 @@ const workflowController = (() => {
   });
   return {
     fetch: async () => workflowAxios.get('/fetch').then(res => res.data),
-    create: async workflowData => workflowAxios.post('/create', { workflowData }).then(res => res.data.workflow),
+    create: async workflowData =>
+      workflowAxios.post('/create', { workflowData }).then(res => res.data.workflow),
     update: async workflowData => workflowAxios.put('/update', { workflowData }),
     delete: async _id => workflowAxios.post('/delete', { _id }),
     fetchById: async _id => workflowAxios.post('/fetchById', { _id }).then(res => res.data.data),
-    fetchByStatusId: async id => workflowAxios.post('/fetchByStatusId', { id }).then(res => res.data),
-    fetchOnlyWorkflowById: async _id => workflowAxios.post('/fetchOnlyWorkflowById', { _id }).then(res => res.data),
-    fetchProcess: async processId => workflowAxios.post('/fetchProcess', { processId }).then(res => res.data.data),
-    fetchProcesses: async () => workflowAxios.get('/workflowProcesses/fetchWorkflowProcesses').then(res => res.data.data),
+    fetchByStatusId: async id =>
+      workflowAxios.post('/fetchByStatusId', { id }).then(res => res.data),
+    fetchOnlyWorkflowById: async _id =>
+      workflowAxios.post('/fetchOnlyWorkflowById', { _id }).then(res => res.data),
+    fetchProcess: async processId =>
+      workflowAxios.post('/fetchProcess', { processId }).then(res => res.data.data),
+    fetchProcesses: async () =>
+      workflowAxios.get('/workflowProcesses/fetchWorkflowProcesses').then(res => res.data.data),
+    fetchProcessesByWorkflowId: async workflowId =>
+      workflowAxios
+        .post('./fetchWorkflowProcessesByWorkflowId', { workflowId })
+        .then(res => res.data.data),
+    fetchProcessesByIds: async ids =>
+      workflowAxios.post('/fetchProcessByIds', { ids }).then(res => res.data.data),
+
+    fetchProcessesByWorkflowIds: async workflowIds =>
+    workflowAxios
+      .post('/fetchWorkflowProcessesByWorkflowIds', { workflowIds })
+      .then(res => res.data.data),
   };
 })();
 

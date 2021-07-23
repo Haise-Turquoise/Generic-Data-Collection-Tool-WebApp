@@ -8,7 +8,8 @@ const organizationGroupController = (() => {
     withCredentials: true,
   });
   return {
-    fetch: async () => organizationGroupAxios.get(`/searchOrganizationGroup`).then(res => res.data.orgGroups),
+    fetch: async () =>
+      organizationGroupAxios.get(`/searchOrganizationGroup`).then(res => res.data.orgGroups),
   };
 })();
 

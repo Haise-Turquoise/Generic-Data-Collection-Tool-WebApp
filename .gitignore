@@ -6,6 +6,9 @@
 # Ignore build from frontend
 build
 
+# Ignore ts output folders
+dist
+
 # Ignore node/npm/yarn related files
 yarn.lock
 node_modules

@@ -2,16 +2,12 @@ import React, { useCallback, useState } from 'react';
 import { shallowEqual, useDispatch, useSelector } from 'react-redux';
 import Typography from '@material-ui/core/Typography';
 import Paper from '@material-ui/core/Paper';
-import TransferStatusController from '../../controllers/TransferStatus';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
+import TransferStatusController from '../../controllers/TransferStatus';
 import { selectFactoryRESTResponseTableValues } from '../../store/common/REST/selectors';
 import { selectTransferStatusStore } from '../../store/TransferStatusStore/selectors';
-import {startTransferRequest, stopTransferRequest} from '../../store/thunks/TransferStatus'
-
-
-
-
+import { startTransferRequest, stopTransferRequest } from '../../store/thunks/TransferStatus';
 
 const TransferStatusHeader = () => {
   return (
@@ -21,11 +17,11 @@ const TransferStatusHeader = () => {
   );
 };
 
-const TransferStausPanel = ()=>{
-  const [readState, writeState] = useState(true)
+const TransferStausPanel = () => {
+  const [readState, writeState] = useState(true);
   const dispatch = useDispatch();
   const temp = useSelector(
-    state=>({
+    state => ({
       respond: selectFactoryRESTResponseTableValues(selectTransferStatusStore)(state),
     }),
     shallowEqual,
@@ -43,48 +39,42 @@ const TransferStausPanel = ()=>{
   //   })
   // },[])
 
-  const StartTransfer = useCallback(()=>{
+  const StartTransfer = useCallback(() => {
     const time = document.getElementById('interval').value;
     console.log(time);
     dispatch(startTransferRequest(time));
     writeState(!readState);
-  }, [])
-  
-  const StopTransfer = useCallback(()=>{
+  }, []);
+
+  const StopTransfer = useCallback(() => {
     dispatch(stopTransferRequest());
     writeState(!readState);
-  },[])
+  }, []);
 
-  
   return (
     <div>
-      <TransferStatusHeader/>
+      <TransferStatusHeader />
       <Paper className="header">
         <Typography variant="h6">Please enter the tranfer period you want</Typography>
-        <TextField id="interval" label="Time in minutes" defaultValue="60" type='Number' inputProps={{ inputProps: { min: 1} }}/>
+        <TextField
+          id="interval"
+          label="Time in minutes"
+          defaultValue="60"
+          type="Number"
+          inputProps={{ inputProps: { min: 1 } }}
+        />
       </Paper>
       <div>
-        <Button
-          color="primary"
-          variant="contained"
-          size="large"
-          onClick={() => StartTransfer()}
-        >
+        <Button color="primary" variant="contained" size="large" onClick={() => StartTransfer()}>
           Set Transfer interval
         </Button>
 
-        <Button
-          color="primary"
-          variant="contained"
-          size="large"
-          onClick={() => StopTransfer()}
-        >
+        <Button color="primary" variant="contained" size="large" onClick={() => StopTransfer()}>
           Stop transfer
         </Button>
       </div>
     </div>
   );
-  
-}
+};
 
 export default TransferStausPanel;

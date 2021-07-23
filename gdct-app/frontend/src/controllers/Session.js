@@ -9,7 +9,8 @@ const sessionController = (() => {
   });
   return {
     fetchById: async _id => sessionAxios.post('/fetchById', { _id }).then(res => res.data),
-    updateExpiration: async _id => sessionAxios.put('/updateExpiration', { _id }).then(res => res.data)
+    updateExpiration: async _id =>
+      sessionAxios.put('/updateExpiration', { _id }).then(res => res.data),
   };
 })();
 

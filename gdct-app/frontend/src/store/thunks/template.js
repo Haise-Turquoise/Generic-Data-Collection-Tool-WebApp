@@ -2,9 +2,7 @@ import cloneDeep from 'clone-deep';
 import { setExcelData } from '../actions/ui/excel/commands';
 
 import templateController from '../../controllers/template';
-import {
-  extractReactAndWorkbookState,
-} from '../../tools/excel';
+import { extractReactAndWorkbookState } from '../../tools/excel';
 import TemplatesStore from '../TemplatesStore/store';
 
 import { getRequestFactory, deleteRequestFactory, updateRequestFactory } from './common/REST';
@@ -21,7 +19,7 @@ export const createTemplateRequest = (template, resolve, reject) => dispatch => 
   templateController
     .create({
       ...template,
-      //templateData: createBlankReactState(),
+      // templateData: createBlankReactState(),
       templateData: {},
     })
     .then(template => {
@@ -34,14 +32,14 @@ export const createTemplateRequest = (template, resolve, reject) => dispatch => 
     });
 };
 
-//? Cause page redirection on error
+// ? Cause page redirection on error
 export const getTemplateRequest = _id => dispatch => {
   dispatch(TemplatesStore.actions.REQUEST());
 
   templateController
     .fetchTemplate(_id)
     .then(template => {
-      if (template === "UNAUTHORIZED ACCESS") {
+      if (template === 'UNAUTHORIZED ACCESS') {
         unauthorized_dialog();
         dispatch(TemplatesStore.actions.FAIL_REQUEST());
       }
