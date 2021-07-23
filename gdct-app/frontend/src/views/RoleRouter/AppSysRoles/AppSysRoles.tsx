@@ -137,7 +137,7 @@ const AppSysRolesTable = () => {
   const editable = useMemo(
     () => ({
       onRowAdd: (appSysRole: AppSysRoleMT) =>
-        new Promise((resolve, reject) => {
+        new Promise<AppSysRole | null>((resolve, reject) => {
           recordUpdate(appSysRole);
           controllerAddRow(AppSysRoleController, setAppSysRoles, appSysRole)
             .then((res: AppSysRole) => {
@@ -153,7 +153,7 @@ const AppSysRolesTable = () => {
               null,
               "Create Application System Role",
               "AppSysRole",
-              (newAppSysRole as AppSysRole)._id,
+              newAppSysRole._id,
               {},
               newAppSysRole
             );

@@ -25,6 +25,37 @@ interface UserSysRole extends SysRole {
   org: UserOrg[]
 }
 
+export interface ToBeApproved {
+  organization: {
+    name: string,
+    id: number,
+    authorizedPerson: {
+      name: string,
+      email: string,
+    },
+  },
+  program: {
+    name: string,
+    code: string,
+    _id: string,
+  },
+  submission: {
+    name: string,
+    _id: string,
+  },
+  permission: string,
+  approve: boolean,
+  review: boolean,
+  submit: boolean,
+  view: boolean,
+  viewCognos: boolean,
+  input: boolean,
+  status: string,
+  appSys: string,
+  applierEmail: string,
+  appSysRoleId: string,
+}
+
 export default interface User {
   _id?: string,
   hashedUsername?: string,
@@ -51,7 +82,7 @@ export default interface User {
   facebook?: Object,
   google?: Object,
   updatedAt?: string,
-  toBeApproved?: any[] | null,
+  toBeApproved?: ToBeApproved[] | null,
 }
 
 export interface RawData {

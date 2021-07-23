@@ -16,7 +16,13 @@ import { selectFactoryRESTError } from '../store/common/REST/selectors';
     Written by Harry Ryu at 2020/12/30, modified and optimized by Sheldon Su at 2020/01/05.
 */
 
-const ErrorBanner = props => {
+type propsType = {
+  title: string,
+  targetStore: any,
+  [key: string]: any,
+}
+
+const ErrorBanner = (props: propsType) => {
   const [showingAlert, setShowingAlert] = useState(false);
 
   const { errors } = useSelector(

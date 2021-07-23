@@ -127,8 +127,8 @@ const AuditLogTable = () => {
           const startDate = document.getElementById("startDatePicker")!.getAttribute("value")
           const endDate = document.getElementById("endDatePicker")!.getAttribute("value")
           return (
-            new Date(rowData.timestamp) >= new Date(startDate || '') && 
-            new Date (rowData.timestamp) <= new Date(endDate || '')
+            new Date(rowData.timestamp || '') >= new Date(startDate || '') && 
+            new Date (rowData.timestamp || '') <= new Date(endDate || '')
           )
         }
       },

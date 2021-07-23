@@ -40,7 +40,7 @@ const TransferStausPanel = () => {
   // },[])
 
   const StartTransfer = useCallback(() => {
-    const time = document.getElementById('interval').value;
+    const time = (document.getElementById('interval') as HTMLInputElement).value;
     console.log(time);
     dispatch(startTransferRequest(time));
     writeState(!readState);

@@ -5,7 +5,7 @@ import AuthController from '../controllers/Auth';
 import CreateAuditLog from './AuditLog_Global';
 import UserStore from '../store/UserStore/store';
 
-export default function Logout({ setLoggedIn }) {
+export default function Logout({ setLoggedIn }: { setLoggedIn: (val: boolean) => void }) {
   const history = useHistory();
 
   // Get User Email

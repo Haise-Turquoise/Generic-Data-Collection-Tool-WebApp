@@ -1,19 +1,19 @@
-import React, { Component } from 'react';
+import React, { ChangeEvent, Component, FormEvent, FormEventHandler } from 'react';
 import { Button, Form, FormGroup, Label, Input, Col, Alert } from 'reactstrap';
 import { NavLink } from 'react-router-dom';
 import { host } from '../../constants/domain';
 
 const validEmailRegex = /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(.\w{2,3})+$/;
-const validateForm = errors => {
+const validateForm = (errors: {[key: string]: string}) => {
   let valid = true;
   Object.values(errors).forEach(val => val.length > 0 && (valid = false));
   return valid;
 };
 
-class signupComponent extends Component {
-  constructor(props) {
+class signupComponent extends Component<{}, {email: string, password: string, errors: { email: string }}> {
+  constructor(props: any) {
     super(props);
-
+    
     this.state = {
       email: '',
       password: '',
@@ -25,24 +25,23 @@ class signupComponent extends Component {
     this.handleSubmit = this.handleSubmit.bind(this);
   }
 
-  handleInputChange(event) {
-    const { name, value } = event.target;
+  handleInputChange(event: ChangeEvent<HTMLInputElement>) {
+    const { name, value }: {name: string, value: string} = event.target;
     const { errors } = this.state;
 
+    // specify what's changing in setState to satisfy ts
     switch (name) {
       case 'email':
         errors.email = !validEmailRegex.test(value) ? 'Not a Valid Email' : '';
+        this.setState({ errors, email: value })
+        break;
+      case 'password':
+        this.setState({ errors, password: value })
         break;
     }
-
-    this.setState({ errors, [name]: value });
-
-    this.setState({
-      [name]: value,
-    });
   }
 
-  handleSubmit(event) {
+  handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
     if (validateForm(this.state.errors)) {

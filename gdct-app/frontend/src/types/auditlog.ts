@@ -1,11 +1,11 @@
 export default interface AuditLog {
-  _id: string,
+  _id?: string,
   user: { _id: string, email: string },
   activity: string,
   moduleName: string,
-  recordId: string | null,
+  recordId: string | null | undefined,
   oldValue: {[key: string]: any},
   newValue: {[key: string]: any},
-  timestamp: string,
+  timestamp?: string,
   __v?: number,
 }

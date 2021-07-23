@@ -1,6 +1,6 @@
-import React, { useMemo, useEffect, useState } from 'react';
+import React, { useMemo, useEffect, useState, MouseEvent } from 'react';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
-import MaterialTable from 'material-table';
+import MaterialTable, { Action, Options } from 'material-table';
 import { Paper, Typography } from '@material-ui/core';
 import cloneDeep from 'clone-deep';
 
@@ -14,12 +14,14 @@ import {
   selectFactoryValueById,
 } from '../../store/common/REST/selectors';
 import { ModifyUserInfoStoreActions } from '../../store/ModifyUserInfo/store';
+//@ts-ignore
 import { calculateOptions } from '../../tools/misc';
 import {
   getUserInfoPopulatedRequest,
   updateUserInfoRequest,
   approvePermission,
   rejectPermission,
+//@ts-ignore
 } from '../../store/thunks/ModifyUserInfo';
 
 import UserController from '../../controllers/user';
@@ -27,6 +29,8 @@ import usersController from '../../controllers/Users';
 import CreateAuditLog from '../AuditLog_Global';
 
 import { selectModifyUserInfoStore } from '../../store/ModifyUserInfo/selectors';
+import { state } from '../../store/types';
+import User, { ToBeApproved } from '../../types/user';
 
 const Header = () => (
   <div className="d-flex justify-content-between p-2 mb-3">
@@ -36,11 +40,11 @@ const Header = () => (
 
 const RequestManagementTable = () => {
   const dispatch = useDispatch();
-  const userID = localStorage.getItem('currentUserID');
+  const userID = localStorage.getItem('currentUserID') || '';
   const email = localStorage.getItem('currentUser');
   const [readRowNum, setRowNum] = useState(1);
 
-  const { user } = useSelector(state => {
+  const { user } = useSelector((state: state) => {
     const user = selectFactoryValueById(selectModifyUserInfoStore)(userID)(state);
     return { user };
   }, shallowEqual);
@@ -54,35 +58,41 @@ const RequestManagementTable = () => {
     toBeApproved = cloneDeep(user.toBeApproved);
   }
   // const toBeApproved = user? cloneDeep(user.toBeApproved):[];
-  const onClickApprove = async (_event, rowData) => {
+  const onClickApprove = async (_event: MouseEvent, rowData: ToBeApproved | ToBeApproved[]) => {
+    if (Array.isArray(rowData)) {
+      return
+    }
     const applierUser = await usersController.fetchByEmail(rowData.applierEmail);
     return new Promise((resolve, reject) => {
       dispatch(approvePermission(rowData, applierUser, user, resolve, reject));
     });
   };
 
-  const onClickReject = async (_event, rowData) => {
+  const onClickReject = async (_event: MouseEvent, rowData: ToBeApproved | ToBeApproved[]) => {
+    if (Array.isArray(rowData)) {
+      return
+    }
     const applierUser = await usersController.fetchByEmail(rowData.applierEmail);
     return new Promise((resolve, reject) => {
       dispatch(rejectPermission(rowData, applierUser, user, resolve, reject));
     });
   };
 
-  const approve_actions = {
+  const approve_actions: Action<ToBeApproved> = {
     icon: ThumbUpIcon,
     tooltip: 'Approve Request',
     onClick: onClickApprove,
   };
 
-  const reject_actions = { icon: ThumbDownIcon, tooltip: 'Reject Request', onClick: onClickReject };
+  const reject_actions: Action<ToBeApproved> = { icon: ThumbDownIcon, tooltip: 'Reject Request', onClick: onClickReject };
   // Prepare the columns for material table
   const columns = useMemo(
     () => [
       { title: 'Applicant Email', field: 'applierEmail' },
-      { title: 'AppSys Role', render: rowData => `${rowData.appSys}- ${rowData.permission}` },
+      { title: 'AppSys Role', render: (rowData: ToBeApproved) => `${rowData.appSys}- ${rowData.permission}` },
       {
         title: 'Organization',
-        render: rowData => `(${rowData.organization.id}) ${rowData.organization.name}`,
+        render: (rowData: ToBeApproved) => `(${rowData.organization.id}) ${rowData.organization.name}`,
       },
       { title: 'Program', field: 'program.name' },
       { title: 'Template', field: 'submission.name' },
@@ -90,7 +100,7 @@ const RequestManagementTable = () => {
     [],
   );
 
-  const options = useMemo(() => calculateOptions(readRowNum), [readRowNum]);
+  const options: Options<ToBeApproved> = useMemo(() => calculateOptions(readRowNum), [readRowNum]);
 
   // Record who and when of the action
   // function recordUpdate(status) {
@@ -107,7 +117,7 @@ const RequestManagementTable = () => {
       dispatch(getUserInfoPopulatedRequest(email));
     }
     return () => {
-      dispatch(ModifyUserInfoStoreActions.RESET());
+      dispatch(ModifyUserInfoStoreActions.RESET(''));
     };
   }, [dispatch]);
 
@@ -127,7 +137,8 @@ const RequestManagementTable = () => {
   );
 };
 
-const RequestManagement = props => (
+// any type fine since props unused
+const RequestManagement = (props: any) => (
   <div className="RequestManagementPage">
     <Header />
     <RequestManagementTable {...props} />

@@ -47,7 +47,7 @@ export const createRequestFactory = (
     controller: { create: ControllerType["create"], createPopulated?: ControllerType["createPopulated"] },
   ) => (
   value: unknown,
-  resolve: (value: unknown) => void,
+  resolve: (value: any) => void,
   reject: () => void,
   isPopulated = false,
 ) => (dispatch: Dispatch) => {
@@ -69,7 +69,7 @@ export const deleteRequestFactory = (
     controller: { delete: ControllerType["delete"], deletePopulated?: ControllerType["deletePopulated"] },
   ) => (
   _id: string,
-  resolve: () => void,
+  resolve: (value?: any) => void,
   reject: () => void,
   isPopulated = false,
 ) => (dispatch: Dispatch) => {

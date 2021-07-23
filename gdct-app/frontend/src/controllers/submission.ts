@@ -12,10 +12,10 @@ const submissionController = (() => {
   return {
     fetchAndCreate: async (email: string): Promise<Submission[]> =>
       submissionAxios.post(`/findSubmissions`, { email }).then(res => res.data.submissions),
-    // TODO maybe should be .submissions
-    updateWorkbook: async (submission: Submission, submissionNote: SubmissionNote): Promise<Submission | null> =>
+      updateWorkbook: async (submission: Submission, submissionNote: SubmissionNote): Promise<Submission | null> =>
       submissionAxios
-        .post('/uploadSubmission', { submission, submissionNote })
+      .post('/uploadSubmission', { submission, submissionNote })
+      // TODO maybe should be .submissions
         .then(res => res.data.submission),
     update: async (submission: Partial<Submission>) => submissionAxios.put(`/updateSubmission`, { submission }),
     updateStatus: async (

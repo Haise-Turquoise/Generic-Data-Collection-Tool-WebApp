@@ -5,13 +5,13 @@
 import React, { useEffect, useCallback, useState } from 'react';
 
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
-import { useHistory } from 'react-router-dom';
+import { RouteComponentProps, RouterProps, useHistory } from 'react-router-dom';
 import { Button, Chip } from '@material-ui/core';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 
 import Spreadsheet from './spreadSheet';
-
+//@ts-ignore
 import Loading from '../../../components/Loading/Loading';
 
 import { getTemplateRequest, updateTemplateWorkflowProcess } from '../../../store/thunks/template';
@@ -21,9 +21,16 @@ import { selectTemplatesStore } from '../../../store/TemplatesStore/selectors';
 import { selectFactoryValueById } from '../../../store/common/REST/selectors';
 import workflowController from '../../../controllers/workflow';
 import TemplatesStore from '../../../store/TemplatesStore/store';
+import Template from '../../../types/template';
+import WorkflowProcess from '../../../types/workflowprocess';
+import { state } from '../../../store/types';
 
-const TemplatePhases = ({ template }) => {
-  const [workflowProcess, setWorkflowProcess] = useState();
+interface ProcessPopulated extends Omit<WorkflowProcess, 'to'> {
+  to: WorkflowProcess[],
+}
+
+const TemplatePhases = ({ template }: { template: Template }) => {
+  const [workflowProcess, setWorkflowProcess] = useState<ProcessPopulated | undefined>();
   let buttonStatus = true;
   const dispatch = useDispatch();
   const currRole = localStorage.getItem('currentRole');
@@ -36,7 +43,8 @@ const TemplatePhases = ({ template }) => {
     if (template)
       workflowController
         .fetchProcess(template.workflowProcessId)
-        .then(workflowProcess => setWorkflowProcess(workflowProcess));
+        //@ts-ignore this call should be populated based on what comes later
+        .then((workflowProcess: ProcessPopulated[]) => setWorkflowProcess(workflowProcess || undefined));
   }, [template]);
 
   const handleClickWorkflow = useCallback(
@@ -53,7 +61,7 @@ const TemplatePhases = ({ template }) => {
         <div className="mb-3 d-flex justify-content-end">
           <Chip className="rounded" color="primary" label="Phase Actions:" />
           {workflowProcess && workflowProcess.to.length ? (
-            workflowProcess.to.map(outwardProcess => (
+            workflowProcess.to.map((outwardProcess) => (
               <Button
                 disabled={buttonStatus}
                 key={outwardProcess._id}
@@ -75,11 +83,11 @@ const Template = ({
   match: {
     params: { _id },
   },
-}) => {
+}: RouteComponentProps<{ _id: string }>) => {
   const dispatch = useDispatch();
   const history = useHistory();
   const { template } = useSelector(
-    state => ({
+    (state: state) => ({
       template: selectFactoryValueById(selectTemplatesStore)(_id)(state),
     }),
     shallowEqual,
@@ -94,7 +102,7 @@ const Template = ({
     dispatch(getTemplateRequest(_id));
 
     return () => {
-      dispatch(TemplatesStore.actions.RESET());
+      dispatch(TemplatesStore.actions.RESET(''));
     };
   }, [_id]);
 

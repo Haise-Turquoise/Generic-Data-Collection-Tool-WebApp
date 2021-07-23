@@ -1,17 +1,29 @@
-import React, { useState, useEffect } from 'react';
-import { Button } from '@material-ui/core';
+import React, { useState, useEffect, MouseEventHandler, MouseEvent } from 'react';
+import { Button, SvgIconTypeMap } from '@material-ui/core';
+//@ts-ignore
 import createUserNavigation from '../../components/AuthPage/createUserNavigation';
+//@ts-ignore
 import DrawerItem from '../../components/AuthPage/DrawerItem';
+//@ts-ignore
 import IconItem from '../../components/AuthPage/IconItem';
+import { OverridableComponent } from '@material-ui/core/OverridableComponent';
+
+interface MappedMenu {
+  name: string,
+  url: string,
+  type: string,
+  icon: OverridableComponent<SvgIconTypeMap<{}, "svg">>,
+  orderId: number,
+}
 
 const MenuHeader = () => {
-  const [setAnchorEl] = React.useState(null);
-  const handleClick = event => {
+  const [anchorEl, setAnchorEl] = React.useState<EventTarget | null>(null);
+  const handleClick = (event: MouseEvent) => {
     setAnchorEl(event.currentTarget);
   };
-  const [config, setConfig] = useState([]);
+  const [config, setConfig] = useState<MappedMenu[]>([]);
   useEffect(() => {
-    createUserNavigation().then(res => {
+    createUserNavigation().then((res: MappedMenu[]) => {
       setConfig(res);
     });
   }, []);
@@ -26,7 +38,7 @@ const MenuHeader = () => {
           <Button
             aria-controls="simple-menu"
             aria-haspopup="true"
-            onClick={handleClick}
+            onClick={handleClick as MouseEventHandler<HTMLButtonElement>}
             style={{ color: 'white', width: '100%', padding: '0' }}
           >
             <IconItem

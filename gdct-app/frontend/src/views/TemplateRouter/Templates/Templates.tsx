@@ -28,10 +28,16 @@ import { getTemplateTypesRequest } from '../../../store/thunks/templateType';
 import { selectTemplateTypesStore } from '../../../store/TemplateTypesStore/selectors';
 import TemplatesStore from '../../../store/TemplatesStore/store';
 import TemplateTypesStore from '../../../store/TemplateTypesStore/store';
+//@ts-ignore
+//@ts-ignore
 import { getWorkflowProcessesRequest } from '../../../store/thunks/workflow';
 import { selectWorkflowProcessesStore } from '../../../store/WorkflowProcessesStore/selectors';
 import WorkflowProcessesStore from '../../../store/WorkflowProcessesStore/store';
+//@ts-ignore
 import { calculateOptions } from '../../../tools/misc';
+import { RouterProps } from 'react-router';
+import WorkflowProcess from '../../../types/workflowprocess';
+import Template from '../../../types/template';
 
 // const TemplateFileDropzone = () => {}
 
@@ -45,13 +51,17 @@ const TemplateHeader = () => {
   );
 };
 
-const TemplatesTable = ({ history }) => {
+const TemplatesTable = ({ history }: RouterProps) => {
   const dispatch = useDispatch();
   const [readRowNum, setRowNum] = useState(1);
-  const [readIndex, setIndex] = useState();
-  const [readTemplate, setTemplate] = useState();
-  const [readIndexName, setIndexName] = useState();
-  const { templates, lookupTemplateTypes, workflowProcesses } = useSelector(
+  const [readIndex, setIndex] = useState<{[key: string]: string, [key: number]: string} | undefined>();
+  const [readTemplate, setTemplate] = useState<Template[] | undefined>();
+  const [readIndexName, setIndexName] = useState<{[key: string]: string, [key: number]: string} | undefined>();
+  const { templates, lookupTemplateTypes, workflowProcesses }: {
+    templates: Template[],
+    lookupTemplateTypes: {[key: string]: string},
+    workflowProcesses: WorkflowProcess[],
+  } = useSelector(
     state => ({
       templates: selectFactoryRESTResponseTableValues(selectTemplatesStore)(state),
       lookupTemplateTypes: selectFactoryRESTLookup(selectTemplateTypesStore)(state),
@@ -59,7 +69,7 @@ const TemplatesTable = ({ history }) => {
     }),
     shallowEqual,
   );
-  const lookupProcesses = workflowProcesses.reduce((acc, value) => {
+  const lookupProcesses = workflowProcesses.reduce((acc: {[key: string]: string}, value: WorkflowProcess) => {
     acc[value._id] = value.statusId.name;
     return acc;
   }, {});
@@ -68,7 +78,7 @@ const TemplatesTable = ({ history }) => {
     
     const keys = Object.keys(lookupTemplateTypes);
 
-    const nameArray = [];
+    const nameArray: string[] = [];
 
     keys.forEach(key=>{
       nameArray.push(lookupTemplateTypes[key]);
@@ -77,8 +87,8 @@ const TemplatesTable = ({ history }) => {
     const sortedNameArray = nameArray.sort();
     
     const IdToIndex = new Map();
-    const IndexToId = {};
-    const IndexToName = {};
+    const IndexToId: {[key: number]: string} = {};
+    const IndexToName: {[key: number]: string} = {};
 
     keys.forEach(key=>{
       const index = sortedNameArray.indexOf(lookupTemplateTypes[key]);
@@ -87,7 +97,7 @@ const TemplatesTable = ({ history }) => {
       IndexToName[index]=lookupTemplateTypes[key];
     })
 
-    const modifiedTemplates = [];
+    const modifiedTemplates: Template[] = [];
 
     templates.forEach(template=>{
       const Id = String(template.templateTypeId);
@@ -124,7 +134,7 @@ const TemplatesTable = ({ history }) => {
       {
         title: 'Modified On',
         field: 'timestamp',
-        editComponent: props => {
+        editComponent: (props: any) => {
           return <div></div>;
         },
       },
@@ -146,7 +156,7 @@ const TemplatesTable = ({ history }) => {
       {
         icon: LaunchIcon,
         tooltip: 'Open Template',
-        onClick: (_event, template) => {
+        onClick: (_event: MouseEvent, template: Template) => {
           history.push(`/admin/template/design/${template._id}`);
         },
       },
@@ -158,38 +168,38 @@ const TemplatesTable = ({ history }) => {
 
   const editable = useMemo(
     () => ({
-      onRowAdd: template =>
+      onRowAdd: (template: Template) =>
         new Promise((resolve, reject) => {
           // get username and record in Modified By column
-          template.updatedBy = localStorage.getItem('currentUser');
+          template.updatedBy = localStorage.getItem('currentUser') || '';
           // record new date and time in Modified On column
           const event = new Date();
           template.timestamp = event.toLocaleString(); 
           const convertedTemplate = Object.assign({}, template);
-          convertedTemplate.templateTypeId = readIndex[template.templateTypeId];
+          convertedTemplate.templateTypeId = (readIndex && readIndex[template.templateTypeId]) || '';
           dispatch(createTemplateRequest(convertedTemplate, resolve, reject));
         }),
-      onRowUpdate: template =>
+      onRowUpdate: (template: Template) =>
         new Promise((resolve, reject) => {
           // get username and record in Modified By column
-          template.updatedBy = localStorage.getItem('currentUser');
+          template.updatedBy = localStorage.getItem('currentUser') || '';
           // record new date and time in Modified On column
           const event = new Date();
           template.timestamp = event.toLocaleString();
           delete template.templateData;
           const convertedTemplate = Object.assign({}, template);
-          convertedTemplate.templateTypeId = readIndex[template.templateTypeId];
+          convertedTemplate.templateTypeId = (readIndex && readIndex[template.templateTypeId]) || '';
           dispatch(updateTemplateRequest(convertedTemplate, resolve, reject));
         }),
-      onRowDelete: template =>
+      onRowDelete: (template: Template) =>
         new Promise((resolve, reject) => {
           // get username and record in Modified By column
-          template.updatedBy = localStorage.getItem('currentUser');
+          template.updatedBy = localStorage.getItem('currentUser') || '';
           // record new date and time in Modified On column
           const event = new Date();
           template.timestamp = event.toLocaleString(); 
           const convertedTemplate = Object.assign({}, template);
-          convertedTemplate.templateTypeId = readIndex[template.templateTypeId];
+          convertedTemplate.templateTypeId = (readIndex && readIndex[template.templateTypeId]) || '';
           dispatch(deleteTemplateRequest(convertedTemplate._id, resolve, reject));
         }),
     }),
@@ -213,9 +223,9 @@ const TemplatesTable = ({ history }) => {
     dispatch(getWorkflowProcessesRequest());
 
     return () => {
-      dispatch(TemplatesStore.actions.RESET());
-      dispatch(WorkflowProcessesStore.actions.RESET());
-      dispatch(TemplateTypesStore.actions.RESET());
+      dispatch(TemplatesStore.actions.RESET(''));
+      dispatch(WorkflowProcessesStore.actions.RESET(''));
+      dispatch(TemplateTypesStore.actions.RESET(''));
     };
   }, [dispatch]);
 
@@ -236,7 +246,7 @@ const TemplatesTable = ({ history }) => {
   );
 };
 
-const Template = props => (
+const Template = (props: RouterProps) => (
   <div className="templatesPage">
     <TemplateHeader />
     {/* <FileDropzone/> */}

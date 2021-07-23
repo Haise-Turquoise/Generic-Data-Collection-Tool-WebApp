@@ -19,7 +19,7 @@ export const getTemplatesRequest = getRequestFactory(TemplatesStore, templateCon
 export const deleteTemplateRequest = deleteRequestFactory(TemplatesStore, templateController);
 export const updateTemplateRequest = updateRequestFactory(TemplatesStore, templateController);
 
-export const createTemplateRequest = (template: Template, resolve: () => void, reject: () => void) => (dispatch: Dispatch) => {
+export const createTemplateRequest = (template: Template, resolve: (value?: any) => void, reject: () => void) => (dispatch: Dispatch) => {
   dispatch(TemplatesStore.actions.REQUEST(''));
   templateController
     .create({
