@@ -4,7 +4,9 @@ WORKDIR /app
 
 COPY package.json .
 
-RUN npm install
+ENV PATH /usr/src/app/node_modules/.bin:$PATH
+
+RUN npm install --no-optional && npm cache clean --force
 
 COPY . .
 

@@ -27,14 +27,14 @@ class varianceInsertionMenu extends React.Component<MenuProps>{
   // Generate all the selection pairs
   generateSelection(){
     const sheet = this.getSheet();
-    const attributeMap = generateAttributeMap(sheet);
+    const attributeMap:any = generateAttributeMap(sheet);
     const attributeIDs = Object.keys(attributeMap);
     const attributeList = []
 
     // organize ID with text
     for (const Id of attributeIDs){
       const colNum = attributeMap[Id];
-      const cell = sheet.rows._[9].cells[colNum];
+      const cell = sheet.rows[9].cells[colNum];
       const text = cell.text;
       attributeList.push({text, Id});
     }
