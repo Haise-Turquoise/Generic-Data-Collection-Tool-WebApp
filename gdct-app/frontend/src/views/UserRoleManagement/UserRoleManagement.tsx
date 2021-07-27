@@ -21,6 +21,18 @@ import { selectFactoryRESTResponseTableValues } from '../../store/common/REST/se
 import { selectAppSysRolesStore } from '../../store/AppSysRolesStore/selectors';
 
 import AuthController from '../../controllers/Auth';
+import SysRole from '../../types/sysrole';
+
+type dataType = {
+  firstName: string,
+  lastName: string,
+  email: string,
+  title: string,
+  phoneNumber: string,
+  ext: string,
+  sysRoles: SysRole[],
+  username: string,
+}
 
 function Copyright() {
   return (
@@ -79,7 +91,14 @@ const useStyles = makeStyles(theme => ({
 
 const steps = ['Mandatory step', 'Extra step', 'Review your info.'];
 
-function getStepContent(step, parentHandleChange, data, activeStep, handleNext, handleBack) {
+function getStepContent(
+    step: number,
+    parentHandleChange: (name: string, value: unknown) => void,
+    data: dataType,
+    activeStep: number,
+    handleNext: () => void,
+    handleBack: () => void,
+  ) {
   switch (step) {
     case 0:
       return (
@@ -128,10 +147,10 @@ export default function SignUp() {
   const [title, setTitle] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [ext, setExt] = useState('');
-  const [sysRoles, setSysRoles] = useState([]);
+  const [sysRoles, setSysRoles] = useState<SysRole[]>([]);
 
   const dispatch = useDispatch();
-  const { appSysRoles } = useSelector(
+  const { appSysRoles }: { appSysRoles: SysRole[] } = useSelector(
     state => ({
       appSysRoles: selectFactoryRESTResponseTableValues(selectAppSysRolesStore)(state),
     }),
@@ -146,38 +165,40 @@ export default function SignUp() {
     setActiveStep(activeStep - 1);
   };
 
-  const parentHandleChange = (name, value) => {
-    const rtn = [];
+  const parentHandleChange = (name: string, value: unknown) => {
+    const rtn: SysRole[] = [];
     switch (name) {
       case 'firstName':
-        setFirstName(value);
+        setFirstName(value as string);
         break;
       case 'password':
-        setPassword(value);
+        setPassword(value as string);
         break;
       case 'lastName':
-        setLastName(value);
+        setLastName(value as string);
         break;
       case 'username':
-        setUsername(value);
+        setUsername(value as string);
         break;
       case 'email':
-        setEmail(value);
+        setEmail(value as string);
         break;
       case 'title':
-        setTitle(value);
+        setTitle(value as string);
         break;
       case 'phoneNumber':
-        setPhoneNumber(value);
+        setPhoneNumber(value as string);
         break;
       case 'ext':
-        setExt(value);
+        setExt(value as string);
         break;
       case 'sysRoles':
-        value.forEach(e => {
+        (value as string[]).forEach(e => {
           const [appSys, role] = e.split('-');
           const appSysRole = appSysRoles.find(e => e.appSys === appSys && e.role === role);
-          rtn.push(appSysRole);
+          if (appSysRole) {
+            rtn.push(appSysRole);
+          }
         });
         setSysRoles(rtn);
         break;
@@ -201,6 +222,12 @@ export default function SignUp() {
       phoneNumber,
       ext,
       sysRoles: sysRoles.map(e => e._id),
+      IsActive: true,
+      endDate: new Date(),
+      hashedUsername: '',
+      newTemplates: [],
+      startDate: new Date(),
+      sysRole: []
     }).then(() => {
       setTimeout(() => {
         history.push('/');

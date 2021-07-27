@@ -95,8 +95,8 @@ const registerSchema = () =>
       .string()
       .min(6, 'Username must be 6 to 20 characters long')
       .max(20, 'Username must be 6 to 20 characters long')
-      .test('Unique Username', 'Username has already been used', async function (value:string) {
-        const fetchData = await UserController.fetchUserByUserName(value);
+      .test('Unique Username', 'Username has already been used', async function (value:string | null | undefined) {
+        const fetchData = await UserController.fetchUserByUserName(value || '');
         if (Object.keys(fetchData.user || {}).length === 0 && fetchData.user?.constructor === Object) {
           return true;
         }
@@ -117,7 +117,7 @@ const registerSchema = () =>
       .required('Please enter a password'),
     passwordConfirm: yup
       .string()
-      .oneOf([yup.ref('password'), null], 'Password should match with Verify Password')
+      .oneOf([yup.ref('password'), undefined], 'Password should match with Verify Password')
       .required('Please confirm your password'),
     firstName: yup
       .string()

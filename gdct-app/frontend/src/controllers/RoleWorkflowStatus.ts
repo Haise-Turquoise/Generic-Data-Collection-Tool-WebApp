@@ -1,5 +1,5 @@
 import axios from 'axios';
-
+import RoleWorkflowStatus from '../types/roleWorkflowStatus';
 import { host } from '../constants/domain';
 
 const roleWorkflowStatusController = (() => {
@@ -8,7 +8,7 @@ const roleWorkflowStatusController = (() => {
     withCredentials: true,
   });
   return {
-    fetchStatusByRole: async (role)=> roleWorkflowStatus.post(`/fetchByRole`, {role}).then(data=>data.data.roleData)
+    fetchStatusByRole: async (role: RoleWorkflowStatus)=> roleWorkflowStatus.post(`/fetchByRole`, {role}).then(data=>data.data.roleData)
   };
 })();
 

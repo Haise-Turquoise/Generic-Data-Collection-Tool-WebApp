@@ -29,6 +29,8 @@ const useStyles = makeStyles(theme => ({
   submit: {
     margin: theme.spacing(3, 0, 2),
   },
+  buttons: {},
+  button: {},
 }));
 
 export default function MandatoryInfo({
@@ -37,6 +39,12 @@ export default function MandatoryInfo({
   activeStep,
   handleNext,
   handleBack,
+}: {
+  parentHandleChange: (name: string, value: unknown) => void,
+  steps: string[],
+  activeStep: number,
+  handleNext: () => void,
+  handleBack: () => void,
 }) {
   const classes = useStyles();
 
@@ -47,7 +55,7 @@ export default function MandatoryInfo({
     email: Yup.string().required('Required'),
     password: Yup.string().required('Required'),
     passwordConfirm: Yup.string()
-      .oneOf([Yup.ref('password'), null], 'Password should match')
+      .oneOf([Yup.ref('password'), undefined], 'Password should match')
       .required('Required'),
   });
   return (

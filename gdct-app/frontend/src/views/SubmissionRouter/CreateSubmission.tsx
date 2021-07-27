@@ -1,12 +1,13 @@
 import { shallowEqual, useDispatch, useSelector } from 'react-redux';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { ChangeEvent, useCallback, useEffect, useState } from 'react';
 import Button from '@material-ui/core/Button';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
-import { useLocation } from 'react-router-dom';
+import { RouterProps, useLocation } from 'react-router-dom';
 import Paper from '@material-ui/core/Paper/Paper';
 import DoneIcon from '@material-ui/icons/Done';
+//@ts-ignore
 import { excelImportHandler } from '../../tools/misc';
 import SubmissionNoteStore from '../../store/SubmissionNoteStore/store';
 import SubmissionWorkbookStore from '../../store/SubmissionWorkbookStore/store';
@@ -25,7 +26,7 @@ const FileUpload = () => {
   const dispatch = useDispatch();
   const handleChange = useCallback(
     async event => {
-      excelImportHandler(event, workBookData => {
+      excelImportHandler(event, (workBookData: any) => {
         dispatch(SubmissionWorkbookStore.actions.RECEIVE(workBookData));
       });
     },
@@ -39,18 +40,18 @@ const FileUpload = () => {
   );
 };
 
-const CreateSubmission = ({ history }) => {
+const CreateSubmission = ({ history }: RouterProps) => {
   //  const [workflowProcess, setWorkflowProcess] = useState()
   const dispatch = useDispatch();
-  const [showSave, setSave] = useState('hidden');
+  const [showSave, setSave] = useState<'visible' | 'hidden'>('hidden');
   const [message, setMessage] = useState('hidden');
   const [messageColour, setMessageColour] = useState('green');
 
-  const handleNoteChange = event => {
+  const handleNoteChange = (event: ChangeEvent<HTMLInputElement>) => {
     dispatch(SubmissionNoteStore.actions.RECEIVE(event.target.value));
   };
 
-  const location = useLocation();
+  const location = useLocation<{ detail: { phase: string }}>();
 
   useEffect(() => {
     dispatch(SubmissionNoteStore.actions.RECEIVE(''));
@@ -73,6 +74,8 @@ const CreateSubmission = ({ history }) => {
 
   const handleCreateSubmission = useCallback(
     (submissionNote, submissionWorkbook) =>
+    //TODO need help on this
+    //@ts-ignore
       dispatch(updateWorkbookRequest(submissionNote, submissionWorkbook, location.state.detail)),
     [dispatch],
   );

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, ChangeEvent } from 'react';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -13,10 +13,11 @@ import InputLabel from '@material-ui/core/InputLabel';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 
-import { Button } from '@material-ui/core';
+import { Button, Theme } from '@material-ui/core';
 import { getAppSysRolesRequest } from '../../store/thunks/AppSysRole';
 import { selectFactoryRESTResponseTableValues } from '../../store/common/REST/selectors';
 import { selectAppSysRolesStore } from '../../store/AppSysRolesStore/selectors';
+import SysRole from '../../types/sysrole';
 
 const useStyles = makeStyles(theme => ({
   paper: {
@@ -43,6 +44,8 @@ const useStyles = makeStyles(theme => ({
   chip: {
     margin: 2,
   },
+  buttons: {},
+  button: {},
 }));
 
 const ITEM_HEIGHT = 48;
@@ -56,7 +59,7 @@ const MenuProps = {
   },
 };
 
-function getStyles(sysRole, sysRoles, theme) {
+function getStyles(sysRole: string, sysRoles: string[], theme: Theme) {
   return {
     fontWeight:
       sysRoles.indexOf(sysRole) === -1
@@ -65,9 +68,16 @@ function getStyles(sysRole, sysRoles, theme) {
   };
 }
 
-export default function SignUp({ parentHandleChange, steps, activeStep, handleNext, handleBack }) {
+// is this function used? Can't find anything
+export default function SignUp({ parentHandleChange, steps, activeStep, handleNext, handleBack }: {
+  parentHandleChange: (name: string, value: unknown) => void,
+  steps: string[],
+  activeStep: number,
+  handleNext: () => void,
+  handleBack: () => void,
+}) {
   const dispatch = useDispatch();
-  const { appSysRoles } = useSelector(
+  const { appSysRoles }: { appSysRoles: SysRole[] } = useSelector(
     state => ({
       appSysRoles: selectFactoryRESTResponseTableValues(selectAppSysRolesStore)(state),
     }),
@@ -87,30 +97,30 @@ export default function SignUp({ parentHandleChange, steps, activeStep, handleNe
   const [title, setTitle] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [ext, setExt] = useState('');
-  const [sysRoles, setSysRoles] = useState([]);
-  const handleChange = e => {
+  const [sysRoles, setSysRoles] = useState<string[]>([]);
+  const handleChange = (e: ChangeEvent<{name?: string, value: unknown}>) => {
     const { name, value } = e.target;
     switch (name) {
       case 'title':
-        setTitle(value);
+        setTitle(value as string);
         parentHandleChange(name, value);
         break;
       case 'phoneNumber':
-        setPhoneNumber(value);
+        setPhoneNumber(value as string);
         parentHandleChange(name, value);
         break;
       case 'ext':
-        setExt(value);
+        setExt(value as string);
         parentHandleChange(name, value);
         break;
       case 'sysRoles':
-        setSysRoles(value);
+        setSysRoles(value as string[]);
         parentHandleChange(name, sysRoles);
         break;
       default:
         break;
     }
-    parentHandleChange(name, value);
+    parentHandleChange(name || '', value);
   };
 
   useEffect(() => {
@@ -170,9 +180,9 @@ export default function SignUp({ parentHandleChange, steps, activeStep, handleNe
                 value={sysRoles}
                 onChange={handleChange}
                 input={<Input id="select-multiple-chip" />}
-                renderValue={selected => (
+                renderValue={(selected: unknown) => (
                   <div className={classes.chips}>
-                    {selected.map(value => (
+                    {(selected as string[]).map(value => (
                       <Chip key={value} label={value} className={classes.chip} />
                     ))}
                   </div>

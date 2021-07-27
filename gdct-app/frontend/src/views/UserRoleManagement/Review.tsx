@@ -4,6 +4,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
 import { Button } from '@material-ui/core';
+import SysRole from '../../types/sysrole'
 
 const useStyles = makeStyles(theme => ({
   listItem: {
@@ -15,6 +16,8 @@ const useStyles = makeStyles(theme => ({
   title: {
     marginTop: theme.spacing(2),
   },
+  buttons: {},
+  button: {},
 }));
 
 export default function Review({
@@ -29,6 +32,18 @@ export default function Review({
   activeStep,
   handleNext,
   handleBack,
+}: {
+  firstName: string,
+  lastName: string,
+  email: string,
+  title: string,
+  phoneNumber: string,
+  ext: string,
+  sysRoles: SysRole[],
+  steps: string[],
+  activeStep: number,
+  handleNext: () => void,
+  handleBack: () => void,
 }) {
   const classes = useStyles();
   return (

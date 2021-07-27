@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { Route, Switch, Redirect } from 'react-router-dom';
 
 import { CircularProgress, Grid } from '@material-ui/core';
+//@ts-ignore
 import AuthPage from './components/AuthPage';
 import Error from './views/authError';
 import AuthController from './controllers/Auth';
@@ -35,7 +36,7 @@ import { ROUTE_WORKFLOW, ROUTE_TEMPLATE_PCKGS, ROUTE_CATEGORY } from './constant
 import './App.scss';
 // import './i18n';
 
-const PrivateRouter = ({ setLoggedIn }) => {
+const PrivateRouter = ({ setLoggedIn }: {setLoggedIn: (value: boolean) => void}) => {
   return (
     <Switch>
       <Route exact path="/" component={GDCTMenu} />
@@ -50,7 +51,7 @@ const PrivateRouter = ({ setLoggedIn }) => {
       <Route path="/admin/role" component={RoleRouter} />
       <Route path={ROUTE_CATEGORY} component={COARouter} />
       <Route exact path="/admin/configuration" component={AppConfigs} />
-      <Route exact path="/admin/business_rule_configure" component={null} />
+      <Route exact path="/admin/business_rule_configure" component={undefined} />
       <Route path="/admin/user_management" component={UserRouter} />
       <Route exact path="/admin/program" component={Programs} />
       <Route exact path="/admin/status" component={Statuses} />
@@ -72,7 +73,7 @@ const PrivateRouter = ({ setLoggedIn }) => {
     </Switch>
   );
 };
-const PublicRouter = ({ setLoggedIn }) => {
+const PublicRouter = ({ setLoggedIn }: {setLoggedIn: (value: boolean) => void}) => {
   return (
     <Switch>
       <Route exact path="/register" component={Register} />
@@ -84,7 +85,7 @@ const PublicRouter = ({ setLoggedIn }) => {
 };
 
 const App = () => {
-  const [isLoggedIn, setLoggedIn] = useState(null);
+  const [isLoggedIn, setLoggedIn] = useState<boolean | null>(null);
 
   useEffect(() => {
     AuthController.profile()

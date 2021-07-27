@@ -45,7 +45,7 @@ export type registerParams = {
   ext: string,
   firstName: string,
   hashedUsername: string,
-  lastname: string,
+  lastName: string,
   newTemplates: newTemplateType[],
   password: string,
   phoneNumber: string,
@@ -67,6 +67,8 @@ export type registerParams = {
   }[],
   title: string,
   username: string,
+  //TODO need help understanding why this -- see userrolemanagement
+  sysRoles?: string[],
 }
 
 export type authRes = {

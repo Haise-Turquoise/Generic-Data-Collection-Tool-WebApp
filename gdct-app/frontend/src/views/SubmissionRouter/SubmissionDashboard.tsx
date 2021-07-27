@@ -107,7 +107,8 @@ const SubmissionDashboard = ({ history }:{history:History}) => {
   )
   
   useEffect(() =>{
-    const role = localStorage.getItem('currentRole');
+    const role = localStorage.getItem('currentRole') || '';
+    //@ts-ignore should be object or string??
     roleWorkflowStatusController.fetchStatusByRole(role).then((data:RoleWorkflowStatus[]) =>{
       setBaseGrouping(data[0].workflowStatus);
     });

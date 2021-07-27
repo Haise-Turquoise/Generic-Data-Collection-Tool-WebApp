@@ -45,8 +45,8 @@ const ProfileSchema = (originalUsername:string) =>
       .string()
       .min(6, 'Username must be 6 to 20 characters long')
       .max(20, 'Username must be 6 to 20 characters long')
-      .test('Unique Username', 'Username has already been used', async function (value:string) {
-        const fetchData = await UserController.fetchUserByUserName(value);
+      .test('Unique Username', 'Username has already been used', async function (value?:string | null) {
+        const fetchData = await UserController.fetchUserByUserName(value || '');
         // users can only do 1: not change the username, or 2: change the username to something new
         return (
           //TODO test this

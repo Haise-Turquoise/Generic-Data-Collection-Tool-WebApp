@@ -4,10 +4,13 @@ import Typography from '@material-ui/core/Typography';
 import Paper from '@material-ui/core/Paper';
 import Button from '@material-ui/core/Button';
 import Box from '@material-ui/core/Box';
+//@ts-ignore is this used?
 import { ROUTE_PUBLIC_REGISTER, ROUTE_PUBLIC_LOGIN } from '../../../constants/routes';
 
 import './Preregister.scss';
+//@ts-ignore is this used?
 import logo from '../../../images/brand/ON_POS_LOGO_WHITE.svg';
+//@ts-ignore is this used?
 import SRIBar from '../../../images/brand/SRI.jpg';
 
 const Header = () => (
