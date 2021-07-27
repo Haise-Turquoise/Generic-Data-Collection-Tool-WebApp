@@ -27,12 +27,12 @@ const workflowController = (() => {
       workflowAxios
         .post('./fetchWorkflowProcessesByWorkflowId', { workflowId })
         .then(res => res.data.data),
+    fetchProcessesByIds: async (ids: string[]): Promise<WorkflowProcess[]> =>
+      workflowAxios.post('/fetchProcessByIds', { ids }).then(res => res.data.data),
     fetchProcessesByWorkflowIds: async (workflowIds: string[]) =>
       workflowAxios
         .post('/fetchWorkflowProcessesByWorkflowIds', { workflowIds })
         .then(res => res.data.data),
-    fetchProcessesByIds: async (ids: string[]): Promise<WorkflowProcess[]> =>
-      workflowAxios.post('/fetchProcessByIds', { ids }).then(res => res.data.data),
   };
 })();
 
