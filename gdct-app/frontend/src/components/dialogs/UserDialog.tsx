@@ -2,14 +2,17 @@ import React, { useCallback, useEffect, useMemo } from 'react';
 
 import { useSelector, shallowEqual, useDispatch } from 'react-redux';
 import SelectableTableDialog from './SelectableTableDialog';
-
+//@ts-ignore
 import { getUsersRequest } from '../../store/thunks/user';
-
+//@ts-ignore
 import { selectIsUserDialogOpen } from '../../store/DialogsStore/selectors';
+//@ts-ignore
 import { selectFactoryRESTResponseTableValues } from '../../store/common/REST/selectors';
+//@ts-ignore
 import DialogsStore from '../../store/DialogsStore/store';
-
-const UserDialog = ({ handleChange }) => {
+//@ts-ignore
+import { selectUsersStore } from '../../store/UsersStore/selectors.js';
+const UserDialog = ({ handleChange }:{handleChange:(id:string)=>void}) => {
   const dispatch = useDispatch();
 
   const { isUserDialogOpen, users } = useSelector(
@@ -47,6 +50,7 @@ const UserDialog = ({ handleChange }) => {
   );
 
   return (
+    //@ts-ignore
     <SelectableTableDialog
       title="User"
       columns={columns}

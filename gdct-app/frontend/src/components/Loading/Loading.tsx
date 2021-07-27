@@ -7,7 +7,7 @@ import Paper from '@material-ui/core/Paper';
 
 import './Loading.scss';
 
-const LoadingContent = ({ message }) => (
+const LoadingContent = ({ message }:{message:string}) => (
   <Paper className="loadingContent">
     <CircularProgress />
     <Typography variant="subtitle2" color="textSecondary">
@@ -16,7 +16,7 @@ const LoadingContent = ({ message }) => (
   </Paper>
 );
 
-const Loading = ({ message }) => (
+const Loading = ({ message }:{message:string}) => (
   <Fade in>
     <div className="loadingContainer">
       <LoadingContent message={message} />

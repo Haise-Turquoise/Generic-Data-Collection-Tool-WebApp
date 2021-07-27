@@ -1,24 +1,26 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import { Table, TableBody, TableCell, TableHead, TableRow } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
+//@ts-ignore
 import uniqid from 'uniqid';
 import './SelectableTable.scss';
 
-const CustomTableCell = ({ value, props }) => (
+const CustomTableCell = ({ value, props }:{value:string, props:any}) => (
   <TableCell align="right" {...props}>
     {value}
   </TableCell>
 );
 
-const CustomTableCells = ({ columns, item, props }) =>
+const CustomTableCells = ({ columns, item, props }:{columns:{field:string}[], item:{[key:string]:any},props:any}) =>
   columns.map(column => (
     <TableCell key={uniqid()} align="right" {...props}>
       {item[column.field]}
     </TableCell>
   ));
 
-const CustomListItems = ({ columns, data, selectedKeys, getKey, handleSelect }) =>
-  data.map(item => {
+const CustomListItems = ({ columns, data, selectedKeys, getKey, handleSelect }:
+  {columns:{field:string}[], data:any, selectedKeys:any, getKey:(item:any)=>string, handleSelect:(item:any)=>void} ) =>
+  data.map((item:any) => {
     const [done, setDone] = useState(false);
     const handleClick = useCallback(
       e => {
@@ -38,12 +40,14 @@ const CustomListItems = ({ columns, data, selectedKeys, getKey, handleSelect }) 
         className={`list__item ${done ? 'list__item--selected' : ''}`}
         onClick={handleClick}
       >
+        {/*@ts-ignore*/}
         <CustomTableCells columns={columns} item={item} />
       </TableRow>
     );
   });
 
-const CustomTableBody = ({ columns, data, selectedKeys, getKey, handleSelect }) => (
+const CustomTableBody = ({ columns, data, selectedKeys, getKey, handleSelect }:
+  {columns:{field:string}[], data:any, selectedKeys:any, getKey:(item:any)=>string, handleSelect:(item:any)=>void}) => (
   <TableBody>
     <CustomListItems
       columns={columns}
@@ -55,19 +59,23 @@ const CustomTableBody = ({ columns, data, selectedKeys, getKey, handleSelect }) 
   </TableBody>
 );
 
-const CustomTableColumns = ({ columns }) =>
-  columns.map(column => <CustomTableCell key={uniqid()} value={column.title} />);
+const CustomTableColumns = ({ columns }:{columns:{field:string, title:string}[]}) =>
+  //@ts-ignore
+  columns.map(column => <CustomTableCell key={uniqid()} value={column.title}/>);
 
-const CustomTableHead = ({ columns }) => (
+const CustomTableHead = ({ columns }:{columns:{field:string, title:string}[]}) => (
   <TableHead>
     <TableRow>
+      {/*@ts-ignore*/}
       <CustomTableColumns columns={columns} />
       {/* <TableCell align="right">isActive</TableCell> */}
     </TableRow>
   </TableHead>
 );
 
-const CustomTable = ({ columns, selectedKeys, getKey, data, handleSelect }) => {
+const CustomTable = ({ columns, selectedKeys, getKey, data, handleSelect }:{
+  columns:{field:string, title:string}[], data:any, selectedKeys:any, getKey:(item:any)=>string, handleSelect:(item:any)=>void
+}) => {
   return (
     <Table>
       <CustomTableHead columns={columns} />

@@ -2,15 +2,20 @@ import React, { useCallback, useEffect, useMemo } from 'react';
 
 import { useSelector, shallowEqual, useDispatch } from 'react-redux';
 import SelectableTableDialog from './SelectableTableDialog';
-
+//@ts-ignore
 import { getWorkflowsRequest } from '../../store/thunks/workflow';
-
+//@ts-ignore
 import DialogsStore from '../../store/DialogsStore/store';
+//@ts-ignore
 import { selectFactoryRESTResponseTableValues } from '../../store/common/REST/selectors';
+//@ts-ignore
 import { selectWorkflowsStore } from '../../store/WorkflowsStore/selectors';
+//@ts-ignore
 import { selectIsWorkflowDialogOpen } from '../../store/DialogsStore/selectors';
-
-const WorkflowDialog = ({ selectedWorkflows, handleChange, shouldClose = true }) => {
+import Workflow from '../../types/workflow';
+const WorkflowDialog = ({ selectedWorkflows, handleChange, shouldClose = true }:
+  {selectedWorkflows:Workflow[], handleChange:(data:Workflow)=>void, shouldClose:boolean}
+  ) => {
   const dispatch = useDispatch();
 
   const { isWorkflowDialogOpen, workflows } = useSelector(
@@ -25,7 +30,7 @@ const WorkflowDialog = ({ selectedWorkflows, handleChange, shouldClose = true })
     dispatch,
   ]);
 
-  const handleSelect = data => {
+  const handleSelect = (data:Workflow) => {
     handleChange(data);
     if (shouldClose) handleClose();
   };
@@ -44,7 +49,7 @@ const WorkflowDialog = ({ selectedWorkflows, handleChange, shouldClose = true })
     [],
   );
 
-  const getKey = selectedWorkflows ? t => t._id : undefined;
+  const getKey:any = selectedWorkflows ? (t:Workflow) => t._id : undefined;
 
   return (
     <SelectableTableDialog

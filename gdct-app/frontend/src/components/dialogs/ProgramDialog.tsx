@@ -1,16 +1,24 @@
 import React, { useCallback, useEffect, useMemo } from 'react';
 
 import { useSelector, shallowEqual, useDispatch } from 'react-redux';
+//@ts-ignore
 import SelectableTableDialog from './SelectableTableDialog';
-
+//@ts-ignore
 import { getProgramsRequest } from '../../store/thunks/program';
-
+//@ts-ignore
 import { selectIsProgramDialogOpen } from '../../store/DialogsStore/selectors';
+//@ts-ignore
 import { selectFactoryRESTResponseTableValues } from '../../store/common/REST/selectors';
+//@ts-ignore
 import { selectProgramsStore } from '../../store/ProgramsStore/selectors';
+//@ts-ignore
 import DialogsStore from '../../store/DialogsStore/store';
-
-const ProgramDialog = ({ selectedPrograms, handleChange, shouldClose = true }) => {
+import Program from '../../types/program';
+const ProgramDialog = ({ selectedPrograms, handleChange, shouldClose = true }:{
+  selectedPrograms:Program[],
+  handleChange:(data:Program)=>void,
+  shouldClose:boolean,
+}) => {
   const dispatch = useDispatch();
 
   const { isProgramDialogOpen, programs } = useSelector(
@@ -47,10 +55,10 @@ const ProgramDialog = ({ selectedPrograms, handleChange, shouldClose = true }) =
     [],
   );
 
-  const getKey = selectedPrograms ? t => t._id : undefined;
+  const getKey:any = selectedPrograms ? (t:Program) => t._id : undefined;
   
   // Sort the programs alphabaticly 
-  const sortedPrograms = programs.sort((a, b)=>a.name.localeCompare(b.name))
+  const sortedPrograms = programs.sort((a:Program, b:Program)=>a.name.localeCompare(b.name))
 
   return (
     <SelectableTableDialog

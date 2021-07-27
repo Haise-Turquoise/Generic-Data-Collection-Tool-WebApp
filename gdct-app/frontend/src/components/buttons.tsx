@@ -1,4 +1,4 @@
-import React, { useMemo, useCallback } from 'react';
+import React, { MouseEvent, useMemo, useCallback } from 'react';
 
 import { useDispatch } from 'react-redux';
 
@@ -10,6 +10,7 @@ import AddCircleIcon from '@material-ui/icons/AddCircle';
 import Button from '@material-ui/core/Button';
 
 import { cx, css } from 'emotion';
+//@ts-ignore
 import { CustomEditor } from '../tools/slate';
 
 import SubmissionPeriodDialog from './dialogs/SubmissionPeriodDialog';
@@ -17,18 +18,25 @@ import StatusDialog from './dialogs/StatusDialog';
 import ProgramDialog from './dialogs/ProgramDialog';
 import TemplateTypeDialog from './dialogs/TemplateTypeDialog';
 import ReportingPeriodDialog from './dialogs/ReportingPeriodDialog';
+//@ts-ignore
 import DialogsStore from '../store/DialogsStore/store';
 import TemplateDialog from './dialogs/TemplateDialog';
 import OrganizationDialog from './dialogs/OrganizationDialog';
 import WorkflowDialog from './dialogs/WorkflowDialog';
-
-export const DeleteButton = ({ handleDelete }) => (
+import SubmissionPeriod from '../types/submissionperiod';
+import Template from '../types/template';
+import Organization from '../types/organization';
+import Program from '../types/program';
+import Workflow from '../types/workflow';
+export const DeleteButton = ({ handleDelete }:{handleDelete:()=>void}) => (
   <IconButton onClick={handleDelete} aria-label="delete">
     <DeleteIcon />
   </IconButton>
 );
 
-export const AddFabIconButton = ({ className, handleClick, title }) => (
+export const AddFabIconButton = ({ className, handleClick, title }:
+  {className:string, handleClick:()=>void, title:string}
+  ) => (
   <Fab
     className={className}
     color="primary"
@@ -41,9 +49,10 @@ export const AddFabIconButton = ({ className, handleClick, title }) => (
   </Fab>
 );
 
-export const MarkIcon = ({ className, ...props }) => (
+export const MarkIcon = ({ className, ...props }:{className:string, props:any}) => (
   <span
     {...props}
+    //@ts-ignore
     ref={ref}
     className={cx(
       'material-icons',
@@ -56,7 +65,9 @@ export const MarkIcon = ({ className, ...props }) => (
   />
 );
 
-const MarkToggler = ({ className, active, reversed, ...props }) => (
+const MarkToggler = ({ className, active, reversed, ...props }:
+  {className:string, active:boolean, reversed:boolean,props:any}
+  ) => (
   <span
     {...props}
     className={cx(
@@ -69,20 +80,24 @@ const MarkToggler = ({ className, active, reversed, ...props }) => (
   />
 );
 
-export const MarkButton = ({ format, icon, editor }) => {
-  const handleMouseDown = event => {
+export const MarkButton = ({ format, icon, editor }:
+  {format:string, icon:string, editor:string}
+  ) => {
+  const handleMouseDown = (event:MouseEvent) => {
     event.preventDefault();
     CustomEditor.toggleMark(editor, format);
   };
 
   return (
+    //@ts-ignore
     <MarkToggler active={CustomEditor.isMarkActive(editor, format)} onMouseDown={handleMouseDown}>
+      {/*@ts-ignore*/}
       <MarkIcon>{icon}</MarkIcon>
     </MarkToggler>
   );
 };
 
-export const SelectIdButton = ({ value, action, children }) => {
+export const SelectIdButton = ({ value, action, children }:{value:any, action:any, children:any}) => {
   const dispatch = useDispatch();
 
   const text = useMemo(() => (value === undefined ? 'SELECT ID' : value), [value]);
@@ -101,25 +116,25 @@ export const SelectIdButton = ({ value, action, children }) => {
   );
 };
 
-export const OrganizationIdButton = ({ value, onChange }) => (
+export const OrganizationIdButton = ({ value, onChange }:{value:string, onChange:(id:string)=>void}) => (
   <SelectIdButton value={value} action={DialogsStore.actions.OPEN_ORGANIZATION_DIALOG}>
     <OrganizationDialog handleChange={onChange} />
   </SelectIdButton>
 );
 
-export const SubmissionPeriodIdButton = ({ value, onChange }) => (
+export const SubmissionPeriodIdButton = ({ value, onChange }:{value:string, onChange:(data:SubmissionPeriod)=>void}) => (
   <SelectIdButton value={value} action={DialogsStore.actions.OPEN_SUBMISSION_PERIOD_DIALOG}>
     <SubmissionPeriodDialog handleChange={onChange} />
   </SelectIdButton>
 );
 
-export const ReportingPeriodIdButton = ({ value, onChange }) => (
+export const ReportingPeriodIdButton = ({ value, onChange }:{value:string, onChange:(id:string)=>void}) => (
   <SelectIdButton value={value} action={DialogsStore.actions.OPEN_REPORTING_PERIOD_DIALOG}>
     <ReportingPeriodDialog handleChange={onChange} />
   </SelectIdButton>
 );
 
-export const StatusIdButton = props => {
+export const StatusIdButton = (props:any) => {
   const { value, onChange, isPopulated = false } = props;
   return (
     <SelectIdButton value={value} action={DialogsStore.actions.OPEN_STATUS_DIALOG}>
@@ -128,31 +143,34 @@ export const StatusIdButton = props => {
   );
 };
 
-export const ProgramIdButton = ({ value, onChange }) => (
+export const ProgramIdButton = ({ value, onChange }:{value:string, onChange:(data:Program)=>void}) => (
   <SelectIdButton value={value} action={DialogsStore.actions.OPEN_PROGRAM_DIALOG}>
+    {/*@ts-ignore*/}
     <ProgramDialog handleChange={onChange} />
   </SelectIdButton>
 );
 
-export const TemplateIdButton = ({ value, onChange }) => (
+export const TemplateIdButton = ({ value, onChange }:{value:string, onChange:(data:Template)=>void}) => (
   <SelectIdButton value={value} action={DialogsStore.actions.OPEN_TEMPLATE_DIALOG}>
+    {/*@ts-ignore*/}
     <TemplateDialog handleChange={onChange} />
   </SelectIdButton>
 );
 
-export const WorkflowIdButton = ({ value, onChange, isPopulated = false }) => (
+export const WorkflowIdButton = ({ value, onChange, isPopulated = false }:{value:string, onChange:(data:string|Workflow)=>void, isPopulated:boolean}) => (
   <SelectIdButton value={value} action={DialogsStore.actions.OPEN_WORKFLOW_DIALOG}>
+    {/*@ts-ignore*/}
     <WorkflowDialog handleChange={d => onChange(isPopulated ? d : d._id)} />
   </SelectIdButton>
 );
 
-export const TemplateTypeIdButton = ({ value, onChange }) => (
+export const TemplateTypeIdButton = ({ value, onChange }:{value:string, onChange:()=>void}) => (
   <SelectIdButton value={value} action={DialogsStore.actions.OPEN_TEMPLATE_TYPE_DIALOG}>
     <TemplateTypeDialog handleChange={onChange} />
   </SelectIdButton>
 );
 
-export const UserIdButton = ({ value, onChange }) => (
+export const UserIdButton = ({ value, onChange }:{value:string, onChange:()=>void}) => (
   <SelectIdButton value={value} action={DialogsStore.actions.OPEN_USER_DIALOG}>
     {/* <TemplateTypeDialog handleChange={onChange}/> */}
   </SelectIdButton>

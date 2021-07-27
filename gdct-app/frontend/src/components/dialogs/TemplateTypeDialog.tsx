@@ -2,15 +2,18 @@ import React, { useCallback, useEffect, useMemo } from 'react';
 
 import { useSelector, shallowEqual, useDispatch } from 'react-redux';
 import SelectableTableDialog from './SelectableTableDialog';
-
+//@ts-ignore
 import { getTemplateTypesRequest } from '../../store/thunks/templateType';
-
+//@ts-ignore
 import DialogsStore from '../../store/DialogsStore/store';
+//@ts-ignore
 import { selectFactoryRESTResponseTableValues } from '../../store/common/REST/selectors';
+//@ts-ignore
 import { selectTemplateTypesStore } from '../../store/TemplateTypesStore/selectors';
+//@ts-ignore
 import { selectIsTemplateTypeDialogOpen } from '../../store/DialogsStore/selectors';
 
-const TemplateTypeDialog = ({ handleChange }) => {
+const TemplateTypeDialog = ({ handleChange }:{handleChange:(id:string)=>void}) => {
   const dispatch = useDispatch();
 
   const { isTemplateTypeDialogOpen, templateTypes } = useSelector(
@@ -49,6 +52,7 @@ const TemplateTypeDialog = ({ handleChange }) => {
   );
 
   return (
+    //@ts-ignore
     <SelectableTableDialog
       title="Template Type"
       columns={columns}

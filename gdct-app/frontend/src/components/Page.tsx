@@ -1,4 +1,5 @@
 import * as React from 'react';
+//@ts-ignore
 import styled, { createGlobalStyle } from 'styled-components';
 
 const PageContent = styled.div`
@@ -9,4 +10,4 @@ const PageContent = styled.div`
   max-height: 80vh;
 `;
 
-export const Page = ({ children }) => <PageContent>{children}</PageContent>;
+export const Page = ({ children }:{children:any}) => <PageContent>{children}</PageContent>;

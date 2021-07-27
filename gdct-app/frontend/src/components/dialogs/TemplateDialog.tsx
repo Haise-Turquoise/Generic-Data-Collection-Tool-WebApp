@@ -1,17 +1,29 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { useSelector, shallowEqual, useDispatch } from 'react-redux';
+//@ts-ignore
 import StatusController from '../../controllers/status';
+//@ts-ignore
 import workflowController from '../../controllers/workflow';
+//@ts-ignore
 import SelectableTableDialog from './SelectableTableDialog';
-
+//@ts-ignore
 import { getTemplatesRequest } from '../../store/thunks/template';
+//@ts-ignore
 import DialogsStore from '../../store/DialogsStore/store';
+//@ts-ignore
 import { selectFactoryRESTResponseTableValues } from '../../store/common/REST/selectors';
+//@ts-ignore
 import { selectTemplatesStore } from '../../store/TemplatesStore/selectors';
+//@ts-ignore
 import { selectIsTemplateDialogOpen } from '../../store/DialogsStore/selectors';
+import Template from '../../types/template';
+import Status from '../../types/status';
+import WorkflowProcess from '../../types/workflowprocess';
 
-const TemplateDialog = ({ selectedTemplates, shouldClose, handleChange }) => {
+const TemplateDialog = ({ selectedTemplates, shouldClose, handleChange }:
+  {selectedTemplates:{[key: string]: boolean}, shouldClose:boolean, handleChange:(data:Template)=>void}
+  ) => {
   const dispatch = useDispatch();
   const [readTemplates, setTemplates] = useState([]);
 
@@ -41,16 +53,17 @@ const TemplateDialog = ({ selectedTemplates, shouldClose, handleChange }) => {
 
   useEffect(() => {
     if (templates.length > 0) {
-      const workflowProcessArray = templates.map(e => e.workflowProcessId);
+      const workflowProcessArray = templates.map((e:Template) => e.workflowProcessId);
 
-      StatusController.fetch().then(data => {
+      StatusController.fetch().then((data:Status[]) => {
+        //@ts-ignore
         data = data.filter(e => e.name == 'Approved')[0];
-        workflowController.fetchProcessesByIds(workflowProcessArray).then(workflowPrcesses => {
+        workflowController.fetchProcessesByIds(workflowProcessArray).then((workflowPrcesses:WorkflowProcess[]) => {
           const endedProcesses = workflowPrcesses.filter(e => e.to.length === 0);
           const endedIdArray = endedProcesses.map(e => String(e._id));
 
           setTemplates(
-            templates.filter(template => endedIdArray.includes(String(template.workflowProcessId))),
+            templates.filter((template:Template) => endedIdArray.includes(String(template.workflowProcessId))),
           );
         });
       });
@@ -67,7 +80,7 @@ const TemplateDialog = ({ selectedTemplates, shouldClose, handleChange }) => {
     [],
   );
 
-  const getKey = selectedTemplates ? t => t._id : undefined;
+  const getKey:any = selectedTemplates ? (t:Template) => t._id : undefined;
 
   return (
     <SelectableTableDialog

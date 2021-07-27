@@ -2,15 +2,18 @@ import React, { useCallback, useEffect, useMemo } from 'react';
 
 import { useSelector, shallowEqual, useDispatch } from 'react-redux';
 import SelectableTableDialog from './SelectableTableDialog';
-
+//@ts-ignore
 import { getSubmissionPeriodsRequest } from '../../store/thunks/submissionPeriod';
-
+//@ts-ignore
 import { selectFactoryRESTResponseTableValues } from '../../store/common/REST/selectors';
+//@ts-ignore
 import { selectIsSubmissionPeriodDialogOpen } from '../../store/DialogsStore/selectors';
+//@ts-ignore
 import DialogsStore from '../../store/DialogsStore/store';
+//@ts-ignore
 import { selectSubmissionPeriodsStore } from '../../store/SubmissionPeriodsStore/selectors';
-
-const SubmissionPeriodDialog = ({ handleChange }) => {
+import SubmissionPeriod from '../../types/submissionperiod';
+const SubmissionPeriodDialog = ({ handleChange }:{handleChange:(data:SubmissionPeriod)=>void}) => {
   const dispatch = useDispatch();
 
   const { isSubmissionPeriodDialogOpen, submissionPeriods } = useSelector(
@@ -50,6 +53,7 @@ const SubmissionPeriodDialog = ({ handleChange }) => {
   );
 
   return (
+    //@ts-ignore
     <SelectableTableDialog
       title="Submission Period"
       columns={columns}

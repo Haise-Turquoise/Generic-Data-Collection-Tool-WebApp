@@ -1,8 +1,10 @@
+//@ts-ignore
 import MenuController from '../../controllers/Menu';
+//@ts-ignore
 import iconMap from './iconMap';
-
+import Menu from '../../types/menu';
 const createUserNavigation = async () => {
-  const menus = await MenuController.fetch();
+  const menus :Menu[] = await MenuController.fetch();
 
   return menus
     .filter(e => !e.isSubMenu)
@@ -41,6 +43,8 @@ const createUserNavigation = async () => {
           return {
             name: subMenu.name,
             type: subMenu.type,
+            //adding a url here to prevent the typescript error, can be delete if there is no need to aviod the error.
+            url:subMenu.url,
             icon: iconMap[subMenu.name],
             children: subChildren,
             orderId: subMenu.orderId,

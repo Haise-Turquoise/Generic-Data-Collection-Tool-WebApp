@@ -36,7 +36,7 @@ import DnsIcon from '@material-ui/icons/Dns';
 import ScatterPlotIcon from '@material-ui/icons/ScatterPlot';
 import EnhancedEncryptionIcon from '@material-ui/icons/EnhancedEncryption';
 import SettingsApplicationsIcon from '@material-ui/icons/SettingsApplications';
-
+import {SvgIconProps} from '@material-ui/core';
 // Universal Style
 const MenuItemStyle = { fontSize: '1.2rem', marginLeft: '1.2rem' };
 const SubMenuItemStyle = { fontSize: '1.2rem', marginLeft: '2rem' };
@@ -44,44 +44,44 @@ const SubMenuItemStyle = { fontSize: '1.2rem', marginLeft: '2rem' };
 // The only source for icons: https://material-ui.com/components/material-icons/
 // To modify any of the icons, please directly reference its literal name string in the menu (if their strings does not match exactly, icons will not appear).
 // To add icons, please add their url reference directly into the menuitem collection in the database.
-export default {
+const ItemMap :{[key:string]:React.ReactElement<SvgIconProps>} =  {
   // Main Menu Submission
-  Submission: <SendIcon />,
-  Dashboard: <SendIcon style={MenuItemStyle} />,
+  'Submission': <SendIcon />,
+  'Dashboard': <SendIcon style={MenuItemStyle} />,
   // Main Menu User
-  User: <AccountCircleIcon />,
-  Profile: <AccountCircleIcon style={MenuItemStyle} />,
+  'User': <AccountCircleIcon />,
+  'Profile': <AccountCircleIcon style={MenuItemStyle} />,
   'Submission Permissions': <EnhancedEncryptionIcon style={SubMenuItemStyle} />,
   'Personal Details': <SettingsApplicationsIcon style={SubMenuItemStyle} />,
   'Request Management': <AccountCircleIcon style={MenuItemStyle} />,
 
-  Logout: <ExitToAppIcon style={MenuItemStyle} />,
+  'Logout': <ExitToAppIcon style={MenuItemStyle} />,
   // Main Menu Report
-  Report: <ReportIcon />,
-  Reports: <ReportIcon style={MenuItemStyle} />,
+  'Report': <ReportIcon />,
+  'Reports': <ReportIcon style={MenuItemStyle} />,
   // Main Menu Template Design
   'Template Design': <FileCopyIcon style={{ fontSize: '1.4rem', marginTop: '0.1rem' }} />,
   'Template Designs': (
     <FileCopyIcon style={{ fontSize: '1.2rem', marginTop: '0.1rem', marginLeft: '1.2rem' }} />
   ),
   // Main Admin
-  Admin: <SupervisorAccountIcon />,
+  'Admin': <SupervisorAccountIcon />,
 
   // Admin COA
-  COA: <DataUsageIcon style={MenuItemStyle} />,
+  'COA': <DataUsageIcon style={MenuItemStyle} />,
   'Category Management': <ListIcon style={SubMenuItemStyle} />,
   'Attribute Management': <ViewColumnIcon style={SubMenuItemStyle} />,
   'Group Management': <GroupIcon style={SubMenuItemStyle} />,
   'Tree Management': <AccountTreeIcon style={SubMenuItemStyle} />,
 
   // Admin Template
-  Template: <TableChartIcon style={MenuItemStyle} />,
+  'Template': <TableChartIcon style={MenuItemStyle} />,
   'Template Type': <InboxIcon style={SubMenuItemStyle} />,
   'Template Package': <AllInboxIcon style={SubMenuItemStyle} />,
 
   // Admin Organization
-  Organization: <AccountBalance style={MenuItemStyle} />,
-  Organizations: <AccountBalance style={SubMenuItemStyle} />,
+  'Organization': <AccountBalance style={MenuItemStyle} />,
+  'Organizations': <AccountBalance style={SubMenuItemStyle} />,
   'Create Organization': <AddCircleOutlineIcon style={SubMenuItemStyle} />,
 
   // Admin Submission-lookup
@@ -90,7 +90,7 @@ export default {
   'Submission Period': <HourglassEmptyIcon style={SubMenuItemStyle} />,
 
   // Admin Role
-  Role: <AppsIcon style={MenuItemStyle} />,
+  'Role': <AppsIcon style={MenuItemStyle} />,
   'Application System': <GroupWorkIcon style={SubMenuItemStyle} />,
   'Application Role': <GroupWorkIcon style={SubMenuItemStyle} />,
   'Application System Role': <GroupWorkIcon style={SubMenuItemStyle} />,
@@ -99,13 +99,13 @@ export default {
   'Application Role Resource Management': <GroupWorkIcon style={SubMenuItemStyle} />,
 
   // Admin Configuration
-  Configuration: <BuildIcon style={MenuItemStyle} />,
+  'Configuration': <BuildIcon style={MenuItemStyle} />,
 
   // Admin User Management
   'User Management': <PeopleAltIcon style={MenuItemStyle} />,
 
   // Admin Program
-  Program: <ScatterPlotIcon style={MenuItemStyle} />,
+  'Program': <ScatterPlotIcon style={MenuItemStyle} />,
 
   // Admin User Role Management
   'User Role Management': <GroupAddIcon style={MenuItemStyle} />,
@@ -114,23 +114,25 @@ export default {
   'Reporting Period': <EventIcon style={MenuItemStyle} />,
 
   // Admin Status
-  Status: <CachedIcon style={MenuItemStyle} />,
+  'Status': <CachedIcon style={MenuItemStyle} />,
 
   // Admin OHFS Data Population
   'OHFS Data Populate': <StorageIcon style={MenuItemStyle} />,
 
   // Admin Workflow
-  Workflow: <CallSplitIcon style={MenuItemStyle} />,
+  'Workflow': <CallSplitIcon style={MenuItemStyle} />,
 
   // Admin Sheet Name
   'Sheet Name': <ListAltIcon style={MenuItemStyle} />,
 
   // Admin Auditlog
-  AuditLog: <SubjectIcon style={MenuItemStyle} />,
+  'AuditLog': <SubjectIcon style={MenuItemStyle} />,
 
   // UNKNOWN
-  Download: <CloudDownloadIcon style={MenuItemStyle} />,
-  Upload: <CloudUploadIcon style={MenuItemStyle} />,
+  'Download': <CloudDownloadIcon style={MenuItemStyle} />,
+  'Upload': <CloudUploadIcon style={MenuItemStyle} />,
   'Business rule configure': <ForumIcon style={MenuItemStyle} />,
   'ETL Setting': <TransitEnterexitIcon style={MenuItemStyle} />,
 };
+
+export default ItemMap
