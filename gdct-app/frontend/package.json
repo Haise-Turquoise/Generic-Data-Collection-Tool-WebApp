@@ -29,6 +29,7 @@
     "@reduxjs/toolkit": "^1.4.0",
     "@types/react-redux": "^7.1.16",
     "@types/react-router-dom": "^5.1.7",
+    "@types/yup": "^0.29.13",
     "awesome-typescript-loader": "^5.2.1",
     "axios": "^0.18.0",
     "bcrypt-nodejs": "^0.0.3",
@@ -89,7 +90,7 @@
     "uniqid": "^5.0.3",
     "webpack-bundle-analyzer": "^3.6.0",
     "webpack-dev-server": "^3.11.0",
-    "xlsx-populate": "https://github.com/greylemon/xlsx-populate",
+    "xlsx-populate": "github:greylemon/xlsx-populate",
     "yup": "^0.29.1"
   },
   "devDependencies": {

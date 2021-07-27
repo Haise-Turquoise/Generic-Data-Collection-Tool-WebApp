@@ -5,6 +5,8 @@ import {
   REACT_FLOW_CHART,
   IFlowChartCallbacks,
   INodeDefaultProps,
+  INode,
+  INodeInnerDefaultProps,
 } from '@mrblenny/react-flow-chart';
 import { useSelector, shallowEqual, useDispatch } from 'react-redux';
 import { TextField, List, ListItem, Typography, Button } from '@material-ui/core';
@@ -46,6 +48,7 @@ type actionType = 'create' | 'update';
 //@ts-ignore
 import CreateAuditLog from '../AuditLog_Global';
 import { state } from '../../store/types';
+import { Node } from '../../types/workflow';
 
 const Auditlog_Operation: string[] = [];
 
@@ -273,10 +276,10 @@ const WorkflowSideBar = ({ stateActions }: { stateActions: IFlowChartCallbacks }
   </div>
 );
 
-// TODO unsure about this
-const NodeInnerCustom = ({ node }: { node: any }) => (
-  <div className="workflowNode">{node.type.name}</div>
-);
+const NodeInnerCustom = ({ node }: {node: Node}) => {
+  const name = typeof node.type === 'string' ? node.type : node.type.name
+  return <div className="workflowNode">{name}</div>
+};
 
 // The flow chart of workflow
 const WorkflowPane = ({ stateActions }: { stateActions: IFlowChartCallbacks }) => {

@@ -49,7 +49,6 @@ const ProfileSchema = (originalUsername:string) =>
         const fetchData = await UserController.fetchUserByUserName(value || '');
         // users can only do 1: not change the username, or 2: change the username to something new
         return (
-          //TODO test this
           fetchData.user?.username === originalUsername || fetchData.user?.username === undefined
         );
       })
