@@ -1,9 +1,9 @@
 import { Dispatch, Slice, SliceCaseReducers } from '@reduxjs/toolkit';
 import { unauthorized_dialog } from '../../../components/Unauthorized_Dialog/Unauthorized_Dialog';
-import { RestStateType, ControllerType } from '../../types';
+import { RestStateType, ControllerType, UserStateType } from '../../types';
 
-export const customRequestFactory = (
-    store: Slice<RestStateType, SliceCaseReducers<RestStateType>, string>,
+export const customRequestFactory = <T = RestStateType | UserStateType>(
+    store: Slice<T, SliceCaseReducers<T>, string>,
     controller: { fetch: ControllerType["fetch"] },
   ) => (query: any) => (dispatch: Dispatch) => {
   dispatch(store.actions.REQUEST(''));

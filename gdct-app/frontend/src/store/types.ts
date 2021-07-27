@@ -20,6 +20,11 @@ export interface RestStateType<T extends {_id: string} = {_id: string, [key:stri
   isCallInProgress: boolean,
 }
 
+export interface UserStateType {
+  isLoggedIn: boolean,
+  currentUser: string,
+}
+
 export interface RestStateReducers {
   'CREATE': CaseReducer<RestStateType, {type: 'CREATE', payload: any}>,
   'DELETE': CaseReducer<RestStateType, {type: 'DELETE', payload: string}>,
