@@ -1,7 +1,7 @@
-import Container, { Service } from 'typedi';
+import Container from 'typedi';
 import UserRepository from '../../repositories/User';
 import AppSysRoleRepository from '../../repositories/AppSysRole';
-import User,{UserDoc} from '../../types/user';
+import User from '../../types/user';
 //@ts-ignore
 import cloneDeep from 'clone-deep';
 import {

@@ -11,7 +11,7 @@ import {sendPermissionChangeUserVerficationEmail,sendPermissionChangeAdminVerfic
 import User, { UserDoc } from '../../types/user';
 //@ts-ignore
 import Organization from '../../types/organization';
-import { ObjectId } from 'mongoose';
+import { ObjectId } from 'mongodb';
 
 export default class UserRepository extends BaseRepository<User, UserDoc> {
   constructor() {
