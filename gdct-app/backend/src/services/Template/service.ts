@@ -78,8 +78,8 @@ export default class TemplateService {
   }
 
   //TODO test this too - same situation
-  async updateTemplateWorkflowProcess(id: string, workflowProcess: Partial<WorkflowProcess>) {
-    return this.templateRepository.updateWorkflowProcess(id, workflowProcess._id!);
+  async updateTemplateWorkflowProcess(id: string, workflowProcess: ObjectId) {
+    return this.templateRepository.updateWorkflowProcess(id, workflowProcess);
   }
 
   async findTemplate(template: Partial<Template>) {
