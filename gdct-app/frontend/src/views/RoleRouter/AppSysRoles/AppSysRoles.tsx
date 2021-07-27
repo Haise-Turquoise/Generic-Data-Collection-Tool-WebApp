@@ -177,7 +177,7 @@ const AppSysRolesTable = () => {
           })();
           // Do Update
           controllerEditRow(AppSysRoleController, setAppSysRoles, appSysRole)
-            .then((res: AppSysRole) => {
+            .then((res: boolean) => {
               if (res) {
                 resolve(res)
               }

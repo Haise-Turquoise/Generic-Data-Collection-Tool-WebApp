@@ -17,6 +17,8 @@ export default class AppSysRoleRepository extends BaseRepository<AppSysRole, App
     const appSysRole = await AppSysRoleModel.findById(id);
     if (appSysRole) {
       appSysRole.isActive = false;
+    }else{
+      throw new AppError(`Delete failed, Item not found for AppSysRole item with ID: ${id}`);
     }
     return this.update(id, appSysRole);
   }
@@ -30,7 +32,10 @@ export default class AppSysRoleRepository extends BaseRepository<AppSysRole, App
 
   async update(id: string, AppSysRole: Partial<AppSysRole>) {
     return AppSysRoleModel.findByIdAndUpdate(id, AppSysRole).then(
-      (AppSysRole: AppSysRoleDoc) => new AppSysRoleEntity(AppSysRole),
+      (AppSysRole: AppSysRoleDoc|null) =>{
+        if (!AppSysRole) throw new AppError(`Update failed for AppSysRole item with ID: ${id}, params: ${AppSysRole}`);
+        return new AppSysRoleEntity(AppSysRole)
+      }
     );
   }
 
@@ -43,14 +48,14 @@ export default class AppSysRoleRepository extends BaseRepository<AppSysRole, App
 
   async findById(id: string | ObjectId) {
     //TODO changed logic test this
-    return super._model.findById(id).then((result: AppSysRoleDoc) => {
+    return super._model.findById(id).then((result: AppSysRoleDoc|null) => {
       if (!result) throw new AppError(i18n.__('idDoesNotExist'));
       return result.toObject();
     });
   }
 
   async findAndCreateAppSysRole(appSys: string, role: string) {
-    return AppSysRoleModel.findOne({ appSys, role }).then((appSysRole: AppSysRoleDoc) => {
+    return AppSysRoleModel.findOne({ appSys, role }).then((appSysRole: AppSysRoleDoc|null) => {
       if (appSysRole) return appSysRole;
       return AppSysRoleModel.create({
         role,

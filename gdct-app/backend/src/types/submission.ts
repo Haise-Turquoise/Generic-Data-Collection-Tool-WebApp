@@ -30,5 +30,6 @@ export default interface Submission {
 }
 
 export interface SubmissionDoc extends Submission, Document {
-  _id: ObjectId;
+  _id:ObjectId
+  id: number;
 }

@@ -3,6 +3,7 @@ import BaseRepository from '../repository';
 import MenuModel from '../../models/Menu';
 import Menu, { MenuDoc } from '../../types/menu';
 import { FilterQuery } from 'mongoose';
+import AppError from '../../utils/AppError';
 
 export default class MenuRepository extends BaseRepository<Menu, MenuDoc> {
   constructor() {
@@ -13,6 +14,8 @@ export default class MenuRepository extends BaseRepository<Menu, MenuDoc> {
     const menu = await MenuModel.findById(id);
     if (menu) {
       menu.isActive = false;
+    }else{
+      throw new AppError(`Delete failed, Item not found for Menu item with ID: ${id}`);
     }
     return this.update(id, menu);
   }
@@ -24,7 +27,11 @@ export default class MenuRepository extends BaseRepository<Menu, MenuDoc> {
   }
 
   async update(id: string, Menu: Partial<Menu>) {
-    return MenuModel.findByIdAndUpdate(id, Menu).then((Menu: MenuDoc) => new MenuEntity(Menu));
+    return MenuModel.findByIdAndUpdate(id, Menu)
+    .then((Menu: MenuDoc|null) => {
+      if (!Menu) throw new AppError(`Update failed, Item not found for Menu item with ID: ${id}`);
+      return new MenuEntity(Menu)
+    });
   }
 
   async find(query: Partial<Menu>) {

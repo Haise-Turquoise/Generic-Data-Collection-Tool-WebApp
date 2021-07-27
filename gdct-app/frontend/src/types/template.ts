@@ -11,42 +11,42 @@ export default interface Template {
   __v?: number,
 };
 
-interface SheetData{
+export interface SheetData{
   name: string,
   freeze: string,
   styles: SheetDataStyle[],
   merges: string[],
-  rows: SheetDataRows[],
-  cols: SheetDataCols[],
+  rows: SheetDataRows,
+  cols: SheetDataCols,
   validations: any[]
   autofilter: any,
   ConditionFormatter: SheetDataConditionalFormatting[]
 };
 
-interface SheetDataRows{
-  [index:string]:{cells?:SheetDataCells},
+export interface SheetDataRows{
+  [rowIndex:string]:{cells?:SheetDataCells, height:number},
 };
 
-interface SheetDataConditionalFormatting{
+export interface SheetDataConditionalFormatting{
   functionName:string,
   params:any[],
 }
 
-interface SheetDataCols{
+export interface SheetDataCols{
   [index:string]:{width: number}
 }
 
-interface SheetDataCells{
+export interface SheetDataCells{
   [index:string]:SheetDataCell,
 };
 
-interface SheetDataCell{
+export interface SheetDataCell{
   text?: string,
   style?: number,
   formulaValue?: number,
 }
 
-interface SheetDataStyle{
+export interface SheetDataStyle{
   align?: string,
   bgcolor?: string,
   font?: SheetDataStyleFont,
@@ -54,13 +54,13 @@ interface SheetDataStyle{
   textwrap?: boolean
 };
 
-interface SheetDataStyleFont{
+export interface SheetDataStyleFont{
   size: number,
   name:string,
   family: number,
 };
 
-interface SheetDataBorder{
+export interface SheetDataBorder{
   bottom?:[string, string],
   top?:[string, string],
   left?:[string, string],
