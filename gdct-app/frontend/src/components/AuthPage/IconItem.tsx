@@ -2,10 +2,19 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Tooltip, ListItem, ListItemIcon, ListItemText } from '@material-ui/core';
 
-const renderItem = ({ name, icon, url, handleClick, option, type }) => {
+const renderItem = ({ name, icon, url, handleClick, option, type }
+  :{name:string, icon:string, url:string, handleClick:()=>void,option:string, type:string}) => {
+  const ListitemProps = {
+    component:url && Link,
+    to:url,
+    style: {display: 'block'},
+
+  };
   return option === 'main' || type === 'topmenu' ? (
+    //@ts-ignore
     <Tooltip title={name} arrow>
-      <ListItem component={url && Link} button to={url} style={{ display: 'block' }}>
+      {/*@ts-ignore*/}
+      <ListItem component = {url && Link} button to = {url} style = {{display: 'block'}}>
         <div
           style={{
             display: 'flex',
@@ -19,7 +28,9 @@ const renderItem = ({ name, icon, url, handleClick, option, type }) => {
       </ListItem>
     </Tooltip>
   ) : (
+    //@ts-ignore
     <Tooltip title={name} arrow>
+      {/*@ts-ignore*/}
       <ListItem component={url && Link} button to={url}>
         <ListItemIcon style={{ color: 'white', minWidth: '0' }} onClick={handleClick}>
           {icon}
@@ -29,8 +40,12 @@ const renderItem = ({ name, icon, url, handleClick, option, type }) => {
   );
 };
 
-const IconItem = ({ name, icon, url, handleClick, isSubMenu = false, option, type }) => {
+const IconItem = ({ name, icon, url, handleClick, isSubMenu = false, option, type }:{
+  name:string, icon:string, url:string, handleClick:()=>void, isSubMenu:boolean, option:string, type:string,
+}) => {
+  //@ts-ignore
   const renderData = isSubMenu ? (
+    //@ts-ignore
     <ListItem key={name} component={url && Link} button to={url} style={{ color: 'black' }}>
       <ListItemIcon>{icon}</ListItemIcon>
       <ListItemText primary={name} />

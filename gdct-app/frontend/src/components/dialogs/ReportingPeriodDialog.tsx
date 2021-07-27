@@ -1,16 +1,20 @@
 import React, { useCallback, useEffect, useMemo } from 'react';
 
 import { useSelector, shallowEqual, useDispatch } from 'react-redux';
+//@ts-ignore
 import SelectableTableDialog from './SelectableTableDialog';
-
+//@ts-ignore
 import { getReportingPeriodsRequest } from '../../store/thunks/reportingPeriod';
-
+//@ts-ignore
 import DialogsStore from '../../store/DialogsStore/store';
+//@ts-ignore
 import { selectIsReportingPeriodDialogOpen } from '../../store/DialogsStore/selectors';
+//@ts-ignore
 import { selectFactoryRESTResponseTableValues } from '../../store/common/REST/selectors';
+//@ts-ignore
 import { selectReportingPeriodsStore } from '../../store/ReportingPeriodsStore/selectors';
 
-const ReportingPeriodDialog = ({ handleChange }) => {
+const ReportingPeriodDialog = ({ handleChange }:{handleChange:(id:string)=>void}) => {
   const dispatch = useDispatch();
 
   const { isReportingPeriodDialogOpen, reportingPeriods } = useSelector(
@@ -50,6 +54,7 @@ const ReportingPeriodDialog = ({ handleChange }) => {
   );
 
   return (
+    //@ts-ignore
     <SelectableTableDialog
       title="Reporting Period"
       columns={columns}

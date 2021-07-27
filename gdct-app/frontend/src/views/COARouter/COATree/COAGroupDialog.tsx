@@ -70,6 +70,7 @@ const COAGroupDialog = ({ sheetNameId, Auditlog_Operations }:
   );
 
   return (
+    //@ts-ignore
     <SelectableTableDialog
       title="COA Groups"
       columns={columns}

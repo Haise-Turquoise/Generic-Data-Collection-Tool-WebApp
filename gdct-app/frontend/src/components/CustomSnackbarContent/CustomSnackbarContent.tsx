@@ -10,16 +10,17 @@ import amber from '@material-ui/core/colors/amber';
 import IconButton from '@material-ui/core/IconButton';
 import SnackbarContent from '@material-ui/core/SnackbarContent';
 import WarningIcon from '@material-ui/icons/Warning';
-import { withStyles } from '@material-ui/core/styles';
+import { withStyles, Theme } from '@material-ui/core/styles';
+import SvgIcon, { SvgIconProps } from "@material-ui/core/SvgIcon";
 
-const variantIcon = {
-  success: CheckCircleIcon,
-  warning: WarningIcon,
-  error: ErrorIcon,
-  info: InfoIcon,
+const variantIcon:{[key:string]:React.FC<SvgIconProps>} = {
+  'success': CheckCircleIcon,
+  'warning': WarningIcon,
+  'error': ErrorIcon,
+  'info': InfoIcon,
 };
 
-const styles1 = theme => ({
+const styles1 = (theme:Theme) => ({
   success: {
     backgroundColor: green[600],
   },
@@ -42,12 +43,14 @@ const styles1 = theme => ({
   message: {
     display: 'flex',
     alignItems: 'center',
+    //@ts-ignore
     whiteSpace: 'pre-line',
   },
 });
 
-function CustomSnackbarContent(props) {
-  const { classes, className, message, onClose, variant, ...other } = props;
+function CustomSnackbarContent(props:any) {
+  const { classes, className, message, onClose,...other } = props;
+  let {variant}:{variant:string} = props;
   const Icon = variantIcon[variant];
 
   return (
@@ -83,5 +86,5 @@ CustomSnackbarContent.propTypes = {
   onClose: PropTypes.func,
   variant: PropTypes.oneOf(['success', 'warning', 'error', 'info']).isRequired,
 };
-
+//@ts-ignore
 export default withStyles(styles1)(CustomSnackbarContent);

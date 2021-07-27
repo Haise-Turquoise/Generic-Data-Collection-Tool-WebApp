@@ -2,16 +2,20 @@ import React, { useCallback, useEffect, useMemo } from 'react';
 import PropTypes from 'prop-types';
 
 import { useSelector, shallowEqual, useDispatch } from 'react-redux';
+//@ts-ignore
 import SelectableTableDialog from './SelectableTableDialog';
-
+//@ts-ignore
 import { getOrgsRequest } from '../../store/thunks/organization';
-
+//@ts-ignore
 import DialogsStore from '../../store/DialogsStore/store';
+//@ts-ignore
 import { selectFactoryRESTResponseTableValues } from '../../store/common/REST/selectors';
+//@ts-ignore
 import { selectOrgsStore } from '../../store/OrganizationsStore/selectors';
+//@ts-ignore
 import { selectIsOrganizationDialogOpen } from '../../store/DialogsStore/selectors';
 
-const OrganizationDialog = ({ handleChange }) => {
+const OrganizationDialog = ({ handleChange }:{handleChange:(_id:string)=>void}) => {
   const dispatch = useDispatch();
 
   const { isOrganizationDialogOpen, organizations } = useSelector(
@@ -49,6 +53,7 @@ const OrganizationDialog = ({ handleChange }) => {
   );
 
   return (
+    //@ts-ignore
     <SelectableTableDialog
       title="Organization"
       columns={columns}
