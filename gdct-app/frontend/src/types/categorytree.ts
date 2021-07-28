@@ -1,7 +1,7 @@
 import CategoryGroup from "./categorygroup";
 
 export default interface CategoryTree {
-  _id: string,
+  _id?: string,
   categoryId: string[],
   // sometimes get group instead of string
   categoryGroupId: string | CategoryGroup,

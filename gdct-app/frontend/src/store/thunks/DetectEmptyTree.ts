@@ -49,7 +49,7 @@ export const deleteCOATreeBySheetName = (sheetName: SheetName, resolve: () => vo
   COATreeController.fetchBySheetName(sheetName._id)
     .then(treeElementList => {
       treeElementList.forEach(treeElement => {
-        COATreeController.delete(treeElement._id);
+        COATreeController.delete(treeElement._id || '');
       });
     })
     .then(result => {

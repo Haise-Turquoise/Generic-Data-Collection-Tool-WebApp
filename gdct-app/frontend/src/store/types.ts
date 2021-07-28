@@ -232,7 +232,7 @@ export interface state {
   UsersStore: RestStateType,
 
   AppConfigsStore: RestStateType,
-  COATreeStore: Slice,
+  COATreeStore: any, //TODO
   DataResumeStore: RestStateType,
   DetectEmptyTreeStore: RestStateType,
   SheetNamesStore: RestStateType,

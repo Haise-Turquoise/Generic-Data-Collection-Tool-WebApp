@@ -5,15 +5,64 @@ import COATreeController from '../../controllers/COATree';
 import COAController from '../../controllers/COA';
 import COAsStore from '../COAsStore/store';
 import COATreesStore from '../COATreesStore/store';
+//@ts-ignore
 import COATreeStore from '../COATreeStore/store';
 import DialogsStore from '../DialogsStore/store';
 import { deleteRequestFactory, updateRequestFactory, getRequestFactory } from './common/REST';
 import { unauthorized_dialog } from '../../components/Unauthorized_Dialog/Unauthorized_Dialog';
+import CategoryTree from '../../types/categorytree';
+import CategoryGroup from '../../types/categorygroup';
+import { Dispatch } from 'redux';
+import { state } from '../types';
+import Category from '../../types/category';
 
-const normalizeTrees = denormalizedCOATrees => {
+interface cbCategory extends Category {
+  title: string,
+}
+
+interface DenormalizedTree {
+  children?: DenormalizedTree[]
+  title: string,
+  content: CategoryTree,
+}
+
+interface NodeCategory {
+  children?: cbCategory[],
+  title: string,
+  content: CategoryTree,
+}
+
+interface NormalizedTree {
+  parentId?: string,
+  _id?: string,
+  categoryId: string[],
+  categoryGroupId: string | CategoryGroup,
+  sheetNameId: string,
+  content: undefined,
+  timestamp?: string,
+  updatedBy?: string,
+}
+
+interface cbTreeNode {
+  lowerSiblingCounts: number[],
+  path: number[],
+  treeIndex: number,
+  parentNode: DenormalizedTree,
+  node: DenormalizedTree,
+}
+
+interface cbCategoryNode {
+  lowerSiblingCounts: number[],
+  path: number[],
+  treeIndex: number,
+  parentNode: DenormalizedTree,
+  node: NodeCategory,
+}
+
+const normalizeTrees = (denormalizedCOATrees: DenormalizedTree[]) => {
   const stack = [...denormalizedCOATrees];
 
-  const normalizedTrees = denormalizedCOATrees.map(COATree => ({
+  const normalizedTrees: NormalizedTree[] = denormalizedCOATrees.map(COATree => ({
     ...COATree.content,
     parentId: undefined,
     content: undefined,
@@ -22,9 +71,9 @@ const normalizeTrees = denormalizedCOATrees => {
   while (stack.length) {
     const node = stack.pop();
 
-    const { children } = node;
+    const { children } = node || { children: [] };
 
-    const parentId = node.content._id;
+    const parentId = node?.content._id || '';
 
     if (children) {
       children.forEach(child => {
@@ -57,17 +106,17 @@ export const updateCOATreeRequest = updateRequestFactory(COATreesStore, COATreeC
 // };
 
 export const createCOATreeRequest = (
-  COAGroup,
-  sheetNameId,
+  COAGroup: CategoryGroup,
+  sheetNameId: string,
   isTreeComponent = false,
-) => dispatch => {
+) => (dispatch: Dispatch) => {
   const COATree = {
     sheetNameId,
-    categoryGroupId: COAGroup._id,
+    categoryGroupId: COAGroup._id || '',
+    categoryId: [],
   };
 
-  dispatch(COATreesStore.actions.REQUEST());
-
+  dispatch(COATreesStore.actions.REQUEST(''));
   COATreeController.create(COATree)
     .then(COATree => {
       batch(() => {
@@ -83,13 +132,14 @@ export const createCOATreeRequest = (
     });
 };
 
-export const getCOATreesBySheetNameRequest = (sheetName, isTreeComponent = false) => (
-  dispatch,
-  getState,
+export const getCOATreesBySheetNameRequest = (sheetName: string, isTreeComponent = false) => (
+  dispatch: Dispatch,
+  getState: () => state,
 ) => {
-  dispatch(COATreesStore.actions.REQUEST());
+  dispatch(COATreesStore.actions.REQUEST(''));
   COAController.fetch()
     .then(result => {
+      //@ts-ignore special case
       if (result === 'UNAUTHORIZED ACCESS') unauthorized_dialog();
       dispatch(COAsStore.actions.RECEIVE(result));
     })
@@ -108,16 +158,13 @@ export const getCOATreesBySheetNameRequest = (sheetName, isTreeComponent = false
               COAsStore: { response },
             } = getState();
             // console.log(response)
-
-            const getNodeKey = ({ treeIndex }) => treeIndex;
+            const getNodeKey = ({ treeIndex }: { treeIndex: number }) => treeIndex;
             const newLocalTree = cloneDeep(localTree);
-            const COAs = cloneDeep(response.Values);
-            // console.log(COAs)
+            const COAs = (cloneDeep(response.Values) as Category[]);
             walk({
               treeData: newLocalTree,
               getNodeKey,
-              callback: node => {
-                // console.log(node)
+              callback: (node: cbCategoryNode) => {
                 if (node.node.content) {
                   // console.log(node.node.content.categoryId)
                   if (node.node.content.categoryId) {
@@ -125,15 +172,16 @@ export const getCOATreesBySheetNameRequest = (sheetName, isTreeComponent = false
                       COAs.forEach(COA => {
                         if (categoryId == COA.id) {
                           // console.log(categoryId)
-                          const COACopy = cloneDeep(COA);
+                          // for some reason this adds a field 'title'
+                          const COACopy = (cloneDeep(COA) as cbCategory);
                           COACopy.title = COACopy.name;
                           if (!node.node.children) {
                             // console.log('child is empty')
                             node.node.children = [COACopy];
-                          } else if (!node.node.children.some(child => child.id === COACopy.id)) {
+                          } else if (!node.node.children.some((child) => child.id === COACopy.id)) {
                             // console.log('not in there')
                             node.node.children.push(COACopy);
-                          } else if (node.node.children.some(child => child.id === COACopy.id)) {
+                          } else if (node.node.children.some((child) => child.id === COACopy.id)) {
                             // console.log('already in there')
                             node.node.children.push(COACopy);
                           }
@@ -156,19 +204,18 @@ export const getCOATreesBySheetNameRequest = (sheetName, isTreeComponent = false
     });
 };
 
-export const updateCOATreesBySheetNameRequest = sheetNameId => (dispatch, getState) => {
+export const updateCOATreesBySheetNameRequest = (sheetNameId: string) => (dispatch: Dispatch, getState: () => state) => {
   const {
     COATreeStore: { localTree },
   } = getState();
 
   // let treeCopy = cloneDeep(toggleExpandedForAll({ treeData:localTree, expanded : true }))
   const treeCopy = cloneDeep(localTree);
-  const getNodeKey = ({ treeIndex }) => treeIndex;
+  const getNodeKey = ({ treeIndex }: { treeIndex: number }) => treeIndex;
   walk({
     treeData: treeCopy,
     getNodeKey,
-    callback: node => {
-      // console.log(node)
+    callback: (node: cbTreeNode) => {
       if (node.node.children) {
         node.node.children = node.node.children.filter(child => child.content !== undefined);
       }
@@ -176,13 +223,14 @@ export const updateCOATreesBySheetNameRequest = sheetNameId => (dispatch, getSta
     ignoreCollapsed: false,
   });
 
-  dispatch(COATreesStore.actions.REQUEST());
+  dispatch(COATreesStore.actions.REQUEST(''));
 
   const normalizedTrees = normalizeTrees(treeCopy);
   // add timestamp and updatedBy attributes to normalizedTree obj
   normalizedTrees.forEach(normalizedTree => {
-    normalizedTree.timestamp = new Date();
-    normalizedTree.updatedBy = localStorage.getItem('currentUser');
+    //TODO please test
+    normalizedTree.timestamp = (new Date()).toString();
+    normalizedTree.updatedBy = localStorage.getItem('currentUser') || undefined;
   });
   COATreeController.updateBySheetName(normalizedTrees, sheetNameId)
     .then(_COATrees => {
