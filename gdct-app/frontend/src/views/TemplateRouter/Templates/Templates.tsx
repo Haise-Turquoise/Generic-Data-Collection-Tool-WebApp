@@ -70,7 +70,7 @@ const TemplatesTable = ({ history }: RouterProps) => {
     shallowEqual,
   );
   const lookupProcesses = workflowProcesses.reduce((acc: {[key: string]: string}, value: WorkflowProcess) => {
-    acc[value._id] = value.statusId.name;
+    acc[value._id!] = value.statusId.name;
     return acc;
   }, {});
 
@@ -220,7 +220,7 @@ const TemplatesTable = ({ history }: RouterProps) => {
   useEffect(() => {
     dispatch(getTemplatesRequest());
     dispatch(getTemplateTypesRequest());
-    dispatch(getWorkflowProcessesRequest());
+    dispatch(getWorkflowProcessesRequest({}));
 
     return () => {
       dispatch(TemplatesStore.actions.RESET(''));

@@ -8,7 +8,7 @@ const WorkflowController = Service([WorkflowService], service => {
     router.get('/workflows/fetch', (req, res, next) => {
       service
         .findWorkflow({})
-        .then(workflows => res.json( workflows ))
+        .then(workflows => {console.log(workflows);res.json( workflows )})
         .catch(next);
     });
 

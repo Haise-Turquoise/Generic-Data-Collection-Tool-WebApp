@@ -57,7 +57,7 @@ const Workflows = () => {
   const [workflows, setWorkflows] = useState<Workflow[] | undefined>(undefined)
 
   useEffect(() => {
-    workflowController.fetch().then((res: unknown) => {
+    workflowController.fetch().then(res => {
       setWorkflows(res as Workflow[])
     })
   }, [])

@@ -1,5 +1,5 @@
 import axios from 'axios';
-import Workflow from '../types/workflow';
+import Workflow, { WorkflowData } from '../types/workflow';
 import WorkflowProcess from '../types/workflowprocess';
 import { host } from '../constants/domain';
 
@@ -10,11 +10,11 @@ const workflowController = (() => {
   });
   return {
     fetch: async (): Promise<Workflow[]> => workflowAxios.get('/fetch').then(res => res.data),
-    create: async (workflowData: Workflow): Promise<Workflow | null> =>
+    create: async (workflowData: WorkflowData): Promise<Workflow | null> =>
       workflowAxios.post('/create', { workflowData }).then(res => res.data.workflow),
-    update: async (workflowData: Partial<Workflow>) => workflowAxios.put('/update', { workflowData }),
+    update: async (workflowData: WorkflowData) => workflowAxios.put('/update', { workflowData }),
     delete: async (_id: string) => workflowAxios.post('/delete', { _id }),
-    fetchById: async (_id: string): Promise<Workflow | null> => workflowAxios.post('/fetchById', { _id }).then(res => res.data.data),
+    fetchById: async (_id: string): Promise<{workflow: Workflow, workflowProcesses: WorkflowProcess[]} | null> => workflowAxios.post('/fetchById', { _id }).then(res => res.data.data),
     fetchByStatusId: async (id: string): Promise<Workflow | null> =>
       workflowAxios.post('/fetchByStatusId', { id }).then(res => res.data),
     fetchOnlyWorkflowById: async (_id: string): Promise<Workflow | null> =>

@@ -14,6 +14,10 @@ import { WorkflowStoreActions, initialWorkflowState } from '../WorkflowStore/sto
 
 import { getRequestFactory, deleteRequestFactory, updateRequestFactory } from './common/REST';
 import WorkflowProcessesStore from '../WorkflowProcessesStore/store';
+import { Dispatch } from 'redux';
+import { state } from '../types';
+import Workflow, { WorkflowData } from '../../types/workflow';
+import WorkflowProcess from '../../types/workflowprocess';
 
 export const getWorkflowsRequest = getRequestFactory(WorkflowsStore, workflowController);
 
@@ -21,7 +25,9 @@ export const deleteWorkflowRequest = deleteRequestFactory(WorkflowsStore, workfl
 
 export const updateWorkflowRequest = updateRequestFactory(WorkflowsStore, workflowController);
 
-const _createWorkflow = (dispatch, getState) => {
+type LinkMapSetType = {[key: string]: Set<string>}
+
+const _createWorkflow = (dispatch: Dispatch, getState: () => state): WorkflowData | null => {
   const state = getState();
 
   const workflowNodes = selectWorkflowNodes(state);
@@ -31,9 +37,9 @@ const _createWorkflow = (dispatch, getState) => {
   const workflowTimestamp = selectWorkflowTimestamp(state);
   const workflowUpdatedBy = selectWorkflowUpdatedBy(state);
 
-  const linkMapSet = {};
-  const endNodes = new Set();
-  const startNodes = new Set();
+  const linkMapSet: LinkMapSetType = {};
+  const endNodes: Set<string> = new Set();
+  const startNodes: Set<string> = new Set();
 
   for (const link in workflowLinks) {
     const { from, to } = workflowLinks[link];
@@ -46,8 +52,7 @@ const _createWorkflow = (dispatch, getState) => {
     endNodes.add(toId);
     startNodes.add(fromId);
   }
-
-  let initialNode = null;
+  let initialNode: any = null;
   let isSingleInitialNode = true;
   startNodes.forEach(node => {
     if (!endNodes.has(node)) {
@@ -59,12 +64,14 @@ const _createWorkflow = (dispatch, getState) => {
     }
   });
 
-  if (!isSingleInitialNode || !Object.keys(workflowNodes).length)
-    return dispatch(
+  if (!isSingleInitialNode || !Object.keys(workflowNodes).length) {
+    dispatch(
       WorkflowStoreActions.UPDATE_WORKFLOW_ERROR('There must be only one starting node'),
     );
+    return null
+  }
 
-  const visited = new Set();
+  const visited = new Set<string>();
 
   markVisitableNodes(initialNode, linkMapSet, visited);
 
@@ -76,21 +83,24 @@ const _createWorkflow = (dispatch, getState) => {
     }
   }
 
-  if (!isGraphConnected)
-    return dispatch(
+  if (!isGraphConnected) {
+    dispatch(
       WorkflowStoreActions.UPDATE_WORKFLOW_ERROR(
         'Graphs must be connected and have at least two nodes',
       ),
     );
+    return null
+  }
 
   // Create the data structure of workflow process
-  const workflow = {
+  const workflow: Workflow = {
     name: workflowName,
-    _id: workflowId,
-    timestamp: workflowTimestamp,
+    _id: workflowId || '',
+    timestamp: workflowTimestamp.toString(),
     updatedBy: workflowUpdatedBy,
+    isActive: true,
   };
-  const workflowProcessesData = [];
+  const workflowProcessesData: WorkflowProcess[] = [];
   const statusData = [];
 
   for (const nodeId in workflowNodes) {
@@ -106,6 +116,8 @@ const _createWorkflow = (dispatch, getState) => {
     workflowProcessesData.push({
       id: linkId,
       statusId: node.type._id,
+      //TODO
+      //@ts-ignore why an object? Doesn't match db
       to: [...linkMapSet[linkId]].map(toId => ({
         id: toId,
         statusId: workflowNodes[toId].type._id,
@@ -117,20 +129,26 @@ const _createWorkflow = (dispatch, getState) => {
 };
 
 // this is the same as submitWorkflow, see below
-export const updateWorkflow = () => (dispatch, getState) => {
+export const updateWorkflow = () => (dispatch: Dispatch, getState: () => state) => {
+  const workflowData = _createWorkflow(dispatch, getState)
+  if (!workflowData) return
   workflowController
-    .update(_createWorkflow(dispatch, getState))
+    .update(workflowData)
     .catch(error => dispatch(WorkflowStoreActions.UPDATE_WORKFLOW_ERROR(error)));
 };
 
-export const submitWorkflow = () => (dispatch, getState) => {
+export const submitWorkflow = () => (dispatch: Dispatch, getState: () => state) => {
+  const workflowData = _createWorkflow(dispatch, getState)
+  if (!workflowData) return
   workflowController
-    .create(_createWorkflow(dispatch, getState))
+    .create(workflowData)
     .catch(error => dispatch(WorkflowStoreActions.UPDATE_WORKFLOW_ERROR(error)));
 };
 
-export const loadWorkflow = workflowId => dispatch => {
-  workflowController.fetchById(workflowId).then(({ workflow, workflowProcesses }) => {
+export const loadWorkflow = (workflowId: string) => (dispatch: Dispatch) => {
+  workflowController.fetchById(workflowId).then(workflowData => {
+    if (!workflowData) return
+    const { workflow, workflowProcesses } = workflowData
     const workflowState = cloneDeep(initialWorkflowState);
     workflowState.name = workflow.name;
     workflowState._id = workflow._id;
@@ -143,7 +161,7 @@ export const loadWorkflow = workflowId => dispatch => {
         position,
       } = workflowProcess;
 
-      workflowState.chart.nodes[_id] = {
+      workflowState.chart.nodes[_id!] = {
         id: _id,
         position,
         orientation: 0,
@@ -189,7 +207,7 @@ export const loadWorkflow = workflowId => dispatch => {
   });
 };
 
-const markVisitableNodes = (startingNode, linkMapSet, visited) => {
+const markVisitableNodes = (startingNode: string, linkMapSet: LinkMapSetType, visited: Set<string>) => {
   visited.add(startingNode);
   const adjacentNodes = linkMapSet[startingNode];
 
@@ -201,12 +219,12 @@ const markVisitableNodes = (startingNode, linkMapSet, visited) => {
 };
 
 export const getWorkflowProcessesRequest = (
-  query,
-  resolve,
-  reject,
+  query: {[key: string]: any},
+  resolve?: () => void,
+  reject?: () => void,
   isPopulated = false,
-) => dispatch => {
-  dispatch(WorkflowProcessesStore.actions.REQUEST());
+) => (dispatch: Dispatch) => {
+  dispatch(WorkflowProcessesStore.actions.REQUEST(''));
 
   workflowController
     .fetchProcesses()

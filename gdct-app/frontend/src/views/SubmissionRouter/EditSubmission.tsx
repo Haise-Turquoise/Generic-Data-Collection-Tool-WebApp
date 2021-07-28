@@ -184,7 +184,7 @@ const EditSubmission = ({ history }:{history:History}) => {
           Promise.all(promiseQuery2).then(workflowProcesses => {
             const statusMap:{ [name: string]: string } = {};
             for (const workflowProcess of workflowProcesses) {
-              statusMap[workflowProcess._id] = workflowProcess.statusName;
+              statusMap[workflowProcess._id!] = workflowProcess.statusName;
             }
             const workflowProcessesList = cloneDeep(workflowProcesses)
             for (const workflowProcesses of workflowProcessesList) {
