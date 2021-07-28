@@ -24,15 +24,7 @@ const mailConfig = {
     pass: 'Gdct1234',
   },
 };
-// const mailConfig = {
-  
-//   service:"hotmail",
-  
-//   auth: {
-//     user: 'yangjie.yang@mail.utoronto.ca',
-//     pass: 'Yangjie961109',
-//   },
-// };
+
 
 // Check your messages at https://ethereal.email/ on the test email account
 // Credentials are present on mailConfig
