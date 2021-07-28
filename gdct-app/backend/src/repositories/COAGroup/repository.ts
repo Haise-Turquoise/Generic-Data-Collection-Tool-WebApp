@@ -4,14 +4,19 @@ import COAGroupModel from '../../models/COAGroup';
 import CategoryGroup, { CategoryGroupDoc } from '../../types/categorygroup';
 import { FilterQuery } from 'mongoose';
 import { ObjectId } from 'mongodb';
+import AppError from '../../utils/AppError';
 
 export default class COAGroupRepository extends BaseRepository<CategoryGroup, CategoryGroupDoc> {
   constructor() {
     super(COAGroupModel);
   }
+
   async delete(id: string) {
     return COAGroupModel.findByIdAndDelete(id).then(
-      (COAGroup: CategoryGroupDoc) => new COAGroupEntity(COAGroup),
+      (COAGroup: CategoryGroupDoc|null) => {
+        if (!COAGroup) throw new AppError(`Delete failed, Item not found for COA group item with ID: ${id}`);
+        return new COAGroupEntity(COAGroup)
+      }
     );
   }
 
@@ -21,7 +26,10 @@ export default class COAGroupRepository extends BaseRepository<CategoryGroup, Ca
 
   async update(id: string, COAGroup: Partial<CategoryGroup>) {
     return COAGroupModel.findByIdAndUpdate(id, COAGroup).then(
-      (COAGroup: CategoryGroupDoc) => new COAGroupEntity(COAGroup),
+      (COAGroup: CategoryGroupDoc|null) =>{
+        if (!COAGroup) throw new AppError(`Update failed, Item not found for COA group item with ID: ${id}, params:${COAGroup}`);
+        return new COAGroupEntity(COAGroup)
+      }
     );
   }
 

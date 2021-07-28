@@ -278,6 +278,7 @@ const UserInfo = ({
   useEffect(()=>{setRowNum(data.length)}, [data])
 
   return isCallInProgress ? (
+    //@ts-ignore
     <Loading />
   ) : (
     <div className="userInfo">

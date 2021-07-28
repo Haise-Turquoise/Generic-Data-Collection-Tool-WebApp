@@ -3,6 +3,7 @@ import BaseRepository from '../repository';
 import SubmissionPeriodModel from '../../models/SubmissionPeriod';
 import SubmissionPeriod, { SubmissionPeriodDoc } from '../../types/submissionperiod';
 import { FilterQuery } from 'mongoose';
+import AppError from '../../utils/AppError';
 
 export default class SubmissionPeriodRepository extends BaseRepository<SubmissionPeriod, SubmissionPeriodDoc> {
   constructor() {
@@ -10,9 +11,11 @@ export default class SubmissionPeriodRepository extends BaseRepository<Submissio
   }
 
   async delete(id: string) {
-    return SubmissionPeriodModel.findByIdAndDelete(id).then(
-      (submissionPeriod: SubmissionPeriodDoc) => new SubmissionPeriodEntity(submissionPeriod),
-    );
+    return SubmissionPeriodModel.findByIdAndDelete(id)
+    .then((submissionPeriod: SubmissionPeriodDoc|null) => {
+      if (!submissionPeriod) throw new AppError(`Delete failed for AppRoleResouece with ID: ${id}`);
+      return new SubmissionPeriodEntity(submissionPeriod);
+      });
   }
 
   async create(submissionPeriod: SubmissionPeriod) {
@@ -22,9 +25,11 @@ export default class SubmissionPeriodRepository extends BaseRepository<Submissio
   }
 
   async update(id: string, submissionPeriod: Partial<SubmissionPeriod>) {
-    return SubmissionPeriodModel.findByIdAndUpdate(id, submissionPeriod).then(
-      (submissionPeriod: SubmissionPeriodDoc) => new SubmissionPeriodEntity(submissionPeriod),
-    );
+    return SubmissionPeriodModel.findByIdAndUpdate(id, submissionPeriod)
+    .then((submissionPeriod: SubmissionPeriodDoc|null) => {
+      if (!submissionPeriod) throw new AppError(`Update failed for AppRoleResouece with ID: ${id}`);
+      return new SubmissionPeriodEntity(submissionPeriod);
+    });
   }
 
   async findByIds(ids: string[]){

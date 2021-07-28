@@ -3,7 +3,6 @@ import AuthController from '../../controllers/Auth';
 import SubmissionsStore from '../SubmissionsStore/store';
 
 import { deleteRequestFactory, updateRequestFactory } from './common/REST';
-import { extractReactAndWorkbookState } from '../../tools/excel';
 
 export const getSubmissionsRequest = callback => dispatch => {
   dispatch(SubmissionsStore.actions.REQUEST());
@@ -80,14 +79,6 @@ export const updateSubmissionExcelRequest = () => (dispatch, getState) => {
     },
   } = getState();
 
-  const [submission] = Values;
-
-  const newSubmission = {
-    ...submission,
-    //   name: present.name,
-    isLatest: true,
-    workbookData: extractReactAndWorkbookState(present, present.inactiveSheets),
-  };
 
   submissionController
     .updateWorkbook(newSubmission)

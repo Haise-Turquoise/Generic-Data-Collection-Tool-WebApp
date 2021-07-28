@@ -1,7 +1,5 @@
 import { combineReducers } from 'redux';
 
-import ui from './reducers/ui';
-
 import TemplatesStore from './TemplatesStore/store';
 import TemplateTypesStore from './TemplateTypesStore/store';
 import TemplatePackagesStore from './TemplatePackagesStore/store';
@@ -80,8 +78,6 @@ export const appReducer = combineReducers({
   WorkflowsStore: WorkflowsStore.reducer,
   WorkflowProcessesStore: WorkflowProcessesStore.reducer,
   TransferStatusStore: TransferStatusStore.reducer,
-
-  ui,
 });
 const rootReducer = (state, action) => {
   // console.log('action', action)

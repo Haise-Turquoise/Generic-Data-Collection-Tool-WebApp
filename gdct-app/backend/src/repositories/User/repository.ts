@@ -11,7 +11,7 @@ import {sendPermissionChangeUserVerficationEmail,sendPermissionChangeAdminVerfic
 import User, { UserDoc } from '../../types/user';
 //@ts-ignore
 import Organization from '../../types/organization';
-import { ObjectId } from 'mongoose';
+import { ObjectId } from 'mongodb';
 
 export default class UserRepository extends BaseRepository<User, UserDoc> {
   constructor() {
@@ -36,19 +36,21 @@ export default class UserRepository extends BaseRepository<User, UserDoc> {
   }
 
   async findById(_id: string) {
-    return UserModel.findById(_id).then((user: UserDoc) => {
+    return UserModel.findById(_id).then((user: UserDoc|null) => {
+      if (!user) return undefined;
       return new UserEntity(user);
     });
   }
 
   async findByUserName(username: string) {
     return UserModel.findOne({ username })
-      .then((user: UserDoc) => {
+      .then((user: UserDoc|null) => {
       // console.log('user',user)
       // const feedbackUser = new UserEntity(user.toObject());
       // console.log('feedbackUser',feedbackUser)
       if (!user) {
-        return {};
+        throw new AppError(`Cannot find user with username ${username}`);
+        ;
       }
       return new UserEntity(user);
     });
@@ -56,7 +58,8 @@ export default class UserRepository extends BaseRepository<User, UserDoc> {
 
   async findByEmail(email: string) {
     return UserModel.findOne({ email })
-      .then((user: UserDoc) => {
+      .then((user: UserDoc|null) => {
+        if (!user) throw new AppError(`Query failed, User not found with email: ${email}`)
         return new UserEntity(user);
       })
       .catch((err: Error) => {
@@ -102,15 +105,14 @@ export default class UserRepository extends BaseRepository<User, UserDoc> {
       }
     );
   }
-  async modifyUserToBeApproved(_id: string, { toBeApproved }: User) {
+  async modifyUserToBeApproved(_id: string|ObjectId, { toBeApproved }: UserEntity) {
     return UserModel.findOneAndUpdate({ _id: _id }, 
       { 
         toBeApproved: toBeApproved,
       }
     );
   }
-  async modifyUserPendingPermissions(_id: any, { sysRole, isActive, pendingPermissions }: User) {
-
+  async modifyUserPendingPermissions(_id: ObjectId, { sysRole, isActive, pendingPermissions }: UserEntity) {
     return UserModel.findOneAndUpdate({ _id: _id }, 
       { 
         sysRole: sysRole,
@@ -121,8 +123,9 @@ export default class UserRepository extends BaseRepository<User, UserDoc> {
   }
 
   async updatePermissionByUserEmail(email: string, permissionData: User, orgList: Organization[]) {
-    return UserModel.findOne({email}).then((user: UserDoc)=>{
-      sendPermissionChangeUserVerficationEmail(user.username, user.email)
+    return UserModel.findOne({email}).then((user: UserDoc|null)=>{
+      if (!user) throw new AppError(`Cannot find User with email ${email}`);
+      sendPermissionChangeUserVerficationEmail(user.username, user.email);
       const hashedUsername = user.hashedUsername;
       const userId = user._id;
       const username = user.username;

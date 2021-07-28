@@ -2,7 +2,7 @@ import AppResouceEntity from '../../entities/AppResource';
 import BaseRepository from '../repository';
 import AppResourceModel from '../../models/AppResource';
 import AppResource, { AppResourceDoc } from '../../types/appresource';
-import { FilterQuery } from 'mongoose';
+import AppError from '../../utils/AppError';
 
 export default class AppResourceRepository extends BaseRepository<AppResource, AppResourceDoc> {
   constructor() {
@@ -10,7 +10,9 @@ export default class AppResourceRepository extends BaseRepository<AppResource, A
   }
 
   async delete(id: string) {
-    return AppResourceModel.findByIdAndDelete(id)
+    const result = await AppResourceModel.findByIdAndDelete(id);
+    if (!result) throw new AppError(`Cannot delete AppResource with ID: ${id}, ID does not Exist`);
+    return result;
   }
 
   async create(appResource: AppResource) {
@@ -19,8 +21,10 @@ export default class AppResourceRepository extends BaseRepository<AppResource, A
 
   async update(id: string, appResource: Partial<AppResource>) {
     return AppResourceModel.findByIdAndUpdate(id, appResource).then(
-      (appResource: AppResourceDoc) => new AppResouceEntity(appResource),
-    );
+      (appResource: AppResourceDoc|null) =>{
+        if (appResource) return new AppResouceEntity(appResource);
+        throw new AppError(`Cannot update AppResource with ID: ${id}, ID does not Exist`);
+    });
   }
 
   async find(query: Partial<AppResource>) {

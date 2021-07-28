@@ -5,7 +5,7 @@ import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import { Formik } from 'formik';
 //@ts-ignore
 import cloneDeep from 'clone-deep';
-import Swal from 'sweetalert2';
+import Swal, { SweetAlertResult } from 'sweetalert2';
 import Paper from '@material-ui/core/Paper';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
@@ -828,7 +828,7 @@ const Register_container = (props: any) => {
       icon: 'success',
       confirmButtonColor: '#3085d6',
       confirmButtonText: 'OK',
-    }).then(result => {
+    }).then((result:SweetAlertResult<any>) => {
       if (result.isConfirmed) {
         // window.location.reload();
         history.push('/');

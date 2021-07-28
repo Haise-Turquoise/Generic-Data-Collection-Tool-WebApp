@@ -83,7 +83,7 @@ const EditOrganization = ({
   const cancel = () => {
     redirect();
   };
-
+  //@ts-ignore
   return !object ? <Loading /> : (
     <div>
       <ModifyOrganization
