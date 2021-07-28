@@ -5,11 +5,15 @@ import usersController from '../../controllers/Users';
 import { ModifyUserInfoStore, ModifyUserInfoStoreActions } from '../ModifyUserInfo/store';
 
 import { updateRequestFactory } from './common/REST';
-
+import { Dispatch } from 'redux';
+import User, { ToBeApproved, UserOrg, UserProg, UserSysRole, UserTemplate } from '../../types/user';
+//@ts-ignore issue with updatePopulated
 export const updateUserInfoRequest = updateRequestFactory(ModifyUserInfoStore, userController);
 
-export const getUserInfoPopulatedRequest = email => dispatch => {
-  dispatch(ModifyUserInfoStoreActions.REQUEST());
+type rowData = ToBeApproved
+
+export const getUserInfoPopulatedRequest = (email: string) => (dispatch: Dispatch) => {
+  dispatch(ModifyUserInfoStoreActions.REQUEST(''));
 
   usersController
     .fetchByEmail(email)
@@ -21,7 +25,7 @@ export const getUserInfoPopulatedRequest = email => dispatch => {
     });
 };
 
-const handleInputTemplate = (rowData, template) => {
+const handleInputTemplate = (rowData: rowData, template: UserTemplate[]) => {
   const newTemplate = {
     templateTypeId: rowData.submission._id,
     templateCode: rowData.submission.name,
@@ -30,7 +34,7 @@ const handleInputTemplate = (rowData, template) => {
   template.push(newTemplate);
 };
 
-const handleInputProgram = (rowData, program) => {
+const handleInputProgram = (rowData: rowData, program: UserProg[]) => {
   const newProgram = {
     programId: rowData.program._id,
     programCode: rowData.program.code,
@@ -54,12 +58,13 @@ const handleInputProgram = (rowData, program) => {
   }
 };
 
-const handleInputOrg = (rowData, org) => {
+const handleInputOrg = (rowData: rowData, org: UserOrg[]) => {
   const newOrg = {
-    orgId: rowData.organization.id.toString(),
-    name: rowData.organization.name,
+    orgId: rowData.organization.id,
+    orgName: rowData.organization.name,
     authorizedPerson: rowData.organization.authorizedPerson,
     program: [],
+    IsActive: true,
   };
   if (org.length > 0) {
     let sameOrg = false;
@@ -79,12 +84,14 @@ const handleInputOrg = (rowData, org) => {
   }
 };
 
-const handleInputSysRole = (rowData, sysRole) => {
-  const newSysRole = {
+const handleInputSysRole = (rowData: rowData, sysRole: UserSysRole[]) => {
+  const newSysRole: User["sysRole"][0] = {
     appSys: rowData.appSys,
     role: rowData.permission,
     appSysRoleId: rowData.appSysRoleId,
     org: [],
+    isActive: true,
+    timestamp: (new Date()).toString(),
   };
   if (sysRole.length > 0) {
     let sameAppSysAndRole = false;
@@ -105,10 +112,11 @@ const handleInputSysRole = (rowData, sysRole) => {
     handleInputOrg(rowData, newSysRole.org);
   }
 };
-export const approvePermission = (rowData, applierUser, user, resolve, reject) => dispatch => {
-  dispatch(ModifyUserInfoStoreActions.REQUEST());
+export const approvePermission = (rowData: rowData, applierUser: User, user: User, resolve?: () => void, reject?: () => void) => (dispatch: Dispatch) => {
+  console.log('ROW DATA', rowData)
+  dispatch(ModifyUserInfoStoreActions.REQUEST(''));
   const userCopy = cloneDeep(user);
-  userCopy.toBeApproved = userCopy.toBeApproved.filter(ele => {
+  userCopy.toBeApproved = userCopy.toBeApproved?.filter(ele => {
     return !(
       ele.applierEmail == rowData.applierEmail &&
       ele.appSys == rowData.appSys &&
@@ -119,7 +127,7 @@ export const approvePermission = (rowData, applierUser, user, resolve, reject) =
     );
   });
   const applierUserCopy = cloneDeep(applierUser);
-  applierUserCopy.pendingPermissions = applierUserCopy.pendingPermissions.filter(ele => {
+  applierUserCopy.pendingPermissions = applierUserCopy.pendingPermissions?.filter(ele => {
     return !(
       ele.applierEmail == rowData.applierEmail &&
       ele.appSys == rowData.appSys &&
@@ -143,10 +151,10 @@ export const approvePermission = (rowData, applierUser, user, resolve, reject) =
   dispatch(ModifyUserInfoStoreActions.RECEIVE([userCopy]));
 };
 
-export const rejectPermission = (rowData, applierUser, user, resolve, reject) => dispatch => {
-  dispatch(ModifyUserInfoStoreActions.REQUEST());
+export const rejectPermission = (rowData: rowData, applierUser: User, user: User, resolve?: () => void, reject?: () => void) => (dispatch: Dispatch) => {
+  dispatch(ModifyUserInfoStoreActions.REQUEST(''));
   const userCopy = cloneDeep(user);
-  userCopy.toBeApproved = userCopy.toBeApproved.filter(ele => {
+  userCopy.toBeApproved = userCopy.toBeApproved?.filter(ele => {
     return !(
       ele.applierEmail == rowData.applierEmail &&
       ele.appSys == rowData.appSys &&
@@ -157,7 +165,7 @@ export const rejectPermission = (rowData, applierUser, user, resolve, reject) =>
     );
   });
   const applierUserCopy = cloneDeep(applierUser);
-  applierUserCopy.pendingPermissions = applierUserCopy.pendingPermissions.filter(ele => {
+  applierUserCopy.pendingPermissions = applierUserCopy.pendingPermissions?.filter(ele => {
     return !(
       ele.applierEmail == rowData.applierEmail &&
       ele.appSys == rowData.appSys &&

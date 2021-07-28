@@ -1,31 +1,63 @@
 import SysRole from "./sysrole";
 
-interface UserTemplate {
+export interface UserTemplate {
   templateCode: string,
-  _id: string,
+  _id?: string,
   templateTypeId: string,
 }
 
-interface UserProg {
+export interface UserProg {
   programCode: string,
-  _id: string,
+  _id?: string,
   programId: string,
   template: UserTemplate[],
 }
 
-interface UserOrg {
-  orgId: string,
+export interface UserOrg {
+  orgId: number,
   orgName: string,
-  _id: string,
+  _id?: string,
   program: UserProg[],
   IsActive: boolean,
 }
 
-interface UserSysRole extends SysRole {
-  org: UserOrg[]
+export interface UserSysRole extends SysRole {
+  org: UserOrg[],
+  appSysRoleId?: string,
 }
 
 export interface ToBeApproved {
+  organization: {
+    name: string,
+    id: number,
+    authorizedPerson: {
+      name: string,
+      email: string,
+    },
+  },
+  program: {
+    name: string,
+    code: string,
+    _id: string,
+  },
+  submission: {
+    name: string,
+    _id: string,
+  },
+  permission: string,
+  approve: boolean,
+  review: boolean,
+  submit: boolean,
+  view: boolean,
+  viewCognos: boolean,
+  input: boolean,
+  status: string,
+  appSys: string,
+  applierEmail: string,
+  appSysRoleId: string,
+}
+
+interface pendingPermission {
   organization: {
     name: string,
     id: number,
@@ -83,6 +115,7 @@ export default interface User {
   google?: Object,
   updatedAt?: string,
   toBeApproved?: ToBeApproved[] | null,
+  pendingPermissions?: pendingPermission[] | null
 }
 
 export interface RawData {

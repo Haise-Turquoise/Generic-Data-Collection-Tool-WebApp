@@ -114,7 +114,7 @@ const AppRoleResourceTable = ({ history }: RouteComponentProps) => {
     
   })
   const lookupSysRoles = appSysRoles?.reduce(function (acc: {[key: string]: string}, sysRole: SysRole) {
-    acc[sysRole._id] = `${sysRole.appSys} - ${sysRole.role}`;
+    acc[sysRole._id!] = `${sysRole.appSys} - ${sysRole.role}`;
     return acc;
   }, {});
 

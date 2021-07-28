@@ -64,7 +64,9 @@ const RequestManagementTable = () => {
     }
     const applierUser = await usersController.fetchByEmail(rowData.applierEmail);
     return new Promise((resolve, reject) => {
-      dispatch(approvePermission(rowData, applierUser, user, resolve, reject));
+      if (applierUser) {
+        dispatch(approvePermission(rowData, applierUser, user, resolve, reject));
+      }
     });
   };
 
@@ -74,7 +76,9 @@ const RequestManagementTable = () => {
     }
     const applierUser = await usersController.fetchByEmail(rowData.applierEmail);
     return new Promise((resolve, reject) => {
-      dispatch(rejectPermission(rowData, applierUser, user, resolve, reject));
+      if (applierUser) {
+        dispatch(rejectPermission(rowData, applierUser, user, resolve, reject));
+      }
     });
   };
 

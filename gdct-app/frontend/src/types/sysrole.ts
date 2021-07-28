@@ -1,5 +1,5 @@
 export default interface SysRole {
-  _id: string,
+  _id?: string,
   appSys: string,
   role: string,
   isActive: boolean,

@@ -221,7 +221,7 @@ export default function SignUp() {
       title,
       phoneNumber,
       ext,
-      sysRoles: sysRoles.map(e => e._id),
+      sysRoles: sysRoles.map(e => e._id!),
       IsActive: true,
       endDate: new Date(),
       hashedUsername: '',

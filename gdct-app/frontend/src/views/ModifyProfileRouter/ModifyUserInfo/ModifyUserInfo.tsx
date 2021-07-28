@@ -280,7 +280,7 @@ const ModifyUserInfo = () => {
       })();
 
       // Do Update
-      dispatch(updateUserInfoRequest(formattedUserInfo, null, null, true, populatedData));
+      dispatch(updateUserInfoRequest(formattedUserInfo, () => {}, () => {}, true, populatedData));
 
       // Alert User
       Swal.fire({

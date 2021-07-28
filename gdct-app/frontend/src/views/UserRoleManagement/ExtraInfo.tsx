@@ -194,7 +194,7 @@ export default function SignUp({ parentHandleChange, steps, activeStep, handleNe
                     <MenuItem
                       key={sysRole._id}
                       value={`${sysRole.appSys}-${sysRole.role}`}
-                      style={getStyles(sysRole._id, sysRoles, theme)}
+                      style={getStyles(sysRole._id!, sysRoles, theme)}
                     >
                       {`${sysRole.appSys}-${sysRole.role}`}
                     </MenuItem>
