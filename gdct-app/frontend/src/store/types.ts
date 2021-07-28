@@ -230,7 +230,7 @@ export interface state {
   ReportingPeriodsStore: RestStateType,
   OrgsStore: RestStateType,
   UsersStore: RestStateType,
-
+  ExcelStore: any,
   AppConfigsStore: RestStateType,
   COATreeStore: any, //TODO
   DataResumeStore: RestStateType,
