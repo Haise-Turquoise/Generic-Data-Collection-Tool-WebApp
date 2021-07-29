@@ -20,6 +20,7 @@ import { selectIsTemplateDialogOpen } from '../../store/DialogsStore/selectors';
 import Template from '../../types/template';
 import Status from '../../types/status';
 import WorkflowProcess from '../../types/workflowprocess';
+import { state } from '../../store/types';
 
 const TemplateDialog = ({ selectedTemplates, shouldClose, handleChange }:
   {selectedTemplates:{[key: string]: boolean}, shouldClose:boolean, handleChange:(data:Template)=>void}
@@ -28,7 +29,7 @@ const TemplateDialog = ({ selectedTemplates, shouldClose, handleChange }:
   const [readTemplates, setTemplates] = useState([]);
 
   const { isTemplateDialogOpen, templates } = useSelector(
-    state => ({
+    (state: state) => ({
       isTemplateDialogOpen: selectIsTemplateDialogOpen(state),
       templates: selectFactoryRESTResponseTableValues(selectTemplatesStore)(state),
     }),

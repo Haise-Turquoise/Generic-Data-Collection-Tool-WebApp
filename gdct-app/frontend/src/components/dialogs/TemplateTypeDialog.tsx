@@ -12,12 +12,13 @@ import { selectFactoryRESTResponseTableValues } from '../../store/common/REST/se
 import { selectTemplateTypesStore } from '../../store/TemplateTypesStore/selectors';
 //@ts-ignore
 import { selectIsTemplateTypeDialogOpen } from '../../store/DialogsStore/selectors';
+import { state } from '../../store/types';
 
 const TemplateTypeDialog = ({ handleChange }:{handleChange:(id:string)=>void}) => {
   const dispatch = useDispatch();
 
   const { isTemplateTypeDialogOpen, templateTypes } = useSelector(
-    state => ({
+    (state: state) => ({
       isTemplateTypeDialogOpen: selectIsTemplateTypeDialogOpen(state),
       templateTypes: selectFactoryRESTResponseTableValues(selectTemplateTypesStore)(state),
     }),

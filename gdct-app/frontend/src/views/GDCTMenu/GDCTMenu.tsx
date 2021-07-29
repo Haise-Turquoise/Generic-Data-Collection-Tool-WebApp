@@ -1,5 +1,5 @@
 import React, { useState, useEffect, MouseEventHandler, MouseEvent } from 'react';
-import { Button, SvgIconTypeMap } from '@material-ui/core';
+import { Button, SvgIconProps, SvgIconTypeMap } from '@material-ui/core';
 //@ts-ignore
 import createUserNavigation from '../../components/AuthPage/createUserNavigation';
 //@ts-ignore
@@ -7,14 +7,7 @@ import DrawerItem from '../../components/AuthPage/DrawerItem';
 //@ts-ignore
 import IconItem from '../../components/AuthPage/IconItem';
 import { OverridableComponent } from '@material-ui/core/OverridableComponent';
-
-interface MappedMenu {
-  name: string,
-  url: string,
-  type: string,
-  icon: OverridableComponent<SvgIconTypeMap<{}, "svg">>,
-  orderId: number,
-}
+import { MappedMenu } from '../../types/menu';
 
 const MenuHeader = () => {
   const [anchorEl, setAnchorEl] = React.useState<EventTarget | null>(null);
@@ -47,6 +40,9 @@ const MenuHeader = () => {
               url={url}
               icon={icon}
               type={type}
+              handleClick={()=>{}}
+              isSubMenu={false}
+              option=''
             />
           </Button>
         ) : (

@@ -75,38 +75,38 @@ export const getSubmissionRequest = (_id: string) => (dispatch: Dispatch) => {
     });
 };
 
-export const updateSubmissionExcelRequest = () => (dispatch: Dispatch, getState: () => state) => {
-  // dispatch(requestSubmissions())
+// export const updateSubmissionExcelRequest = () => (dispatch: Dispatch, getState: () => state) => {
+//   // dispatch(requestSubmissions())
 
-  const {
-    SubmissionsStore: {
-      response: { Values },
-    },
-    ui: {
-      //@ts-ignore how do we get this
-      excel: { present },
-    },
-  } = getState();
+//   const {
+//     SubmissionsStore: {
+//       response: { Values },
+//     },
+//     ui: {
+//       //@ts-ignore how do we get this
+//       excel: { present },
+//     },
+//   } = getState();
 
-  const [submission] = Values;
+//   const [submission] = Values;
 
-  const newSubmission = {
-    ...submission,
-    //   name: present.name,
-    isLatest: true,
-    workbookData: extractReactAndWorkbookState(present, present.inactiveSheets),
-  };
+//   const newSubmission = {
+//     ...submission,
+//     //   name: present.name,
+//     isLatest: true,
+//     workbookData: extractReactAndWorkbookState(present, present.inactiveSheets),
+//   };
 
-  submissionController
-     //@ts-ignore
-    .updateWorkbook(newSubmission)
-    .then(() => {
-      dispatch(SubmissionsStore.actions.UPDATE(newSubmission));
-    })
-    .catch(error => {
-      dispatch(SubmissionsStore.actions.FAIL_REQUEST(error));
-    });
-};
+//   submissionController
+//      //@ts-ignore
+//     .updateWorkbook(newSubmission)
+//     .then(() => {
+//       dispatch(SubmissionsStore.actions.UPDATE(newSubmission));
+//     })
+//     .catch(error => {
+//       dispatch(SubmissionsStore.actions.FAIL_REQUEST(error));
+//     });
+// };
 
 export const getSubmissionByIdRequest = (_id: string) => (dispatch: Dispatch) => {
   submissionController

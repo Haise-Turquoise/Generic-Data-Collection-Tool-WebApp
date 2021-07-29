@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { Menu } from '../types/menu'
+import Menu from '../types/menu'
 import { host } from '../constants/domain';
 
 const MenuController = (() => {

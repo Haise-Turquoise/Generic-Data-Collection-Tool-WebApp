@@ -14,12 +14,13 @@ import { selectFactoryRESTResponseTableValues } from '../../store/common/REST/se
 import { selectOrgsStore } from '../../store/OrganizationsStore/selectors';
 //@ts-ignore
 import { selectIsOrganizationDialogOpen } from '../../store/DialogsStore/selectors';
+import { state } from '../../store/types';
 
 const OrganizationDialog = ({ handleChange }:{handleChange:(_id:string)=>void}) => {
   const dispatch = useDispatch();
 
   const { isOrganizationDialogOpen, organizations } = useSelector(
-    state => ({
+    (state: state) => ({
       isOrganizationDialogOpen: selectIsOrganizationDialogOpen(state),
       organizations: selectFactoryRESTResponseTableValues(selectOrgsStore)(state),
     }),

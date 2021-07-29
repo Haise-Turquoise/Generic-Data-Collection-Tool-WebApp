@@ -192,7 +192,7 @@ const COAsTable = () => {
       onRowDelete: (COA: Category) => 
         new Promise((resolve, reject) => {
           recordUpdate(COA);
-          controllerDeleteRow(COAController, setCOAs, COA._id).then((res: boolean) => {
+          controllerDeleteRow(COAController, setCOAs, COA._id || '').then((res: boolean) => {
             if (res) {
               resolve(COA)
             }

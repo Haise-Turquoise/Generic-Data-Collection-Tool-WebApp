@@ -162,7 +162,7 @@ const COAGroupsTable = () => {
       onRowDelete: (COAGroup: CategoryGroupMT) =>
         new Promise((resolve, reject) => {
           recordUpdate(COAGroup);
-          controllerDeleteRow(COAGroupController, setCOAGroups, COAGroup._id)
+          controllerDeleteRow(COAGroupController, setCOAGroups, COAGroup._id || '')
             .then((res: boolean) => {
               if (res) {
                 resolve(COAGroup)

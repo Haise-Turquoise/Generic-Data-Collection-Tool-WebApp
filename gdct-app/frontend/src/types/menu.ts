@@ -1,3 +1,4 @@
+import { SvgIconProps } from "@material-ui/core";
 import MenuItem from "./menuitems";
 export default interface Menu{
     items:MenuItem[];
@@ -10,4 +11,12 @@ export default interface Menu{
     orderId:number;
     url:string;
     subMenus:this[];
+}
+
+export interface MappedMenu {
+    name: string,
+    url: string,
+    type: string,
+    icon: React.ReactElement<SvgIconProps>,
+    orderId: number,
 }
