@@ -1,5 +1,5 @@
-import { ObjectId, Document, Model } from 'mongoose';
-
+import { Document, Model } from 'mongoose';
+import { ObjectId } from "mongodb";
 export default interface TemplateType {
   _id: string;
   name: string;

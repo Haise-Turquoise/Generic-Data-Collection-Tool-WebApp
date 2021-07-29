@@ -3,6 +3,7 @@ import BaseRepository from '../repository';
 import WorkflowModel from '../../models/Workflow/Workflow';
 import Workflow, { WorkflowDoc } from '../../types/workflow';
 import { FilterQuery } from 'mongoose';
+import AppError from '../../utils/AppError';
 
 export default class WorkflowRepository extends BaseRepository<Workflow, WorkflowDoc> {
   constructor() {
@@ -10,9 +11,11 @@ export default class WorkflowRepository extends BaseRepository<Workflow, Workflo
   }
 
   async delete(id: string) {
-    return WorkflowModel.findByIdAndDelete(id).then(
-      (workflow: WorkflowDoc) => new WorkflowEntity(workflow),
-    );
+    return WorkflowModel.findByIdAndDelete(id)
+    .then((workflow: WorkflowDoc|null) => {
+      if (!workflow) throw new AppError(`Delete failed, Item not found for workflow item with ID: ${id}`)
+      return new WorkflowEntity(workflow);
+    });
   }
 
   async create(workflow: Workflow) {
@@ -22,9 +25,11 @@ export default class WorkflowRepository extends BaseRepository<Workflow, Workflo
   async update(id: string, workflow: Partial<Workflow>) {
     const newWorkflow: Partial<WorkflowDoc> = { ...workflow };
     delete workflow._id;
-    return WorkflowModel.findByIdAndUpdate(id, workflow).then(
-      (workflow: WorkflowDoc) => new WorkflowEntity(workflow),
-    );
+    return WorkflowModel.findByIdAndUpdate(id, workflow)
+    .then((workflow: WorkflowDoc|null) => {
+      if (!workflow) throw new AppError(`Update failed, Item not found for workflow item with ID: ${id}`)
+      return new WorkflowEntity(workflow);
+    });
   }
 
   async find(query: Partial<Workflow>) {

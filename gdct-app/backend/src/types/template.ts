@@ -21,8 +21,8 @@ export interface SheetData{
   freeze: string,
   styles: SheetDataStyle[],
   merges: string[],
-  rows: SheetDataRows[],
-  cols: SheetDataCols[],
+  rows: SheetDataRows,
+  cols: SheetDataCols,
   validations: any[]
   autofilter: any,
   ConditionFormatter: SheetDataConditionalFormatting[]

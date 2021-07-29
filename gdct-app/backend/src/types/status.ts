@@ -1,6 +1,7 @@
-import { Document } from "mongoose";
-
+import { Document} from "mongoose";
+import { ObjectId } from "mongodb";
 export default interface Status {
+  _id:ObjectId,
   name: string,
   description: string,
   timestamp: Date,
@@ -10,4 +11,6 @@ export default interface Status {
   order: number,
 }
 
-export interface StatusDoc extends Status, Document {}
+export interface StatusDoc extends Status, Document {
+    _id:ObjectId
+}

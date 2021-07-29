@@ -4,6 +4,7 @@ import SubmissionRepository from '../../repositories/Submission';
 import TemplateRepository from '../../repositories/Template';
 import TemplateType from '../../types/templatetype';
 import { ObjectId } from 'mongodb'
+import { TemplateDoc } from '../../types/template';
 
 // @Service()
 export default class TemplateTypeService {
@@ -23,8 +24,8 @@ export default class TemplateTypeService {
 
   async deleteTemplateType(id: string) {
     const templates = await this.templateRepository.findTemplateIDByTypeID(id);
-    templates.map((template: TemplateType)=>template._id);
-    const submission = await this.submissionRepository.findOneByTemplateIDs(templates);
+    const templateIds = templates.map((template: TemplateDoc)=>template._id);
+    const submission = await this.submissionRepository.findOneByTemplateIDs(templateIds);
     if (submission != null) throw new Error('Template types already referenced');
     return this.templateTypeRepository.delete(id);
   }

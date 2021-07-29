@@ -11,6 +11,7 @@ import { Request, Response, NextFunction } from 'express'
 import User from '../../types/user';
 import { CallbackError } from 'mongoose';
 import { AppSysRoleDoc } from '../../types/appsysrole';
+import UserEntity from '../../entities/User';
 
 export default class AuthService {
   private UserRepository: UserRepository;
@@ -55,7 +56,7 @@ export default class AuthService {
         //@ts-ignore
         console.log('HEADERS', res.headers)
         const { email } = (req.user as User);
-        const user: User = await this.UserRepository.findByEmail(email);
+        const user: UserEntity| void = await this.UserRepository.findByEmail(email);
         if (user) {
           //@ts-ignore 
           req.session.isAdmin = Boolean(user.sysRole.find(e => e.role === 'Business Admin'));
@@ -89,6 +90,7 @@ export default class AuthService {
       const email = req.session.user
       // If anyone knows what req.logout does, please contact David Yang
       req.logout();
+      //@ts-ignore
       req.session.destroy(() => {});
       //For Audit Log
       const authService = new AuthService();
@@ -106,6 +108,7 @@ export default class AuthService {
         //@ts-ignore
         authService.UserRepository.findByEmail(req.user.email)
           .then(data => {
+            // @ts-ignore
               data.sessionID = req.sessionID;
               returnNormalJson(res, data);
           })
@@ -186,7 +189,7 @@ export default class AuthService {
     return Array.from(set).map(e => JSON.parse(e));
   }
 
-  getRoles(user: User) {
+  getRoles(user: UserEntity) {
     return new Promise(async (resolve, reject) => {
       const dataSet = new Set<string>();
       for (const sysRole of user.sysRole) {
@@ -194,6 +197,7 @@ export default class AuthService {
           sysRole.appSysRoleId,
         );
         for (const id of roleResouce.resourceId) {
+          // @ts-ignore
           const resourcesData = await this.AppResourceRepository.findById(id);
           dataSet.add(JSON.stringify(resourcesData));
         }

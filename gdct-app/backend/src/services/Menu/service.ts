@@ -1,4 +1,5 @@
 import Container from 'typedi';
+//@ts-ignore
 import i18n from 'i18n';
 import MenuRepository from '../../repositories/Menu';
 import MenuItemRepository from '../../repositories/MenuItem';
@@ -52,6 +53,7 @@ export default class MenuService {
     if (!role) {
       throw new AppError(i18n.__('Auth.service.profile.NotAuthenticated'), 400);
     }
+    // @ts-ignore
     return this.findMenu().then((menus: PopulatedMenu[]) => {
       const filteredMenus = [];
       for (const menu of menus) {

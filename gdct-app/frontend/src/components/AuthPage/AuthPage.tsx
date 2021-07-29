@@ -201,7 +201,7 @@ const Header = ({
       <Link to="/" className={classes.title}>
         <HeaderTitle title={title} />
       </Link>
-      {isTopMenu && <TopItemList config={config} classes={classes} isMobile={isMobile} />}
+      {isTopMenu && <TopItemList config={config}  isMobile={isMobile} />}
       <Chip
         label={
           <span>
@@ -434,6 +434,7 @@ const AuthPage = ({
     window.matchMedia('(max-width: 1000px)').addListener(handler);
     setTopMenu(!isMobile);
     createUserNavigation().then((res:any) => {
+      console.log('res', res)
       setConfig(res);
     });
   }, [isMobile]);

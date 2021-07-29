@@ -11,7 +11,7 @@ export default class SubmissionEntity {
   public submittedDate: Date;
   public programId: ObjectId;
   public workbookData: any;
-  public workflowProcessId: ObjectId;
+  public workflowProcessId: ObjectId|null;
   public workflowId: ObjectId;
   public statusId: ObjectId;
   public year: string;

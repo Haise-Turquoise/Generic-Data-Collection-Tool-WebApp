@@ -10,7 +10,7 @@ export default class BaseRepository<T, U extends T & Document> {
     this._model = model;
   }
 
-  find(item: Partial<T>) {
+  find(item: Partial<T>):Promise<any>  {
     const message = `${i18n.__('MethodNotImplemented')} ${{ item }}`;
     throw new AppError(message);
   }
@@ -20,26 +20,26 @@ export default class BaseRepository<T, U extends T & Document> {
     throw new AppError(message);
   }
 
-  update(id: string, item: Partial<T>) {
+  update(id: string, item: Partial<T>):Promise<any>  {
     const message = `${i18n.__('MethodNotImplemented')} ${{ id }} ${{ item }}`;
     throw new AppError(message);
   }
 
-  async findAll(option?: QueryOptions) {
+  async findAll(option?: QueryOptions):Promise<any>  {
     return this._model.find({}, null, option).then((result: U[]) => {
       if (!result) throw new AppError(i18n.__('idDoesNotExist'));
       return result;
     });
   }
 
-  async delete(id: string) {
+  async delete(id: string):Promise<any>  {
     return this._model.findByIdAndDelete(id).then((result: U | null) => {
       if (!result) throw new AppError(i18n.__('idDoesNotExist')); // throw new Error('_id does not exist');
       return result.toObject();
     });
   }
 
-  async findById(id: string | number | ObjectId) {
+  async findById(id: string | number | ObjectId):Promise<any>  {
     return this._model.findById(id).then((result: U | null) => {
       if (!result) {;throw new AppError(i18n.__('idDoesNotExist'));} // throw new Error('_id does not exist');
       return result.toObject();
@@ -48,7 +48,7 @@ export default class BaseRepository<T, U extends T & Document> {
 
   async validate(id: string | ObjectId) {
     return this._model.findById(id).then((document: T | null) => {
-      if (!document) throw `${this._model.collection.name} not found`;
+      if (!document) throw new AppError(`${this._model.collection.name} not found. Id: ${id}`);
     });
   }
 

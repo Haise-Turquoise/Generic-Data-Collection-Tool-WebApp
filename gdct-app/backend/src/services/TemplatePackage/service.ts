@@ -2,6 +2,7 @@ import Container from 'typedi';
 import TemplatePackageRepository from '../../repositories/TemplatePackage';
 import StatusRepository from '../../repositories/Status';
 import TemplatePackage from '../../types/templatepackage';
+import AppError from '../../utils/AppError';
 
 // @Service()
 export default class TemplatePackageService {
@@ -19,6 +20,7 @@ export default class TemplatePackageService {
 
   async deleteTemplatePackage(id: string) {
     const targetPackageStaus = await this.templatePackageRepository.findStatusById(id);
+    if (!targetPackageStaus) throw new AppError(`Cannot find stauts related to template package with ID ${id}`);
     if (targetPackageStaus.name === "Published") throw new Error("This Template Package was already published");
     return this.templatePackageRepository.delete(id);
   }

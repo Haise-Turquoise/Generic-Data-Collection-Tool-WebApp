@@ -23,7 +23,7 @@ import MuiAlert from '@material-ui/lab/Alert';
 
 import { useDispatch } from 'react-redux';
 import moment from 'moment';
-import Swal from 'sweetalert2';
+import Swal, { SweetAlertResult } from 'sweetalert2';
 //@ts-ignore
 import { host } from '../constants/domain';
 //@ts-ignore
@@ -254,7 +254,7 @@ export default function Login({ setLoggedIn }:{setLoggedIn:(flag:boolean)=>void}
                     cancelButtonText: 'Cancel',
                     reverseButtons: true,
                   })
-                  .then(result => {
+                  .then((result:SweetAlertResult<any>) => {
                     if (result.isConfirmed) {
                       SessionController.updateExpiration(sessionID || '');
                       swalWithBootstrapButtons.fire(
@@ -275,7 +275,7 @@ export default function Login({ setLoggedIn }:{setLoggedIn:(flag:boolean)=>void}
                   icon: 'warning',
                   confirmButtonColor: '#3085d6',
                   confirmButtonText: 'OK',
-                }).then(result => {
+                }).then((result:SweetAlertResult<any>) => {
                   if (result.isConfirmed) {
                     dispatch(UserStore.actions.LOGOUT(false));
                     window.location.reload();

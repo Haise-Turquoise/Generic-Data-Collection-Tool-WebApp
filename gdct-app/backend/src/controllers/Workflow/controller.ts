@@ -6,7 +6,9 @@ const WorkflowController = Service([WorkflowService], service => {
   const router = Router();
   return (() => {
     router.get('/workflows/fetch', (req, res, next) => {
+      
       service
+      //@ts-ignore
         .findWorkflow({})
         .then(workflows => {console.log(workflows);res.json( workflows )})
         .catch(next);

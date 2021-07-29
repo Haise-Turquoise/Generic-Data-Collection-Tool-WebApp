@@ -3,6 +3,7 @@ import BaseRepository from '../repository';
 import COAModel from '../../models/COA';
 import Category, { CategoryDoc } from '../../types/category';
 import { FilterQuery } from 'mongoose';
+import AppError from '../../utils/AppError';
 
 export default class COARepository extends BaseRepository<Category, CategoryDoc> {
   constructor() {
@@ -10,7 +11,10 @@ export default class COARepository extends BaseRepository<Category, CategoryDoc>
   }
 
   async delete(id: string) {
-    return COAModel.findByIdAndDelete(id).then((COA: CategoryDoc) => new COAEntity(COA));
+    return COAModel.findByIdAndDelete(id).then((COA: CategoryDoc|null) =>{
+      if (!COA) return undefined;
+      return new COAEntity(COA)
+    });
   }
 
   async create(COA: Category | Category[]) {
@@ -24,7 +28,10 @@ export default class COARepository extends BaseRepository<Category, CategoryDoc>
   }
 
   async update(id: string, COA: Partial<Category>) {
-    return COAModel.findByIdAndUpdate(id, COA).then((COA: CategoryDoc) => new COAEntity(COA));
+    return COAModel.findByIdAndUpdate(id, COA).then((COA: CategoryDoc|null) => {
+      if (!COA) throw new AppError(`Update failed, Item not found or not updated for COA item with ID: ${id}, params:${COA}`);
+      return new COAEntity(COA)
+    });
   }
 
   async find(query: Partial<Category>) {
@@ -45,10 +52,11 @@ export default class COARepository extends BaseRepository<Category, CategoryDoc>
     return COAModel.find({ id: { $in : query }});
   }
 
-  async findById(id: string) {
-    return COAModel.find({ _id: id }).then((result: CategoryDoc[])=>{
+  async findById(id: string):Promise<COAEntity|undefined> {
+    return COAModel.find({ _id: id }).then((result: CategoryDoc[]|undefined)=>{
+      if (!result) throw new AppError(`Query failed, Item not found for COA item with ID: ${id}`)
       if (result.length == 0){
-        return [];
+        return ;
       }
       else {
         return new COAEntity(result[0]);
