@@ -9,6 +9,8 @@ import {ObjectId} from 'mongodb';
 import Template, { TemplateDoc, SheetData } from '../../types/template';
 import { WorkflowProcessDoc } from '../../types/workflowprocess';
 import { FilterQuery } from 'mongoose';
+import AppError from '../../utils/AppError';
+import WorkflowProcessEntity from '../../entities/WorkflowProcess/WorkflowProcess';
 
 // MongoDB implementation
 // @Service()
@@ -83,9 +85,10 @@ export default class TemplateRepository extends BaseRepository<Template, Templat
     if (templateData) formattedTemplate.templateData = templateData;
 
     const oldValue = await TemplateModel.findById(id);
+    if (!oldValue) throw new AppError(`Update failed, Item not found for Template item with ID: ${id}`);
     if (oldValue.templateTypeId != formattedTemplate.templateTypeId){
       const templateWorkFlow = await this.templateTypeRepository.findById(formattedTemplate.templateTypeId || '');
-      const workFlowItems: WorkflowProcessDoc[] = await this.workflowProcessRepository.find({ workflowId: templateWorkFlow.templateWorkflowId });
+      const workFlowItems: WorkflowProcessEntity[] = await this.workflowProcessRepository.find({ workflowId: templateWorkFlow.templateWorkflowId });
       const referencedIds: ObjectId[] = [];
       workFlowItems.forEach(e => {
         e.to.forEach(element =>{
@@ -103,9 +106,11 @@ export default class TemplateRepository extends BaseRepository<Template, Templat
       formattedTemplate.workflowProcessId = diff[0];
     }
 
-    return TemplateModel.findByIdAndUpdate(id, formattedTemplate, {new: true}).then(
-      (template: TemplateDoc) => { console.log(template); return new TemplateEntity(template)}
-    );
+    return TemplateModel.findByIdAndUpdate(id, formattedTemplate, {new: true})
+    .then((template: TemplateDoc|null) => {
+      if (!template) throw new AppError(`Update failed, Item not found for Template item with ID: ${id}`)
+      return new TemplateEntity(template)
+    });
   }
 
   async updateWorkflowProcess(_id: string, workflowProcessId: ObjectId) {
@@ -113,7 +118,10 @@ export default class TemplateRepository extends BaseRepository<Template, Templat
       //@ts-ignore Unsure about this
       .validate(workflowProcessId)
       .then(() => TemplateModel.findByIdAndUpdate(_id, { workflowProcessId }))
-      .then((template: TemplateDoc) => new TemplateEntity(template));
+      .then((template: TemplateDoc|null) =>{
+        if (!template) throw new AppError(`Update WorkflowProcess, Item not found for workflowprocess item with ID: ${_id}`)
+        return new TemplateEntity(template);
+      });
   }
 
   async find(query: Partial<Template>) {

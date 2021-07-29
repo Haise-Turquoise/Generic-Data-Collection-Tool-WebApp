@@ -92,7 +92,7 @@ const CustomField = ({ label, children, addButton = false, handleClick = () => {
 const FirstSection = ({ values, handleChangeStatus, handleChangeSubmissionPeriod }: {
   values: TemplateValues,
   handleChangeStatus: (statusId: string) => void,
-  handleChangeSubmissionPeriod: (submissionPeriodId: string) => void,
+  handleChangeSubmissionPeriod: (submissionPeriodId: SubmissionPeriod) => void,
 }) => (
   <div>
     <CustomField label="Status">
@@ -184,7 +184,7 @@ const Sections = ({
   handleRemoveTemplate: (template: Template) => void,
   handleRemoveProgram: (program: Program) => void,
   handleChangeStatus: (statudId: string) => void,
-  handleChangeSubmissionPeriod: (submissionPeriodId: string) => void,
+  handleChangeSubmissionPeriod: (submissionPeriodId: SubmissionPeriod) => void,
 }) => (
   <div className="d-flex justify-content-between">
     <FirstSection
@@ -287,6 +287,7 @@ const Content = ({ setFieldValue, handleChange, values }: FormProps) => {
         shouldClose={false}
       />
       <ProgramDialog
+        //@ts-ignore
         selectedPrograms={selectedPrograms}
         handleChange={handleAddProgram}
         shouldClose={false}

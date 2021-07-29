@@ -2,21 +2,17 @@ import AppRoleResouceEntity from '../../entities/AppRoleResource';
 import BaseRepository from '../repository';
 import AppRoleResourceModel from '../../models/AppRoleResource';
 import AppRoleResource, { AppRoleResourceDoc } from '../../types/approleresource';
-import { FilterQuery } from 'mongoose';
 import { ObjectId } from 'mongodb'
+import AppError from '../../utils/AppError';
 export default class AppRoleResourceRepository extends BaseRepository<AppRoleResource, AppRoleResourceDoc> {
   constructor() {
     super(AppRoleResourceModel);
   }
 
   async delete(id: string) {
-    // const appRoleResource = await AppRoleResourceModel.findById(id);
-    // if (appRoleResource) {
-    //   appRoleResource.isActive = false;
-    // }
-    // return this.update(id, appRoleResource);
-    // return COAModel.findByIdAndDelete(id).then(COA => new COAEntity(COA.toObject()));
-    return AppRoleResourceModel.findByIdAndDelete(id).then((appRoleResource: AppRoleResourceDoc)=> new AppRoleResouceEntity(appRoleResource))
+    const result = await AppRoleResourceModel.findByIdAndDelete(id);
+    if (!result) throw new AppError(`Cannot delete app role resource: ID ${id} does not exist`);
+    return new AppRoleResouceEntity(result);
   }
 
   async create(appRoleResource: AppRoleResource) {
@@ -38,12 +34,15 @@ export default class AppRoleResourceRepository extends BaseRepository<AppRoleRes
     })
 
     return AppRoleResourceModel.findByIdAndUpdate(id, appRoleResource).then(
-      (appRoleResource: AppRoleResourceDoc) => new AppRoleResouceEntity(appRoleResource),
-    );
+      (appRoleResource: AppRoleResourceDoc|null) => {
+        if (!appRoleResource) throw new AppError(`Update AppoleResource Failed: Cannot update ID: ${id} to ${appRoleResource} `);
+        return new AppRoleResouceEntity(appRoleResource);
+      });
   }
 
   async find(query: Partial<AppRoleResource>) {
-    return AppRoleResourceModel.find(query).then((appRoleResources: AppRoleResourceDoc[]) => {
+    return AppRoleResourceModel.find(query).then((appRoleResources: AppRoleResourceDoc[]|null) => {
+      if (!appRoleResources) throw new AppError(`Query failed for AppRoleResouece with query: ${query}`);
       return appRoleResources.map(
         appRoleResource => new AppRoleResouceEntity(appRoleResource),
       );
@@ -51,13 +50,16 @@ export default class AppRoleResourceRepository extends BaseRepository<AppRoleRes
   }
 
   async findById(_id: string) {
-    return AppRoleResourceModel.findById(_id).then((appRoleResource: AppRoleResourceDoc) => {
+    return AppRoleResourceModel.findById(_id).then((appRoleResource: AppRoleResourceDoc|null) => {
+      if (!appRoleResource) throw new AppError(`Query failed for AppRoleResouece with ID: ${_id}`);
       return new AppRoleResouceEntity(appRoleResource);
     });
   }
 
   async findByAppSysRoleId(RoleId: string | ObjectId) {
-    return AppRoleResourceModel.findOne({ 'appSysRoleId.roleId': RoleId }).then((appRoleResource: AppRoleResourceDoc) => {
+    return AppRoleResourceModel.findOne({ 'appSysRoleId.roleId': RoleId })
+    .then((appRoleResource: AppRoleResourceDoc|null) => {
+      if (!appRoleResource) throw new AppError(`Query failed for AppRoleResouece with Role ID: ${RoleId}`);
       return new AppRoleResouceEntity(appRoleResource);
     });
   }

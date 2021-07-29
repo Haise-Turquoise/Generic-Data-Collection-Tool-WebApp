@@ -2,7 +2,7 @@ import React, { useCallback, useEffect } from 'react';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 
 import { Formik } from 'formik';
-import Swal from 'sweetalert2';
+import Swal, { SweetAlertResult } from 'sweetalert2';
 //@ts-ignore
 import * as yup from 'yup';
 
@@ -289,7 +289,7 @@ const ModifyUserInfo = () => {
         icon: 'success',
         confirmButtonColor: '#3085d6',
         confirmButtonText: 'OK',
-      }).then(result => {
+      }).then((result:SweetAlertResult<any>) => {
         if (result.isConfirmed) {
           window.location.reload();
         }

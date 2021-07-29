@@ -61,7 +61,7 @@ const processData = async (file: File, cb: (allData: AllDataType) => void) => {
     workbook = await workbook.xlsx.load(data);
     let allData: AllDataType = {};
 
-    workbook.eachSheet((worksheet, sheetId) => {
+    workbook.eachSheet((worksheet:ExcelJS.Worksheet, sheetId:number) => {
       if (ignoreSheets.includes(worksheet.name)) {
         return;
       }

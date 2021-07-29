@@ -369,7 +369,7 @@ const EditSubmission = ({ history }:{history:History}) => {
       }, 2000);
     }
   };
-
+  console.log('button list', buttonList)
   return (
     <div className="submissions" style={{ cursor }}>
       <SubmissionHeader />
@@ -474,7 +474,7 @@ const EditSubmission = ({ history }:{history:History}) => {
                 size="large"
                 key={status.statusName}
                 style={{ cursor }}
-                disabled={buttonDisplayBaseOnRole || buttonDisplayBaseOnStatus}
+                disabled={buttonDisplayBaseOnStatus}
                 onClick={() => {
                   handleChangeStatus(
                     submission,

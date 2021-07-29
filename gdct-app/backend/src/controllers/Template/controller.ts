@@ -59,7 +59,6 @@ const TemplateController = Service([TemplateService], service => {
 
     router.put('/templates/workflowProcess', (req, res, next) => {
       const { _id, workflowProcessId } = req.body;
-
       service
         .updateTemplateWorkflowProcess(_id, workflowProcessId)
         .then(() => res.end())

@@ -167,7 +167,7 @@ const StatusItems = ({ statuses }: { statuses: Status[] }) => (
       <ListItem
         className="statuses__status"
         key={_id}
-        button
+        
         draggable={true}
         onDragStart={event => {
           event.dataTransfer.setData(REACT_FLOW_CHART, createNodeDragData(_id, name));
@@ -235,7 +235,7 @@ const WorkflowStatuses = () => {
   };
 
   statuses = useMemo(() => statuses.filter(filterStatus), [statuses, workflowFilter]);
-
+  console.log('status', statuses)
   useEffect(() => {
     dispatch(getStatusesRequest());
 

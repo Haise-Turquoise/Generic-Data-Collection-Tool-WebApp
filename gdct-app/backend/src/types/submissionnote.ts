@@ -9,6 +9,7 @@ export default interface SubmissionNote {
   userCreatorId: ObjectId;
   updatedBy: string;
   role: string;
+  
 }
 
 export interface SubmissionNoteDoc extends SubmissionNote, Document {

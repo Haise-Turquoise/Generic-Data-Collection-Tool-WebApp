@@ -18,6 +18,7 @@ const SessionController = Service([SessionService], service => {
       const { _id } = req.body;
 
       service
+      //@ts-ignore
         .updateExpiration(_id, req.session.cookie.originalMaxAge)
         .then(session => res.json(session))
         .catch(next);
