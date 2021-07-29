@@ -1,5 +1,5 @@
 export default interface CategoryGroup {
-  _id: string,
+  _id?: string,
   name: string,
   __v?: number,
   timestamp: string,

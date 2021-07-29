@@ -13,13 +13,14 @@ import { selectWorkflowsStore } from '../../store/WorkflowsStore/selectors';
 //@ts-ignore
 import { selectIsWorkflowDialogOpen } from '../../store/DialogsStore/selectors';
 import Workflow from '../../types/workflow';
+import { state } from '../../store/types';
 const WorkflowDialog = ({ selectedWorkflows, handleChange, shouldClose = true }:
   {selectedWorkflows:Workflow[], handleChange:(data:Workflow)=>void, shouldClose:boolean}
   ) => {
   const dispatch = useDispatch();
 
   const { isWorkflowDialogOpen, workflows } = useSelector(
-    state => ({
+    (state: state) => ({
       isWorkflowDialogOpen: selectIsWorkflowDialogOpen(state),
       workflows: selectFactoryRESTResponseTableValues(selectWorkflowsStore)(state),
     }),

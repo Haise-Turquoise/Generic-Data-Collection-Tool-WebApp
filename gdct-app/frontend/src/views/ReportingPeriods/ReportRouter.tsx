@@ -2,7 +2,7 @@ import React from 'react';
 
 import { Switch, Route } from 'react-router-dom';
 import '../../images/static_report.jpg';
-import SubmissionStatuses from './PackageStatus';
+import SubmissionStatuses from './SubmissionStatus';
 
 const ReportRouter = () => (
   <Switch>

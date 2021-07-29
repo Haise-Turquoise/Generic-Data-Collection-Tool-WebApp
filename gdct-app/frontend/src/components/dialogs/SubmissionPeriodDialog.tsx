@@ -13,11 +13,12 @@ import DialogsStore from '../../store/DialogsStore/store';
 //@ts-ignore
 import { selectSubmissionPeriodsStore } from '../../store/SubmissionPeriodsStore/selectors';
 import SubmissionPeriod from '../../types/submissionperiod';
+import { state } from '../../store/types';
 const SubmissionPeriodDialog = ({ handleChange }:{handleChange:(data:SubmissionPeriod)=>void}) => {
   const dispatch = useDispatch();
 
   const { isSubmissionPeriodDialogOpen, submissionPeriods } = useSelector(
-    state => ({
+    (state: state) => ({
       isSubmissionPeriodDialogOpen: selectIsSubmissionPeriodDialogOpen(state),
       submissionPeriods: selectFactoryRESTResponseTableValues(selectSubmissionPeriodsStore)(state),
     }),

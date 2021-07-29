@@ -20,7 +20,7 @@ export default class ReportPeriodRepository extends BaseRepository<CategoryTree,
     );
   }
 
-  async create(COATree: CategoryTree) {
+  async create(COATree: CategoryTree | CategoryTree[]) {
     return COATreeModel.create(COATree)
       .then(COATree => {
         if (Array.isArray(COATree)) {

@@ -12,11 +12,12 @@ import { selectFactoryRESTResponseTableValues } from '../../store/common/REST/se
 import DialogsStore from '../../store/DialogsStore/store';
 //@ts-ignore
 import { selectUsersStore } from '../../store/UsersStore/selectors.js';
+import { state } from '../../store/types';
 const UserDialog = ({ handleChange }:{handleChange:(id:string)=>void}) => {
   const dispatch = useDispatch();
 
   const { isUserDialogOpen, users } = useSelector(
-    state => ({
+    (state: state) => ({
       isUserDialogOpen: selectIsUserDialogOpen(state),
       users: selectFactoryRESTResponseTableValues(selectUsersStore)(state),
     }),
