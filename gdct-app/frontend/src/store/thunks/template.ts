@@ -1,10 +1,8 @@
 import cloneDeep from 'clone-deep';
 //@ts-ignore
-import { setExcelData } from '../actions/ui/excel/commands';
+// import { setExcelData } from '../actions/ui/excel/commands';
 
 import templateController from '../../controllers/template';
-//@ts-ignore
-import { extractReactAndWorkbookState } from '../../tools/excel';
 import TemplatesStore from '../TemplatesStore/store';
 
 import { getRequestFactory, deleteRequestFactory, updateRequestFactory } from './common/REST';
@@ -51,39 +49,8 @@ export const getTemplateRequest = (_id: string) => (dispatch: Dispatch) => {
         dispatch(TemplatesStore.actions.FAIL_REQUEST('unauthorized'));
       }
       // dispatch(setExcelData(convertStateToReactState(template.templateData)));
-      dispatch(setExcelData(template?.templateData));
+      // dispatch(setExcelData(template?.templateData));
       dispatch(TemplatesStore.actions.RECEIVE([template]));
-    })
-    .catch(error => {
-      dispatch(TemplatesStore.actions.FAIL_REQUEST(error));
-    });
-};
-
-export const updateTemplateExcelRequest = () => (dispatch: Dispatch, getState: () => state) => {
-  // dispatch(requestTemplates())
-
-  const {
-    TemplatesStore: {
-      response: { Values },
-    },
-    ui: {
-      //@ts-ignore this too
-      excel: { present },
-    },
-  } = getState();
-
-  const [template] = Values;
-
-  const newTemplate = {
-    ...template,
-    name: present.name,
-    templateData: extractReactAndWorkbookState(present, present.inactiveSheets),
-  };
-
-  templateController
-    .update(newTemplate)
-    .then(() => {
-      dispatch(TemplatesStore.actions.UPDATE(newTemplate));
     })
     .catch(error => {
       dispatch(TemplatesStore.actions.FAIL_REQUEST(error));
