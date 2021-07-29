@@ -16,7 +16,7 @@ const LoadingContent = ({ message }:{message?:string}) => (
   </Paper>
 );
 
-const Loading = ({ message }:{message:string}) => (
+const Loading = ({ message }:{message?:string}) => (
   <Fade in>
     <div className="loadingContainer">
       <LoadingContent message={message} />
