@@ -351,7 +351,6 @@ const EditSubmission = ({ history }:{history:History}) => {
     const result = await dispatch(
       updateSubmissionStatusRequest(submission, submissionNote, role, newProcessId),
     );
-
     if (result) {
       if (!role) {
         role = 'ChangeNote';
@@ -368,7 +367,6 @@ const EditSubmission = ({ history }:{history:History}) => {
       }, 2000);
     }
   };
-  console.log('button list', buttonList)
   return (
     <div className="submissions" style={{ cursor }}>
       <SubmissionHeader />

@@ -44,7 +44,7 @@ export default class COARepository extends BaseRepository<Category, CategoryDoc>
     return COAModel.find({}).then((COAs: CategoryDoc[]) => COAs.map(COA => new COAEntity(COA)));
   }
 
-  async batchFind(categoryIds: string[], option={ name: 0, _id: 0, COA: 0, __v: 0, unitOfMeassure: 0}) {
+  async batchFind(categoryIds: string[], option={ name: 0, _id: 0, COA: 0, __v: 0, unitOfMeassure: 0}):Promise<CategoryDoc[]> {
     return COAModel.find({ id: { $in : categoryIds }}, option);
   }
 

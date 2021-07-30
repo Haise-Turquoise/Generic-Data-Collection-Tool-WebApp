@@ -2,12 +2,20 @@ import { withRouter } from 'react-router';
 import React, { Component } from "react";
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import Spreadsheet from 'x-data-spreadsheet';
+// @ts-ignore
 import submissionController from '../../controllers/submission';
+// @ts-ignore
 import statusController from '../../controllers/status';
+// @ts-ignore
 import orgController from '../../controllers/organization';
 import { compareSheet } from '../../tools/misc';
+import {Coordinate} from '../../types/spreadsheetTypes/spreadSheetTypes';
+// @ts-ignore
 import CreateAuditLog from '../AuditLog_Global';
 import Button from '@material-ui/core/Button';
+import Submission, { submissionSpreadsheetProps } from '../../types/submission';
+import Status from '../../types/status';
+import { SheetData } from '../../types/template';
 
 // Sheet style Option
 const sheetOption = {
@@ -48,27 +56,37 @@ const sheetOption = {
 
 // Created by Sheldon Su 2021/01/20
 // We use compoenent instead of hooks since hooks will cause undefined behavior
-class SubmissionSpreadSheet extends Component{
-  constructor(props) {
+class SubmissionSpreadSheet extends Component<submissionSpreadsheetProps>{
+
+  sheet: Spreadsheet|any;
+  id: string;
+  currentCoord: Coordinate|{};
+  categoryAndAttribute: {};
+  submissionObject: Partial<Submission>;
+  edit: boolean;
+  orginalValue: SheetData[];
+  history: any;
+
+  constructor(props:submissionSpreadsheetProps) {
     super(props);
     this.sheet = null;
     this.id = this.props.sheetID;
     this.currentCoord = {};
     this.categoryAndAttribute = {};
-    this.insertedPreview = [];
     this.submissionObject = {};
     this.edit = true;
-    this.orginalValue = null;
+    this.orginalValue = [];
     this.clearComponentChild = this.clearComponentChild.bind(this);
     this.insertOrg = this.insertOrg.bind(this);
+    //@ts-ignore
     this.history = this.props.history;
   }
 
   // After component mount, initailize spreadsheet and load data from DB
   componentDidMount() {
     if (this.sheet == null) {
-      submissionController.fetchSubmission(this.id).then(submission => {
-        statusController.findStatusByID(submission.statusId).then(status => {
+      submissionController.fetchSubmission(this.id).then((submission:Submission) => {
+        statusController.findStatusByID(submission.statusId).then((status:Status) => {
           if (status && status.name === 'Approved') {
             sheetOption.mode = 'read';
             this.edit = false;
@@ -79,25 +97,26 @@ class SubmissionSpreadSheet extends Component{
 
           this.submissionObject = submission;
           this.clearComponentChild();
-          // @ts-ignore
           this.orginalValue = JSON.parse(JSON.stringify(submission.workbookData));
           // @ts-ignore
           this.sheet = new Spreadsheet('#x-spreadsheet', sheetOption)
-            .loadData(submission.workbookData)
-            .reRender();
+            //@ts-ignore
+            .loadData(submission.workbookData).reRender();
+          //@ts-ignore
           this.sheet.on('cell-selected', (cell, row, col) => {
             this.currentCoord = { row, col };
           });
         });
       });
     } else {
-      submissionController.fetchSubmission(this.id).then(submission => {
+      submissionController.fetchSubmission(this.id).then((submission:Submission) => {
         this.submissionObject = submission;
         this.clearComponentChild();
         // @ts-ignore
         this.sheet = new Spreadsheet('#x-spreadsheet', sheetOption)
-          .loadData(submission.workbookData)
-          .reRender();
+        //@ts-ignore
+          .loadData(submission.workbookData).reRender();
+        //@ts-ignore
         this.sheet.on('cell-selected', (cell, row, col) => {
           this.currentCoord = { row, col };
         });
@@ -122,16 +141,17 @@ class SubmissionSpreadSheet extends Component{
     this.saveTemplate();
   }
 
-  handleSave(e) {
+  handleSave(e:Event) {
     e.preventDefault();
     this.saveTemplate();
   }
 
   saveTemplate = () => {
     if (this.sheet && this.edit) {
-      const newData = this.sheet.getData();
+      if (this.sheet === null) throw new Error("Sheet did not initialize correctly!");     
+      const newData = this.sheet.getData() as SheetData[];
       this.submissionObject.workbookData = newData;
-      submissionController.updateWorkbook(this.submissionObject).then(res => {
+      submissionController.updateWorkbook(this.submissionObject).then((res:any) => {
         const difference = compareSheet(this.orginalValue, newData);
         CreateAuditLog(
           null,
@@ -145,7 +165,7 @@ class SubmissionSpreadSheet extends Component{
     }
   };
 
-  insertOrg = async orgId => {
+  insertOrg = async (orgId:number) => {
     if (this.edit) {
       // Get org data
       const org = await orgController.fetchById(Number(orgId));
@@ -174,23 +194,24 @@ class SubmissionSpreadSheet extends Component{
     }
   };
 
-    render(){
-        return (
-          <div>
-            <div style={{display:'flex'}}>
-              <Button variant="outlined" color="primary" onClick={this.saveTemplate}>
-                Save
-              </Button>
-               <Button variant="outlined" color="primary" onClick={()=>{this.history.goBack()}}>
-               <ArrowBackIcon></ArrowBackIcon>
-                back
-              </Button>
-              
-            </div>
-            <div id="x-spreadsheet"></div>
-          </div>
-        )
-    }
+  render(){
+    return (
+      <div>
+        <div style={{display:'flex'}}>
+          <Button variant="outlined" color="primary" onClick={this.saveTemplate}>
+            Save
+          </Button>
+            <Button variant="outlined" color="primary" onClick={()=>{this.history.goBack()}}>
+            <ArrowBackIcon></ArrowBackIcon>
+            back
+          </Button>
+          
+        </div>
+        <div id="x-spreadsheet"></div>
+      </div>
+    )
+  }
 }
 
+// @ts-ignore
 export default withRouter(SubmissionSpreadSheet);
