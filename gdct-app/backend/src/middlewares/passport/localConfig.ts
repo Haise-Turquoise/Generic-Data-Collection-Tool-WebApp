@@ -17,10 +17,11 @@ module.exports = () => {
         if (email) email = email.toLowerCase();
         process.nextTick(function () {
           UserModel.findOne({ email })
-            .then(user => {
+            .then((user: { validatePassword: (arg0: string) => any; email: any; }) => {
               if (!user || !user.validatePassword(password)) {
-                return done(null, false, { errors: { 'email or password': 'is invalid' } });
+                return done(null, false, { message: 'email or password is invalid' });
               }
+              // @ts-ignore
               req.session.user = user.email;
               return done(null, { email: user.email });
             })
