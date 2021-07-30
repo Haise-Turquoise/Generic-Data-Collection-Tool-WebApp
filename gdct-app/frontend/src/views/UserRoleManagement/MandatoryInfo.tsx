@@ -1,5 +1,6 @@
 import React from 'react';
 import { Formik } from 'formik';
+//@ts-ignore
 import * as Yup from 'yup';
 
 import CssBaseline from '@material-ui/core/CssBaseline';

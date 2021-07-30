@@ -8,7 +8,7 @@ const roleSubmissionButtonController = (() => {
     withCredentials: true,
   });
   return {
-    fetchSubmissionButtonByRole: async (role)=> roleSubmissionButton.post(`/fetchByRole`, {role}).then(data=>data.data.roleData)
+    fetchSubmissionButtonByRole: async (role:string)=> roleSubmissionButton.post(`/fetchByRole`, {role}).then(data=>data.data.roleData)
   };
 })();
 
