@@ -21,3 +21,7 @@ export default interface Submission {
   isLatest: boolean,
   parentId: string,
 }
+
+export interface submissionSpreadsheetProps{
+  sheetID:string
+}
