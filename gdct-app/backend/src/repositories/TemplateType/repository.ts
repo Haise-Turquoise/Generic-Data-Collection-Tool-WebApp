@@ -6,6 +6,7 @@ import ProgramRepository from '../Program';
 import {ObjectId} from 'mongodb';
 import {FilterQuery } from 'mongoose';
 import TemplateType, { TemplateTypeDoc } from '../../types/templatetype';
+import AppError from '../../utils/AppError';
 
 // @Service()
 export default class TemplateTypeRepository extends BaseRepository<TemplateType, TemplateTypeDoc> {
@@ -53,6 +54,7 @@ export default class TemplateTypeRepository extends BaseRepository<TemplateType,
   }
 
   async findByProgramIds(programIds: ObjectId[]) {
+    // @ts-ignore
     return TemplateTypeModel.find({ programIds: { $in: programIds } });
   }
 
@@ -60,7 +62,10 @@ export default class TemplateTypeRepository extends BaseRepository<TemplateType,
     return this.programRepository
       .validateMany(templateType.programIds || [])
       .then(() => TemplateTypeModel.findByIdAndUpdate(id, templateType))
-      .then(templateType => new TemplateTypeEntity(templateType));
+      .then((templateType:TemplateTypeDoc|null) => {
+        if(!templateType) throw new AppError(`Update failed, Item not found for TemplateType item with ID: ${id}`)
+        return new TemplateTypeEntity(templateType)
+      });
   }
 
   async find(query: Partial<TemplateType>) {
@@ -90,8 +95,10 @@ export default class TemplateTypeRepository extends BaseRepository<TemplateType,
   }
 
   async delete(id: string) {
-    return TemplateTypeModel.findByIdAndDelete(id).then(
-      (templateType: TemplateTypeDoc) => new TemplateTypeEntity(templateType),
-    );
+    return TemplateTypeModel.findByIdAndDelete(id)
+    .then((templateType: TemplateTypeDoc|null) => {
+      if(!templateType) throw new AppError(`Delete failed, Item not found for TemplateType item with ID: ${id}`);
+      return new TemplateTypeEntity(templateType)
+    });
   }
 }

@@ -12,12 +12,13 @@ import { selectFactoryRESTResponseTableValues } from '../../store/common/REST/se
 import { selectStatusesStore } from '../../store/StatusesStore/selectors';
 //@ts-ignore
 import DialogsStore from '../../store/DialogsStore/store';
+import { state } from '../../store/types';
 
 const StatusDialog = ({ handleChange }:{handleChange:(data:any)=>void}) => {
   const dispatch = useDispatch();
 
   const { isStatusDialogOpen, statuses } = useSelector(
-    state => ({
+    (state: state) => ({
       isStatusDialogOpen: selectIsStatusDialogOpen(state),
       statuses: selectFactoryRESTResponseTableValues(selectStatusesStore)(state),
     }),

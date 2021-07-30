@@ -419,8 +419,8 @@ const AuthPage = ({
 
   children,
 }:{
-  headerTitle:string,
-  drawerTitle:string,
+  headerTitle?:string,
+  drawerTitle?:string,
   children:Object,
 }) => {
   const classes = useStyles();

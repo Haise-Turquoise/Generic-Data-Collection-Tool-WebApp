@@ -24,7 +24,7 @@ import MaterialTable from 'material-table';
 
 import { useTranslation } from 'react-i18next';
 //@ts-ignore
-import Swal from 'sweetalert2';
+import Swal, { SweetAlertResult } from 'sweetalert2';
 //@ts-ignore
 import userRegistrationStore from '../../../store/UserRegistrationStore/store';
 import {
@@ -473,7 +473,7 @@ const ModifyPermission_container = (props:any) => {
       icon: 'success',
       confirmButtonColor: '#3085d6',
       confirmButtonText: 'OK',
-    }).then(result => {
+    }).then((result:SweetAlertResult<any>) => {
       if (result.isConfirmed) {
         window.location.reload();
       }

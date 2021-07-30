@@ -1,20 +1,5 @@
 import nodemailer from 'nodemailer';
 
-
-
-
-
-
-// const mailConfig = {
-//   host: 'smtp.ethereal.email',
-//   port: 587,
-//   auth: {
-//     user: 'julio32@ethereal.email',
-//     pass: 'qdjK2XgTyyHtR9zScz',
-//   },
-// };
-
-
 const mailConfig = {
   
   service:"hotmail",
@@ -48,8 +33,6 @@ export const sendPermissionChangeUserVerficationEmail = (username,email) => {
     .sendMail(message)
     .then(info => ({ message: `Preview URL: ${nodemailer.getTestMessageUrl(info)}` }));
 };
-
-
 
 export const sendUserVerficationEmail = registerData => {
   const { username, email } = registerData;
@@ -106,8 +89,6 @@ export const sendAdminVerficationEmail = (orgInfo, hashedUsername, userId, usern
     .then(info => ({ message: `Preview URL: ${nodemailer.getTestMessageUrl(info)}` }));
 };
 
-
-
 export const sendPermissionChangeAdminVerficationEmail = (orgInfo, hashedUsername, userId, username) => {
   const { authorizedPerson, orgId, permission } = orgInfo;
   const orgName = orgInfo.name;
@@ -144,12 +125,6 @@ export const sendPermissionChangeAdminVerficationEmail = (orgInfo, hashedUsernam
     .sendMail(message)
     .then(info => ({ message: `Preview URL: ${nodemailer.getTestMessageUrl(info)}` }));
 };
-
-
-
-
-
-
 
 export const sendUserActiveEmail = user => {
   const { username, hashedUsername, _id, email } = user;

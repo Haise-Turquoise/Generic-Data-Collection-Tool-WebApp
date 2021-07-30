@@ -2,16 +2,19 @@ import AppConfigEntity from '../../entities/AppConfig';
 import BaseRepository from '../repository';
 import AppConfigModel from '../../models/AppConfig';
 import AppConfig, { AppConfigDoc } from '../../types/appconfig';
+import AppError from '../../utils/AppError';
 
 export default class AppConfigRepository extends BaseRepository<AppConfig, AppConfigDoc> {
   constructor() {
     super(AppConfigModel);
   }
 
-  async delete(id: string) {
+  async deleteById(id: string) {
     const appConfig = await AppConfigModel.findById(id);
     if (appConfig) {
       appConfig.isActive = false;
+    }else{
+      throw new AppError(`Cannot find AppConfig with ID: ${id}`);
     }
     return this.update(id, appConfig);
   }
@@ -23,18 +26,28 @@ export default class AppConfigRepository extends BaseRepository<AppConfig, AppCo
 
   async update(id: string, AppConfig: Partial<AppConfig>) {
     return AppConfigModel.findByIdAndUpdate(id, AppConfig).then(
-      (AppConfig: AppConfigDoc) => new AppConfigEntity(AppConfig),
-    );
+      (AppConfig: AppConfigDoc|null) => {
+        if (!AppConfig) return undefined;
+        return new AppConfigEntity(AppConfig)
+      });
   }
 
   async find(query: Partial<AppConfig>) {
-    return AppConfigModel.find(query).then((AppConfigs: AppConfigDoc[]) =>
-      AppConfigs.map(AppConfig => new AppConfigEntity(AppConfig)),
-    );
+    return AppConfigModel.find(query).then((AppConfigs: AppConfigDoc[]|null) =>{
+      if (AppConfigs){
+        return AppConfigs.map(AppConfig => new AppConfigEntity(AppConfig));
+      }else{
+        return [];
+      }
+    });
   }
 
   async findById(id: string) {
-    return AppConfigModel.findById(id);
+    const result = await AppConfigModel.findById(id);
+    if (!result){
+      throw new AppError(`Cannot find AppConfig with ID: ${id}`);
+    }
+    return result;
   }
 
   async findAll() {

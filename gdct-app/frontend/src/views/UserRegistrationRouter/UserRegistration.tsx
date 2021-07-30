@@ -5,7 +5,7 @@ import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import { Formik } from 'formik';
 //@ts-ignore
 import cloneDeep from 'clone-deep';
-import Swal from 'sweetalert2';
+import Swal, { SweetAlertResult } from 'sweetalert2';
 import Paper from '@material-ui/core/Paper';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
@@ -95,10 +95,9 @@ const registerSchema = () =>
       .string()
       .min(6, 'Username must be 6 to 20 characters long')
       .max(20, 'Username must be 6 to 20 characters long')
-      .test('Unique Username', 'Username has already been used', async function (value:string) {
-        const fetchData = await UserController.fetchUserByUserName(value);
-
-        if (Object.keys(fetchData.user).length === 0 && fetchData.user.constructor === Object) {
+      .test('Unique Username', 'Username has already been used', async function (value:string | null | undefined) {
+        const fetchData = await UserController.fetchUserByUserName(value || '');
+        if (Object.keys(fetchData.user || {}).length === 0 && fetchData.user?.constructor === Object) {
           return true;
         }
         return false;
@@ -118,7 +117,7 @@ const registerSchema = () =>
       .required('Please enter a password'),
     passwordConfirm: yup
       .string()
-      .oneOf([yup.ref('password'), null], 'Password should match with Verify Password')
+      .oneOf([yup.ref('password'), undefined], 'Password should match with Verify Password')
       .required('Please confirm your password'),
     firstName: yup
       .string()
@@ -828,7 +827,7 @@ const Register_container = (props: any) => {
       icon: 'success',
       confirmButtonColor: '#3085d6',
       confirmButtonText: 'OK',
-    }).then(result => {
+    }).then((result:SweetAlertResult<any>) => {
       if (result.isConfirmed) {
         // window.location.reload();
         history.push('/');

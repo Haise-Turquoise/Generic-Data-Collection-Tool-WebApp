@@ -13,12 +13,13 @@ import { selectIsReportingPeriodDialogOpen } from '../../store/DialogsStore/sele
 import { selectFactoryRESTResponseTableValues } from '../../store/common/REST/selectors';
 //@ts-ignore
 import { selectReportingPeriodsStore } from '../../store/ReportingPeriodsStore/selectors';
+import { state } from '../../store/types';
 
 const ReportingPeriodDialog = ({ handleChange }:{handleChange:(id:string)=>void}) => {
   const dispatch = useDispatch();
 
   const { isReportingPeriodDialogOpen, reportingPeriods } = useSelector(
-    state => ({
+    (state: state) => ({
       isReportingPeriodDialogOpen: selectIsReportingPeriodDialogOpen(state),
       reportingPeriods: selectFactoryRESTResponseTableValues(selectReportingPeriodsStore)(state),
     }),

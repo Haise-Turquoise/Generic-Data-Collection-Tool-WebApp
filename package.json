@@ -6,7 +6,7 @@
   "author": "Bill Hu <william.hu@ontario.ca>",
   "license": "MIT",
   "scripts": {
-    "install": "yarn --cwd slate && yarn --cwd gdct-app",
+    "install": "yarn --cwd gdct-app",
     "start": "yarn --cwd gdct-app start",
     "fix": "yarn --cwd gdct-app fix",
     "test": "jest"
@@ -23,18 +23,23 @@
     "mssql": "^6.3.1",
     "nvs": "^0.4.17",
     "passport-google-oauth": "^2.0.0",
-    "passport-remember-me": "^0.0.1",
+    "passport-remember-me": "0.0.1",
     "react": "^17.0.2",
     "react-datepicker": "^3.6.0",
     "react-dom": "^17.0.2",
     "react-modal": "^3.12.1",
     "sweetalert2": "^10.16.0",
+    "ts-loader": "^8.3.0",
     "x-data-spreadsheet": "git+https://github.com/Sheldonsu28/x-spreadsheet.git#master",
     "xlsx": "^0.16.9",
     "yarn": "^1.22.10"
   },
   "devDependencies": {
     "@babel/preset-env": "^7.12.1",
+    "@types/bcrypt-nodejs": "0.0.31",
+    "@types/cookie-parser": "^1.4.2",
+    "@types/object-hash": "^2.1.1",
+    "@types/passport-local": "^1.0.34",
     "babel-jest": "^26.6.0",
     "eslint-plugin-react": "^7.22.0",
     "jest": "^26.6.0",

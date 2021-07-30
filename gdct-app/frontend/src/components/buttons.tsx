@@ -10,8 +10,6 @@ import AddCircleIcon from '@material-ui/icons/AddCircle';
 import Button from '@material-ui/core/Button';
 
 import { cx, css } from 'emotion';
-//@ts-ignore
-import { CustomEditor } from '../tools/slate';
 
 import SubmissionPeriodDialog from './dialogs/SubmissionPeriodDialog';
 import StatusDialog from './dialogs/StatusDialog';
@@ -80,22 +78,6 @@ const MarkToggler = ({ className, active, reversed, ...props }:
   />
 );
 
-export const MarkButton = ({ format, icon, editor }:
-  {format:string, icon:string, editor:string}
-  ) => {
-  const handleMouseDown = (event:MouseEvent) => {
-    event.preventDefault();
-    CustomEditor.toggleMark(editor, format);
-  };
-
-  return (
-    //@ts-ignore
-    <MarkToggler active={CustomEditor.isMarkActive(editor, format)} onMouseDown={handleMouseDown}>
-      {/*@ts-ignore*/}
-      <MarkIcon>{icon}</MarkIcon>
-    </MarkToggler>
-  );
-};
 
 export const SelectIdButton = ({ value, action, children }:{value:any, action:any, children:any}) => {
   const dispatch = useDispatch();

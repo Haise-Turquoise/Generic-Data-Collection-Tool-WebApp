@@ -139,12 +139,12 @@ const COAGroupsTable = () => {
           recordUpdate(COAGroup);
           // Find the old value before updating in order to Auditlog
           (async () => {
-            const oldCOAGroup = await COAGroupController.fetchCOAGroup(COAGroup._id);
+            const oldCOAGroup = await COAGroupController.fetchCOAGroup(COAGroup._id || '');
             CreateAuditLog(
               null,
               'Update Category Group',
               'CategoryGroup',
-              oldCOAGroup._id,
+              oldCOAGroup?._id,
               oldCOAGroup,
               COAGroup,
             );
@@ -162,7 +162,7 @@ const COAGroupsTable = () => {
       onRowDelete: (COAGroup: CategoryGroupMT) =>
         new Promise((resolve, reject) => {
           recordUpdate(COAGroup);
-          controllerDeleteRow(COAGroupController, setCOAGroups, COAGroup._id)
+          controllerDeleteRow(COAGroupController, setCOAGroups, COAGroup._id || '')
             .then((res: boolean) => {
               if (res) {
                 resolve(COAGroup)

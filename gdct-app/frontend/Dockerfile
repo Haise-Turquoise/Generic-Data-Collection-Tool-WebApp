@@ -1,0 +1,15 @@
+FROM node:14
+
+WORKDIR /app
+
+COPY package.json .
+
+ENV PATH /usr/src/app/node_modules/.bin:$PATH
+
+RUN npm install --no-optional && npm cache clean --force
+
+COPY . .
+
+EXPOSE 3003
+
+CMD [ "npm", "start" ]

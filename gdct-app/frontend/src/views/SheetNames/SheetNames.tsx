@@ -3,7 +3,7 @@ import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 
 import MaterialTable, { Column, Options } from 'material-table';
 import { Paper, Typography } from '@material-ui/core';
-import Swal from 'sweetalert2';
+import Swal, { SweetAlertResult } from 'sweetalert2';
 
 import moment from 'moment';
 import {
@@ -159,7 +159,7 @@ const SheetNamesTable = () => {
               null,
               'Update Sheet',
               'SheetName',
-              oldSheetName._id,
+              oldSheetName?._id,
               oldSheetName,
               sheetName,
             );
@@ -200,7 +200,7 @@ const SheetNamesTable = () => {
                 icon: 'error',
                 confirmButtonColor: '#3085d6',
                 confirmButtonText: 'OK',
-              }).then(result => {
+              }).then((result:SweetAlertResult<any>) => {
                 if (result.isConfirmed) {
                   window.location.reload();
                 }

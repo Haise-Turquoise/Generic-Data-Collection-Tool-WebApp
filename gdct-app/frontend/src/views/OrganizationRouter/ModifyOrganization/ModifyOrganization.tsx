@@ -31,6 +31,8 @@ import { connect } from 'react-redux';
 import Organization from '../../../types/organization';
 import Program from '../../../types/program';
 
+import Swal from 'sweetalert2'
+
 type genObject = { [key: string]: any };
 
 interface MOProps {
@@ -40,7 +42,7 @@ interface MOProps {
 interface MOState {
   id: number;
   takenIds: number[];
-  blockSubmit: boolean;
+  error: string;
   [key: string]: any;
 }
 
@@ -333,7 +335,7 @@ class ModifyOrganization extends React.Component<MOProps, MOState> {
     this.state = {
       ...temp,
       takenIds: [],
-      blockSubmit: false,
+      error: 'Please fill in the form',
     };
     this.updateState = this.updateState.bind(this);
     this.handleChanges = this.handleChanges.bind(this);
@@ -357,16 +359,27 @@ class ModifyOrganization extends React.Component<MOProps, MOState> {
         ...this.props.object
       })
     }
-    if (prevState.id !== this.state.id) {
-      if (this.state.takenIds.includes(this.state.id)) {
-        this.setState({
-          blockSubmit: true,
-        });
-      } else {
-        this.setState({
-          blockSubmit: false,
-        });
-      }
+    // check errors
+    if (prevState.id !== this.state.id
+        || prevState.name !== this.state.name
+        || prevState.IFISNum !== this.state.IFISNum
+      ) {
+        if (this.state.takenIds.includes(this.state.id)) {
+          this.setState({
+            error: 'Duplicate ID not allowed',
+          });
+        } else {
+          this.setState({
+            error: '',
+          });
+        }
+        if (!this.state.name) {
+          this.setState({ error: 'Name is required' })
+          return
+        }
+        if (!this.state.IFISNum) {
+          this.setState({ error: 'IFISNum is required' })
+        }
     }
   }
 
@@ -401,11 +414,12 @@ class ModifyOrganization extends React.Component<MOProps, MOState> {
   }
 
   preSubmit() {
-    if (this.state.blockSubmit) {
-      // random used here so that ErrorBanner displays every attempted submit
-      this.props.dispatch(
-        OrgsStore.actions.FAIL_REQUEST('Duplicate id is not allowed' + Math.random().toString()),
-      );
+    if (this.state.error) {
+      Swal.fire({
+        title: 'Error',
+        text: this.state.error,
+        icon: 'error'
+      })
       return false;
     } else {
       this.props.submit(this.state);
@@ -416,10 +430,10 @@ class ModifyOrganization extends React.Component<MOProps, MOState> {
     return (
       <div>
         <OrganizationHeader title={this.props.title} />
-        <ErrorBanner
+        {/* <ErrorBanner
           title={'The organization ID already exists in the database. Please select a unique ID'}
           targetStore={selectOrgsStore}
-        />
+        /> */}
         <OrganizationForm
           object={this.state}
           submit={this.preSubmit}

@@ -290,7 +290,7 @@ const TemplatePackages = () => {
               null,
               'Update Template Package',
               'TemplatePackage',
-              oldTemplatePackage._id,
+              oldTemplatePackage?._id,
               oldTemplatePackage,
               templatePackage,
             );
@@ -333,8 +333,8 @@ const TemplatePackages = () => {
     dispatch(getSubmissionPeriodsRequest());
 
     return () => {
-      dispatch(StatusesStore.actions.RESET());
-      dispatch(SubmissionPeriodsStore.actions.RESET());
+      dispatch(StatusesStore.actions.RESET(''));
+      dispatch(SubmissionPeriodsStore.actions.RESET(''));
     };
   }, [dispatch]);
 

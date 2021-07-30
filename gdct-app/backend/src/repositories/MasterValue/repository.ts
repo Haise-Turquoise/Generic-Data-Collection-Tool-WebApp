@@ -8,29 +8,34 @@ export default class MasterValueRepository extends BaseRepository<MasterValue, M
     super(MasterValueModel);
   }
 
-  async bulkUpdate(submission: string, masterValues: MasterValue[]) {
+  async bulkUpdate(submission: {_id:string, name:string}, masterValues: MasterValue[]) {
+    // @ts-ignore
     return MasterValueModel.deleteMany({ submission }).then(() =>
       MasterValueModel.create(masterValues),
     );
   }
 
   async batchFind(attributeIds: string[], categoryIds: string[], orgId: number) {
-    return MasterValueModel.find({ attributeId: { $in : attributeIds }, categoryId: {$in : categoryIds }, 'org.id':orgId}).then((values: unknown) => {return values});
+    return MasterValueModel.find({ attributeId: { $in : attributeIds }, categoryId: {$in : categoryIds }, 'org.id':orgId})
+    .then((values: unknown) => {return values});
   }
 
   async findAll(){
     return MasterValueModel.find();
   }
   
+  //@ts-ignore
   async batchDelete(attributeIds: string[], categoryIds: string[], orgId: number) {
-    return MasterValueModel.deleteMany({ attributeId: { $in : attributeIds }, categoryId: {$in : categoryIds }, org: orgId}).then((values: unknown) => {return values});
+    //@ts-ignore
+    return MasterValueModel.deleteMany({ attributeId: { $in : attributeIds }, categoryId: {$in : categoryIds }, org: orgId})
+    .then((values: unknown) => {return values});
   }
 
-  async findByCategoryId(id: string){
+  async findByCategoryId(id: string):Promise<MasterValueDoc[]>{
     return MasterValueModel.find({categoryId: id});
   }
 
-  async findByAttributeId(id: string){
+  async findByAttributeId(id: string):Promise<MasterValueDoc[]>{
     return MasterValueModel.find({attributeId: id});
   }
 

@@ -3,6 +3,7 @@ import BaseRepository from '../repository';
 import ColumnNameModel from '../../models/ColumnName';
 import Attribute, { AttributeDoc } from '../../types/attribute';
 import { FilterQuery, QueryOptions } from 'mongoose';
+import AppError from '../../utils/AppError';
 
 export default class ColumnNameRepository extends BaseRepository<Attribute, AttributeDoc> {
   constructor() {
@@ -11,7 +12,10 @@ export default class ColumnNameRepository extends BaseRepository<Attribute, Attr
 
   async delete(id: string) {
     return ColumnNameModel.findByIdAndDelete(id).then(
-      (deletedColumnName: AttributeDoc) => new ColumnNameEntity(deletedColumnName),
+      (deletedColumnName: AttributeDoc|null) => {
+        if (!deletedColumnName) throw new AppError(`Delete failed, Item not found for ColumnName item with ID: ${id}`);
+        return new ColumnNameEntity(deletedColumnName)
+      },
     );
   }
 
@@ -23,7 +27,10 @@ export default class ColumnNameRepository extends BaseRepository<Attribute, Attr
 
   async update(id: string, columnName: Partial<Attribute>) {
     return ColumnNameModel.findByIdAndUpdate(id, columnName).then(
-      (updatedColumnName: AttributeDoc) => new ColumnNameEntity(updatedColumnName),
+      (updatedColumnName: AttributeDoc|null) => {
+        if (!updatedColumnName) throw new AppError(`Update failed, Item not found for ColumnName item with ID: ${id}`);
+        return new ColumnNameEntity(updatedColumnName)
+      },
     );
   }
 
@@ -59,10 +66,12 @@ export default class ColumnNameRepository extends BaseRepository<Attribute, Attr
     );
   }
 
-  async findById(id: string) {
-    return ColumnNameModel.find({ _id: id }).then((result: AttributeDoc[]) => {
+  async findById(id: string):Promise<ColumnNameEntity|undefined> {
+    return ColumnNameModel.find({ _id: id })
+    .then((result: AttributeDoc[]|undefined) => {
+      if (!result) throw new AppError(`Query failed, Item not found for Column Name item with ID: ${id}`)
       if (result.length == 0) {
-        return [];
+        return ;
       }
       else {
         return new ColumnNameEntity(result[0]);

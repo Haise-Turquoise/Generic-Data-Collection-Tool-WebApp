@@ -33,8 +33,7 @@ import DataResumeController from './DataResume/controller';
 import SpreadsheetApisController from './Spreadsheet';
 import TransferStatusController from './TransferStatus';
 import SessionController from '../controllers/Session/Session';
-//@ts-ignore
-import PackageStatusController from './PackageStatus'
+import SubmissionStatusController from './SubmissionStatus'
 import RoleWorkflowStatusController from '../controllers/RoleWorkflowStatus'
 import RoleSubmissionButtonController from '../controllers/RoleSubmissionButton';
 export const routerManager = (app: Application) => {
@@ -86,8 +85,8 @@ export const routerManager = (app: Application) => {
   // Use to handle transfer control
   
   app.use('/transferManager', Container.get(TransferStatusController));
-  //@ts-ignore
-  app.use('/report', Container.get(PackageStatusController))
+
+  app.use('/report', Container.get(SubmissionStatusController))
   // Created by Sheldon on 2021/07/13
   // Use to handle roleWorkflowStatus
   app.use('/roleWorkflowStatus', Container.get(RoleWorkflowStatusController));

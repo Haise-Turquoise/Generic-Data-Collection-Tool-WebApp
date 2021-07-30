@@ -3,6 +3,7 @@ import Container from 'typedi';
 import ColumnNameRepository from '../../repositories/ColumnName';
 import MasterValueRepository from '../../repositories/MasterValue';
 import Attribute from '../../types/attribute';
+import AppError from '../../utils/AppError';
 
 // @Service()
 export default class ColumnNameService {
@@ -18,9 +19,11 @@ export default class ColumnNameService {
   }
 
   async deleteColumnName(id: string) {
-    let res = await this.columnNameRepository.findById(id);
-    res = await this.masterValueRepository.findByAttributeId(res.id);
-    if (!res.length) {
+    const res = await this.columnNameRepository.findById(id);
+    if (!res) throw new AppError(`Delete Failed, cannot find column name by Id: ${id}`)
+    const res2 = await this.masterValueRepository.findByAttributeId(res.id);
+
+    if (!res2.length) {
       return this.columnNameRepository.delete(id);
     } else {
       throw new Error("Attribute exists in mastervalue");
