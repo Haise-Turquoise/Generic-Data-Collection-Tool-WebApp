@@ -45,6 +45,10 @@ import WorkflowProcess from '../../types/workflowprocess';
 import Status from '../../types/status';
 import VisitedNode from '../../types/visitednode';
 import SubmissionNote from '../../types/submissionnote';
+// import { Submission } from '../../types/submissions';
+//@ts-ignore
+import roleSubmissionButtonController from '../../controllers/RoleSubmissionButton';
+import { common } from '@material-ui/core/colors';
 import Submission from '../../types/submission';
 const timeOption = {
   year: 'numeric',
@@ -81,6 +85,7 @@ const EditSubmission = ({ history }:{history:History}) => {
   const [visitedWorkFlowProcesses, setVisitedWorkFlowProcesses] = useState<VisitedNode[]>([]);
   const [buttonList, setButtonList] = useState<VisitedNode[]>([]);
   const [currentRole, setCurrentRole] = useState([]);
+  const [roleButtons, setRoleButtons] = useState([]);
   // const [downloadUnavailable, setDownloadUnavailable] = useState(true);
   const [nextStepIdMap, setNextStepIdMap] = useState({});
   const [submissionHasBeen, setSubmissionHasBeen] = useState<string | undefined>(undefined);
@@ -252,7 +257,13 @@ const EditSubmission = ({ history }:{history:History}) => {
     }
     dispatch(SubmissionNoteStore.actions.RECEIVE(''));
   }, [location, dispatch, refresh]);
-
+  useEffect(()=>{
+    roleSubmissionButtonController.fetchSubmissionButtonByRole(currentRole[0]).then((data:any)=>{
+      if(data.length >0){
+        setRoleButtons(data[0].button)
+      }
+    })
+  },[currentRole])
   useEffect(()=>{
     dispatch(getSubmissionByIdRequest(submissionId));
   }, [submissionId])
@@ -314,15 +325,15 @@ const EditSubmission = ({ history }:{history:History}) => {
   };
 
   // decide button display base on current role.
-  const handleButtonDisplayByRole = (button:string, role:string[], map:{ [key: string]: string }) => {
+  const handleButtonDisplayByRole = (button:string, role:string[], roleButtons:string[]) => {
     if (role.length == 0) {
       role[0] = 'Business Admin';
     }
-    const checkList = map[role[0]];
-    if (!checkList.includes(button)) {
-      return true;
+    if(roleButtons.includes(button)){
+      return false
     }
-    return false;
+    return true;
+
   };
   // decide button display base on current Status
   const handleButtonDisplayByStatus = (button:string, visitedWorkFlowProcesses:VisitedNode[], status:string|undefined) => {
@@ -369,6 +380,7 @@ const EditSubmission = ({ history }:{history:History}) => {
       }, 2000);
     }
   };
+  // console.log('button list', buttonList)
   return (
     <div className="submissions" style={{ cursor }}>
       <SubmissionHeader />
@@ -459,13 +471,15 @@ const EditSubmission = ({ history }:{history:History}) => {
               status.statusName,
               currentRole,
               // @ts-ignore
-              roleButtonMap,
+              roleButtons,
             );
+            
             const buttonDisplayBaseOnStatus:boolean = handleButtonDisplayByStatus(
               status.statusName,
               visitedWorkFlowProcesses,
               submissionHasBeen,
             );
+
             return (
               <Button
                 color="primary"
@@ -473,7 +487,7 @@ const EditSubmission = ({ history }:{history:History}) => {
                 size="large"
                 key={status.statusName}
                 style={{ cursor }}
-                disabled={buttonDisplayBaseOnStatus}
+                disabled={buttonDisplayBaseOnStatus||buttonDisplayBaseOnRole}
                 onClick={() => {
                   handleChangeStatus(
                     submission,

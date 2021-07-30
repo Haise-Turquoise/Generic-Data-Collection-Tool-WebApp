@@ -1,5 +1,5 @@
 import cloneDeep from 'clone-deep';
-
+//@ts-ignore
 import { walk, removeNode, changeNodeAtPath, toggleExpandedForAll } from 'react-sortable-tree';
 import { createSlice } from '@reduxjs/toolkit';
 import { useSelector, shallowEqual } from 'react-redux';

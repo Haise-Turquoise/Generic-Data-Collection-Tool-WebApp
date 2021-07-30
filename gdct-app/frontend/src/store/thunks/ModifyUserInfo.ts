@@ -1,4 +1,5 @@
 import { resolveConfig } from 'prettier';
+//@ts-ignore
 import cloneDeep from 'clone-deep';
 import userController from '../../controllers/user';
 import usersController from '../../controllers/Users';
@@ -112,11 +113,11 @@ const handleInputSysRole = (rowData: rowData, sysRole: UserSysRole[]) => {
     handleInputOrg(rowData, newSysRole.org);
   }
 };
-export const approvePermission = (rowData: rowData, applierUser: User, user: User, resolve?: () => void, reject?: () => void) => (dispatch: Dispatch) => {
+export const approvePermission = (rowData: rowData, applierUser: User, user: User, resolve?: (value?:any) => void, reject?: () => void) => (dispatch: Dispatch) => {
   console.log('ROW DATA', rowData)
   dispatch(ModifyUserInfoStoreActions.REQUEST(''));
   const userCopy = cloneDeep(user);
-  userCopy.toBeApproved = userCopy.toBeApproved?.filter(ele => {
+  userCopy.toBeApproved = userCopy.toBeApproved?.filter((ele:any) => {
     return !(
       ele.applierEmail == rowData.applierEmail &&
       ele.appSys == rowData.appSys &&
@@ -127,7 +128,7 @@ export const approvePermission = (rowData: rowData, applierUser: User, user: Use
     );
   });
   const applierUserCopy = cloneDeep(applierUser);
-  applierUserCopy.pendingPermissions = applierUserCopy.pendingPermissions?.filter(ele => {
+  applierUserCopy.pendingPermissions = applierUserCopy.pendingPermissions?.filter((ele:any) => {
     return !(
       ele.applierEmail == rowData.applierEmail &&
       ele.appSys == rowData.appSys &&
@@ -151,10 +152,10 @@ export const approvePermission = (rowData: rowData, applierUser: User, user: Use
   dispatch(ModifyUserInfoStoreActions.RECEIVE([userCopy]));
 };
 
-export const rejectPermission = (rowData: rowData, applierUser: User, user: User, resolve?: () => void, reject?: () => void) => (dispatch: Dispatch) => {
+export const rejectPermission = (rowData: rowData, applierUser: User, user: User, resolve?: (value?:any) => void, reject?: () => void) => (dispatch: Dispatch) => {
   dispatch(ModifyUserInfoStoreActions.REQUEST(''));
   const userCopy = cloneDeep(user);
-  userCopy.toBeApproved = userCopy.toBeApproved?.filter(ele => {
+  userCopy.toBeApproved = userCopy.toBeApproved?.filter((ele:any) => {
     return !(
       ele.applierEmail == rowData.applierEmail &&
       ele.appSys == rowData.appSys &&
@@ -165,7 +166,7 @@ export const rejectPermission = (rowData: rowData, applierUser: User, user: User
     );
   });
   const applierUserCopy = cloneDeep(applierUser);
-  applierUserCopy.pendingPermissions = applierUserCopy.pendingPermissions?.filter(ele => {
+  applierUserCopy.pendingPermissions = applierUserCopy.pendingPermissions?.filter((ele:any) => {
     return !(
       ele.applierEmail == rowData.applierEmail &&
       ele.appSys == rowData.appSys &&
