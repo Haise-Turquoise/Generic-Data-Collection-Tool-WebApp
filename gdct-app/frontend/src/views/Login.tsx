@@ -352,7 +352,7 @@ export default function Login({ setLoggedIn }:{setLoggedIn:(flag:boolean)=>void}
           )}
           <FormControlLabel
             control={<Checkbox value="remember" color="primary" />}
-            label="Remember me"
+            label="Remember me!"
           />
           <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
             <Alert onClose={handleClose} severity="error">
