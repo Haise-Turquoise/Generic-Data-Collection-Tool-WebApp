@@ -107,7 +107,8 @@ const SubmissionDashboard = ({ history }:{history:History}) => {
   )
   
   useEffect(() =>{
-    const role = localStorage.getItem('currentRole');
+    const role = localStorage.getItem('currentRole') || '';
+    //@ts-ignore should be object or string??
     roleWorkflowStatusController.fetchStatusByRole(role).then((data:RoleWorkflowStatus[]) =>{
       setBaseGrouping(data[0].workflowStatus);
     });
@@ -120,9 +121,9 @@ const SubmissionDashboard = ({ history }:{history:History}) => {
     // const submissionGroups = submissions.map(e=>e.phase);
     // const allowedStatus = allowedGrouping.filter(e=>submissionGroups.includes(e));
     // setStatuses(allowedStatus);
-    UsersController.fetchByEmail(localStorage.getItem('currentUser')).then((res:User)=>{
+    UsersController.fetchByEmail(localStorage.getItem('currentUser') || '').then((res:User | null)=>{
       let filter:string[] = [];
-      res.sysRole.forEach(role => {
+      res?.sysRole.forEach(role => {
         if (role.role === currRole && currRole !== 'Business Admin'){
           role.org.forEach(orginfo => {
             filter = filter.concat(orginfo.program.map(e=>String(e.programId)))

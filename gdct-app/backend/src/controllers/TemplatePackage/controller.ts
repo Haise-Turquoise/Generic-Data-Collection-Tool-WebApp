@@ -25,7 +25,7 @@ const TemplatePackageController = Service([TemplatePackageService], service => {
 
       service
         .findTemplatePackage({ _id })
-        .then(([templatePackage]) => res.json({ templatePackage }))
+        .then(([templatePackage]) => res.json(templatePackage))
         .catch(next);
     });
 

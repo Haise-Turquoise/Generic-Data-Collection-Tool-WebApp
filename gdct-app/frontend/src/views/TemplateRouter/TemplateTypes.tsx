@@ -200,7 +200,7 @@ const TemplateTypesTable = ({ history }: RouterProps) => {
               null,
               'Update Template Type',
               'TemplateType',
-              oldTemplateType._id,
+              oldTemplateType?._id,
               oldTemplateType,
               templateType,
             );

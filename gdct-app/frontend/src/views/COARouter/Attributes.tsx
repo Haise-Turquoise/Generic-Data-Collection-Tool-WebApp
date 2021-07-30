@@ -194,7 +194,7 @@ const ColumnNamesTable = () => {
               null,
               'Update Attribute',
               'Attribute',
-              oldColumnName._id,
+              oldColumnName?._id,
               oldColumnName,
               columnName,
             );
@@ -224,7 +224,7 @@ const ColumnNamesTable = () => {
           (async () => {
             const oldColumnName = await columnNameController.fetchAttribute(columnName._id);
             // Actually Deleted (Attribute might not be deleted because it is referenced in master value table)
-            if (oldColumnName.length === 0) {
+            if (oldColumnName) {
               CreateAuditLog(null, 'Delete Attribute', 'Attribute', columnName._id, columnName, {});
             }
           })();

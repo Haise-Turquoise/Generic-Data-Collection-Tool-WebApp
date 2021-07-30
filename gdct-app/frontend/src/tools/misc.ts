@@ -16,9 +16,8 @@ export const DnDReorder = (list:any, startIndex:number, endIndex:number) => {
 };
 
 export const memoizeFunction = (f:any) => {
-  return function () {
-    const args = Array.prototype.slice.call(arguments);
-
+  return function (...fArgs: any[]) {
+    const args = Array.prototype.slice.call(fArgs);
     // we've confirmed this isn't really influencing
     // speed positively
     f.memoize = f.memoize || {};

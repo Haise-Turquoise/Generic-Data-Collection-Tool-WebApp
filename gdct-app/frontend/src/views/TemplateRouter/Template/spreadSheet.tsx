@@ -109,8 +109,8 @@ class SpreadSheet extends Component<SpreadSheetProps>{
     }else{
       sheetOption.mode = 'edit';
     }
-    templateController.fetchTemplate(this.id).then((template:Template)=>{
-      const data = template.templateData?template.templateData:[];
+    templateController.fetchTemplate(this.id).then((template:Template | null)=>{
+      const data = template?.templateData;
       // @ts-ignore
       this.sheet = new Spreadsheet("#x-spreadsheet", sheetOption).loadData(data).reRender();
       
@@ -122,13 +122,17 @@ class SpreadSheet extends Component<SpreadSheetProps>{
     });
 
     // fetch Validation Threshold
-    appConfigController.fetchValidationThreshold().then((data:AppConfig)=>{
+    appConfigController.fetchValidationThreshold().then((data:AppConfig | null)=>{
       // default value is 0.05
-      this.validationThreshold = data.value?Number(data.value): 0.05;
+      if (data) {
+        this.validationThreshold = data.value?Number(data.value): 0.05;
+      }
     })
 
-    appConfigController.fetchAttributeRow().then((data:AppConfig)=>{
-      this.attrbuteRow = data.value? Number(data.value) - 1: 9 
+    appConfigController.fetchAttributeRow().then((data:AppConfig | null)=>{
+      if (data) {
+        this.attrbuteRow = data.value? Number(data.value) - 1: 9
+      } 
     })
 
   }
@@ -245,6 +249,9 @@ class SpreadSheet extends Component<SpreadSheetProps>{
   // This function handles enable preview feature
   async enablePreview(orgID:number){
     const orgInfo = await OrgController.fetchById(orgID);
+    if (!orgInfo) {
+      return
+    }
     const currentSheetIndex = this.sheet.getCurrentSheetIndex();
 
     // Generate mappings

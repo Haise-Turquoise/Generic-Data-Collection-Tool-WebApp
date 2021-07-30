@@ -14,6 +14,7 @@ import { selectProgramsStore } from '../../store/ProgramsStore/selectors';
 //@ts-ignore
 import DialogsStore from '../../store/DialogsStore/store';
 import Program from '../../types/program';
+import { state } from '../../store/types';
 const ProgramDialog = ({ selectedPrograms, handleChange, shouldClose = true }:{
   selectedPrograms:Program[],
   handleChange:(data:Program)=>void,
@@ -22,7 +23,7 @@ const ProgramDialog = ({ selectedPrograms, handleChange, shouldClose = true }:{
   const dispatch = useDispatch();
 
   const { isProgramDialogOpen, programs } = useSelector(
-    state => ({
+    (state: state) => ({
       isProgramDialogOpen: selectIsProgramDialogOpen(state),
       programs: selectFactoryRESTResponseTableValues(selectProgramsStore)(state),
     }),

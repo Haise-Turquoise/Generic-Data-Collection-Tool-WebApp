@@ -1,9 +1,10 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Tooltip, ListItem, ListItemIcon, ListItemText } from '@material-ui/core';
+import { Tooltip, ListItem, ListItemIcon, ListItemText, SvgIconTypeMap, SvgIconProps } from '@material-ui/core';
+import { OverridableComponent } from '@material-ui/core/OverridableComponent';
 
 const renderItem = ({ name, icon, url, handleClick, option, type }
-  :{name:string, icon:string, url:string, handleClick:()=>void,option:string, type:string}) => {
+  :{name:string, icon:React.ReactElement<SvgIconProps>, url:string, handleClick:()=>void,option:string, type:string}) => {
   const ListitemProps = {
     component:url && Link,
     to:url,
@@ -41,7 +42,7 @@ const renderItem = ({ name, icon, url, handleClick, option, type }
 };
 
 const IconItem = ({ name, icon, url, handleClick, isSubMenu = false, option, type }:{
-  name:string, icon:string, url:string, handleClick:()=>void, isSubMenu:boolean, option:string, type:string,
+  name:string, icon:React.ReactElement<SvgIconProps>, url:string, handleClick:()=>void, isSubMenu:boolean, option:string, type:string,
 }) => {
   //@ts-ignore
   const renderData = isSubMenu ? (

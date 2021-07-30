@@ -17,7 +17,7 @@ const COAController = Service([COAService], service => {
 
       service
         .findCOAById(_id)
-        .then(COAs => res.json({ COAs }))
+        .then(COA => res.json({ COA }))
         .catch(next);
     });
 

@@ -136,7 +136,7 @@ const StatusesTable = () => {
           // Find the old value before updating for Auditlog
           (async () => {
             const oldStatus = await statusController.fetchStatus(status._id);
-            CreateAuditLog(null, 'Update Status', 'Status', oldStatus._id, oldStatus, status);
+            CreateAuditLog(null, 'Update Status', 'Status', oldStatus?._id, oldStatus, status);
           })();
           // Do Update
           controllerEditRow(statusController, setStatuses, status)

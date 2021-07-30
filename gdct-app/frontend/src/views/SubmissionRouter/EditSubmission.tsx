@@ -45,7 +45,7 @@ import WorkflowProcess from '../../types/workflowprocess';
 import Status from '../../types/status';
 import VisitedNode from '../../types/visitednode';
 import SubmissionNote from '../../types/submissionnote';
-import { Submission } from '../../types/submissions';
+import Submission from '../../types/submission';
 const timeOption = {
   year: 'numeric',
   month: 'numeric',
@@ -83,7 +83,7 @@ const EditSubmission = ({ history }:{history:History}) => {
   const [currentRole, setCurrentRole] = useState([]);
   // const [downloadUnavailable, setDownloadUnavailable] = useState(true);
   const [nextStepIdMap, setNextStepIdMap] = useState({});
-  const [submissionHasBeen, setSubmissionHasBeen] = useState(undefined);
+  const [submissionHasBeen, setSubmissionHasBeen] = useState<string | undefined>(undefined);
   const SubmissionHeader = () => (
     <Paper className="header">
       <Typography variant="h5">Submissions</Typography>
@@ -173,9 +173,9 @@ const EditSubmission = ({ history }:{history:History}) => {
           const promiseQuery2 = [];
           for (const workflowProcess of workflowProcesses) {
             promiseQuery2.push(
-              statusController.fetchStatus(workflowProcess.statusId).then((status:Status) => {
+              statusController.fetchStatus(workflowProcess.statusId).then((status:Status | null) => {
                 const workflowProcessCopy = cloneDeep(workflowProcess) as VisitedNode;
-                workflowProcessCopy.statusName = status.name;
+                workflowProcessCopy.statusName = status?.name || '';
                 workflowProcessCopy.toStatusesName = [];
                 return workflowProcessCopy;
               }),
@@ -184,7 +184,7 @@ const EditSubmission = ({ history }:{history:History}) => {
           Promise.all(promiseQuery2).then(workflowProcesses => {
             const statusMap:{ [name: string]: string } = {};
             for (const workflowProcess of workflowProcesses) {
-              statusMap[workflowProcess._id] = workflowProcess.statusName;
+              statusMap[workflowProcess._id!] = workflowProcess.statusName;
             }
             const workflowProcessesList = cloneDeep(workflowProcesses)
             for (const workflowProcesses of workflowProcessesList) {
@@ -224,8 +224,8 @@ const EditSubmission = ({ history }:{history:History}) => {
       workflowController
         // @ts-ignore
         .fetchProcess(location.state.detail.workflowProcessId)
-        .then((workflowProcess:WorkflowProcess) => {
-          if (workflowProcess !== undefined)
+        .then((workflowProcess:WorkflowProcess | null) => {
+          if (workflowProcess !== undefined && workflowProcess !== null)
             workflowProcess.to.forEach((process:any) => {
               const nextStepIdMapCopy: { [index:string]: string } = cloneDeep(nextStepIdMap);
               nextStepIdMapCopy[process.statusId.name] = process._id;
@@ -270,20 +270,20 @@ const EditSubmission = ({ history }:{history:History}) => {
         if (childrenSubmissions.length > 0) {
           for (const childrenSubmission of childrenSubmissions) {
             const status = await statusController.fetchStatus(childrenSubmission.statusId);
-            if (status.name == 'Submitted') {
-              setSubmissionHasBeen(status.name);
+            if (status?.name == 'Submitted') {
+              setSubmissionHasBeen(status?.name);
             } else {
               const submission = await SubmissionController.fetchSubmission(
                 location.state.detail._id,
               );
-              const status = await statusController.fetchStatus(submission.statusId);
-              setSubmissionHasBeen(status.name);
+              const status = await statusController.fetchStatus(submission?.statusId || '');
+              setSubmissionHasBeen(status?.name);
             }
           }
         } else {
           const submission = await SubmissionController.fetchSubmission(location.state.detail._id);
-          const status = await statusController.fetchStatus(submission.statusId);
-          setSubmissionHasBeen(status.name);
+          const status = await statusController.fetchStatus(submission?.statusId || '');
+          setSubmissionHasBeen(status?.name);
         }
       } catch (e) {}
     })();
@@ -351,6 +351,8 @@ const EditSubmission = ({ history }:{history:History}) => {
     const result = await dispatch(
       updateSubmissionStatusRequest(submission, submissionNote, role, newProcessId),
     );
+
+    //@ts-ignore odd warning here
     if (result) {
       if (!role) {
         role = 'ChangeNote';
