@@ -29,7 +29,7 @@ const CreateOrganization = () => {
   };
 
   const submit = (organization: Organization) => {
-    new Promise((resolve, reject) => {
+    new Promise<Organization | null>((resolve, reject) => {
       dispatch(createOrgsRequest(organization, resolve, reject));
     }).then(newOrganization => {
       // For Auditlog
@@ -38,7 +38,7 @@ const CreateOrganization = () => {
           null,
           'Create Organization',
           'Organization',
-          (newOrganization as Organization)._id,
+          newOrganization._id,
           {},
           newOrganization,
         );

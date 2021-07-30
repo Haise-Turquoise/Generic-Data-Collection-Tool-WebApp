@@ -39,6 +39,7 @@ import Template from '../../types/template';
 import Program from '../../types/program';
 import Status from '../../types/status';
 import SubmissionPeriod from '../../types/submissionperiod';
+import { state } from '../../store/types';
 // values for the form
 interface TemplateValues {
   name: string,
@@ -91,7 +92,7 @@ const CustomField = ({ label, children, addButton = false, handleClick = () => {
 const FirstSection = ({ values, handleChangeStatus, handleChangeSubmissionPeriod }: {
   values: TemplateValues,
   handleChangeStatus: (statusId: string) => void,
-  handleChangeSubmissionPeriod: (submissionPeriodId: string) => void,
+  handleChangeSubmissionPeriod: (submissionPeriodId: SubmissionPeriod) => void,
 }) => (
   <div>
     <CustomField label="Status">
@@ -183,7 +184,7 @@ const Sections = ({
   handleRemoveTemplate: (template: Template) => void,
   handleRemoveProgram: (program: Program) => void,
   handleChangeStatus: (statudId: string) => void,
-  handleChangeSubmissionPeriod: (submissionPeriodId: string) => void,
+  handleChangeSubmissionPeriod: (submissionPeriodId: SubmissionPeriod) => void,
 }) => (
   <div className="d-flex justify-content-between">
     <FirstSection
@@ -286,6 +287,7 @@ const Content = ({ setFieldValue, handleChange, values }: FormProps) => {
         shouldClose={false}
       />
       <ProgramDialog
+        //@ts-ignore
         selectedPrograms={selectedPrograms}
         handleChange={handleAddProgram}
         shouldClose={false}
@@ -335,8 +337,8 @@ const TemplatePackage = ({
   const dispatch = useDispatch();
   const history = useHistory();
 
-  const { templatePackage }: { templatePackage: TemplateValues } = useSelector(state => {
-    const templatePackage = selectFactoryValueById(selectTemplatePackagesStore)(_id)(state);
+  const { templatePackage }: { templatePackage: TemplateValues } = useSelector((state: state) => {
+    const templatePackage = selectFactoryValueById(selectTemplatePackagesStore)(_id || '')(state);
     return {
       templatePackage: templatePackage || init,
     };
@@ -347,7 +349,7 @@ const TemplatePackage = ({
       dispatch(getTemplatePackagePopulatedRequest(_id));
     }
     return () => {
-      dispatch(TemplatePackagesStoreActions.RESET());
+      dispatch(TemplatePackagesStoreActions.RESET(''));
     };
   }, [dispatch, _id]);
 
@@ -367,13 +369,15 @@ const TemplatePackage = ({
 
     // Find the old value before updating in order to Auditlog
     (async () => { 
-      const oldTemplatePackage = await templatePackageController.fetchTemplatePackage(formattedTemplatePackage._id);
-      CreateAuditLog(null, "Update Template Package", "TemplatePackage", oldTemplatePackage._id, oldTemplatePackage, formattedTemplatePackage);
+      if (formattedTemplatePackage._id) {
+        const oldTemplatePackage = await templatePackageController.fetchTemplatePackage(formattedTemplatePackage._id);
+        CreateAuditLog(null, "Update Template Package", "TemplatePackage", oldTemplatePackage?._id, oldTemplatePackage, formattedTemplatePackage);
+      }
     })();
 
     // Do Update
     const redirect = () => { history.push('/admin/template/package') };
-    dispatch(updateTemplatePackageRequest(formattedTemplatePackage, redirect, null, true, populatedData));
+    dispatch(updateTemplatePackageRequest(formattedTemplatePackage, redirect, () => {}, true, populatedData));
   }, [dispatch, _id]);
 
   return (

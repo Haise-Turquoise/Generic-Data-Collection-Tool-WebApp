@@ -1,0 +1,12 @@
+import { createSlice, SliceCaseReducers } from '@reduxjs/toolkit';
+import { REST_REDUCERS } from '../common/REST/reducers';
+import { REST_STATE } from '../common/REST/state';
+import { RestStateType } from '../types';
+
+export const DataResumeStore = createSlice({
+  name: 'DATA_RESUME',
+  initialState: REST_STATE,
+  reducers: REST_REDUCERS,
+});
+
+export default DataResumeStore;

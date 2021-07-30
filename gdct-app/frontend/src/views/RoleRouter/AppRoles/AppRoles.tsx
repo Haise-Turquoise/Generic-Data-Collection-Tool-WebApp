@@ -137,7 +137,7 @@ const AppRolesTable = () => {
               null,
               'Update Application Role',
               'AppRole',
-              oldAppRole._id,
+              oldAppRole?._id,
               oldAppRole,
               appRole,
             );

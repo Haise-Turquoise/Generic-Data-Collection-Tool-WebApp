@@ -2,7 +2,7 @@ import React, { useCallback, useEffect } from 'react';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 
 import { Formik } from 'formik';
-import Swal from 'sweetalert2';
+import Swal, { SweetAlertResult } from 'sweetalert2';
 //@ts-ignore
 import * as yup from 'yup';
 
@@ -28,6 +28,7 @@ import CreateAuditLog from '../../AuditLog_Global';
 import User from '../../../types/user';
 
 import './ModifyUserInfo.scss';
+import { state } from '../../../store/types';
 
 // The header or the title of this page
 const Header = () => (
@@ -44,11 +45,11 @@ const ProfileSchema = (originalUsername:string) =>
       .string()
       .min(6, 'Username must be 6 to 20 characters long')
       .max(20, 'Username must be 6 to 20 characters long')
-      .test('Unique Username', 'Username has already been used', async function (value:string) {
-        const fetchData = await UserController.fetchUserByUserName(value);
+      .test('Unique Username', 'Username has already been used', async function (value?:string | null) {
+        const fetchData = await UserController.fetchUserByUserName(value || '');
         // users can only do 1: not change the username, or 2: change the username to something new
         return (
-          fetchData.user.username === originalUsername || fetchData.user.username === undefined
+          fetchData.user?.username === originalUsername || fetchData.user?.username === undefined
         );
       })
       .required('Please enter a username'),
@@ -239,10 +240,10 @@ const init = {
 const ModifyUserInfo = () => {
   const dispatch = useDispatch();
 
-  const userID = localStorage.getItem('currentUserID');
-  const email = localStorage.getItem('currentUser');
+  const userID = localStorage.getItem('currentUserID') || '';
+  const email = localStorage.getItem('currentUser') || '';
 
-  const { user } = useSelector(state => {
+  const { user } = useSelector((state: state) => {
     const user = selectFactoryValueById(selectModifyUserInfoStore)(userID)(state);
     return { user: user || init };
   }, shallowEqual);
@@ -254,7 +255,7 @@ const ModifyUserInfo = () => {
       dispatch(getUserInfoPopulatedRequest(email));
     }
     return () => {
-      dispatch(ModifyUserInfoStoreActions.RESET());
+      dispatch(ModifyUserInfoStoreActions.RESET(''));
     };
   }, [dispatch]);
 
@@ -274,12 +275,12 @@ const ModifyUserInfo = () => {
 
       // Find the old value before updating in order to Auditlog
       (async () => {
-        const oldUser = await usersController.fetchByEmail(email);
-        CreateAuditLog(null, 'Modify User Info', 'User', oldUser._id, oldUser, formattedUserInfo);
+        const oldUser = await usersController.fetchByEmail(email || '');
+        CreateAuditLog(null, 'Modify User Info', 'User', oldUser?._id, oldUser, formattedUserInfo);
       })();
 
       // Do Update
-      dispatch(updateUserInfoRequest(formattedUserInfo, null, null, true, populatedData));
+      dispatch(updateUserInfoRequest(formattedUserInfo, () => {}, () => {}, true, populatedData));
 
       // Alert User
       Swal.fire({
@@ -288,7 +289,7 @@ const ModifyUserInfo = () => {
         icon: 'success',
         confirmButtonColor: '#3085d6',
         confirmButtonText: 'OK',
-      }).then(result => {
+      }).then((result:SweetAlertResult<any>) => {
         if (result.isConfirmed) {
           window.location.reload();
         }

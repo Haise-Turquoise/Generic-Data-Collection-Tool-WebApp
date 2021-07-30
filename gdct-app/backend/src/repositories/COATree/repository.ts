@@ -4,6 +4,7 @@ import COATreeModel from '../../models/COATree';
 import CategoryTree, { CategoryTreeDoc } from '../../types/categorytree';
 import {ObjectId} from 'mongodb';
 import { FilterQuery } from 'mongoose';
+import AppError from '../../utils/AppError';
 
 export default class ReportPeriodRepository extends BaseRepository<CategoryTree, CategoryTreeDoc> {
   constructor() {
@@ -12,11 +13,14 @@ export default class ReportPeriodRepository extends BaseRepository<CategoryTree,
 
   async delete(id: string) {
     return COATreeModel.findByIdAndDelete(id).then(
-      (COATree: CategoryTreeDoc) => new COATreeEntity(COATree),
+      (COATree: CategoryTreeDoc|null) => {
+        if (!COATree) throw new AppError(`Delete failed, Item not found for COATree item with ID: ${id}`);
+        return new COATreeEntity(COATree)
+      }
     );
   }
 
-  async create(COATree: CategoryTree) {
+  async create(COATree: CategoryTree | CategoryTree[]) {
     return COATreeModel.create(COATree)
       .then(COATree => {
         if (Array.isArray(COATree)) {

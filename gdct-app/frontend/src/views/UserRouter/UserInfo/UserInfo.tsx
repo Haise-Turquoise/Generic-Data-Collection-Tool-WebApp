@@ -37,7 +37,7 @@ import { calculateOptions } from '../../../tools/misc'
 //@ts-ignore
 import Loading from '../../../components/Loading';
 //@ts-ignore
-import UserController from '../../../controllers/user.js'
+import UserController from '../../../controllers/user'
 
 import Swal, { SweetAlertResult } from 'sweetalert2'
 
@@ -64,7 +64,7 @@ interface RawData {
   email: string,
   firstName: string,
   lastName: string,
-  orgId: string,
+  orgId: number,
   orgName: string,
   phoneNumber: string,
   programCode: string,
@@ -223,7 +223,7 @@ const UserInfo = ({
             }).then((result: SweetAlertResult) => {
               if (result.isConfirmed) {
                 UserController
-                  .deletePermissionByUserEmail(rawData!.email, rawData)
+                  .deletePermissionByUserEmail(rawData!.email, rawData!)
                   .then((res: unknown) => {
                     // on success remove item from list
                     updateData((prevData) => 
@@ -242,7 +242,7 @@ const UserInfo = ({
           } else {
             // if multiple roles left proceed
             UserController
-              .deletePermissionByUserEmail(rawData!.email, rawData)
+              .deletePermissionByUserEmail(rawData!.email, rawData!)
               .then((res: unknown) => {
                 // on success remove item from list
                 updateData((prevData) => 
@@ -278,6 +278,7 @@ const UserInfo = ({
   useEffect(()=>{setRowNum(data.length)}, [data])
 
   return isCallInProgress ? (
+    //@ts-ignore
     <Loading />
   ) : (
     <div className="userInfo">

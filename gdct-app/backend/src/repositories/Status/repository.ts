@@ -4,6 +4,7 @@ import StatusModel from '../../models/Status';
 import Status, { StatusDoc } from '../../types/status';
 import { FilterQuery } from 'mongoose';
 import { ObjectId } from 'mongodb';
+import AppError from '../../utils/AppError';
 
 export default class StatusRepository extends BaseRepository<Status, StatusDoc> {
   constructor() {
@@ -11,7 +12,11 @@ export default class StatusRepository extends BaseRepository<Status, StatusDoc> 
   }
 
   async delete(id: string) {
-    return StatusModel.findByIdAndDelete(id).then((status: StatusDoc) => new StatusEntity(status));
+    return StatusModel.findByIdAndDelete(id)
+    .then((status: StatusDoc|null) => {
+      if (!status) throw new AppError(`Delete failed, Item not found for Staus item with ID: ${id}`);
+      return new StatusEntity(status)
+    });
   }
 
   async create(status: Status) {
@@ -19,7 +24,11 @@ export default class StatusRepository extends BaseRepository<Status, StatusDoc> 
   }
 
   async update(id: string, status: Partial<Status>) {
-    return StatusModel.findByIdAndUpdate(id, status).then((status: StatusDoc) => new StatusEntity(status));
+    return StatusModel.findByIdAndUpdate(id, status)
+    .then((status: StatusDoc|null) => {
+      if (!status) throw new AppError(`Update failed, Item not found for Staus item with ID: ${id}`);
+      return new StatusEntity(status)
+    });
   }
 
   async findByName(name: string) {

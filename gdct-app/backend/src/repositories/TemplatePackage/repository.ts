@@ -10,6 +10,7 @@ import UsersRepository from '../Users';
 import TemplateModel from '../../models/Template';
 import TemplatePackage, { TemplatePackageDoc } from '../../types/templatepackage';
 import { FilterQuery } from 'mongoose';
+import AppError from '../../utils/AppError';
 
 const populatedParams = 'submissionPeriodId templateIds statusId programIds';
 
@@ -122,9 +123,11 @@ export default class TemplatePackageRepository extends BaseRepository<TemplatePa
   }
 
   async delete(id: string) {
-    return TemplatePackageModel.findByIdAndDelete(id).then(
-      (templatePackage: TemplatePackageDoc) => new TemplatePackageEntity(templatePackage),
-    );
+    return TemplatePackageModel.findByIdAndDelete(id)
+    .then((templatePackage: TemplatePackageDoc|null) => {
+      if (!templatePackage) throw new AppError(`Delete failed for template package with ID: ${id}`);
+      return new TemplatePackageEntity(templatePackage);
+    });
   }
 
   async findByIds(ids: string[]){
@@ -136,9 +139,11 @@ export default class TemplatePackageRepository extends BaseRepository<TemplatePa
   }
 
   async findStatusById(id: string){
-    const statusID: TemplatePackageDoc = await TemplatePackageModel.findById(id, {_id:0, statusId:1});
+    const statusID: TemplatePackageDoc|null = await TemplatePackageModel.findById(id, {_id:0, statusId:1});
+    if(!statusID) throw new AppError(`Query failed, Item not found for Status item with ID: ${id}`);
     return this.statusRepository.findById(statusID.statusId);
   }
+  
   async findByUpdateBy(updatedBy: string) {
     return TemplatePackageModel.find({ updatedBy });
   }

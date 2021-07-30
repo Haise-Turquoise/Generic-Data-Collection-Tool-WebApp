@@ -158,7 +158,7 @@ const AppResourcesTable = () => {
               null,
               'Update Application Resource',
               'AppResource',
-              oldAppResource._id,
+              oldAppResource?._id,
               oldAppResource,
               appResource,
             );

@@ -163,7 +163,7 @@ const LinkProgramTable = ({
 
   useEffect(() => {
     AppRoleResourceController.fetchAppRoleResource(_id)
-      .then((res: AppRoleResource | undefined) => {
+      .then((res: AppRoleResource | null) => {
         console.log(res)
         if (res) {
           setAppRoleResource(res)
@@ -181,9 +181,9 @@ const LinkProgramTable = ({
     dispatch(getAppSysRolesRequest());
     dispatch(getAppResourcesRequest());
     return () => {
-      dispatch(AppResourcesStore.actions.RESET());
-      dispatch(AppRoleResourcesStore.actions.RESET());
-      dispatch(AppSysRolesStore.actions.RESET());
+      dispatch(AppResourcesStore.actions.RESET(''));
+      dispatch(AppRoleResourcesStore.actions.RESET(''));
+      dispatch(AppSysRolesStore.actions.RESET(''));
     };
   }, [dispatch]);
 

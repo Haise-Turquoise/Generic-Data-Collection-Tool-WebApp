@@ -2,7 +2,7 @@ import AppRoleEntity from '../../entities/AppRole';
 import BaseRepository from '../repository';
 import AppRoleModel from '../../models/AppRole';
 import AppRole, { AppRoleDoc } from '../../types/approle';
-import { FilterQuery } from 'mongoose';
+import AppError from '../../utils/AppError';
 
 export default class AppRoleRepository extends BaseRepository<AppRole, AppRoleDoc> {
   constructor() {
@@ -13,6 +13,8 @@ export default class AppRoleRepository extends BaseRepository<AppRole, AppRoleDo
     const appRole = await AppRoleModel.findById(id);
     if (appRole) {
       appRole.isActive = false;
+    }else{
+      throw new AppError(`Cannot delete AppRole: ID ${id} does not exist`);
     }
     return this.update(id, appRole);
   }

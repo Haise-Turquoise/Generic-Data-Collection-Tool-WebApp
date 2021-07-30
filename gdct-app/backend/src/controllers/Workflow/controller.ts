@@ -10,7 +10,7 @@ const WorkflowController = Service([WorkflowService], service => {
       service
       //@ts-ignore
         .findWorkflow({})
-        .then(workflows => res.json( workflows ))
+        .then(workflows => {console.log(workflows);res.json( workflows )})
         .catch(next);
     });
 

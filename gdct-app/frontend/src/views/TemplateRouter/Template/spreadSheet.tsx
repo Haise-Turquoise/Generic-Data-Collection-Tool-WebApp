@@ -2,17 +2,13 @@ import React, { Component } from "react";
 import Spreadsheet from 'x-data-spreadsheet';
 //@ts-ignore
 import templateController from '../../../controllers/template';
-//@ts-ignore
 import CategoryInsertMenu from './CategoryInsertionMenu';
-//@ts-ignore
 import AttributeInsertMenu from './AttributeInsertionMenu';
 //@ts-ignore
 import spreadSheetController from '../../../controllers/spreadSheet';
-//@ts-ignore
 import PopulationSelectionMenu from './PopulationSelectionMenu';
 //@ts-ignore
 import OrgController from '../../../controllers/organization';
-//@ts-ignore
 import VarianceInsertionMenu from './InsertVarianceMenu'
 import Button from '@material-ui/core/Button';
 import { digitToAlpha,
@@ -26,7 +22,7 @@ import appConfigController from '../../../controllers/AppConfig';
 import { ObjectId } from 'mongoose';
 import {PreviewData, Coordinate, SpreadSheetProps, CategorySelection, IdMapping, OrgPreviewData} from '../../../types/spreadsheetTypes/spreadSheetTypes';
 import { MasterValue } from '../../../types/mastervalue';
-import Template from '../../../types/template';
+import Template, { SheetData } from '../../../types/template';
 import AppConfig from '../../../types/appconfig';
 
 // Sheet style Option
@@ -113,8 +109,8 @@ class SpreadSheet extends Component<SpreadSheetProps>{
     }else{
       sheetOption.mode = 'edit';
     }
-    templateController.fetchTemplate(this.id).then((template:Template)=>{
-      const data = template.templateData?template.templateData:[];
+    templateController.fetchTemplate(this.id).then((template:Template | null)=>{
+      const data = template?.templateData;
       // @ts-ignore
       this.sheet = new Spreadsheet("#x-spreadsheet", sheetOption).loadData(data).reRender();
       
@@ -126,13 +122,17 @@ class SpreadSheet extends Component<SpreadSheetProps>{
     });
 
     // fetch Validation Threshold
-    appConfigController.fetchValidationThreshold().then((data:AppConfig)=>{
+    appConfigController.fetchValidationThreshold().then((data:AppConfig | null)=>{
       // default value is 0.05
-      this.validationThreshold = data.value?Number(data.value): 0.05;
+      if (data) {
+        this.validationThreshold = data.value?Number(data.value): 0.05;
+      }
     })
 
-    appConfigController.fetchAttributeRow().then((data:AppConfig)=>{
-      this.attrbuteRow = data.value? Number(data.value) - 1: 9 
+    appConfigController.fetchAttributeRow().then((data:AppConfig | null)=>{
+      if (data) {
+        this.attrbuteRow = data.value? Number(data.value) - 1: 9
+      } 
     })
 
   }
@@ -192,11 +192,12 @@ class SpreadSheet extends Component<SpreadSheetProps>{
 
     // split the attribute id pairs
     const selection = varianceSelection.split(' ');
-    const currSheet = this.sheet.datas[currSheetIndex];
+    const currSheet = this.sheet.getData()[currSheetIndex];
     
     // Generate Mappings
-    const categoryMap = generateCategoryMap(currSheet);
-    const attributeMap = generateAttributeMap(currSheet);
+    const categoryMap:any = generateCategoryMap(currSheet);
+    console.log('hi', categoryMap)
+    const attributeMap:any = generateAttributeMap(currSheet);
 
     // Identify the col alphabit assignment
     const startCol = digitToAlpha(Number(attributeMap[selection[0]]) + 1);
@@ -241,19 +242,21 @@ class SpreadSheet extends Component<SpreadSheetProps>{
 
   // This function handles download template feature, it convert Json array
   // from x-data-spreadsheet to xlsx
-  downloadTemplate(sheetData:Object[]){
+  downloadTemplate(sheetData:SheetData[]){
     templateDownloader(this.workBookName, sheetData);
   }
 
   // This function handles enable preview feature
   async enablePreview(orgID:number){
     const orgInfo = await OrgController.fetchById(orgID);
+    if (!orgInfo) {
+      return
+    }
     const currentSheetIndex = this.sheet.getCurrentSheetIndex();
 
     // Generate mappings
     const categoryMapping = this.sheet.datas[currentSheetIndex].rowLookUpTable(0);
     const attributeMapping = this.sheet.datas[currentSheetIndex].colLookUpTable(0);
-    console.log(this.sheet.datas[currentSheetIndex])
 
     const categories = Object.keys(categoryMapping);
     const attributes = Object.keys(attributeMapping);
@@ -299,7 +302,7 @@ class SpreadSheet extends Component<SpreadSheetProps>{
   }
 
   getCurrentSheet(){
-    return this.sheet.datas[this.sheet.getCurrentSheetIndex()];
+    return this.sheet.getData()[this.sheet.getCurrentSheetIndex()];
   }
   
   // This function handles disable preview feature
@@ -331,14 +334,17 @@ class SpreadSheet extends Component<SpreadSheetProps>{
 
   lineNumberInsertion(reRender=false){
     const currSheetIndex = this.sheet.getCurrentSheetIndex();
-    const currSheet = this.sheet.datas[currSheetIndex];
+    const currSheet = this.sheet.getData()[currSheetIndex];
     const categoryMap = generateCategoryMap(currSheet);
+    console.log('map', categoryMap)
 
     let categoryIDs = Object.keys(categoryMap).sort((id1, id2)=>
+      // @ts-ignore
       categoryMap[id1] - categoryMap[id2]
     );
 
     for (let i = 0; i < categoryIDs.length; i++){
+      // @ts-ignore
       this.sheet.cellText(categoryMap[categoryIDs[i]], 2, i + 1, currSheetIndex);
     }
     if (reRender) this.sheet.reRender();

@@ -84,7 +84,7 @@ const TemplateTypeTable = ({
   useEffect(() => {
     dispatch(getTemplateTypesRequest());
     return () => {
-      dispatch(TemplateTypesStore.actions.RESET());
+      dispatch(TemplateTypesStore.actions.RESET(''));
     };
   }, [dispatch]);
 
@@ -128,7 +128,7 @@ const LinkProgramTable = ({
       return
     }
     templateType.programIds = templateType.programIds.concat([rowData._id]);
-    dispatch(updateTemplateTypeRequest(templateType, null, reject));
+    dispatch(updateTemplateTypeRequest(templateType, () => {}, reject));
     // Refresh templateType because dispatch makes object read-only, not allowing multiple adding.
     templateType = { ...templateType };
   };
@@ -138,7 +138,7 @@ const LinkProgramTable = ({
       return
     }
     templateType.programIds = templateType.programIds.filter(elem => elem !== rowData._id);
-    dispatch(updateTemplateTypeRequest(templateType, null, reject));
+    dispatch(updateTemplateTypeRequest(templateType, () => {}, reject));
     // Refresh templateType because dispatch makes object read-only, not allowing multiple deleting.
     templateType = { ...templateType };
   };

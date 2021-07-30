@@ -6,6 +6,7 @@ import SheetNameEntity from '../../entities/SheetName';
 import SheetName, { SheetNameDoc } from '../../types/sheetName';
 import { FilterQuery } from 'mongoose';
 import { ObjectId } from 'mongodb'
+import AppError from '../../utils/AppError';
 
 // @Service()
 export default class SheetNameRepository extends BaseRepository<SheetName, SheetNameDoc> {
@@ -22,7 +23,10 @@ export default class SheetNameRepository extends BaseRepository<SheetName, Sheet
 
   async update(id: string, sheetName: Partial<SheetName>) {
     return SheetNameModel.findByIdAndUpdate(id, sheetName)
-      .then((sheetName: SheetNameDoc) => new SheetNameEntity(sheetName));
+      .then((sheetName: SheetNameDoc|null) => {
+        if (!sheetName) throw new AppError(`Update failed for SheetName item with ID: ${id}`);
+        return new SheetNameEntity(sheetName);
+      });
   }
 
   async find(query: Partial<SheetName>) {
@@ -46,7 +50,11 @@ export default class SheetNameRepository extends BaseRepository<SheetName, Sheet
   }
 
   async delete(id: string) {
-    return SheetNameModel.findByIdAndDelete(id).then((sheetName: SheetNameDoc) => new SheetNameEntity(sheetName));
+    return SheetNameModel.findByIdAndDelete(id)
+    .then((sheetName: SheetNameDoc|null) => {
+      if (!sheetName) throw new AppError(`Delete failed, Item not found for SheetName item with ID: ${id}`);
+      return new SheetNameEntity(sheetName)
+    });
   }
 
   async batchFind(query: ObjectId[] | string[]){

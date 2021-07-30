@@ -90,7 +90,7 @@ const COATreesTable = ({ history }: RouterProps) => {
     COATreeController.fetchBySheetName(sheetNameId)
     .then((treeElementList: CategoryTree[]) => {
       treeElementList.forEach(treeElement => {
-        COATreeController.delete(treeElement._id);
+        COATreeController.delete(treeElement._id || '');
       });
     })
     .then((result: unknown) => {

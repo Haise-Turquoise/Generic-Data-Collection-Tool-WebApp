@@ -23,12 +23,13 @@ import { selectFactoryRESTResponseValues } from '../../../store/common/REST/sele
 import { selectCOAsStore } from '../../../store/COAsStore/selectors';
 //@ts-ignore
 import { selectIsCOADialogOpen } from '../../../store/DialogsStore/selectors';
+import { state } from '../../../store/types';
 
 const COADialog = ({ Auditlog_Operations }: { Auditlog_Operations: string[] }) => {
   const dispatch = useDispatch();
 
   const { COAs, selectedCOAIds, isCOADialogOpen, COATreeId } = useSelector(
-    state => ({
+    (state: state) => ({
       selectedCOAIds: selectSelectedCOAIdsMap(state),
       COATreeId: selectSelectedCOATreeId(state),
       COAs: selectFactoryRESTResponseValues(selectCOAsStore)(state),

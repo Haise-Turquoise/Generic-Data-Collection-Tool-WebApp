@@ -68,12 +68,12 @@ const EditOrganization = ({
         null,
         'Update Organization',
         'Organization',
-        oldOrganization._id,
+        oldOrganization?._id,
         oldOrganization,
         newOrganization,
       );
       // Add _id and trim tableData created by Material Table
-      newOrganization['_id'] = oldOrganization._id;
+      newOrganization['_id'] = oldOrganization?._id || '';
       const organization_trim = (({ tableData, ...o }) => o)(newOrganization);
       // Update
       dispatch(updateOrgsRequest(organization_trim, accept, reject));
@@ -83,7 +83,7 @@ const EditOrganization = ({
   const cancel = () => {
     redirect();
   };
-
+  //@ts-ignore
   return !object ? <Loading /> : (
     <div>
       <ModifyOrganization
