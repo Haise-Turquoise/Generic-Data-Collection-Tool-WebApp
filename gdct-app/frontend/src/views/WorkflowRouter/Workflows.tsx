@@ -57,7 +57,7 @@ const Workflows = () => {
   const [workflows, setWorkflows] = useState<Workflow[] | undefined>(undefined)
 
   useEffect(() => {
-    workflowController.fetch().then((res: unknown) => {
+    workflowController.fetch().then(res => {
       setWorkflows(res as Workflow[])
     })
   }, [])
@@ -123,7 +123,7 @@ const Workflows = () => {
         }).then(() => {
           (async () => {
             const oldWorkflow = await workflowController.fetchOnlyWorkflowById(workflow._id);
-            if (oldWorkflow.length === 0) {
+            if (oldWorkflow) {
               CreateAuditLog(null, 'Delete Workflow', 'Workflow', workflow._id, workflow, {});
             }
           })();

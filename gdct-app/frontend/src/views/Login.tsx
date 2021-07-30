@@ -149,7 +149,7 @@ export default function Login({ setLoggedIn }:{setLoggedIn:(flag:boolean)=>void}
     }
   };
 
-  let sessionID:number|null = null;
+  let sessionID:string|null = null;
   // onSubmit for sign in button
   const handleSubmit = async (e:any) => {
     e.preventDefault();
@@ -158,8 +158,10 @@ export default function Login({ setLoggedIn }:{setLoggedIn:(flag:boolean)=>void}
     try {
       if (email && validateForm(errors)) {
         // logic to verify validity of submitter role
-        const { sysRole } = await usersController.fetchByEmail(email);
-
+        const { sysRole } = await usersController.fetchByEmail(email) || { sysRole: null };
+        if (!sysRole) {
+          return
+        }
         const possibleRoles = sysRole.reduce((acc:any, curr:SysRole) => acc.concat(curr.role), []);
         let currentRole = selectedRole;
         if (possibleRoles.length < 2) {
@@ -171,7 +173,7 @@ export default function Login({ setLoggedIn }:{setLoggedIn:(flag:boolean)=>void}
         }
 
         checkLogin = await AuthController.login({ email, password, selectedRole })
-          .then((data:undefined|{data:{email:string, _id:string, sessionID:number}, status:string}) => {
+          .then((data:undefined|{data:{email:string, _id:string, sessionID:string}, status:string}) => {
             if (data === undefined) {
               return false;
             }
@@ -206,11 +208,11 @@ export default function Login({ setLoggedIn }:{setLoggedIn:(flag:boolean)=>void}
   const handleUpdateRoles = () => {
     usersController
       .fetchByEmail(email)
-      .then((data:User) => {
+      .then((data:User | null) => {
         //@ts-ignore
         setRoles(data.sysRole.map(role => role.role));
         // set selected role manually if only one available
-        if (data.sysRole.length >= 1) {
+        if (data && data.sysRole.length >= 1) {
           setSelectedRole(data.sysRole[0].role);
         }
       })
@@ -220,12 +222,13 @@ export default function Login({ setLoggedIn }:{setLoggedIn:(flag:boolean)=>void}
   // Session Timer
   const Timer = async () => {
     const sessionCheckingPeriod = await AppConfigController.fetchSessionCheckingPeriod();
+    if (!sessionCheckingPeriod) return
     const period = sessionCheckingPeriod.value;
     let i = 0;
     while (i < 60) {
       (function (i) {
         setTimeout(function () {
-          SessionController.fetchById(sessionID).then((session:{expires:string}) => {
+          SessionController.fetchById(sessionID || '').then((session:{expires:string}) => {
             if (session !== null) {
               const expirationTime = session.expires;
               const currentTime = moment();
@@ -253,7 +256,7 @@ export default function Login({ setLoggedIn }:{setLoggedIn:(flag:boolean)=>void}
                   })
                   .then((result:SweetAlertResult<any>) => {
                     if (result.isConfirmed) {
-                      SessionController.updateExpiration(sessionID);
+                      SessionController.updateExpiration(sessionID || '');
                       swalWithBootstrapButtons.fire(
                         'Reset!',
                         'Your session has been reset',
@@ -282,7 +285,7 @@ export default function Login({ setLoggedIn }:{setLoggedIn:(flag:boolean)=>void}
               }
             }
           });
-        }, period * 60 * 1000 * i);
+        }, +period * 60 * 1000 * i);
       })(i++);
     }
   };

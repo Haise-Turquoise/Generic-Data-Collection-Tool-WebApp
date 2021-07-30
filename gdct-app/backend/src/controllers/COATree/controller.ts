@@ -2,7 +2,8 @@ import { Service } from 'typedi';
 import { Router } from 'express';
 import COATreeService from '../../services/COATree';
 import COATreeEntity from '../../entities/COATree';
-import { CategoryTreeDoc } from '../../types/categorytree';
+import CategoryTree, { CategoryTreeDoc } from '../../types/categorytree';
+import SheetName from '../../types/sheetName';
 
 const COATreeController = Service([COATreeService], service => {
   const router = Router();
@@ -22,19 +23,18 @@ const COATreeController = Service([COATreeService], service => {
       const { sheetNameId } = req.body;
 
       service
-        // @ts-ignore
-        .findCOATree(new COATreeEntity({ sheetNameId }))
-        .then((COATrees: COATreeEntity[]) =>
+        .findCOATree({ sheetNameId })
+        .then((COATrees: CategoryTreeDoc[]) =>
           res.json({ COATrees: COATrees.map(COATree => ({ ...COATree, COATreeData: undefined })) }),
         )
         .catch(next);
     });
 
     router.post('/COATrees/sheetName/fetchBySheetNames', (req, res, next) => {
-      const { sheetNameIds }: { sheetNameIds: CategoryTreeDoc[] } = req.body;
+      const { sheetNameIds }: { sheetNameIds: SheetName[] } = req.body;
       const allTreePromises: Promise<any>[] = []
       sheetNameIds.forEach(sheetNameId => {
-        allTreePromises.push(service.findCOATree(new COATreeEntity(sheetNameId)))
+        allTreePromises.push(service.findCOATree({sheetNameId: sheetNameId._id}))
       })
       Promise.all(allTreePromises)
         .then(COATrees => {
@@ -50,7 +50,7 @@ const COATreeController = Service([COATreeService], service => {
     router.get('/COATrees/fetch', (req, res, next) => {
       service
         .findCOATree(new COATreeEntity(req.body))
-        .then((COATrees: COATreeEntity[]) =>
+        .then((COATrees: CategoryTreeDoc[]) =>
           res.json({ COATrees: COATrees.map(COATree => ({ ...COATree, COATreeData: undefined })) }),
         )
         .catch(next);

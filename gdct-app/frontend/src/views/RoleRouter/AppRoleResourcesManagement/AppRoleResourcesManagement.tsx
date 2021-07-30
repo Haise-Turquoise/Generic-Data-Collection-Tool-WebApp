@@ -114,7 +114,7 @@ const AppRoleResourceTable = ({ history }: RouteComponentProps) => {
     
   })
   const lookupSysRoles = appSysRoles?.reduce(function (acc: {[key: string]: string}, sysRole: SysRole) {
-    acc[sysRole._id] = `${sysRole.appSys} - ${sysRole.role}`;
+    acc[sysRole._id!] = `${sysRole.appSys} - ${sysRole.role}`;
     return acc;
   }, {});
 
@@ -200,7 +200,7 @@ const AppRoleResourceTable = ({ history }: RouteComponentProps) => {
         // Find the old value before updating in order to Auditlog
         (async () => { 
           const oldAppRoleResource = await AppRoleResourceController.fetchAppRoleResource(appRoleResource._id);
-          CreateAuditLog(null, "Update Application Role Resource", "AppRoleResource", oldAppRoleResource._id, oldAppRoleResource, appRoleResource);
+          CreateAuditLog(null, "Update Application Role Resource", "AppRoleResource", oldAppRoleResource?._id, oldAppRoleResource, appRoleResource);
         })();
         // Do Update
         controllerEditRow(AppRoleResourceController, setAppRoleResources, appRoleResource)

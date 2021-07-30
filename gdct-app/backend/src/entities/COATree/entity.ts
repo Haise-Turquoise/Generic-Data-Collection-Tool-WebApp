@@ -1,8 +1,8 @@
 import { ObjectId } from "mongodb";
-import { CategoryTreeDoc } from "../../types/categorytree";
+import CategoryTree, { CategoryTreeDoc } from "../../types/categorytree";
 
 export default class COATreeEntity {
-  public _id: ObjectId;
+  public _id: ObjectId | null;
   public parentId: ObjectId;
   public categoryGroupId: ObjectId;
   public categoryId: ObjectId[];
@@ -10,7 +10,7 @@ export default class COATreeEntity {
   public timestamp: Date;
   public updatedBy: string;
   
-  constructor({ _id, parentId, categoryGroupId, categoryId, sheetNameId, timestamp, updatedBy, }: CategoryTreeDoc) {
+  constructor({ _id, parentId, categoryGroupId, categoryId, sheetNameId, timestamp, updatedBy, }: CategoryTreeDoc | CategoryTree) {
     // console.log(categoryGroupId)
     // console.log(_id)
     this._id = _id;

@@ -2,8 +2,8 @@
 import MenuController from '../../controllers/Menu';
 //@ts-ignore
 import iconMap from './iconMap';
-import Menu from '../../types/menu';
-const createUserNavigation = async () => {
+import Menu, { MappedMenu } from '../../types/menu';
+const createUserNavigation = async (): Promise<MappedMenu[]> => {
   const menus :Menu[] = await MenuController.fetch();
 
   return menus
@@ -15,7 +15,7 @@ const createUserNavigation = async () => {
           url: e.url,
           type: e.type,
           icon: iconMap[e.name],
-          orderID: e.orderId,
+          orderId: e.orderId,
         };
       }
       let children = e.items.map(item => {
@@ -58,7 +58,8 @@ const createUserNavigation = async () => {
           return a.type.localeCompare(b.type);
         });
       }
-      return { name: e.name, type: e.type, icon: iconMap[e.name], children };
+      //TODO could be problem
+      return { name: e.name, type: e.type, icon: iconMap[e.name], children, url: e.url, orderId: e.orderId };
     });
 };
 

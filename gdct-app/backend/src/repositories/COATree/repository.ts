@@ -20,7 +20,7 @@ export default class ReportPeriodRepository extends BaseRepository<CategoryTree,
     );
   }
 
-  async create(COATree: CategoryTree) {
+  async create(COATree: CategoryTree | CategoryTree[]) {
     return COATreeModel.create(COATree)
       .then(COATree => {
         if (Array.isArray(COATree)) {
@@ -78,7 +78,7 @@ export default class ReportPeriodRepository extends BaseRepository<CategoryTree,
   async batchFindById(query: string[]) {
     return COATreeModel.find({ _id: { $in: query } });
   }
-  async batchFindByCategoryId(query: string[], sheetTitleId: string){
+  async batchFindByCategoryId(query: string[], sheetTitleId: string):Promise<CategoryTreeDoc[]>{
     //@ts-ignore more problems with mongoose
     return COATreeModel.find({ categoryId: { "$in" : query }, sheetNameId: sheetTitleId})
   }

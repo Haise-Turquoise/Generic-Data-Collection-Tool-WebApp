@@ -159,7 +159,7 @@ const SheetNamesTable = () => {
               null,
               'Update Sheet',
               'SheetName',
-              oldSheetName._id,
+              oldSheetName?._id,
               oldSheetName,
               sheetName,
             );

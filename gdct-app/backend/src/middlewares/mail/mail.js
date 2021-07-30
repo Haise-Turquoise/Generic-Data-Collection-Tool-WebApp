@@ -1,20 +1,5 @@
 import nodemailer from 'nodemailer';
 
-
-
-
-
-
-// const mailConfig = {
-//   host: 'smtp.ethereal.email',
-//   port: 587,
-//   auth: {
-//     user: 'julio32@ethereal.email',
-//     pass: 'qdjK2XgTyyHtR9zScz',
-//   },
-// };
-
-
 const mailConfig = {
   
   service:"hotmail",
@@ -24,15 +9,7 @@ const mailConfig = {
     pass: 'Gdct1234',
   },
 };
-// const mailConfig = {
-  
-//   service:"hotmail",
-  
-//   auth: {
-//     user: 'yangjie.yang@mail.utoronto.ca',
-//     pass: 'Yangjie961109',
-//   },
-// };
+
 
 // Check your messages at https://ethereal.email/ on the test email account
 // Credentials are present on mailConfig
@@ -56,8 +33,6 @@ export const sendPermissionChangeUserVerficationEmail = (username,email) => {
     .sendMail(message)
     .then(info => ({ message: `Preview URL: ${nodemailer.getTestMessageUrl(info)}` }));
 };
-
-
 
 export const sendUserVerficationEmail = registerData => {
   const { username, email } = registerData;
@@ -114,8 +89,6 @@ export const sendAdminVerficationEmail = (orgInfo, hashedUsername, userId, usern
     .then(info => ({ message: `Preview URL: ${nodemailer.getTestMessageUrl(info)}` }));
 };
 
-
-
 export const sendPermissionChangeAdminVerficationEmail = (orgInfo, hashedUsername, userId, username) => {
   const { authorizedPerson, orgId, permission } = orgInfo;
   const orgName = orgInfo.name;
@@ -152,12 +125,6 @@ export const sendPermissionChangeAdminVerficationEmail = (orgInfo, hashedUsernam
     .sendMail(message)
     .then(info => ({ message: `Preview URL: ${nodemailer.getTestMessageUrl(info)}` }));
 };
-
-
-
-
-
-
 
 export const sendUserActiveEmail = user => {
   const { username, hashedUsername, _id, email } = user;

@@ -63,7 +63,7 @@ const COATreeActions = ({ sheetNameId }: { sheetNameId: string }) => {
           'Update COA Tree',
           'CategoryTree',
           sheetNameId,
-          { 0: `Changes happened on Sheet: ${sheet.name}` },
+          { 0: `Changes happened on Sheet: ${sheet?.name}` },
           Auditlog_Operations,
         );
         Auditlog_Operations = [];
