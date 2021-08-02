@@ -85,8 +85,9 @@ class SubmissionSpreadSheet extends Component<submissionSpreadsheetProps>{
   // After component mount, initailize spreadsheet and load data from DB
   componentDidMount() {
     if (this.sheet == null) {
-      submissionController.fetchSubmission(this.id).then((submission:Submission) => {
-        statusController.findStatusByID(submission.statusId).then((status:Status) => {
+      submissionController.fetchSubmission(this.id).then((submission:Submission|null) => {
+        if (!submission) throw new Error('Submission not found');
+        statusController.findStatusByID(submission.statusId).then((status:Status|null) => {
           if (status && status.name === 'Approved') {
             sheetOption.mode = 'read';
             this.edit = false;
@@ -109,7 +110,8 @@ class SubmissionSpreadSheet extends Component<submissionSpreadsheetProps>{
         });
       });
     } else {
-      submissionController.fetchSubmission(this.id).then((submission:Submission) => {
+      submissionController.fetchSubmission(this.id).then((submission:Submission|null) => {
+        if (!submission) throw new Error('Submission not found');
         this.submissionObject = submission;
         this.clearComponentChild();
         // @ts-ignore
@@ -151,7 +153,7 @@ class SubmissionSpreadSheet extends Component<submissionSpreadsheetProps>{
       if (this.sheet === null) throw new Error("Sheet did not initialize correctly!");     
       const newData = this.sheet.getData() as SheetData[];
       this.submissionObject.workbookData = newData;
-      submissionController.updateWorkbook(this.submissionObject).then((res:any) => {
+      submissionController.updateWorkbook(this.submissionObject as Submission, null).then((res:any) => {
         const difference = compareSheet(this.orginalValue, newData);
         CreateAuditLog(
           null,
@@ -169,9 +171,10 @@ class SubmissionSpreadSheet extends Component<submissionSpreadsheetProps>{
     if (this.edit) {
       // Get org data
       const org = await orgController.fetchById(Number(orgId));
-
+      if (!org) throw new Error('Organization not found')
       // Get reporting period data
       const reportPeriod = await submissionController.fetchSubmissionReportingPeriod(this.id);
+      if (!reportPeriod) throw new Error('Reporting Period not found')
       const data = this.sheet.getData();
 
       // Iterate through each sheet to fill in information (start from the second sheet)
