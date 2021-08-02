@@ -1,3 +1,4 @@
+//@ts-ignore
 import cloneDeep from 'clone-deep';
 //@ts-ignore
 import { walk, removeNode, changeNodeAtPath, toggleExpandedForAll } from 'react-sortable-tree';

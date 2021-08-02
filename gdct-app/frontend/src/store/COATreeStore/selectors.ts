@@ -1,6 +1,6 @@
 import { createSelector } from 'reselect';
 
-const selectCOATreeStore = state => state.COATreeStore;
+const selectCOATreeStore = (state:any) => state.COATreeStore;
 
 const selectSelectedNodeProps = createSelector(
   [selectCOATreeStore],
@@ -31,9 +31,9 @@ const selectSelectedNodeCOAIds = createSelector([selectSelectedNodeContent], sel
 // );
 
 export const selectSelectedCOAIdsMap = createSelector([selectSelectedNodeCOAIds], categoryId => {
-  const selectedCOAIds = {};
+  const selectedCOAIds:{[key:string]:boolean} = {};
 
-  categoryId.forEach(COAId => (selectedCOAIds[COAId] = true));
+  categoryId.forEach((COAId:string) => (selectedCOAIds[COAId] = true));
 
   return selectedCOAIds;
 });
