@@ -847,7 +847,7 @@ const MasterValuePopulation = () => {
   }, [db_hfkList]);
 
   const [query, setQuery] = useState({
-    year: '',
+    Year: '',
   });
 
   const handleChange = (event: ChangeEvent<{ name?: string, value: unknown }>) => {
@@ -955,7 +955,7 @@ const MasterValuePopulation = () => {
       delete obj.checked;
       delete obj.tableData;
     });
-    const ap = query.year;
+    const ap = query.Year;
     const hfk = hfkList.filter(obj => obj.checked).map(obj => ({ ...obj }));
     hfk.forEach(obj => {
       delete obj.checked;
@@ -977,7 +977,7 @@ const MasterValuePopulation = () => {
     <Loading />
   ) : (
     <div>
-      <HeaderActions val={query.year} data={periodList} name={'year'} handleChange={handleChange} />
+      <HeaderActions val={query.Year} data={periodList} name={'Year'} handleChange={handleChange} />
       <div className="tableContainer">
         <div className="tableWrapper">
           <MaterialTable
