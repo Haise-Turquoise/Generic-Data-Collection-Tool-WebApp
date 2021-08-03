@@ -977,7 +977,7 @@ const MasterValuePopulation = () => {
     <Loading />
   ) : (
     <div>
-      <HeaderActions val={query.year} data={periodList} name={'Year'} handleChange={handleChange} />
+      <HeaderActions val={query.year} data={periodList} name={'year'} handleChange={handleChange} />
       <div className="tableContainer">
         <div className="tableWrapper">
           <MaterialTable
