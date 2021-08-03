@@ -169,7 +169,7 @@ export default class SubmissionService {
     };
 
     return this.submissionRepository.update(submission._id, submission).then(() => {
-      return this.submissionNoteRepository.create(submissionNotes);
+      if (submissionNotes.note) return this.submissionNoteRepository.create(submissionNotes);
     });
   }
 
