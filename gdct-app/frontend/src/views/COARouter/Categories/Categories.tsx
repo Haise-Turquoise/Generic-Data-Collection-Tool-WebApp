@@ -19,7 +19,7 @@ import { selectFactoryRESTResponseTableValues, selectFactoryRESTError } from '..
 //@ts-ignore
 import { selectCOAsStore } from '../../../store/COAsStore/selectors';
 //@ts-ignore
-import { calculateOptions, checkDuplicates, controllerAddRow, controllerEditRow, controllerDeleteRow } from '../../../tools/misc';
+import { calculateOptions, checkDuplicates, controllerAddRow, controllerEditRow, controllerDeleteRow, formatTimestamp } from '../../../tools/misc';
 //@ts-ignore
 import CreateAuditLog from '../../AuditLog_Global';
 //@ts-ignore
@@ -109,8 +109,7 @@ const COAsTable = () => {
 
   // Convert Date format
   COAs?.forEach((COA: Category) => {
-    const logtime = new Date(COA.timestamp);
-    COA.timestamp = moment(logtime).format('YYYY-MM-DD HH:mm:ss');
+    COA.timestamp = formatTimestamp(COA.timestamp);
   });
 
   // Prepare the columns for material table

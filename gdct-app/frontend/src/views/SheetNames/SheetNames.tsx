@@ -25,6 +25,7 @@ import {
   controllerAddRow,
   controllerEditRow,
   controllerDeleteRow,
+  formatTimestamp,
   //@ts-ignore
 } from '../../tools/misc';
 //@ts-ignore
@@ -74,8 +75,7 @@ const SheetNamesTable = () => {
 
   // Convert Date format
   sheetNames?.forEach((sheetName: SheetName) => {
-    const logtime = new Date(sheetName.timestamp);
-    sheetName.timestamp = moment(logtime).format('YYYY-MM-DD HH:mm:ss');
+    sheetName.timestamp = formatTimestamp(sheetName.timestamp);
   });
 
   // Prepare the columns for material table
