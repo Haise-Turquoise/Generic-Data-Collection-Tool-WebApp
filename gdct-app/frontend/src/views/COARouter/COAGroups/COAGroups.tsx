@@ -24,7 +24,8 @@ import {
   checkDuplicates,
   controllerAddRow,
   controllerEditRow,
-  controllerDeleteRow
+  controllerDeleteRow,
+  formatTimestamp
   //@ts-ignore
 } from '../../../tools/misc';
   //@ts-ignore
@@ -69,8 +70,7 @@ const COAGroupsTable = () => {
 
   // Convert Date format
   COAGroups?.forEach((COAGroup: CategoryGroup) => {
-    const logtime = new Date(COAGroup.timestamp);
-    COAGroup.timestamp = moment(logtime).format('YYYY-MM-DD HH:mm:ss');
+    COAGroup.timestamp = formatTimestamp(COAGroup.timestamp)
   });
 
   // Prepare the columns for material table

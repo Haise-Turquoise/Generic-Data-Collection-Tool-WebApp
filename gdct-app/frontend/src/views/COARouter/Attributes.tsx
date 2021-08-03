@@ -26,7 +26,7 @@ import CreateAuditLog from '../AuditLog_Global';
   //@ts-ignore
 import columnNameController from '../../controllers/columnName';
   //@ts-ignore
-import { checkDuplicates, controllerAddRow, controllerEditRow, controllerDeleteRow } from '../../tools/misc'
+import { checkDuplicates, controllerAddRow, controllerEditRow, controllerDeleteRow, formatTimestamp } from '../../tools/misc'
 
 import Attribute from '../../types/attrubute';
 
@@ -110,8 +110,7 @@ const ColumnNamesTable = () => {
 
   // Convert Date format
   columnNames?.forEach((columnName: Attribute) => {
-    const logtime = new Date(columnName.timestamp);
-    columnName.timestamp = moment(logtime).format('YYYY-MM-DD HH:mm:ss');
+    columnName.timestamp = formatTimestamp(columnName.timestamp);
   });
 
   // Prepare the columns for material table

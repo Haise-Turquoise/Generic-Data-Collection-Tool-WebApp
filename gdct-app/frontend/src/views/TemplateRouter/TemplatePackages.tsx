@@ -43,7 +43,7 @@ import SubmissionPeriodsStore from '../../store/SubmissionPeriodsStore/store';
   //@ts-ignore
 import ErrorBanner from '../ErrorBanner';
   //@ts-ignore
-import { calculateOptions, controllerAddRow, controllerEditRow, controllerDeleteRow } from '../../tools/misc';
+import { calculateOptions, controllerAddRow, controllerEditRow, controllerDeleteRow, formatTimestamp } from '../../tools/misc';
   //@ts-ignore
 import CreateAuditLog from '../AuditLog_Global';
   //@ts-ignore
@@ -116,10 +116,8 @@ const TemplatePackages = () => {
 
   // Convert Date format
   templatePackages?.forEach(templatePackage => {
-    const logtime = new Date(templatePackage.timestamp);
-    const creationDate = new Date(templatePackage.creationDate);
-    templatePackage.timestamp = moment(logtime).format('YYYY-MM-DD HH:mm:ss');
-    templatePackage.creationDate = moment(creationDate).format('YYYY-MM-DD HH:mm:ss');
+    templatePackage.timestamp = formatTimestamp(templatePackage.timestamp);
+    templatePackage.creationDate = formatTimestamp(templatePackage.creationDate);
   });
 
   // Prepare the actions for material table
