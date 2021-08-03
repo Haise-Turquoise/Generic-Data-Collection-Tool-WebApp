@@ -1,7 +1,8 @@
+//@ts-ignore
 import passportLocal from 'passport-local';
 import passport from 'passport';
 import UserModel from '../../models/User/model';
-
+import { Request} from 'express';
 const LocalStrategy = passportLocal.Strategy;
 
 module.exports = () => {
@@ -13,14 +14,15 @@ module.exports = () => {
         passwordField: 'password',
         passReqToCallback: true,
       },
-      function (req, email, password, done) {
+      function (req:Request, email:string, password:string, done:any) {
         if (email) email = email.toLowerCase();
         process.nextTick(function () {
           UserModel.findOne({ email })
-            .then(user => {
+            .then((user: { validatePassword: (arg0: string) => any; email: any; }) => {
               if (!user || !user.validatePassword(password)) {
-                return done(null, false, { errors: { 'email or password': 'is invalid' } });
+                return done(null, false, { message: 'email or password is invalid' });
               }
+              // @ts-ignore
               req.session.user = user.email;
               return done(null, { email: user.email });
             })

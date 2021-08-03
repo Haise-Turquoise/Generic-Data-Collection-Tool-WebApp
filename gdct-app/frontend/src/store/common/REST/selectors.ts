@@ -1,4 +1,5 @@
 import { createSelector } from 'reselect';
+//@ts-ignore
 import cloneDeep from 'clone-deep';
 //@ts-ignore
 import { memoizeFunction } from '../../../tools/misc';
@@ -34,7 +35,7 @@ export const selectFactoryValueById = (storeSelector: Selector<state, RestStateT
 export const selectFactoryRESTLookup = memoizeFunction((storeSelector: Selector<state, RestStateType>, field = 'name') =>
   createSelector([selectFactoryRESTResponse(storeSelector)], (response: RestStateType["response"]) => {
     const values = cloneDeep(response.Values);
-
+    //@ts-ignore
     return values.reduce(function (acc: {[key: string]: any}, value) {
       acc[value._id] = `${value[field]}`;
       return acc;

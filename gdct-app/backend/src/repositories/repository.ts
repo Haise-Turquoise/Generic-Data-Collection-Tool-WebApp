@@ -41,7 +41,7 @@ export default class BaseRepository<T, U extends T & Document> {
 
   async findById(id: string | number | ObjectId):Promise<any>  {
     return this._model.findById(id).then((result: U | null) => {
-      if (!result) {;throw new AppError(i18n.__('idDoesNotExist'));} // throw new Error('_id does not exist');
+      if (!result) {throw new AppError(`${this._model.collection.name} not found, Id:${id}`);} // throw new Error('_id does not exist');
       return result.toObject();
     });
   }

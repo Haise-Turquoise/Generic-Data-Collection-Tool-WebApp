@@ -1,11 +1,14 @@
 import { json, urlencoded } from 'body-parser';
 import cors from 'cors';
 import passport from 'passport';
+//@ts-ignore
 import session from 'express-session';
 import mongoose from 'mongoose';
-import mongoStore from 'connect-mongo';
+import MongoStore from 'connect-mongo';
 import compression from 'compression';
+//@ts-ignore
 import cookieParser from 'cookie-parser';
+//@ts-ignore
 import i18n from 'i18n';
 import path from 'path';
 import { dbUtil } from './db';
@@ -14,6 +17,11 @@ import AppRoleResourceModel from '../models/AppRoleResource';
 import AppResourceModel from '../models/AppResource';
 import UserModel from '../models/User';
 
+import { Express, Request, Response, NextFunction } from 'express';
+import { UserDoc } from '../types/user';
+import { AppRoleResourceDoc } from '../types/approleresource';
+import AppError from '../utils/AppError';
+
 i18n.configure({
   locales: ['en', 'fr'],
   directory: path.join(__dirname, '../configs/locales'),
@@ -21,9 +29,9 @@ i18n.configure({
   cookie: 'lang',
 });
 
-export const middlewares = app => {
-  // @ts-ignore
+export const middlewares = (app: Express) => {
   require('./passport')();
+  // @ts-ignore
   app.use(cookieParser());
   app.use(json({ limit: '50mb' }));
   app.use(urlencoded({ extended: true }));
@@ -31,39 +39,41 @@ export const middlewares = app => {
   app.use(compression());
   app.use(customLogger);
 
-  const CookieStore = mongoStore(session);
+  const CookieStore = MongoStore(session);
   app.use(
     session({
-      secret: process.env.COOKIE_SECRET,
+      secret: process.env.COOKIE_SECRET!,
       resave: false,
-      // saveUninitialized can only be false in here!
-      saveUninitialized: false,
+      saveUninitialized: false, // can only be false
       rolling: true,
       cookie: { maxAge: 30 * 60 * 1000 },
       store: new CookieStore({ mongooseConnection: mongoose.connection }),
-    }),
+    })
   );
   
-  let allowedUrls = [];
+  let allowedUrls: (string | undefined)[];
   let isLoggedIn = false;
-  app.use('/', async (req, res, next) => {
+  app.use('/', async (req: Request, res: Response, next: NextFunction) => {
     const requestUrl = req.originalUrl;
     
     // During the logging in process, fetch all allowed requestUrls for this user
     if (!isLoggedIn && requestUrl === '/login' && req.body.selectedRole !== undefined) {
       // Fetching
-      const user = await UserModel.findOne({ email: req.body.email });
-      let loggedInSysRole = user.sysRole.find(sysRole => sysRole.role === req.body.selectedRole);
+      const user: UserDoc | null = await UserModel.findOne({ email: req.body.email });
+      if (!user) throw new AppError("This user does not exist.");
+      let loggedInSysRole = user!.sysRole.find(sysRole => sysRole.role === req.body.selectedRole);
       // *** Set the role to be the first available role for this user as the default role 
       // *** because autofill feature would make the user role empty
-      if (!loggedInSysRole) loggedInSysRole = user.sysRole[0];
+      if (!loggedInSysRole) loggedInSysRole = user!.sysRole[0];
 
       const loggedInAs = loggedInSysRole.appSys + ' ' + loggedInSysRole.role;
-      const allowedRoleResource = await AppRoleResourceModel.findOne({ 'appSysRoleId.roleName': loggedInAs });
-      const allowedResources = allowedRoleResource.toObject().resourceId;
+      const allowedRoleResource: AppRoleResourceDoc | null = await AppRoleResourceModel.findOne({ 'appSysRoleId.roleName': loggedInAs });
+      if (!allowedRoleResource) throw new AppError("Cannot find role resource.");
+      
+      const allowedResources = allowedRoleResource!.toObject().resourceId;
       const promise = allowedResources.map(async allowedResource => {
         const resource = await AppResourceModel.findById({ _id: allowedResource.id });
-        if (resource === null) {
+        if (!resource) {
           console.log("Resource: " + allowedResource.resourceName + " not found due to a mismatch of id/name!");
         } else{
           return resource.resourcePath;
@@ -101,9 +111,10 @@ export const middlewares = app => {
   app.use(passport.initialize());
   app.use(passport.session());
 
-  app.use((req, res, next) => {
+  app.use((req: Request, res: Response, next: NextFunction) => {
     // res.cookie('lang', 'fr');
     i18n.init(req, res);
+    //@ts-ignore
     res.locals.__ = res.__;
     const currentLocale = i18n.getLocales();
     return next();

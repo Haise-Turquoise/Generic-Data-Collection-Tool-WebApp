@@ -6,7 +6,12 @@ import COATreeRepository from '../../repositories/COATree';
 import COAGroupRepository from '../../repositories/COAGroup';
 import SheetNameRepository from '../../repositories/SheetName';
 import MasterValueRepository from '../../repositories/MasterValue';
+import { SubmissionDoc } from '../../types/submission';
+import { ObjectID, ObjectId } from 'mongodb';;
+import { MasterValueDoc, MasterValueOrg } from '../../types/mastervalue';
 import { extractAttributeIds, extractCategoryIds } from './mastervaluePrepopulation';
+import { CategoryTreeDoc } from '../../types/categorytree';
+import AppError from '../AppError';
 
 const reportingPeriodRepository = Container.get(ReportingPeriodRepository);
 const coaTreeRepository = Container.get(COATreeRepository);
@@ -19,13 +24,13 @@ const masterValueRepository = Container.get(MasterValueRepository);
 // Last Updated: Dec 21, 2020
 // After a template package is approved, populate data inside the spreadsheet into the database
 export async function mastervalueExtraction(
-    id,
-    submission,
-    org,
-    program,
-    template,
-    templateType,
-    reportingPeriod,
+    id:string,
+    submission: SubmissionDoc,
+    org:MasterValueOrg,
+    program:{ _id: ObjectID; name: string; },
+    template:string,
+    templateType: {_id: ObjectId, name: string},
+    reportingPeriod:{ name: string },
   ){
     const { workbookData } = submission;
 
@@ -39,7 +44,7 @@ export async function mastervalueExtraction(
       if (categoryIDs.length > 0 && attributeIDs.length > 0){
 
         // Container for mastervalues to be populated
-        const masterValues = [];
+        const masterValues:Partial<MasterValueDoc>[] = [];
         const openSubmissions = await reportingPeriodRepository.findSubmissionOpen();
         const currentYearAttributes = [];
 
@@ -62,25 +67,27 @@ export async function mastervalueExtraction(
         const filteredAttributes = existingAttributes.map(e=>e.id);
         const filteredCategories = existingCategories.map(e=>e.id);
 
-        await masterValueRepository.batchDelete(filteredAttributes, filteredCategories, org);
+        await masterValueRepository.batchDelete(filteredAttributes, filteredCategories, org.id);
       
         // Get CategoryTree based on categoryId
         const sheetTitle = sheet.name;
         const sheetTitleId = await sheetNameRepository.findByName(sheetTitle);
+        if (!sheetTitleId || sheetTitle.length === 0) throw new AppError(`Sheet ID not found for name: ${sheetTitle}`);
         const categoryTrees = await coaTreeRepository.batchFindByCategoryId(filteredCategories, sheetTitleId[0]._id);
 
-        let categoryTreeList = {};
-        const categoryGroupQuery = [];
+        let categoryTreeList:any = {};
+        const categoryGroupQuery:string[] = [];
 
         // Search for all layers of categoryTree. Should run maximum of five times according to the requirement
         await Promise.resolve(recursiveCategoryTreeSearch(categoryTrees, categoryTreeList, categoryGroupQuery, 0));
         let categoryGroupList = await coaGroupRepository.batchFind(categoryGroupQuery);
-
+        // @ts-ignore
         const attributeIDAndName = await columNameRepository.findAll({_id:0});
+        // @ts-ignore
         const categoryIDAndName = await coaRepository.batchFind(categoryIDs, { _id: 0, COA: 0, __v: 0, unitOfMeassure: 0})
 
-        const categoryIdTable = {};
-        const attributeIdTable = {};
+        const categoryIdTable:any = {};
+        const attributeIdTable:any = {};
 
         attributeIDAndName.forEach(entry=>{
           attributeIdTable[entry.id] = entry.name;
@@ -126,7 +133,9 @@ export async function mastervalueExtraction(
                         string = string + categoryGroup.name + ', '
                         if (categoryTree.parentId){
                           const parentId = categoryTree.parentId.toString();
-                          string = recursiveString(parentId, categoryTreeList, categoryGroupList, string, iteration);
+                          const newString = recursiveString(parentId, categoryTreeList, categoryGroupList, string, iteration);
+                          if (!newString) throw new AppError("Undefined category group String");
+                          string = newString
                         }
     
     
@@ -159,13 +168,14 @@ export async function mastervalueExtraction(
           }
         }
         Promise.all(masterValues).then(() => {
+          //@ts-ignore
           masterValueRepository.bulkUpdate(id, masterValues);
         });
       }
     }
   }
   
-  function recursiveString(parentId, categoryTreeList, categoryGroupList, string, iteration){
+  function recursiveString(parentId:string, categoryTreeList:any, categoryGroupList:any, string:string, iteration:number){
     iteration = iteration + 1;
     const categoryTree = categoryTreeList[iteration]
     for (let item in categoryTree){
@@ -175,7 +185,9 @@ export async function mastervalueExtraction(
             string = string + categoryGroupList[itemTwo].name + ', ';
             if (categoryTree[item].parentId){
               parentId = categoryTreeList[iteration][item].parentId.toString();
-              string = recursiveString(parentId, categoryTreeList, categoryGroupList, string, iteration++)
+              const newString = recursiveString(parentId, categoryTreeList, categoryGroupList, string, iteration++);
+              if (!newString) throw new AppError("Undefined categoryGroup String");      
+              string = newString;
             }
             return string;
           }
@@ -184,14 +196,14 @@ export async function mastervalueExtraction(
     }
   }
   
-  async function recursiveCategoryTreeSearch(currentTree, categoryTreeList, categoryGroupQuery, iteration){
+  async function recursiveCategoryTreeSearch(currentTree:CategoryTreeDoc[], categoryTreeList:any, categoryGroupQuery:string[], iteration:number){
     let categoryTreeQuery = [];
     categoryTreeList[iteration] = currentTree;
     for (let item in currentTree){
       if (currentTree[item].parentId){
         categoryTreeQuery.push(currentTree[item].parentId.toString());
       }
-      categoryGroupQuery.push(currentTree[item].categoryGroupId);
+      categoryGroupQuery.push(String(currentTree[item].categoryGroupId));
     }
     if (categoryTreeQuery.length){
       let nextTree = await coaTreeRepository.batchFindById(categoryTreeQuery)
