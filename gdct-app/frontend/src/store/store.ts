@@ -37,7 +37,7 @@ const devTools: ConfigureStoreOptions["devTools"] = {
 const store = configureStore({
   reducer: rootReducer,
   middleware: [thunk],
-  devTools,
+  // devTools,
 });
 
 export default store;
