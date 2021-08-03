@@ -1,4 +1,4 @@
-import { combineReducers } from 'redux';
+import { combineReducers,Action } from 'redux';
 
 import TemplatesStore from './TemplatesStore/store';
 import TemplateTypesStore from './TemplateTypesStore/store';
@@ -87,3 +87,8 @@ const rootReducer = (state, action) => {
   return appReducer(state, action);
 };
 export default rootReducer;
+
+
+
+
+

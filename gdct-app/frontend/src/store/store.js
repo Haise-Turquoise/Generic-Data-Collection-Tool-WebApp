@@ -1,11 +1,12 @@
 import thunk from 'redux-thunk';
 import { configureStore } from '@reduxjs/toolkit';
-
+//@ts-ignore
 import rootReducer from './reducer';
+import { combineReducers,Action } from 'redux';
 
 const devTools = {
   // Specify extension’s options like name, actionsBlacklist, actionsCreators, serialize...
-  actionSanitizer: action => {
+  actionSanitizer: (action) => {
     switch (action.type) {
       case 'EXCEL_SET_EXCEL_DATA':
         return {
@@ -19,7 +20,7 @@ const devTools = {
         return action;
     }
   },
-  stateSanitizer: state => ({
+  stateSanitizer: (state) => ({
     ...state,
     ui: {
       ...state.ui,
