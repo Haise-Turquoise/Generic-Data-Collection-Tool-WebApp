@@ -1,4 +1,5 @@
 import { cloneDeep } from 'lodash';
+//@ts-ignore
 import uniqid from 'uniqid';
 import WorkflowsStore from '../WorkflowsStore/store';
 import workflowController from '../../controllers/workflow';

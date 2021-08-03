@@ -1,3 +1,4 @@
+//@ts-ignore
 import cloneDeep from 'clone-deep';
 import sheetNameController from '../../controllers/sheetName';
 import DetectEmptyTreeStore from '../DetectEmptyTreeStore/store';

@@ -13,7 +13,7 @@ const spreadSheetController = (() => {
     fetchCategoryAndAttribute: async () =>
       sheetNameAxios.post('/getAttributesAndCatagory/', { user: 'google' }).then(res => res.data),
 
-    fetchByOrgID: async (orgID, categories, attributes) =>
+    fetchByOrgID: async (orgID:number, categories:string[], attributes:string[]) =>
       axios
         .get(urlParser(orgID, categories, attributes), {
           headers: { 'Access-Control-Allow-Credentials': true },

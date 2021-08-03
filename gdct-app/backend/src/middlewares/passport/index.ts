@@ -1,16 +1,15 @@
 import passport from 'passport';
 import UserModel from '../../models/User/model';
+import { UserDoc } from '../../types/user';
 
 module.exports = () => {
   passport.serializeUser(function (user, done) {
     done(null, user);
   });
 
-  passport.deserializeUser(function (user, done) {
-    UserModel.findOne({ email: user.email }, function (err, dbUser) {
+  passport.deserializeUser(function (user: UserDoc, done) {
+    UserModel.findOne({ email: user.email }, function (err: Error, dbUser: UserDoc) {
       const filteredUser = {
-        facebook: dbUser.facebook,
-        google: dbUser.google,
         fullname: `${dbUser.firstName} ${dbUser.lastName}`,
         email: dbUser.email,
         sysRole: dbUser.sysRole,
@@ -19,7 +18,4 @@ module.exports = () => {
     });
   });
   require('./localConfig')();
-  require('./autoConfig')();
-  require('./facebookConfig')();
-  require('./googleConfig')();
 };
