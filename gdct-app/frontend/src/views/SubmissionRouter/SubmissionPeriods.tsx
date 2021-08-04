@@ -72,8 +72,7 @@ const SubmissionPeriod = () => {
 
   // Convert Date format
   submissionPeriods?.forEach(submissionPeriod => {
-    const logtime = new Date(submissionPeriod.timestamp);
-    submissionPeriod.timestamp = moment(logtime).format('YYYY-MM-DD HH:mm:ss');
+    submissionPeriod.timestamp = formatTimestamp(submissionPeriod.timestamp);
   });
 
   const columns: Column<SubmissionPeriod>[] = useMemo(
