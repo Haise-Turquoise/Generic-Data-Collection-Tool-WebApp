@@ -22,6 +22,7 @@ import {
   controllerAddRow,
   controllerEditRow,
   controllerDeleteRow,
+  formatTimestamp,
   //@ts-ignore
 } from '../../../tools/misc';
 //@ts-ignore
@@ -67,8 +68,7 @@ const AppRolesTable = () => {
 
   // Convert Date format
   appRoles?.forEach(appRole => {
-    const logtime = new Date(appRole.timestamp);
-    appRole.timestamp = moment(logtime).format('YYYY-MM-DD HH:mm:ss');
+    appRole.timestamp = formatTimestamp(appRole.timestamp);
   });
 
   // Prepare the columns for material table

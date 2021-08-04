@@ -102,6 +102,9 @@ const WorkflowHeaderActions = ({ type, id }: { type: actionType; id: string }) =
 
   return (
     <div>
+      <Button color="primary" variant="outlined" onClick={() => {history.push('/admin/workflow')}}>
+        Back
+      </Button>
       <Button color="primary" variant="contained" onClick={handleSave}>
         Save
       </Button>
@@ -235,7 +238,6 @@ const WorkflowStatuses = () => {
   };
 
   statuses = useMemo(() => statuses.filter(filterStatus), [statuses, workflowFilter]);
-  console.log('status', statuses)
   useEffect(() => {
     dispatch(getStatusesRequest());
 

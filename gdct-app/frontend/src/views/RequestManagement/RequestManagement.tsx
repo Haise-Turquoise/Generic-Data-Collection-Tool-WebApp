@@ -51,8 +51,8 @@ const RequestManagementTable = () => {
   }, shallowEqual);
   // // Convert Date format
   // statuses.forEach(status => {
-  //   const logtime = new Date(status.timestamp);
-  //   status.timestamp = moment(logtime).format("YYYY-MM-DD HH:mm:ss")
+  //   // will work if this is needer, import formatTimestamp from tools
+  //   status.timestamp = formatTimestamp(status.timestamp)
   // });
   let toBeApproved = [];
   if (user && user.toBeApproved) {

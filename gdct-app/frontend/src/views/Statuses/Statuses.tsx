@@ -24,6 +24,7 @@ import {
   controllerAddRow,
   controllerEditRow,
   controllerDeleteRow,
+  formatTimestamp,
   //@ts-ignore
 } from '../../tools/misc';
 
@@ -72,8 +73,7 @@ const StatusesTable = () => {
   
   // Convert Date format
   statuses?.forEach((status: Status) => {
-    const logtime = new Date(status.timestamp);
-    status.timestamp = moment(logtime).format('YYYY-MM-DD HH:mm:ss');
+    status.timestamp = formatTimestamp(status.timestamp);
   });
 
   // Prepare the columns for material table

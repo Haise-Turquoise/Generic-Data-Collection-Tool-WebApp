@@ -1,6 +1,7 @@
 import Excel from 'exceljs';
 import {SheetDataStyle, SheetData} from '../types/template';
 import { Options } from 'material-table';
+import moment from 'moment';
 
 export const isObjectEmpty = (object:any) => {
   for (let key in object) return false;
@@ -708,4 +709,10 @@ export const controllerDeleteRow = async (Controller:any, setState:Function, _id
   } finally {
     return true
   }
+}
+
+// returns properly formatted date or empty string
+export const formatTimestamp = (timestamp: string) => {
+  let time = moment(new Date(timestamp)).format('YYYY-MM-DD HH:mm:ss');
+  return (time === 'Invalid date') ? '' : time
 }

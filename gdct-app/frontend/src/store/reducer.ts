@@ -1,4 +1,4 @@
-import { combineReducers,Action } from 'redux';
+import { Action, combineReducers } from 'redux';
 
 import TemplatesStore from './TemplatesStore/store';
 import TemplateTypesStore from './TemplateTypesStore/store';
@@ -23,6 +23,7 @@ import SubmissionsStore from './SubmissionsStore/store';
 import SubmissionNoteStore from './SubmissionNoteStore/store';
 import SubmissionNoteHistoryStore from './SubmissionNoteHistoryStore/store';
 import SubmissionWorkbookStore from './SubmissionWorkbookStore/store';
+//@ts-ignore
 import COATreeStore from './COATreeStore/store';
 import COATreesStore from './COATreesStore/store';
 import DetectEmptyTreeStore from './DetectEmptyTreeStore/store';
@@ -79,7 +80,7 @@ export const appReducer = combineReducers({
   WorkflowProcessesStore: WorkflowProcessesStore.reducer,
   TransferStatusStore: TransferStatusStore.reducer,
 });
-const rootReducer = (state, action) => {
+const rootReducer = (state: any, action: Action<any>) => {
   // console.log('action', action)
   if (action.type === 'USER/LOGOUT') {
     state = undefined;

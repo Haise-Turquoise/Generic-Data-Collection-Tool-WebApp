@@ -3,7 +3,6 @@ import React, { useState, useEffect } from 'react';
 import { Route, Switch, Redirect } from 'react-router-dom';
 
 import { CircularProgress, Grid } from '@material-ui/core';
-//@ts-ignore
 import AuthPage from './components/AuthPage';
 import Error from './views/authError';
 import AuthController from './controllers/Auth';

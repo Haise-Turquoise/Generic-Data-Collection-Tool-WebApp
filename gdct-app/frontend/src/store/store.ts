@@ -1,10 +1,10 @@
 import thunk from 'redux-thunk';
-import { configureStore } from '@reduxjs/toolkit';
+import { configureStore, ConfigureStoreOptions } from '@reduxjs/toolkit';
 //@ts-ignore
 import rootReducer from './reducer';
 import { combineReducers,Action } from 'redux';
 
-const devTools = {
+const devTools: ConfigureStoreOptions["devTools"] = {
   // Specify extension’s options like name, actionsBlacklist, actionsCreators, serialize...
   actionSanitizer: (action) => {
     switch (action.type) {
@@ -12,6 +12,7 @@ const devTools = {
         return {
           ...action,
           excelData: {
+            //@ts-ignore
             ...action.excelData,
             inactiveSheets: '<<LONG_BLOB>>',
           },
@@ -23,8 +24,10 @@ const devTools = {
   stateSanitizer: (state) => ({
     ...state,
     ui: {
+      //@ts-ignore
       ...state.ui,
       excel: {
+        //@ts-ignore
         ...state.ui.excel,
         inactiveSheets: '<<LONG_BLOB>>',
       },
@@ -35,7 +38,7 @@ const devTools = {
 const store = configureStore({
   reducer: rootReducer,
   middleware: [thunk],
-  devTools,
+  // devTools,
 });
 
 export default store;
