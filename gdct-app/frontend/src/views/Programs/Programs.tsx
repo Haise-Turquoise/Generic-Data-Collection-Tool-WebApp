@@ -22,6 +22,7 @@ import {
   controllerAddRow,
   controllerEditRow,
   controllerDeleteRow,
+  formatTimestamp,
   //@ts-ignore
 } from '../../tools/misc'
 
@@ -73,8 +74,7 @@ const ProgramsTable = () => {
 
   // Convert Date format
   programs?.forEach((program: Program) => {
-    const logtime = new Date(program.timestamp);
-    program.timestamp = moment(logtime).format('YYYY-MM-DD HH:mm:ss');
+    program.timestamp = formatTimestamp(program.timestamp);
   });
 
   // Prepare the columns for material table

@@ -22,6 +22,7 @@ import {
   controllerAddRow,
   controllerEditRow,
   controllerDeleteRow,
+  formatTimestamp,
   //@ts-ignore
 } from '../../tools/misc'
 
@@ -77,8 +78,7 @@ const ReportingPeriodsTable = () => {
   }, [reportingPeriods])
   // Convert Date format
   reportingPeriods?.forEach((reportingPeriod: ReportingPeriod) => {
-    const logtime = new Date(reportingPeriod.timestamp);
-    reportingPeriod.timestamp = moment(logtime).format('YYYY-MM-DD HH:mm:ss');
+    reportingPeriod.timestamp = formatTimestamp(reportingPeriod.timestamp);
   });
 
   // Prepare the columns for material table

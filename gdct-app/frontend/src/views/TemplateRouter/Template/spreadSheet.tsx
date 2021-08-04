@@ -250,7 +250,7 @@ class SpreadSheet extends Component<SpreadSheetProps>{
   async enablePreview(orgID:number){
     const orgInfo = await OrgController.fetchById(orgID);
     if (!orgInfo) {
-      return
+      return;
     }
     const currentSheetIndex = this.sheet.getCurrentSheetIndex();
 
@@ -262,10 +262,10 @@ class SpreadSheet extends Component<SpreadSheetProps>{
     const attributes = Object.keys(attributeMapping);
 
     const productOfLength = categories.length* attributes.length;
-
+    console.log(orgID, categories, attributes);
     // Get the master values from DB
     const masterValueData:MasterValue[] = productOfLength > 0 ? await spreadSheetController.fetchByOrgID(orgID, categories, attributes):[];
-
+    console.log(masterValueData)
     // Insert mastervalue preview
     masterValueData.forEach(element => {
       const COAID = element["categoryId"];

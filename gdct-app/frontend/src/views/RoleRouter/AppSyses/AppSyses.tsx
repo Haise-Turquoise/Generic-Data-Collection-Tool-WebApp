@@ -22,6 +22,7 @@ import {
   controllerAddRow,
   controllerEditRow,
   controllerDeleteRow,
+  formatTimestamp,
   //@ts-ignore
 } from '../../../tools/misc'
 
@@ -67,8 +68,7 @@ const AppSysesTable = () => {
 
   // Convert Date format
   appSyses?.forEach(appSys => {
-    const logtime = new Date(appSys.timestamp);
-    appSys.timestamp = moment(logtime).format('YYYY-MM-DD HH:mm:ss');
+    appSys.timestamp = formatTimestamp(appSys.timestamp);
   });
 
   const columns: Column<AppSysMT>[] = useMemo(

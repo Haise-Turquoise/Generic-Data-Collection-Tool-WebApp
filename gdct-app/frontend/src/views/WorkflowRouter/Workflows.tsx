@@ -19,6 +19,7 @@ import {
   controllerAddRow,
   controllerEditRow,
   controllerDeleteRow,
+  formatTimestamp,
   //@ts-ignore
 } from '../../tools/misc';
 
@@ -76,8 +77,7 @@ const Workflows = () => {
 
   // Convert Date format
   workflows?.forEach(workflow => {
-    const logtime = new Date(workflow.timestamp);
-    workflow.timestamp = moment(logtime).format('YYYY-MM-DD HH:mm:ss');
+    workflow.timestamp = formatTimestamp(workflow.timestamp);
   });
 
   const columns: Column<WorkflowMT>[] = useMemo(
