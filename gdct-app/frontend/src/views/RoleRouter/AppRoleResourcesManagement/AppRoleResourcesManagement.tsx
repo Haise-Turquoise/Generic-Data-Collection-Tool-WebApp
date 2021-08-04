@@ -42,6 +42,7 @@ import {
   controllerAddRow,
   controllerEditRow,
   controllerDeleteRow,
+  formatTimestamp,
   //@ts-ignore
 } from '../../../tools/misc';
 //@ts-ignore
@@ -103,8 +104,7 @@ const AppRoleResourceTable = ({ history }: RouteComponentProps) => {
   }, [appRoleResources])
   // Convert Date format
   appRoleResources?.forEach(appRoleResource => {
-    const logtime = new Date(appRoleResource.timestamp);
-    appRoleResource.timestamp = moment(logtime).format('YYYY-MM-DD HH:mm:ss');
+    appRoleResource.timestamp = formatTimestamp(appRoleResource.timestamp);
   });
   //convert appSysRoleId from object to objectId if necessary
   appRoleResources?.forEach(appRoleResource => {

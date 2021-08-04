@@ -8,7 +8,7 @@ import { Paper, Typography, Dialog, DialogActions, DialogContent,
 //@ts-ignore
 import { selectProgramsStore } from '../../store/ProgramsStore/selectors';
 import {
-  calculateOptions,
+  calculateOptions, formatTimestamp,
   //@ts-ignore
 } from '../../tools/misc'
 
@@ -111,11 +111,7 @@ const SubmissionStatusTable = () => {
 
   // Convert Date format
   submissionStatus?.forEach((subStatus: SubmissionStatus)  => {
-    if (subStatus.submissionNote.updatedDate === "") {
-      return
-    }
-    const logtime = new Date(subStatus.submissionNote.updatedDate);
-    subStatus.submissionNote.updatedDate = moment(logtime).format('YYYY-MM-DD HH:mm:ss');
+    subStatus.submissionNote.updatedDate = formatTimestamp(subStatus.submissionNote.updatedDate);
   });
 
   // Prepare the columns for material table

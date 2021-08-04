@@ -31,6 +31,7 @@ import {
   controllerAddRow,
   controllerEditRow,
   controllerDeleteRow,
+  formatTimestamp,
   //@ts-ignore
 } from '../../tools/misc'
 
@@ -80,8 +81,7 @@ const AppConfigsTable = () => {
 
   // Convert Date format
   appConfigs?.forEach((appConfig: AppConfig) => {
-    const logtime = new Date(appConfig.timestamp);
-    appConfig.timestamp = moment(logtime).format('YYYY-MM-DD HH:mm:ss');
+    appConfig.timestamp = formatTimestamp(appConfig.timestamp)
   });
   // Assign code as name
   const lookupSysRoles = appSyses?.reduce(function (acc: {[key:string]: string}, appSys: AppSys) {

@@ -13,7 +13,7 @@ import { selectFactoryRESTResponseTableValues } from '../../../store/common/REST
 //@ts-ignore
 import { selectUsersStore } from '../../../store/UsersStore/selectors';
 //@ts-ignore
-import { calculateOptions, controllerEditRow } from '../../../tools/misc'
+import { calculateOptions, controllerEditRow, formatTimestamp } from '../../../tools/misc'
 import {
   getUsersRequest,
   updateUsersRequest,
@@ -115,8 +115,7 @@ const UsersTable = () => {
   };
   // Convert Date format
   users?.forEach(user => {
-    const logtime = new Date(user.timestamp);
-    user.timestamp = moment(logtime).format('YYYY-MM-DD HH:mm:ss');
+    user.timestamp = formatTimestamp(user.timestamp)
   });
 
   // Prepare the columns for material table
