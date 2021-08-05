@@ -9,7 +9,7 @@ const COATreeModel = model<CategoryTree>(
     {
       parentId: { type: ObjectId, ref: 'CategoryTree' },
       categoryGroupId: { type: ObjectId, ref: 'CategoryGroup' },
-      categoryId: [{ type: Object, ref: 'Category' }],
+      categoryId: [{ type: String, ref: 'Category' }],
       sheetNameId: { type: ObjectId, ref: 'SheetName' },
       timestamp: { type: Date },
       updatedBy: { type: String },
