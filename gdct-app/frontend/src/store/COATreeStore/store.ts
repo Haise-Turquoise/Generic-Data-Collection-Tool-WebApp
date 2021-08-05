@@ -132,7 +132,7 @@ const DELETE_COA_TREE_UI = (state:any, { payload }:any) => {
       ignoreCollapsed: false,
     });
   }
-
+  //@ts-ignore
   const newLocalTree = removeNode({
     treeData: treeCopy,
     path: payload.node.path,
