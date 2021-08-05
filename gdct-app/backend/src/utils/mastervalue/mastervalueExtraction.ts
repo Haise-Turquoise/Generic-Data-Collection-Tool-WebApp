@@ -73,6 +73,7 @@ export async function mastervalueExtraction(
         const sheetTitle = sheet.name;
         const sheetTitleId = await sheetNameRepository.findByName(sheetTitle);
         if (!sheetTitleId || sheetTitle.length === 0) throw new AppError(`Sheet ID not found for name: ${sheetTitle}`);
+        // @ts-ignore
         const categoryTrees = await coaTreeRepository.batchFindByCategoryId(filteredCategories, sheetTitleId[0]._id);
 
         let categoryTreeList:any = {};
