@@ -15,4 +15,8 @@ export default class RoleSubmissionButtonService{
   async findByRole(role:string):Promise<RoleSubmissionButton>{
     return this.roleSubmissionButtonRepository.findByRole(role);
   }
+
+  async update(_id: string, RoleSubmissionButton: Partial<RoleSubmissionButton>) {
+    return this.roleSubmissionButtonRepository.update(_id, RoleSubmissionButton)
+  }
 }
