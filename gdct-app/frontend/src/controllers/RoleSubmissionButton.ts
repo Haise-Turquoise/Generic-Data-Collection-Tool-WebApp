@@ -1,6 +1,7 @@
 import axios from 'axios';
 
 import { host } from '../constants/domain';
+import RoleSubmissionButton from '../types/rolesubmissionbutton';
 
 const roleSubmissionButtonController = (() => {
   const roleSubmissionButton = axios.create({
@@ -8,7 +9,8 @@ const roleSubmissionButtonController = (() => {
     withCredentials: true,
   });
   return {
-    fetchSubmissionButtonByRole: async (role:string)=> roleSubmissionButton.post(`/fetchByRole`, {role}).then(data=>data.data.roleData)
+    fetchSubmissionButtonByRole: async (role:string): Promise<RoleSubmissionButton> => roleSubmissionButton.post(`/fetchByRole`, {role}).then(data=>data.data.roleData),
+    update: async (RoleSubmissionButton: RoleSubmissionButton) => roleSubmissionButton.post('/update', { RoleSubmissionButton }),
   };
 })();
 
