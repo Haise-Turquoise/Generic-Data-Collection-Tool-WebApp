@@ -5,7 +5,7 @@ export default class COATreeEntity {
   public _id: ObjectId | null;
   public parentId: ObjectId;
   public categoryGroupId: ObjectId;
-  public categoryId: ObjectId[];
+  public categoryId: String[];
   public sheetNameId: ObjectId;
   public timestamp: Date;
   public updatedBy: string;

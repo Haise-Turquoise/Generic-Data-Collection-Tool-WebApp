@@ -71,8 +71,8 @@ export default class ReportPeriodRepository extends BaseRepository<CategoryTree,
   }
 
   async batchFindByCategoryIdWithoutSheetName(query: string[]) {
-    const objIdQuery = query.map(q => new ObjectId(q))
-    return COATreeModel.find({ categoryId: { $in: objIdQuery } });
+    // const objIdQuery = query.map(q => new ObjectId(q))
+    return COATreeModel.find({ categoryId: { $in: query } });
   }
 
   async batchFindById(query: string[]) {
