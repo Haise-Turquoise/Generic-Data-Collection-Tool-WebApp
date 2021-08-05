@@ -5,6 +5,7 @@ import { findFirstAttributeCol, lockSheet } from './excel';
 import SubmissionPeriodRepository from '../../repositories/SubmissionPeriod';
 import { SheetData } from '../../types/template';
 import { SubmissionDoc } from '../../types/submission';
+import { MasterValueDoc } from '../../types/mastervalue';
 
 
 const masterValueRepository = Container.get(MasterValueRepository);
@@ -71,7 +72,7 @@ export async function mastervaluePrepopulation(workbook:SheetData[], submission:
     const attributeList = Object.keys(attributeMap);
 
     // Find the corresponding attributes in the DB, any of the mapping is empty, skip the DB query
-    const res = categoryList.length > 0 && attributeList.length > 0 ? await masterValueRepository.batchFind(attributeList, categoryList, orgId) : [];
+    const res:any = categoryList.length > 0 && attributeList.length > 0 ? await masterValueRepository.batchFind(attributeList, categoryList, orgId) : [];
     // populate the sheet with master values according to the mappings
     const colMap = new Map();
     const colList = []

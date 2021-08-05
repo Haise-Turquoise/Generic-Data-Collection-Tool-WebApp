@@ -99,6 +99,7 @@ const ReportingPeriodsTable = () => {
           return <div></div>;
         },
       },
+      { title: 'submissionClosed', field: 'submissionClosed' },
     ],
     [],
   );
