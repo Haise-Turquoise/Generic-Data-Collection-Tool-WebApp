@@ -93,6 +93,7 @@ const SheetNamesTable = () => {
         field: 'name',
         validate: rowData => checkDuplicates(rowData, sheetNames, 'name'),
       },
+      { title: 'New Column', field: 'isActive', type: 'boolean' },
       { title: 'Active', field: 'isActive', type: 'boolean' },
       {
         title: 'Modified On',
