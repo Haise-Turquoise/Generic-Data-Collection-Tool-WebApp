@@ -93,7 +93,7 @@ export default class SubmissionService {
     })
   }
 
-  async findQuery(query:Partial<Submission>) {
+  async findQuery(query: Partial<Submission>) {
     return await this.submissionRepository.findQuery(query)
   }
 
