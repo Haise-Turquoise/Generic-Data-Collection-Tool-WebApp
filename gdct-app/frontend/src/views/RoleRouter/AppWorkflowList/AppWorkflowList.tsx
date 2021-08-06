@@ -6,18 +6,18 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import {
   calculateOptions,
 } from '../../../tools/misc';
-import RoleSubmissionButtonController from '../../../controllers/RoleSubmissionButton'
+import roleWorkflowStatusController from '../../../controllers/RoleWorkflowStatus'
 import statusController from '../../../controllers/status';
 
 type nameObj = { name: string }
 
-const AppButtonList = ({ role, isEditable = true, onClickAdd, onClickDelete }: {
+const AppWorkflowList = ({ role, isEditable = true, onClickAdd, onClickDelete }: {
   role: string,
   isEditable?: boolean,
   onClickAdd: (e: any, value: nameObj | nameObj[]) => void,
   onClickDelete: (e: any, value: nameObj | nameObj[]) => void,
 }) => {
-  const [buttonList, setButtonList] = useState<nameObj[] | undefined>(undefined)
+  const [workflowList, setWorkflowList] = useState<nameObj[] | undefined>(undefined)
   const [statuses, setStatuses] = useState<nameObj[] | undefined>(undefined)
 
   const addButton = (_e: any, rowData: nameObj | nameObj[]) => {
@@ -28,7 +28,7 @@ const AppButtonList = ({ role, isEditable = true, onClickAdd, onClickDelete }: {
     setStatuses(prev => {
       return prev?.filter(({name}) => name !== rowData.name)
     })
-    setButtonList(prev => {
+    setWorkflowList(prev => {
       return prev?.concat(rowData)
     })
   }
@@ -38,7 +38,7 @@ const AppButtonList = ({ role, isEditable = true, onClickAdd, onClickDelete }: {
       return
     }
     onClickDelete(_e, rowData)
-    setButtonList(prev => {
+    setWorkflowList(prev => {
       return prev?.filter(({name}) => name !== rowData.name)
     })
     setStatuses(prev => {
@@ -47,81 +47,72 @@ const AppButtonList = ({ role, isEditable = true, onClickAdd, onClickDelete }: {
   }
   
   useEffect(() => {
+    if (role === 'Not Found') {
+      return
+    }
     (async () => {
-      const buttonRes = await RoleSubmissionButtonController.fetchSubmissionButtonByRole(role.replace("_", " "))
-      const formatted = buttonRes?.button?.map(name => ({ name })) || []
-      setButtonList(formatted)
+      const workflowRes = await roleWorkflowStatusController.fetchStatusByRole(role.replace("_", " "))
+      const formatted = workflowRes?.workflowStatus?.map(name => ({ name })) || []
+      setWorkflowList(formatted)
       const statusRes = await statusController.fetch()
       const statusFormatted = statusRes
-        .filter(status => !status.forPackage && !formatted.find(({name}) => name === status.name))
+        .filter(status => !status.forPackage && formatted && !formatted.find(({name}) => name === status.name))
         .map(status => ({ name: status.name }))
       setStatuses(statusFormatted)
     })()
-  }, [])
+  }, [role])
 
   // table stuff while loading
   const preColumns: Column<{name: string}>[] = [{title: 'Name', field: 'name'}]
-  const preButtons: nameObj[] = [{
+  const preWorkflows: nameObj[] = [{
     name: ''
   }]
   const preNonButtons: nameObj[] = [{
     name: ''
   }]
 
-  const [readButtonsNum, setButtonsNum] = useState(1);
-  const [readNonButtonsNum, setNonButtonsNum] = useState(1);
+  const [readWorkflowsNum, setWorkflowsNum] = useState(1);
+  const [readNonWorkflowsNum, setNonWorkflowsNum] = useState(1);
   // needed to set these here to prevent clearing search term
   useEffect(() => {
-    setButtonsNum(buttonList?.length || 1)
-    setNonButtonsNum(statuses?.length || 1)
-  }, [buttonList, statuses])
+    setWorkflowsNum(workflowList?.length || 1)
+    setNonWorkflowsNum(statuses?.length || 1)
+  }, [workflowList, statuses])
 
   const columns: Column<nameObj>[] = useMemo(() => 
     [
-      { title: 'Button Name', field: 'name', defaultSort: 'asc' },
+      { title: 'Status Name', field: 'name', defaultSort: 'asc' },
     ],
     [],
   );
-
-  const options: Options<nameObj> = useMemo(() => (
-    { 
-      actionsColumnIndex: -1, 
-      search: false, 
-      showTitle: true,
-      maxBodyHeight: '400px',
-      minBodyHeight: '400px',
-    }),
-    [],
-  );
-
 
   const left_actions: Action<nameObj>[] = useMemo(() => [{ icon: DeleteIcon, tooltip: 'Remove from Mapping', onClick: deleteButton }], []);
 
   const right_actions: Action<nameObj>[] = useMemo(() => [{ icon: AddIcon, tooltip: 'Add to Mapping', onClick: addButton }], []);
   // const orgOptions: Options<AppResource> = useMemo(() => calculateOptions(readOrgRowNum), [readOrgRowNum]);
-  const orgOptions: any = useMemo(() => calculateOptions(readButtonsNum), [readButtonsNum]);
+  const orgOptions: any = useMemo(() => calculateOptions(readWorkflowsNum), [readWorkflowsNum]);
   // const nonOrgOptions: Options<AppResource> = useMemo(() => calculateOptions(readNonOrgRowNum), [readNonOrgRowNum]);
-  const nonOrgOptions: any = useMemo(() => calculateOptions(readNonButtonsNum), [readNonButtonsNum]);
+  const nonOrgOptions: any = useMemo(() => calculateOptions(readNonWorkflowsNum), [readNonWorkflowsNum]);
   return (
     <div className="tableContainer">
       <div className="tableWrapper-linked">
         <MaterialTable
           title="Linked App Resource"
           // @ts-ignore
-          key = {readButtonsNum}
-          columns={!!buttonList ? columns : preColumns}
-          data={!!buttonList ? buttonList : preButtons}
+          key = {readWorkflowsNum}
+          columns={!!workflowList ? columns : preColumns}
+          data={!!workflowList ? workflowList : preWorkflows}
           options={{
             ...orgOptions,
             actionsColumnIndex: 0,
           }}
-          actions={(isEditable && !!buttonList) ? left_actions : undefined}
+          actions={(isEditable && !!workflowList) ? left_actions : undefined}
         />
       </div>
       <div className="tableWrapper-other">
         <MaterialTable
           title="Other App Resource"
-          key={readNonButtonsNum}
+          key={readNonWorkflowsNum}
           // @ts-ignore
           columns={!!statuses ? columns : preColumns}
           data={!!statuses ? statuses : preNonButtons}
@@ -136,4 +127,4 @@ const AppButtonList = ({ role, isEditable = true, onClickAdd, onClickDelete }: {
   );
 };
 
-export default AppButtonList;
+export default AppWorkflowList;

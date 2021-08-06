@@ -241,6 +241,7 @@ export interface state {
   SubmissionNoteStore: RestStateType,
   SubmissionNoteHistoryStore: RestStateType,
   SubmissionWorkbookStore: RestStateType,
+  ConfigurationStore: RestStateType,
 
   ColumnNamesStore: RestStateType,
   UserRegistrationStore: Slice,
