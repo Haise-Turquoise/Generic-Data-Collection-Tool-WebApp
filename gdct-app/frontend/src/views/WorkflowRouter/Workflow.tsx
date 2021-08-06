@@ -60,18 +60,22 @@ const WorkflowHeaderActions = ({ type, id }: { type: actionType; id: string }) =
   const setWorkflows = async () => {
     // check if workflow is referenced in submission before updating
     if (type === 'update') {
-      const res: Submission[] | null = await SubmissionController.fetch({ workflowId: id })
-      // needs testing
-      if (res && res!.length >= 1) {
-        Swal.fire({
-          title: 'Error updating workflow',
-          text: 'Workflow is already referenced in submissions',
-          icon: 'warning'
-        })
+      try {
+        const res: Submission[] | null = await SubmissionController.fetch({ workflowId: id })
+        // needs testing
+        if (res && res!.length >= 1) {
+          Swal.fire({
+            title: 'Error updating workflow',
+            text: 'Workflow is already referenced in submissions',
+            icon: 'warning'
+          })
+          return false
+        } else {
+          dispatch(updateWorkflow())
+          return true
+        }
+      } catch (e) {
         return false
-      } else {
-        dispatch(updateWorkflow())
-        return true
       }
     } else {
       dispatch(submitWorkflow())
@@ -102,6 +106,9 @@ const WorkflowHeaderActions = ({ type, id }: { type: actionType; id: string }) =
 
   return (
     <div>
+      <Button color="primary" variant="outlined" onClick={() => {history.push('/admin/workflow')}}>
+        Back
+      </Button>
       <Button color="primary" variant="contained" onClick={handleSave}>
         Save
       </Button>
@@ -235,7 +242,6 @@ const WorkflowStatuses = () => {
   };
 
   statuses = useMemo(() => statuses.filter(filterStatus), [statuses, workflowFilter]);
-  console.log('status', statuses)
   useEffect(() => {
     dispatch(getStatusesRequest());
 

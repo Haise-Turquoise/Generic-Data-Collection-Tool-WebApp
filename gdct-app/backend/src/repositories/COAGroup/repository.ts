@@ -45,7 +45,7 @@ export default class COAGroupRepository extends BaseRepository<CategoryGroup, Ca
     );
   }
 
-  async batchFind(query: ObjectId[]){
+  async batchFind(query: (ObjectId|string)[]){
     return COAGroupModel.find({ _id: { "$in" : query }})
 
   }

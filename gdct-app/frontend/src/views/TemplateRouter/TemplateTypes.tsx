@@ -34,6 +34,7 @@ import {
     controllerAddRow,
     controllerEditRow,
     controllerDeleteRow,
+    formatTimestamp,
     //@ts-ignore
 } from '../../tools/misc';
 import moment from 'moment';
@@ -98,8 +99,7 @@ const TemplateTypesTable = ({ history }: RouterProps) => {
   }]
   // Convert Date format
   templateTypes?.forEach(templateType => {
-    const logtime = new Date(templateType.timestamp);
-    templateType.timestamp = moment(logtime).format('YYYY-MM-DD HH:mm:ss');
+    templateType.timestamp = formatTimestamp(templateType.timestamp);
   });
 
   // Config the lookup function for columns

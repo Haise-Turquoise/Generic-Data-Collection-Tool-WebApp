@@ -1,11 +1,14 @@
 import { json, urlencoded } from 'body-parser';
 import cors from 'cors';
 import passport from 'passport';
+//@ts-ignore
 import session from 'express-session';
 import mongoose from 'mongoose';
 import MongoStore from 'connect-mongo';
 import compression from 'compression';
+//@ts-ignore
 import cookieParser from 'cookie-parser';
+//@ts-ignore
 import i18n from 'i18n';
 import path from 'path';
 import { dbUtil } from './db';
@@ -111,6 +114,7 @@ export const middlewares = (app: Express) => {
   app.use((req: Request, res: Response, next: NextFunction) => {
     // res.cookie('lang', 'fr');
     i18n.init(req, res);
+    //@ts-ignore
     res.locals.__ = res.__;
     const currentLocale = i18n.getLocales();
     return next();

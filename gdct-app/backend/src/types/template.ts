@@ -28,30 +28,31 @@ export interface SheetData{
   ConditionFormatter: SheetDataConditionalFormatting[]
 };
 
-interface SheetDataRows{
-  [index:string]:{cells?:SheetDataCells},
+export interface SheetDataRows{
+  [index:string]:{cells?:SheetDataCells, hide?:boolean},
 };
 
-interface SheetDataConditionalFormatting{
+export interface SheetDataConditionalFormatting{
   functionName:string,
   params:any[],
 }
 
-interface SheetDataCols{
-  [index:string]:{width: number}
+export interface SheetDataCols{
+  [index:string]:{width?: number, hide?:boolean}
 }
 
-interface SheetDataCells{
+export interface SheetDataCells{
   [index:string]:SheetDataCell,
 };
 
-interface SheetDataCell{
+export interface SheetDataCell{
   text?: string,
   style?: number,
+  editable?:boolean
   formulaValue?: number,
 }
 
-interface SheetDataStyle{
+export interface SheetDataStyle{
   align?: string,
   bgcolor?: string,
   font?: SheetDataStyleFont,
@@ -59,13 +60,13 @@ interface SheetDataStyle{
   textwrap?: boolean
 };
 
-interface SheetDataStyleFont{
+export interface SheetDataStyleFont{
   size: number,
   name:string,
   family: number,
 };
 
-interface SheetDataBorder{
+export interface SheetDataBorder{
   bottom?:[string, string],
   top?:[string, string],
   left?:[string, string],

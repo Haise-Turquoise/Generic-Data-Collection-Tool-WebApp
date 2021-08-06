@@ -10,6 +10,8 @@ import AppRoles from './AppRoles';
 import AppResources from './AppResources';
 import AppRoleResourcesManagement from './AppRoleResourcesManagement';
 import AppRoleResourceManagement from './AppRoleResourceManagement';
+import AppRoleButtonManagement from './AppRoleButtonManagement';
+import AppRoleButtonsManagement from './AppRoleButtonsManagement';
 
 const TemplateRouter = () => (
   <Switch>
@@ -26,6 +28,16 @@ const TemplateRouter = () => (
       exact
       path="/admin/role/app_role_resource_management/:_id"
       component={AppRoleResourceManagement}
+    />
+    <Route
+      exact
+      path="/admin/role/app_role_button_management"
+      component={AppRoleButtonsManagement}
+    />
+    <Route
+      exact
+      path="/admin/role/app_role_button_management/:role"
+      component={AppRoleButtonManagement}
     />
     <Route component={NotFound} />
   </Switch>

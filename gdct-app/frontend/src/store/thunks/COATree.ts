@@ -1,5 +1,7 @@
 import { batch } from 'react-redux';
+//@ts-ignore
 import cloneDeep from 'clone-deep';
+//@ts-ignore
 import SortableTree, { walk, toggleExpandedForAll } from 'react-sortable-tree';
 import COATreeController from '../../controllers/COATree';
 import COAController from '../../controllers/COA';
@@ -122,6 +124,7 @@ export const createCOATreeRequest = (
       batch(() => {
         dispatch(COATreesStore.actions.CREATE(COATree));
         if (isTreeComponent) {
+          //@ts-ignore
           dispatch(COATreeStore.actions.ADD_ROOT_COA_TREE_UI({ tree: COATree }));
           dispatch(DialogsStore.actions.CLOSE_COA_GROUP_DIALOG());
         }

@@ -27,7 +27,7 @@ import { selectDetectEmptyTreeStore } from '../../../store/DetectEmptyTreeStore/
 import { ROUTE_CATEGORY_TREES } from '../../../constants/routes';
 
 //@ts-ignore
-import { calculateOptions } from '../../../tools/misc'
+import { calculateOptions, formatTimestamp } from '../../../tools/misc'
 import moment from 'moment';
 //@ts-ignore
 import CreateAuditLog from '../../AuditLog_Global';
@@ -125,9 +125,7 @@ const COATreesTable = ({ history }: RouterProps) => {
 
   // Convert Date format
   detectEmptyTree?.forEach((detectEmptyTree: DetectEmptyTree) => {
-    //@ts-ignore
-    const logtime = new Date(detectEmptyTree.timestamp);
-    detectEmptyTree.timestamp = moment(logtime).format('YYYY-MM-DD HH:mm:ss');
+    detectEmptyTree.timestamp = formatTimestamp(detectEmptyTree.timestamp || '');
   });
 
   const columns: Column<DetectEmptyTree>[] = useMemo(
