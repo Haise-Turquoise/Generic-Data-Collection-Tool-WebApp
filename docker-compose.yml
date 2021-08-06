@@ -5,7 +5,7 @@ services:
     build:
       context: ./gdct-app/backend
       dockerfile: ./Dockerfile
-    image: "gdct-backend"
+    image: "gdctdockercontainer.azurecr.io/gdct-backend:latest"
     ports:
       - "3000:3000"
       
@@ -15,8 +15,8 @@ services:
     build:
       context: ./gdct-app/frontend
       dockerfile: ./Dockerfile
-    image: "gdct-frontend"
+    image: "gdctdockercontainer.azurecr.io/gdct-frontend:latest"
     ports:
       - "3003:3003"
     links:
-      - "backend:be"
+      - "backend"
