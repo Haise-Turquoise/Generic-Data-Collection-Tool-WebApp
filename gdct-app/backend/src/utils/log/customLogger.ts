@@ -9,6 +9,7 @@ morgan.token('status', (req, res) => {
   return chalk.red(res.statusCode);
 });
 
+// @ts-ignore
 const customLogger = morgan(`:method :status :url - ${chalk.green(':response-time')} ms`, {
   stream: logger().stream,
 });
