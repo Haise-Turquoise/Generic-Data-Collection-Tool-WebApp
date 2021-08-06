@@ -28,6 +28,7 @@ import Status from '../../types/status';
 import WorkflowProcess from '../../types/workflowprocess';
 import TemplateType from '../../types/templatetype';
 import Template from '../../types/template';
+import AppError from '../../utils/AppError';
 // @Service()
 export default class SubmissionService {
   private submissionRepository:SubmissionRepository;
@@ -137,6 +138,8 @@ export default class SubmissionService {
                     initialNode = node;
                   }
                 });
+                if (!program || !template) throw new AppError(`Cannot find template or program`);
+                
                 submission.name = submission.orgId
                   .toString()
                   .concat('_', program.name, '_', template.name);
@@ -156,6 +159,7 @@ export default class SubmissionService {
   async uploadSubmissionWorkbook(submission:any, workbookData:Submission['workbookData'], submissionNote:SubmissionNote) {
     //@ts-ignore
     const currentStatus = await this.statusRepository.findById(submission.statusId);
+    if (!currentStatus) throw new AppError(`Cannot find status with Id : ${submission.statusId}`); 
     if (currentStatus.name == 'Approved' || currentStatus.name == 'Submitted') return;
     submission.workbookData = await mastervaluePrepopulation(workbookData, submission);
     submission.updatedDate = new Date();
@@ -189,8 +193,10 @@ export default class SubmissionService {
     return this.findSubmissionById(id).then(submission => {
       if (!submission) throw 'Submission id does not exist';
       return this.orgRepository.findById(submission.orgId).then(org => {
+        if (!org) throw new AppError(`Cannot find org with orgId: ${submission.orgId}`);
         const orgConst = { id: org.id, name: org.name };
         return this.programRepository.findById(submission.programId).then(program => {
+          if (!program) throw new AppError(`Cannot find program with orgId: ${submission.programId}`);
           const programConst = { _id: program._id, name: program.name };
           return this.templateRepository.findById(submission.templateId).then(template => {
             const templateConst = template.name;
@@ -234,9 +240,9 @@ export default class SubmissionService {
   }
 
   async updateSubmission(submission:Submission) {
-    console.log('================================\n', submission)
     return this.submissionRepository.update(submission._id.toString(), submission).then(submission => {
-      if (submission.phase === 'Approved') return this.phaseSubmission(submission._id);
+      //@ts-ignore
+      if (submission.phase === 'Approved') return this.phaseSubmission(String(submission._id));
     });
   }
 
@@ -252,6 +258,8 @@ export default class SubmissionService {
       role,
     };
     const currentStatus = await this.statusRepository.findById(new ObjectId(submission.statusId));
+    if (!currentStatus) throw new AppError(`Cannot find status by id ${submission.statusId}`);
+    
     if (currentStatus.name == 'Approved') {
       submissionNotes.role = 'Approved';
       
@@ -407,7 +415,7 @@ export default class SubmissionService {
 
  
   async findSubmission(email:any) {
-    const userInfo: User = await this.usersRepository.findByEmail(email);
+    const userInfo: User = await this.usersRepository.findByEmail(email) as User;
     
     const org = userInfo.sysRole[0].org[0];
     // Update By Sheldon Su in Jan to make it work for admins
@@ -515,7 +523,7 @@ export default class SubmissionService {
             // Generate all the maps
             const periodSet = new Map();
             const programSet = new Map();
-            const templatePkgSet = new Map();
+            const templatePkgSet = new Map<any, any>();
             const statusSet = new Map();
 
 
@@ -554,6 +562,7 @@ export default class SubmissionService {
             //@ts-ignore
             await this.templatePackageRepository.find({_id: {$in: [...templatePkgSet.keys()]}})
             .then(templateData=>{
+              //@ts-ignore
               templateData.forEach((e:TemplatePackage) => {
                 templatePkgSet.set(String(e._id), e);
               });

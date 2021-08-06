@@ -18,7 +18,8 @@ module.exports = () => {
         if (email) email = email.toLowerCase();
         process.nextTick(function () {
           UserModel.findOne({ email })
-            .then((user: { validatePassword: (arg0: string) => any; email: any; }) => {
+          //@ts-ignore
+            .then((user: { validatePassword: (arg0: string) => any; email: any; }|null) => {
               if (!user || !user.validatePassword(password)) {
                 return done(null, false, { message: 'email or password is invalid' });
               }

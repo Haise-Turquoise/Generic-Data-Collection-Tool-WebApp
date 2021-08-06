@@ -10,7 +10,7 @@ export default class RoleSubmissionButtonRepository extends BaseRepository<RoleS
     super(RoleSubmissionButtonModel)
   }
 
-  async findByRole(role:string):Promise<RoleSubmissionButton>{
+  async findByRole(role:string):Promise<RoleSubmissionButton[]>{
     return RoleSubmissionButtonModel.find({role});
   }
 
