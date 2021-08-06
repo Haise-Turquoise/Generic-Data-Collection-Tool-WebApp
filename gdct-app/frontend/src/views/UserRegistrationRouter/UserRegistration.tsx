@@ -341,7 +341,7 @@ const getStepContent = (
       onRowDelete: (userPermission: UserPermission) =>
             new Promise<void>((resolve, reject) =>{
                 setTimeout(() =>{
-                    dispatch(deleteUserPermission(userPermission, resolve, reject));
+                    dispatch(deleteUserPermission(userPermission));
                     resolve();
                 }, 1000);
       })
