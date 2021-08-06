@@ -1,4 +1,6 @@
+//@ts-ignore
 import configurationController from '../../controllers/configuration';
+//@ts-ignore
 import ConfigurationStore from '../Configuration/store';
 
 import {

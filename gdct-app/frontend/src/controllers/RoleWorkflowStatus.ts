@@ -8,7 +8,9 @@ const roleWorkflowStatusController = (() => {
     withCredentials: true,
   });
   return {
-    fetchStatusByRole: async (role: RoleWorkflowStatus)=> roleWorkflowStatus.post(`/fetchByRole`, {role}).then(data=>data.data.roleData)
+    fetchStatusByRole: async (role: string): Promise<RoleWorkflowStatus> => roleWorkflowStatus.post(`/fetchByRole`, {role}).then(data=>data.data.roleData),
+    create: async (item: RoleWorkflowStatus): Promise<RoleWorkflowStatus> => roleWorkflowStatus.post('/create', { item }).then(data=>data.data.roleData),
+    update: async (_id: string, item: Partial<RoleWorkflowStatus>) => roleWorkflowStatus.post('/update', {_id, item})
   };
 })();
 

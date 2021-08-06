@@ -17,6 +17,14 @@ const RoleSubmissionButtonController = Service([RoleSubmissionButtonService], se
       .catch(next);
     })
 
+    router.post('/create', (req, res, next) => {
+      const { item } = req.body;
+      service
+        .create(item)
+        .then((data) => res.json({ roleData: data }))
+        .catch(next)
+    })
+
     router.post('/update', (req, res, next)=> {
       const { RoleSubmissionButton }: { RoleSubmissionButton: RoleSubmissionButton } = req.body;
       service

@@ -13,6 +13,10 @@ export default class RoleSubmissionButtonRepository extends BaseRepository<RoleS
   async findByRole(role:string):Promise<RoleSubmissionButton>{
     return RoleSubmissionButtonModel.findOne({role});
   }
+  
+  async create(item: RoleSubmissionButton): Promise<RoleSubmissionButtonDoc> {
+    return await RoleSubmissionButtonModel.create(item);
+  }
 
   async update(_id: string, RoleSubmissionButton: Partial<RoleSubmissionButton>) {
     return RoleSubmissionButtonModel.findByIdAndUpdate(_id, RoleSubmissionButton)
