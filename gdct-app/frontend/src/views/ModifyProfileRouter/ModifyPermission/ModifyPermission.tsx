@@ -45,7 +45,7 @@ import {
   deleteUserPermission,
   loadModifyPermissionPage,
   //@ts-ignore
-} from '../../../store/thunks/userRegistration.js';
+} from '../../../store/thunks/userRegistration';
 import UserPermission from '../../../types/userpermission';
 import Presubmission from '../../../types/presubmission';
 import AppSys from '../../../types/appsys';
@@ -269,7 +269,7 @@ const getStepContent = (
       onRowDelete: (userPermission: UserPermission) =>
             new Promise<void>((resolve, reject) =>{
                 setTimeout(() =>{
-                    dispatch(deleteUserPermission(userPermission, resolve, reject));
+                    dispatch(deleteUserPermission(userPermission));
                     resolve();
                 }, 1000);
       })
