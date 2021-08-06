@@ -1,6 +1,6 @@
 import Container from 'typedi';
 import RoleSubmissionButtonRepository from '../../repositories/RoleSubmissionButton/repository';
-import RoleSubmissionButton from '../../types/rolesubmissionbutton'
+import RoleSubmissionButton, { RoleSubmissionButtonDoc } from '../../types/rolesubmissionbutton'
 
 // Created by Jie on 2021/07/29
 // Service for RoleSubmissionButton
@@ -14,6 +14,10 @@ export default class RoleSubmissionButtonService{
 
   async findByRole(role:string):Promise<RoleSubmissionButton>{
     return this.roleSubmissionButtonRepository.findByRole(role);
+  }
+
+  async create(item: RoleSubmissionButton): Promise<RoleSubmissionButtonDoc> {
+    return this.roleSubmissionButtonRepository.create(item);
   }
 
   async update(_id: string, RoleSubmissionButton: Partial<RoleSubmissionButton>) {
