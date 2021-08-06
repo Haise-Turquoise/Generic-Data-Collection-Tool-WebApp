@@ -102,6 +102,11 @@ export default class TemplatePackageRepository extends BaseRepository<TemplatePa
     return TemplatePackageModel.find({ programIds: programId } as FilterQuery<TemplatePackageDoc>);
   }
 
+  // async retrieveFullPkgInfoByProgramId(programIds:string[]){
+  //   const programIdArrays = programIds.map(e=>)
+  //   return TemplatePackageModel.find()
+  // }
+
   async findByName(name: string) {
     return TemplatePackageModel.find({ name });
   }

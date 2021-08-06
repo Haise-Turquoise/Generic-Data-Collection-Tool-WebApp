@@ -333,6 +333,10 @@ export default class SubmissionService {
     //   });
     // });
   }
+  async findTempPkg(programAndTempTypes:{program:ObjectId, templateTypes:any[]}[]){
+    
+  }
+
   async findTemplatePackage(programAndTempTypes:{program:ObjectId, templateTypes:any[]}[]) {
     const promiseQuery1 :Promise<any>[]= [];
     const newTemplatePackages:TemplatePackage[] = [];
@@ -401,7 +405,7 @@ export default class SubmissionService {
     });
   }
 
-  // This is specified one user can only belongs to organization
+ 
   async findSubmission(email:any) {
     const userInfo: User = await this.usersRepository.findByEmail(email);
     
@@ -425,9 +429,9 @@ export default class SubmissionService {
           if (!orgMapping[organization.orgId]) orgMapping[organization.orgId] = [];
           organization.program.forEach(program => {
             orgMapping[organization.orgId].push(String(program.programId));
-            if (!programIds.includes(program.programId?.toString())){
+            if (!programIds.includes(String(program.programId))){
               programAndTempTypes.push({ program: program.programId, templateTypes: program.template });
-              programIds.push(program.programId?.toString());
+              programIds.push(String(program.programId));
             }
           });
         });
@@ -439,9 +443,11 @@ export default class SubmissionService {
     }
     // Find template packages base on programs and template types
     return this.findTemplatePackage(programAndTempTypes).then((templatePackages:TemplatePackage[]) => {
+      console.log(templatePackages)
       const name = 'Unsubmitted';
       const inProgressName ='in progress';
       // Filter out in progress template packages
+
       return this.statusRepository.findByName(name).then(status => {
         return this.statusRepository.findByName(inProgressName).then(inProgress=>{
           const promiseQuery1 :Promise<any>[]= [];
@@ -458,7 +464,7 @@ export default class SubmissionService {
                     const programId = submission.programId;
                     if(newOrgMapping[orgId]){
                       newOrgMapping[orgId] = newOrgMapping[orgId].filter((e:ObjectId) => 
-                        e.toString() !== programId.toString()
+                        String(e) !== String(programId)
                      );
                      newOrgMapping[orgId] = newOrgMapping[orgId].map((e:ObjectId)=>String(e))
                     }
