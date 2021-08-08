@@ -30,6 +30,8 @@ import {
 //@ts-ignore
 import sheetNameController from '../../controllers/sheetName';
 //@ts-ignore
+import templateTypeController from '../../controllers/templateType';
+//@ts-ignore
 import CreateAuditLog from '../AuditLog_Global';
 
 import SheetName from '../../types/sheetname';
@@ -53,9 +55,20 @@ const SheetNamesTable = () => {
   const [sheetNames, setSheetNames] = useState<SheetName[] | undefined>(undefined)
 
   useEffect(() => {
-    sheetNameController.fetch().then((res: unknown) => {
-      setSheetNames(res as SheetName[])
+    sheetNameController.fetch().then((res: Array<SheetName>) => {
+      const promise = res!.map(async element => {
+        const type = await templateTypeController.fetchById(element.templateTypeId)
+        .catch(err => console.log(err));
+        const newElement = {
+          ...element,
+          templateTypeId: type?.name
+        };
+        
+        return newElement;
+      })
+      Promise.all(promise).then(result => setSheetNames(result as SheetName[]));
     })
+
   }, [])
 
   // table vars while loading data
@@ -93,7 +106,8 @@ const SheetNamesTable = () => {
         field: 'name',
         validate: rowData => checkDuplicates(rowData, sheetNames, 'name'),
       },
-      { title: 'New Column', field: 'isActive', type: 'boolean' },
+      { title: 'Sheet Type', field: 'templateTypeId', type: 'string'
+      },
       { title: 'Active', field: 'isActive', type: 'boolean' },
       {
         title: 'Modified On',
