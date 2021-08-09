@@ -55,22 +55,6 @@ const SheetNamesTable = () => {
   const [sheetNames, setSheetNames] = useState<SheetName[] | undefined>(undefined)
   const [idToName, setIdToName] = useState<{[key: string]: string, [key: number]: string} | undefined>();
 
-  // useEffect(() => {
-  //   sheetNameController.fetch().then((res: Array<SheetName>) => {
-  //     const promise = res!.map(async element => {
-  //       const type = await templateTypeController.fetchById(element.templateTypeId)
-  //       .catch(err => console.log(err));
-  //       const newElement = {
-  //         ...element,
-  //         templateTypeId: type?.name
-  //       };
-        
-  //       return newElement;
-  //     })
-  //     Promise.all(promise).then(result => setSheetNames(result as SheetName[]));
-  //   })
-
-  // }, [])
 
   useEffect(() => {
     templateTypeController.fetch().then((res:any) => {
