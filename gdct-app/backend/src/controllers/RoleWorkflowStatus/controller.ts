@@ -17,6 +17,13 @@ const RoleWorkflowStatusController = Service([RoleWorkflowStatusService], servic
       .catch(next);
     })
 
+    router.get('/findAll', (_req, res, next) => {
+      service
+        .findAll()
+        .then((data) => res.json({roleData: data}))
+        .catch(next)
+    })
+
     router.post('/create', (req, res, next) => {
       const { item } = req.body;
       service

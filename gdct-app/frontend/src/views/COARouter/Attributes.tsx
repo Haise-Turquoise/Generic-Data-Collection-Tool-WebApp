@@ -116,7 +116,7 @@ const ColumnNamesTable = () => {
   // Prepare the columns for material table
   const columns: Column<Attribute>[] = useMemo(
     () => [
-      { title: 'ID', field: 'id', validate: rowData => checkDuplicates(rowData, columnNames, 'id') || true },
+      { title: 'ID', field: 'id', validate: rowData => checkDuplicates(rowData, columnNames, 'id') },
       { title: 'Name', field: 'name' },
       { title: 'Description', field: 'description' },
       { title: 'Active', type: 'boolean', field: 'isActive' },

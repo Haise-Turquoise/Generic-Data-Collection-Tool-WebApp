@@ -21,7 +21,7 @@ const AppRoleWorkflowStatusManagementHeader = ({
 }: RouteComponentProps<propType>) => {
   return (
     <Paper className="header">
-      <Typography variant="h5">App Role Button Management</Typography>
+      <Typography variant="h5">App Role Workflow Management</Typography>
       <Typography variant="body1">{role}</Typography>
       {/* <HeaderActions/> */}
     </Paper>
@@ -55,11 +55,15 @@ const LinkProgramTable = ({
             setRoleWorkflowStatus({
               role: 'Create Me',
               workflowStatus: [],
+              modifiedOn: '',
+              updatedBy: '',
             })
           } else {
             setRoleWorkflowStatus({
               role: 'Not Found',
               workflowStatus: [],
+              modifiedOn: '',
+              updatedBy: '',
             })
           }
         }
@@ -83,6 +87,8 @@ const LinkProgramTable = ({
           roleWorkflowStatusController.create({
             role: role.replace("_", " "),
             workflowStatus: [],
+            modifiedOn: new Date().toLocaleString(),
+            updatedBy: localStorage.getItem('currentUser') || ''
           }).then(res => {
             setRoleWorkflowStatus(res)
             return
@@ -111,7 +117,11 @@ const LinkProgramTable = ({
       if (!prev?._id) {
         return
       }
-      const copy: RoleWorkflowStatus = {...prev!}
+      const copy: RoleWorkflowStatus = {
+        ...prev!,
+        modifiedOn: new Date().toLocaleString(),
+        updatedBy: localStorage.getItem('currentUser') || ''
+      }
       copy.workflowStatus = copy.workflowStatus.concat([rowData.name])
       roleWorkflowStatusController.update(copy._id!, copy)
       return copy
@@ -126,7 +136,11 @@ const LinkProgramTable = ({
       if (!prev?._id) {
         return
       }
-      const copy: RoleWorkflowStatus = {...prev!}
+      const copy: RoleWorkflowStatus = {
+        ...prev!,
+        modifiedOn: new Date().toLocaleString(),
+        updatedBy: localStorage.getItem('currentUser') || ''
+      }
       copy.workflowStatus = copy.workflowStatus.filter(name => name !== rowData.name)
       roleWorkflowStatusController.update(copy._id!, copy)
       return copy

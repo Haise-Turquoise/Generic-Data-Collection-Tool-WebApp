@@ -1,45 +1,19 @@
 import React, { useMemo, useEffect, useState } from 'react';
-import { useDispatch, useSelector, shallowEqual } from 'react-redux';
+import { useDispatch } from 'react-redux';
 
 import MaterialTable, { Column, Options } from 'material-table';
 import { Paper, Typography } from '@material-ui/core';
-import moment from 'moment';
-import {
-  getAppSysRolesRequest,
-  createAppSysRoleRequest,
-  deleteAppSysRoleRequest,
-  updateAppSysRoleRequest,
-//@ts-ignore
-} from '../../../store/thunks/AppSysRole';
-
-//@ts-ignore
-import { getAppRolesRequest } from '../../../store/thunks/AppRole';
-//@ts-ignore
-import { getAppSysesRequest } from '../../../store/thunks/AppSys';
-
-//@ts-ignore
-import { selectFactoryRESTResponseTableValues } from '../../../store/common/REST/selectors';
-//@ts-ignore
-import { selectAppSysRolesStore } from '../../../store/AppSysRolesStore/selectors';
-//@ts-ignore
-import { selectAppSysesStore } from '../../../store/AppSysesStore/selectors';
-//@ts-ignore
-import { selectAppRolesStore } from '../../../store/AppRolesStore/selectors';
 import {
   calculateOptions,
   controllerAddRow,
   controllerEditRow,
   controllerDeleteRow,
   formatTimestamp,
-  //@ts-ignore
+  checkDuplicates,
 } from '../../../tools/misc';
-//@ts-ignore
 import CreateAuditLog from '../../AuditLog_Global';
-//@ts-ignore
 import AppSysRoleController from '../../../controllers/AppSysRole';
-//@ts-ignore
 import AppSysController from '../../../controllers/AppSys'
-//@ts-ignore
 import AppRoleController from '../../../controllers/AppRole'
 
 import AppSysRole from '../../../types/appsysrole';
@@ -107,8 +81,9 @@ const AppSysRolesTable = () => {
       {
         title: 'Application System',
         field: 'appSys',
+        validate: rowData => checkDuplicates(rowData, appSysRoles, 'appSys')
       },
-      { title: 'Role', field: 'role' },
+      { title: 'Role', field: 'role', validate: rowData => checkDuplicates(rowData, appSysRoles, 'role') },
       {
         title: 'Modified On',
         field: 'timestamp',
@@ -124,7 +99,7 @@ const AppSysRolesTable = () => {
         },
       },
     ],
-    [lookupSysRoles, lookupAppRoles],
+    [lookupSysRoles, lookupAppRoles, appSysRoles],
   );
 
   const options: Options<AppSysRoleMT> = useMemo(() => calculateOptions(readNumRow), [readNumRow]);

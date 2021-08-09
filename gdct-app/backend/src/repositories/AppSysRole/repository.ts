@@ -47,10 +47,9 @@ export default class AppSysRoleRepository extends BaseRepository<AppSysRole, App
   }
 
   async findById(id: string | ObjectId) {
-    //TODO changed logic test this
-    return super._model.findById(id).then((result: AppSysRoleDoc|null) => {
+    return super.findById(id).then((result: AppSysRoleDoc|null) => {
       if (!result) throw new AppError(i18n.__('idDoesNotExist'));
-      return result.toObject();
+      return result;
     });
   }
 

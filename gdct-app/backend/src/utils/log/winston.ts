@@ -1,4 +1,5 @@
 import winston from 'winston';
+//@ts-ignore
 import { SPLAT } from 'triple-beam';
 import chalk from 'chalk';
 
