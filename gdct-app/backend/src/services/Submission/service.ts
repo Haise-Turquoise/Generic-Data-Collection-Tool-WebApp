@@ -341,8 +341,38 @@ export default class SubmissionService {
     //   });
     // });
   }
+
+
   async findTempPkg(programAndTempTypes:{program:ObjectId, templateTypes:any[]}[]){
+    const program2TypesMap = new Map<string, string[]>();
+
+    console.log(programAndTempTypes)
+
+    programAndTempTypes.forEach(e=>{
+      program2TypesMap.set(String(e.program), e.templateTypes.map(type=>String(type._id)))
+    })
+    console.log(program2TypesMap)
+    const packages:any[] = await this.templatePackageRepository
+    .retrieveFullPkgInfoByProgramId(programAndTempTypes.map(e=>e.program));
     
+    const filteredPackage = packages.filter(templatePkg=>{
+      for (const temlpate of templatePkg.templateIds){
+        const templateTypeId = String(temlpate.templateTypeId)
+        for (const program of templatePkg.programIds){
+          if (program2TypesMap.get(String(program))?.includes(templateTypeId)){
+            return true;
+          }
+        }
+      }
+      return false;
+    });
+
+    filteredPackage.forEach(templatePkg=>{
+      const templateIds = templatePkg.templateIds.map((e:any)=>e._id);
+      templatePkg.templateIds = templateIds;
+    });
+    console.log(filteredPackage);
+    return filteredPackage;
   }
 
   async findTemplatePackage(programAndTempTypes:{program:ObjectId, templateTypes:any[]}[]) {
@@ -352,6 +382,7 @@ export default class SubmissionService {
       promiseQuery1.push(
         this.templatePackageRepository.findByProgramId(element.program.toString()).then((templatePackages:TemplatePackage[]) => {
           const templatePackagesCopy:any[] = [];
+          
           templatePackages.forEach(templatePackage => {
             templatePackagesCopy.filter(ele => ele._id !== templatePackage._id);
             templatePackagesCopy.push(templatePackage);
@@ -450,8 +481,7 @@ export default class SubmissionService {
       programID.forEach(element=>{programIds.push(element._id?.toString())})
     }
     // Find template packages base on programs and template types
-    return this.findTemplatePackage(programAndTempTypes).then((templatePackages:TemplatePackage[]) => {
-      console.log(templatePackages)
+    return this.findTempPkg(programAndTempTypes).then((templatePackages:TemplatePackage[]) => {
       const name = 'Unsubmitted';
       const inProgressName ='in progress';
       // Filter out in progress template packages
