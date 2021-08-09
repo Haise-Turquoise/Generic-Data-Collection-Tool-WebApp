@@ -8,7 +8,7 @@ const usersController = (() => {
     withCredentials: true,
   });
   return {
-    fetch: async (query?: any): Promise<User[]> => usersAxios.get('/fetch', query).then(res => res.data),
+    fetch: async (query: Partial<User>): Promise<User[]> => usersAxios.post('/fetch', { query }).then(res => res.data),
     fetchById: async (_id: string): Promise<User | null> => usersAxios.post('/fetchById', { _id }).then(res => res.data),
     fetchByEmail: async (userEmail: string): Promise<User | null> =>
       usersAxios.post('/fetchByEmail', { userEmail }).then(res => res.data),

@@ -6,9 +6,11 @@ import UserService from '../../services/Users';
 const UsersController = Service([UserService], service => {
   const router = Router();
   return (() => {
-    router.get('/fetch', (req, res, next) => {
+    router.post('/fetch', (req, res, next) => {
+      const { query } = req.body;
+
       service
-        .findUser(req.query)
+        .findUser(query)
         .then(users => res.json( users ))
         .catch(next);
     });
