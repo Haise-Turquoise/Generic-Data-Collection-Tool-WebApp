@@ -21,7 +21,7 @@ import { selectFactoryRESTResponseTableValues } from '../../store/common/REST/se
 import { selectSheetNamesStore } from '../../store/SheetNamesStore/selectors';
 import {
   calculateOptions,
-  checkDuplicates,
+  checkDuplicateSet,
   controllerAddRow,
   controllerEditRow,
   controllerDeleteRow,
@@ -53,23 +53,36 @@ const SheetNamesTable = () => {
   const dispatch = useDispatch();
   const [readRowNum, setRowNum] = useState(1);
   const [sheetNames, setSheetNames] = useState<SheetName[] | undefined>(undefined)
+  const [idToName, setIdToName] = useState<{[key: string]: string, [key: number]: string} | undefined>();
+
+  // useEffect(() => {
+  //   sheetNameController.fetch().then((res: Array<SheetName>) => {
+  //     const promise = res!.map(async element => {
+  //       const type = await templateTypeController.fetchById(element.templateTypeId)
+  //       .catch(err => console.log(err));
+  //       const newElement = {
+  //         ...element,
+  //         templateTypeId: type?.name
+  //       };
+        
+  //       return newElement;
+  //     })
+  //     Promise.all(promise).then(result => setSheetNames(result as SheetName[]));
+  //   })
+
+  // }, [])
 
   useEffect(() => {
-    sheetNameController.fetch().then((res: Array<SheetName>) => {
-      const promise = res!.map(async element => {
-        const type = await templateTypeController.fetchById(element.templateTypeId)
-        .catch(err => console.log(err));
-        const newElement = {
-          ...element,
-          templateTypeId: type?.name
-        };
-        
-        return newElement;
-      })
-      Promise.all(promise).then(result => setSheetNames(result as SheetName[]));
+    templateTypeController.fetch().then((res:any) => {
+      const status:any = {};
+      res!.map((template:any) => status[template._id] = template.name)
+      setIdToName(status)
+    });
+    sheetNameController.fetch().then((res: unknown) => {
+      setSheetNames(res as SheetName[])
     })
-
   }, [])
+
 
   // table vars while loading data
   const preColumns: Column<SheetNameMT>[] = [{ title: 'Name', field: 'name' }];
@@ -104,9 +117,13 @@ const SheetNamesTable = () => {
       {
         title: 'Name',
         field: 'name',
-        validate: rowData => checkDuplicates(rowData, sheetNames, 'name'),
+        validate: rowData => checkDuplicateSet(rowData, sheetNames),
       },
-      { title: 'Sheet Type', field: 'templateTypeId', type: 'string'
+      { title: 'Template Type', 
+        field: 'templateTypeId', 
+        type: 'string',
+        lookup: idToName,
+        validate: rowData => checkDuplicateSet(rowData, sheetNames)
       },
       { title: 'Active', field: 'isActive', type: 'boolean' },
       {
@@ -126,6 +143,8 @@ const SheetNamesTable = () => {
     ],
     [sheetNames],
   );
+
+  console.log(sheetNames);
 
   const options: Options<SheetNameMT> = useMemo(() => calculateOptions(readRowNum), [readRowNum]);
 
