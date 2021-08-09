@@ -12,8 +12,12 @@ export default class RoleSubmissionButtonService{
     this.roleSubmissionButtonRepository = Container.get(RoleSubmissionButtonRepository);
   }
 
-  async findByRole(role:string):Promise<RoleSubmissionButton>{
+  async findByRole(role:string):Promise<RoleSubmissionButtonDoc>{
     return this.roleSubmissionButtonRepository.findByRole(role);
+  }
+
+  async findAll(): Promise<RoleSubmissionButtonDoc[]>{
+    return this.roleSubmissionButtonRepository.findAll()
   }
 
   async create(item: RoleSubmissionButton): Promise<RoleSubmissionButtonDoc> {
