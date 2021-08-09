@@ -52,7 +52,7 @@ const UsersTable = () => {
   const [users, setUsers] = useState<User[] | undefined>(undefined)
 
   useEffect(() => {
-    usersController.fetch().then((res: unknown) => {
+    usersController.fetch({}).then((res: unknown) => {
       setUsers(res as User[])
     })
   }, [])
@@ -97,15 +97,16 @@ const UsersTable = () => {
     orgId !== '' ? (o = orgId) : '';
     orgName !== '' ? (n = orgName) : '';
 
-    usersController.fetch({
-      params: {
+    usersController.fetch(
+      {
         username: u,
         lastName: l,
         firstName: f,
+        // @ts-ignore
         'sysRole.org.orgId': o,
         'sysRole.org.orgName': n,
-      },
-    }).then((res: unknown) => {
+      }
+    ).then((res: unknown) => {
       if (res === 'UNAUTHORIZED ACCESS') {
         unauthorized_dialog()
       } else {
