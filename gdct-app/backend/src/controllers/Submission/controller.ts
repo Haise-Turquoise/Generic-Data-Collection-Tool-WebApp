@@ -18,11 +18,10 @@ const SubmissionController = Service([SubmissionService], service => {
 
     router.post('/submissions/findQuery', (req, res, next) => {
       const { query } = req.body
+      
       service
         .findQuery(query)
-        .then(submissions => {
-          res.json({ submissions })
-        })
+        .then(submissions => res.json({ submissions }))
         .catch(next)
     })
 
