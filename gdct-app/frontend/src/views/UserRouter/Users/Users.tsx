@@ -77,6 +77,22 @@ const UsersTable = () => {
   }]
 
   const handleClear = () => {
+    usersController.fetch(
+      {
+        username: "",
+        lastName: "",
+        firstName: "",
+        // @ts-ignore
+        'sysRole.org.orgId': "",
+        'sysRole.org.orgName': "",
+      }
+    ).then((res: unknown) => {
+      if (res === 'UNAUTHORIZED ACCESS') {
+        unauthorized_dialog()
+      } else {
+        setUsers(res as User[])
+      }
+    });
     setUserName('');
     setLastName('');
     setFirstName('');
@@ -112,8 +128,9 @@ const UsersTable = () => {
       } else {
         setUsers(res as User[])
       }
-    })
+    });
   };
+
   // Convert Date format
   users?.forEach(user => {
     user.timestamp = formatTimestamp(user.timestamp)
