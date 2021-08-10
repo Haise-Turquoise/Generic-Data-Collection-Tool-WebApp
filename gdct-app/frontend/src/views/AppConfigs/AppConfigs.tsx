@@ -3,36 +3,15 @@ import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 
 import MaterialTable, { Column, Options } from 'material-table';
 import { Paper, Typography } from '@material-ui/core';
-
-import moment from 'moment';
-
-import {
-  getAppConfigsRequest,
-  createAppConfigRequest,
-  deleteAppConfigRequest,
-  updateAppConfigRequest,
-  //@ts-ignore
-} from '../../store/thunks/AppConfig';
-//@ts-ignore
-import { getAppSysesRequest } from '../../store/thunks/AppSys';
-//@ts-ignore
-import { selectFactoryRESTResponseTableValues } from '../../store/common/REST/selectors';
-//@ts-ignore
-import { selectAppConfigsStore } from '../../store/AppConfigsStore/selectors';
-//@ts-ignore
-import { selectAppSysesStore } from '../../store/AppSysesStore/selectors';
-//@ts-ignore
 import AppConfigController from '../../controllers/AppConfig';
-//@ts-ignore
 import AppSysController from '../../controllers/AppSys';
-//@ts-ignore
 import CreateAuditLog from '../AuditLog_Global';
 import {
   controllerAddRow,
   controllerEditRow,
   controllerDeleteRow,
   formatTimestamp,
-  //@ts-ignore
+  fetchWithStatus,
 } from '../../tools/misc'
 
 import AppConfig from '../../types/appconfig';
@@ -76,11 +55,10 @@ const AppConfigsTable = () => {
   const dispatch = useDispatch();
   const [appConfigs, setAppConfigs] = useState<AppConfig[] | undefined>(undefined)
   const [appSyses, setAppSyses] = useState<AppSys[] | undefined>(undefined)
+  const [status, setStatus] = useState<'LOADING...' | 'NOT ALLOWED'>('LOADING...')
 
   useEffect(() => {
-    AppConfigController.fetch().then((res: unknown) => {
-      setAppConfigs(res as AppConfig[])
-    })
+    fetchWithStatus<AppConfig>(AppConfigController, setAppConfigs, setStatus)
     AppSysController.fetch().then((res: unknown) => {
       setAppSyses(res as AppSys[])
     })
@@ -90,7 +68,7 @@ const AppConfigsTable = () => {
   const preColumns: Column<AppConfigMT>[] = [{ title: 'Name', field: 'value' }];
   const preConfigs: AppConfigMT[] = [
     {
-      value: 'LOADING...',
+      value: status,
       _id: '',
       key: '',
       appSys: '',

@@ -1,20 +1,10 @@
 import React, { useMemo, useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-
 import MaterialTable, { Action, Column } from 'material-table';
 import AddIcon from '@material-ui/icons/Add';
 import DeleteIcon from '@material-ui/icons/Delete';
-
-import PropTypes from 'prop-types';
-//@ts-ignore
-import { selectFactoryRESTResponseTableValues } from '../../../store/common/REST/selectors';
-//@ts-ignore
-import { selectProgramsStore } from '../../../store/ProgramsStore/selectors';
-//@ts-ignore
-import { getProgramsRequest } from '../../../store/thunks/program';
-//@ts-ignore
 import ProgController from '../../../controllers/Program'
 import Program from '../../../types/program'
+import { fetchWithStatus } from '../../../tools/misc';
 
 interface ProgListProps {
   programIds: string[],
@@ -25,11 +15,10 @@ interface ProgListProps {
 
 const ProgList = ({ programIds, onClickAdd, onClickDelete, isEditable = true }: ProgListProps) => {
   const [programList, setProgramList] = useState<Program[] | undefined>(undefined)
+  const [status, setStatus] = useState<'LOADING...' | 'NOT ALLOWED'>('LOADING...')
 
   useEffect(() => {
-    ProgController.fetch().then((res: unknown) => {
-      setProgramList(res as Program[])
-    })
+    fetchWithStatus<Program>(ProgController, setProgramList, setStatus)
   }, [])
 
   const preColumns: Column<Program>[] = [{
@@ -40,7 +29,7 @@ const ProgList = ({ programIds, onClickAdd, onClickDelete, isEditable = true }: 
     _id: '',
     code: '',
     isActive: false,
-    name: 'LOADING...',
+    name: status,
     timestamp: '',
     updatedAt: '',
     updatedBy: '',

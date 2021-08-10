@@ -1,15 +1,11 @@
-import React, { useState, useEffect, ChangeEvent, FormEvent } from 'react';
+import React, { useState, FormEvent } from 'react';
 import { Button, Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { Publish } from '@material-ui/icons';
 import ExcelJS from 'exceljs';
-//@ts-ignore
 import COATreeController from '../../../controllers/COATree';
-//@ts-ignore
 import SheetNameController from '../../../controllers/sheetName';
-//@ts-ignore
 import COAGroupController from '../../../controllers/COAGroup';
-//@ts-ignore
 import COAController from '../../../controllers/COA';
 import SheetName from '../../../types/sheetname';
 import CategoryGroup from '../../../types/categorygroup';
@@ -20,12 +16,39 @@ let workbook = new ExcelJS.Workbook();
 const ignoreSheets = ['Main Menu', 'Identification'];
 
 type CatIDType = {
-  [key: string]: Category[]
+  [categoryGroup: string]: Category[]
 }
 type AllDataType = {
-  [key: string]: CatIDType
+  [sheetName: string]: CatIDType
 }
 
+/*
+* Sample obejct structure for AllDataType
+{
+  sheetName1: {
+    categoryGroup1: [{
+      ...Category1
+    }],
+    categoryGroup2: [
+      {
+        ...Category2
+      },
+      {
+        ...Category3
+      }
+    ]
+  },
+  sheetName2: {
+    ...
+  },
+}
+*/
+
+/**
+ * Converts a column string ex: AA to an integer
+ * @param {string} col - The column string
+ * @returns The converted integer
+ */
 const colToInt = (col: string) => {
   let res = 0,
     base = 1;
@@ -48,7 +71,11 @@ const constants = {
   UNIT: colToInt('I'),
 };
 
-// process uploaded file data
+/**
+ * Async processes the data from a spreadsheet file
+ * @param file - The spreadsheet file to process
+ * @param cb - The function to call with the processed data
+ */
 const processData = async (file: File, cb: (allData: AllDataType) => void) => {
   let reader = new FileReader();
   reader.readAsArrayBuffer(file);
@@ -92,7 +119,11 @@ const processData = async (file: File, cb: (allData: AllDataType) => void) => {
   };
 };
 
-// build tree objects
+/**
+ * Builds all tree objects from processed data 
+ * @param data - the data processed in processData()
+ * @returns an array of CategoryTrees
+ */
 const buildObjects = async (data: AllDataType) => {
   const objects: CategoryTree[] = [];
   const groups: CategoryGroup[] = await COAGroupController.fetch();
@@ -146,10 +177,13 @@ const buildObjects = async (data: AllDataType) => {
   return objects;
 };
 
-// send tree objects to database - check for duplicates
+/**
+ * Populate database with created trees - checks for duplicates
+ * @param trees - The trees created in buildObejcts()
+ */
 const createTrees = async (trees: CategoryTree[]) => {
   const currTrees: CategoryTree[] = await COATreeController.fetch();
-  // remove existing trees
+  // remove trees already in the databas
   trees = trees.filter(tree => {
     const found = currTrees.find(
       currTree =>
@@ -176,6 +210,10 @@ const useStyles = makeStyles({
   },
 });
 
+/**
+ * The functional component to handle file upload/processing
+ * @returns The JSX component
+ */
 export default function COAGenerator() {
   const [file, setFile] = useState<File | null>(null);
   const [fileName, setFileName] = useState('');
@@ -191,6 +229,7 @@ export default function COAGenerator() {
     setFileName(e.currentTarget.files[0].name);
   };
 
+  // process current File
   const processWorkbook = () => {
     if (!file) {
       console.log('no file')

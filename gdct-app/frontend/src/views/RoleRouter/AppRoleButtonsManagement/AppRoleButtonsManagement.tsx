@@ -3,15 +3,10 @@ import MaterialTable, { Action, Column, Options } from 'material-table';
 import LaunchIcon from '@material-ui/icons/Launch';
 import { Paper, Typography } from '@material-ui/core';
 import AppRoleController from '../../../controllers/AppRole'
-//@ts-ignore
-import ErrorBanner from '../../ErrorBanner';
 import {
   calculateOptions, formatTimestamp,
-  //@ts-ignore
 } from '../../../tools/misc';
-//@ts-ignore
 import { RouteComponentProps } from 'react-router';
-
 import AppRole from '../../../types/approle';
 import roleSubmissionButtonController from '../../../controllers/RoleSubmissionButton';
 
@@ -24,7 +19,6 @@ const AppRoleResourceHeader = () => {
   return (
     <Paper className="header">
       <Typography variant="h5">App Role Buttons Management</Typography>
-      {/* <HeaderActions/> */}
     </Paper>
   );
 };
@@ -34,12 +28,17 @@ const AppRoleResourceTable = ({ history }: RouteComponentProps) => {
   const [readRowNum, setRowNum] = useState(1);
   const [appRoles, setAppRoles] =
     useState<AppRolePlus[] | undefined>(undefined)
+  const [status, setStatus] = useState<'LOADING...' | 'NOT ALLOWED'>('LOADING...')
 
     useEffect(() => {
       (
         async () => {
           const appRoleRes = await AppRoleController.fetch()
           const buttonsRes = await roleSubmissionButtonController.findAll()
+          if (!appRoleRes || !buttonsRes) {
+            setStatus('NOT ALLOWED')
+            return
+          }
           const appRolesPlus: AppRolePlus[] = []
           for (const appRole of appRoleRes) {
             const buttonRes = buttonsRes.find(button => button.role === appRole.name)
@@ -62,7 +61,7 @@ const AppRoleResourceTable = ({ history }: RouteComponentProps) => {
     name: '',
     isActive: false,
     timestamp: '',
-    updatedBy: 'LOADING...',
+    updatedBy: status,
     modifiedOn: '',
   }]
 

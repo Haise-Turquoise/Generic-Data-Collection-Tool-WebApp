@@ -1,6 +1,6 @@
   
 import React, { useMemo, useEffect, useState } from 'react';
-import MaterialTable, { Action, Column, Options } from 'material-table';
+import MaterialTable, { Action, Column } from 'material-table';
 import AddIcon from '@material-ui/icons/Add';
 import DeleteIcon from '@material-ui/icons/Delete';
 import {
@@ -19,6 +19,7 @@ const AppWorkflowList = ({ role, isEditable = true, onClickAdd, onClickDelete }:
 }) => {
   const [workflowList, setWorkflowList] = useState<nameObj[] | undefined>(undefined)
   const [statuses, setStatuses] = useState<nameObj[] | undefined>(undefined)
+  const [status, setStatus] = useState<'LOADING...' | 'NOT ALLOWED'>('LOADING...')
 
   const addButton = (_e: any, rowData: nameObj | nameObj[]) => {
     if (Array.isArray(rowData)) {
@@ -52,6 +53,9 @@ const AppWorkflowList = ({ role, isEditable = true, onClickAdd, onClickDelete }:
     }
     (async () => {
       const workflowRes = await roleWorkflowStatusController.fetchStatusByRole(role.replace("_", " "))
+      if (!workflowRes) {
+        setStatus('NOT ALLOWED')
+      }
       const formatted = workflowRes?.workflowStatus?.map(name => ({ name })) || []
       setWorkflowList(formatted)
       const statusRes = await statusController.fetch()
@@ -65,10 +69,10 @@ const AppWorkflowList = ({ role, isEditable = true, onClickAdd, onClickDelete }:
   // table stuff while loading
   const preColumns: Column<{name: string}>[] = [{title: 'Name', field: 'name'}]
   const preWorkflows: nameObj[] = [{
-    name: ''
+    name: status
   }]
   const preNonButtons: nameObj[] = [{
-    name: ''
+    name: status
   }]
 
   const [readWorkflowsNum, setWorkflowsNum] = useState(1);

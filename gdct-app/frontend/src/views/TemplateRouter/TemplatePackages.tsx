@@ -8,51 +8,27 @@ import MaterialTable, { Action, Column, Options } from 'material-table';
 import moment from 'moment';
 
 import { useHistory } from 'react-router-dom';
-//@ts-ignore
 import Select from 'react-select';
 import {
   selectFactoryRESTResponseTableValues,
   selectFactoryRESTIsCallInProgress,
   selectFactoryRESTLookup,
-  //@ts-ignore
 } from '../../store/common/REST/selectors';
-  //@ts-ignore
 import { selectTemplatePackagesStore } from '../../store/TemplatePackagesStore/selectors';
-import {
-  createTemplatePackageRequest,
-  deleteTemplatePackageRequest,
-  updateTemplatePackageRequest,
-  //@ts-ignore
-} from '../../store/thunks/templatePackage';
-  //@ts-ignore
 import { ROUTE_TEMPLATE_PCKGS_PCKGS } from '../../constants/routes';
-  //@ts-ignore
-import { TemplatePackagesStoreActions } from '../../store/TemplatePackagesStore/store';
-  //@ts-ignore
 import { selectStatusesStore } from '../../store/StatusesStore/selectors';
-  //@ts-ignore
 import { getStatusesRequest } from '../../store/thunks/status';
-  //@ts-ignore
 import { selectSubmissionPeriodsStore } from '../../store/SubmissionPeriodsStore/selectors';
-  //@ts-ignore
 import { getSubmissionPeriodsRequest } from '../../store/thunks/submissionPeriod';
-  //@ts-ignore
 import StatusesStore from '../../store/StatusesStore/store';
-  //@ts-ignore
 import SubmissionPeriodsStore from '../../store/SubmissionPeriodsStore/store';
-  //@ts-ignore
 import ErrorBanner from '../ErrorBanner';
-  //@ts-ignore
-import { calculateOptions, controllerAddRow, controllerEditRow, controllerDeleteRow, formatTimestamp } from '../../tools/misc';
-  //@ts-ignore
+import { calculateOptions, controllerAddRow, controllerEditRow, controllerDeleteRow, formatTimestamp, fetchWithStatus } from '../../tools/misc';
 import CreateAuditLog from '../AuditLog_Global';
-  //@ts-ignore
 import templatePackageController from '../../controllers/templatePackage';
 
 import TemplatePackage from '../../types/templatepackage';
 import Status from '../../types/status';
-import SubmissionPeriod from '../../types/submissionperiod';
-import { AxiosResponse } from 'axios';
 
 interface TemplatePackageMT extends TemplatePackage {
   tableData?: any,
@@ -63,7 +39,6 @@ const TemplatePackageHeader = () => {
   return (
     <Paper className="header">
       <Typography variant="h5">Template Package</Typography>
-      {/* <HeaderActions/> */}
     </Paper>
   );
 };
@@ -74,17 +49,16 @@ const TemplatePackages = () => {
   const [readRowNum, setRowNum] = useState(1);
   const [templatePackages, setTemplatePackages] = 
     useState<TemplatePackage[] | undefined>(undefined)
+  const [status, setStatus] = useState<'LOADING...' | 'NOT ALLOWED'>('LOADING...')
 
   useEffect(() => {
-    templatePackageController.fetch().then((res: unknown) => {
-      setTemplatePackages(res as TemplatePackage[])
-    })
+    fetchWithStatus<TemplatePackage>(templatePackageController, setTemplatePackages, setStatus)
   }, [])
 
   // table vars while loading
   const preColumns: Column<TemplatePackageMT>[] = [{ title: 'Name', field: 'name' }]
   const prePackages: TemplatePackageMT[] = [{
-    name: 'LOADING...',
+    name: status,
     _id: '',
     creationDate: '',
     programIds: [],
