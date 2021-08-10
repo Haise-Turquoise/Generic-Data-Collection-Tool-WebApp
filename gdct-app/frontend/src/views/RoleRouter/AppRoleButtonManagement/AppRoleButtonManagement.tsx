@@ -8,6 +8,8 @@ import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import AppButtonList from '../AppButtonList';
 import roleSubmissionButtonController from '../../../controllers/RoleSubmissionButton';
 import RoleSubmissionButton from '../../../types/rolesubmissionbutton';
+import Swal from 'sweetalert2';
+import AppRoleController from '../../../controllers/AppRole';
 type propType = { role: string }
 type nameObj = { name: string }
 
@@ -33,23 +35,72 @@ const LinkProgramTable = ({
   const [roleSubmissionButton, setRoleSubmissionButton] =
     useState<RoleSubmissionButton | undefined>(undefined)
 
-  useEffect(() => {
-    console.log('ROLE', role.replace("_", " "))
-    roleSubmissionButtonController.fetchSubmissionButtonByRole(role.replace("_", " "))
-      .then(res => {
-          if (res) {
-          setRoleSubmissionButton(res)
-        } else {
-          setRoleSubmissionButton({
-            button: [],
-            role: 'Not Found',
-          })
+    useEffect(() => {
+      (
+        async () => {
+          let found: RoleSubmissionButton | null = null
+          try {
+            found = await roleSubmissionButtonController.fetchSubmissionButtonByRole(role.replace("_", " "))
+            
+            if (found) {
+              setRoleSubmissionButton(found)
+            } else {
+              throw new Error('go to catch block')
+            }
+          } catch (e) {
+            const appRoles = await AppRoleController.fetch()
+            const names = appRoles.map(role => (role.name))
+            if (names.includes(role.replace("_", " "))) {
+              setRoleSubmissionButton({
+                role: 'Create Me',
+                button: [],
+              })
+            } else {
+              setRoleSubmissionButton({
+                role: 'Not Found',
+                button: [],
+              })
+            }
+          }
         }
-      }).catch(() => setRoleSubmissionButton({
-        button: [],
-        role: 'Not Found'
-      }))
-  }, [])
+      )()
+    }, [])
+  
+    useEffect(() => {
+      if (roleSubmissionButton?.role === 'Create Me') {
+        // create new one
+        Swal.fire({
+          title: 'Resource Not Found',
+          text: 'Would you like to create it?',
+          showDenyButton: true,
+          denyButtonText: 'Return',
+          confirmButtonText: 'Create',
+          icon: 'question',
+        }).then(res => {
+          if (res.isConfirmed) {
+            // create the resource
+            roleSubmissionButtonController.create({
+              role: role.replace("_", " "),
+              button: [],
+            }).then(res => {
+              setRoleSubmissionButton(res)
+              return
+            })
+          } else {
+            redirect();
+            return
+          }
+        })
+      } else if (roleSubmissionButton?.role === 'Not Found') {
+        Swal.fire({
+          title: 'Resource Not Found',
+          icon: 'error',
+          showConfirmButton: false,
+          showDenyButton: true,
+          denyButtonText: 'Return',
+        }).then(_res => redirect())
+      }
+    }, [roleSubmissionButton])
 
   const onClickAdd = (_: any, rowData: nameObj | nameObj[]) => {
     if (Array.isArray(rowData) || !roleSubmissionButton) {
