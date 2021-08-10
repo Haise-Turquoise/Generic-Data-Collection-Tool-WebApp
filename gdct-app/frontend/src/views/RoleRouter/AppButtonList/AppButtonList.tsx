@@ -19,6 +19,7 @@ const AppButtonList = ({ role, isEditable = true, onClickAdd, onClickDelete }: {
 }) => {
   const [buttonList, setButtonList] = useState<nameObj[] | undefined>(undefined)
   const [statuses, setStatuses] = useState<nameObj[] | undefined>(undefined)
+  const [status, setStatus] = useState<'LOADING...' | 'NOT ALLOWED'>('LOADING...')
 
   const addButton = (_e: any, rowData: nameObj | nameObj[]) => {
     if (Array.isArray(rowData)) {
@@ -49,6 +50,10 @@ const AppButtonList = ({ role, isEditable = true, onClickAdd, onClickDelete }: {
   useEffect(() => {
     (async () => {
       const buttonRes = await RoleSubmissionButtonController.fetchSubmissionButtonByRole(role.replace("_", " "))
+      if (!buttonRes) {
+        setStatus('NOT ALLOWED')
+        return
+      }
       const formatted = buttonRes?.button?.map(name => ({ name })) || []
       setButtonList(formatted)
       const statusRes = await statusController.fetch()
@@ -62,10 +67,10 @@ const AppButtonList = ({ role, isEditable = true, onClickAdd, onClickDelete }: {
   // table stuff while loading
   const preColumns: Column<{name: string}>[] = [{title: 'Name', field: 'name'}]
   const preButtons: nameObj[] = [{
-    name: ''
+    name: status
   }]
   const preNonButtons: nameObj[] = [{
-    name: ''
+    name: status
   }]
 
   const [readButtonsNum, setButtonsNum] = useState(1);

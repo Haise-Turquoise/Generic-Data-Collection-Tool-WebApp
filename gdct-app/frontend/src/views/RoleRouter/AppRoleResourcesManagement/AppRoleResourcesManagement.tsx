@@ -43,6 +43,7 @@ import {
   controllerEditRow,
   controllerDeleteRow,
   formatTimestamp,
+  fetchWithStatus,
   //@ts-ignore
 } from '../../../tools/misc';
 //@ts-ignore
@@ -76,11 +77,10 @@ const AppRoleResourceTable = ({ history }: RouteComponentProps) => {
     useState<AppSysRole[] | undefined>(undefined)
   const [appResources, setAppResources] =
     useState<AppResource[] | undefined>(undefined)
+  const [status, setStatus] = useState<'LOADING...' | 'NOT ALLOWED'>('LOADING...')
 
   useEffect(() => {
-    AppRoleResourceController.fetch().then((res: unknown) => {
-      setAppRoleResources(res as AppRoleResource[])
-    })
+    fetchWithStatus<AppRoleResource>(AppRoleResourceController, setAppRoleResources, setStatus)
     AppSysRoleController.fetch().then((res: unknown) => {
       setAppSysRoles(res as AppSysRole[])
     })
@@ -96,7 +96,7 @@ const AppRoleResourceTable = ({ history }: RouteComponentProps) => {
     appSysRoleId: { roleId: '', roleName: '' },
     resourceId: [],
     timestamp: '',
-    updatedBy: 'LOADING...',
+    updatedBy: status,
   }]
 
   useEffect(()=>{

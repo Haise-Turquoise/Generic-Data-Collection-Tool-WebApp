@@ -20,9 +20,7 @@ export default class AppRoleResourceService {
     let appSysRole = await this.AppSysRoleRepository.findById(
       typeof appRoleResource.appSysRoleId === 'string' ?  appRoleResource.appSysRoleId : appRoleResource.appSysRoleId.roleId
     )
-
-    const roleId = appRoleResource.appSysRoleId.roleId;
-    appRoleResource.appSysRoleId = { roleId, roleName: appSysRole.appSys + " " + appSysRole.role}
+    appRoleResource.appSysRoleId = { roleId: appSysRole._id, roleName: appSysRole.appSys + " " + appSysRole.role}
 
     return this.AppRoleResourceRepository.create(appRoleResource);
   }

@@ -2,6 +2,7 @@ import Excel from 'exceljs';
 import {SheetDataStyle, SheetData} from '../types/template';
 import { Options } from 'material-table';
 import moment from 'moment';
+import React, { ReactText } from 'react';
 
 export const isObjectEmpty = (object:any) => {
   for (let key in object) return false;
@@ -654,7 +655,9 @@ export const checkDuplicates = (rowData:any, tableData:any, field:string) => {
 // add a row using a controller in material-table
 export const controllerAddRow = async (Controller:any, setState:Function, data:any) => {
   try {
+    console.log('APPROLERES', data)
     const newData = await Controller.create(data)
+    console.log('NOW', newData)
     if (!newData) {
       return undefined
     }
@@ -715,4 +718,24 @@ export const controllerDeleteRow = async (Controller:any, setState:Function, _id
 export const formatTimestamp = (timestamp: string) => {
   let time = moment(new Date(timestamp)).format('YYYY-MM-DD HH:mm:ss');
   return (time === 'Invalid date') ? '' : time
+}
+
+/**
+ * Fetches data from a controller and updates either the response or status
+ * @param controller - The controller to fetch from
+ * @param setRes - The function to set the result
+ * @param setStatus - The function to set the status
+ */
+export const fetchWithStatus = async <T>(
+    controller: any,
+    setRes: React.Dispatch<React.SetStateAction<T[] | undefined>>,
+    setStatus: React.Dispatch<React.SetStateAction<'LOADING...' | 'NOT ALLOWED'>>
+  ) => {
+    controller.fetch().then((res: T[] | undefined) => {
+      if (res) {
+        setRes(res)
+      } else {
+        setStatus('NOT ALLOWED')
+      }
+    })
 }

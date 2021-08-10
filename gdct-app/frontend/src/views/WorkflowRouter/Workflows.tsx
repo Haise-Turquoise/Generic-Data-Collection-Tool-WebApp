@@ -1,34 +1,19 @@
 import React, { useMemo, useEffect, useState } from 'react';
-import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 
 import MaterialTable, { Action, Column, Options } from 'material-table';
 import { Paper, Typography, Button } from '@material-ui/core';
 import LaunchIcon from '@material-ui/icons/Launch';
-
-//@ts-ignore
-import { selectFactoryRESTResponseTableValues } from '../../store/common/REST/selectors';
-//@ts-ignore
 import { selectWorkflowsStore } from '../../store/WorkflowsStore/selectors';
-//@ts-ignore
 import { ROUTE_WORKFLOW_CREATE, ROUTE_WORKFLOW } from '../../constants/routes';
-//@ts-ignore
-import { getWorkflowsRequest, deleteWorkflowRequest } from '../../store/thunks/workflow';
 import {
   calculateOptions,
-  controllerAddRow,
-  controllerEditRow,
   controllerDeleteRow,
   formatTimestamp,
-  //@ts-ignore
+  fetchWithStatus,
 } from '../../tools/misc';
-
-import moment from 'moment';
-//@ts-ignore
 import ErrorBanner from '../ErrorBanner';
-//@ts-ignore
 import CreateAuditLog from '../AuditLog_Global';
-//@ts-ignore
 import workflowController from '../../controllers/workflow';
 
 import Workflow from '../../types/workflow';
@@ -52,22 +37,20 @@ const WorkflowHeader = () => {
 };
 
 const Workflows = () => {
-  const dispatch = useDispatch();
   const history = useHistory();
   const [readRowNum, setRowNum] = useState(1);
   const [workflows, setWorkflows] = useState<Workflow[] | undefined>(undefined)
+  const [status, setStatus] = useState<'LOADING...' | 'NOT ALLOWED'>('LOADING...')
 
   useEffect(() => {
-    workflowController.fetch().then(res => {
-      setWorkflows(res as Workflow[])
-    })
+    fetchWithStatus<Workflow>(workflowController, setWorkflows, setStatus)
   }, [])
 
   // table vars for loading
   const preColumns: Column<WorkflowMT>[] = [{ title: 'Name', field: 'name' }];
   const preWorkflows: WorkflowMT[] = [
     {
-      name: 'LOADING...',
+      name: status,
       _id: '',
       timestamp: '',
       updatedBy: '',

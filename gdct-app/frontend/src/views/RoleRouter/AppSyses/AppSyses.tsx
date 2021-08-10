@@ -1,36 +1,19 @@
 import React, { useMemo, useEffect, useState } from 'react';
-import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 
 import MaterialTable, { Column, Options } from 'material-table';
 import { Paper, Typography } from '@material-ui/core';
-import moment from 'moment';
-
-import {
-  getAppSysesRequest,
-  createAppSysRequest,
-  deleteAppSysRequest,
-  updateAppSysRequest,
-//@ts-ignore
-} from '../../../store/thunks/AppSys';
-
-//@ts-ignore
-import { selectFactoryRESTResponseTableValues } from '../../../store/common/REST/selectors';
-//@ts-ignore
-import { selectAppSysesStore } from '../../../store/AppSysesStore/selectors';
 import {
   calculateOptions,
   controllerAddRow,
   controllerEditRow,
   controllerDeleteRow,
   formatTimestamp,
-  //@ts-ignore
+  checkDuplicates,
+  fetchWithStatus,
 } from '../../../tools/misc'
 
-//@ts-ignore
 import AppSysController from '../../../controllers/AppSys'
-//@ts-ignore
 import CreateAuditLog from '../../AuditLog_Global'
-
 import AppSys from '../../../types/appsys';
 interface AppSysMT extends AppSys {
   tableData?: any,
@@ -40,26 +23,23 @@ const AppSysesHeader = () => {
   return (
     <Paper className="header">
       <Typography variant="h5">Application System</Typography>
-      {/* <HeaderActions/> */}
     </Paper>
   );
 };
 
 const AppSysesTable = () => {
-  const dispatch = useDispatch();
   const [readRowNum, setRowNum] = useState(1);
+  const [status, setStatus] = useState<'LOADING...' | 'NOT ALLOWED'>('LOADING...')
   const [appSyses, setAppSyses] = useState<AppSys[] | undefined>(undefined)
 
   useEffect(() => {
-    AppSysController.fetch().then((res: unknown) => {
-      setAppSyses(res as AppSys[])
-    })
+    fetchWithStatus<AppSys>(AppSysController, setAppSyses, setStatus)
   }, [])
 
   // table stuff while loading
   const preColumns: Column<AppSysMT>[] = [{title: 'Name', field: 'name'}]
   const preAppSys: AppSysMT[] = [{
-    name: 'LOADING...',
+    name: status,
     _id: '',
     code: '',
     isActive: false,
@@ -73,8 +53,8 @@ const AppSysesTable = () => {
 
   const columns: Column<AppSysMT>[] = useMemo(
     () => [
-      { title: 'Code', field: 'code' },
-      { title: 'Name', field: 'name' },
+      { title: 'Code', field: 'code', validate: rowData => checkDuplicates(rowData, appSyses, 'code') },
+      { title: 'Name', field: 'name', validate: rowData => checkDuplicates(rowData, appSyses, 'name') },
       {
         title: 'Modified On',
         field: 'timestamp',
@@ -90,7 +70,7 @@ const AppSysesTable = () => {
         },
       },
     ],
-    [],
+    [appSyses],
   );
   
   const options: Options<AppSysMT> = useMemo(() => calculateOptions(readRowNum), [readRowNum]);

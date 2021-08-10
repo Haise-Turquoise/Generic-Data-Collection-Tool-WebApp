@@ -1,8 +1,6 @@
 import React, { Fragment, useMemo, useEffect, useState } from 'react';
-import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 
 import moment from 'moment';
-//@ts-ignore
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 
@@ -10,24 +8,16 @@ import MaterialTable, { Action, Column, EditCellColumnDef, Filter, Options } fro
 import { Paper, Typography, Button,
          Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@material-ui/core';
 import FindInPageIcon from '@material-ui/icons/FindInPage';
-
-//@ts-ignore
-import { selectFactoryRESTResponseTableValues } from '../../store/common/REST/selectors';
-//@ts-ignore
-import { getAuditLogRequest } from '../../store/thunks/AuditLog';
-//@ts-ignore
-import { selectAuditLogStore } from '../../store/AuditLogStore/selectors';
-//@ts-ignore
 import AuditLogController from '../../controllers/AuditLog'
 
 import AuditLog from '../../types/auditlog';
+import { fetchWithStatus } from '../../tools/misc';
 
 // Title Text
 const AuditLogHeader = () => {
   return (
     <Paper className="header">
       <Typography variant="h5">Audit Log</Typography>
-      {/* <HeaderActions/> */}
     </Paper>
   );
 };
@@ -92,13 +82,11 @@ const CustomDatePicker = (props: {
 
 // Table contents
 const AuditLogTable = () => {
-  const dispatch = useDispatch();
   const [auditlogs, setAuditLogs] = useState<AuditLog[] | undefined>(undefined)
+  const [status, setStatus] = useState<'LOADING...' | 'NOT ALLOWED'>('LOADING...')
 
   useEffect(() => {
-    AuditLogController.fetch().then((res: unknown) => {
-      setAuditLogs(res as AuditLog[])
-    })
+    fetchWithStatus(AuditLogController, setAuditLogs, setStatus)
   }, [])
 
   // table vars for loading
@@ -106,7 +94,7 @@ const AuditLogTable = () => {
   const preLogs: AuditLog[] = [{
     _id: '',
     activity: '',
-    moduleName: 'LOADING...',
+    moduleName: status,
     newValue: {},
     oldValue: {},
     recordId: '',
