@@ -36,6 +36,7 @@ import DnsIcon from '@material-ui/icons/Dns';
 import ScatterPlotIcon from '@material-ui/icons/ScatterPlot';
 import EnhancedEncryptionIcon from '@material-ui/icons/EnhancedEncryption';
 import SettingsApplicationsIcon from '@material-ui/icons/SettingsApplications';
+import NatureIcon from '@material-ui/icons/Nature';
 import {SvgIconProps} from '@material-ui/core';
 // Universal Style
 const MenuItemStyle = { fontSize: '1.2rem', marginLeft: '1.2rem' };
@@ -73,6 +74,7 @@ const ItemMap :{[key:string]:React.ReactElement<SvgIconProps>} =  {
   'Attribute Management': <ViewColumnIcon style={SubMenuItemStyle} />,
   'Group Management': <GroupIcon style={SubMenuItemStyle} />,
   'Tree Management': <AccountTreeIcon style={SubMenuItemStyle} />,
+  'Generate Tree': <NatureIcon style={SubMenuItemStyle} />,
 
   // Admin Template
   'Template': <TableChartIcon style={MenuItemStyle} />,
@@ -97,7 +99,9 @@ const ItemMap :{[key:string]:React.ReactElement<SvgIconProps>} =  {
   'Application Resource': <GroupWorkIcon style={SubMenuItemStyle} />,
   'Application Role Resource': <GroupWorkIcon style={SubMenuItemStyle} />,
   'Application Role Resource Management': <GroupWorkIcon style={SubMenuItemStyle} />,
-
+  'Application Role Button Management': <GroupWorkIcon style={SubMenuItemStyle} />,
+  'Application Role Workflow Management': <GroupWorkIcon style={SubMenuItemStyle} />,
+  
   // Admin Configuration
   'Configuration': <BuildIcon style={MenuItemStyle} />,
 
