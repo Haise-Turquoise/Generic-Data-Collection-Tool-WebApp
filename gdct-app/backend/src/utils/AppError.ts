@@ -19,5 +19,5 @@ export default class AppError extends Error {
 export const wrapTryCatch = (fn: any) => (req: Request, res: Response, next: NextFunction) => {
   // where does statusCode come from
   console.log('HERE')
-  fn(req, res, next).catch((err: any) => next(new AppError(err.message)));
+  fn(req, res, next).catch((err: Error) => next(new AppError(err.message)));
 };

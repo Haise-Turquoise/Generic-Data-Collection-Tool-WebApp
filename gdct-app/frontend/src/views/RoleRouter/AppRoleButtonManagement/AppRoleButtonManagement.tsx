@@ -54,11 +54,15 @@ const LinkProgramTable = ({
               setRoleSubmissionButton({
                 role: 'Create Me',
                 button: [],
+                updatedBy: '',
+                modifiedOn: ''
               })
             } else {
               setRoleSubmissionButton({
                 role: 'Not Found',
                 button: [],
+                updatedBy: '',
+                modifiedOn: ''
               })
             }
           }
@@ -82,6 +86,8 @@ const LinkProgramTable = ({
             roleSubmissionButtonController.create({
               role: role.replace("_", " "),
               button: [],
+              updatedBy: localStorage.getItem('currentUser') || '',
+              modifiedOn: new Date().toLocaleString()
             }).then(res => {
               setRoleSubmissionButton(res)
               return
@@ -107,7 +113,11 @@ const LinkProgramTable = ({
       return
     }
     setRoleSubmissionButton(prev => {
-      const copy: RoleSubmissionButton = {...prev!}
+      const copy: RoleSubmissionButton = {
+        ...prev!,
+        modifiedOn: new Date().toLocaleString(),
+        updatedBy: localStorage.getItem('currentUser') || ''
+      }
       copy.button = copy.button.concat([rowData.name])
       roleSubmissionButtonController.update(copy)
       return copy
@@ -119,7 +129,11 @@ const LinkProgramTable = ({
       return
     }
     setRoleSubmissionButton(prev => {
-      const copy: RoleSubmissionButton = {...prev!}
+      const copy: RoleSubmissionButton = {
+        ...prev!,
+        modifiedOn: new Date().toLocaleString(),
+        updatedBy: localStorage.getItem('currentUser') || ''
+      }
       copy.button = copy.button.filter(name => name !== rowData.name)
       roleSubmissionButtonController.update(copy)
       return copy
