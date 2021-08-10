@@ -1,30 +1,15 @@
 import React, { useMemo, useEffect, useState } from 'react';
-import { useDispatch, useSelector, shallowEqual } from 'react-redux';
+import { useSelector, shallowEqual } from 'react-redux';
 
 import MaterialTable, { Column, Options } from 'material-table';
 import { Paper, Typography, Collapse, IconButton }  from '@material-ui/core';
 import Alert from '@material-ui/lab/Alert';
 import CloseIcon from '@material-ui/icons/Close';
-import moment from 'moment';
-
-import {
-  getCOAsRequest,
-  createCOARequest,
-  deleteCOARequest,
-  updateCOARequest,
-  //@ts-ignore
-} from '../../../store/thunks/COA';
-//@ts-ignore
-import { selectFactoryRESTResponseTableValues, selectFactoryRESTError } from '../../../store/common/REST/selectors';
-//@ts-ignore
+import { selectFactoryRESTError } from '../../../store/common/REST/selectors';
 import { selectCOAsStore } from '../../../store/COAsStore/selectors';
-//@ts-ignore
-import { calculateOptions, checkDuplicates, controllerAddRow, controllerEditRow, controllerDeleteRow, formatTimestamp } from '../../../tools/misc';
-//@ts-ignore
+import { calculateOptions, checkDuplicates, controllerAddRow, controllerEditRow, controllerDeleteRow, formatTimestamp, fetchWithStatus } from '../../../tools/misc';
 import CreateAuditLog from '../../AuditLog_Global';
-//@ts-ignore
 import COAController from '../../../controllers/COA';
-
 import Category from '../../../types/category'
 
 const COAsHeader = () => {
@@ -86,20 +71,18 @@ const AlertSign = () => {
 
 // The material table
 const COAsTable = () => {
-  const dispatch = useDispatch();
   const [readRowNum, setRowNum] = useState(1);
   const [COAs, setCOAs] = useState<Category[] | undefined>(undefined)
+  const [status, setStatus] = useState<'LOADING...' | 'NOT ALLOWED'>('LOADING...')
 
   useEffect(() => {
-    COAController.fetch().then((res: unknown) => {
-      setCOAs(res as Category[])
-    })
+    fetchWithStatus<Category>(COAController, setCOAs, setStatus)
   }, [])
 
   // table stuff while loading
   const preColumns: Column<Category>[] = [{title: 'Name', field: 'name'}]
   const preCOAs: Category[] = [{ 
-    name: 'LOADING...',
+    name: status,
     _id: '',
     id: '',
     COA: '',

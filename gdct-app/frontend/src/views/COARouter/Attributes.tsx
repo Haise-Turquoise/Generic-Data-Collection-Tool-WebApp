@@ -26,7 +26,7 @@ import CreateAuditLog from '../AuditLog_Global';
   //@ts-ignore
 import columnNameController from '../../controllers/columnName';
   //@ts-ignore
-import { checkDuplicates, controllerAddRow, controllerEditRow, controllerDeleteRow, formatTimestamp } from '../../tools/misc'
+import { checkDuplicates, controllerAddRow, controllerEditRow, controllerDeleteRow, formatTimestamp, fetchWithStatus } from '../../tools/misc'
 
 import Attribute from '../../types/attrubute';
 
@@ -92,17 +92,16 @@ const ColumnNamesTable = () => {
   const dispatch = useDispatch();
   const [readRowNum, setRowNum] = useState(1);
   const [columnNames, setColumnNames] = useState<Attribute[] | undefined>(undefined)
+  const [status, setStatus] = useState<'LOADING...' | 'NOT ALLOWED'>('LOADING...')
 
   useEffect(() => {
-    columnNameController.fetch().then((res: unknown) => {
-      setColumnNames(res as Attribute[])
-    })
+    fetchWithStatus<Attribute>(columnNameController, setColumnNames, setStatus)
   }, [])
 
   // table stuff while loading
   const preColumns: Column<Attribute>[] = [{title: 'Name', field: 'name'}]
   const preCols: Attribute[] = [{
-    name: 'LOADING...',
+    name: status,
     _id: '',
     id: '',
     timestamp: '',

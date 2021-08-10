@@ -1,41 +1,16 @@
 import React, { useMemo, useEffect, useState } from 'react';
-import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 
 import MaterialTable, { Action, Column, Options } from 'material-table';
 import LaunchIcon from '@material-ui/icons/Launch';
 import { Paper, Typography } from '@material-ui/core';
-//@ts-ignore
 import COATreeController from '../../../controllers/COATree';
-//@ts-ignore
 import SheetNameController from '../../../controllers/sheetName'
-import {
-  getSheetNamesRequest,
-//@ts-ignore
-} from '../../../store/thunks/sheetName';
-import {
-  getDetectEmptyTree,
-  deleteCOATreeBySheetName
-//@ts-ignore
-} from '../../../store/thunks/DetectEmptyTree';
-//@ts-ignore
-import { selectFactoryRESTResponseTableValues } from '../../../store/common/REST/selectors';
-//@ts-ignore
-import { selectSheetNamesStore } from '../../../store/SheetNamesStore/selectors';
-//@ts-ignore
-import { selectDetectEmptyTreeStore } from '../../../store/DetectEmptyTreeStore/selectors';
-//@ts-ignore
 import { ROUTE_CATEGORY_TREES } from '../../../constants/routes';
-
-//@ts-ignore
 import { calculateOptions, formatTimestamp } from '../../../tools/misc'
-import moment from 'moment';
-//@ts-ignore
 import CreateAuditLog from '../../AuditLog_Global';
-
 import CategoryTree from '../../../types/categorytree';
 import SheetName from '../../../types/sheetname';
 import DetectEmptyTree from '../../../types/detectemptytree'
-
 import { RouterProps } from 'react-router';
 
 const buildDET = async (sheetNames: SheetName[]) => {
@@ -70,6 +45,7 @@ const COATreesTable = ({ history }: RouterProps) => {
     useState<SheetName[] | undefined>(undefined)
   const [detectEmptyTree, setDetectEmptyTree] =
     useState<DetectEmptyTree[] | undefined>(undefined)
+  const [status, setStatus] = useState<'LOADING...' | 'NOT ALLOWED'>('LOADING...')
 
   const deleteCOATreeBySheetName = (sheetNameId: string, resolve: (val: unknown) => void) => {
     // clear appropriate values in state
@@ -103,18 +79,25 @@ const COATreesTable = ({ history }: RouterProps) => {
   useEffect(() => {
     SheetNameController.fetch()
       .then((res: unknown) => {
-        setSheetNames(res as SheetName[])
-        return buildDET(res as SheetName[])
+        if (res) {
+          setSheetNames(res as SheetName[])
+          return buildDET(res as SheetName[])
+        } else {
+          setStatus('NOT ALLOWED')
+          return undefined
+        }
       })
-      .then((detectEmptyTrees: DetectEmptyTree[]) => {
-        setDetectEmptyTree(detectEmptyTrees)
+      .then((detectEmptyTrees?: DetectEmptyTree[]) => {
+        if (detectEmptyTrees) {
+          setDetectEmptyTree(detectEmptyTrees)
+        }
       })
   }, [])
 
   // table stuff while loading
   const preColumns: Column<DetectEmptyTree>[] = [{title: 'Name', field: 'name'}]
   const preTrees: DetectEmptyTree[] = [{
-    name: 'LOADING...',
+    name: status,
     _id: '',
     timestamp: '',
     updatedBy: '',

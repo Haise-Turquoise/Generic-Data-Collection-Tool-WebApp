@@ -31,6 +31,7 @@ import {
   controllerEditRow,
   controllerDeleteRow,
   formatTimestamp,
+  fetchWithStatus,
   //@ts-ignore
 } from '../../tools/misc'
 //@ts-ignore
@@ -51,16 +52,15 @@ const SubmissionPeriod = () => {
   const [readRowNum, setRowNum] = useState(1);
   const [submissionPeriods, setSubmissionPeriods] =
     useState<SubmissionPeriod[] | undefined>(undefined)
+  const [status, setStatus] = useState<'LOADING...' | 'NOT ALLOWED'>('LOADING...')
 
   useEffect(() => {
-    SubmissionPeriodController.fetch().then((res: unknown) => {
-      setSubmissionPeriods(res as SubmissionPeriod[])
-    })
+    fetchWithStatus<SubmissionPeriod>(SubmissionPeriodController, setSubmissionPeriods, setStatus)
   }, [])
 
   // table vars for loading
   const preColumns = [{ title: 'Name', field: 'name' }];
-  const prePeriods = [{ name: 'LOADING...' }];
+  const prePeriods = [{ name: status }];
 
   const { lookupReportingPeriods }: {
     lookupReportingPeriods: {[key:string]: any}

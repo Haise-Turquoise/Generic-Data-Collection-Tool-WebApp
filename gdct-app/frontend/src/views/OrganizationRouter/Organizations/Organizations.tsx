@@ -1,21 +1,11 @@
 import React, { useMemo, useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import PropTypes from 'prop-types';
 
 import MaterialTable, { Column, Action } from 'material-table';
 import { Paper, Button, Typography } from '@material-ui/core';
 
-import { BrowserRouter, Route, Router, RouterProps, useHistory } from 'react-router-dom';
+import { RouterProps, useHistory } from 'react-router-dom';
 import EditIcon from '@material-ui/icons/Edit';
-//@ts-ignore
-import { selectFactoryRESTResponseTableValues } from '../../../store/common/REST/selectors';
-//@ts-ignore
-import { selectOrgsStore } from '../../../store/OrganizationsStore/selectors';
-//@ts-ignore
-import { getOrgsRequest } from '../../../store/thunks/organization';
-//@ts-ignore
-import { calculateOptions } from '../../../tools/misc';
-//@ts-ignore
+import { calculateOptions, fetchWithStatus } from '../../../tools/misc';
 import OrgController from '../../../controllers/organization'
 import Organization from '../../../types/organization'
 
@@ -43,20 +33,18 @@ const OrganizationHeader = () => {
 };
 
 const Organizations = ({ history }: RouterProps) => {
-  const dispatch = useDispatch();
   const [readRowNum, setRowNum] = useState(1);
   const [Orgs, setOrgs] = useState<Organization[] | undefined>(undefined)
+  const [status, setStatus] = useState<'LOADING...' | 'NOT ALLOWED'>('LOADING...')
 
   useEffect(() => {
-    OrgController.fetch().then((res: unknown) => {
-      setOrgs(res as Organization[])
-    })
+    fetchWithStatus<Organization>(OrgController, setOrgs, setStatus)
   }, [])
   
   // table stuff while loading
   const preOrgs: Organization[] = [
     {
-      name: 'LOADING...',
+      name: status,
       _id: '',
       id: 0,
       effectiveDate: '',
