@@ -17,6 +17,10 @@ export default class RoleWorkflowStatusService{
     return this.roleWorkflowStatusRepository.findByRole(role);
   }
 
+  async findAll(): Promise<RoleWorkflowStatusDoc[]> {
+    return this.roleWorkflowStatusRepository.findAll()
+  }
+
   async create(item: RoleWorkflowStatus): Promise<RoleWorkflowStatusDoc> {
     return this.roleWorkflowStatusRepository.create(item);
   }

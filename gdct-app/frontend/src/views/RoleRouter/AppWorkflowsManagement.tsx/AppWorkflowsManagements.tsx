@@ -3,12 +3,20 @@ import MaterialTable, { Action, Column, Options } from 'material-table';
 import LaunchIcon from '@material-ui/icons/Launch';
 import { Paper, Typography } from '@material-ui/core';
 import AppRoleController from '../../../controllers/AppRole'
+import roleSubmissionButtonController from '../../../controllers/RoleSubmissionButton';
 import {
   calculateOptions,
+  formatTimestamp,
 } from '../../../tools/misc';
 import { RouteComponentProps } from 'react-router';
 
 import AppRole from '../../../types/approle';
+import roleWorkflowStatusController from '../../../controllers/RoleWorkflowStatus';
+
+interface AppRolePlus extends AppRole {
+  modifiedOn: string,
+  updatedBy: string,
+}
 
 const AppRoleWorkflowHeader = () => {
   return (
@@ -23,23 +31,37 @@ const AppRoleWorkflowHeader = () => {
 const AppRoleWorkflowTable = ({ history }: RouteComponentProps) => {
   const [readRowNum, setRowNum] = useState(1);
   const [appRoles, setAppRoles] =
-    useState<AppRole[] | undefined>(undefined)
+    useState<AppRolePlus[] | undefined>(undefined)
 
   useEffect(() => {
-    AppRoleController.fetch().then((res: unknown) => {
-      setAppRoles(res as AppRole[])
-    })
+    (
+      async () => {
+        const appRoleRes = await AppRoleController.fetch()
+        const workflowsRes = await roleWorkflowStatusController.findAll()
+        const appRolesPlus: AppRolePlus[] = []
+        for (const appRole of appRoleRes) {
+          const workflowRes = workflowsRes.find(workflow => workflow.role === appRole.name)
+          appRolesPlus.push({
+            ...appRole,
+            modifiedOn: workflowRes ? formatTimestamp(workflowRes.modifiedOn) : '',
+            updatedBy: workflowRes ? workflowRes.updatedBy : '',
+          })
+        }
+        setAppRoles(appRolesPlus)
+      }
+    )()
   }, [])
 
   // table stuff while loading
-  const preColumns: Column<AppRole>[] = [{title: 'Name', field: 'updatedBy'}]
-  const preAppRoleWorkflows: AppRole[] = [{
+  const preColumns: Column<AppRolePlus>[] = [{title: 'Name', field: 'updatedBy'}]
+  const preAppRoleWorkflows: AppRolePlus[] = [{
     _id: '',
     code: '',
     name: '',
     isActive: false,
     timestamp: '',
     updatedBy: 'LOADING...',
+    modifiedOn: '',
   }]
 
   useEffect(()=>{
@@ -47,14 +69,16 @@ const AppRoleWorkflowTable = ({ history }: RouteComponentProps) => {
   }, [appRoles])
   
   // Prepare the columns for material table
-  const columns: Column<AppRole>[] = useMemo(
+  const columns: Column<AppRolePlus>[] = useMemo(
     () => [
       { title: 'Application System Role', field: 'name' },
+      { title: 'Modified On', field: 'modifiedOn' },
+      { title: 'Updated By', field: 'updatedBy' },
     ],
     [],
   );
   // Prepare the actions for the material table
-  const actions: Action<AppRole>[] = useMemo(
+  const actions: Action<AppRolePlus>[] = useMemo(
     () => [
       {
         icon: LaunchIcon,
@@ -69,7 +93,7 @@ const AppRoleWorkflowTable = ({ history }: RouteComponentProps) => {
     [history],
   );
 
-  const options: Options<AppRole> = useMemo(() => calculateOptions(readRowNum), [readRowNum]);
+  const options: Options<AppRolePlus> = useMemo(() => calculateOptions(readRowNum), [readRowNum]);
 
   return (
     <MaterialTable
