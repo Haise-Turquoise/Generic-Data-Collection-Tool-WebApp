@@ -346,20 +346,21 @@ export default class SubmissionService {
   async findTempPkg(programAndTempTypes:{program:ObjectId, templateTypes:any[]}[]){
     const program2TypesMap = new Map<string, string[]>();
 
-    console.log(programAndTempTypes)
-
     programAndTempTypes.forEach(e=>{
-      program2TypesMap.set(String(e.program), e.templateTypes.map(type=>String(type._id)))
+      console.log(e.templateTypes.map(type=>String(type.templateTypeId)))
+      program2TypesMap.set(String(e.program), e.templateTypes.map(type=>String(type.templateTypeId)))
     })
-    console.log(program2TypesMap)
     const packages:any[] = await this.templatePackageRepository
     .retrieveFullPkgInfoByProgramId(programAndTempTypes.map(e=>e.program));
-    
+
+    console.log(program2TypesMap);
+
     const filteredPackage = packages.filter(templatePkg=>{
       for (const temlpate of templatePkg.templateIds){
         const templateTypeId = String(temlpate.templateTypeId)
         for (const program of templatePkg.programIds){
-          if (program2TypesMap.get(String(program))?.includes(templateTypeId)){
+          if (program2TypesMap.get(String(program))!.includes(templateTypeId)){
+            console.log(String(program), templateTypeId)
             return true;
           }
         }
@@ -371,7 +372,6 @@ export default class SubmissionService {
       const templateIds = templatePkg.templateIds.map((e:any)=>e._id);
       templatePkg.templateIds = templateIds;
     });
-    console.log(filteredPackage);
     return filteredPackage;
   }
 
