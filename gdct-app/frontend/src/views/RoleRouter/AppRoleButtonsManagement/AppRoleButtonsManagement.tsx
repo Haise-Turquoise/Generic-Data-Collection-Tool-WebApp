@@ -6,18 +6,24 @@ import AppRoleController from '../../../controllers/AppRole'
 //@ts-ignore
 import ErrorBanner from '../../ErrorBanner';
 import {
-  calculateOptions,
+  calculateOptions, formatTimestamp,
   //@ts-ignore
 } from '../../../tools/misc';
 //@ts-ignore
 import { RouteComponentProps } from 'react-router';
 
 import AppRole from '../../../types/approle';
+import roleSubmissionButtonController from '../../../controllers/RoleSubmissionButton';
+
+interface AppRolePlus extends AppRole {
+  modifiedOn: string,
+  updatedBy: string,
+}
 
 const AppRoleResourceHeader = () => {
   return (
     <Paper className="header">
-      <Typography variant="h5">App Role Resources Management</Typography>
+      <Typography variant="h5">App Role Buttons Management</Typography>
       {/* <HeaderActions/> */}
     </Paper>
   );
@@ -27,23 +33,37 @@ const AppRoleResourceHeader = () => {
 const AppRoleResourceTable = ({ history }: RouteComponentProps) => {
   const [readRowNum, setRowNum] = useState(1);
   const [appRoles, setAppRoles] =
-    useState<AppRole[] | undefined>(undefined)
+    useState<AppRolePlus[] | undefined>(undefined)
 
-  useEffect(() => {
-    AppRoleController.fetch().then((res: unknown) => {
-      setAppRoles(res as AppRole[])
-    })
-  }, [])
+    useEffect(() => {
+      (
+        async () => {
+          const appRoleRes = await AppRoleController.fetch()
+          const buttonsRes = await roleSubmissionButtonController.findAll()
+          const appRolesPlus: AppRolePlus[] = []
+          for (const appRole of appRoleRes) {
+            const buttonRes = buttonsRes.find(button => button.role === appRole.name)
+            appRolesPlus.push({
+              ...appRole,
+              modifiedOn: buttonRes ? formatTimestamp(buttonRes.modifiedOn) : '',
+              updatedBy: buttonRes ? buttonRes.updatedBy : '',
+            })
+          }
+          setAppRoles(appRolesPlus)
+        }
+      )()
+    }, [])
 
   // table stuff while loading
-  const preColumns: Column<AppRole>[] = [{title: 'Name', field: 'updatedBy'}]
-  const preAppRoleResources: AppRole[] = [{
+  const preColumns: Column<AppRolePlus>[] = [{title: 'Name', field: 'updatedBy'}]
+  const preAppRoleResources: AppRolePlus[] = [{
     _id: '',
     code: '',
     name: '',
     isActive: false,
     timestamp: '',
     updatedBy: 'LOADING...',
+    modifiedOn: '',
   }]
 
   useEffect(()=>{
@@ -51,14 +71,16 @@ const AppRoleResourceTable = ({ history }: RouteComponentProps) => {
   }, [appRoles])
   
   // Prepare the columns for material table
-  const columns: Column<AppRole>[] = useMemo(
+  const columns: Column<AppRolePlus>[] = useMemo(
     () => [
       { title: 'Application System Role', field: 'name' },
+      { title: 'Modified On', field: 'modifiedOn' },
+      { title: 'Updated By', field: 'updatedBy' },
     ],
     [],
   );
   // Prepare the actions for the material table
-  const actions: Action<AppRole>[] = useMemo(
+  const actions: Action<AppRolePlus>[] = useMemo(
     () => [
       {
         icon: LaunchIcon,
@@ -73,7 +95,7 @@ const AppRoleResourceTable = ({ history }: RouteComponentProps) => {
     [history],
   );
 
-  const options: Options<AppRole> = useMemo(() => calculateOptions(readRowNum), [readRowNum]);
+  const options: Options<AppRolePlus> = useMemo(() => calculateOptions(readRowNum), [readRowNum]);
 
   return (
     <MaterialTable

@@ -48,6 +48,17 @@ const ReportingPeriodHeader = () => {
   );
 };
 
+const generateCode = (name: string) => {
+  const first = `${name.substring(0,4)}9`
+  let second
+  if (name.substr(-2) === 'YE' || name.length < 10) {
+    second = 9
+  } else {
+    second = name.substr(-1)
+  }
+  return `${first}${second}`
+} 
+
 const ReportingPeriodsTable = () => {
   const dispatch = useDispatch();
   const [readRowNum, setRowNum] = useState(1);
@@ -85,6 +96,7 @@ const ReportingPeriodsTable = () => {
   const columns: Column<ReportingPeriodMT>[] = useMemo(
     () => [
       { title: 'Name', field: 'name' },
+      { title: 'Code', field: 'code', editComponent: () => (<div></div>) },
       {
         title: 'Modified On',
         field: 'timestamp',
@@ -110,6 +122,8 @@ const ReportingPeriodsTable = () => {
 
   // Record who and when of the action
   function recordUpdate(reportingPeriod: ReportingPeriodMT) {
+    //generate code
+    reportingPeriod.code = generateCode(reportingPeriod.name)
     //get username and record in Modified By column
     reportingPeriod.updatedBy = localStorage.getItem('currentUser') || '';
     //record new date and time in Modified On column

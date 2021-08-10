@@ -10,12 +10,8 @@ import {
   createAppRoleRequest,
   deleteAppRoleRequest,
   updateAppRoleRequest,
-//@ts-ignore
 } from '../../../store/thunks/AppRole';
-
-//@ts-ignore
 import { selectFactoryRESTResponseTableValues } from '../../../store/common/REST/selectors';
-//@ts-ignore
 import { selectAppRolesStore } from '../../../store/AppRolesStore/selectors';
 import {
   calculateOptions,
@@ -23,11 +19,9 @@ import {
   controllerEditRow,
   controllerDeleteRow,
   formatTimestamp,
-  //@ts-ignore
+  checkDuplicates,
 } from '../../../tools/misc';
-//@ts-ignore
 import CreateAuditLog from '../../AuditLog_Global';
-//@ts-ignore
 import AppRoleController from '../../../controllers/AppRole';
 
 import AppRole from '../../../types/approle';
@@ -74,8 +68,8 @@ const AppRolesTable = () => {
   // Prepare the columns for material table
   const columns: Column<AppRoleMT>[] = useMemo(
     () => [
-      { title: 'Code', field: 'code' },
-      { title: 'Name', field: 'name' },
+      { title: 'Code', field: 'code', validate: rowData => checkDuplicates(rowData, appRoles, 'code') },
+      { title: 'Name', field: 'name', validate: rowData => checkDuplicates(rowData, appRoles, 'name') },
       {
         title: 'Modified On',
         field: 'timestamp',
@@ -91,7 +85,7 @@ const AppRolesTable = () => {
         },
       },
     ],
-    [],
+    [appRoles],
   );
 
   const options: Options<AppRoleMT> = useMemo(() => calculateOptions(readRowNum), [readRowNum]);

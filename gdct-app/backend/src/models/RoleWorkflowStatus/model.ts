@@ -8,7 +8,9 @@ const RoleWorkflowStatusModel = model<RoleWorkflowStatusDoc>('RoleWorkflowStatus
   new Schema<RoleWorkflowStatusDoc>(
     {
       role:{type: String},
-      workflowStatus:{type: Array}
+      workflowStatus:{type: Array},
+      updatedBy: String,
+      modifiedOn: Date,
     },
     { minimize: false },
   ),

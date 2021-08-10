@@ -9,7 +9,9 @@ const RoleSubmissionButtonModel = model<RoleSubmissionButtonDoc>('RoleSubmission
   new Schema<RoleSubmissionButtonDoc>(
     {
       role:{type: String},
-      button:{type: Array}
+      button:{type: Array},
+      updatedBy: String,
+      modifiedOn: Date,
     },
     { minimize: false },
   ),
