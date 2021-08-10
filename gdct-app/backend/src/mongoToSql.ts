@@ -491,7 +491,7 @@ const TemplateTypeTransfer = async(conn:any)=>{
 const transfer = async ()=>{
   const transferRepo = Container.get(transferStatusRepository);
   const res = await transferRepo.findTransferStatus();
-  if (res.isActive){
+  if (res && res.isActive){
     console.log('Starting Transfer')
     try{
       const pool = new sql.ConnectionPool(config);
