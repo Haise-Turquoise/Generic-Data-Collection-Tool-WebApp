@@ -9,7 +9,6 @@ import Loading from '../../components/Loading/Loading';
 import { getSubmissionRequest } from '../../store/thunks/submission';
 // @ts-ignore
 import CustomSnackbarContent from '../../components/CustomSnackbarContent/CustomSnackbarContent';
-// @ts-ignore
 import SubmissionSpreadSheet from './SubmissionSpreadSheet';
 
 const Submission = ({
@@ -44,7 +43,10 @@ const Submission = ({
     <Loading />
   ) : (
     <div>
-      <SubmissionSpreadSheet sheetID={_id} />
+      
+      <SubmissionSpreadSheet
+      //@ts-ignore
+      sheetID={_id} />
 
       <Snackbar
         anchorOrigin={{

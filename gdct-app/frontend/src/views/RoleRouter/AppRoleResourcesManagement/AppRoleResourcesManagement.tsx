@@ -1,50 +1,21 @@
 import React, { useMemo, useEffect, useState } from 'react';
-import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import MaterialTable, { Action, Column, Options } from 'material-table';
 import LaunchIcon from '@material-ui/icons/Launch';
 import { Paper, Typography } from '@material-ui/core';
-import moment from 'moment';
-//@ts-ignore
-import { getAppSysRolesRequest } from '../../../store/thunks/AppSysRole';
-//@ts-ignore
-import { getAppResourcesRequest } from '../../../store/thunks/AppResource';
-import {
-    getAppRoleResourcesRequest,
-    createAppRoleResourceRequest,
-    deleteAppRoleResourceRequest,
-    updateAppRoleResourceRequest,
-//@ts-ignore
-  } from '../../../store/thunks/AppRoleResource';
-//@ts-ignore
-import { selectFactoryRESTResponseTableValues } from '../../../store/common/REST/selectors';
-//@ts-ignore
 import { selectAppRoleResourcesStore } from '../../../store/AppRoleResourcesStore/selectors';
-//@ts-ignore
-import { selectAppSysRolesStore } from '../../../store/AppSysRolesStore/selectors';
-//@ts-ignore
-import { selectAppResourcesStore } from '../../../store/AppResourcesStore/selectors';
-//@ts-ignore
-import {AppRoleResourcesStore} from '../../../store/AppRoleResourcesStore/store';
-//@ts-ignore
-import {AppSysRolesStore} from '../../../store/AppSysRolesStore/store';
-//@ts-ignore
-import {AppResourcesStore} from '../../../store/AppResourcesStore/store';
-//@ts-ignore
 import AppRoleResourceController from '../../../controllers/AppRoleResource'
-//@ts-ignore
 import AppSysRoleController from '../../../controllers/AppSysRole'
-//@ts-ignore
 import AppResourceController from '../../../controllers/AppResource'
-//@ts-ignore
 import ErrorBanner from '../../ErrorBanner';
 import {
   calculateOptions,
   controllerAddRow,
   controllerEditRow,
   controllerDeleteRow,
-  //@ts-ignore
+  formatTimestamp,
+  fetchWithStatus,
+  checkDuplicates,
 } from '../../../tools/misc';
-//@ts-ignore
 import CreateAuditLog from '../../AuditLog_Global';
 import { RouteComponentProps } from 'react-router';
 
@@ -61,7 +32,6 @@ const AppRoleResourceHeader = () => {
   return (
     <Paper className="header">
       <Typography variant="h5">App Role Resources Management</Typography>
-      {/* <HeaderActions/> */}
     </Paper>
   );
 };
@@ -75,11 +45,10 @@ const AppRoleResourceTable = ({ history }: RouteComponentProps) => {
     useState<AppSysRole[] | undefined>(undefined)
   const [appResources, setAppResources] =
     useState<AppResource[] | undefined>(undefined)
+  const [status, setStatus] = useState<'LOADING...' | 'NOT ALLOWED'>('LOADING...')
 
   useEffect(() => {
-    AppRoleResourceController.fetch().then((res: unknown) => {
-      setAppRoleResources(res as AppRoleResource[])
-    })
+    fetchWithStatus<AppRoleResource>(AppRoleResourceController, setAppRoleResources, setStatus)
     AppSysRoleController.fetch().then((res: unknown) => {
       setAppSysRoles(res as AppSysRole[])
     })
@@ -95,7 +64,7 @@ const AppRoleResourceTable = ({ history }: RouteComponentProps) => {
     appSysRoleId: { roleId: '', roleName: '' },
     resourceId: [],
     timestamp: '',
-    updatedBy: 'LOADING...',
+    updatedBy: status,
   }]
 
   useEffect(()=>{
@@ -103,8 +72,7 @@ const AppRoleResourceTable = ({ history }: RouteComponentProps) => {
   }, [appRoleResources])
   // Convert Date format
   appRoleResources?.forEach(appRoleResource => {
-    const logtime = new Date(appRoleResource.timestamp);
-    appRoleResource.timestamp = moment(logtime).format('YYYY-MM-DD HH:mm:ss');
+    appRoleResource.timestamp = formatTimestamp(appRoleResource.timestamp);
   });
   //convert appSysRoleId from object to objectId if necessary
   appRoleResources?.forEach(appRoleResource => {
@@ -126,7 +94,7 @@ const AppRoleResourceTable = ({ history }: RouteComponentProps) => {
   // Prepare the columns for material table
   const columns: Column<AppRoleResourceMT>[] = useMemo(
     () => [
-      { title: 'Application System Role', field: 'appSysRoleId', lookup: lookupSysRoles },
+      { title: 'Application System Role', field: 'appSysRoleId', lookup: lookupSysRoles, validate: rowData => checkDuplicates(rowData, appRoleResources, 'appSysRoleId') },
       {
         title: 'Modified On',
         field: 'timestamp',
@@ -143,7 +111,7 @@ const AppRoleResourceTable = ({ history }: RouteComponentProps) => {
       },
       // {title: 'IsActive', field: 'isActive'}
     ],
-    [lookupSysRoles, lookupResources],
+    [lookupSysRoles, lookupResources, appRoleResources],
   );
   // Prepare the actions for the material table
   const actions: Action<AppRoleResourceMT>[] = useMemo(

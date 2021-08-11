@@ -71,14 +71,14 @@ export default class ReportPeriodRepository extends BaseRepository<CategoryTree,
   }
 
   async batchFindByCategoryIdWithoutSheetName(query: string[]) {
-    const objIdQuery = query.map(q => new ObjectId(q))
-    return COATreeModel.find({ categoryId: { $in: objIdQuery } });
+    // const objIdQuery = query.map(q => new ObjectId(q))
+    return COATreeModel.find({ categoryId: { $in: query } });
   }
 
   async batchFindById(query: string[]) {
     return COATreeModel.find({ _id: { $in: query } });
   }
-  async batchFindByCategoryId(query: string[], sheetTitleId: string){
+  async batchFindByCategoryId(query: string[], sheetTitleId: string):Promise<CategoryTreeDoc[]>{
     //@ts-ignore more problems with mongoose
     return COATreeModel.find({ categoryId: { "$in" : query }, sheetNameId: sheetTitleId})
   }

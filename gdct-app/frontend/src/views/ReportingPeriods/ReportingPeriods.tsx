@@ -1,37 +1,20 @@
 import React, { useMemo, useEffect, useState } from 'react';
-import { useDispatch, useSelector, shallowEqual } from 'react-redux';
-
-import moment from 'moment';
-
 import MaterialTable, { Column, Options } from 'material-table';
 import { Paper, Typography } from '@material-ui/core';
-
-import {
-  getReportingPeriodsRequest,
-  createReportingPeriodRequest,
-  deleteReportingPeriodRequest,
-  updateReportingPeriodRequest,
-  //@ts-ignore
-} from '../../store/thunks/reportingPeriod';
-//@ts-ignore
-import { selectFactoryRESTResponseTableValues } from '../../store/common/REST/selectors';
-//@ts-ignore
 import { selectReportingPeriodsStore } from '../../store/ReportingPeriodsStore/selectors';
 import {
   calculateOptions,
   controllerAddRow,
   controllerEditRow,
   controllerDeleteRow,
-  //@ts-ignore
+  formatTimestamp,
+  checkDuplicates,
+  fetchWithStatus,
 } from '../../tools/misc'
 
-//@ts-ignore
 import ErrorBanner from '../ErrorBanner';
-//@ts-ignore
 import CreateAuditLog from '../AuditLog_Global';
-//@ts-ignore
 import reportingPeriodController from '../../controllers/reportingPeriod';
-
 import ReportingPeriod from '../../types/reportingperiod';
 
 interface ReportingPeriodMT extends ReportingPeriod {
@@ -42,28 +25,36 @@ const ReportingPeriodHeader = () => {
   return (
     <Paper className="header">
       <Typography variant="h5">Reporting Period</Typography>
-      {/* <HeaderActions/> */}
     </Paper>
   );
 };
 
+const generateCode = (name: string) => {
+  const first = `${name.substring(0,4)}9`
+  let second
+  if (name.substr(-2) === 'YE' || name.length < 10) {
+    second = 9
+  } else {
+    second = name.substr(-1)
+  }
+  return `${first}${second}`
+} 
+
 const ReportingPeriodsTable = () => {
-  const dispatch = useDispatch();
   const [readRowNum, setRowNum] = useState(1);
   const [reportingPeriods, setReportingPeriods] =
     useState<ReportingPeriod[] | undefined>(undefined)
+  const [status, setStatus] = useState<'LOADING...' | 'NOT ALLOWED'>('LOADING...')
 
   useEffect(() => {
-    reportingPeriodController.fetch().then((res: unknown) => {
-      setReportingPeriods(res as ReportingPeriod[])
-    })
+    fetchWithStatus<ReportingPeriod>(reportingPeriodController, setReportingPeriods, setStatus)
   }, [])
 
   // table vars for loading
   const preColumns: Column<ReportingPeriodMT>[] = [{ title: 'Name', field: 'name' }];
   const prePeriods: ReportingPeriodMT[] = [
     {
-      name: 'LOADING... ',
+      name: status,
       _id: '',
       code: '',
       submissionClosed: false,
@@ -77,14 +68,14 @@ const ReportingPeriodsTable = () => {
   }, [reportingPeriods])
   // Convert Date format
   reportingPeriods?.forEach((reportingPeriod: ReportingPeriod) => {
-    const logtime = new Date(reportingPeriod.timestamp);
-    reportingPeriod.timestamp = moment(logtime).format('YYYY-MM-DD HH:mm:ss');
+    reportingPeriod.timestamp = formatTimestamp(reportingPeriod.timestamp);
   });
 
   // Prepare the columns for material table
   const columns: Column<ReportingPeriodMT>[] = useMemo(
     () => [
-      { title: 'Name', field: 'name' },
+      { title: 'Name', field: 'name', validate: rowData => checkDuplicates(rowData, reportingPeriods, 'name') },
+      { title: 'Code', field: 'code', editComponent: () => (<div></div>) },
       {
         title: 'Modified On',
         field: 'timestamp',
@@ -99,8 +90,9 @@ const ReportingPeriodsTable = () => {
           return <div></div>;
         },
       },
+      { title: 'submissionClosed', field: 'submissionClosed' },
     ],
-    [],
+    [reportingPeriods],
   );
 
   const options: Options<ReportingPeriodMT> = useMemo(() => calculateOptions(readRowNum), [
@@ -109,6 +101,8 @@ const ReportingPeriodsTable = () => {
 
   // Record who and when of the action
   function recordUpdate(reportingPeriod: ReportingPeriodMT) {
+    //generate code
+    reportingPeriod.code = generateCode(reportingPeriod.name)
     //get username and record in Modified By column
     reportingPeriod.updatedBy = localStorage.getItem('currentUser') || '';
     //record new date and time in Modified On column
@@ -181,7 +175,7 @@ const ReportingPeriodsTable = () => {
             })
         }),
     }),
-    [dispatch],
+    [],
   );
 
   return (

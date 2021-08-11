@@ -1,39 +1,23 @@
 import React, { useMemo, useEffect, useState } from 'react';
-import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 
 import MaterialTable, { Column, Options } from 'material-table';
 import { Paper, Typography } from '@material-ui/core';
 import Swal, { SweetAlertResult } from 'sweetalert2';
-
-import moment from 'moment';
-import {
-  getSheetNamesRequest,
-  createSheetNameRequest,
-  deleteSheetNameRequest,
-  updateSheetNameRequest,
-  //@ts-ignore
-} from '../../store/thunks/sheetName';
-//@ts-ignore
 import DetectEmptySheet from './DetectEmptySheet';
-//@ts-ignore
-import { selectFactoryRESTResponseTableValues } from '../../store/common/REST/selectors';
-//@ts-ignore
-import { selectSheetNamesStore } from '../../store/SheetNamesStore/selectors';
 import {
   calculateOptions,
   checkDuplicateSet,
   controllerAddRow,
   controllerEditRow,
   controllerDeleteRow,
-  //@ts-ignore
+  formatTimestamp,
+  fetchWithStatus,
 } from '../../tools/misc';
-//@ts-ignore
 import sheetNameController from '../../controllers/sheetName';
 //@ts-ignore
 import templateTypeController from '../../controllers/templateType';
 //@ts-ignore
 import CreateAuditLog from '../AuditLog_Global';
-
 import SheetName from '../../types/sheetname';
 
 interface SheetNameMT extends SheetName {
@@ -44,13 +28,11 @@ const SheetNameHeader = () => {
   return (
     <Paper className="header">
       <Typography variant="h5">Sheet Name</Typography>
-      {/* <HeaderActions/> */}
     </Paper>
   );
 };
 
 const SheetNamesTable = () => {
-  const dispatch = useDispatch();
   const [readRowNum, setRowNum] = useState(1);
   const [sheetNames, setSheetNames] = useState<SheetName[] | undefined>(undefined)
   const [idToName, setIdToName] = useState<{[key: string]: string, [key: number]: string} | undefined>();
@@ -64,7 +46,7 @@ const SheetNamesTable = () => {
   //         ...element,
   //         templateTypeId: type?.name
   //       };
-        
+
   //       return newElement;
   //     })
   //     Promise.all(promise).then(result => setSheetNames(result as SheetName[]));
@@ -74,7 +56,7 @@ const SheetNamesTable = () => {
 
   useEffect(() => {
     const status:any = {};
-    
+
     async function fetchTemplate() {
       let response = await templateTypeController.fetch()
       response.sort((a:any,b:any) => {
@@ -108,7 +90,7 @@ const SheetNamesTable = () => {
   const preColumns: Column<SheetNameMT>[] = [{ title: 'Name', field: 'name' }];
   const preSheets: SheetName[] = [
     {
-      name: 'LOADING...',
+      name: status,
       _id: '',
       id: 0,
       isActive: true,
@@ -120,8 +102,7 @@ const SheetNamesTable = () => {
 
   // Convert Date format
   sheetNames?.forEach((sheetName: SheetName) => {
-    const logtime = new Date(sheetName.timestamp);
-    sheetName.timestamp = moment(logtime).format('YYYY-MM-DD HH:mm:ss');
+    sheetName.timestamp = formatTimestamp(sheetName.timestamp);
   });
 
   // Prepare the columns for material table
@@ -139,8 +120,8 @@ const SheetNamesTable = () => {
         field: 'name',
         validate: rowData => checkDuplicateSet(rowData, sheetNames),
       },
-      { title: 'Template Type', 
-        field: 'templateTypeId', 
+      { title: 'Template Type',
+        field: 'templateTypeId',
         lookup: idToName,
         validate: rowData => checkDuplicateSet(rowData, sheetNames)
       },

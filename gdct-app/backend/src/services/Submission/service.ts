@@ -93,7 +93,7 @@ export default class SubmissionService {
     })
   }
 
-  async findQuery(query:Partial<Submission>) {
+  async findQuery(query: Partial<Submission>) {
     return await this.submissionRepository.findQuery(query)
   }
 
@@ -169,7 +169,7 @@ export default class SubmissionService {
     };
 
     return this.submissionRepository.update(submission._id, submission).then(() => {
-      return this.submissionNoteRepository.create(submissionNotes);
+      if (submissionNotes.note) return this.submissionNoteRepository.create(submissionNotes);
     });
   }
 
@@ -193,7 +193,7 @@ export default class SubmissionService {
         return this.programRepository.findById(submission.programId).then(program => {
           const programConst = { _id: program._id, name: program.name };
           return this.templateRepository.findById(submission.templateId).then(template => {
-            const templateConst = { _id: template._id, name: template.name };
+            const templateConst = template.name;
             return this.templateTypeRepository
             
               .findById(template.templateTypeId)
@@ -234,6 +234,7 @@ export default class SubmissionService {
   }
 
   async updateSubmission(submission:Submission) {
+    console.log('================================\n', submission)
     return this.submissionRepository.update(submission._id.toString(), submission).then(submission => {
       if (submission.phase === 'Approved') return this.phaseSubmission(submission._id);
     });
@@ -250,19 +251,20 @@ export default class SubmissionService {
       updatedBy,
       role,
     };
-
     const currentStatus = await this.statusRepository.findById(new ObjectId(submission.statusId));
     if (currentStatus.name == 'Approved') {
       submissionNotes.role = 'Approved';
       
-      return this.submissionNoteRepository.create(submissionNotes);
+      await this.submissionNoteRepository.create(submissionNotes);
+      return submission
     }
 
 
     if (role == undefined) {
       submissionNotes.role = currentStatus.name;
       
-      return this.submissionNoteRepository.create(submissionNotes);
+      await this.submissionNoteRepository.create(submissionNotes);
+      return submission
     }
   
     await this.submissionNoteRepository.create(submissionNotes);
@@ -282,10 +284,10 @@ export default class SubmissionService {
       await this.submissionRepository.findAndSetFalse(submission._id);
       //@ts-ignore
       delete submission._id;
-        const newSubmission = await this.submissionRepository.create(submission);
+      const newSubmission = await this.submissionRepository.create(submission);
 
-        await this.submissionNoteRepository.updateNoteToNewSubmission(oldSubmissionId, newSubmission._id.toString());
-        return newSubmission;
+      await this.submissionNoteRepository.updateNoteToNewSubmission(oldSubmissionId, newSubmission._id.toString());
+      return newSubmission;
 
       // return this.submissionRepository.findAndSetFalse(submission._id).then(async() => {
       //   delete submission._id;
@@ -300,7 +302,7 @@ export default class SubmissionService {
 
     submission.isLatest = true;
 
-    const newSubmission = this.submissionRepository.update(submission._id.toString(), submission);
+    const newSubmission = await this.submissionRepository.update(submission._id.toString(), submission);
     //@ts-ignore
     if (role === 'Approved') this.phaseSubmission(newSubmission._id);
 

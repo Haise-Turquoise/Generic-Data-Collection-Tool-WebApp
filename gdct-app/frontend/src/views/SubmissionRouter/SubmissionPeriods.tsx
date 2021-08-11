@@ -30,6 +30,8 @@ import {
   controllerAddRow,
   controllerEditRow,
   controllerDeleteRow,
+  formatTimestamp,
+  fetchWithStatus,
   //@ts-ignore
 } from '../../tools/misc'
 //@ts-ignore
@@ -50,16 +52,15 @@ const SubmissionPeriod = () => {
   const [readRowNum, setRowNum] = useState(1);
   const [submissionPeriods, setSubmissionPeriods] =
     useState<SubmissionPeriod[] | undefined>(undefined)
+  const [status, setStatus] = useState<'LOADING...' | 'NOT ALLOWED'>('LOADING...')
 
   useEffect(() => {
-    SubmissionPeriodController.fetch().then((res: unknown) => {
-      setSubmissionPeriods(res as SubmissionPeriod[])
-    })
+    fetchWithStatus<SubmissionPeriod>(SubmissionPeriodController, setSubmissionPeriods, setStatus)
   }, [])
 
   // table vars for loading
   const preColumns = [{ title: 'Name', field: 'name' }];
-  const prePeriods = [{ name: 'LOADING...' }];
+  const prePeriods = [{ name: status }];
 
   const { lookupReportingPeriods }: {
     lookupReportingPeriods: {[key:string]: any}
@@ -72,8 +73,7 @@ const SubmissionPeriod = () => {
 
   // Convert Date format
   submissionPeriods?.forEach(submissionPeriod => {
-    const logtime = new Date(submissionPeriod.timestamp);
-    submissionPeriod.timestamp = moment(logtime).format('YYYY-MM-DD HH:mm:ss');
+    submissionPeriod.timestamp = formatTimestamp(submissionPeriod.timestamp);
   });
 
   const columns: Column<SubmissionPeriod>[] = useMemo(

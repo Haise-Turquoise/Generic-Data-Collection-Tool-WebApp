@@ -1,33 +1,13 @@
   
-import React, { useMemo, useEffect, useState, MouseEventHandler } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import React, { useMemo, useEffect, useState } from 'react';
 
 import MaterialTable, { Action, Column, Options } from 'material-table';
 import AddIcon from '@material-ui/icons/Add';
 import DeleteIcon from '@material-ui/icons/Delete';
-import PropTypes from 'prop-types';
-
-//@ts-ignore
-import { selectAppResourcesStore } from '../../../store/AppResourcesStore/selectors';
-//@ts-ignore
-import { getAppResourcesRequest } from '../../../store/thunks/AppResource';
-//
-//@ts-ignore
-import { selectFactoryRESTResponseTableValues } from '../../../store/common/REST/selectors';
-//@ts-ignore
-import { selectProgramsStore } from '../../../store/ProgramsStore/selectors';
-//@ts-ignore
-import { getProgramsRequest } from '../../../store/thunks/program';
 import {
-  calculateOptions,
-  controllerAddRow,
-  controllerEditRow,
-  controllerDeleteRow
-  //@ts-ignore
+  calculateOptions, fetchWithStatus
 } from '../../../tools/misc';
-//@ts-ignore
 import AppResourceController from '../../../controllers/AppResource'
-
 import AppResource from '../../../types/appresource';
 
 const AppResourceList = ({ resourceId, isEditable = true, onClickAdd, onClickDelete }: {
@@ -37,11 +17,10 @@ const AppResourceList = ({ resourceId, isEditable = true, onClickAdd, onClickDel
   onClickDelete: (e: any, value: AppResource | AppResource[]) => void,
 }) => {
   const [resourceList, setResourceList] = useState<AppResource[] | undefined>(undefined)
+  const [status, setStatus] = useState<'LOADING...' | 'NOT ALLOWED'>('LOADING...')
   
   useEffect(() => {
-    AppResourceController.fetch().then((res: unknown) => {
-      setResourceList(res as AppResource[])
-    })
+    fetchWithStatus<AppResource>(AppResourceController, setResourceList, setStatus)
   }, [])
   
   // convert resourceId into a id only array
@@ -56,7 +35,7 @@ const AppResourceList = ({ resourceId, isEditable = true, onClickAdd, onClickDel
     _id: '',
     id: 0,
     isProtected: '',
-    resourceName: 'LOADING...',
+    resourceName: status,
     resourcePath: '',
     timestamp: '',
     updatedBy: '',
@@ -65,7 +44,7 @@ const AppResourceList = ({ resourceId, isEditable = true, onClickAdd, onClickDel
     _id: '',
     id: 0,
     isProtected: '',
-    resourceName: 'LOADING...',
+    resourceName: status,
     resourcePath: '',
     timestamp: '',
     updatedBy: '',

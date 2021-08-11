@@ -1,47 +1,19 @@
 import React, { useMemo, useEffect, useState } from 'react';
-import { useDispatch, useSelector, shallowEqual } from 'react-redux';
-
 import MaterialTable, { Action, Column } from 'material-table';
 import LaunchIcon from '@material-ui/icons/Launch';
 import { Paper, Typography } from '@material-ui/core';
-
-
-import {
-  getTemplateTypesRequest,
-  createTemplateTypeRequest,
-  deleteTemplateTypeRequest,
-  updateTemplateTypeRequest,
-  //@ts-ignore
-} from '../../store/thunks/templateType';
-
-  //@ts-ignore
-import { selectFactoryRESTResponseTableValues } from '../../store/common/REST/selectors';
-  //@ts-ignore
 import { selectTemplateTypesStore } from '../../store/TemplateTypesStore/selectors';
-  //@ts-ignore
-import { selectWorkflowsStore } from '../../store/WorkflowsStore/selectors';
-  //@ts-ignore
-import { getWorkflowsRequest } from '../../store/thunks/workflow';
-  //@ts-ignore
-import { WorkflowStoreActions } from '../../store/WorkflowStore/store';
-  //@ts-ignore
-import TemplateTypesStore from '../../store/TemplateTypesStore/store';
-  //@ts-ignore
 import ErrorBanner from '../ErrorBanner';
-//@ts-ignore
 import {
     calculateOptions,
     controllerAddRow,
     controllerEditRow,
     controllerDeleteRow,
-    //@ts-ignore
+    formatTimestamp,
+    fetchWithStatus,
 } from '../../tools/misc';
-import moment from 'moment';
-  //@ts-ignore
 import CreateAuditLog from '../AuditLog_Global';
-  //@ts-ignore
 import templateTypeController from '../../controllers/templateType';
-//@ts-ignore
 import WorkflowController from '../../controllers/workflow'
 
 import TemplateType from '../../types/templatetype';
@@ -56,7 +28,6 @@ const TemplateTypeHeader = () => {
   return (
     <Paper className="header">
       <Typography variant="h5">Template Type</Typography>
-      {/* <HeaderActions/> */}
     </Paper>
   );
 };
@@ -68,11 +39,10 @@ const TemplateTypesTable = ({ history }: RouterProps) => {
     useState<TemplateType[] | undefined>(undefined)
   const [workflows, setWorkflows] =
     useState<Workflow[] | undefined>(undefined)
+  const [status, setStatus] = useState<'LOADING...' | 'NOT ALLOWED'>('LOADING...')
 
   useEffect(() => {
-    templateTypeController.fetch().then((res: unknown) => {
-      setTemplateTypes(res as TemplateType[])
-    })
+    fetchWithStatus<TemplateType>(templateTypeController, setTemplateTypes, setStatus)
     WorkflowController.fetch().then((res: unknown) => {
       setWorkflows(res as Workflow[])
     })
@@ -80,7 +50,7 @@ const TemplateTypesTable = ({ history }: RouterProps) => {
 
   const preColumns: Column<TemplateTypeMT>[] = [{ title: 'Name', field: 'name' }]
   const preTypes: TemplateTypeMT[] = [{
-    name: 'LOADING...',
+    name: status,
     _id: '',
     description: '',
     programId: [],
@@ -98,8 +68,7 @@ const TemplateTypesTable = ({ history }: RouterProps) => {
   }]
   // Convert Date format
   templateTypes?.forEach(templateType => {
-    const logtime = new Date(templateType.timestamp);
-    templateType.timestamp = moment(logtime).format('YYYY-MM-DD HH:mm:ss');
+    templateType.timestamp = formatTimestamp(templateType.timestamp);
   });
 
   // Config the lookup function for columns

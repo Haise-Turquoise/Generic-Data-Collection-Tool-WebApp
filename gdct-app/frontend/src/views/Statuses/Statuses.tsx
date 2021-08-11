@@ -1,37 +1,18 @@
 import React, { useMemo, useEffect, useState } from 'react';
-import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 
 import MaterialTable, { Column, Options } from 'material-table';
 import { Paper, Typography } from '@material-ui/core';
-
-import moment from 'moment';
-
-import {
-  getStatusesRequest,
-  createStatusRequest,
-  deleteStatusRequest,
-  updateStatusRequest,
-  //@ts-ignore
-} from '../../store/thunks/status';
-
-//@ts-ignore
-import { selectFactoryRESTResponseTableValues } from '../../store/common/REST/selectors';
-//@ts-ignore
-import { selectStatusesStore } from '../../store/StatusesStore/selectors';
-
 import {
   calculateOptions,
   controllerAddRow,
   controllerEditRow,
   controllerDeleteRow,
-  //@ts-ignore
+  formatTimestamp,
+  fetchWithStatus,
+  checkDuplicates,
 } from '../../tools/misc';
-
-//@ts-ignore
 import statusController from '../../controllers/status';
-//@ts-ignore
 import CreateAuditLog from '../AuditLog_Global';
-
 import Status from '../../types/status';
 
 interface StatusMT extends Status {
@@ -42,20 +23,17 @@ const StatusHeader = () => {
   return (
     <Paper className="header">
       <Typography variant="h5">Status</Typography>
-      {/* <HeaderActions/> */}
     </Paper>
   );
 };
 
 const StatusesTable = () => {
-  const dispatch = useDispatch();
   const [readRowNum, setRowNum] = useState(1);
   const [statuses, setStatuses] = useState<Status[] | undefined>(undefined)
+  const [status, setStatus] = useState<'LOADING...' | 'NOT ALLOWED'>('LOADING...')
 
   useEffect(() => {
-    statusController.fetch().then((res: unknown) => {
-      setStatuses(res as Status[])
-    })
+    fetchWithStatus<Status>(statusController, setStatuses, setStatus)
   }, [])
 
   const preColumns: Column<StatusMT>[] = [{ title: 'Name', field: 'name' }]
@@ -72,14 +50,13 @@ const StatusesTable = () => {
   
   // Convert Date format
   statuses?.forEach((status: Status) => {
-    const logtime = new Date(status.timestamp);
-    status.timestamp = moment(logtime).format('YYYY-MM-DD HH:mm:ss');
+    status.timestamp = formatTimestamp(status.timestamp);
   });
 
   // Prepare the columns for material table
   const columns: Column<StatusMT>[] = useMemo(
     () => [
-      { title: 'Name', field: 'name' },
+      { title: 'Name', field: 'name', validate: rowData => checkDuplicates(rowData, statuses, 'name') },
       { title: 'Description', field: 'description' },
       { title: 'Active', type: 'boolean', field: 'isActive' },
       { title: 'For Package', type: 'boolean', field: 'forPackage' },
@@ -98,7 +75,7 @@ const StatusesTable = () => {
         },
       },
     ],
-    [],
+    [statuses],
   );
 
   const options: Options<StatusMT> = useMemo(() => calculateOptions(readRowNum), [readRowNum]);

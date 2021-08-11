@@ -14,7 +14,7 @@ export interface UserProg {
 }
 
 export interface UserOrg {
-  orgId: number,
+  orgId: string,
   orgName: string,
   _id?: string,
   program: UserProg[],
@@ -29,7 +29,7 @@ export interface UserSysRole extends SysRole {
 export interface ToBeApproved {
   organization: {
     name: string,
-    id: number,
+    id: string,
     authorizedPerson: {
       name: string,
       email: string,
@@ -124,7 +124,7 @@ export interface RawData {
   email: string,
   firstName: string,
   lastName: string,
-  orgId: number,
+  orgId: string,
   orgName: string,
   phoneNumber: string,
   programCode: string,

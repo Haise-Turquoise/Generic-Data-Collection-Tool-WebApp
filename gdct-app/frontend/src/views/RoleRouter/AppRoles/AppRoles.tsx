@@ -1,34 +1,18 @@
 import React, { useMemo, useEffect, useState } from 'react';
-import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 
 import MaterialTable, { Column, Options } from 'material-table';
 import { Paper, Typography } from '@material-ui/core';
-import moment from 'moment';
-
-import {
-  getAppRolesRequest,
-  createAppRoleRequest,
-  deleteAppRoleRequest,
-  updateAppRoleRequest,
-//@ts-ignore
-} from '../../../store/thunks/AppRole';
-
-//@ts-ignore
-import { selectFactoryRESTResponseTableValues } from '../../../store/common/REST/selectors';
-//@ts-ignore
-import { selectAppRolesStore } from '../../../store/AppRolesStore/selectors';
 import {
   calculateOptions,
   controllerAddRow,
   controllerEditRow,
   controllerDeleteRow,
-  //@ts-ignore
+  formatTimestamp,
+  checkDuplicates,
+  fetchWithStatus,
 } from '../../../tools/misc';
-//@ts-ignore
 import CreateAuditLog from '../../AuditLog_Global';
-//@ts-ignore
 import AppRoleController from '../../../controllers/AppRole';
-
 import AppRole from '../../../types/approle';
 interface AppRoleMT extends AppRole {
   tableData?: any,
@@ -38,26 +22,23 @@ const AppRolesHeader = () => {
   return (
     <Paper className="header">
       <Typography variant="h5">Application Role</Typography>
-      {/* <HeaderActions/> */}
     </Paper>
   );
 };
 
 const AppRolesTable = () => {
-  const dispatch = useDispatch();
   const [readRowNum, setRowNum] = useState(1);
   const [appRoles, setAppRoles] = useState<AppRole[] | undefined>(undefined)
+  const [status, setStatus] = useState<'LOADING...' | 'NOT ALLOWED'>('LOADING...')
 
   useEffect(() => {
-    AppRoleController.fetch().then((res: unknown) => {
-      setAppRoles(res as AppRole[])
-    })
+    fetchWithStatus<AppRole>(AppRoleController, setAppRoles, setStatus)
   }, [])
 
   // table stuff while loading
   const preColumns: Column<AppRoleMT>[] = [{title: 'Name', field: 'name'}]
   const preAppRoles: AppRoleMT[] = [{
-    name: 'LOADING...',
+    name: status,
     _id: '',
     code: '',
     isActive: false,
@@ -67,15 +48,14 @@ const AppRolesTable = () => {
 
   // Convert Date format
   appRoles?.forEach(appRole => {
-    const logtime = new Date(appRole.timestamp);
-    appRole.timestamp = moment(logtime).format('YYYY-MM-DD HH:mm:ss');
+    appRole.timestamp = formatTimestamp(appRole.timestamp);
   });
 
   // Prepare the columns for material table
   const columns: Column<AppRoleMT>[] = useMemo(
     () => [
-      { title: 'Code', field: 'code' },
-      { title: 'Name', field: 'name' },
+      { title: 'Code', field: 'code', validate: rowData => checkDuplicates(rowData, appRoles, 'code') },
+      { title: 'Name', field: 'name', validate: rowData => checkDuplicates(rowData, appRoles, 'name') },
       {
         title: 'Modified On',
         field: 'timestamp',
@@ -91,7 +71,7 @@ const AppRolesTable = () => {
         },
       },
     ],
-    [],
+    [appRoles],
   );
 
   const options: Options<AppRoleMT> = useMemo(() => calculateOptions(readRowNum), [readRowNum]);

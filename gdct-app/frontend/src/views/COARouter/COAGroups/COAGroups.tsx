@@ -1,35 +1,19 @@
 import React, { useMemo, useEffect, useState } from 'react';
-import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 
 import MaterialTable, { Column, Options } from 'material-table';
 import { Paper, Typography } from '@material-ui/core';
-import moment from 'moment';
-
-import {
-  getCOAGroupsRequest,
-  createCOAGroupRequest,
-  deleteCOAGroupRequest,
-  updateCOAGroupRequest,
-  //@ts-ignore
-} from '../../../store/thunks/COAGroup';
-
-  //@ts-ignore
 import ErrorBanner from '../../ErrorBanner'
-  //@ts-ignore
-import { selectFactoryRESTResponseTableValues } from '../../../store/common/REST/selectors';
-  //@ts-ignore
 import { selectCOAGroupsStore } from '../../../store/COAGroupsStore/selectors';
 import { 
   calculateOptions,
   checkDuplicates,
   controllerAddRow,
   controllerEditRow,
-  controllerDeleteRow
-  //@ts-ignore
+  controllerDeleteRow,
+  formatTimestamp,
+  fetchWithStatus
 } from '../../../tools/misc';
-  //@ts-ignore
 import CreateAuditLog from '../../AuditLog_Global';
-  //@ts-ignore
 import COAGroupController from '../../../controllers/COAGroup';
 
 import CategoryGroup from '../../../types/categorygroup';
@@ -42,35 +26,31 @@ const COAGroupsHeader = () => {
   return (
     <Paper className="header">
       <Typography variant="h5">Category Group Management</Typography>
-      {/* <HeaderActions/> */}
     </Paper>
   );
 };
 
 // The material table
 const COAGroupsTable = () => {
-  const dispatch = useDispatch();
   const [readRowNum, setRowNum] = useState(1);
   const [COAGroups, setCOAGroups] = useState<CategoryGroup[] | undefined>(undefined)
+  const [status, setStatus] = useState<'LOADING...' | 'NOT ALLOWED'>('LOADING...')
 
   useEffect(() => {
-    COAGroupController.fetch().then((res: unknown) => {
-      setCOAGroups(res as CategoryGroup[])
-    })
+    fetchWithStatus<CategoryGroup>(COAGroupController, setCOAGroups, setStatus)
   }, [])
 
   // table stuff while loading
   const preColumns: Column<CategoryGroupMT>[] = [{title: 'Name', field: 'name'}]
   const preGroups: CategoryGroupMT[] = [{ 
-    name: 'LOADING...',
+    name: status,
     _id: '',
     timestamp: '',
   }]
 
   // Convert Date format
   COAGroups?.forEach((COAGroup: CategoryGroup) => {
-    const logtime = new Date(COAGroup.timestamp);
-    COAGroup.timestamp = moment(logtime).format('YYYY-MM-DD HH:mm:ss');
+    COAGroup.timestamp = formatTimestamp(COAGroup.timestamp)
   });
 
   // Prepare the columns for material table
@@ -181,7 +161,7 @@ const COAGroupsTable = () => {
           );
         }),
     }),
-    [dispatch],
+    [],
   );
 
   useEffect(() => { 

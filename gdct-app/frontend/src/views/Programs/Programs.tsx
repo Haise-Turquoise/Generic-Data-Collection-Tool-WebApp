@@ -1,20 +1,7 @@
 import React, { useMemo, useEffect, useState } from 'react';
-import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 
-import moment from 'moment';
-
-import MaterialTable, { Column, MaterialTableProps, Options } from 'material-table';
+import MaterialTable, { Column, Options } from 'material-table';
 import { Paper, Typography } from '@material-ui/core';
-import {
-  getProgramsRequest,
-  createProgramsRequest,
-  deleteProgramsRequest,
-  updateProgramsRequest,
-  //@ts-ignore
-} from '../../store/thunks/program';
-//@ts-ignore
-import { selectFactoryRESTResponseTableValues } from '../../store/common/REST/selectors';
-//@ts-ignore
 import { selectProgramsStore } from '../../store/ProgramsStore/selectors';
 import {
   calculateOptions,
@@ -22,14 +9,12 @@ import {
   controllerAddRow,
   controllerEditRow,
   controllerDeleteRow,
-  //@ts-ignore
+  formatTimestamp,
+  fetchWithStatus,
 } from '../../tools/misc'
 
-//@ts-ignore
 import ErrorBanner from '../ErrorBanner';
-//@ts-ignore
 import ProgramController from '../../controllers/Program';
-//@ts-ignore
 import CreateAuditLog from '../AuditLog_Global';
 import Program from '../../types/program';
 
@@ -41,27 +26,24 @@ const ProgramHeader = () => {
   return (
     <Paper className="header">
       <Typography variant="h5">Program</Typography>
-      {/* <HeaderActions/> */}
     </Paper>
   );
 };
 
 const ProgramsTable = () => {
-  const dispatch = useDispatch();
   const [readRowNum, setRowNum] = useState(1);
   const [programs, setPrograms] = useState<Program[] | undefined>(undefined)
+  const [status, setStatus] = useState<'LOADING...' | 'NOT ALLOWED'>('LOADING...')
 
   useEffect(() => {
-    ProgramController.fetch().then((res: unknown) => {
-      setPrograms(res as Program[])
-    })
+    fetchWithStatus<Program>(ProgramController, setPrograms, setStatus)
   }, [])
 
   // table vars for loading
   const preColumns: Column<ProgramMT>[] = [{ title: 'Name', field: 'name' }];
   const prePrograms: ProgramMT[] = [
     {
-      name: 'LOADING... ',
+      name: status,
       _id: '',
       code: '',
       isActive: true,
@@ -73,8 +55,7 @@ const ProgramsTable = () => {
 
   // Convert Date format
   programs?.forEach((program: Program) => {
-    const logtime = new Date(program.timestamp);
-    program.timestamp = moment(logtime).format('YYYY-MM-DD HH:mm:ss');
+    program.timestamp = formatTimestamp(program.timestamp);
   });
 
   // Prepare the columns for material table

@@ -2,6 +2,7 @@ import React, { useMemo, useEffect, useState, MouseEvent } from 'react';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import MaterialTable, { Action, Options } from 'material-table';
 import { Paper, Typography } from '@material-ui/core';
+//@ts-ignore
 import cloneDeep from 'clone-deep';
 
 import AddIcon from '@material-ui/icons/Add';
@@ -50,8 +51,8 @@ const RequestManagementTable = () => {
   }, shallowEqual);
   // // Convert Date format
   // statuses.forEach(status => {
-  //   const logtime = new Date(status.timestamp);
-  //   status.timestamp = moment(logtime).format("YYYY-MM-DD HH:mm:ss")
+  //   // will work if this is needer, import formatTimestamp from tools
+  //   status.timestamp = formatTimestamp(status.timestamp)
   // });
   let toBeApproved = [];
   if (user && user.toBeApproved) {
