@@ -1,30 +1,20 @@
 import React, { useMemo, useEffect, useState } from 'react';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
-import { RouteChildrenProps, RouteComponentProps, RouterProps, useHistory } from 'react-router-dom';
+import { RouteComponentProps, useHistory } from 'react-router-dom';
 
 import MaterialTable, { Column, Options } from 'material-table';
 import { Paper, Typography, Button } from '@material-ui/core';
-//@ts-ignore
 import Loading from '../../components/Loading';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
-//@ts-ignore
-import Loading from '../../components/Loading';
 
 import {
   getTemplateTypesRequest,
   updateTemplateTypeRequest,
-//@ts-ignore
 } from '../../store/thunks/templateType';
-
-//@ts-ignore
 import ProgramList from '../OrganizationRouter/ProgramList';
-//@ts-ignore
 import { selectFactoryRESTResponseTableValues } from '../../store/common/REST/selectors';
-//@ts-ignore
 import { selectTemplateTypesStore } from '../../store/TemplateTypesStore/selectors';
-//@ts-ignore
 import TemplateTypesStore from '../../store/TemplateTypesStore/store';
-//@ts-ignore
 import { calculateOptions } from '../../tools/misc';
 
 import TemplateType from '../../types/templatetype';
@@ -35,7 +25,6 @@ const TemplateTypeHeader = () => {
   return (
     <Paper className="header">
       <Typography variant="h5">Template Type Viewer</Typography>
-      {/* <HeaderActions/> */}
     </Paper>
   );
 };

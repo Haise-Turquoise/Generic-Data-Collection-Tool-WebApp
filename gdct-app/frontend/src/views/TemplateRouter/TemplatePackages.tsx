@@ -23,7 +23,7 @@ import { getSubmissionPeriodsRequest } from '../../store/thunks/submissionPeriod
 import StatusesStore from '../../store/StatusesStore/store';
 import SubmissionPeriodsStore from '../../store/SubmissionPeriodsStore/store';
 import ErrorBanner from '../ErrorBanner';
-import { calculateOptions, controllerAddRow, controllerEditRow, controllerDeleteRow, formatTimestamp, fetchWithStatus } from '../../tools/misc';
+import { calculateOptions, controllerAddRow, controllerEditRow, controllerDeleteRow, formatTimestamp, fetchWithStatus, checkDuplicates } from '../../tools/misc';
 import CreateAuditLog from '../AuditLog_Global';
 import templatePackageController from '../../controllers/templatePackage';
 
@@ -113,7 +113,7 @@ const TemplatePackages = () => {
   // Prepare the columns for material table
   const columns: Column<TemplatePackageMT>[] = useMemo(
     () => [
-      { title: 'Name', field: 'name' },
+      { title: 'Name', field: 'name', validate: rowData => checkDuplicates(rowData, templatePackages, 'name') },
       {
         title: 'Submission Period ID',
         field: 'submissionPeriodId',
@@ -211,7 +211,7 @@ const TemplatePackages = () => {
         },
       },
     ],
-    [lookupStatuses, lookupSubmissionPeriods],
+    [lookupStatuses, lookupSubmissionPeriods, templatePackages],
   );
 
   const options: Options<TemplatePackageMT> = useMemo(() => calculateOptions(readRowNum), [readRowNum]);

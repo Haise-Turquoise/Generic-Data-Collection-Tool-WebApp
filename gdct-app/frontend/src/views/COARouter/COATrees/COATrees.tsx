@@ -34,7 +34,6 @@ const COATreesHeader = () => {
   return (
     <Paper className="header">
       <Typography variant="h5">Category Tree Management</Typography>
-      {/* <HeaderActions/> */}
     </Paper>
   );
 };

@@ -16,7 +16,6 @@ const COAsHeader = () => {
   return (
     <Paper className="header">
       <Typography variant="h5">Category Management</Typography>
-      {/* <HeaderActions/> */}
     </Paper>
   );
 };

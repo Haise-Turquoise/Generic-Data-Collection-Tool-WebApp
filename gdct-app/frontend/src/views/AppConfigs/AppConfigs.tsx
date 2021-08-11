@@ -1,5 +1,4 @@
 import React, { useMemo, useEffect, useState } from 'react';
-import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 
 import MaterialTable, { Column, Options } from 'material-table';
 import { Paper, Typography } from '@material-ui/core';
@@ -46,13 +45,11 @@ const AppConfigsHeader = () => {
   return (
     <Paper className="header">
       <Typography variant="h5">Configuration</Typography>
-      {/* <HeaderActions/> */}
     </Paper>
   );
 };
 
 const AppConfigsTable = () => {
-  const dispatch = useDispatch();
   const [appConfigs, setAppConfigs] = useState<AppConfig[] | undefined>(undefined)
   const [appSyses, setAppSyses] = useState<AppSys[] | undefined>(undefined)
   const [status, setStatus] = useState<'LOADING...' | 'NOT ALLOWED'>('LOADING...')

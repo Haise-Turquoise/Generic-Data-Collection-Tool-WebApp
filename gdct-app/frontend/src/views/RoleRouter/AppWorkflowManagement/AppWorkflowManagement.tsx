@@ -10,7 +10,6 @@ import roleWorkflowStatusController from '../../../controllers/RoleWorkflowStatu
 import AppRoleController from '../../../controllers/AppRole';
 import RoleWorkflowStatus from '../../../types/roleWorkflowStatus';
 import Swal from 'sweetalert2';
-import AppRole from '../../../types/approle';
 type propType = { role: string }
 type nameObj = { name: string }
 
@@ -23,7 +22,6 @@ const AppRoleWorkflowStatusManagementHeader = ({
     <Paper className="header">
       <Typography variant="h5">App Role Workflow Management</Typography>
       <Typography variant="body1">{role}</Typography>
-      {/* <HeaderActions/> */}
     </Paper>
   );
 };
