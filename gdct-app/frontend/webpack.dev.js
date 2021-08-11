@@ -14,6 +14,7 @@ module.exports = merge(common, {
     port: 3003,
     open: true,
     historyApiFallback: true,
+    disableHostCheck: true
   },
   module: {
     rules: [
