@@ -1,24 +1,9 @@
 import React, { useMemo, useEffect, useState } from 'react';
-import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 
 import MaterialTable, { Column, Options } from 'material-table';
 import { Paper, Typography } from '@material-ui/core';
 import Swal, { SweetAlertResult } from 'sweetalert2';
-
-import moment from 'moment';
-import {
-  getSheetNamesRequest,
-  createSheetNameRequest,
-  deleteSheetNameRequest,
-  updateSheetNameRequest,
-  //@ts-ignore
-} from '../../store/thunks/sheetName';
-//@ts-ignore
 import DetectEmptySheet from './DetectEmptySheet';
-//@ts-ignore
-import { selectFactoryRESTResponseTableValues } from '../../store/common/REST/selectors';
-//@ts-ignore
-import { selectSheetNamesStore } from '../../store/SheetNamesStore/selectors';
 import {
   calculateOptions,
   checkDuplicates,
@@ -26,13 +11,10 @@ import {
   controllerEditRow,
   controllerDeleteRow,
   formatTimestamp,
-  //@ts-ignore
+  fetchWithStatus,
 } from '../../tools/misc';
-//@ts-ignore
 import sheetNameController from '../../controllers/sheetName';
-//@ts-ignore
 import CreateAuditLog from '../AuditLog_Global';
-
 import SheetName from '../../types/sheetname';
 
 interface SheetNameMT extends SheetName {
@@ -43,27 +25,24 @@ const SheetNameHeader = () => {
   return (
     <Paper className="header">
       <Typography variant="h5">Sheet Name</Typography>
-      {/* <HeaderActions/> */}
     </Paper>
   );
 };
 
 const SheetNamesTable = () => {
-  const dispatch = useDispatch();
   const [readRowNum, setRowNum] = useState(1);
   const [sheetNames, setSheetNames] = useState<SheetName[] | undefined>(undefined)
+  const [status, setStatus] = useState<'LOADING...' | 'NOT ALLOWED'>('LOADING...')
 
   useEffect(() => {
-    sheetNameController.fetch().then((res: unknown) => {
-      setSheetNames(res as SheetName[])
-    })
+    fetchWithStatus<SheetName>(sheetNameController, setSheetNames, setStatus)
   }, [])
 
   // table vars while loading data
   const preColumns: Column<SheetNameMT>[] = [{ title: 'Name', field: 'name' }];
   const preSheets: SheetName[] = [
     {
-      name: 'LOADING...',
+      name: status,
       _id: '',
       id: 0,
       isActive: true,

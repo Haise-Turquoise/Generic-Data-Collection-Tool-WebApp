@@ -1,21 +1,6 @@
 import React, { useMemo, useEffect, useState } from 'react';
-import { useDispatch, useSelector, shallowEqual } from 'react-redux';
-
-import moment from 'moment';
-
 import MaterialTable, { Column, Options } from 'material-table';
 import { Paper, Typography } from '@material-ui/core';
-
-import {
-  getReportingPeriodsRequest,
-  createReportingPeriodRequest,
-  deleteReportingPeriodRequest,
-  updateReportingPeriodRequest,
-  //@ts-ignore
-} from '../../store/thunks/reportingPeriod';
-//@ts-ignore
-import { selectFactoryRESTResponseTableValues } from '../../store/common/REST/selectors';
-//@ts-ignore
 import { selectReportingPeriodsStore } from '../../store/ReportingPeriodsStore/selectors';
 import {
   calculateOptions,
@@ -23,16 +8,13 @@ import {
   controllerEditRow,
   controllerDeleteRow,
   formatTimestamp,
-  //@ts-ignore
+  checkDuplicates,
+  fetchWithStatus,
 } from '../../tools/misc'
 
-//@ts-ignore
 import ErrorBanner from '../ErrorBanner';
-//@ts-ignore
 import CreateAuditLog from '../AuditLog_Global';
-//@ts-ignore
 import reportingPeriodController from '../../controllers/reportingPeriod';
-
 import ReportingPeriod from '../../types/reportingperiod';
 
 interface ReportingPeriodMT extends ReportingPeriod {
@@ -43,7 +25,6 @@ const ReportingPeriodHeader = () => {
   return (
     <Paper className="header">
       <Typography variant="h5">Reporting Period</Typography>
-      {/* <HeaderActions/> */}
     </Paper>
   );
 };
@@ -60,22 +41,20 @@ const generateCode = (name: string) => {
 } 
 
 const ReportingPeriodsTable = () => {
-  const dispatch = useDispatch();
   const [readRowNum, setRowNum] = useState(1);
   const [reportingPeriods, setReportingPeriods] =
     useState<ReportingPeriod[] | undefined>(undefined)
+  const [status, setStatus] = useState<'LOADING...' | 'NOT ALLOWED'>('LOADING...')
 
   useEffect(() => {
-    reportingPeriodController.fetch().then((res: unknown) => {
-      setReportingPeriods(res as ReportingPeriod[])
-    })
+    fetchWithStatus<ReportingPeriod>(reportingPeriodController, setReportingPeriods, setStatus)
   }, [])
 
   // table vars for loading
   const preColumns: Column<ReportingPeriodMT>[] = [{ title: 'Name', field: 'name' }];
   const prePeriods: ReportingPeriodMT[] = [
     {
-      name: 'LOADING... ',
+      name: status,
       _id: '',
       code: '',
       submissionClosed: false,
@@ -95,7 +74,7 @@ const ReportingPeriodsTable = () => {
   // Prepare the columns for material table
   const columns: Column<ReportingPeriodMT>[] = useMemo(
     () => [
-      { title: 'Name', field: 'name' },
+      { title: 'Name', field: 'name', validate: rowData => checkDuplicates(rowData, reportingPeriods, 'name') },
       { title: 'Code', field: 'code', editComponent: () => (<div></div>) },
       {
         title: 'Modified On',
@@ -113,7 +92,7 @@ const ReportingPeriodsTable = () => {
       },
       { title: 'submissionClosed', field: 'submissionClosed' },
     ],
-    [],
+    [reportingPeriods],
   );
 
   const options: Options<ReportingPeriodMT> = useMemo(() => calculateOptions(readRowNum), [
@@ -196,7 +175,7 @@ const ReportingPeriodsTable = () => {
             })
         }),
     }),
-    [dispatch],
+    [],
   );
 
   return (

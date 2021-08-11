@@ -1,8 +1,5 @@
 // ModifyOrganization is the parent page for CreateOrganization and EditOrganization
 import React, { useState, useEffect, ChangeEventHandler, ChangeEvent } from 'react';
-//@ts-ignore
-import { selectOrgsStore } from '../../../store/OrganizationsStore/selectors';
-
 import PropTypes from 'prop-types';
 import moment from 'moment';
 
@@ -19,13 +16,7 @@ import {
 
 import './ModifyOrganization.scss';
 import ProgList from '../ProgramList';
-//@ts-ignore
-import ErrorBanner from '../../ErrorBanner';
-
-//@ts-ignore
 import orgController from '../../../controllers/organization';
-//@ts-ignore
-import OrgsStore from '../../../store/OrganizationsStore/store';
 import { connect } from 'react-redux';
 
 import Organization from '../../../types/organization';
@@ -66,7 +57,6 @@ const OrganizationHeader = ({ title }: { title: string }) => {
   return (
     <Paper className="header">
       <Typography variant="h5">{title}</Typography>
-      {/* <HeaderActions/> */}
     </Paper>
   );
 };

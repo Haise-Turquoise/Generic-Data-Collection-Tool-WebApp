@@ -3,7 +3,6 @@ import MaterialTable, { Action, Column, Options } from 'material-table';
 import LaunchIcon from '@material-ui/icons/Launch';
 import { Paper, Typography } from '@material-ui/core';
 import AppRoleController from '../../../controllers/AppRole'
-import roleSubmissionButtonController from '../../../controllers/RoleSubmissionButton';
 import {
   calculateOptions,
   formatTimestamp,
@@ -22,7 +21,6 @@ const AppRoleWorkflowHeader = () => {
   return (
     <Paper className="header">
       <Typography variant="h5">App Role Workflows Management</Typography>
-      {/* <HeaderActions/> */}
     </Paper>
   );
 };
@@ -30,6 +28,7 @@ const AppRoleWorkflowHeader = () => {
 // Prepare the data for material table
 const AppRoleWorkflowTable = ({ history }: RouteComponentProps) => {
   const [readRowNum, setRowNum] = useState(1);
+  const [status, setStatus] = useState<'LOADING...' | 'NOT ALLOWED'>('LOADING...')
   const [appRoles, setAppRoles] =
     useState<AppRolePlus[] | undefined>(undefined)
 
@@ -38,6 +37,10 @@ const AppRoleWorkflowTable = ({ history }: RouteComponentProps) => {
       async () => {
         const appRoleRes = await AppRoleController.fetch()
         const workflowsRes = await roleWorkflowStatusController.findAll()
+        if (!workflowsRes) {
+          setStatus('NOT ALLOWED')
+          return
+        }
         const appRolesPlus: AppRolePlus[] = []
         for (const appRole of appRoleRes) {
           const workflowRes = workflowsRes.find(workflow => workflow.role === appRole.name)
@@ -60,7 +63,7 @@ const AppRoleWorkflowTable = ({ history }: RouteComponentProps) => {
     name: '',
     isActive: false,
     timestamp: '',
-    updatedBy: 'LOADING...',
+    updatedBy: status,
     modifiedOn: '',
   }]
 

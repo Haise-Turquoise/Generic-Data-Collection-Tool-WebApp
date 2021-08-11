@@ -5,28 +5,11 @@ import MaterialTable, { Column, Options } from 'material-table';
 import { Paper, Typography, Collapse, IconButton } from '@material-ui/core';
 import Alert from '@material-ui/lab/Alert';
 import CloseIcon from '@material-ui/icons/Close';
-import moment from 'moment';
-
-import {
-  getColumnNamesRequest,
-  createColumnNameRequest,
-  deleteColumnNameRequest,
-  updateColumnNameRequest,
-  //@ts-ignore
-} from '../../store/thunks/columnName';
-
-  //@ts-ignore
-import { selectFactoryRESTResponseTableValues, selectFactoryRESTError } from '../../store/common/REST/selectors';
-  //@ts-ignore
+import { selectFactoryRESTError } from '../../store/common/REST/selectors';
 import { selectColumnNamesStore } from '../../store/ColumnNamesStore/selectors';
-  //@ts-ignore
-import { ColumnNamesActions } from '../../store/ColumnNamesStore/store';
-  //@ts-ignore
 import CreateAuditLog from '../AuditLog_Global';
-  //@ts-ignore
 import columnNameController from '../../controllers/columnName';
-  //@ts-ignore
-import { checkDuplicates, controllerAddRow, controllerEditRow, controllerDeleteRow, formatTimestamp } from '../../tools/misc'
+import { checkDuplicates, controllerAddRow, controllerEditRow, controllerDeleteRow, formatTimestamp, fetchWithStatus } from '../../tools/misc'
 
 import Attribute from '../../types/attrubute';
 
@@ -34,7 +17,6 @@ const ColumnNameHeader = () => {
   return (
     <Paper className="header">
       <Typography variant="h5">Attribute Management</Typography>
-      {/* <HeaderActions/> */}
     </Paper>
   );
 };
@@ -92,17 +74,16 @@ const ColumnNamesTable = () => {
   const dispatch = useDispatch();
   const [readRowNum, setRowNum] = useState(1);
   const [columnNames, setColumnNames] = useState<Attribute[] | undefined>(undefined)
+  const [status, setStatus] = useState<'LOADING...' | 'NOT ALLOWED'>('LOADING...')
 
   useEffect(() => {
-    columnNameController.fetch().then((res: unknown) => {
-      setColumnNames(res as Attribute[])
-    })
+    fetchWithStatus<Attribute>(columnNameController, setColumnNames, setStatus)
   }, [])
 
   // table stuff while loading
   const preColumns: Column<Attribute>[] = [{title: 'Name', field: 'name'}]
   const preCols: Attribute[] = [{
-    name: 'LOADING...',
+    name: status,
     _id: '',
     id: '',
     timestamp: '',

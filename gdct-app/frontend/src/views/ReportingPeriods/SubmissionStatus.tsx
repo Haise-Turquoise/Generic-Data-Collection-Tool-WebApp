@@ -5,17 +5,13 @@ import FindInPageIcon from '@material-ui/icons/FindInPage';
 import MaterialTable, { Action, Column, Options } from 'material-table';
 import { Paper, Typography, Dialog, DialogActions, DialogContent, 
   DialogContentText, DialogTitle, Button } from '@material-ui/core';
-//@ts-ignore
 import { selectProgramsStore } from '../../store/ProgramsStore/selectors';
 import {
   calculateOptions, formatTimestamp,
-  //@ts-ignore
 } from '../../tools/misc'
 
-//@ts-ignore
 import ErrorBanner from '../ErrorBanner';
 import SubmissionStatusController from '../../controllers/SubmissionStatus';
-//@ts-ignore
 import SubmissionNoteController from '../../controllers/submissionNote'
 import SubmissionStatus from '../../types/packagestatus';
 import SubmissionNote from '../../types/submissionnote';
@@ -24,7 +20,6 @@ const SubmissionStatusHeader = () => {
   return (
     <Paper className="header">
       <Typography variant="h5">Submission Status Report</Typography>
-      {/* <HeaderActions/> */}
     </Paper>
   );
 };
@@ -34,6 +29,7 @@ const SubmissionStatusTable = () => {
   const [submissionStatus, setSubmissionStatus] = useState<SubmissionStatus[] | undefined>(undefined)
   const [open, setOpen] = useState(false)
   const [detail, setDetail] = useState('')
+  const [status, setStatus] = useState<'LOADING...' | 'NOT ALLOWED'>('LOADING...')
 
   const handleOpen = (rowData: SubmissionStatus) => {
     if (!rowData.status || !rowData.submission || !rowData.submissionNote.submissionId) {
@@ -64,6 +60,10 @@ const SubmissionStatusTable = () => {
 
   useEffect(() => {
     SubmissionStatusController.fetch().then((res: unknown) => {
+      if (!res) {
+        setStatus('NOT ALLOWED')
+        return
+      }
       (res as SubmissionStatus[]).forEach((subStat) => {
         if (!subStat.subIndex) {
           subStat.submission = { name: 'Not Submitted' }

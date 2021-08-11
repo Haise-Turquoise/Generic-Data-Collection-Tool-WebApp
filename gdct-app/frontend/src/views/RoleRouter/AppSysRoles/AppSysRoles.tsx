@@ -10,6 +10,7 @@ import {
   controllerDeleteRow,
   formatTimestamp,
   checkDuplicates,
+  fetchWithStatus,
 } from '../../../tools/misc';
 import CreateAuditLog from '../../AuditLog_Global';
 import AppSysRoleController from '../../../controllers/AppSysRole';
@@ -28,7 +29,6 @@ const AppSysRolesHeader = () => {
   return (
     <Paper className="header">
       <Typography variant="h5">Application System Role</Typography>
-      {/* <HeaderActions/> */}
     </Paper>
   );
 };
@@ -38,15 +38,14 @@ const AppSysRolesTable = () => {
   const [readNumRow, setNumRow] = useState(1);
   const [appSyses, setAppSyses] = useState<AppSys[] | undefined>(undefined)
   const [appSysRoles, setAppSysRoles] = useState<AppSysRole[] | undefined>(undefined)
+  const [status, setStatus] = useState<'LOADING...' | 'NOT ALLOWED'>('LOADING...')
   const [appRoles, setAppRoles] = useState<AppRole[] | undefined>(undefined)
 
   useEffect(() => {
     AppSysController.fetch().then((res: unknown) => {
       setAppSyses(res as AppSys[])
     })
-    AppSysRoleController.fetch().then((res: unknown) => {
-      setAppSysRoles(res as AppSysRole[])
-    })
+    fetchWithStatus<AppSysRole>(AppSysRoleController, setAppSysRoles, setStatus)
     AppRoleController.fetch().then((res: unknown) => {
       setAppRoles(res as AppRole[])
     })
@@ -58,7 +57,7 @@ const AppSysRolesTable = () => {
     _id: '',
     appSys: '',
     isActive: false,
-    role: 'LOADING...',
+    role: status,
     timestamp: '',
   }]
 
