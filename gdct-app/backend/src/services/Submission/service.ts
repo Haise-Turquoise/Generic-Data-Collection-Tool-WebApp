@@ -367,14 +367,11 @@ export default class SubmissionService {
       }
       return false;
     });
-
-    filteredPackage.forEach(templatePkg=>{
-      const templateIds = templatePkg.templateIds.map((e:any)=>e._id);
-      templatePkg.templateIds = templateIds;
-    });
     return filteredPackage;
   }
 
+  // This function is not in use anymore, just in case it will be use in the future,
+  // I will leave it here for now
   async findTemplatePackage(programAndTempTypes:{program:ObjectId, templateTypes:any[]}[]) {
     const promiseQuery1 :Promise<any>[]= [];
     const newTemplatePackages:TemplatePackage[] = [];
@@ -459,19 +456,33 @@ export default class SubmissionService {
       }[]
   }[] = [];
     const programIds:String[] = [];
-    const orgMapping:{[key:string]:string[]} = {};
-
+    const orgProgramMapping:{[key:string]:string[]} = {};
+    const orgTempTypeMapping:{[key:string]:string[]} = {}
     // Generate org Mappings to find out which submissions are missing
     if (orgId){
       userInfo.sysRole.forEach(sysRole => {
         sysRole.org.forEach(organization => {
-          if (!orgMapping[organization.orgId]) orgMapping[organization.orgId] = [];
+
+          if (!orgProgramMapping[organization.orgId]) orgProgramMapping[organization.orgId] = [];
+          if (!orgTempTypeMapping[organization.orgId]) orgTempTypeMapping[organization.orgId] = [];
+
           organization.program.forEach(program => {
-            orgMapping[organization.orgId].push(String(program.programId));
+            orgProgramMapping[organization.orgId].push(String(program.programId));
+            
             if (!programIds.includes(String(program.programId))){
               programAndTempTypes.push({ program: program.programId, templateTypes: program.template });
               programIds.push(String(program.programId));
+            }else{
+              const targetObject = programAndTempTypes.filter(e=>String(e.program) === String(program.programId))[0];
+              program.template.forEach(typeId=>{
+                targetObject.templateTypes.push(typeId);
+              })
             }
+            program.template.forEach(typeObject=>{
+              if (!orgTempTypeMapping[organization.orgId].includes(String(typeObject.templateTypeId))){
+                orgTempTypeMapping[organization.orgId].push(String(typeObject.templateTypeId));
+              }
+            })
           });
         });
       });
@@ -489,49 +500,62 @@ export default class SubmissionService {
       return this.statusRepository.findByName(name).then(status => {
         return this.statusRepository.findByName(inProgressName).then(inProgress=>{
           const promiseQuery1 :Promise<any>[]= [];
-          templatePackages.forEach(templatePackage => {
-            if (templatePackage.statusId.toString() !=inProgress[0]._id.toString())
+          templatePackages.forEach((templatePackage:any) => {
+            if (templatePackage.statusId.toString() != inProgress[0]._id.toString())
             promiseQuery1.push(
               this.submissionRepository
                 .findByTemplatePackageId(templatePackage._id)
                 .then((submissions:Submission[]) => {
-                  
-                  const newOrgMapping = JSON.parse(JSON.stringify(orgMapping));
+                  const newOrgMapping = JSON.parse(JSON.stringify(orgProgramMapping));
+                  const newTempTypeMapping = JSON.parse(JSON.stringify(orgTempTypeMapping));
                   submissions.forEach(submission => {
                     const orgId = submission.orgId;
                     const programId = submission.programId;
-                    if(newOrgMapping[orgId]){
-                      newOrgMapping[orgId] = newOrgMapping[orgId].filter((e:ObjectId) => 
+                    if(newOrgMapping[orgId] && newTempTypeMapping[orgId]){
+                      newTempTypeMapping[orgId] = newTempTypeMapping[orgId].filter((e:ObjectId) => 
+                        String(e) !== String(templatePackage.templateIds[0].templateTypeId)
+                      );
+                      if(newTempTypeMapping[orgId].length === 0 ){
+                        newOrgMapping[orgId] = newOrgMapping[orgId].filter((e:ObjectId) => 
                         String(e) !== String(programId)
-                     );
-                     newOrgMapping[orgId] = newOrgMapping[orgId].map((e:ObjectId)=>String(e))
+                       );
+                       newOrgMapping[orgId] = newOrgMapping[orgId].map((e:ObjectId)=>String(e))
+                      }
                     }
                   });
                   const { templateIds } = templatePackage;
-                  const promiseQuery3 :Promise<any>[]= [];
+                  const promiseQuery3:Promise<any>[]= [];
+                  
                   if (templateIds !== undefined) {
-                    templateIds.forEach(templateId => {
+                    
+                    templateIds.forEach((templateObj: any) => {
                       if (templatePackage.programIds !== undefined) {
-                        templatePackage.programIds.forEach(programId => {
+                        
+                        templatePackage.programIds.forEach((programId:any) => {
                           programAndTempTypes.forEach(element => {
                             if (element.program.toString() == programId.toString()) {
-                            Object.keys(newOrgMapping).forEach(organizationId=>{
-                              if (newOrgMapping[organizationId].includes(String(element.program))){
-                                const orgId = organizationId;
-                                  promiseQuery3.push(
-                                  this.createSubmissionBaseOnTemplatePackage({
-                                    orgId,
-                                    templateId,
-                                    templatePackageId: templatePackage._id,
-                                    submissionPeriodId: templatePackage.submissionPeriodId,
-                                    programId,
-                                    statusId: status[0]._id,
-                                    version: 0,
-                                    isLatest: true,
-                                  }),
-                                );
-                              }
-                            });
+                            
+                              Object.keys(newOrgMapping).forEach(organizationId=>{
+                               
+                                if (newOrgMapping[organizationId].includes(String(element.program)) && 
+                                    newTempTypeMapping[organizationId].includes(String(templateObj.templateTypeId))){
+                                 
+                                  const orgId = organizationId;
+
+                                    promiseQuery3.push(
+                                    this.createSubmissionBaseOnTemplatePackage({
+                                      orgId,
+                                      templateId:templateObj._id,
+                                      templatePackageId: templatePackage._id,
+                                      submissionPeriodId: templatePackage.submissionPeriodId,
+                                      programId,
+                                      statusId: status[0]._id,
+                                      version: 0,
+                                      isLatest: true,
+                                    }),
+                                  );
+                                }
+                              });
                             }
                           });
                         });
@@ -557,16 +581,16 @@ export default class SubmissionService {
             const statusSet = new Map();
 
 
-            Object.keys(orgMapping).forEach(e=>{
-              orgMapping[e] = orgMapping[e].map(id=>String(id));
+            Object.keys(orgProgramMapping).forEach(e=>{
+              orgProgramMapping[e] = orgProgramMapping[e].map(id=>String(id));
             })
             //@ts-ignore
-            const rawSubmissionArr: Submission[] = await this.submissionRepository.findByOrgIdAndProgramId(Object.keys(orgMapping), programIds);
+            const rawSubmissionArr: Submission[] = await this.submissionRepository.findByOrgIdAndProgramId(Object.keys(orgProgramMapping), programIds);
 
             // if orgId is undefined, then it must be an admin, so the filter will not filter
             // the submissions
             const submissionArr = orgId? rawSubmissionArr.filter(submission=>{
-              return orgMapping[submission.orgId].includes(String(submission.programId))
+              return orgProgramMapping[submission.orgId].includes(String(submission.programId))
             }
             ) : rawSubmissionArr;
             
