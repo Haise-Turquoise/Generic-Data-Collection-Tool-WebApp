@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
 //@ts-ignore
-import SortableTree, { toggleExpandedForAll } from 'react-sortable-tree';
+import SortableTree from 'react-sortable-tree';
 import { useSelector, shallowEqual, useDispatch, batch } from 'react-redux';
 import { Paper, Typography, Button, TextField, IconButton } from '@material-ui/core';
 
@@ -12,7 +12,6 @@ import AddIcon from '@material-ui/icons/Add';
 import {
   updateCOATreesBySheetNameRequest,
   getCOATreesBySheetNameRequest,
-//@ts-ignore
 } from '../../../store/thunks/COATree';
 
 import GroupDialog from './COAGroupDialog';
@@ -20,14 +19,9 @@ import COADialog from './COADialog';
 
 import './COATree.scss';
 import 'react-sortable-tree/style.css';
-//@ts-ignore
 import COATreeStore from '../../../store/COATreeStore/store';
-//@ts-ignore
 import DialogsStore from '../../../store/DialogsStore/store';
-
-//@ts-ignore
 import CreateAuditLog from '../../AuditLog_Global';
-//@ts-ignore
 import sheetNameController from '../../../controllers/sheetName';
 
 let Auditlog_Operations: string[] = [];
@@ -91,7 +85,6 @@ const COATreeHeader = ({ sheetNameId }: { sheetNameId: string }) => {
   return (
     <Paper className="header">
       <Typography variant="h5">COA Tree</Typography>
-      {/* <HeaderActions/> */}
       <COATreeActions sheetNameId={sheetNameId} />
     </Paper>
   );

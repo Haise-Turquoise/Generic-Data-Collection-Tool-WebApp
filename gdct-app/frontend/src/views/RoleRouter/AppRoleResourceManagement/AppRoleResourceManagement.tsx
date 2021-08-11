@@ -1,61 +1,24 @@
-import React, { useMemo, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import { RouteComponentProps, useHistory } from 'react-router-dom';
-
-import MaterialTable from 'material-table';
 import { Paper, Typography, Button } from '@material-ui/core';
-//@ts-ignore
 import Loading from '../../../components/Loading';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
-//@ts-ignore
-import Loading from '../../../components/Loading';
 
 import AppResourceList from '../AppResourceList';
-import ProgramList from '../../OrganizationRouter/ProgramList';
-//@ts-ignore
 import { selectFactoryRESTResponseTableValues } from '../../../store/common/REST/selectors';
-import {
-  calculateOptions,
-  controllerAddRow,
-  controllerEditRow,
-  controllerDeleteRow,
-  //@ts-ignore
-} from '../../../tools/misc';
-//
-//@ts-ignore
 import{selectAppRoleResourcesStore} from '../../../store/AppRoleResourcesStore/selectors';
-//@ts-ignore
-import { selectAppSysRolesStore } from '../../../store/AppSysRolesStore/selectors';
-//@ts-ignore
-import { selectAppResourcesStore } from '../../../store/AppResourcesStore/selectors';
-
-//@ts-ignore
 import {AppRoleResourcesStore} from '../../../store/AppRoleResourcesStore/store';
-//@ts-ignore
 import {AppSysRolesStore} from '../../../store/AppSysRolesStore/store';
-//@ts-ignore
 import {AppResourcesStore} from '../../../store/AppResourcesStore/store';
-//@ts-ignore
 import { getAppSysRolesRequest } from '../../../store/thunks/AppSysRole';
-//@ts-ignore
 import { getAppResourcesRequest } from '../../../store/thunks/AppResource';
 import {
     getAppRoleResourcesRequest,
-    createAppRoleResourceRequest,
-    deleteAppRoleResourceRequest,
-    updateAppRoleResourceRequest,
-//@ts-ignore
   } from '../../../store/thunks/AppRoleResource';
-//@ts-ignore
 import AppRoleResourceController from '../../../controllers/AppRoleResource'
-//@ts-ignore
-import AppSysRoleController from '../../../controllers/AppSysRole'
-//@ts-ignore
-import AppResourceController from '../../../controllers/AppResource'
-
 import AppRoleResource from '../../../types/approleresource';
 import AppResource from '../../../types/appresource';
-import { AxiosResponse } from 'axios';
 type propType = { _id: string }
 
 const AppRoleResourceManagementHeader = ({
@@ -87,7 +50,6 @@ const AppRoleResourceManagementHeader = ({
     <Paper className="header">
       <Typography variant="h5">App Role Resource Management</Typography>
       <Typography variant="body1">{roleName}</Typography>
-      {/* <HeaderActions/> */}
     </Paper>
   );
 };
