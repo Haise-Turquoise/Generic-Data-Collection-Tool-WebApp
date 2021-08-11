@@ -661,17 +661,27 @@ export const checkDuplicateSet = (rowData:any, tableData:any) => {
       tableData.forEach( (item:any) => 
         {
           if (item.name === rowData.name && item.templateTypeId === rowData.templateTypeId
-            && rowData.id !== item.id) {
-              console.log(item);
-              console.log(rowData);
+            && (rowData.id !== item.id || !item.id)) {
               counter++;
           }
+          
         }
       )
+      return (counter >= 1) ? `Duplicate (Name, Sheet Type) not allowed` : true
     }
   } else if (rowData._id) {
     // this case runs while submitting a change
     return true;
+  } else {
+    tableData.forEach( (item:any) => 
+        {
+          if (item.name === rowData.name && item.templateTypeId === rowData.templateTypeId) {
+              counter++;
+          }
+          
+        }
+      )
+      return (counter >= 1) ? `Duplicate (Name, Sheet Type) not allowed` : true
   }
 
   return (counter >= 1) ? `Duplicate (Name, Sheet Type) not allowed` : true
