@@ -35,6 +35,7 @@ import {
     controllerEditRow,
     controllerDeleteRow,
     formatTimestamp,
+    checkDuplicates,
     //@ts-ignore
 } from '../../tools/misc';
 import moment from 'moment';
@@ -98,9 +99,9 @@ const TemplateTypesTable = ({ history }: RouterProps) => {
     updatedBy: '',
   }]
   // Convert Date format
-  templateTypes?.forEach(templateType => {
-    templateType.timestamp = formatTimestamp(templateType.timestamp);
-  });
+  // templateTypes?.forEach(templateType => {
+  //   templateType.timestamp = formatTimestamp(templateType.timestamp);
+  // });
 
   // Config the lookup function for columns
   const lookupWorkflows = workflows?.reduce(function (acc: {[key: string]: string}, workflow) {
@@ -114,7 +115,7 @@ const TemplateTypesTable = ({ history }: RouterProps) => {
   
   // Prepare the columns for material table
   const columns: Column<TemplateTypeMT>[] = [
-    { title: 'Name', field: 'name' },
+    { title: 'Name', field: 'name', validate: rowData => checkDuplicates(rowData, templateTypes, 'name') },
     { title: 'Description', field: 'description' },
     { title: 'Submission Workflow', field: 'submissionWorkflowId', lookup: lookupWorkflows },
     { title: 'Template Workflow', field: 'templateWorkflowId', lookup: lookupWorkflows },
@@ -163,6 +164,7 @@ const TemplateTypesTable = ({ history }: RouterProps) => {
   function recordUpdate(templateType: TemplateTypeMT) {
     templateType.updatedBy = localStorage.getItem('currentUser') || '';
     templateType.timestamp = new Date().toLocaleString(); 
+    return templateType;
   }
   // Prepare the editing functionalities for the material table
   const editable = useMemo(
@@ -236,7 +238,7 @@ const TemplateTypesTable = ({ history }: RouterProps) => {
           );
         }),
     }),
-    [],
+    [templateTypes],
   );
 
   return (
