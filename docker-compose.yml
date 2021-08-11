@@ -7,7 +7,7 @@ services:
         dockerfile: ./Dockerfile
       image: "gdctdockercontainer.azurecr.io/gdct-frontend:latest"
       ports:
-        - "3003:3003"
+        - "3003:80"
       links:
         - "backend"
   backend:
