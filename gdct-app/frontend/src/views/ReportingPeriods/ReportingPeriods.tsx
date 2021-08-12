@@ -25,7 +25,6 @@ const ReportingPeriodHeader = () => {
   return (
     <Paper className="header">
       <Typography variant="h5">Reporting Period</Typography>
-      {/* <HeaderActions/> */}
     </Paper>
   );
 };

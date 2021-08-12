@@ -3,7 +3,6 @@ import MaterialTable, { Action, Column, Options } from 'material-table';
 import LaunchIcon from '@material-ui/icons/Launch';
 import { Paper, Typography } from '@material-ui/core';
 import AppRoleController from '../../../controllers/AppRole'
-import roleSubmissionButtonController from '../../../controllers/RoleSubmissionButton';
 import {
   calculateOptions,
   formatTimestamp,
@@ -22,7 +21,6 @@ const AppRoleWorkflowHeader = () => {
   return (
     <Paper className="header">
       <Typography variant="h5">App Role Workflows Management</Typography>
-      {/* <HeaderActions/> */}
     </Paper>
   );
 };

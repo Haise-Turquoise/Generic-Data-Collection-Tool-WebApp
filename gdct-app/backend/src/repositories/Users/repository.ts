@@ -36,7 +36,10 @@ export default class UsersRepository extends BaseRepository<User, UserDoc> {
       isActive,
       timestamp,
       updatedBy,
-    }).then((user: UserDoc|null) => new UserModel(user));
+    }).then((user: UserDoc|null) => {
+      if (!user) throw new AppError(`Cannot update the user with id:${id}, id not found`)
+      new UserModel(user);
+    });
   }
 
   async find(query: Partial<User>) {

@@ -51,7 +51,18 @@ const SubmissionPeriod = () => {
   const dispatch = useDispatch();
   const [readRowNum, setRowNum] = useState(1);
   const [submissionPeriods, setSubmissionPeriods] =
+  
     useState<SubmissionPeriod[] | undefined>(undefined)
+  const [readIndex, setIndex] = useState<{[key: string]: string, [key: number]: string} | undefined>();
+  const [readsubmissionPeriods, setModifiedSubmissionPeriod] = useState<Template[] | undefined>();
+  const [readIndexName, setIndexName] = useState<{[key: string]: string, [key: number]: string} | undefined>();
+  useEffect(() => {
+    // dispatch(getSubmissionPeriodsRequest())
+    dispatch(getReportingPeriodsRequest());
+    SubmissionPeriodController.fetch().then((res: unknown) => {
+      setSubmissionPeriods(res as SubmissionPeriod[])
+    })
+  }, [dispatch])
   const [status, setStatus] = useState<'LOADING...' | 'NOT ALLOWED'>('LOADING...')
 
   useEffect(() => {
@@ -62,15 +73,54 @@ const SubmissionPeriod = () => {
   const preColumns = [{ title: 'Name', field: 'name' }];
   const prePeriods = [{ name: status }];
 
-  const { lookupReportingPeriods }: {
+  const { lookupReportingPeriods}: {
     lookupReportingPeriods: {[key:string]: any}
+    // submissionPeriods:SubmissionPeriod[]
   } = useSelector(
     state => ({
       lookupReportingPeriods: selectFactoryRESTLookup(selectReportingPeriodsStore)(state),
+      // submissionPeriods:selectFactoryRESTResponseTableValues(selectSubmissionPeriodsStore)(state)
     }),
     shallowEqual,
   );
+  
+  
 
+
+  useEffect(()=>{
+    if(submissionPeriods && Object.keys(submissionPeriods).length>0){
+      const keys = Object.keys(lookupReportingPeriods);
+      const nameArray: string[] = [];
+      keys.forEach(key=>{
+        nameArray.push(lookupReportingPeriods[key]);
+      });
+      const sortedNameArray = nameArray.sort();
+      const IdToIndex = new Map();
+      const IndexToId: {[key: number]: string} = {};
+      const IndexToName: {[key: number]: string} = {};
+      keys.forEach(key=>{
+        const index = sortedNameArray.indexOf(lookupReportingPeriods[key]);
+        IdToIndex.set(String(key), index);
+        IndexToId[index]=String(key);
+        IndexToName[index]=lookupReportingPeriods[key];
+      })
+      const modifiedSubmissionPeriods: SubmissionPeriod[] = [];
+      submissionPeriods.forEach(submissionPeriod=>{
+        const Id = String(submissionPeriod.reportingPeriodId);
+        const modifiedSubmissionPeriod = Object.assign({}, submissionPeriod)
+        modifiedSubmissionPeriod.reportingPeriodId = IdToIndex.get(Id);
+        modifiedSubmissionPeriods.push(modifiedSubmissionPeriod);
+      });
+      setModifiedSubmissionPeriod(modifiedSubmissionPeriods);
+      setIndex(IndexToId);
+      setIndexName(IndexToName);
+      
+    }
+    
+
+    
+  }, [submissionPeriods, lookupReportingPeriods])
+  
   // Convert Date format
   submissionPeriods?.forEach(submissionPeriod => {
     submissionPeriod.timestamp = formatTimestamp(submissionPeriod.timestamp);
@@ -84,7 +134,7 @@ const SubmissionPeriod = () => {
       {
         title: 'ReportingPeriodId',
         field: 'reportingPeriodId',
-        lookup: lookupReportingPeriods,
+        lookup: readIndexName,
       },
       {
         title: 'Modified On',
@@ -101,7 +151,7 @@ const SubmissionPeriod = () => {
         },
       },
     ],
-    [lookupReportingPeriods],
+    [lookupReportingPeriods, readIndexName],
   );
 
   // Record who and when of the action
@@ -118,8 +168,10 @@ const SubmissionPeriod = () => {
     () => ({
       onRowAdd: (submissionPeriod: SubmissionPeriod) =>
         new Promise((resolve, reject) => {
-          recordUpdate(submissionPeriod);
-          controllerAddRow(SubmissionPeriodController, setSubmissionPeriods, submissionPeriod)
+          const convertedSubmissionPeriod = Object.assign({}, submissionPeriod);
+          convertedSubmissionPeriod.reportingPeriodId = (readIndex && readIndex[submissionPeriod.reportingPeriodId]) || '';
+          recordUpdate(convertedSubmissionPeriod);
+          controllerAddRow(SubmissionPeriodController, setSubmissionPeriods, convertedSubmissionPeriod)
             .then((res?: SubmissionPeriod) => {
               if (res) {
                 resolve(res)
@@ -129,19 +181,24 @@ const SubmissionPeriod = () => {
         }),
       onRowUpdate: (submissionPeriod: SubmissionPeriod) =>
         new Promise((resolve, reject) => {
-          recordUpdate(submissionPeriod);
-          controllerEditRow(SubmissionPeriodController, setSubmissionPeriods, submissionPeriod)
+          const convertedSubmissionPeriod = Object.assign({}, submissionPeriod);
+          convertedSubmissionPeriod.reportingPeriodId = (readIndex && readIndex[submissionPeriod.reportingPeriodId]) || '';
+          recordUpdate(convertedSubmissionPeriod);
+          controllerEditRow(SubmissionPeriodController, setSubmissionPeriods, convertedSubmissionPeriod)
             .then((res: boolean) => {
               if (res) {
                 resolve(res)
               }
               reject()
             })
+          
         }),
       onRowDelete: (submissionPeriod: SubmissionPeriod) =>
         new Promise((resolve, reject) => {
-          recordUpdate(submissionPeriod);
-          controllerDeleteRow(SubmissionPeriodController, setSubmissionPeriods, submissionPeriod._id)
+          const convertedSubmissionPeriod = Object.assign({}, submissionPeriod);
+          convertedSubmissionPeriod.reportingPeriodId = (readIndex && readIndex[parseInt(submissionPeriod.reportingPeriodId)]) || '';
+          recordUpdate(convertedSubmissionPeriod);
+          controllerDeleteRow(SubmissionPeriodController, setSubmissionPeriods, convertedSubmissionPeriod._id)
             .then((res: boolean) => {
               if (res) {
                 resolve(res)
@@ -150,24 +207,24 @@ const SubmissionPeriod = () => {
             })
         }),
     }),
-    [],
+    [dispatch, readIndex],
   );
 
-  useEffect(() => {
-    dispatch(getReportingPeriodsRequest());
-  }, [dispatch]);
+  // useEffect(() => {
+    
+  //   dispatch(getReportingPeriodsRequest());
+  // }, [dispatch]);
 
   useEffect(()=>{
     setRowNum(submissionPeriods?.length || 1)
   }, [submissionPeriods])
-
   return (
     <div>
       <SubmissionPeriodHeader />
       <MaterialTable
         key={readRowNum}
         columns={!!submissionPeriods ? columns : preColumns}
-        data={!!submissionPeriods ? submissionPeriods : prePeriods}
+        data={!!submissionPeriods ? readsubmissionPeriods : prePeriods}
         editable={!!submissionPeriods ? editable : undefined}
         options={options}
       />

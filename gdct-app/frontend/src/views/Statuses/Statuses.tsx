@@ -9,6 +9,7 @@ import {
   controllerDeleteRow,
   formatTimestamp,
   fetchWithStatus,
+  checkDuplicates,
 } from '../../tools/misc';
 import statusController from '../../controllers/status';
 import CreateAuditLog from '../AuditLog_Global';
@@ -55,7 +56,7 @@ const StatusesTable = () => {
   // Prepare the columns for material table
   const columns: Column<StatusMT>[] = useMemo(
     () => [
-      { title: 'Name', field: 'name' },
+      { title: 'Name', field: 'name', validate: rowData => checkDuplicates(rowData, statuses, 'name') },
       { title: 'Description', field: 'description' },
       { title: 'Active', type: 'boolean', field: 'isActive' },
       { title: 'For Package', type: 'boolean', field: 'forPackage' },
@@ -74,7 +75,7 @@ const StatusesTable = () => {
         },
       },
     ],
-    [],
+    [statuses],
   );
 
   const options: Options<StatusMT> = useMemo(() => calculateOptions(readRowNum), [readRowNum]);

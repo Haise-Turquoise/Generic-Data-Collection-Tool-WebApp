@@ -26,7 +26,6 @@ const COAGroupsHeader = () => {
   return (
     <Paper className="header">
       <Typography variant="h5">Category Group Management</Typography>
-      {/* <HeaderActions/> */}
     </Paper>
   );
 };

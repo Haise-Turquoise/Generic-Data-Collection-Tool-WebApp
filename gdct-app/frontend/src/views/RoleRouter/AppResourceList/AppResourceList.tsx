@@ -1,11 +1,12 @@
   
 import React, { useMemo, useEffect, useState } from 'react';
+import { Paper, Typography, Button } from '@material-ui/core';
 
 import MaterialTable, { Action, Column, Options } from 'material-table';
 import AddIcon from '@material-ui/icons/Add';
 import DeleteIcon from '@material-ui/icons/Delete';
 import {
-  calculateOptions, fetchWithStatus
+  calculateOptionsWithTitle, fetchWithStatus
 } from '../../../tools/misc';
 import AppResourceController from '../../../controllers/AppResource'
 import AppResource from '../../../types/appresource';
@@ -82,18 +83,19 @@ const AppResourceList = ({ resourceId, isEditable = true, onClickAdd, onClickDel
   );
 
 
+
   const left_actions: Action<AppResource>[] = useMemo(() => [{ icon: DeleteIcon, tooltip: 'Remove from Mapping', onClick: onClickDelete }], []);
 
   const right_actions: Action<AppResource>[] = useMemo(() => [{ icon: AddIcon, tooltip: 'Add to Mapping', onClick: onClickAdd }], []);
   // const orgOptions: Options<AppResource> = useMemo(() => calculateOptions(readOrgRowNum), [readOrgRowNum]);
-  const orgOptions: any = useMemo(() => calculateOptions(readOrgRowNum), [readOrgRowNum]);
+  const orgOptions: any = useMemo(() => calculateOptionsWithTitle(readOrgRowNum), [readOrgRowNum]);
   // const nonOrgOptions: Options<AppResource> = useMemo(() => calculateOptions(readNonOrgRowNum), [readNonOrgRowNum]);
-  const nonOrgOptions: any = useMemo(() => calculateOptions(readNonOrgRowNum), [readNonOrgRowNum]);
+  const nonOrgOptions: any = useMemo(() => calculateOptionsWithTitle(readNonOrgRowNum), [readNonOrgRowNum]);
   return (
     <div className="tableContainer">
       <div className="tableWrapper-linked">
         <MaterialTable
-          title="Linked App Resource"
+          title="Current Resources"
           // @ts-ignore
           key = {readOrgRowNum}
           columns={!!resourceList ? columns : preColumns}
@@ -107,7 +109,7 @@ const AppResourceList = ({ resourceId, isEditable = true, onClickAdd, onClickDel
       </div>
       <div className="tableWrapper-other">
         <MaterialTable
-          title="Other App Resource"
+          title="Additional Resources"
           key={readNonOrgRowNum}
           // @ts-ignore
           columns={!!resourceList ? columns : preColumns}
@@ -119,6 +121,7 @@ const AppResourceList = ({ resourceId, isEditable = true, onClickAdd, onClickDel
           actions={(isEditable && !!resourceList) ? right_actions : undefined}
         />
       </div>
+
     </div>
   );
 };

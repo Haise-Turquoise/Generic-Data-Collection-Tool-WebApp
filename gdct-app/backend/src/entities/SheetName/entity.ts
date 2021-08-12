@@ -6,6 +6,7 @@ export default class SheetNameEntity {
   public id: number;
   public name: string;
   public timestamp: Date;
+  public templateTypeId: ObjectId;
   public updatedBy: string;
   public isActive: boolean;
 
@@ -14,6 +15,7 @@ export default class SheetNameEntity {
     id,
     name,
     timestamp,
+    templateTypeId,
     updatedBy,
     isActive,
   }: SheetNameDoc) {
@@ -21,6 +23,7 @@ export default class SheetNameEntity {
     this.id = id;
     this.name = name;
     this.timestamp = timestamp;
+    this.templateTypeId = templateTypeId;
     this.updatedBy = updatedBy;
     this.isActive = isActive;
   }

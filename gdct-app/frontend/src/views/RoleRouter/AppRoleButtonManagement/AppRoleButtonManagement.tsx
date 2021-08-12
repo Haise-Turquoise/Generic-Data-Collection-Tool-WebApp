@@ -22,7 +22,6 @@ const AppRoleButtonManagementHeader = ({
     <Paper className="header">
       <Typography variant="h5">App Role Button Management</Typography>
       <Typography variant="body1">{role}</Typography>
-      {/* <HeaderActions/> */}
     </Paper>
   );
 };

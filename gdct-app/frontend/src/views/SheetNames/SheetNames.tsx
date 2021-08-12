@@ -6,7 +6,7 @@ import Swal, { SweetAlertResult } from 'sweetalert2';
 import DetectEmptySheet from './DetectEmptySheet';
 import {
   calculateOptions,
-  checkDuplicates,
+  checkDuplicateSet,
   controllerAddRow,
   controllerEditRow,
   controllerDeleteRow,
@@ -14,6 +14,9 @@ import {
   fetchWithStatus,
 } from '../../tools/misc';
 import sheetNameController from '../../controllers/sheetName';
+//@ts-ignore
+import templateTypeController from '../../controllers/templateType';
+//@ts-ignore
 import CreateAuditLog from '../AuditLog_Global';
 import SheetName from '../../types/sheetname';
 
@@ -32,11 +35,56 @@ const SheetNameHeader = () => {
 const SheetNamesTable = () => {
   const [readRowNum, setRowNum] = useState(1);
   const [sheetNames, setSheetNames] = useState<SheetName[] | undefined>(undefined)
-  const [status, setStatus] = useState<'LOADING...' | 'NOT ALLOWED'>('LOADING...')
+  const [idToName, setIdToName] = useState<{[key: string]: string, [key: number]: string} | undefined>();
+
+  // useEffect(() => {
+  //   sheetNameController.fetch().then((res: Array<SheetName>) => {
+  //     const promise = res!.map(async element => {
+  //       const type = await templateTypeController.fetchById(element.templateTypeId)
+  //       .catch(err => console.log(err));
+  //       const newElement = {
+  //         ...element,
+  //         templateTypeId: type?.name
+  //       };
+
+  //       return newElement;
+  //     })
+  //     Promise.all(promise).then(result => setSheetNames(result as SheetName[]));
+  //   })
+
+  // }, [])
 
   useEffect(() => {
-    fetchWithStatus<SheetName>(sheetNameController, setSheetNames, setStatus)
+    const status:any = {};
+
+    async function fetchTemplate() {
+      let response = await templateTypeController.fetch()
+      response.sort((a:any,b:any) => {
+        let fa = a.name,
+        fb = b.name;
+
+      if (fa < fb) {
+          return -1;
+      }
+      if (fa > fb) {
+          return 1;
+      }
+      return 0;
+      })
+
+      const status:any = {}
+      response!.map((template:any) => status[template._id] = template.name)
+      console.log(status)
+      setIdToName(status)
+
+      sheetNameController.fetch().then((res: unknown) => {
+        setSheetNames(res as SheetName[])
+      })
+    }
+
+    fetchTemplate();
   }, [])
+
 
   // table vars while loading data
   const preColumns: Column<SheetNameMT>[] = [{ title: 'Name', field: 'name' }];
@@ -70,7 +118,12 @@ const SheetNamesTable = () => {
       {
         title: 'Name',
         field: 'name',
-        validate: rowData => checkDuplicates(rowData, sheetNames, 'name'),
+        validate: rowData => checkDuplicateSet(rowData, sheetNames),
+      },
+      { title: 'Template Type',
+        field: 'templateTypeId',
+        lookup: idToName,
+        validate: rowData => checkDuplicateSet(rowData, sheetNames)
       },
       { title: 'Active', field: 'isActive', type: 'boolean' },
       {
