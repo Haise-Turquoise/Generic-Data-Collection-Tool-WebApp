@@ -68,6 +68,7 @@ const useStyles = makeStyles(theme => ({
 const EditSubmission = ({ history }:{history:History}) => {
   const dispatch = useDispatch();
   const location:any = useLocation();
+  console.log(location.state.detail)
   const [submissionId, setSubmissionId] = useState(location.state.detail._id);
   // const [submitUnavailable, setSubmitUnavailable] = useState(true);
   // const [approveUnavailable, setApproveUnavailable] = useState(true);
@@ -258,6 +259,7 @@ const EditSubmission = ({ history }:{history:History}) => {
     dispatch(SubmissionNoteStore.actions.RECEIVE(''));
   }, [location, dispatch, refresh]);
   useEffect(()=>{
+    
     roleSubmissionButtonController.fetchSubmissionButtonByRole(currentRole[0]).then((data:any)=>{
       if(data.length >0){
         setRoleButtons(data[0].button)
@@ -326,10 +328,12 @@ const EditSubmission = ({ history }:{history:History}) => {
 
   // decide button display base on current role.
   const handleButtonDisplayByRole = (button:string, role:string[], roleButtons:string[]) => {
-    if (role.length == 0) {
-      role[0] = 'Business Admin';
-    }
+    
+    // if (role.length == 0) {
+    //   role[0] = 'Business Admin';
+    // }
     if(roleButtons.includes(button)){
+      
       return false
     }
     return true;
@@ -380,7 +384,6 @@ const EditSubmission = ({ history }:{history:History}) => {
       }, 2000);
     }
   };
-  // console.log('button list', buttonList)
   return (
     <div className="submissions" style={{ cursor }}>
       <SubmissionHeader />

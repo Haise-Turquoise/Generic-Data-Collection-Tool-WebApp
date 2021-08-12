@@ -75,9 +75,9 @@ const TemplatesTable = ({ history }: RouterProps) => {
   }, {});
 
   useEffect(()=>{
-    
+    // console.log('lookupTemplateTypes', lookupTemplateTypes)
     const keys = Object.keys(lookupTemplateTypes);
-
+    console.log('keys', keys)
     const nameArray: string[] = [];
 
     keys.forEach(key=>{
@@ -113,7 +113,7 @@ const TemplatesTable = ({ history }: RouterProps) => {
   }, [templates, lookupTemplateTypes]);
   
 
-  
+  console.log(readIndexName)
   const columns = useMemo(
     () => [
       { title: 'Name', field: 'name' },
@@ -232,7 +232,7 @@ const TemplatesTable = ({ history }: RouterProps) => {
   useEffect(() => {
     setRowNum(templates.length);
   }, [templates]);
-
+  console.log('readTemplate', readTemplate)
   return (
     // @ts-ignore
     <MaterialTable

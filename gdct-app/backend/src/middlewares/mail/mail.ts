@@ -1,5 +1,21 @@
+//@ts-ignore
+import { ObjectId } from 'mongoose';
+//@ts-ignore
 import nodemailer from 'nodemailer';
+import User from '../../types/user';
+// import Organization from '../../types/organization';
 
+interface Organization  {
+  name:string,
+  authorizedPerson:{
+    name:string,
+    telephone:string, 
+    email:string,
+  }
+  orgId:string,
+  permission:string[],
+
+}
 const mailConfig = {
   
   service:"hotmail",
@@ -15,7 +31,7 @@ const mailConfig = {
 // Credentials are present on mailConfig
 const transporter = nodemailer.createTransport(mailConfig);
 
-export const sendPermissionChangeUserVerficationEmail = (username,email) => {
+export const sendPermissionChangeUserVerficationEmail = (username:string,email:string) => {
   // const { username, email } = registerData;
   const message = {
     from: 'ohfstest@outlook.com',
@@ -31,10 +47,10 @@ export const sendPermissionChangeUserVerficationEmail = (username,email) => {
 
   return transporter
     .sendMail(message)
-    .then(info => ({ message: `Preview URL: ${nodemailer.getTestMessageUrl(info)}` }));
+    .then((info:string) => ({ message: `Preview URL: ${nodemailer.getTestMessageUrl(info)}` }));
 };
 
-export const sendUserVerficationEmail = registerData => {
+export const sendUserVerficationEmail = (registerData:User) => {
   const { username, email } = registerData;
   const message = {
     from: 'ohfstest@outlook.com',
@@ -50,15 +66,15 @@ export const sendUserVerficationEmail = registerData => {
 
   return transporter
     .sendMail(message)
-    .then(info => ({ message: `Preview URL: ${nodemailer.getTestMessageUrl(info)}` }));
+    .then((info:string) => ({ message: `Preview URL: ${nodemailer.getTestMessageUrl(info)}` }));
 };
 
-export const sendAdminVerficationEmail = (orgInfo, hashedUsername, userId, username) => {
+export const sendAdminVerficationEmail = (orgInfo:Organization, hashedUsername:string, userId:string, username:string) => {
   const { authorizedPerson, orgId, permission } = orgInfo;
   const orgName = orgInfo.name;
   const { name, telephone, email } = authorizedPerson;
 
-  const stringList = [];
+  const stringList:string[] = [];
   permission.forEach(e => {
     stringList.push(JSON.stringify(e));
   });
@@ -86,15 +102,15 @@ export const sendAdminVerficationEmail = (orgInfo, hashedUsername, userId, usern
 
   return transporter
     .sendMail(message)
-    .then(info => ({ message: `Preview URL: ${nodemailer.getTestMessageUrl(info)}` }));
+    .then((info:string) => ({ message: `Preview URL: ${nodemailer.getTestMessageUrl(info)}` }));
 };
 
-export const sendPermissionChangeAdminVerficationEmail = (orgInfo, hashedUsername, userId, username) => {
+export const sendPermissionChangeAdminVerficationEmail = (orgInfo:Organization, hashedUsername:string, userId:string, username:string) => {
   const { authorizedPerson, orgId, permission } = orgInfo;
   const orgName = orgInfo.name;
   const { name, telephone, email } = authorizedPerson;
   
-  const stringList = [];
+  const stringList:string[] = [];
   permission.forEach(e => {
     stringList.push(JSON.stringify(e));
   });
@@ -123,10 +139,10 @@ export const sendPermissionChangeAdminVerficationEmail = (orgInfo, hashedUsernam
 
   return transporter
     .sendMail(message)
-    .then(info => ({ message: `Preview URL: ${nodemailer.getTestMessageUrl(info)}` }));
+    .then((info:string) => ({ message: `Preview URL: ${nodemailer.getTestMessageUrl(info)}` }));
 };
 
-export const sendUserActiveEmail = user => {
+export const sendUserActiveEmail = (user:User) => {
   const { username, hashedUsername, _id, email } = user;
   const message = {
     from: 'ohfstest@outlook.com',
@@ -142,10 +158,10 @@ export const sendUserActiveEmail = user => {
 
   return transporter
     .sendMail(message)
-    .then(info => ({ message: `Preview URL: ${nodemailer.getTestMessageUrl(info)}` }));
+    .then((info:string) => ({ message: `Preview URL: ${nodemailer.getTestMessageUrl(info)}` }));
 };
 
-export const sendUserRejectEmail = user => {
+export const sendUserRejectEmail = (user:User) => {
   const { username, email } = user;
   const message = {
     from: 'ohfstest@outlook.com',
@@ -158,5 +174,5 @@ export const sendUserRejectEmail = user => {
 
   return transporter
     .sendMail(message)
-    .then(info => ({ message: `Preview URL: ${nodemailer.getTestMessageUrl(info)}` }));
+    .then((info:string) => ({ message: `Preview URL: ${nodemailer.getTestMessageUrl(info)}` }));
 };

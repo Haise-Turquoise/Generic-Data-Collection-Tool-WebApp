@@ -81,16 +81,20 @@ export default class SubmissionService {
   //   });
   //   console.log('permission', permission)
   // }
-  checkUserRole(userInfo:User, submission:Submission, permission:string[]){
-    userInfo.sysRole.forEach(sysRole=>{
-      sysRole.org.forEach(org=>{
-        org.program.forEach(program=>{
-          if(org.orgId.toString() == submission.orgId.toString() && program.programId.toString() == submission.programId.toString()){
-            permission.push(sysRole.role)
+  async checkUserRole(userInfo:User, submission:Submission, permission:string[]){
+    for (const sysRole of userInfo.sysRole){
+      for(const org of sysRole.org){
+        for (const program of org.program){
+          for (const template of program.template){
+            const submissionTemplate = await this.templateRepository.findById(submission.templateId)
+            const submissionTemplateTypeId = submissionTemplate.templateTypeId
+            if(org.orgId.toString() == submission.orgId.toString() && program.programId.toString() == submission.programId.toString()&& submissionTemplateTypeId == template.templateTypeId.toString()){
+              permission.push(sysRole.role)
+            }
           }
-        })
-      })
-    })
+        }
+      }
+    }
   }
 
   async findQuery(query:Partial<Submission>) {
@@ -581,14 +585,13 @@ export default class SubmissionService {
             });
             
             // Assemble each the object for transfer
-            submissionArr.forEach(submission => {
+            for (const submission of submissionArr){
               const programData = programSet.get(String(submission.programId));
               const periodName = periodSet.get(String(submission.submissionPeriodId)).name;
               const statusName = statusSet.get(String(submission.statusId)).name;
               const templateData = templatePkgSet.get(String(submission.templatePackageId));
-
               const permission:string[] = []
-              this.checkUserRole(userInfo, submission, permission);
+              await this.checkUserRole(userInfo, submission, permission);
               const changedSubmission : Submission = {
                 
                 ...submission._doc,
@@ -604,7 +607,7 @@ export default class SubmissionService {
               };
 
               changedSubmissions.push(changedSubmission)
-            });
+            };
 
             
             return changedSubmissions
