@@ -10,9 +10,19 @@ const _ = require('lodash');
 import {sendPermissionChangeUserVerficationEmail,sendPermissionChangeAdminVerficationEmail} from '../../middlewares/mail/mail'
 import User, { UserDoc } from '../../types/user';
 //@ts-ignore
-import Organization from '../../types/organization';
+// import Organization from '../../types/organization';
 import { ObjectId } from 'mongodb';
+interface Organization  {
+  name:string,
+  authorizedPerson:{
+    name:string,
+    telephone:string, 
+    email:string,
+  }
+  orgId:string,
+  permission:string[],
 
+}
 export default class UserRepository extends BaseRepository<User, UserDoc> {
   constructor() {
     super(UserModel);
@@ -131,7 +141,7 @@ export default class UserRepository extends BaseRepository<User, UserDoc> {
       const username = user.username;
       
       orgList.forEach(orgInfo => {
-        sendPermissionChangeAdminVerficationEmail(orgInfo, hashedUsername, userId, username);
+        sendPermissionChangeAdminVerficationEmail(orgInfo, hashedUsername, userId.toString(), username);
       });
       return user;
     }).then((user: UserDoc)=>{

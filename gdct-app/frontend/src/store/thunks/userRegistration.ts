@@ -1,4 +1,5 @@
 import hash from 'object-hash';
+//@ts-ignore
 import cloneDeep from 'clone-deep';
 import bcrypt from 'bcrypt-nodejs';
 import organizationController from '../../controllers/organization';

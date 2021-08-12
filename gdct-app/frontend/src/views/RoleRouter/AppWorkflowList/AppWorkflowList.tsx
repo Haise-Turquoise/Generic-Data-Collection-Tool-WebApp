@@ -4,7 +4,7 @@ import MaterialTable, { Action, Column } from 'material-table';
 import AddIcon from '@material-ui/icons/Add';
 import DeleteIcon from '@material-ui/icons/Delete';
 import {
-  calculateOptions,
+  calculateOptionsWithTitle,
 } from '../../../tools/misc';
 import roleWorkflowStatusController from '../../../controllers/RoleWorkflowStatus'
 import statusController from '../../../controllers/status';
@@ -94,14 +94,14 @@ const AppWorkflowList = ({ role, isEditable = true, onClickAdd, onClickDelete }:
 
   const right_actions: Action<nameObj>[] = useMemo(() => [{ icon: AddIcon, tooltip: 'Add to Mapping', onClick: addButton }], []);
   // const orgOptions: Options<AppResource> = useMemo(() => calculateOptions(readOrgRowNum), [readOrgRowNum]);
-  const orgOptions: any = useMemo(() => calculateOptions(readWorkflowsNum), [readWorkflowsNum]);
+  const orgOptions: any = useMemo(() => calculateOptionsWithTitle(readWorkflowsNum), [readWorkflowsNum]);
   // const nonOrgOptions: Options<AppResource> = useMemo(() => calculateOptions(readNonOrgRowNum), [readNonOrgRowNum]);
-  const nonOrgOptions: any = useMemo(() => calculateOptions(readNonWorkflowsNum), [readNonWorkflowsNum]);
+  const nonOrgOptions: any = useMemo(() => calculateOptionsWithTitle(readNonWorkflowsNum), [readNonWorkflowsNum]);
   return (
     <div className="tableContainer">
       <div className="tableWrapper-linked">
         <MaterialTable
-          title="Linked App Resource"
+          title="Current Workflows"
           // @ts-ignore
           key = {readWorkflowsNum}
           columns={!!workflowList ? columns : preColumns}
@@ -115,7 +115,7 @@ const AppWorkflowList = ({ role, isEditable = true, onClickAdd, onClickDelete }:
       </div>
       <div className="tableWrapper-other">
         <MaterialTable
-          title="Other App Resource"
+          title="Additional Workflows"
           key={readNonWorkflowsNum}
           // @ts-ignore
           columns={!!statuses ? columns : preColumns}
