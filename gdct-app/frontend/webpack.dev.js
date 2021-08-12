@@ -9,7 +9,7 @@ module.exports = merge(common, {
   devtool: 'inline-source-map',
   devServer: {
     contentBase: '.',
-    // host:'0.0.0.0',
+    host:'gdct-container.azurewebsites.net',
     hot: true,
     port: 3003,
     open: true,
