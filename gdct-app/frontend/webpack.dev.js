@@ -9,9 +9,9 @@ module.exports = merge(common, {
   devtool: 'inline-source-map',
   devServer: {
     contentBase: '.',
-    host:'0.0.0.0',
+    // host:'0.0.0.0',
     hot: true,
-    port: 80,
+    port: 3003,
     open: true,
     historyApiFallback: true,
     disableHostCheck: true
