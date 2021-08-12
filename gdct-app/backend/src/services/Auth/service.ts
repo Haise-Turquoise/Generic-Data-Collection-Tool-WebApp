@@ -213,7 +213,7 @@ export default class AuthService {
       return passport.authenticate('local')(req, res, async () => {
         const { email } = (req.user as User);
         const user = await authService.UserRepository.findByEmail(email);
-
+        console.log(email, user)
         //@ts-ignore
         req.session.isAdmin = false;
         if (user) {
