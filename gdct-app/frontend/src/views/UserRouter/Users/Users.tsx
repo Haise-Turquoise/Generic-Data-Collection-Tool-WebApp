@@ -11,6 +11,7 @@ import usersController from '../../../controllers/Users';
 import CreateAuditLog from '../../AuditLog_Global';
 
 import User from '../../../types/user';
+import { OpenInNew } from '@material-ui/icons';
 
 const UsersHeader = () => {
   return (
@@ -198,6 +199,15 @@ const UsersTable = () => {
       onClick: (_: any, user: User | User[]) => {
         if (!Array.isArray(user)) {
           history.push(`/admin/user_management/${user._id}`);
+        }
+      },
+    },
+    {
+      icon: OpenInNew,
+      tooltip: 'Edit User Permissions',
+      onClick: (_: any, user: User | User[]) => {
+        if (!Array.isArray(user)) {
+          history.push(`/admin/user_management/permissions/${user._id}`);
         }
       },
     },
