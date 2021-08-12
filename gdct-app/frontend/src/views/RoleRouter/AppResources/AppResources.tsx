@@ -1,22 +1,7 @@
 import React, { useMemo, useEffect, useState } from 'react';
-import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 
 import MaterialTable, { Column, Options } from 'material-table';
 import { Paper, Typography } from '@material-ui/core';
-import moment from 'moment';
-
-import {
-  getAppResourcesRequest,
-  createAppResourceRequest,
-  deleteAppResourceRequest,
-  updateAppResourceRequest,
-//@ts-ignore
-} from '../../../store/thunks/AppResource';
-
-//@ts-ignore
-import { selectFactoryRESTResponseTableValues } from '../../../store/common/REST/selectors';
-//@ts-ignore
-import { selectAppResourcesStore } from '../../../store/AppResourcesStore/selectors';
 import {
   calculateOptions,
   checkDuplicates,
@@ -24,13 +9,10 @@ import {
   controllerEditRow,
   controllerDeleteRow,
   formatTimestamp,
-  //@ts-ignore
+  fetchWithStatus,
 } from '../../../tools/misc'
-//@ts-ignore
 import CreateAuditLog from '../../AuditLog_Global';
-//@ts-ignore
 import AppResourceController from '../../../controllers/AppResource';
-
 import AppResource from '../../../types/appresource'
 
 interface AppResourceMT extends AppResource {
@@ -41,7 +23,6 @@ const AppResourcesHeader = () => {
   return (
     <Paper className="header">
       <Typography variant="h5">Application Resource</Typography>
-      {/* <HeaderActions/> */}
     </Paper>
   );
 };
@@ -49,11 +30,10 @@ const AppResourcesHeader = () => {
 const AppResourcesTable = () => {
   const [readRowNum, setRowNum] = useState(1);
   const [appResources, setAppResources] = useState<AppResource[] | undefined>(undefined)
+  const [status, setStatus] = useState<'LOADING...' | 'NOT ALLOWED'>('LOADING...')
 
   useEffect(() => {
-    AppResourceController.fetch().then((res: unknown) => {
-      setAppResources(res as AppResource[])
-    })
+    fetchWithStatus<AppResource>(AppResourceController, setAppResources, setStatus)
   }, [])
 
   // table stuff while loading
@@ -62,7 +42,7 @@ const AppResourcesTable = () => {
     _id: '',
     id: 0,
     isProtected: '',
-    resourceName: 'LOADING...',
+    resourceName: status,
     resourcePath: '',
     timestamp: '',
     updatedBy: '',

@@ -1,40 +1,21 @@
-import React, { useState, useMemo, useEffect, Component } from 'react';
-import { useDispatch, useSelector, shallowEqual } from 'react-redux';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 
 import MaterialTable, { Action, Column, Options } from 'material-table';
 import { Paper, Typography } from '@material-ui/core';
-
-import moment from 'moment';
-
 import VisibilityIcon from '@material-ui/icons/Visibility';
-//@ts-ignore
-import { selectFactoryRESTResponseTableValues } from '../../../store/common/REST/selectors';
-//@ts-ignore
-import { selectUsersStore } from '../../../store/UsersStore/selectors';
-//@ts-ignore
-import { calculateOptions, controllerEditRow, formatTimestamp } from '../../../tools/misc'
-import {
-  getUsersRequest,
-  updateUsersRequest,
-//@ts-ignore
-} from '../../../store/thunks/users';
-//@ts-ignore
+import { calculateOptions, controllerEditRow, fetchWithStatus, formatTimestamp } from '../../../tools/misc'
 import { unauthorized_dialog } from '../../../components/Unauthorized_Dialog/Unauthorized_Dialog'
 
-//@ts-ignore
 import usersController from '../../../controllers/Users';
-//@ts-ignore
 import CreateAuditLog from '../../AuditLog_Global';
 
 import User from '../../../types/user';
-import SysRole from '../../../types/sysrole';
 
 const UsersHeader = () => {
   return (
     <Paper className="header">
       <Typography variant="h5">User Management</Typography>
-      {/* <HeaderActions/> */}
     </Paper>
   );
 };
@@ -50,11 +31,10 @@ const UsersTable = () => {
   const [orgName, setOrgName] = useState('');
   const [readRowNum, setRowNum] = useState(1);
   const [users, setUsers] = useState<User[] | undefined>(undefined)
+  const [status, setStatus] = useState<'LOADING...' | 'NOT ALLOWED'>('LOADING...')
 
   useEffect(() => {
-    usersController.fetch().then((res: unknown) => {
-      setUsers(res as User[])
-    })
+    fetchWithStatus<User>(usersController, setUsers, setStatus)
   }, [])
 
   // table vars for loading
@@ -73,10 +53,26 @@ const UsersTable = () => {
     sysRole: [],
     timestamp: '',
     title: '',
-    username: 'LOADING...',
+    username: status,
   }]
 
   const handleClear = () => {
+    usersController.fetch(
+      {
+        username: "",
+        lastName: "",
+        firstName: "",
+        // @ts-ignore
+        'sysRole.org.orgId': "",
+        'sysRole.org.orgName': "",
+      }
+    ).then((res: unknown) => {
+      if (res === 'UNAUTHORIZED ACCESS') {
+        unauthorized_dialog()
+      } else {
+        setUsers(res as User[])
+      }
+    });
     setUserName('');
     setLastName('');
     setFirstName('');
@@ -97,22 +93,24 @@ const UsersTable = () => {
     orgId !== '' ? (o = orgId) : '';
     orgName !== '' ? (n = orgName) : '';
 
-    usersController.fetch({
-      params: {
+    usersController.fetch(
+      {
         username: u,
         lastName: l,
         firstName: f,
+        // @ts-ignore
         'sysRole.org.orgId': o,
         'sysRole.org.orgName': n,
-      },
-    }).then((res: unknown) => {
+      }
+    ).then((res: unknown) => {
       if (res === 'UNAUTHORIZED ACCESS') {
         unauthorized_dialog()
       } else {
         setUsers(res as User[])
       }
-    })
+    });
   };
+
   // Convert Date format
   users?.forEach(user => {
     user.timestamp = formatTimestamp(user.timestamp)

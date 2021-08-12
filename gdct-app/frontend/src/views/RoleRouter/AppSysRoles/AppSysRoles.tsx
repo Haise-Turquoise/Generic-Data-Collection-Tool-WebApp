@@ -1,45 +1,20 @@
 import React, { useMemo, useEffect, useState } from 'react';
-import { useDispatch, useSelector, shallowEqual } from 'react-redux';
+import { useDispatch } from 'react-redux';
 
 import MaterialTable, { Column, Options } from 'material-table';
 import { Paper, Typography } from '@material-ui/core';
-import moment from 'moment';
-import {
-  getAppSysRolesRequest,
-  createAppSysRoleRequest,
-  deleteAppSysRoleRequest,
-  updateAppSysRoleRequest,
-//@ts-ignore
-} from '../../../store/thunks/AppSysRole';
-
-//@ts-ignore
-import { getAppRolesRequest } from '../../../store/thunks/AppRole';
-//@ts-ignore
-import { getAppSysesRequest } from '../../../store/thunks/AppSys';
-
-//@ts-ignore
-import { selectFactoryRESTResponseTableValues } from '../../../store/common/REST/selectors';
-//@ts-ignore
-import { selectAppSysRolesStore } from '../../../store/AppSysRolesStore/selectors';
-//@ts-ignore
-import { selectAppSysesStore } from '../../../store/AppSysesStore/selectors';
-//@ts-ignore
-import { selectAppRolesStore } from '../../../store/AppRolesStore/selectors';
 import {
   calculateOptions,
   controllerAddRow,
   controllerEditRow,
   controllerDeleteRow,
   formatTimestamp,
-  //@ts-ignore
+  checkDuplicates,
+  fetchWithStatus,
 } from '../../../tools/misc';
-//@ts-ignore
 import CreateAuditLog from '../../AuditLog_Global';
-//@ts-ignore
 import AppSysRoleController from '../../../controllers/AppSysRole';
-//@ts-ignore
 import AppSysController from '../../../controllers/AppSys'
-//@ts-ignore
 import AppRoleController from '../../../controllers/AppRole'
 
 import AppSysRole from '../../../types/appsysrole';
@@ -54,7 +29,6 @@ const AppSysRolesHeader = () => {
   return (
     <Paper className="header">
       <Typography variant="h5">Application System Role</Typography>
-      {/* <HeaderActions/> */}
     </Paper>
   );
 };
@@ -64,15 +38,14 @@ const AppSysRolesTable = () => {
   const [readNumRow, setNumRow] = useState(1);
   const [appSyses, setAppSyses] = useState<AppSys[] | undefined>(undefined)
   const [appSysRoles, setAppSysRoles] = useState<AppSysRole[] | undefined>(undefined)
+  const [status, setStatus] = useState<'LOADING...' | 'NOT ALLOWED'>('LOADING...')
   const [appRoles, setAppRoles] = useState<AppRole[] | undefined>(undefined)
 
   useEffect(() => {
     AppSysController.fetch().then((res: unknown) => {
       setAppSyses(res as AppSys[])
     })
-    AppSysRoleController.fetch().then((res: unknown) => {
-      setAppSysRoles(res as AppSysRole[])
-    })
+    fetchWithStatus<AppSysRole>(AppSysRoleController, setAppSysRoles, setStatus)
     AppRoleController.fetch().then((res: unknown) => {
       setAppRoles(res as AppRole[])
     })
@@ -84,7 +57,7 @@ const AppSysRolesTable = () => {
     _id: '',
     appSys: '',
     isActive: false,
-    role: 'LOADING...',
+    role: status,
     timestamp: '',
   }]
 
@@ -107,8 +80,9 @@ const AppSysRolesTable = () => {
       {
         title: 'Application System',
         field: 'appSys',
+        validate: rowData => checkDuplicates(rowData, appSysRoles, 'appSys')
       },
-      { title: 'Role', field: 'role' },
+      { title: 'Role', field: 'role', validate: rowData => checkDuplicates(rowData, appSysRoles, 'role') },
       {
         title: 'Modified On',
         field: 'timestamp',
@@ -124,7 +98,7 @@ const AppSysRolesTable = () => {
         },
       },
     ],
-    [lookupSysRoles, lookupAppRoles],
+    [lookupSysRoles, lookupAppRoles, appSysRoles],
   );
 
   const options: Options<AppSysRoleMT> = useMemo(() => calculateOptions(readNumRow), [readNumRow]);

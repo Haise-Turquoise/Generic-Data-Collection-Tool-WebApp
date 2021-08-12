@@ -1,5 +1,7 @@
 export default interface RoleWorkflowStatus{
-  _id:string,
+  _id?:string,
   role:string,
-  workflowStatus:string[]
+  workflowStatus:string[],
+  updatedBy: string,
+  modifiedOn: string,
 }

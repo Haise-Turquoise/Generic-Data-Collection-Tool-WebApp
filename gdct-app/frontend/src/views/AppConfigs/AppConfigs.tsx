@@ -1,38 +1,16 @@
 import React, { useMemo, useEffect, useState } from 'react';
-import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 
 import MaterialTable, { Column, Options } from 'material-table';
 import { Paper, Typography } from '@material-ui/core';
-
-import moment from 'moment';
-
-import {
-  getAppConfigsRequest,
-  createAppConfigRequest,
-  deleteAppConfigRequest,
-  updateAppConfigRequest,
-  //@ts-ignore
-} from '../../store/thunks/AppConfig';
-//@ts-ignore
-import { getAppSysesRequest } from '../../store/thunks/AppSys';
-//@ts-ignore
-import { selectFactoryRESTResponseTableValues } from '../../store/common/REST/selectors';
-//@ts-ignore
-import { selectAppConfigsStore } from '../../store/AppConfigsStore/selectors';
-//@ts-ignore
-import { selectAppSysesStore } from '../../store/AppSysesStore/selectors';
-//@ts-ignore
 import AppConfigController from '../../controllers/AppConfig';
-//@ts-ignore
 import AppSysController from '../../controllers/AppSys';
-//@ts-ignore
 import CreateAuditLog from '../AuditLog_Global';
 import {
   controllerAddRow,
   controllerEditRow,
   controllerDeleteRow,
   formatTimestamp,
-  //@ts-ignore
+  fetchWithStatus,
 } from '../../tools/misc'
 
 import AppConfig from '../../types/appconfig';
@@ -42,24 +20,42 @@ interface AppConfigMT extends AppConfig {
   tableData?: any;
 }
 
+const customCheckDuplicates = (rowData:AppConfigMT, tableData?: AppConfigMT[]) => {
+  if (!tableData) {
+    return true
+  }
+  // custom we are checking key and appSys together
+  // field of element being edited -- null if not editing
+  let current:any = null;
+  if (rowData.tableData) {
+    if (rowData.tableData.editing === 'delete') {
+      return true;
+    } else if (rowData.tableData.editing === 'update') {
+      current = tableData.find((el:any) => el._id === rowData._id);
+    }
+  } else if (rowData._id) {
+    // this case runs while submitting a change
+    return true;
+  }
+  const duplicate = tableData.find((val:any) => val.key === rowData.key && val.appSys === rowData.appSys && val !== current)
+  return duplicate ? "Duplicate key not allowed for single appSys" : true
+}
+
 const AppConfigsHeader = () => {
   return (
     <Paper className="header">
       <Typography variant="h5">Configuration</Typography>
-      {/* <HeaderActions/> */}
     </Paper>
   );
 };
 
 const AppConfigsTable = () => {
-  const dispatch = useDispatch();
   const [appConfigs, setAppConfigs] = useState<AppConfig[] | undefined>(undefined)
   const [appSyses, setAppSyses] = useState<AppSys[] | undefined>(undefined)
+  const [status, setStatus] = useState<'LOADING...' | 'NOT ALLOWED'>('LOADING...')
 
   useEffect(() => {
-    AppConfigController.fetch().then((res: unknown) => {
-      setAppConfigs(res as AppConfig[])
-    })
+    fetchWithStatus<AppConfig>(AppConfigController, setAppConfigs, setStatus)
     AppSysController.fetch().then((res: unknown) => {
       setAppSyses(res as AppSys[])
     })
@@ -69,7 +65,7 @@ const AppConfigsTable = () => {
   const preColumns: Column<AppConfigMT>[] = [{ title: 'Name', field: 'value' }];
   const preConfigs: AppConfigMT[] = [
     {
-      value: 'LOADING...',
+      value: status,
       _id: '',
       key: '',
       appSys: '',
@@ -92,7 +88,7 @@ const AppConfigsTable = () => {
   // Prepare the columns for the material table
   const columns: Column<AppConfigMT>[] = useMemo(
     () => [
-      { title: 'Key', field: 'key' },
+      { title: 'Key', field: 'key', validate: rowData => customCheckDuplicates(rowData, appConfigs) },
       { title: 'Value', field: 'value' },
       { title: 'System', field: 'appSys', lookup: lookupSysRoles },
       {
@@ -110,7 +106,7 @@ const AppConfigsTable = () => {
         },
       },
     ],
-    [lookupSysRoles],
+    [lookupSysRoles, appConfigs],
   );
 
   // Prepare the options

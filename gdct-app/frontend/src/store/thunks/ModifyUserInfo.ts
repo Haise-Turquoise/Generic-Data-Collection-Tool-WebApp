@@ -1,4 +1,3 @@
-import { resolveConfig } from 'prettier';
 //@ts-ignore
 import cloneDeep from 'clone-deep';
 import userController from '../../controllers/user';

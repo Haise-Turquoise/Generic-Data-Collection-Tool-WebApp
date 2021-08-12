@@ -1,24 +1,17 @@
-import React, { useEffect, useMemo, useCallback } from 'react';
+import React, { useEffect, useMemo, useCallback, useState } from 'react';
 import {
   FlowChart,
   actions,
   REACT_FLOW_CHART,
   IFlowChartCallbacks,
-  INodeDefaultProps,
-  INode,
-  INodeInnerDefaultProps,
 } from '@mrblenny/react-flow-chart';
 import { useSelector, shallowEqual, useDispatch } from 'react-redux';
 import { TextField, List, ListItem, Typography, Button } from '@material-ui/core';
 import { mapValues } from 'lodash';
 import { useRouteMatch, useHistory } from 'react-router-dom';
-//@ts-ignore
 import { selectFactoryRESTResponseValues } from '../../store/common/REST/selectors';
-//@ts-ignore
 import { selectStatusesStore } from '../../store/StatusesStore/selectors';
-//@ts-ignore
 import { getStatusesRequest } from '../../store/thunks/status';
-//@ts-ignore
 import { StatusesStoreActions } from '../../store/StatusesStore/store';
 
 import {
@@ -27,15 +20,10 @@ import {
   selectSelectedNodeValue,
   selectWorkflowFilter,
   selectWorkflowName,
-  //@ts-ignore
 } from '../../store/WorkflowStore/selectors';
-//@ts-ignore
 import { WorkflowStoreActions } from '../../store/WorkflowStore/store';
-//@ts-ignore
 import { submitWorkflow, updateWorkflow, loadWorkflow } from '../../store/thunks/workflow';
-//@ts-ignore
 import { getWorkflowsRequest, deleteWorkflowRequest } from '../../store/thunks/workflow';
-//@ts-ignore
 import SubmissionController from '../../controllers/submission'
 import './Workflow.scss';
 
@@ -45,42 +33,61 @@ import Status from '../../types/status';
 import Submission from '../../types/submission'
 type actionType = 'create' | 'update';
 
-//@ts-ignore
 import CreateAuditLog from '../AuditLog_Global';
 import { state } from '../../store/types';
-import { Node } from '../../types/workflow';
+import Workflow, { Node } from '../../types/workflow';
+import workflowController from '../../controllers/workflow';
 
 const Auditlog_Operation: string[] = [];
 
 // The Save button and its logic in the header
-const WorkflowHeaderActions = ({ type, id }: { type: actionType; id: string }) => {
+const WorkflowHeaderActions = ({ type, id, error }: { type: actionType; id: string, error?: string }) => {
   const dispatch = useDispatch();
   const history = useHistory();
 
-  const setWorkflows = async () => {
+  const setWorkflows = async (error?: string) => {
     // check if workflow is referenced in submission before updating
     if (type === 'update') {
-      const res: Submission[] | null = await SubmissionController.fetch({ workflowId: id })
-      // needs testing
-      if (res && res!.length >= 1) {
-        Swal.fire({
-          title: 'Error updating workflow',
-          text: 'Workflow is already referenced in submissions',
-          icon: 'warning'
-        })
+      try {
+        const res: Submission[] | null = await SubmissionController.fetch({ workflowId: id })
+        // needs testing
+        if (res && res!.length >= 1) {
+          Swal.fire({
+            title: 'Error updating workflow',
+            text: 'Workflow is already referenced in submissions',
+            icon: 'error'
+          })
+          return false
+        } else if (error) {
+          Swal.fire({
+            title: 'Error updating workflow',
+            text: error,
+            icon: 'error'
+          })
+          return false
+        } else {
+          dispatch(updateWorkflow())
+          return true
+        }
+      } catch (e) {
         return false
-      } else {
-        dispatch(updateWorkflow())
-        return true
       }
     } else {
+      if (error) {
+        Swal.fire({
+          title: 'Error updating workflow',
+          text: error,
+          icon: 'error'
+        })
+        return false
+      }
       dispatch(submitWorkflow())
       return true
     }
   }
 
   const handleSave = useCallback(() => {
-    setWorkflows().then(res => {
+    setWorkflows(error).then(res => {
       if (!res) {
         return
       }
@@ -98,7 +105,7 @@ const WorkflowHeaderActions = ({ type, id }: { type: actionType; id: string }) =
       // Redirect back
       history.push('/admin/workflow');
     })
-  }, [dispatch]);
+  }, [dispatch, error]);
 
   return (
     <div>
@@ -115,10 +122,24 @@ const WorkflowHeaderActions = ({ type, id }: { type: actionType; id: string }) =
 // The Header for workflow, including the name input field.
 const WorkflowHeader = ({ type, id }: { type: actionType; id: string }) => {
   const dispatch = useDispatch();
+  const [workflows, setWorkflows] = useState<Workflow[]>([])
+  const [error, setError] = useState<string | undefined>()
+
+  useEffect(() => {
+    workflowController.fetch().then(res => {
+      setWorkflows(res)
+    })
+  }, [])
 
   let name = useSelector((state: state) => selectWorkflowName(state), shallowEqual);
   const handleChangeName = useCallback(
     ({ target: { value } }) => {
+      if (type === 'create' && workflows.find(wrk => wrk.name === value)) {
+        console.log('will block')
+        setError('duplicate name not allowed')
+      } else if (type === 'update' && workflows.find(wrk => wrk.name === value && wrk._id !== id)) {
+        setError('duplicate name not allowed')
+      } else { setError(undefined) }
       dispatch(WorkflowStoreActions.UPDATE_WORKFLOW_NAME(value));
 
       // Delete previous name change record for only auditting the newest name change
@@ -129,7 +150,7 @@ const WorkflowHeader = ({ type, id }: { type: actionType; id: string }) => {
       }
       Auditlog_Operation.push(`Name Changed To: ${value}`);
     },
-    [dispatch],
+    [dispatch, workflows],
   );
   return (
     <div className="workflowHeader">
@@ -140,7 +161,7 @@ const WorkflowHeader = ({ type, id }: { type: actionType; id: string }) => {
         value={name}
         onChange={handleChangeName}
       />
-      <WorkflowHeaderActions type={type} id={id} />
+      <WorkflowHeaderActions type={type} id={id} error={error} />
     </div>
   );
 };

@@ -3,15 +3,23 @@ import RoleSubmissionButton from '../../types/rolesubmissionbutton';
 import RoleSubmissionButtonModel from '../../models/RoleSubmissionButton';
 import {RoleSubmissionButtonDoc} from '../../types/rolesubmissionbutton';
 
-// Created by Sheldon on 2021/07/13
+// Created by Jie on 2021/07/13
 // Repository for RoleSubmissionButton
 export default class RoleSubmissionButtonRepository extends BaseRepository<RoleSubmissionButton, RoleSubmissionButtonDoc>{
   constructor(){
     super(RoleSubmissionButtonModel)
   }
 
-  async findByRole(role:string):Promise<RoleSubmissionButton>{
-    return RoleSubmissionButtonModel.find({role});
+  async findByRole(role:string):Promise<RoleSubmissionButtonDoc>{
+    return RoleSubmissionButtonModel.findOne({role});
+  }
+  
+  async create(item: RoleSubmissionButton): Promise<RoleSubmissionButtonDoc> {
+    return await RoleSubmissionButtonModel.create(item);
+  }
+
+  async update(_id: string, RoleSubmissionButton: Partial<RoleSubmissionButton>) {
+    return RoleSubmissionButtonModel.findByIdAndUpdate(_id, RoleSubmissionButton)
   }
 
 }

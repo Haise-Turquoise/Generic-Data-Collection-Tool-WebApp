@@ -1,13 +1,14 @@
 import winston from 'winston';
+//@ts-ignore
 import { SPLAT } from 'triple-beam';
 import chalk from 'chalk';
 
 const myFormat = winston.format.printf(({ level, message, label, ...others }) => {
   let formatedString = `${new Date().toLocaleString('en-CA')} [${label}] ${level}: ${message}`;
+  // @ts-ignore
   if (others[SPLAT]) {
-    formatedString += `${
-      typeof others[SPLAT] === 'object' ? JSON.stringify(others[SPLAT]) : others[SPLAT]
-    }`;
+    // @ts-ignore
+    formatedString += `${typeof others[SPLAT] === 'object' ? JSON.stringify(others[SPLAT]) : others[SPLAT]}`;
   }
 
   return formatedString;
@@ -20,26 +21,24 @@ const options = {
       level: process.env.NODE_ENV === 'production' ? 'info' : 'debug',
       format: winston.format.combine(winston.format.colorize(), myFormat),
       handleExceptions: true,
-      json: false,
     }),
     new winston.transports.File({
       filename: 'log/gdct.log',
       level: 'info',
       format: winston.format.combine(myFormat),
       handleExceptions: true,
-      json: true,
       maxsize: 5242880, // 5MB
       maxFiles: 5,
-      colorize: false,
     }),
   ],
 };
 
-export let log;
+export let log: winston.Logger;
 
 export const initLogger = () => {
   log = winston.createLogger(options);
   log.stream = {
+    // @ts-ignore
     write(message) {
       log.info(message.replace('\n', ''));
     },

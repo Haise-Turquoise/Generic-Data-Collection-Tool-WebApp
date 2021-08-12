@@ -64,7 +64,7 @@ interface RawData {
   email: string,
   firstName: string,
   lastName: string,
-  orgId: number,
+  orgId: string,
   orgName: string,
   phoneNumber: string,
   programCode: string,
