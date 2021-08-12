@@ -24,7 +24,7 @@ const COATreeController = Service([COATreeService], service => {
 
       service
         .findCOATree({ sheetNameId })
-        .then((COATrees: CategoryTreeDoc[]) =>
+        .then((COATrees: COATreeEntity[]) =>
           res.json({ COATrees: COATrees.map(COATree => ({ ...COATree, COATreeData: undefined })) }),
         )
         .catch(next);
@@ -50,7 +50,7 @@ const COATreeController = Service([COATreeService], service => {
     router.get('/COATrees/fetch', (req, res, next) => {
       service
         .findCOATree(new COATreeEntity(req.body))
-        .then((COATrees: CategoryTreeDoc[]) =>
+        .then((COATrees: COATreeEntity[]) =>
           res.json({ COATrees: COATrees.map(COATree => ({ ...COATree, COATreeData: undefined })) }),
         )
         .catch(next);
