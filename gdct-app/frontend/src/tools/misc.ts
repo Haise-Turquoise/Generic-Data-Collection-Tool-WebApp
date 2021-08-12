@@ -47,6 +47,24 @@ export const calculateOptions = (itemCount:number) => {
   } as Options<any>;
 };
 
+export const calculateOptionsWithTitle = (itemCount:number) => {
+  let length = itemCount;
+  if (length > 100) length = 100;
+  else if (length == 0) length = 1;
+  const sizeOptions = [10, 25, 50, 100, itemCount];
+  sizeOptions.sort((a, b) => a - b);
+  return {
+    actionsColumnIndex: -1,
+    search: true,
+    showTitle: true,
+    maxBodyHeight: '400px',
+    pageSizeOptions: sizeOptions,
+    pageSize: length,
+    addRowPosition: 'first',
+  } as Options<any>;
+};
+
+
 export const urlParser = (orgId: number, categories: string[], attributes: string[]) => {
   let baseUrl = 'https://gdctrest.azurewebsites.net/mastervalues/all?organization=';
   let UrlWithOrg = baseUrl + orgId + '&categories=';

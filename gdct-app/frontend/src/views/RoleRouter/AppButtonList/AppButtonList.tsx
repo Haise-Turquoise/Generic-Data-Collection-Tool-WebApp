@@ -4,7 +4,7 @@ import MaterialTable, { Action, Column, Options } from 'material-table';
 import AddIcon from '@material-ui/icons/Add';
 import DeleteIcon from '@material-ui/icons/Delete';
 import {
-  calculateOptions,
+  calculateOptionsWithTitle,
 } from '../../../tools/misc';
 import RoleSubmissionButtonController from '../../../controllers/RoleSubmissionButton'
 import statusController from '../../../controllers/status';
@@ -104,14 +104,14 @@ const AppButtonList = ({ role, isEditable = true, onClickAdd, onClickDelete }: {
 
   const right_actions: Action<nameObj>[] = useMemo(() => [{ icon: AddIcon, tooltip: 'Add to Mapping', onClick: addButton }], []);
   // const orgOptions: Options<AppResource> = useMemo(() => calculateOptions(readOrgRowNum), [readOrgRowNum]);
-  const orgOptions: any = useMemo(() => calculateOptions(readButtonsNum), [readButtonsNum]);
+  const orgOptions: any = useMemo(() => calculateOptionsWithTitle(readButtonsNum), [readButtonsNum]);
   // const nonOrgOptions: Options<AppResource> = useMemo(() => calculateOptions(readNonOrgRowNum), [readNonOrgRowNum]);
-  const nonOrgOptions: any = useMemo(() => calculateOptions(readNonButtonsNum), [readNonButtonsNum]);
+  const nonOrgOptions: any = useMemo(() => calculateOptionsWithTitle(readNonButtonsNum), [readNonButtonsNum]);
   return (
     <div className="tableContainer">
       <div className="tableWrapper-linked">
         <MaterialTable
-          title="Linked App Resource"
+          title="Visible Buttons"
           // @ts-ignore
           key = {readButtonsNum}
           columns={!!buttonList ? columns : preColumns}
@@ -125,7 +125,7 @@ const AppButtonList = ({ role, isEditable = true, onClickAdd, onClickDelete }: {
       </div>
       <div className="tableWrapper-other">
         <MaterialTable
-          title="Other App Resource"
+          title="Hidden Buttons"
           key={readNonButtonsNum}
           // @ts-ignore
           columns={!!statuses ? columns : preColumns}
