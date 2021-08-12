@@ -28,7 +28,6 @@ import Status from '../../types/status';
 import WorkflowProcess from '../../types/workflowprocess';
 import TemplateType from '../../types/templatetype';
 import Template from '../../types/template';
-import AppError from '../../utils/AppError';
 // @Service()
 export default class SubmissionService {
   private submissionRepository:SubmissionRepository;
@@ -138,8 +137,6 @@ export default class SubmissionService {
                     initialNode = node;
                   }
                 });
-                if (!program || !template) throw new AppError(`Cannot find template or program`);
-                
                 submission.name = submission.orgId
                   .toString()
                   .concat('_', program.name, '_', template.name);
@@ -159,7 +156,6 @@ export default class SubmissionService {
   async uploadSubmissionWorkbook(submission:any, workbookData:Submission['workbookData'], submissionNote:SubmissionNote) {
     //@ts-ignore
     const currentStatus = await this.statusRepository.findById(submission.statusId);
-    if (!currentStatus) throw new AppError(`Cannot find status with Id : ${submission.statusId}`); 
     if (currentStatus.name == 'Approved' || currentStatus.name == 'Submitted') return;
     submission.workbookData = await mastervaluePrepopulation(workbookData, submission);
     submission.updatedDate = new Date();
@@ -193,10 +189,8 @@ export default class SubmissionService {
     return this.findSubmissionById(id).then(submission => {
       if (!submission) throw 'Submission id does not exist';
       return this.orgRepository.findById(submission.orgId).then(org => {
-        if (!org) throw new AppError(`Cannot find org with orgId: ${submission.orgId}`);
         const orgConst = { id: org.id, name: org.name };
         return this.programRepository.findById(submission.programId).then(program => {
-          if (!program) throw new AppError(`Cannot find program with orgId: ${submission.programId}`);
           const programConst = { _id: program._id, name: program.name };
           return this.templateRepository.findById(submission.templateId).then(template => {
             const templateConst = template.name;
@@ -240,9 +234,9 @@ export default class SubmissionService {
   }
 
   async updateSubmission(submission:Submission) {
+    console.log('================================\n', submission)
     return this.submissionRepository.update(submission._id.toString(), submission).then(submission => {
-      //@ts-ignore
-      if (submission.phase === 'Approved') return this.phaseSubmission(String(submission._id));
+      if (submission.phase === 'Approved') return this.phaseSubmission(submission._id);
     });
   }
 
@@ -258,8 +252,6 @@ export default class SubmissionService {
       role,
     };
     const currentStatus = await this.statusRepository.findById(new ObjectId(submission.statusId));
-    if (!currentStatus) throw new AppError(`Cannot find status by id ${submission.statusId}`);
-    
     if (currentStatus.name == 'Approved') {
       submissionNotes.role = 'Approved';
       
@@ -341,37 +333,6 @@ export default class SubmissionService {
     //   });
     // });
   }
-
-
-  async findTempPkg(programAndTempTypes:{program:ObjectId, templateTypes:any[]}[]){
-    const program2TypesMap = new Map<string, string[]>();
-
-    programAndTempTypes.forEach(e=>{
-      console.log(e.templateTypes.map(type=>String(type.templateTypeId)))
-      program2TypesMap.set(String(e.program), e.templateTypes.map(type=>String(type.templateTypeId)))
-    })
-    const packages:any[] = await this.templatePackageRepository
-    .retrieveFullPkgInfoByProgramId(programAndTempTypes.map(e=>e.program));
-
-    console.log(program2TypesMap);
-
-    const filteredPackage = packages.filter(templatePkg=>{
-      for (const temlpate of templatePkg.templateIds){
-        const templateTypeId = String(temlpate.templateTypeId)
-        for (const program of templatePkg.programIds){
-          if (program2TypesMap.get(String(program))!.includes(templateTypeId)){
-            console.log(String(program), templateTypeId)
-            return true;
-          }
-        }
-      }
-      return false;
-    });
-    return filteredPackage;
-  }
-
-  // This function is not in use anymore, just in case it will be use in the future,
-  // I will leave it here for now
   async findTemplatePackage(programAndTempTypes:{program:ObjectId, templateTypes:any[]}[]) {
     const promiseQuery1 :Promise<any>[]= [];
     const newTemplatePackages:TemplatePackage[] = [];
@@ -379,7 +340,6 @@ export default class SubmissionService {
       promiseQuery1.push(
         this.templatePackageRepository.findByProgramId(element.program.toString()).then((templatePackages:TemplatePackage[]) => {
           const templatePackagesCopy:any[] = [];
-          
           templatePackages.forEach(templatePackage => {
             templatePackagesCopy.filter(ele => ele._id !== templatePackage._id);
             templatePackagesCopy.push(templatePackage);
@@ -441,9 +401,9 @@ export default class SubmissionService {
     });
   }
 
- 
+  // This is specified one user can only belongs to organization
   async findSubmission(email:any) {
-    const userInfo: User = await this.usersRepository.findByEmail(email) as User;
+    const userInfo: User = await this.usersRepository.findByEmail(email);
     
     const org = userInfo.sysRole[0].org[0];
     // Update By Sheldon Su in Jan to make it work for admins
@@ -456,33 +416,19 @@ export default class SubmissionService {
       }[]
   }[] = [];
     const programIds:String[] = [];
-    const orgProgramMapping:{[key:string]:string[]} = {};
-    const orgTempTypeMapping:{[key:string]:string[]} = {}
+    const orgMapping:{[key:string]:string[]} = {};
+
     // Generate org Mappings to find out which submissions are missing
     if (orgId){
       userInfo.sysRole.forEach(sysRole => {
         sysRole.org.forEach(organization => {
-
-          if (!orgProgramMapping[organization.orgId]) orgProgramMapping[organization.orgId] = [];
-          if (!orgTempTypeMapping[organization.orgId]) orgTempTypeMapping[organization.orgId] = [];
-
+          if (!orgMapping[organization.orgId]) orgMapping[organization.orgId] = [];
           organization.program.forEach(program => {
-            orgProgramMapping[organization.orgId].push(String(program.programId));
-            
-            if (!programIds.includes(String(program.programId))){
+            orgMapping[organization.orgId].push(String(program.programId));
+            if (!programIds.includes(program.programId?.toString())){
               programAndTempTypes.push({ program: program.programId, templateTypes: program.template });
-              programIds.push(String(program.programId));
-            }else{
-              const targetObject = programAndTempTypes.filter(e=>String(e.program) === String(program.programId))[0];
-              program.template.forEach(typeId=>{
-                targetObject.templateTypes.push(typeId);
-              })
+              programIds.push(program.programId?.toString());
             }
-            program.template.forEach(typeObject=>{
-              if (!orgTempTypeMapping[organization.orgId].includes(String(typeObject.templateTypeId))){
-                orgTempTypeMapping[organization.orgId].push(String(typeObject.templateTypeId));
-              }
-            })
           });
         });
       });
@@ -492,70 +438,56 @@ export default class SubmissionService {
       programID.forEach(element=>{programIds.push(element._id?.toString())})
     }
     // Find template packages base on programs and template types
-    return this.findTempPkg(programAndTempTypes).then((templatePackages:TemplatePackage[]) => {
+    return this.findTemplatePackage(programAndTempTypes).then((templatePackages:TemplatePackage[]) => {
       const name = 'Unsubmitted';
       const inProgressName ='in progress';
       // Filter out in progress template packages
-
       return this.statusRepository.findByName(name).then(status => {
         return this.statusRepository.findByName(inProgressName).then(inProgress=>{
           const promiseQuery1 :Promise<any>[]= [];
-          templatePackages.forEach((templatePackage:any) => {
-            if (templatePackage.statusId.toString() != inProgress[0]._id.toString())
+          templatePackages.forEach(templatePackage => {
+            if (templatePackage.statusId.toString() !=inProgress[0]._id.toString())
             promiseQuery1.push(
               this.submissionRepository
                 .findByTemplatePackageId(templatePackage._id)
                 .then((submissions:Submission[]) => {
-                  const newOrgMapping = JSON.parse(JSON.stringify(orgProgramMapping));
-                  const newTempTypeMapping = JSON.parse(JSON.stringify(orgTempTypeMapping));
+                  
+                  const newOrgMapping = JSON.parse(JSON.stringify(orgMapping));
                   submissions.forEach(submission => {
                     const orgId = submission.orgId;
                     const programId = submission.programId;
-                    if(newOrgMapping[orgId] && newTempTypeMapping[orgId]){
-                      newTempTypeMapping[orgId] = newTempTypeMapping[orgId].filter((e:ObjectId) => 
-                        String(e) !== String(templatePackage.templateIds[0].templateTypeId)
-                      );
-                      if(newTempTypeMapping[orgId].length === 0 ){
-                        newOrgMapping[orgId] = newOrgMapping[orgId].filter((e:ObjectId) => 
-                        String(e) !== String(programId)
-                       );
-                       newOrgMapping[orgId] = newOrgMapping[orgId].map((e:ObjectId)=>String(e))
-                      }
+                    if(newOrgMapping[orgId]){
+                      newOrgMapping[orgId] = newOrgMapping[orgId].filter((e:ObjectId) => 
+                        e.toString() !== programId.toString()
+                     );
+                     newOrgMapping[orgId] = newOrgMapping[orgId].map((e:ObjectId)=>String(e))
                     }
                   });
                   const { templateIds } = templatePackage;
-                  const promiseQuery3:Promise<any>[]= [];
-                  
+                  const promiseQuery3 :Promise<any>[]= [];
                   if (templateIds !== undefined) {
-                    
-                    templateIds.forEach((templateObj: any) => {
+                    templateIds.forEach(templateId => {
                       if (templatePackage.programIds !== undefined) {
-                        
-                        templatePackage.programIds.forEach((programId:any) => {
+                        templatePackage.programIds.forEach(programId => {
                           programAndTempTypes.forEach(element => {
                             if (element.program.toString() == programId.toString()) {
-                            
-                              Object.keys(newOrgMapping).forEach(organizationId=>{
-                               
-                                if (newOrgMapping[organizationId].includes(String(element.program)) && 
-                                    newTempTypeMapping[organizationId].includes(String(templateObj.templateTypeId))){
-                                 
-                                  const orgId = organizationId;
-
-                                    promiseQuery3.push(
-                                    this.createSubmissionBaseOnTemplatePackage({
-                                      orgId,
-                                      templateId:templateObj._id,
-                                      templatePackageId: templatePackage._id,
-                                      submissionPeriodId: templatePackage.submissionPeriodId,
-                                      programId,
-                                      statusId: status[0]._id,
-                                      version: 0,
-                                      isLatest: true,
-                                    }),
-                                  );
-                                }
-                              });
+                            Object.keys(newOrgMapping).forEach(organizationId=>{
+                              if (newOrgMapping[organizationId].includes(String(element.program))){
+                                const orgId = organizationId;
+                                  promiseQuery3.push(
+                                  this.createSubmissionBaseOnTemplatePackage({
+                                    orgId,
+                                    templateId,
+                                    templatePackageId: templatePackage._id,
+                                    submissionPeriodId: templatePackage.submissionPeriodId,
+                                    programId,
+                                    statusId: status[0]._id,
+                                    version: 0,
+                                    isLatest: true,
+                                  }),
+                                );
+                              }
+                            });
                             }
                           });
                         });
@@ -577,20 +509,20 @@ export default class SubmissionService {
             // Generate all the maps
             const periodSet = new Map();
             const programSet = new Map();
-            const templatePkgSet = new Map<any, any>();
+            const templatePkgSet = new Map();
             const statusSet = new Map();
 
 
-            Object.keys(orgProgramMapping).forEach(e=>{
-              orgProgramMapping[e] = orgProgramMapping[e].map(id=>String(id));
+            Object.keys(orgMapping).forEach(e=>{
+              orgMapping[e] = orgMapping[e].map(id=>String(id));
             })
             //@ts-ignore
-            const rawSubmissionArr: Submission[] = await this.submissionRepository.findByOrgIdAndProgramId(Object.keys(orgProgramMapping), programIds);
+            const rawSubmissionArr: Submission[] = await this.submissionRepository.findByOrgIdAndProgramId(Object.keys(orgMapping), programIds);
 
             // if orgId is undefined, then it must be an admin, so the filter will not filter
             // the submissions
             const submissionArr = orgId? rawSubmissionArr.filter(submission=>{
-              return orgProgramMapping[submission.orgId].includes(String(submission.programId))
+              return orgMapping[submission.orgId].includes(String(submission.programId))
             }
             ) : rawSubmissionArr;
             
@@ -616,7 +548,6 @@ export default class SubmissionService {
             //@ts-ignore
             await this.templatePackageRepository.find({_id: {$in: [...templatePkgSet.keys()]}})
             .then(templateData=>{
-              //@ts-ignore
               templateData.forEach((e:TemplatePackage) => {
                 templatePkgSet.set(String(e._id), e);
               });

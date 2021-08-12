@@ -51,7 +51,7 @@ export default class ColumnNameRepository extends BaseRepository<Attribute, Attr
   }
 
   async batchFind(attributeIds: string[], option={ name: 0, _id: 0, __v: 0}):Promise<AttributeDoc[]> {
-    return ColumnNameModel.find({ id: { $in : attributeIds }}, option).then((values: AttributeDoc[]) => {return values});
+    return ColumnNameModel.find({ id: { $in : attributeIds }}, option).then((values: unknown) => {return values});
   }
 
   async findAll(option?: QueryOptions):Promise<AttributeDoc[]> {

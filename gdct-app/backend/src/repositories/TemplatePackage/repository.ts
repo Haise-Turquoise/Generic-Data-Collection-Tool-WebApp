@@ -11,7 +11,6 @@ import TemplateModel from '../../models/Template';
 import TemplatePackage, { TemplatePackageDoc } from '../../types/templatepackage';
 import { FilterQuery } from 'mongoose';
 import AppError from '../../utils/AppError';
-import { ObjectID } from 'bson';
 
 const populatedParams = 'submissionPeriodId templateIds statusId programIds';
 
@@ -101,15 +100,6 @@ export default class TemplatePackageRepository extends BaseRepository<TemplatePa
 
   async findByProgramId(programId: string) {
     return TemplatePackageModel.find({ programIds: programId } as FilterQuery<TemplatePackageDoc>);
-  }
-
-
-  async retrieveFullPkgInfoByProgramId(programIds:ObjectID[]){
-    //@ts-ignore
-    const result = await TemplatePackageModel.find({ programIds: {$in:programIds}})
-    .populate('templateIds', 'templateTypeId')
-    console.log(result[0].templateIds)
-    return result;
   }
 
   async findByName(name: string) {

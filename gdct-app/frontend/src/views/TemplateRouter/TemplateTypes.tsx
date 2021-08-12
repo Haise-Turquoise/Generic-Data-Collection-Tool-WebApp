@@ -11,7 +11,6 @@ import {
     controllerDeleteRow,
     formatTimestamp,
     fetchWithStatus,
-    checkDuplicates,
 } from '../../tools/misc';
 import CreateAuditLog from '../AuditLog_Global';
 import templateTypeController from '../../controllers/templateType';
@@ -84,7 +83,7 @@ const TemplateTypesTable = ({ history }: RouterProps) => {
   
   // Prepare the columns for material table
   const columns: Column<TemplateTypeMT>[] = [
-    { title: 'Name', field: 'name', validate: rowData => checkDuplicates(rowData, templateTypes, 'name') },
+    { title: 'Name', field: 'name' },
     { title: 'Description', field: 'description' },
     { title: 'Submission Workflow', field: 'submissionWorkflowId', lookup: lookupWorkflows },
     { title: 'Template Workflow', field: 'templateWorkflowId', lookup: lookupWorkflows },
@@ -206,7 +205,7 @@ const TemplateTypesTable = ({ history }: RouterProps) => {
           );
         }),
     }),
-    [templateTypes],
+    [],
   );
 
   return (

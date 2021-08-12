@@ -137,7 +137,7 @@ const DELETE_COA_TREE_UI = (state:any, { payload }:any) => {
     treeData: treeCopy,
     path: payload.node.path,
     getNodeKey,
-  })?.treeData;
+  }).treeData;
   return {
     ...state,
     localTree: newLocalTree,

@@ -222,7 +222,8 @@ const LinkProgramTable = ({
 
 const AppRoleResourceManagement = (props: RouteComponentProps<propType>) => (
   <div className="templateTypePage">
-    <AppRoleResourceManagementHeader {...props} /> 
+    <AppRoleResourceManagementHeader {...props} />
+
     <LinkProgramTable {...props} />
   </div>
 );

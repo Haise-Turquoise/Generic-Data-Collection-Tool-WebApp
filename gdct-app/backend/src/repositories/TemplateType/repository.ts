@@ -30,8 +30,6 @@ export default class TemplateTypeRepository extends BaseRepository<TemplateType,
     isViewable,
     isReportable,
     isActive,
-    timestamp,
-    updatedBy,
   }: TemplateType) {
     return this.programRepository
       .validateMany(programIds)
@@ -42,6 +40,7 @@ export default class TemplateTypeRepository extends BaseRepository<TemplateType,
           templateWorkflowId,
           submissionWorkflowId,
           programIds,
+
           isApprovable,
           isReviewable,
           isSubmittable,
@@ -49,8 +48,6 @@ export default class TemplateTypeRepository extends BaseRepository<TemplateType,
           isViewable,
           isReportable,
           isActive,
-          timestamp,
-          updatedBy,
         }),
       )
       .then(templateType => new TemplateTypeEntity(templateType));

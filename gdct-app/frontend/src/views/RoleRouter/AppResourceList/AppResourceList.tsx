@@ -121,6 +121,7 @@ const AppResourceList = ({ resourceId, isEditable = true, onClickAdd, onClickDel
           actions={(isEditable && !!resourceList) ? right_actions : undefined}
         />
       </div>
+
     </div>
   );
 };

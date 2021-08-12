@@ -1,6 +1,3 @@
-/***
- * This File is responseble for transfering data from mongodb to Azure sql
- */
 const sql = require("mssql");
 
 import MasterValueRepository from './repositories/MasterValue' 
@@ -13,13 +10,6 @@ import attributeRepository from './repositories/ColumnName'
 import categoryGroupRepository from './repositories/COAGroup'
 import transferStatusRepository from  './repositories/TransferStatus'
 import Container from 'typedi';
-import { OrganizationDoc } from './types/organization';
-import { CategoryGroupDoc } from './types/categorygroup';
-import { CategoryDoc } from './types/category';
-import { ReportingPeriodDoc } from './types/reportingperiod';
-import { MasterValueDoc } from './types/mastervalue';
-import { ProgramDoc } from './types/program';
-import { TemplateTypeDoc } from './types/templatetype';
 
 const config = {
   user: process.env.AzureDBUser,
@@ -39,7 +29,7 @@ const config = {
  /* 
   This function is use for organization transfer, implemented in a sycrhonized way for ease of benchmarking
  */
-const orgTransfer = async(conn:any)=>{
+const orgTransfer = async(conn)=>{
 
   // Send a request that delete everything in the organization table
   await conn.query`DELETE FROM dbo.organization`
@@ -51,7 +41,7 @@ const orgTransfer = async(conn:any)=>{
   console.time('Total runtime');
   console.time('Mongo query time');
   // Query everything from org table in mongo DB 
-  const mongoOrganization:OrganizationDoc[] = await organizationModel.findAll();
+  const mongoOrganization = await organizationModel.findAll();
   console.timeEnd('Mongo query time');
 
   console.time('mongo to SQL reformat time')
@@ -108,6 +98,8 @@ const orgTransfer = async(conn:any)=>{
       entry.code,
       entry.legalName,
       JSON.stringify(entry.location),
+
+      JSON.stringify(entry.managerUsersIds),
       entry.postalCode,
       entry.authorizedUserId,
       entry.contactUserId
@@ -133,7 +125,7 @@ const orgTransfer = async(conn:any)=>{
   This function is use for categoryGroup transfer, implemented in a sycrhonized way for ease of benchmarking
   The details are the same for all the transfer function. Plase refer to the first function for details
  */
-const categoryGroupTransfer = async(conn:any)=>{
+const categoryGroupTransfer = async(conn)=>{
   await conn.query`DELETE FROM dbo.CategoryGroup`
   const categoryGroupModel = Container.get(categoryGroupRepository)
   console.log('\n\n');
@@ -141,7 +133,7 @@ const categoryGroupTransfer = async(conn:any)=>{
 
   console.time('Total runtime');
   console.time('Mongo query time');
-  const mongoCOAGroup:CategoryGroupDoc[] = await categoryGroupModel.findAll();
+  const mongoCOAGroup = await categoryGroupModel.findAll();
   console.timeEnd('Mongo query time');
 
   console.time('mongo to SQL reformat time')
@@ -176,7 +168,7 @@ const categoryGroupTransfer = async(conn:any)=>{
   This function is use for Attribute transfer, implemented in a sycrhonized way for ease of benchmarking
   The details are the same for all the transfer function. Plase refer to the first function for details
 */
-const AttributeTransfer = async(conn:any)=>{
+const AttributeTransfer = async(conn)=>{
   await conn.query`DELETE FROM dbo.Attribute`
   const attributeModel = Container.get(attributeRepository)
   console.log('\n\n');
@@ -220,7 +212,7 @@ const AttributeTransfer = async(conn:any)=>{
   This function is use for COA transfer, implemented in a sycrhonized way for ease of benchmarking
   The details are the same for all the transfer function. Plase refer to the first function for details
 */
-const COATransfer = async(conn:any)=>{
+const COATransfer = async(conn)=>{
 
   await conn.query`DELETE FROM dbo.category`
   const COAModel = Container.get(COARepository);
@@ -229,7 +221,7 @@ const COATransfer = async(conn:any)=>{
 
   console.time('Total runtime');
   console.time('Mongo query time');
-  const mongoCOA:CategoryDoc[] = await COAModel.findAll();
+  const mongoCOA = await COAModel.findAll();
   console.timeEnd('Mongo query time');
 
   console.time('mongo to SQL reformat time')
@@ -268,7 +260,7 @@ const COATransfer = async(conn:any)=>{
   This function is use for Reporting period transfer, implemented in a sycrhonized way for ease of benchmarking
   The details are the same for all the transfer function. Plase refer to the first function for details
 */
-const ReportingPeriodTransfer = async(conn:any)=>{
+const ReportingPeriodTransfer = async(conn)=>{
   await conn.query`DELETE FROM dbo.ReportingPeriod`;
   const reportingPeriodModel = Container.get(reportingPeriodRepository);
   console.log('\n\n');
@@ -276,7 +268,7 @@ const ReportingPeriodTransfer = async(conn:any)=>{
 
   console.time('Total runtime');
   console.time('Mongo query time');
-  const mongoReportingPeriod: ReportingPeriodDoc[] = await reportingPeriodModel.findAll();
+  const mongoReportingPeriod = await reportingPeriodModel.findAll();
   console.timeEnd('Mongo query time');
 
   console.time('mongo to SQL reformat time')
@@ -314,7 +306,7 @@ const ReportingPeriodTransfer = async(conn:any)=>{
   This function is use for MasterValue transfer, implemented in a sycrhonized way for ease of benchmarking
   The details are the same for all the transfer function. Plase refer to the first function for details
 */
-const MasterValueTransfer = async (conn:any) =>{
+const MasterValueTransfer = async (conn) =>{
   conn.query`DELETE FROM dbo.MasterValue`
   const masterValueModel = Container.get(MasterValueRepository);
   console.log('\n\n');
@@ -326,7 +318,7 @@ const MasterValueTransfer = async (conn:any) =>{
   // console.timeEnd('SQL delete time')
 
   console.time('Mongo query time');
-  const res:MasterValueDoc[] = await masterValueModel.findAll();
+  const res = await masterValueModel.findAll();
   console.timeEnd('Mongo query time')
 
   console.time('mongo to SQL reformat time')
@@ -340,6 +332,7 @@ const MasterValueTransfer = async (conn:any) =>{
   table.columns.add('orgName', sql.VarChar(50), { nullable: false });
   table.columns.add('program_id', sql.VarChar(50), { nullable: false });
   table.columns.add('programName', sql.VarChar(50), { nullable: false });
+  table.columns.add('template_id', sql.VarChar(50), { nullable: false });
   table.columns.add('templateName', sql.VarChar(50), { nullable: false });
   table.columns.add('templateType_id', sql.VarChar(50), { nullable: false });
   table.columns.add('templateTypeName', sql.VarChar(50), { nullable: false });
@@ -369,7 +362,8 @@ const MasterValueTransfer = async (conn:any) =>{
       String(element.program._id),
       element.program.name,
 
-      element.template,
+      String(element.template._id),
+      element.template.name,
 
       String(element.templateType._id),
       element.templateType.name,
@@ -405,7 +399,7 @@ const MasterValueTransfer = async (conn:any) =>{
   This function is use for program transfer, implemented in a sycrhonized way for ease of benchmarking
   The details are the same for all the transfer function. Plase refer to the first function for details
 */
-const programTransfer = async(conn:any)=>{
+const programTransfer = async(conn)=>{
   await conn.query`DELETE FROM dbo.program`
   const programModel = Container.get(programRepository);
   console.log('\n\n');
@@ -413,7 +407,7 @@ const programTransfer = async(conn:any)=>{
 
   console.time('Total runtime');
   console.time('Mongo query time');
-  const mongoProgram:ProgramDoc[] = await programModel.find({});
+  const mongoProgram = await programModel.find({});
   console.timeEnd('Mongo query time');
 
   console.time('mongo to SQL reformat time')
@@ -447,7 +441,7 @@ const programTransfer = async(conn:any)=>{
   This function is use for template type transfer, implemented in a sycrhonized way for ease of benchmarking
   The details are the same for all the transfer function. Plase refer to the first function for details
 */
-const TemplateTypeTransfer = async(conn:any)=>{
+const TemplateTypeTransfer = async(conn)=>{
   await conn.query`DELETE FROM dbo.templateType`
   const templateTypeModel = Container.get(templateTypeRepository)
   console.log('\n\n');
@@ -455,7 +449,7 @@ const TemplateTypeTransfer = async(conn:any)=>{
 
   console.time('Total runtime');
   console.time('Mongo query time');
-  const mongotemplateTypes:TemplateTypeDoc[] = await templateTypeModel.findAll();
+  const mongotemplateTypes = await templateTypeModel.findAll();
   console.timeEnd('Mongo query time');
 
   console.time('mongo to SQL reformat time')
@@ -491,7 +485,7 @@ const TemplateTypeTransfer = async(conn:any)=>{
 const transfer = async ()=>{
   const transferRepo = Container.get(transferStatusRepository);
   const res = await transferRepo.findTransferStatus();
-  if (res && res.isActive){
+  if (res.isActive){
     console.log('Starting Transfer')
     try{
       const pool = new sql.ConnectionPool(config);
@@ -512,7 +506,8 @@ const transfer = async ()=>{
     console.log("TransferStatus not active")
   }
 }
-const startTransfer = (interval:number)=>{
+const test = ()=>{console.log('hi')}
+const startTransfer = (interval)=>{
   return setInterval(transfer, interval)
 }
 export default startTransfer;
