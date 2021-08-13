@@ -655,7 +655,6 @@ export const excelImportHandler = (event:React.ChangeEvent<HTMLInputElement>, da
 export const checkDuplicates = (rowData:any, tableData:any, field:string) => {
   // field of element being edited -- null if not editing
   let current:any = null;
-  console.log(rowData);
   if (rowData.tableData) {
     if (rowData.tableData.editing === 'delete') {
       return true;
