@@ -34,7 +34,7 @@ import { getWorkflowProcessesRequest } from '../../../store/thunks/workflow';
 import { selectWorkflowProcessesStore } from '../../../store/WorkflowProcessesStore/selectors';
 import WorkflowProcessesStore from '../../../store/WorkflowProcessesStore/store';
 //@ts-ignore
-import { calculateOptions } from '../../../tools/misc';
+import { calculateOptions, checkDuplicates } from '../../../tools/misc';
 import { RouterProps } from 'react-router';
 import WorkflowProcess from '../../../types/workflowprocess';
 import Template from '../../../types/template';
@@ -77,7 +77,6 @@ const TemplatesTable = ({ history }: RouterProps) => {
   useEffect(()=>{
     // console.log('lookupTemplateTypes', lookupTemplateTypes)
     const keys = Object.keys(lookupTemplateTypes);
-    console.log('keys', keys)
     const nameArray: string[] = [];
 
     keys.forEach(key=>{
@@ -116,7 +115,8 @@ const TemplatesTable = ({ history }: RouterProps) => {
   console.log(readIndexName)
   const columns = useMemo(
     () => [
-      { title: 'Name', field: 'name' },
+      //@ts-ignore
+      { title: 'Name', field: 'name', validate: rowData => checkDuplicates(rowData, readTemplate, 'name')},
       {
         title: 'Template Type ID',
         field: 'templateTypeId',
@@ -143,7 +143,7 @@ const TemplatesTable = ({ history }: RouterProps) => {
       {
         title: 'Updated By',
         field: 'updatedBy',
-        editComponent: props => {
+        editComponent: (props:any) => {
           return <div></div>;
         },
       },
@@ -232,7 +232,6 @@ const TemplatesTable = ({ history }: RouterProps) => {
   useEffect(() => {
     setRowNum(templates.length);
   }, [templates]);
-  console.log('readTemplate', readTemplate)
   return (
     // @ts-ignore
     <MaterialTable

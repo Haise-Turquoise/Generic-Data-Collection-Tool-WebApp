@@ -189,6 +189,7 @@ const queryREST = async (
     { category, ap, hfk, attribute }: QueryRESTParams,
     setGetCount: Dispatch<SetStateAction<number>>,
     setGetTotal: Dispatch<SetStateAction<number>>,
+    setUploadCount: Dispatch<SetStateAction<number>>,
     getCount: number,
     getTotal: number,
     setResumeQueries: Dispatch<SetStateAction<MasterValue[]>>,
@@ -253,6 +254,7 @@ const queryREST = async (
     };
     await MasterValueController.addDocument(newMasterValue).then((_res: any) => {
       // setLoadCount(loadCount=>loadCount+1);
+      setUploadCount(uploadCount=>uploadCount+1);
       console.log('add one successfully');
     })
   };
@@ -321,6 +323,7 @@ const DoRetrieval = (
     { category, ap, hfk, col }: PopulateParamters,
     setGetCount: Dispatch<SetStateAction<number>>,
     setGetTotal: Dispatch<SetStateAction<number>>,
+    setUploadCount:Dispatch<SetStateAction<number>>,
     getCount: number,
     getTotal: number,
     setResumeQueries: Dispatch<SetStateAction<MasterValue[]>>,
@@ -345,6 +348,7 @@ const DoRetrieval = (
         { category, ap, hfk, attribute: fnd },
         setGetCount,
         setGetTotal,
+        setUploadCount,
         getCount,
         getTotal,
         setResumeQueries,
@@ -539,6 +543,7 @@ const  FooterActions =  (props: footerActionProps) =>  {
 
   const [getCount, setGetCount] = useState<number>(props.getPopulateParameters().currentCount);
   const [getTotal, setGetTotal] = useState<number>(props.getPopulateParameters().totalCount);
+  const [uploadCount, setUploadCount] = useState<number>(props.getPopulateParameters().totalCount);
   const [getSuccess, setGetSuccess] = useState(false);
   const [resumeQueries, setResumeQueries] = useState(props.getPopulateParameters().resumeArray);
   const [getButtonDisabled, setGetButtonDisabled] = useState(false);
@@ -630,8 +635,9 @@ const  FooterActions =  (props: footerActionProps) =>  {
   }, [getCount]);
   useEffect(() => {
     console.log('upload to database');
-    console.log(getCount);
-    console.log(getTotal);
+    console.log('getCount', getCount);
+    console.log('getTotal',getTotal);
+    console.log('uploadCount', uploadCount);
     if (!(getCount == 0 && getTotal == 0)) {
       if (getCount == getTotal) {
         console.log('finish');
@@ -641,12 +647,13 @@ const  FooterActions =  (props: footerActionProps) =>  {
         const dataResumeStatues = { resumeArray: [], currentCount: 0, totalCount: 0 };
         dispatch(updateDataResume(dataResumeStatues));
         let successMessage = '';
-        successMessage+= getCount.toString();
+        successMessage+= uploadCount.toString();
         successMessage += ' objects has been added to mastervalue collection.';
         successMessage += '\n';
         successMessage += 'finish progress successfully !';
         setTimeout(function () {
           handleDialogOpen(successMessage, 'Result');
+          setUploadCount(0);
         }, 500);
       } else {
         let alertMessage = '';
@@ -688,6 +695,7 @@ const  FooterActions =  (props: footerActionProps) =>  {
               props.getPopulateParameters(),
               setGetCount,
               setGetTotal,
+              setUploadCount,
               getCount,
               getTotal,
               setResumeQueries,
