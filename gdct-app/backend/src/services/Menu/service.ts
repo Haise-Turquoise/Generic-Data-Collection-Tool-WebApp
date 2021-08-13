@@ -50,6 +50,8 @@ export default class MenuService {
   }
 
   getAuthroizedMenus(role: string) {
+    console.log('=========================role===================\n',role);
+    console.log('=================================================');
     if (!role) {
       throw new AppError(i18n.__('Auth.service.profile.NotAuthenticated'), 400);
     }

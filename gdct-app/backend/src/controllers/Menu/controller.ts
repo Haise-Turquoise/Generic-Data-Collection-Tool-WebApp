@@ -7,6 +7,8 @@ const MenuController = Service([MenuService], service => {
   return (() => {
 
     router.get('/Menus', (req, res, next) => {
+      console.log('==================req session========================\n', req.session)
+      console.log('==================req ========================\n', req)
       service
         // @ts-ignore
         .getAuthroizedMenus(req.session.role)
