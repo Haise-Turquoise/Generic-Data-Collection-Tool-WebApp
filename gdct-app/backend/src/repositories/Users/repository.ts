@@ -26,7 +26,7 @@ export default class UsersRepository extends BaseRepository<User, UserDoc> {
     }).then(user => new UsersEntity(user));
   }
 
-  async update(id: string, { username, firstName, lastName, email, phoneNumber, isActive, timestamp, updatedBy, }: Partial<User>) {
+  async update(id: string, { username, firstName, lastName, email, phoneNumber, isActive, timestamp, updatedBy, sysRole, }: Partial<User>) {
     return UserModel.findByIdAndUpdate(id, {
       username,
       firstName,
@@ -38,7 +38,7 @@ export default class UsersRepository extends BaseRepository<User, UserDoc> {
       updatedBy,
     }).then((user: UserDoc|null) => {
       if (!user) throw new AppError(`Cannot update the user with id:${id}, id not found`)
-      new UserModel(user);
+      return new UserModel(user);
     });
   }
 

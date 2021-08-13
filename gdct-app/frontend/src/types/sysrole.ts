@@ -4,6 +4,7 @@ export default interface SysRole {
   role: string,
   isActive: boolean,
   timestamp: string,
+  isSuperRole?: boolean,
   updatedBy?: string,
   __v?: number,
 }

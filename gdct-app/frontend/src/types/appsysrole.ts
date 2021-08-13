@@ -4,6 +4,7 @@ export default interface AppSysRole {
   role: string,
   isActive: boolean,
   timestamp: string,
+  isSuperRole?: boolean,
   updatedBy?: string,
   __v?: number,
 }
