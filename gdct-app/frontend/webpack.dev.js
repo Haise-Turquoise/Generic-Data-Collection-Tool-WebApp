@@ -10,7 +10,7 @@ module.exports = merge(common, {
   devServer: {
     contentBase: '.',
     host:'0.0.0.0',
-    hot: true,
+    // hot: true,
     port: 3003,
     open: true,
     historyApiFallback: true,
