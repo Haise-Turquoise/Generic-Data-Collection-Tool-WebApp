@@ -32,6 +32,7 @@ import {
   controllerDeleteRow,
   formatTimestamp,
   fetchWithStatus,
+  checkDuplicates,
   //@ts-ignore
 } from '../../tools/misc'
 //@ts-ignore
@@ -112,6 +113,7 @@ const SubmissionPeriod = () => {
         modifiedSubmissionPeriods.push(modifiedSubmissionPeriod);
       });
       setModifiedSubmissionPeriod(modifiedSubmissionPeriods);
+      console.log(readsubmissionPeriods)
       setIndex(IndexToId);
       setIndexName(IndexToName);
       
@@ -128,7 +130,7 @@ const SubmissionPeriod = () => {
 
   const columns: Column<SubmissionPeriod>[] = useMemo(
     () => [
-      { title: 'Name', field: 'name' },
+      { title: 'Name', field: 'name', validate: rowData => checkDuplicates(rowData, readsubmissionPeriods, 'name')},
       { title: 'Start Date', type: 'date', field: 'startDate' },
       { title: 'End Date', type: 'date', field: 'endDate' },
       {
