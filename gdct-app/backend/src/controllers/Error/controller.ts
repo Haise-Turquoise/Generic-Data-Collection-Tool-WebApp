@@ -4,7 +4,7 @@ import errorHandler from '../../configs/errorHandler';
 import AppError from '../../utils/AppError';
 import { log } from '../../utils/log/winston';
 
-const errorHandlerController = (err: AppError, req: Request, res: Response, next: NextFunction) => {
+const errorHandlerController = (err: any, req: Request, res: Response, next: NextFunction) => {
   if (err) {
     console.log(err)
     err.statusCode = err.statusCode || 500;

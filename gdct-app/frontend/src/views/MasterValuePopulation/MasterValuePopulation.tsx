@@ -640,8 +640,13 @@ const  FooterActions =  (props: footerActionProps) =>  {
         setResumeQueries([]);
         const dataResumeStatues = { resumeArray: [], currentCount: 0, totalCount: 0 };
         dispatch(updateDataResume(dataResumeStatues));
+        let successMessage = '';
+        successMessage+= getCount.toString();
+        successMessage += ' objects has been added to mastervalue collection.';
+        successMessage += '\n';
+        successMessage += 'finish progress successfully !';
         setTimeout(function () {
-          handleDialogOpen('finish progress successfully!', 'Result');
+          handleDialogOpen(successMessage, 'Result');
         }, 500);
       } else {
         let alertMessage = '';

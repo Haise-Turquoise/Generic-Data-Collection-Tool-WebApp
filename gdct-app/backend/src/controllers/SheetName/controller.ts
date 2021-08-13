@@ -8,7 +8,7 @@ const SheetNameController = Service([SheetNameService], service => {
     router.get('/sheetNames/fetch', (req, res, next) => {
       service
         .findSheetName({})
-        .then(sheetNames => res.json( sheetNames ))
+        .then(sheetNames => {res.json( sheetNames )})
         .catch(next);
     });
 
