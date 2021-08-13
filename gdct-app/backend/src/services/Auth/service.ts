@@ -217,6 +217,9 @@ export default class AuthService {
         //@ts-ignore
         req.session.isAdmin = false;
         if (user) {
+
+          console.log('selected Role', req.body.selectedRole)
+
           const selectedRole = req.body.selectedRole || user.sysRole[0].role;
           //@ts-ignore
           req.session.role = selectedRole;
