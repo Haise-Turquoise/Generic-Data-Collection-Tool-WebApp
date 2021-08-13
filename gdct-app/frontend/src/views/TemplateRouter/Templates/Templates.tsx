@@ -143,7 +143,7 @@ const TemplatesTable = ({ history }: RouterProps) => {
       {
         title: 'Updated By',
         field: 'updatedBy',
-        editComponent: props => {
+        editComponent: (props:any) => {
           return <div></div>;
         },
       },
