@@ -38,7 +38,7 @@ const StatusesTable = () => {
 
   const preColumns: Column<StatusMT>[] = [{ title: 'Name', field: 'name' }]
   const preStatuses: StatusMT[] = [{
-    name: 'LOADING...',
+    name: status,
     _id: '',
     description: '',
     isActive: true,
