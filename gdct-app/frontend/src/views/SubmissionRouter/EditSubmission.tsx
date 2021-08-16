@@ -267,11 +267,11 @@ const EditSubmission = ({ history }:{history:History}) => {
   },[currentRole])
   useEffect(()=>{
     dispatch(getSubmissionByIdRequest(submissionId));
-  }, [submissionId])
+  }, [submissionId, dispatch])
 
   useEffect(()=>{
     dispatch(getSubmissionNoteRequest(submission._id));
-  }, [submission])
+  }, [submission, dispatch])
 
   useEffect(() => {
     (async function () {

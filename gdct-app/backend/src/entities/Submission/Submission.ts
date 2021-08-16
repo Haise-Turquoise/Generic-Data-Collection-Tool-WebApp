@@ -8,6 +8,7 @@ export default class SubmissionEntity {
   public orgId: number;
   public templateId: ObjectId;
   public templatePackageId: ObjectId;
+  public templateName:String;
   public submittedDate: Date;
   public programId: ObjectId;
   public workbookData: any;
@@ -35,6 +36,7 @@ export default class SubmissionEntity {
     programId,
     workbookData,
     workflowProcessId,
+    templateName,
     workflowId,
     statusId,
     year,
@@ -53,6 +55,7 @@ export default class SubmissionEntity {
     this.orgId = orgId;
     this.templateId = templateId;
     this.templatePackageId = templatePackageId;
+    this.templateName = templateName;
     this.programId = programId;
     this.workbookData = workbookData;
     this.submittedDate = submittedDate;
