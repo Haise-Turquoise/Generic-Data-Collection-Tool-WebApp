@@ -4,7 +4,7 @@ import MenuController from '../../controllers/Menu';
 import iconMap from './iconMap';
 import Menu, { MappedMenu } from '../../types/menu';
 const createUserNavigation = async (): Promise<MappedMenu[]> => {
-  const menus :Menu[] = await MenuController.fetch();
+  const menus :Menu[] = await MenuController.fetch(localStorage.getItem('currentRole') || '');
 
   return menus
     .filter(e => !e.isSubMenu)
