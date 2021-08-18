@@ -103,10 +103,10 @@ export default class AuthService {
   profile(req: Request, res: Response, next: NextFunction) {
     
     try {
-      if (req.user) {
+      if (req.body.email) {
         const authService = new AuthService();
         //@ts-ignore
-        authService.UserRepository.findByEmail(req.user.email)
+        authService.UserRepository.findByEmail(req.body.email)
           .then(data => {
             // @ts-ignore
               data.sessionID = req.sessionID;
