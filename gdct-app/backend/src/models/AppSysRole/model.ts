@@ -10,6 +10,7 @@ const AppSysRole = new Schema<AppSysRoleDoc>(
     //    userCreatorId: { type: ObjectId, ref: 'User' },
     updatedBy: { type: String },
     isActive: { type: Boolean },
+    isSuperRole: Boolean,
   },
   { minimize: false },
 );

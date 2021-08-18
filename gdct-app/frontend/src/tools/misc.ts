@@ -48,6 +48,24 @@ export const calculateOptions = (itemCount:number) => {
   } as Options<any>;
 };
 
+export const calculateOptionsWithTitle = (itemCount:number) => {
+  let length = itemCount;
+  if (length > 100) length = 100;
+  else if (length == 0) length = 1;
+  const sizeOptions = [10, 25, 50, 100, itemCount];
+  sizeOptions.sort((a, b) => a - b);
+  return {
+    actionsColumnIndex: -1,
+    search: true,
+    showTitle: true,
+    maxBodyHeight: '400px',
+    pageSizeOptions: sizeOptions,
+    pageSize: length,
+    addRowPosition: 'first',
+  } as Options<any>;
+};
+
+
 export const urlParser = (orgId: number, categories: string[], attributes: string[]) => {
   let baseUrl = 'https://gdctrest.azurewebsites.net/mastervalues/all?organization=';
   let UrlWithOrg = baseUrl + orgId + '&categories=';
@@ -651,6 +669,42 @@ export const checkDuplicates = (rowData:any, tableData:any, field:string) => {
   const vals = tableData.map((el:any) => el[field])
   const duplicate = vals.find((val:any) => val === rowData[field] && val !== current)
   return duplicate ? `Duplicate ${field} not allowed` : true
+}
+
+export const checkDuplicateSet = (rowData:any, tableData:any) => {
+  //If there is one or more, then duplicates exist
+  let counter:number = 0;
+  if (rowData.tableData) {
+    if (rowData.tableData.editing === 'delete') {
+      return true;
+    } else if (rowData.tableData.editing === 'update') {
+      tableData.forEach( (item:any) => 
+        {
+          if (item.name === rowData.name && item.templateTypeId === rowData.templateTypeId
+            && (rowData.id !== item.id || !item.id)) {
+              counter++;
+          }
+          
+        }
+      )
+      return (counter >= 1) ? `Duplicate (Name, Sheet Type) not allowed` : true
+    }
+  } else if (rowData._id) {
+    // this case runs while submitting a change
+    return true;
+  } else {
+    tableData.forEach( (item:any) => 
+        {
+          if (item.name === rowData.name && item.templateTypeId === rowData.templateTypeId) {
+              counter++;
+          }
+          
+        }
+      )
+      return (counter >= 1) ? `Duplicate (Name, Sheet Type) not allowed` : true
+  }
+
+  return (counter >= 1) ? `Duplicate (Name, Sheet Type) not allowed` : true
 }
 
 // add a row using a controller in material-table

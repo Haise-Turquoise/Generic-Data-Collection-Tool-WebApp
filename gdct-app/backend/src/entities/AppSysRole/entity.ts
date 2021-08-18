@@ -8,13 +8,15 @@ export default class AppSysRoleEntity {
   public timestamp: Date;
   public updatedBy: string;
   public isActive: boolean;
+  public isSuperRole?: boolean;
 
-  constructor({ _id, appSys, role, timestamp, updatedBy, isActive }: AppSysRoleDoc) {
+  constructor({ _id, appSys, role, timestamp, updatedBy, isActive, isSuperRole }: AppSysRoleDoc) {
     this._id = _id;
     this.appSys = appSys;
     this.role = role;
     this.timestamp = timestamp;
     this.updatedBy = updatedBy;
     this.isActive = isActive;
+    this.isSuperRole = isSuperRole;
   }
 }

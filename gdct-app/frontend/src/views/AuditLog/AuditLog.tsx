@@ -1,6 +1,7 @@
 import React, { Fragment, useMemo, useEffect, useState } from 'react';
 
 import moment from 'moment';
+//@ts-ignore
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 

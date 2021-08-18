@@ -259,18 +259,19 @@ const EditSubmission = ({ history }:{history:History}) => {
   }, [location, dispatch, refresh]);
   useEffect(()=>{
     roleSubmissionButtonController.fetchSubmissionButtonByRole(currentRole[0]).then((data:any)=>{
-      if(data.length >0){
-        setRoleButtons(data[0].button)
+      
+      if(data){
+        setRoleButtons(data.button)
       }
     })
   },[currentRole])
   useEffect(()=>{
     dispatch(getSubmissionByIdRequest(submissionId));
-  }, [submissionId])
+  }, [submissionId, dispatch])
 
   useEffect(()=>{
     dispatch(getSubmissionNoteRequest(submission._id));
-  }, [submission])
+  }, [submission, dispatch])
 
   useEffect(() => {
     (async function () {
@@ -326,10 +327,11 @@ const EditSubmission = ({ history }:{history:History}) => {
 
   // decide button display base on current role.
   const handleButtonDisplayByRole = (button:string, role:string[], roleButtons:string[]) => {
-    if (role.length == 0) {
-      role[0] = 'Business Admin';
-    }
+    // if (role.length == 0) {
+    //   role[0] = 'Business Admin';
+    // }
     if(roleButtons.includes(button)){
+      
       return false
     }
     return true;
@@ -380,7 +382,6 @@ const EditSubmission = ({ history }:{history:History}) => {
       }, 2000);
     }
   };
-  // console.log('button list', buttonList)
   return (
     <div className="submissions" style={{ cursor }}>
       <SubmissionHeader />

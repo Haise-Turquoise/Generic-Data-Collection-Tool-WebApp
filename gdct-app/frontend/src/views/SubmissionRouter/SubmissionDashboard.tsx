@@ -141,7 +141,7 @@ const SubmissionDashboard = ({ history }:{history:History}) => {
   }
 
   let filteredSubmission = [...submissions];
-
+  console.log(filteredSubmission)
   useEffect(()=>{
     if (filteredSubmission[0] !== undefined) {
 
