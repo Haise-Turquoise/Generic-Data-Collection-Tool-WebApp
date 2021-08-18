@@ -112,6 +112,7 @@ export default class AuthService {
         //@ts-ignore
         authService.UserRepository.findByEmail(req.user.email)
           .then(data => {
+            console.log('=============profile sessionID=======\n', req.sessionID);
             // @ts-ignore
               data.sessionID = req.sessionID;
               returnNormalJson(res, data);
@@ -120,6 +121,7 @@ export default class AuthService {
         returnErrorJson(res, 'Not authenticated', 401);
       }
     } catch (err) {
+      console.log('=============profile err===============\n', err);
       next(err);
     }
   }
