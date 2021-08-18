@@ -36,7 +36,6 @@ export default class AuthService {
   authenticateCallback(req: Request, res: Response, next: NextFunction) {
     try {
       const { method } = req.params;
-      console.log(method)
       
       // res.setHeader('Access-Control-Allow-Origin', process.env.CLIENT_SERVER);
       res.setHeader('Access-Control-Allow-Origin', '*');
@@ -54,7 +53,6 @@ export default class AuthService {
         failureRedirect: `${process.env.CLIENT_SERVER}/auth/error`, // redirect to error page
       })(req, res, async () => {
         //@ts-ignore
-        console.log('HEADERS', res.headers)
         const { email } = (req.user as User);
         const user: UserEntity| void = await this.UserRepository.findByEmail(email);
         if (user) {
@@ -213,13 +211,9 @@ export default class AuthService {
       return passport.authenticate('local')(req, res, async () => {
         const { email } = (req.user as User);
         const user = await authService.UserRepository.findByEmail(email);
-        console.log(email, user)
         //@ts-ignore
         req.session.isAdmin = false;
         if (user) {
-
-          console.log('selected Role', req.body.selectedRole)
-
           const selectedRole = req.body.selectedRole || user.sysRole[0].role;
           //@ts-ignore
           req.session.role = selectedRole;
