@@ -55,6 +55,10 @@ export default class AuthService {
         //@ts-ignore
         const { email } = (req.user as User);
         const user: UserEntity| void = await this.UserRepository.findByEmail(email);
+
+        console.log('============== authenticateCallback request user===============\n',req.user);
+        console.log('============== authenticateCallback request session===============\n', req.session);
+
         if (user) {
           //@ts-ignore 
           req.session.isAdmin = Boolean(user.sysRole.find(e => e.role === 'Business Admin'));
@@ -101,6 +105,8 @@ export default class AuthService {
   profile(req: Request, res: Response, next: NextFunction) {
     
     try {
+      console.log('==============request user===============\n',req.user);
+      console.log('==============request session===============\n', req.session);
       if (req.user) {
         const authService = new AuthService();
         //@ts-ignore
