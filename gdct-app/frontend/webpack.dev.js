@@ -10,12 +10,12 @@ module.exports = merge(common, {
   devServer: {
     contentBase: '.',
     // host:'0.0.0.0',
-    hot: true,
+    hot: false,
     port: 3003,
     open: true,
     historyApiFallback: true,
     disableHostCheck: true
-  },
+  }, 
   module: {
     rules: [
       {

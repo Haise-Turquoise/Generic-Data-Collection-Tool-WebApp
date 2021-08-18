@@ -8,9 +8,9 @@ const TransferStatusController = (() => {
   });
 
   return {
-    startTransfer: async (time: string) => transferStatusAxios.post('/startService', { time }),
+    setTransfer: async (time: string) => transferStatusAxios.post('/startService', { time }),
     stopTransfer: async () => transferStatusAxios.get('/stopService'),
-    fetchStatus: async () => transferStatusAxios.get('/getServiceStatus'),
+    fetchStatus: async () => transferStatusAxios.get('/getServiceStatus').then(res=>res.data),
   };
 })();
 

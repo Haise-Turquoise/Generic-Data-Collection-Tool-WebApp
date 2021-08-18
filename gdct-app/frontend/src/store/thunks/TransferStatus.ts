@@ -5,8 +5,8 @@ import { Dispatch } from 'redux';
 export const startTransferRequest = (minutes: string) => (dispatch: Dispatch) => {
   dispatch(TransferStatusStore.actions.REQUEST(''));
 
-  TransferStatusController.startTransfer(minutes)
-    .then(res => {
+  TransferStatusController.setTransfer(minutes)
+    .then((res:any) => {
       dispatch(TransferStatusStore.actions.RECEIVE(res));
     })
     .catch(error => {
@@ -18,7 +18,7 @@ export const stopTransferRequest = () => (dispatch: Dispatch) => {
   dispatch(TransferStatusStore.actions.REQUEST(''));
 
   TransferStatusController.stopTransfer()
-    .then(res => {
+    .then((res:any) => {
       dispatch(TransferStatusStore.actions.RECEIVE(res));
     })
     .catch(error => {
