@@ -5,9 +5,9 @@ import AuthService from '../../services/Auth';
 const AuthController = Service([AuthService], service => {
   const router = Router();
   return (() => {
-    router.post('/login', (req, res, next) => {console.log('===req===',req.body);return service.processPassport}, service.profile);
+    router.post('/login', (req, res, next) => {console.log('===req===',req.body); next()}, service.profile);
     router.post('/register', service.createUser);
-    router.get('/profile', service.profile);
+    router.get('/profile', (req, res, next) => {console.log('===req===',req.body); next()},service.profile);
     router.get('/logout', service.logout);
     return router;
   })();
