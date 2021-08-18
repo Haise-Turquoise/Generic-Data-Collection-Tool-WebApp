@@ -37,6 +37,7 @@ import ScatterPlotIcon from '@material-ui/icons/ScatterPlot';
 import EnhancedEncryptionIcon from '@material-ui/icons/EnhancedEncryption';
 import SettingsApplicationsIcon from '@material-ui/icons/SettingsApplications';
 import NatureIcon from '@material-ui/icons/Nature';
+import MultilineChartIcon from '@material-ui/icons/MultilineChart';
 import {SvgIconProps} from '@material-ui/core';
 // Universal Style
 const MenuItemStyle = { fontSize: '1.2rem', marginLeft: '1.2rem' };
@@ -49,17 +50,18 @@ const ItemMap :{[key:string]:React.ReactElement<SvgIconProps>} =  {
   // Main Menu Submission
   'Submission': <SendIcon />,
   'Dashboard': <SendIcon style={MenuItemStyle} />,
+  
   // Main Menu User
   'User': <AccountCircleIcon />,
   'Profile': <AccountCircleIcon style={MenuItemStyle} />,
-  'Submission Permissions': <EnhancedEncryptionIcon style={SubMenuItemStyle} />,
-  'Personal Details': <SettingsApplicationsIcon style={SubMenuItemStyle} />,
   'Request Management': <AccountCircleIcon style={MenuItemStyle} />,
-
   'Logout': <ExitToAppIcon style={MenuItemStyle} />,
+
   // Main Menu Report
   'Report': <ReportIcon />,
   'Reports': <ReportIcon style={MenuItemStyle} />,
+  'Submission Status': <MultilineChartIcon style={MenuItemStyle} />,
+
   // Main Menu Template Design
   'Template Design': <FileCopyIcon style={{ fontSize: '1.4rem', marginTop: '0.1rem' }} />,
   'Template Designs': (

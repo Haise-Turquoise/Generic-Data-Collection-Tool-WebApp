@@ -122,7 +122,7 @@ const AuditLogTable = () => {
       },
       { title: 'User Email', field: 'user.email' },
       { title: 'Activity', field: 'activity' },
-      { title: 'Module Name', field: 'moduleName', filtering: false },
+      { title: 'Module Name', field: 'moduleName' },
     ],
     [],
   );
@@ -176,7 +176,7 @@ const AuditLogTable = () => {
   const actions: Action<AuditLog>[] = [
     {
       icon: () => <FindInPageIcon />, 
-      tooltip: "Detail Information",
+      tooltip: "Detailed Information",
       onClick: (_: any, rowData: AuditLog | AuditLog[]) => {
         if (!Array.isArray(rowData)) {
           handleClickOpen(rowData);

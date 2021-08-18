@@ -3,6 +3,7 @@ import {SheetDataStyle, SheetData} from '../types/template';
 import { Options } from 'material-table';
 import moment from 'moment';
 import React, { ReactText } from 'react';
+import { unauthorized_dialog } from '../components/Unauthorized_Dialog/Unauthorized_Dialog';
 
 export const isObjectEmpty = (object:any) => {
   for (let key in object) return false;
@@ -731,8 +732,10 @@ export const fetchWithStatus = async <T>(
     setRes: React.Dispatch<React.SetStateAction<T[] | undefined>>,
     setStatus: React.Dispatch<React.SetStateAction<'LOADING...' | 'NOT ALLOWED'>>
   ) => {
-    controller.fetch().then((res: T[] | undefined) => {
-      if (res) {
+    controller.fetch().then((res: T[] | undefined | 'UNAUTHORIZED ACCESS') => {
+      if (res === 'UNAUTHORIZED ACCESS') {
+        unauthorized_dialog();
+      } else if (res) {
         setRes(res)
       } else {
         setStatus('NOT ALLOWED')
