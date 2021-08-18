@@ -103,14 +103,14 @@ export default class AuthService {
   }
 
   profile(req: Request, res: Response, next: NextFunction) {
-    
+    console.log('reqbody========', req.body)
     try {
       console.log('==============request user===============\n',req.user);
       console.log('==============request session===============\n', req.session);
-      if (req.user) {
+      if (req.body.email) {
         const authService = new AuthService();
         //@ts-ignore
-        authService.UserRepository.findByEmail(req.user.email)
+        authService.UserRepository.findByEmail(req.body.email)
           .then(data => {
             console.log('=============profile sessionID=======\n', req.sessionID);
             // @ts-ignore
