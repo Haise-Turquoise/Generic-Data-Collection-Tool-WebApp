@@ -1,7 +1,6 @@
 import hash from 'object-hash';
 import cloneDeep from 'clone-deep';
 import bcrypt from 'bcrypt-nodejs';
-import { fromAddress } from 'xlsx-populate/lib/addressConverter';
 import organizationController from '../../controllers/organization';
 import AppSysController from '../../controllers/AppSys';
 import organizationGroupController from '../../controllers/organizationGroup';
@@ -10,9 +9,7 @@ import templateTypeController from '../../controllers/templateType';
 import userController from '../../controllers/user';
 import usersController from '../../controllers/Users';
 import userRegistrationStore from '../UserRegistrationStore/store';
-import { getUsersRequest } from './users';
 
-import UsersStore from '../UsersStore/store';
 
 // Loading Update Profile Page
 export const getUserInfo = () => (dispatch, getState) => {

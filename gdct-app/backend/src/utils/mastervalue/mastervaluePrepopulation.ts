@@ -100,6 +100,10 @@ export async function mastervaluePrepopulation(workbook:SheetData[], submission:
     // Add org info into the spreadsheet
     if (i > 0){
       const sheetRows = sheet.rows;
+      if (sheet.name.toLowerCase() === "main menu"){
+        //@ts-ignore
+        sheetRows[4].cells[1].text = 'Fiscal Year: ' + reportingPeriodInfo.name.slice(0,7);
+      }
       if (sheet.name.toLowerCase() === 'identification'){
         // add objects if they are undefined
         if (!sheetRows[8]) sheetRows[8] = {cells:{3:{text:''}}};
