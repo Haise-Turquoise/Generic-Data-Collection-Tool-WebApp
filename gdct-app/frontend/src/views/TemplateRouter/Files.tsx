@@ -1,6 +1,5 @@
 import { Button } from '@material-ui/core'
 import React, { useEffect, useState } from 'react'
-import FileController from '../../controllers/File'
 import path from 'path'
 
 export default function Files() {
