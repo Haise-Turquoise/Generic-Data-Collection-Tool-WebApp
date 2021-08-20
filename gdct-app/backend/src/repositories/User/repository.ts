@@ -59,7 +59,8 @@ export default class UserRepository extends BaseRepository<User, UserDoc> {
       // const feedbackUser = new UserEntity(user.toObject());
       // console.log('feedbackUser',feedbackUser)
       if (!user) {
-        throw new AppError(`Cannot find user with username ${username}`);
+        return {};
+        // throw new AppError(`Cannot find user with username ${username}`);
         ;
       }
       return new UserEntity(user);

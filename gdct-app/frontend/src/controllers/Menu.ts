@@ -8,7 +8,7 @@ const MenuController = (() => {
     withCredentials: true,
   });
   return {
-    fetch: async (): Promise<Menu[]> => MenuAxios.get('').then(res => res.data.Menus),
+    fetch: async (role: string): Promise<Menu[]> => MenuAxios.post('', { role }).then(res => res.data.Menus),
   };
 })();
 

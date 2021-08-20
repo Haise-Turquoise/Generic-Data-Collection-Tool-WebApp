@@ -14,7 +14,7 @@ const TemplateTypeController = Service([TemplateTypeService], service => {
 
     router.post('/templateTypes/fetchById', (req, res, next) => {
       const { _id } = req.body;
-
+      
       service
         .findById(_id)
         .then(templateType => res.json(templateType))

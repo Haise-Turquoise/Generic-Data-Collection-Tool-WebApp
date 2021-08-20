@@ -1,7 +1,7 @@
 import Container from 'typedi';
 import UserRepository from '../../repositories/User';
 import AppSysRoleRepository from '../../repositories/AppSysRole';
-import User from '../../types/user';
+import User ,{UserDoc} from '../../types/user';
 //@ts-ignore
 import cloneDeep from 'clone-deep';
 import {
@@ -83,7 +83,7 @@ export default class UserService {
       const appSysRole = await this.AppSysRoleRepository.findAndCreateAppSysRole(template.appSys, template.permission)
       template.appSysRoleId = appSysRole._id;
       const orgApproverName = template.organization.authorizedPerson.name;
-      const orgApprover = await this.fetchUserByUserName(orgApproverName);
+      const orgApprover:any = await this.fetchUserByUserName(orgApproverName);
       const orgApproverCopy = cloneDeep(orgApprover)
       orgApproverCopy.toBeApproved.push(template)
       await this.UserRepository.modifyUserToBeApproved(orgApproverCopy._id, orgApproverCopy)
@@ -139,7 +139,7 @@ export default class UserService {
 
   async sendActiveEmail(approve: queryParam, _id: queryParam, orgId: queryParam) {
     let checkActive = true;
-    this.UserRepository.findById(_id?.toString() || '').then(user => {
+    this.UserRepository.findById(_id?.toString() || '').then((user:any) => {
       if (!user) throw new AppError(`User not found for user id ${_id}`);
       if (approve == 'true') {
         user.sysRole.forEach((sysRole: User["sysRole"][0]) => {
@@ -165,7 +165,7 @@ export default class UserService {
   async sendUserPermissionActiveEmail(approve: queryParam, _id: queryParam, orgId: queryParam) {
     // need to finish the logic, replace appSys with tempAppSys, clean the tempAppSys, newTemplates. Set the newPermissionPending to false
     let checkActive = true;
-    this.UserRepository.findById(_id?.toString() || '').then(user => {
+    this.UserRepository.findById(_id?.toString() || '').then((user:any) => {
       if (!user) throw new AppError(`Cannot find user by ID ${_id}.`);
       
       if (approve == 'true') {
@@ -319,7 +319,7 @@ export default class UserService {
       const appSysRole = await this.AppSysRoleRepository.findAndCreateAppSysRole(template.appSys, template.permission)
       template.appSysRoleId = appSysRole._id;
       const orgApproverName = template.organization.authorizedPerson.name;
-      const orgApprover = await this.fetchUserByUserName(orgApproverName);
+      const orgApprover:any = await this.fetchUserByUserName(orgApproverName);
       const orgApproverCopy = cloneDeep(orgApprover)
       orgApproverCopy.toBeApproved.push(template)
       await this.UserRepository.modifyUserToBeApproved(orgApproverCopy._id, orgApproverCopy)

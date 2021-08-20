@@ -231,6 +231,7 @@ const selectOrgProgram = (
         <Select
           name="appSys"
           id = "*Application"
+          //@ts-ignore
           options={appSysOptions}
           //@ts-ignore
           onChange={handleAppSysChange}
@@ -242,6 +243,7 @@ const selectOrgProgram = (
         <Select
           name="organizations"
           id = "*Organization Groups"
+          //@ts-ignore
           options={organizationGroupOptions}
           //@ts-ignore
           onChange={handleOrgGroupChange}

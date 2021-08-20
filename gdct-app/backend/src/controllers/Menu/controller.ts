@@ -6,10 +6,10 @@ const MenuController = Service([MenuService], service => {
   const router = Router();
   return (() => {
 
-    router.get('/Menus', (req, res, next) => {
+    router.post('/Menus', (req, res, next) => {
       service
         // @ts-ignore
-        .getAuthroizedMenus(req.session.role)
+        .getAuthroizedMenus(req.body.role)
         .then(res => {
           res.sort((a, b) => a.orderId - b.orderId);
           return res;
