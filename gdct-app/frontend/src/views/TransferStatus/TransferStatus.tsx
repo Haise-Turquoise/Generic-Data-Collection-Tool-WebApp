@@ -18,8 +18,8 @@ const TransferStausPanel = () => {
   const [transferStatus, setTransferStatus] = useState<string>('');
 
   useEffect(() => {
-    TransferStatusController.fetchStatus().then((data:TransferStatus) => {
-      setTransferStatus(String(data.interval));
+    TransferStatusController.fetchStatus().then((data:{status:TransferStatus}) => {
+      setTransferStatus(String(data.status.interval));
     });
   },[]);
   
@@ -37,7 +37,7 @@ const TransferStausPanel = () => {
       <TransferStatusHeader />
       <Paper className="header">
         <Typography variant="h6">The current transfer Interval is {transferStatus} minutes</Typography>
-        <Typography variant="h6">Please enter a interval</Typography>
+        <Typography variant="h6">Please enter an time interval</Typography>
         <TextField
           id="interval"
           label="Time in minutes"

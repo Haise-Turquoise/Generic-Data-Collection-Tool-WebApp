@@ -59,7 +59,8 @@ class varianceInsertionMenu extends React.Component<MenuProps>{
           let id = input_fields[input_fields.selectedIndex].id;
           this.callback(id);
       }
-      this.setState({open:false})
+      this.setState({open:false});
+      this.data = [];
   }
 
   render(){
@@ -68,7 +69,7 @@ class varianceInsertionMenu extends React.Component<MenuProps>{
               <Button variant="outlined" color="primary" onClick={()=>{this.generateSelection(); this.setState({open:true})}}>
                   Insert Variance
               </Button>
-              <Dialog onClose={()=>{this.setState({open:false})}} aria-labelledby="simple-dialog-title" open={// @ts-ignore
+              <Dialog onClose={()=>{this.setState({open:false}); this.data=[];}} aria-labelledby="simple-dialog-title" open={// @ts-ignore
                 this.state.open} fullWidth={true}>
                   <DialogTitle id="simple-dialog-title">Insert Variance</DialogTitle>
                   <form>
