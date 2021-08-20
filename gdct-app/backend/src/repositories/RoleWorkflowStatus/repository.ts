@@ -10,7 +10,7 @@ export default class RoleWorkflowStatusRepository extends BaseRepository<RoleWor
     super(RoleWorkflowStatusModel)
   }
 
-  async findByRole(role:string):Promise<RoleWorkflowStatusDoc>{
+  async findByRole(role:string){
     return RoleWorkflowStatusModel.findOne({role});
   }
 

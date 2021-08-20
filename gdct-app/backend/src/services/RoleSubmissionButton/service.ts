@@ -12,7 +12,7 @@ export default class RoleSubmissionButtonService{
     this.roleSubmissionButtonRepository = Container.get(RoleSubmissionButtonRepository);
   }
 
-  async findByRole(role:string):Promise<RoleSubmissionButtonDoc>{
+  async findByRole(role:string){
     return this.roleSubmissionButtonRepository.findByRole(role);
   }
 

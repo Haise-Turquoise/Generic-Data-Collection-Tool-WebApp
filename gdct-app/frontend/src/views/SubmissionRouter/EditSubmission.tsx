@@ -45,6 +45,7 @@ import SubmissionNote from '../../types/submissionnote';
 // import { Submission } from '../../types/submissions';
 //@ts-ignore
 import roleSubmissionButtonController from '../../controllers/RoleSubmissionButton';
+import RoleSubmissionButton from '../../types/rolesubmissionbutton';
 import Submission from '../../types/submission';
 const timeOption = {
   year: 'numeric',
@@ -74,8 +75,8 @@ const EditSubmission = ({ history }:{history:History}) => {
   const [refresh, setRefresh] = useState(false);
   const [visitedWorkFlowProcesses, setVisitedWorkFlowProcesses] = useState<VisitedNode[]>([]);
   const [buttonList, setButtonList] = useState<VisitedNode[]>([]);
-  const [currentRole, setCurrentRole] = useState([]);
-  const [roleButtons, setRoleButtons] = useState([]);
+  const [currentRole, setCurrentRole] = useState<string[]>([]);
+  const [roleButtons, setRoleButtons] = useState<string[]>([]);
   // const [downloadUnavailable, setDownloadUnavailable] = useState(true);
   const [nextStepIdMap, setNextStepIdMap] = useState({});
   const [submissionHasBeen, setSubmissionHasBeen] = useState<string | undefined>(undefined);
@@ -248,7 +249,7 @@ const EditSubmission = ({ history }:{history:History}) => {
     dispatch(SubmissionNoteStore.actions.RECEIVE(''));
   }, [location, dispatch, refresh]);
   useEffect(()=>{
-    roleSubmissionButtonController.fetchSubmissionButtonByRole(currentRole[0]).then((data:any)=>{
+    roleSubmissionButtonController.fetchSubmissionButtonByRole(currentRole[0]).then((data:RoleSubmissionButton)=>{
       
       if(data){
         setRoleButtons(data.button)
