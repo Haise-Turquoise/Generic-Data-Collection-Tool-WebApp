@@ -23,10 +23,6 @@ const TemplateType = new Schema<TemplateTypeDoc>(
   { minimize: false, timestamps: true },
 )
 
-TemplateType.pre(/^find/, function (this: Model<TemplateTypeDoc>, next: (err: CallbackError) => void) {
-  this.find({ isActive: { $ne: false } });
-  next(null);
-});
 
 const TemplateTypeModel = model<TemplateTypeDoc>('TemplateType', TemplateType, 'TemplateType');
 

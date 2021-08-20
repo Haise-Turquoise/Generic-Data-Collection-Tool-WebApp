@@ -132,7 +132,7 @@ const buildObjects = async (data: AllDataType) => {
   const allNewCategories: Category[] = [];
   for (let sheetName of Object.keys(data)) {
     // get ID from existing sheetName
-    const foundSheet = sheets.find(sheet => sheet.name === 'Medical Staff Remuneration');
+    const foundSheet = sheets.find(sheet => sheet.name === sheetName);
     let sheetNameId;
     if (!foundSheet) {
       continue;

@@ -14,11 +14,6 @@ const Status = new Schema<StatusDoc>(
   { minimize: false, timestamps: true },
 )
 
-Status.pre(/^find/, function (this: Model<StatusDoc>, next: (err: CallbackError) => void) {
-  this.find({ isActive: { $ne: false } });
-  next(null);
-});
-
 const StatusModel = model<StatusDoc>('Status', Status, 'Status');
 
 export default StatusModel;

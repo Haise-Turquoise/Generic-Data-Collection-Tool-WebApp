@@ -6,7 +6,7 @@ import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import { makeStyles } from '@material-ui/core/styles';
 import InputLabel from '@material-ui/core/InputLabel';
-import MaterialTable from 'material-table';
+import MaterialTable, { Action } from 'material-table';
 import Paper from '@material-ui/core/Paper';
 import LaunchIcon from '@material-ui/icons/Launch';
 import CreateOutlinedIcon from '@material-ui/icons/CreateOutlined';
@@ -133,7 +133,7 @@ const SubmissionDashboard = ({ history }:{history:History}) => {
     });
   }, [submissions])
 
-  let submitterFlag = false;
+  const [submitterFlag, setSubmitterFlag] = useState(false)
 
   if (!Array.isArray(submissions)) {
     submissions = [];
@@ -168,7 +168,7 @@ const SubmissionDashboard = ({ history }:{history:History}) => {
               permission => permission === 'Submitter' || permission === 'Inputter',
             ) !== undefined
           )
-            submitterFlag = true;
+            setSubmitterFlag(true);
         } else {
           // should remove invalid (undefined/out of range) submissions
           filteredSubmission.filter(element => element !== submission)
@@ -259,25 +259,31 @@ const SubmissionDashboard = ({ history }:{history:History}) => {
     ],
     [history],
   );
-  const actions = useMemo(
+  const noUpload = ['Submitted', 'Reviewed', 'Approved']
+  const actions: (Action<Submission> | ((rowData: Submission) => Action<Submission>))[] = useMemo(
     () => [
-      {
-        icon: LaunchIcon,
+      (rowData: Submission) => ({
+        icon: (LaunchIcon as any),
         tooltip: 'Upload Submission',
-        onClick: (_event:MouseEvent, submission:Submission) =>
+        onClick: (_event:MouseEvent, submission:Submission | Submission[]) => {
+          if (Array.isArray(submission)) return
           history.push({
             pathname: `/submission/createSubmission/${submission._id}`,
             state: { detail: submission },
-          }),
-      },
+          })
+        },
+        hidden: noUpload.includes(rowData.phase)
+      }),
       {
         icon: CreateOutlinedIcon,
         tooltip: 'View/Edit Submission',
-        onClick: (_event:MouseEvent, submission:Submission) =>
+        onClick: (_event:MouseEvent, submission:Submission | Submission[]) => {
+          if (Array.isArray(submission)) return
           history.push({
             pathname: `/submission/dashboard/editSubmission/${submission._id}`,
             state: { detail: submission },
-          }),
+          })
+        }
       },
     ],
     [history],
