@@ -8,6 +8,7 @@ export default interface Template {
   timestamp: string,
   createdAt: string,
   updatedAt: string,
+  expirationDate: string,
   __v?: number,
 };
 
