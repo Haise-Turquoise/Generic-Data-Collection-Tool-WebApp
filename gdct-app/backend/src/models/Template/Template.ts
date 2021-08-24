@@ -18,6 +18,8 @@ const TemplateModel = model<TemplateDoc>(
 
       userCreatorId: { type: ObjectId, ref: 'User' },
       creationDate: { type: Date },
+      createdAt: {type: Date},
+      updatedAt: {type: Date},
       expirationDate: { type: Date },
       statusId:{ type:ObjectId, ref:'Status'},
       googleSheetId: { type: ObjectId, ref: 'GoogleSheet' },

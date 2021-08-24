@@ -9,6 +9,8 @@ export default interface Template {
   templateTypeId: ObjectId;
   userCreatorId: ObjectId;
   creationDate: Date;
+  createdAt: Date;
+  updatedAt: Date;
   expirationDate: Date;
   statusId: ObjectId;
   googleSheetId: ObjectId;
