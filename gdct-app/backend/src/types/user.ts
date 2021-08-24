@@ -11,32 +11,13 @@ export default interface User {
   firstName: string;
   lastName: string;
   newPermissionPending: boolean;
-  tempSysRole: User["sysRole"];
+  tempSysRole: UserSysRole[];
   newTemplates: any[];
   toBeApproved: any[];
   phoneNumber: string;
   pendingPermissions: any[];
   password: string;
-  sysRole: {
-    _id: ObjectId;
-    appSys: string;
-    role: string;
-    appSysRoleId: ObjectId;
-    org: {
-      orgId: string;
-      orgName: string;
-      IsActive: boolean;
-      program: {
-        programId: ObjectId;
-        programCode: string;
-        template: {
-          templateTypeId: ObjectId;
-          templateCode: string;
-          status: string;
-        }[];
-      }[];
-    }[];
-  }[];
+  sysRole: UserSysRole[];
   facebook: {
     id: string;
     token: string;
@@ -58,6 +39,28 @@ export default interface User {
   organizations:any;
   isApproved:boolean;
 }
+
+export interface UserSysRole{
+  _id: ObjectId;
+  appSys: string;
+  role: string;
+  appSysRoleId: ObjectId;
+  org: {
+    orgId: string;
+    orgName: string;
+    IsActive: boolean;
+    program: {
+      programId: ObjectId;
+      programCode: string;
+      template: {
+        templateTypeId: ObjectId;
+        templateCode: string;
+        status: string;
+      }[];
+    }[];
+  }[];
+}
+
 
 export interface UserDoc extends User, Document {
   _id: ObjectId,
