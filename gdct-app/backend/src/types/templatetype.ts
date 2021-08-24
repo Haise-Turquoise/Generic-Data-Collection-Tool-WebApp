@@ -16,6 +16,7 @@ export default interface TemplateType {
   timestamp: Date;
   updatedBy: string;
   isActive: boolean;
+  updatedAt: Date;
 }
 
 export interface TemplateTypeDoc extends TemplateType, Document {

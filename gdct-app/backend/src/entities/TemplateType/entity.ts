@@ -16,6 +16,7 @@ export default class TemplateTypeEntity {
   public isReportable: boolean;
   public timestamp: Date;
   public updatedBy: string;
+  public updatedAt: Date;
   public isActive: boolean;
 
   constructor({
@@ -34,6 +35,7 @@ export default class TemplateTypeEntity {
     timestamp,
     updatedBy,
     isActive,
+    updatedAt,
   }: TemplateTypeDoc) {
     this._id = _id;
     this.name = name;
@@ -50,5 +52,6 @@ export default class TemplateTypeEntity {
     this.timestamp = timestamp;
     this.updatedBy = updatedBy;
     this.isActive = isActive;
+    this.updatedAt = updatedAt;
   }
 }

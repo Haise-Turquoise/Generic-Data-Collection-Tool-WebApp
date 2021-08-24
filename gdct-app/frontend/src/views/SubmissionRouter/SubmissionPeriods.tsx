@@ -134,7 +134,7 @@ const SubmissionPeriod = () => {
       { title: 'Start Date', type: 'date', field: 'startDate' },
       { title: 'End Date', type: 'date', field: 'endDate' },
       {
-        title: 'ReportingPeriodId',
+        title: 'Reporting Period Id',
         field: 'reportingPeriodId',
         lookup: readIndexName,
       },

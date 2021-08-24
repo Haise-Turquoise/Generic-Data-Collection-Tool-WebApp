@@ -55,7 +55,7 @@ const ProgramsTable = () => {
 
   // Convert Date format
   programs?.forEach((program: Program) => {
-    program.timestamp = formatTimestamp(program.timestamp);
+    program.updatedAt = formatTimestamp(program.updatedAt);
   });
 
   // Prepare the columns for material table
@@ -69,7 +69,7 @@ const ProgramsTable = () => {
       },
       {
         title: 'Modified On',
-        field: 'timestamp',
+        field: 'updatedAt',
         editComponent: () => {
           return <div></div>;
         },
