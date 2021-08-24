@@ -196,7 +196,6 @@ class SpreadSheet extends Component<SpreadSheetProps>{
     
     // Generate Mappings
     const categoryMap:any = generateCategoryMap(currSheet);
-    console.log('hi', categoryMap)
     const attributeMap:any = generateAttributeMap(currSheet);
 
     // Identify the col alphabit assignment
@@ -211,6 +210,8 @@ class SpreadSheet extends Component<SpreadSheetProps>{
     if (findResult < 0){
       this.sheet.insertColAt(targetCol);
       this.sheet.cellText(9, targetCol, 'Variance', currSheetIndex);
+      this.sheet.insertColAt(targetCol + 1)
+      this.sheet.cellText(9, targetCol + 1, 'Note', currSheetIndex);
     }
 
     const keys = Object.keys(categoryMap);
@@ -223,6 +224,8 @@ class SpreadSheet extends Component<SpreadSheetProps>{
       const text = '=' + '(' + startCol + rowNum + '-' + endCol + rowNum + ')/' + startCol + rowNum;
       this.sheet.cellText(rowNum - 1, targetCol, text, currSheetIndex);
       const cellCoord = targetColAlphabit.toLocaleLowerCase() + (rowNum);
+      this.sheet.cellText(rowNum - 1, targetCol, text, currSheetIndex);
+      this.sheet.cellText(rowNum - 1, targetCol + 1, '', currSheetIndex);
       this.sheet.addOtherGreaterThan(
         rowNum - 1, 
         rowNum - 1, 

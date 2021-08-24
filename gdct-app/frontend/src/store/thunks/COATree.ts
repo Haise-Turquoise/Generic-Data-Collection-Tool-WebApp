@@ -214,7 +214,14 @@ export const updateCOATreesBySheetNameRequest = (sheetNameId: string) => (
   const {
     COATreeStore: { localTree },
   } = getState();
-
+  // check duplicates
+  const found: string[] = []
+  for (let item of localTree) {
+    if (found.includes(item.content.categoryGroupId._id)) {
+      return 'Duplicate category group not allowed'
+    }
+    found.push(item.content.categoryGroupId._id)
+  }
   // let treeCopy = cloneDeep(toggleExpandedForAll({ treeData:localTree, expanded : true }))
   const treeCopy = cloneDeep(localTree);
   const getNodeKey = ({ treeIndex }: { treeIndex: number }) => treeIndex;

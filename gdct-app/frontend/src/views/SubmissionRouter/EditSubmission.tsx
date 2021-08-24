@@ -10,16 +10,13 @@ import { useLocation } from 'react-router-dom';
 import MaterialTable from 'material-table';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import { makeStyles } from '@material-ui/core/styles';
+
 // @ts-ignore
-import { length } from 'file-loader';
-// @ts-ignore
-import { excelImportHandler, templateDownloader } from '../../tools/misc';
+import { templateDownloader } from '../../tools/misc';
 // @ts-ignore
 import { getSubmissionNoteRequest } from '../../store/thunks/submissionNote';
 // @ts-ignore
 import SubmissionNoteStore from '../../store/SubmissionNoteStore/store';
-// @ts-ignore
-import SubmissionWorkbookStore from '../../store/SubmissionWorkbookStore/store';
 // @ts-ignore
 import SubmissionController from '../../controllers/submission';
 // @ts-ignore
@@ -48,7 +45,7 @@ import SubmissionNote from '../../types/submissionnote';
 // import { Submission } from '../../types/submissions';
 //@ts-ignore
 import roleSubmissionButtonController from '../../controllers/RoleSubmissionButton';
-import { common } from '@material-ui/core/colors';
+import RoleSubmissionButton from '../../types/rolesubmissionbutton';
 import Submission from '../../types/submission';
 const timeOption = {
   year: 'numeric',
@@ -57,13 +54,7 @@ const timeOption = {
   hour: 'numeric',
   minute: 'numeric',
 };
-const useStyles = makeStyles(theme => ({
-  root: {
-    width: '100%',
-    maxWidth: 360,
-    backgroundColor: theme.palette.background.paper,
-  },
-}));
+
 
 const EditSubmission = ({ history }:{history:History}) => {
   const dispatch = useDispatch();
@@ -84,8 +75,8 @@ const EditSubmission = ({ history }:{history:History}) => {
   const [refresh, setRefresh] = useState(false);
   const [visitedWorkFlowProcesses, setVisitedWorkFlowProcesses] = useState<VisitedNode[]>([]);
   const [buttonList, setButtonList] = useState<VisitedNode[]>([]);
-  const [currentRole, setCurrentRole] = useState([]);
-  const [roleButtons, setRoleButtons] = useState([]);
+  const [currentRole, setCurrentRole] = useState<string[]>([]);
+  const [roleButtons, setRoleButtons] = useState<string[]>([]);
   // const [downloadUnavailable, setDownloadUnavailable] = useState(true);
   const [nextStepIdMap, setNextStepIdMap] = useState({});
   const [submissionHasBeen, setSubmissionHasBeen] = useState<string | undefined>(undefined);
@@ -258,7 +249,7 @@ const EditSubmission = ({ history }:{history:History}) => {
     dispatch(SubmissionNoteStore.actions.RECEIVE(''));
   }, [location, dispatch, refresh]);
   useEffect(()=>{
-    roleSubmissionButtonController.fetchSubmissionButtonByRole(currentRole[0]).then((data:any)=>{
+    roleSubmissionButtonController.fetchSubmissionButtonByRole(currentRole[0]).then((data:RoleSubmissionButton)=>{
       
       if(data){
         setRoleButtons(data.button)
@@ -267,11 +258,11 @@ const EditSubmission = ({ history }:{history:History}) => {
   },[currentRole])
   useEffect(()=>{
     dispatch(getSubmissionByIdRequest(submissionId));
-  }, [submissionId])
+  }, [submissionId, dispatch])
 
   useEffect(()=>{
     dispatch(getSubmissionNoteRequest(submission._id));
-  }, [submission])
+  }, [submission, dispatch])
 
   useEffect(() => {
     (async function () {
@@ -387,6 +378,7 @@ const EditSubmission = ({ history }:{history:History}) => {
       <SubmissionHeader />
 
       <Paper className="pl-4 pr-4 pb-5 pt-4">
+        <Typography variant="h6"> {submission.name} </Typography>
         <div className="submission__label">
           <Typography className="submission__inputTitle"> Note </Typography>
         </div>

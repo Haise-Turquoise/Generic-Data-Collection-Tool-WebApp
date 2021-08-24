@@ -112,6 +112,7 @@ export const getSubmissionByIdRequest = (_id: string) => (dispatch: Dispatch) =>
   submissionController
     .fetchSubmission(_id)
     .then(submission => {
+      
       dispatch(SubmissionsStore.actions.RECEIVE(submission));
     })
     .catch(error => {
@@ -126,10 +127,10 @@ export const updateSubmissionStatusRequest = (
   newProcessId: string
 ) => async (dispatch: Dispatch) => {
   const updatedBy = localStorage.getItem('currentUser') || '';
-
   await submissionController
     .updateStatus(submission, submissionNote, role, newProcessId, updatedBy)
     .then((updatedSubmission) => {
+      
       Object.assign(updatedSubmission, {phase: role});
       dispatch(SubmissionsStore.actions.RECEIVE(updatedSubmission));
     })

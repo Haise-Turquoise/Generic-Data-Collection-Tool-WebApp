@@ -247,7 +247,6 @@ export default class SubmissionService {
 
   
   async updateStatus(submission:Submission, submissionNote:SubmissionNote, role:string, nextProcessId:string, updatedBy:string) {
-    
     const submissionNotes :any= {
       note: submissionNote,
       submissionId: submission._id,

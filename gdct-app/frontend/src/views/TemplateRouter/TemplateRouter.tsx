@@ -16,6 +16,7 @@ import TemplatePackages from './TemplatePackages';
 import TemplatePackage from './TemplatePackage';
 //@ts-ignore
 import { ROUTE_TEMPLATE_PCKGS_PCKG, ROUTE_TEMPLATE_PCKGS_PCKGS } from '../../constants/routes';
+import Files from './Files';
 
 const TemplateRouter = () => (
   <Switch>
@@ -25,6 +26,7 @@ const TemplateRouter = () => (
     <Route exact path="/admin/template/type/:_id" component={TemplateType} />
     <Route exact path={ROUTE_TEMPLATE_PCKGS_PCKGS} component={TemplatePackages} />
     <Route exact path={ROUTE_TEMPLATE_PCKGS_PCKG} component={TemplatePackage} />
+    <Route exact path="/admin/template/tool" component={Files} />
     <Route component={NotFound} />
   </Switch>
 );

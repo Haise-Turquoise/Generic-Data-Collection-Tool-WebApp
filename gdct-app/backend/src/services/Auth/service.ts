@@ -36,7 +36,6 @@ export default class AuthService {
   authenticateCallback(req: Request, res: Response, next: NextFunction) {
     try {
       const { method } = req.params;
-      console.log(method)
       
       // res.setHeader('Access-Control-Allow-Origin', process.env.CLIENT_SERVER);
       res.setHeader('Access-Control-Allow-Origin', '*');
@@ -54,9 +53,12 @@ export default class AuthService {
         failureRedirect: `${process.env.CLIENT_SERVER}/auth/error`, // redirect to error page
       })(req, res, async () => {
         //@ts-ignore
-        console.log('HEADERS', res.headers)
         const { email } = (req.user as User);
         const user: UserEntity| void = await this.UserRepository.findByEmail(email);
+
+        console.log('============== authenticateCallback request user===============\n',req.user);
+        console.log('============== authenticateCallback request session===============\n', req.session);
+
         if (user) {
           //@ts-ignore 
           req.session.isAdmin = Boolean(user.sysRole.find(e => e.role === 'Business Admin'));
@@ -101,13 +103,16 @@ export default class AuthService {
   }
 
   profile(req: Request, res: Response, next: NextFunction) {
-    
+    console.log('reqbody========', req.body)
     try {
-      if (req.user) {
+      console.log('==============request user===============\n',req.user);
+      console.log('==============request session===============\n', req.session);
+      if (req.body.email) {
         const authService = new AuthService();
         //@ts-ignore
-        authService.UserRepository.findByEmail(req.user.email)
+        authService.UserRepository.findByEmail(req.body.email)
           .then(data => {
+            console.log('=============profile sessionID=======\n', req.sessionID);
             // @ts-ignore
               data.sessionID = req.sessionID;
               returnNormalJson(res, data);
@@ -116,6 +121,7 @@ export default class AuthService {
         returnErrorJson(res, 'Not authenticated', 401);
       }
     } catch (err) {
+      console.log('=============profile err===============\n', err);
       next(err);
     }
   }
@@ -213,7 +219,6 @@ export default class AuthService {
       return passport.authenticate('local')(req, res, async () => {
         const { email } = (req.user as User);
         const user = await authService.UserRepository.findByEmail(email);
-
         //@ts-ignore
         req.session.isAdmin = false;
         if (user) {

@@ -6,6 +6,7 @@ export default interface AppSysRole {
   timestamp: Date,
   updatedBy: string,
   isActive: boolean,
+  isSuperRole?: boolean,
 }
 
 export interface AppSysRoleDoc extends AppSysRole, Document {}

@@ -13,7 +13,7 @@ export default class RoleWorkflowStatusService{
     this.roleWorkflowStatusRepository = Container.get(RoleWorkflowStatusRepository);
   }
 
-  async findByRole(role:string):Promise<RoleWorkflowStatusDoc>{
+  async findByRole(role:string){
     return this.roleWorkflowStatusRepository.findByRole(role);
   }
 

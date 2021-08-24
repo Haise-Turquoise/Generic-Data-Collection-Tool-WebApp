@@ -8,7 +8,7 @@ import UserModel from '../../models/User';
 import AppError from '../../utils/AppError';
 const _ = require('lodash'); 
 import {sendPermissionChangeUserVerficationEmail,sendPermissionChangeAdminVerficationEmail} from '../../middlewares/mail/mail'
-import User, { UserDoc } from '../../types/user';
+import User, { UserDoc, UserSysRole } from '../../types/user';
 //@ts-ignore
 // import Organization from '../../types/organization';
 import { ObjectId } from 'mongodb';
@@ -59,7 +59,8 @@ export default class UserRepository extends BaseRepository<User, UserDoc> {
       // const feedbackUser = new UserEntity(user.toObject());
       // console.log('feedbackUser',feedbackUser)
       if (!user) {
-        throw new AppError(`Cannot find user with username ${username}`);
+        return {};
+        // throw new AppError(`Cannot find user with username ${username}`);
         ;
       }
       return new UserEntity(user);
@@ -77,10 +78,10 @@ export default class UserRepository extends BaseRepository<User, UserDoc> {
       });
   }
 
-  async updateSysRole(_id: string, sysRole: User["sysRole"]) {
+  async updateSysRole(_id: string, sysRole: UserSysRole[]) {
     return UserModel.findOneAndUpdate({ _id }, { sysRole});
   }
-  async updateSysRoleFromTempSysRole(_id: string, sysRole: User["sysRole"]) {
+  async updateSysRoleFromTempSysRole(_id: string, sysRole: UserSysRole[]) {
     
     // walk through the whole sysRole, make sure each pending state for templates is false
     sysRole.forEach((sys)=>{
@@ -92,6 +93,7 @@ export default class UserRepository extends BaseRepository<User, UserDoc> {
         })
       })
     })
+    //@ts-ignore
     return UserModel.findOneAndUpdate({ _id }, { sysRole:sysRole,newPermissionPending:false,tempSysRole:[], newTemplates:[]});
   }
 

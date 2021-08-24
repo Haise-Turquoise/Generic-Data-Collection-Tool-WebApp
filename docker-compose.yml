@@ -1,4 +1,15 @@
 services:
+  frontend:
+      env_file:
+          "./gdct-app/frontend/.env"
+      build:
+        context: ./gdct-app/frontend
+        dockerfile: ./Dockerfile
+      image: "gdctdockercontainer.azurecr.io/gdct-frontend:latest"
+      ports:
+        - "3003:3003"
+      links:
+        - "backend"
   backend:
     env_file:
         "./gdct-app/backend/.env"
@@ -8,7 +19,7 @@ services:
     image: "gdct-backend"
     ports:
       - "3000:3000"
-      
+
   frontend:
     env_file:
         "./gdct-app/frontend/.env"
@@ -17,6 +28,4 @@ services:
       dockerfile: ./Dockerfile
     image: "gdct-frontend"
     ports:
-      - "3003:3003"
-    links:
-      - "backend:be"
+      - "3000:3000"
