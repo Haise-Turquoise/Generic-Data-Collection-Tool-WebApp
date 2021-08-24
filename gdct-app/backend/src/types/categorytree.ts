@@ -7,7 +7,7 @@ export default interface CategoryTree {
   categoryGroupId: ObjectId;
   categoryId: String[];
   sheetNameId: ObjectId;
-  timestamp: Date;
+  updatedAt: Date;
   updatedBy: string;
 }
 

@@ -7,10 +7,10 @@ export default class COATreeEntity {
   public categoryGroupId: ObjectId;
   public categoryId: String[];
   public sheetNameId: ObjectId;
-  public timestamp: Date;
+  public updatedAt: Date;
   public updatedBy: string;
   
-  constructor({ _id, parentId, categoryGroupId, categoryId, sheetNameId, timestamp, updatedBy, }: CategoryTreeDoc | CategoryTree) {
+  constructor({ _id, parentId, categoryGroupId, categoryId, sheetNameId, updatedAt, updatedBy, }: CategoryTreeDoc | CategoryTree) {
     // console.log(categoryGroupId)
     // console.log(_id)
     this._id = _id;
@@ -18,7 +18,7 @@ export default class COATreeEntity {
     this.categoryGroupId = categoryGroupId;
     this.categoryId = categoryId;
     this.sheetNameId = sheetNameId;
-    this.timestamp = timestamp;
+    this.updatedAt = updatedAt;
     this.updatedBy = updatedBy;
   }
 }

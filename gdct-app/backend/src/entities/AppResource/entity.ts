@@ -7,16 +7,16 @@ export default class AppResourceEntity {
   public resourceName: string;
   public resourcePath: string;
   public isProtected: AppResourceDoc["isProtected"];
-  public timestamp: Date;
+  public updatedAt: Date;
   public updatedBy: string;
 
-  constructor({ _id, id, resourceName, resourcePath, isProtected, timestamp, updatedBy }: AppResourceDoc) {
+  constructor({ _id, id, resourceName, resourcePath, isProtected, updatedAt, updatedBy }: AppResourceDoc) {
     this._id = _id;
     this.id = id;
     this.resourceName = resourceName;
     this.resourcePath = resourcePath;
     this.isProtected = isProtected;
-    this.timestamp = timestamp;
+    this.updatedAt = updatedAt;
     this.updatedBy = updatedBy;
   }
 }

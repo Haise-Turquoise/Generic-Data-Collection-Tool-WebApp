@@ -5,7 +5,7 @@ export default interface SheetName {
   _id: ObjectId,
   id: number;
   name: string;
-  timestamp: Date;
+  updatedAt: Date;
   templateTypeId: ObjectId,
   updatedBy: string;
   isActive: boolean;

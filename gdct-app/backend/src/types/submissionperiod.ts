@@ -7,7 +7,7 @@ export default interface SubmissionPeriod {
   name: string,
   startDate: Date,
   endDate: Date,
-  timestamp: Date,
+  updatedAt: Date,
   updatedBy: string,
   programId: ObjectId[];
 }

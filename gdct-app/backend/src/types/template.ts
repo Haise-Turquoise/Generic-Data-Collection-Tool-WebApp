@@ -12,7 +12,7 @@ export default interface Template {
   expirationDate: Date;
   statusId: ObjectId;
   googleSheetId: ObjectId;
-  timestamp: Date;
+  updatedAt: Date;
   updatedBy: string;
 }
 

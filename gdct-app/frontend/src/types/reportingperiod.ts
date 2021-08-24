@@ -5,7 +5,7 @@ export default interface ReportingPeriod {
   endDate?: string;
   code: string;
   submissionClosed: boolean;
-  timestamp: string;
+  updatedAt: string;
   updatedBy: string;
   __v?: number;
 }

@@ -6,6 +6,6 @@ export default interface Status {
   updatedAt: string;
   forPackage: boolean;
   order?: number;
-  timestamp: string;
+  updatedAt: string;
   updatedBy: string;
 }

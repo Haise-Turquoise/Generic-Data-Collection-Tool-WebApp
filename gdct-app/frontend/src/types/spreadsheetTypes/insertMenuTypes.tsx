@@ -12,7 +12,7 @@ export interface CategoryData{
   COA:string;
   id:string;
   name:string;
-  timestamp:string;
+  updatedAt:string;
   unitOfMeasure:string;
   __v:number;
   _id:string;

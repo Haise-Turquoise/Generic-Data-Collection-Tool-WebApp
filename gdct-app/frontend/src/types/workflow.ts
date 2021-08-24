@@ -4,7 +4,7 @@ export default interface Workflow {
   _id: string;
   isActive: boolean;
   name: string;
-  timestamp: string;
+  updatedAt: string;
   updatedBy: string;
   __v?: number;
 }
