@@ -42,7 +42,6 @@ const StatusesTable = () => {
     _id: '',
     description: '',
     isActive: true,
-    updatedAt: '',
     forPackage: true,
     updatedAt: '',
     updatedBy: '',

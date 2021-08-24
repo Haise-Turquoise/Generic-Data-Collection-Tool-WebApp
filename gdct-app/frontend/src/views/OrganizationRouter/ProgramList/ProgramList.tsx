@@ -31,7 +31,6 @@ const ProgList = ({ programIds, onClickAdd, onClickDelete, isEditable = true }: 
     isActive: false,
     name: status,
     updatedAt: '',
-    updatedAt: '',
     updatedBy: '',
   }]
 

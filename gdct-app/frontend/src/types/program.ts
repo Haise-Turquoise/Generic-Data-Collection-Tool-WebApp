@@ -4,6 +4,5 @@ export default interface Program {
   isActive: boolean;
   name: string;
   updatedAt: string;
-  updatedAt: string;
   updatedBy: string;
 }

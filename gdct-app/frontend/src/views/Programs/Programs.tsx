@@ -49,7 +49,6 @@ const ProgramsTable = () => {
       isActive: true,
       updatedAt: '',
       updatedBy: '',
-      updatedAt: '',
     },
   ];
 

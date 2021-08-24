@@ -114,7 +114,7 @@ const UsersTable = () => {
 
   // Convert Date format
   users?.forEach(user => {
-    user.updatedAt = formatTimestamp(user.updatedAt)
+    user.updatedAt = formatTimestamp(user.updatedAt || '')
   });
 
   // Prepare the columns for material table

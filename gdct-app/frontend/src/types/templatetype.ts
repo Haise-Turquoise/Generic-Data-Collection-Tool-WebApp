@@ -13,7 +13,6 @@ export default interface TemplateType {
   isViewable?: boolean | null,
   programIds: string[],
   updatedAt: string,
-  updatedAt: string,
   updatedBy: string,
   name: string,
   submissionWorkflowId?: string,

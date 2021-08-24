@@ -64,7 +64,6 @@ const TemplateTypesTable = ({ history }: RouterProps) => {
     isViweable: false,
     programIds: [],
     updatedAt: '',
-    updatedAt: '',
     updatedBy: '',
   }]
   // Convert Date format
