@@ -7,7 +7,7 @@ export default interface TemplatePackage {
   statusId: string,
   creationDate: string,
   updatedBy: string,
-  timestamp: string,
+  updatedAt: string,
   __v?: number,
   userCreatorId?: null
 }

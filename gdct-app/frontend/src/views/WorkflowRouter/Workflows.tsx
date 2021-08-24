@@ -52,7 +52,7 @@ const Workflows = () => {
     {
       name: status,
       _id: '',
-      timestamp: '',
+      updatedAt: '',
       updatedBy: '',
       isActive: true,
     },
@@ -60,7 +60,7 @@ const Workflows = () => {
 
   // Convert Date format
   workflows?.forEach(workflow => {
-    workflow.timestamp = formatTimestamp(workflow.timestamp);
+    workflow.updatedAt = formatTimestamp(workflow.updatedAt);
   });
 
   const columns: Column<WorkflowMT>[] = useMemo(
@@ -68,7 +68,7 @@ const Workflows = () => {
       { title: 'Name', field: 'name' },
       {
         title: 'Modified On',
-        field: 'timestamp',
+        field: 'updatedAt',
         editComponent: () => {
           return <div></div>;
         },
@@ -89,7 +89,7 @@ const Workflows = () => {
   // Record user and time when an action occurs
   function recordUpdate(workflow: WorkflowMT) {
     workflow.updatedBy = localStorage.getItem('currentUser') || '';
-    workflow.timestamp = new Date().toLocaleString();
+    workflow.updatedAt = new Date().toLocaleString();
   }
   const editable = useMemo(
     () => ({

@@ -3,7 +3,7 @@ export default interface SysRole {
   appSys: string,
   role: string,
   isActive: boolean,
-  timestamp: string,
+  updatedAt: string,
   isSuperRole?: boolean,
   updatedBy?: string,
   __v?: number,

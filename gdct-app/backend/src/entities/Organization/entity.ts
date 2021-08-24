@@ -21,7 +21,7 @@ export default class OrgEntity {
   public programId: ObjectId[];
   public effectiveDate: Date;
   public expiryDate: Date;
-  public timestamp: Date;
+  public updatedAt: Date;
   public updatedBy: string;
 
   constructor({
@@ -44,7 +44,7 @@ export default class OrgEntity {
     programId,
     effectiveDate,
     expiryDate,
-    timestamp,
+    updatedAt,
     updatedBy,
   }: OrganizationDoc) {
     this._id = _id;
@@ -66,7 +66,7 @@ export default class OrgEntity {
     this.programId = programId;
     this.effectiveDate = effectiveDate;
     this.expiryDate = expiryDate;
-    this.timestamp = timestamp;
+    this.updatedAt = updatedAt;
     this.updatedBy = updatedBy;
   }
 }

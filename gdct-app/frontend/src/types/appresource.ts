@@ -3,7 +3,7 @@ export default interface AppResource {
   resourceName: string,
   resourcePath: string,
   isProtected: string,
-  timestamp: string,
+  updatedAt: string,
   updatedBy: string,
   id: number,
 }

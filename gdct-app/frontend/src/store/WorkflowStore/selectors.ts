@@ -32,7 +32,7 @@ export const selectWorkflowId = createSelector(
 
 export const selectWorkflowTimestamp = createSelector(
   [selectWorkflowStore],
-  workflowStore => workflowStore.timestamp,
+  workflowStore => workflowStore.updatedAt,
 );
 
 export const selectWorkflowUpdatedBy = createSelector(

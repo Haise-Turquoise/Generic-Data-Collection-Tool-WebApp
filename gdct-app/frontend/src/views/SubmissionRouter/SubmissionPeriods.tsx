@@ -125,7 +125,7 @@ const SubmissionPeriod = () => {
   
   // Convert Date format
   submissionPeriods?.forEach(submissionPeriod => {
-    submissionPeriod.timestamp = formatTimestamp(submissionPeriod.timestamp);
+    submissionPeriod.updatedAt = formatTimestamp(submissionPeriod.updatedAt);
   });
 
   const columns: Column<SubmissionPeriod>[] = useMemo(
@@ -140,7 +140,7 @@ const SubmissionPeriod = () => {
       },
       {
         title: 'Modified On',
-        field: 'timestamp',
+        field: 'updatedAt',
         editComponent: () => {
           return <div></div>;
         },
@@ -161,7 +161,7 @@ const SubmissionPeriod = () => {
     //get username and record in Modified By column
     submissionPeriod.updatedBy = localStorage.getItem('currentUser');
     // record new date and time in Modified On column
-    submissionPeriod.timestamp = new Date().toLocaleString();
+    submissionPeriod.updatedAt = new Date().toLocaleString();
   }
 
   const options: Options<SubmissionPeriod> = useMemo(() => calculateOptions(readRowNum), [readRowNum]);

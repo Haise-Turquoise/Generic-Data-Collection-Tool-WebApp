@@ -6,5 +6,5 @@ export default interface Category {
   __v?: number,
   updatedBy?: string,
   unitOfMeasure: string,
-  timestamp: string,
+  updatedAt: string,
 }

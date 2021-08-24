@@ -5,6 +5,6 @@ export default interface SubmissionPeriod {
   startDate: string,
   endDate: string,
   name: string,
-  timestamp: string,
+  updatedAt: string,
   updatedBy: string,
 }

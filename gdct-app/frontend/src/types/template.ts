@@ -5,7 +5,6 @@ export default interface Template {
   templateTypeId: string,
   workflowProcessId: string,
   updatedBy: string,
-  timestamp: string,
   createdAt: string,
   updatedAt: string,
   __v?: number,

@@ -6,7 +6,7 @@ export default interface Category {
   id: string;
   COA: string;
   unitOfMeasure: string;
-  timestamp: Date;
+  updatedAt: Date;
   updatedBy: string;
 }
 

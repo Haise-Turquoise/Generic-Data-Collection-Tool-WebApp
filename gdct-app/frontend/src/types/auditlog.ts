@@ -6,6 +6,6 @@ export default interface AuditLog {
   recordId: string | null | undefined,
   oldValue: {[key: string]: any},
   newValue: {[key: string]: any},
-  timestamp?: string,
+  updatedAt?: string,
   __v?: number,
 }

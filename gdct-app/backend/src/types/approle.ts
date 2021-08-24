@@ -3,7 +3,7 @@ import { Document } from "mongoose";
 export default interface AppRole {
   code: string,
   name: string,
-  timestamp: Date,
+  updatedAt: Date,
   updatedBy: string,
   isActive: boolean,
 }

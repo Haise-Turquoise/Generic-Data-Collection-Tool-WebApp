@@ -3,7 +3,7 @@ export default interface AppSys {
   code: string,
   name: string,
   isActive: boolean,
-  timestamp: string,
+  updatedAt: string,
   updatedBy?: string,
   __v?: number
 }

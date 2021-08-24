@@ -42,15 +42,14 @@ const StatusesTable = () => {
     _id: '',
     description: '',
     isActive: true,
-    updatedAt: '',
     forPackage: true,
-    timestamp: '',
+    updatedAt: '',
     updatedBy: '',
   }]
   
   // Convert Date format
   statuses?.forEach((status: Status) => {
-    status.timestamp = formatTimestamp(status.timestamp);
+    status.updatedAt = formatTimestamp(status.updatedAt);
   });
 
   // Prepare the columns for material table
@@ -62,7 +61,7 @@ const StatusesTable = () => {
       { title: 'For Package', type: 'boolean', field: 'forPackage' },
       {
         title: 'Modified On',
-        field: 'timestamp',
+        field: 'updatedAt',
         editComponent: () => {
           return <div></div>;
         },
@@ -85,7 +84,7 @@ const StatusesTable = () => {
     //get username and record in Modified By column
     status.updatedBy = localStorage.getItem('currentUser') || '';
     //record new date and time in Modified On column
-    status.timestamp = new Date().toLocaleString();
+    status.updatedAt = new Date().toLocaleString();
   }
   // Prepare the editing functionalities for the material table
   const editable = useMemo(
