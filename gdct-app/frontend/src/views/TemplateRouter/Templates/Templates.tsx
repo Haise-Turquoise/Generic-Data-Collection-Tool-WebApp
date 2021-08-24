@@ -34,7 +34,7 @@ import { getWorkflowProcessesRequest } from '../../../store/thunks/workflow';
 import { selectWorkflowProcessesStore } from '../../../store/WorkflowProcessesStore/selectors';
 import WorkflowProcessesStore from '../../../store/WorkflowProcessesStore/store';
 //@ts-ignore
-import { calculateOptions, checkDuplicates } from '../../../tools/misc';
+import { calculateOptions, checkDuplicates, formatTimestamp } from '../../../tools/misc';
 import { RouterProps } from 'react-router';
 import WorkflowProcess from '../../../types/workflowprocess';
 import Template from '../../../types/template';
@@ -125,15 +125,18 @@ const TemplatesTable = ({ history }: RouterProps) => {
       {
         title: 'Creation Date',
         // type: 'date',
-        field: 'timestamp',
+        field: 'createdAt',
+        editComponent: (props: any) => {
+          return <div></div>;
+        },
         // editable: 'onAdd',
         // initialEditValue: new Date(),
       },
-      { title: 'Expiration Date', type: 'date', field: 'expirationDate' },
+      { title: 'Expiration Date', field: 'expirationDate' },
       { title: 'Workflow', field: 'workflowProcessId', lookup: lookupProcesses, editable: 'never' },
       {
         title: 'Modified On',
-        field: 'timestamp',
+        field: 'updatedAt',
         editComponent: (props: any) => {
           return <div></div>;
         },
@@ -207,14 +210,11 @@ const TemplatesTable = ({ history }: RouterProps) => {
   );
 
   // Convert Date format
-  templates.forEach(templates => {
-    if (templates.timestamp != null) {
-      const event = new Date(templates.timestamp.toString());
-      templates.timestamp = event.toLocaleString();
-    } else {
-      const event = new Date('2021-02-16T03:59:32.015Z');
-      templates.timestamp = event.toLocaleString();
-    }
+  templates.forEach(template => {
+    console.log(template)
+    template.createdAt = formatTimestamp(template.createdAt)
+    template.updatedAt = formatTimestamp(template.updatedAt)
+    template.expirationDate = formatTimestamp(template.expirationDate)
   });
 
   useEffect(() => {
