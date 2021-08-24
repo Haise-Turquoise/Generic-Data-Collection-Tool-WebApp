@@ -363,7 +363,7 @@ const TemplatePackage = ({
       templateIds: populatedData.templateIds.map(({ _id }: Template) => _id),
       programIds: populatedData.programIds.map(({ _id }: Program) => _id),
       creationDate: populatedData.creationDate,
-      timestamp: Date(),  
+      updatedAt: Date(),  
       updatedBy: localStorage.getItem('currentUser') || '',
     };
 

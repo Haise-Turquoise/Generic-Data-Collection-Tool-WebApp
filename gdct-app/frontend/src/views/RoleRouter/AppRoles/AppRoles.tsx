@@ -42,13 +42,13 @@ const AppRolesTable = () => {
     _id: '',
     code: '',
     isActive: false,
-    timestamp: '',
+    updatedAt: '',
     updatedBy: '',
   }]
 
   // Convert Date format
   appRoles?.forEach(appRole => {
-    appRole.timestamp = formatTimestamp(appRole.timestamp);
+    appRole.updatedAt = formatTimestamp(appRole.updatedAt);
   });
 
   // Prepare the columns for material table
@@ -58,7 +58,7 @@ const AppRolesTable = () => {
       { title: 'Name', field: 'name', validate: rowData => checkDuplicates(rowData, appRoles, 'name') },
       {
         title: 'Modified On',
-        field: 'timestamp',
+        field: 'updatedAt',
         editComponent: () => {
           return <div></div>;
         },
@@ -79,7 +79,7 @@ const AppRolesTable = () => {
   // Record user and time when an action occurs 
   function recordUpdate(appRole: AppRoleMT) {
     appRole.updatedBy = localStorage.getItem('currentUser') || '';
-    appRole.timestamp = new Date().toLocaleString(); 
+    appRole.updatedAt = new Date().toLocaleString(); 
   }
   const editable = useMemo(
     () => ({

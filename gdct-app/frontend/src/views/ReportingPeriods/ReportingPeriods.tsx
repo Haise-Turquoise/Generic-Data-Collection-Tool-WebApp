@@ -58,7 +58,7 @@ const ReportingPeriodsTable = () => {
       _id: '',
       code: '',
       submissionClosed: false,
-      timestamp: '',
+      updatedAt: '',
       updatedBy: '',
     },
   ];
@@ -68,7 +68,7 @@ const ReportingPeriodsTable = () => {
   }, [reportingPeriods])
   // Convert Date format
   reportingPeriods?.forEach((reportingPeriod: ReportingPeriod) => {
-    reportingPeriod.timestamp = formatTimestamp(reportingPeriod.timestamp);
+    reportingPeriod.updatedAt = formatTimestamp(reportingPeriod.updatedAt);
   });
 
   // Prepare the columns for material table
@@ -78,7 +78,7 @@ const ReportingPeriodsTable = () => {
       { title: 'Code', field: 'code', editComponent: () => (<div></div>) },
       {
         title: 'Modified On',
-        field: 'timestamp',
+        field: 'updatedAt',
         editComponent: () => {
           return <div></div>;
         },
@@ -106,7 +106,7 @@ const ReportingPeriodsTable = () => {
     //get username and record in Modified By column
     reportingPeriod.updatedBy = localStorage.getItem('currentUser') || '';
     //record new date and time in Modified On column
-    reportingPeriod.timestamp = new Date().toLocaleString();
+    reportingPeriod.updatedAt = new Date().toLocaleString();
   }
   // Prepare the editing functionalities for the material table
   const editable = useMemo(

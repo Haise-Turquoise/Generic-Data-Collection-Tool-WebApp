@@ -58,12 +58,12 @@ const AppSysRolesTable = () => {
     appSys: '',
     isActive: false,
     role: status,
-    timestamp: '',
+    updatedAt: '',
   }]
 
   // Convert Date format
   appSysRoles?.forEach(appSysRole => {
-    appSysRole.timestamp = formatTimestamp(appSysRole.timestamp);
+    appSysRole.updatedAt = formatTimestamp(appSysRole.updatedAt);
   });
   const lookupSysRoles = appSyses?.reduce(function (acc: {[key:string]: string}, appSys: AppSys) {
     acc[appSys.code] = appSys.name;
@@ -85,7 +85,7 @@ const AppSysRolesTable = () => {
       { title: 'Role', field: 'role', validate: rowData => checkDuplicates(rowData, appSysRoles, 'role') },
       {
         title: 'Modified On',
-        field: 'timestamp',
+        field: 'updatedAt',
         editComponent: () => {
           return <div></div>;
         },
@@ -106,7 +106,7 @@ const AppSysRolesTable = () => {
   // Record user and time when an action occurs 
   function recordUpdate(appSysRole: AppSysRoleMT) {
     appSysRole.updatedBy = localStorage.getItem('currentUser') || '';
-    appSysRole.timestamp = new Date().toLocaleString(); 
+    appSysRole.updatedAt = new Date().toLocaleString(); 
   }
   const editable = useMemo(
     () => ({

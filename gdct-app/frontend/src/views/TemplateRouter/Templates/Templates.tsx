@@ -125,7 +125,7 @@ const TemplatesTable = ({ history }: RouterProps) => {
       {
         title: 'Creation Date',
         // type: 'date',
-        field: 'timestamp',
+        field: 'updatedAt',
         // editable: 'onAdd',
         // initialEditValue: new Date(),
       },
@@ -133,7 +133,7 @@ const TemplatesTable = ({ history }: RouterProps) => {
       { title: 'Workflow', field: 'workflowProcessId', lookup: lookupProcesses, editable: 'never' },
       {
         title: 'Modified On',
-        field: 'timestamp',
+        field: 'updatedAt',
         editComponent: (props: any) => {
           return <div></div>;
         },
@@ -174,7 +174,7 @@ const TemplatesTable = ({ history }: RouterProps) => {
           template.updatedBy = localStorage.getItem('currentUser') || '';
           // record new date and time in Modified On column
           const event = new Date();
-          template.timestamp = event.toLocaleString(); 
+          template.updatedAt = event.toLocaleString(); 
           const convertedTemplate = Object.assign({}, template);
           convertedTemplate.templateTypeId = (readIndex && readIndex[template.templateTypeId]) || '';
           dispatch(createTemplateRequest(convertedTemplate, resolve, reject));
@@ -185,7 +185,7 @@ const TemplatesTable = ({ history }: RouterProps) => {
           template.updatedBy = localStorage.getItem('currentUser') || '';
           // record new date and time in Modified On column
           const event = new Date();
-          template.timestamp = event.toLocaleString();
+          template.updatedAt = event.toLocaleString();
           delete template.templateData;
           const convertedTemplate = Object.assign({}, template);
           convertedTemplate.templateTypeId = (readIndex && readIndex[template.templateTypeId]) || '';
@@ -197,7 +197,7 @@ const TemplatesTable = ({ history }: RouterProps) => {
           template.updatedBy = localStorage.getItem('currentUser') || '';
           // record new date and time in Modified On column
           const event = new Date();
-          template.timestamp = event.toLocaleString(); 
+          template.updatedAt = event.toLocaleString(); 
           const convertedTemplate = Object.assign({}, template);
           convertedTemplate.templateTypeId = (readIndex && readIndex[template.templateTypeId]) || '';
           dispatch(deleteTemplateRequest(convertedTemplate._id, resolve, reject));
@@ -208,12 +208,12 @@ const TemplatesTable = ({ history }: RouterProps) => {
 
   // Convert Date format
   templates.forEach(templates => {
-    if (templates.timestamp != null) {
-      const event = new Date(templates.timestamp.toString());
-      templates.timestamp = event.toLocaleString();
+    if (templates.updatedAt != null) {
+      const event = new Date(templates.updatedAt.toString());
+      templates.updatedAt = event.toLocaleString();
     } else {
       const event = new Date('2021-02-16T03:59:32.015Z');
-      templates.timestamp = event.toLocaleString();
+      templates.updatedAt = event.toLocaleString();
     }
   });
 
