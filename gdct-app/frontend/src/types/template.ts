@@ -25,7 +25,7 @@ export interface SheetData{
 };
 
 export interface SheetDataRows{
-  [rowIndex:string]:{cells?:SheetDataCells, height:number},
+  [rowIndex:string]:{cells?:SheetDataCells, height:number, hide?:boolean},
 };
 
 export interface SheetDataConditionalFormatting{
@@ -34,7 +34,7 @@ export interface SheetDataConditionalFormatting{
 }
 
 export interface SheetDataCols{
-  [index:string]:{width: number}
+  [index:string]:{width: number, hide?:boolean}
 }
 
 export interface SheetDataCells{
@@ -44,6 +44,7 @@ export interface SheetDataCells{
 export interface SheetDataCell{
   text?: string,
   style?: number,
+  editable?:boolean
   formulaValue?: number,
 }
 

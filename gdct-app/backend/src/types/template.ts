@@ -31,7 +31,7 @@ export interface SheetData{
 };
 
 export interface SheetDataRows{
-  [index:string]:{cells?:SheetDataCells, hide?:boolean},
+  [index:string]:{cells?:SheetDataCells, height:number, hide?:boolean},
 };
 
 export interface SheetDataConditionalFormatting{
