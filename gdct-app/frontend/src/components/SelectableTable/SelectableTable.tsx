@@ -24,7 +24,7 @@ const CustomListItems = ({ columns, data, selectedKeys, getKey, handleSelect }:
     const [done, setDone] = useState(false);
     const handleClick = useCallback(
       e => {
-        setDone(true);
+        setDone(!done);
         handleSelect(item);
       },
       [handleSelect],

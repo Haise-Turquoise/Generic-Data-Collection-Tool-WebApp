@@ -1,13 +1,10 @@
-import React, { useCallback, useState } from 'react';
-import { shallowEqual, useDispatch, useSelector } from 'react-redux';
+import React, { useCallback, useEffect, useState } from 'react';
 import Typography from '@material-ui/core/Typography';
 import Paper from '@material-ui/core/Paper';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import TransferStatusController from '../../controllers/TransferStatus';
-import { selectFactoryRESTResponseTableValues } from '../../store/common/REST/selectors';
-import { selectTransferStatusStore } from '../../store/TransferStatusStore/selectors';
-import { startTransferRequest, stopTransferRequest } from '../../store/thunks/TransferStatus';
+import TransferStatus from '../../types/transferStatus';
 
 const TransferStatusHeader = () => {
   return (
@@ -18,44 +15,29 @@ const TransferStatusHeader = () => {
 };
 
 const TransferStausPanel = () => {
-  const [readState, writeState] = useState(true);
-  const dispatch = useDispatch();
-  const temp = useSelector(
-    state => ({
-      respond: selectFactoryRESTResponseTableValues(selectTransferStatusStore)(state),
-    }),
-    shallowEqual,
-  );
-  // useEffect(()=>{
-  //   axiosBase.get('/getServiceStatus').then(value=>{
-  //     console.log("run", value)
-  //     if (value.currentActiveProcess){
-  //       console.log('here')
-  //       setTransferState('The service is active with a sync interval of ' + value.interval + ' minutes.')
-  //     }else{
-  //       console.log('here 2')
-  //       setTransferState('The ETL process currently is not running.')
-  //     }
-  //   })
-  // },[])
+  const [transferStatus, setTransferStatus] = useState<string>('');
 
+  useEffect(() => {
+    TransferStatusController.fetchStatus().then((data:{status:TransferStatus}) => {
+      setTransferStatus(String(data.status.interval));
+    });
+  },[]);
+  
   const StartTransfer = useCallback(() => {
     const time = (document.getElementById('interval') as HTMLInputElement).value;
-    console.log(time);
-    dispatch(startTransferRequest(time));
-    writeState(!readState);
+    TransferStatusController.setTransfer(time);
   }, []);
 
   const StopTransfer = useCallback(() => {
-    dispatch(stopTransferRequest());
-    writeState(!readState);
+    TransferStatusController.stopTransfer();
   }, []);
 
   return (
     <div>
       <TransferStatusHeader />
       <Paper className="header">
-        <Typography variant="h6">Please enter the tranfer period you want</Typography>
+        <Typography variant="h6">The current transfer Interval is {transferStatus} minutes</Typography>
+        <Typography variant="h6">Please enter an time interval</Typography>
         <TextField
           id="interval"
           label="Time in minutes"

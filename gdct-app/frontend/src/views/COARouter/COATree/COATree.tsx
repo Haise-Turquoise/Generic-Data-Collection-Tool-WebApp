@@ -23,6 +23,8 @@ import COATreeStore from '../../../store/COATreeStore/store';
 import DialogsStore from '../../../store/DialogsStore/store';
 import CreateAuditLog from '../../AuditLog_Global';
 import sheetNameController from '../../../controllers/sheetName';
+import Swal from 'sweetalert2';
+import COATreesStore from '../../../store/COATreesStore/store';
 
 let Auditlog_Operations: string[] = [];
 
@@ -46,26 +48,37 @@ const COATreeActions = ({ sheetNameId }: { sheetNameId: string }) => {
     dispatch(DialogsStore.actions.OPEN_COA_GROUP_DIALOG());
   }, [dispatch]);
 
-  const handleSave = useCallback(() => {
-    dispatch(updateCOATreesBySheetNameRequest(sheetNameId));
-    (async () => {
-      const sheet = await sheetNameController.fetchById(sheetNameId);
-      // Auditlog (At least one change is made)
-      if (Auditlog_Operations.length > 0) {
-        CreateAuditLog(
-          null,
-          'Update COA Tree',
-          'CategoryTree',
-          sheetNameId,
-          { 0: `Changes happened on Sheet: ${sheet?.name}` },
-          Auditlog_Operations,
-        );
-        Auditlog_Operations = [];
-      }
-    })();
-    // Redirect back
-    history.push('/admin/coa/tree');
-  }, [dispatch]);
+  const handleSave = () => {
+    const res = dispatch(updateCOATreesBySheetNameRequest(sheetNameId));
+    if (!res) {
+      (async () => {
+        const sheet = await sheetNameController.fetchById(sheetNameId);
+
+        // Auditlog (At least one change is made)
+        if (Auditlog_Operations.length > 0) {
+          CreateAuditLog(
+            null,
+            'Update COA Tree',
+            'CategoryTree',
+            sheetNameId,
+            { 0: `Changes happened on Sheet: ${sheet?.name}` },
+            Auditlog_Operations,
+          );
+          Auditlog_Operations = [];
+        }
+      })();
+      // Redirect back
+      history.push('/admin/coa/tree');
+    } else {
+      Swal.fire({
+        title: 'Error saving tree',
+        text: res.toString(),
+        icon: 'error',
+      }).then(_res => {
+        dispatch(COATreesStore.actions.FAIL_REQUEST(null))
+      })
+    }
+  };
 
   return (
     <div className="header__actions">

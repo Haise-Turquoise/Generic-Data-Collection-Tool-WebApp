@@ -13,6 +13,8 @@ export default class TemplateEntity {
   public workflowProcessId: ObjectId;
   public timestamp: Date;
   public updatedBy: string;
+  public createdAt: Date;
+  public updatedAt: Date;
 
   constructor({
     _id,
@@ -25,6 +27,8 @@ export default class TemplateEntity {
     workflowProcessId,
     timestamp,
     updatedBy,
+    createdAt,
+    updatedAt
   }: TemplateDoc) {
     this._id = _id;
     this.name = name;
@@ -36,5 +40,7 @@ export default class TemplateEntity {
     this.workflowProcessId = workflowProcessId;
     this.timestamp = timestamp;
     this.updatedBy = updatedBy;
+    this.createdAt = createdAt;
+    this.updatedAt = updatedAt;
   }
 }

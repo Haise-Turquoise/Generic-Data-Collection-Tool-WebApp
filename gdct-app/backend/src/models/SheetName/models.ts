@@ -14,11 +14,6 @@ const SheetName = new Schema<SheetNameDoc>(
   { minimize: false },
 )
 
-SheetName.pre(/^find/, function (this: Model<SheetNameDoc>, next: (err: CallbackError) => void) {
-  this.find({ isActive: { $ne: false } });
-  next(null);
-});
-
 const SheetNameModel = model<SheetNameDoc>('SheetName', SheetName, 'SheetName');
 
 export default SheetNameModel;
