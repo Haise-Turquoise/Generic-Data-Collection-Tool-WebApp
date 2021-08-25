@@ -7,6 +7,7 @@ export default interface Template {
   updatedBy: string,
   createdAt: string,
   updatedAt: string,
+  expirationDate: string,
   __v?: number,
 };
 

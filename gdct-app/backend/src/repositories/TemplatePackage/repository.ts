@@ -108,7 +108,6 @@ export default class TemplatePackageRepository extends BaseRepository<TemplatePa
     //@ts-ignore
     const result = await TemplatePackageModel.find({ programIds: {$in:programIds}})
     .populate('templateIds', 'templateTypeId')
-    console.log(result[0].templateIds)
     return result;
   }
 

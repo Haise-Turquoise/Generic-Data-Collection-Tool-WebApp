@@ -14,6 +14,7 @@ import {
 import statusController from '../../controllers/status';
 import CreateAuditLog from '../AuditLog_Global';
 import Status from '../../types/status';
+import Checkbox from '@material-ui/core/Checkbox';
 
 interface StatusMT extends Status {
   tableData?: any;
@@ -38,7 +39,7 @@ const StatusesTable = () => {
 
   const preColumns: Column<StatusMT>[] = [{ title: 'Name', field: 'name' }]
   const preStatuses: StatusMT[] = [{
-    name: status,
+    name: 'LOADING...',
     _id: '',
     description: '',
     isActive: true,
@@ -57,8 +58,21 @@ const StatusesTable = () => {
     () => [
       { title: 'Name', field: 'name', validate: rowData => checkDuplicates(rowData, statuses, 'name') },
       { title: 'Description', field: 'description' },
-      { title: 'Active', type: 'boolean', field: 'isActive' },
-      { title: 'For Package', type: 'boolean', field: 'forPackage' },
+      { title: 'Active', type: 'boolean', field: 'isActive', initialEditValue: 'true' },
+      { title: 'For Package', type: 'boolean', field: 'forPackage', initialEditValue: 'false',
+      editComponent: (props) => (
+        <Checkbox
+          checked={props.value === 'true'}
+          onChange={e => {
+            console.log(props.value)
+            if (props.value === 'true'){
+              props.onChange('false')
+            } else {
+              props.onChange('true')
+            }
+          }}
+        />
+      )},
       {
         title: 'Modified On',
         field: 'updatedAt',

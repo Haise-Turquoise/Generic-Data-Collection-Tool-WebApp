@@ -34,10 +34,10 @@ import CallSplitIcon from '@material-ui/icons/CallSplit';
 import InboxIcon from '@material-ui/icons/Inbox';
 import DnsIcon from '@material-ui/icons/Dns';
 import ScatterPlotIcon from '@material-ui/icons/ScatterPlot';
-import EnhancedEncryptionIcon from '@material-ui/icons/EnhancedEncryption';
-import SettingsApplicationsIcon from '@material-ui/icons/SettingsApplications';
 import NatureIcon from '@material-ui/icons/Nature';
 import MultilineChartIcon from '@material-ui/icons/MultilineChart';
+import WifiOffIcon from '@material-ui/icons/WifiOff';
+import QueryBuilderIcon from '@material-ui/icons/QueryBuilder';
 import {SvgIconProps} from '@material-ui/core';
 // Universal Style
 const MenuItemStyle = { fontSize: '1.2rem', marginLeft: '1.2rem' };
@@ -82,6 +82,7 @@ const ItemMap :{[key:string]:React.ReactElement<SvgIconProps>} =  {
   'Template': <TableChartIcon style={MenuItemStyle} />,
   'Template Type': <InboxIcon style={SubMenuItemStyle} />,
   'Template Package': <AllInboxIcon style={SubMenuItemStyle} />,
+  'Offline Tool': <WifiOffIcon style={SubMenuItemStyle} />,
 
   // Admin Organization
   'Organization': <AccountBalance style={MenuItemStyle} />,
@@ -133,6 +134,9 @@ const ItemMap :{[key:string]:React.ReactElement<SvgIconProps>} =  {
 
   // Admin Auditlog
   'AuditLog': <SubjectIcon style={MenuItemStyle} />,
+
+  // Admin ETL
+  'ETL': <QueryBuilderIcon style={MenuItemStyle} />,
 
   // UNKNOWN
   'Download': <CloudDownloadIcon style={MenuItemStyle} />,

@@ -51,6 +51,7 @@ export const middlewares = (app: Express) => {
     })
   );
   
+  // Session Management
   let allowedUrls: (string | undefined)[];
   let isLoggedIn = false;
   app.use('/', async (req: Request, res: Response, next: NextFunction) => {
