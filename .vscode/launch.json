@@ -17,6 +17,20 @@
                 "${workspaceFolder}/**/backend/dist/**/*.js"
             ],
             "envFile": "${workspaceFolder}\\gdct-app\\backend\\.env"
-        }
+        },
+        {
+            "type": "pwa-msedge",
+            "request": "launch",
+            "name": "Debug Frontend (Windows/Edge)",
+            "url": "http://localhost:3003",
+            "webRoot": "${workspaceFolder}\\gdct-app\\frontend",
+        },
+        {
+            "type": "pwa-chrome",
+            "request": "launch",
+            "name": "Debug Frontend (Windows/Chrome)",
+            "url": "http://localhost:3003",
+            "webRoot": "${workspaceFolder}\\gdct-app\\frontend"
+        },
     ]
 }
