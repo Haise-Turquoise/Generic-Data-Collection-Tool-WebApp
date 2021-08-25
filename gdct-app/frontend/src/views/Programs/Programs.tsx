@@ -49,13 +49,12 @@ const ProgramsTable = () => {
       isActive: true,
       updatedAt: '',
       updatedBy: '',
-      timestamp: '',
     },
   ];
 
   // Convert Date format
   programs?.forEach((program: Program) => {
-    program.timestamp = formatTimestamp(program.timestamp);
+    program.updatedAt = formatTimestamp(program.updatedAt);
   });
 
   // Prepare the columns for material table
@@ -69,7 +68,7 @@ const ProgramsTable = () => {
       },
       {
         title: 'Modified On',
-        field: 'timestamp',
+        field: 'updatedAt',
         editComponent: () => {
           return <div></div>;
         },
@@ -93,7 +92,7 @@ const ProgramsTable = () => {
     //get username and record in Modified By column
     program.updatedBy = localStorage.getItem('currentUser') || '';
     //record new date and time in Modified On column
-    program.timestamp = new Date().toLocaleString();
+    program.updatedAt = new Date().toLocaleString();
   }
   // Prepare the editing functionalities for the material table
   const editable = useMemo(

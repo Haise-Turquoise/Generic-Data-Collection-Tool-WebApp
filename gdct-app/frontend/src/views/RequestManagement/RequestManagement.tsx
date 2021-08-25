@@ -52,7 +52,7 @@ const RequestManagementTable = () => {
   // // Convert Date format
   // statuses.forEach(status => {
   //   // will work if this is needer, import formatTimestamp from tools
-  //   status.timestamp = formatTimestamp(status.timestamp)
+  //   status.updatedAt = formatTimestamp(status.updatedAt)
   // });
   let toBeApproved = [];
   if (user && user.toBeApproved) {
@@ -112,7 +112,7 @@ const RequestManagementTable = () => {
   //   //get username and record in Modified By column
   //   status.updatedBy = localStorage.getItem('currentUser');
   //   //record new date and time in Modified On column
-  //   status.timestamp = new Date().toLocaleString();
+  //   status.updatedAt = new Date().toLocaleString();
   // }
   // Prepare the editing functionalities for the material table
 

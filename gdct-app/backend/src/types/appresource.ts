@@ -7,7 +7,7 @@ export default interface AppResource {
   resourceName: string;
   resourcePath: string;
   isProtected: 'TRUE' | 'FALSE' | 'true' | 'false';
-  timestamp: Date;
+  updatedAt: Date;
   updatedBy: string;
 }
 

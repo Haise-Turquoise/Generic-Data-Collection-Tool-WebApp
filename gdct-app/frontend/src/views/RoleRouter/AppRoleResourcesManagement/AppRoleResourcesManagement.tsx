@@ -63,7 +63,7 @@ const AppRoleResourceTable = ({ history }: RouteComponentProps) => {
     _id: '',
     appSysRoleId: { roleId: '', roleName: '' },
     resourceId: [],
-    timestamp: '',
+    updatedAt: '',
     updatedBy: status,
   }]
 
@@ -72,7 +72,7 @@ const AppRoleResourceTable = ({ history }: RouteComponentProps) => {
   }, [appRoleResources])
   // Convert Date format
   appRoleResources?.forEach(appRoleResource => {
-    appRoleResource.timestamp = formatTimestamp(appRoleResource.timestamp);
+    appRoleResource.updatedAt = formatTimestamp(appRoleResource.updatedAt);
   });
   //convert appSysRoleId from object to objectId if necessary
   appRoleResources?.forEach(appRoleResource => {
@@ -97,7 +97,7 @@ const AppRoleResourceTable = ({ history }: RouteComponentProps) => {
       { title: 'Application System Role', field: 'appSysRoleId', lookup: lookupSysRoles, validate: rowData => checkDuplicates(rowData, appRoleResources, 'appSysRoleId') },
       {
         title: 'Modified On',
-        field: 'timestamp',
+        field: 'updatedAt',
         editComponent: () => {
           return <div></div>;
         },
@@ -134,7 +134,7 @@ const AppRoleResourceTable = ({ history }: RouteComponentProps) => {
   // Record user and time when an action occurs 
   function recordUpdate(appRoleResource: AppRoleResourceMT) {
     appRoleResource.updatedBy = localStorage.getItem('currentUser') || '';
-    appRoleResource.timestamp = new Date().toLocaleString(); 
+    appRoleResource.updatedAt = new Date().toLocaleString(); 
   }
   // Prepare the editing functionalities for the material table
   const editable = useMemo(

@@ -4,7 +4,7 @@ export default interface CategoryGroup {
   _id: ObjectId;
   name: string;
   code: string;
-  timestamp: Date;
+  updatedAt: Date;
   updatedBy: string;
   isActive: boolean;
 }

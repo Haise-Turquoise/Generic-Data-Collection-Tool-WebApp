@@ -34,7 +34,7 @@ export default interface User {
   approvedDate: Date;
   startDate: Date;
   endDate: Date;
-  timestamp: Date;
+  updatedAt: Date;
   updatedBy: string;
   organizations:any;
   isApproved:boolean;

@@ -4,7 +4,7 @@ export default interface AppConfig {
   key: string,
   value: string,
   appSys: string,
-  timestamp: Date,
+  updatedAt: Date,
   updatedBy: string,
   isActive: boolean,
 }

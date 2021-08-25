@@ -4,6 +4,6 @@ export default interface SheetName {
   name: string;
   isActive: boolean;
   templateTypeId: string;
-  timestamp: string;
+  updatedAt: string;
   updatedBy: string;
 }

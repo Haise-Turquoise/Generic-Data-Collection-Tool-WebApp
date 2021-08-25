@@ -100,7 +100,7 @@ const AuditLogTable = () => {
     oldValue: {},
     recordId: '',
     user: {_id: '', email: ''},
-    timestamp: '',
+    updatedAt: '',
   }]
 
   // Prepare the table columns for MaterialTable
@@ -108,7 +108,7 @@ const AuditLogTable = () => {
     () => [
       {
         title: 'Time',
-        field: 'timestamp',
+        field: 'updatedAt',
         // Use Datepicker as filter
         filterComponent: props => <CustomDatePicker {...props} />,
         // must have "term" as an input even it is not used
@@ -116,8 +116,8 @@ const AuditLogTable = () => {
           const startDate = document.getElementById("startDatePicker")!.getAttribute("value")
           const endDate = document.getElementById("endDatePicker")!.getAttribute("value")
           return (
-            new Date(rowData.timestamp || '') >= new Date(startDate || '') && 
-            new Date (rowData.timestamp || '') <= new Date(endDate || '')
+            new Date(rowData.updatedAt || '') >= new Date(startDate || '') && 
+            new Date (rowData.updatedAt || '') <= new Date(endDate || '')
           )
         }
       },
@@ -148,7 +148,7 @@ const AuditLogTable = () => {
   // Prepare the data for MaterialTable
   // Convert Auditlogs' time format
   auditlogs?.forEach(auditlog => {
-    auditlog.timestamp = moment(auditlog.timestamp).format("YYYY-MM-DD HH:mm:ss")
+    auditlog.updatedAt = moment(auditlog.updatedAt).format("YYYY-MM-DD HH:mm:ss")
   })
 
   //= =================================================================================================
@@ -160,7 +160,7 @@ const AuditLogTable = () => {
   const handleClickOpen = (rowData: AuditLog) => {
     setOpen(true);
     setDetail(
-      `AT ${rowData.timestamp}
+      `AT ${rowData.updatedAt}
       USER: ${rowData.user.email}
       PERFORMED: ${rowData.activity}
       FOR DOCUMENT: ${rowData.recordId}

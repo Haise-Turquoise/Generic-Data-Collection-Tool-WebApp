@@ -13,7 +13,7 @@ export default interface TemplateType {
   isInputtable: boolean;
   isViewable: boolean;
   isReportable: boolean;
-  timestamp: Date;
+  updatedAt: Date;
   updatedBy: string;
   isActive: boolean;
 }

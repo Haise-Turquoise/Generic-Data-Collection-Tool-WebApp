@@ -97,7 +97,7 @@ const _createWorkflow = (dispatch: Dispatch, getState: () => state): WorkflowDat
   const workflow: Workflow = {
     name: workflowName,
     _id: workflowId || '',
-    timestamp: workflowTimestamp.toString(),
+    updatedAt: workflowTimestamp.toString(),
     updatedBy: workflowUpdatedBy,
     isActive: true,
   };

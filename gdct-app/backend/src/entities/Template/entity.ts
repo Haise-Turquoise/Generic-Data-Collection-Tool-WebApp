@@ -11,7 +11,7 @@ export default class TemplateEntity {
   public creationDate: Date;
   public expirationDate: Date;
   public workflowProcessId: ObjectId;
-  public timestamp: Date;
+  public updatedAt: Date;
   public updatedBy: string;
   public createdAt: Date;
   public updatedAt: Date;
@@ -25,7 +25,7 @@ export default class TemplateEntity {
     creationDate,
     expirationDate,
     workflowProcessId,
-    timestamp,
+    updatedAt,
     updatedBy,
     createdAt,
     updatedAt
@@ -38,7 +38,7 @@ export default class TemplateEntity {
     this.creationDate = creationDate;
     this.expirationDate = expirationDate;
     this.workflowProcessId = workflowProcessId;
-    this.timestamp = timestamp;
+    this.updatedAt = updatedAt;
     this.updatedBy = updatedBy;
     this.createdAt = createdAt;
     this.updatedAt = updatedAt;

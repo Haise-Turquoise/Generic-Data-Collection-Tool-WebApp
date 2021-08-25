@@ -66,7 +66,7 @@ const TemplatePackages = () => {
     statusId: '',
     submissionPeriodId: '',
     templateIds: [],
-    timestamp: '',
+    updatedAt: '',
     updatedBy: '',
   }]
 
@@ -91,7 +91,7 @@ const TemplatePackages = () => {
 
   // Convert Date format
   templatePackages?.forEach(templatePackage => {
-    templatePackage.timestamp = formatTimestamp(templatePackage.timestamp);
+    templatePackage.updatedAt = formatTimestamp(templatePackage.updatedAt);
     templatePackage.creationDate = formatTimestamp(templatePackage.creationDate);
   });
 
@@ -199,7 +199,7 @@ const TemplatePackages = () => {
       },
       {
         title: 'Modified On',
-        field: 'timestamp',
+        field: 'updatedAt',
         editComponent: () => {
           return <div></div>;
         },
@@ -220,7 +220,7 @@ const TemplatePackages = () => {
   // Record user and time when an action occurs 
   function recordUpdate(templatePackage: TemplatePackageMT) {
     templatePackage.updatedBy = localStorage.getItem('currentUser') || '';
-    templatePackage.timestamp = new Date().toLocaleString(); 
+    templatePackage.updatedAt = new Date().toLocaleString(); 
   }
   // Prepare the editing functionalities for the material table
   const editable = useMemo(

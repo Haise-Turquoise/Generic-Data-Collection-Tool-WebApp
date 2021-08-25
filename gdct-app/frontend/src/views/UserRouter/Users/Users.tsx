@@ -52,7 +52,7 @@ const UsersTable = () => {
     password: '',
     phoneNumber: '',
     sysRole: [],
-    timestamp: '',
+    updatedAt: '',
     title: '',
     username: status,
   }]
@@ -114,7 +114,7 @@ const UsersTable = () => {
 
   // Convert Date format
   users?.forEach(user => {
-    user.timestamp = formatTimestamp(user.timestamp)
+    user.updatedAt = formatTimestamp(user.updatedAt || '')
   });
 
   // Prepare the columns for material table
@@ -128,7 +128,7 @@ const UsersTable = () => {
       { title: 'Active', type: 'boolean', field: 'isActive' },
       {
         title: 'Modified On',
-        field: 'timestamp',
+        field: 'updatedAt',
         editComponent: () => {
           return <div></div>;
         },
@@ -161,7 +161,7 @@ const UsersTable = () => {
   // Record username and time when an action occurs 
   function recordUpdate(user: User) {
     user.updatedBy = localStorage.getItem('currentUser') || '';
-    user.timestamp = new Date().toLocaleString(); 
+    user.updatedAt = new Date().toLocaleString(); 
   }
   // Prepare the editing functionalities for the material table
   const editable = useMemo(
