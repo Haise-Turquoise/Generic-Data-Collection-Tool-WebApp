@@ -38,6 +38,8 @@ import NatureIcon from '@material-ui/icons/Nature';
 import MultilineChartIcon from '@material-ui/icons/MultilineChart';
 import WifiOffIcon from '@material-ui/icons/WifiOff';
 import QueryBuilderIcon from '@material-ui/icons/QueryBuilder';
+import LockIcon from '@material-ui/icons/Lock';
+import PermIdentityIcon from '@material-ui/icons/PermIdentity';
 import {SvgIconProps} from '@material-ui/core';
 // Universal Style
 const MenuItemStyle = { fontSize: '1.2rem', marginLeft: '1.2rem' };
@@ -54,6 +56,8 @@ const ItemMap :{[key:string]:React.ReactElement<SvgIconProps>} =  {
   // Main Menu User
   'User': <AccountCircleIcon />,
   'Profile': <AccountCircleIcon style={MenuItemStyle} />,
+  'Submission Permissions': <LockIcon style={SubMenuItemStyle} />,
+  'Personal Details': <PermIdentityIcon style={SubMenuItemStyle} />,
   'Request Management': <AccountCircleIcon style={MenuItemStyle} />,
   'Logout': <ExitToAppIcon style={MenuItemStyle} />,
 
