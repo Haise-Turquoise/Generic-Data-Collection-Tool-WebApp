@@ -6,7 +6,7 @@ import AppSysRole from "./appsysrole";
 export default interface AppRoleResource {
   appResourceId: AppResource,
   appSysRoleId: {roleId: ObjectId, roleName: string},
-  timestamp: Date,
+  updatedAt: Date,
   resourceId: {id: AppResource["_id"], resourceName: AppResource["resourceName"]}[]
   updatedBy: string,
 }

@@ -6,7 +6,7 @@ export default interface CategoryTree {
   // sometimes get group instead of string
   categoryGroupId: string | CategoryGroup,
   sheetNameId: string,
-  timestamp?: string,
+  updatedAt?: string,
   updatedBy?: string,
   parentId?: string,
   __v?: number,

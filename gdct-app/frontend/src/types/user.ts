@@ -106,7 +106,6 @@ export default interface User {
   approvedDate: string,
   creationDate: string,
   isEmailVerified: boolean,
-  timestamp: string,
   updatedBy?: string,
   AppConfig?: string[],
   password: string,

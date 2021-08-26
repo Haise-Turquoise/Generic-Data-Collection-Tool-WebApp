@@ -91,7 +91,7 @@ const handleInputSysRole = (rowData: rowData, sysRole: UserSysRole[]) => {
     appSysRoleId: rowData.appSysRoleId,
     org: [],
     isActive: true,
-    timestamp: (new Date()).toString(),
+    updatedAt: (new Date()).toString(),
   };
   if (sysRole.length > 0) {
     let sameAppSysAndRole = false;

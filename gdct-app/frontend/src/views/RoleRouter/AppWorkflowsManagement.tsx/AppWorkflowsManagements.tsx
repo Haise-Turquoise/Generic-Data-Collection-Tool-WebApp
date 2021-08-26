@@ -62,7 +62,7 @@ const AppRoleWorkflowTable = ({ history }: RouteComponentProps) => {
     code: '',
     name: '',
     isActive: false,
-    timestamp: '',
+    updatedAt: '',
     updatedBy: status,
     modifiedOn: '',
   }]

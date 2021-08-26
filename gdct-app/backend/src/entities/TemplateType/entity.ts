@@ -14,7 +14,7 @@ export default class TemplateTypeEntity {
   public isInputtable: boolean;
   public isViewable: boolean;
   public isReportable: boolean;
-  public timestamp: Date;
+  public updatedAt: Date;
   public updatedBy: string;
   public isActive: boolean;
 
@@ -31,7 +31,7 @@ export default class TemplateTypeEntity {
     isInputtable,
     isViewable,
     isReportable,
-    timestamp,
+    updatedAt,
     updatedBy,
     isActive,
   }: TemplateTypeDoc) {
@@ -47,7 +47,7 @@ export default class TemplateTypeEntity {
     this.isInputtable = isInputtable;
     this.isViewable = isViewable;
     this.isReportable = isReportable;
-    this.timestamp = timestamp;
+    this.updatedAt = updatedAt;
     this.updatedBy = updatedBy;
     this.isActive = isActive;
   }

@@ -205,7 +205,7 @@ export interface WorkflowState {
   name: string,
   error: string | null,
   _id: string | null,
-  timestamp: Date,
+  updatedAt: Date,
   updatedBy: string,
 }
 

@@ -30,7 +30,7 @@ export default class TemplateTypeRepository extends BaseRepository<TemplateType,
     isViewable,
     isReportable,
     isActive,
-    timestamp,
+    updatedAt,
     updatedBy,
   }: TemplateType) {
     return this.programRepository
@@ -49,7 +49,7 @@ export default class TemplateTypeRepository extends BaseRepository<TemplateType,
           isViewable,
           isReportable,
           isActive,
-          timestamp,
+          updatedAt,
           updatedBy,
         }),
       )

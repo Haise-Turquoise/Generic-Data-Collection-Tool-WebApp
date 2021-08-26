@@ -7,7 +7,7 @@ export default interface ReportingPeriod {
   application: string;
   code: string;
   submissionClosed: boolean;
-  timestamp: Date;
+  updatedAt: Date;
   updatedBy: string;
 }
 

@@ -3,7 +3,7 @@ import CategoryTree from "./categorytree";
 export default interface DetectEmptyTree {
   _id: string,
   name: string,
-  timestamp?: string,
+  updatedAt?: string,
   updatedBy?: string,
   value: CategoryTree[]
 }

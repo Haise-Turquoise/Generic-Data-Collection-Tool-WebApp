@@ -177,7 +177,7 @@ const TemplatesTable = ({ history }: RouterProps) => {
           template.updatedBy = localStorage.getItem('currentUser') || '';
           // record new date and time in Modified On column
           const event = new Date();
-          template.timestamp = event.toLocaleString(); 
+          template.updatedAt = event.toLocaleString(); 
           const convertedTemplate = Object.assign({}, template);
           convertedTemplate.templateTypeId = (readIndex && readIndex[template.templateTypeId]) || '';
           dispatch(createTemplateRequest(convertedTemplate, resolve, reject));
@@ -188,7 +188,7 @@ const TemplatesTable = ({ history }: RouterProps) => {
           template.updatedBy = localStorage.getItem('currentUser') || '';
           // record new date and time in Modified On column
           const event = new Date();
-          template.timestamp = event.toLocaleString();
+          template.updatedAt = event.toLocaleString();
           delete template.templateData;
           const convertedTemplate = Object.assign({}, template);
           convertedTemplate.templateTypeId = (readIndex && readIndex[template.templateTypeId]) || '';
@@ -200,7 +200,7 @@ const TemplatesTable = ({ history }: RouterProps) => {
           template.updatedBy = localStorage.getItem('currentUser') || '';
           // record new date and time in Modified On column
           const event = new Date();
-          template.timestamp = event.toLocaleString(); 
+          template.updatedAt = event.toLocaleString(); 
           const convertedTemplate = Object.assign({}, template);
           convertedTemplate.templateTypeId = (readIndex && readIndex[template.templateTypeId]) || '';
           dispatch(deleteTemplateRequest(convertedTemplate._id, resolve, reject));

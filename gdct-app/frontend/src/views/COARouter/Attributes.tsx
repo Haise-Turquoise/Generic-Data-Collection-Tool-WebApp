@@ -86,12 +86,12 @@ const ColumnNamesTable = () => {
     name: status,
     _id: '',
     id: '',
-    timestamp: '',
+    updatedAt: '',
   }]
 
   // Convert Date format
   columnNames?.forEach((columnName: Attribute) => {
-    columnName.timestamp = formatTimestamp(columnName.timestamp);
+    columnName.updatedAt = formatTimestamp(columnName.updatedAt);
   });
 
   // Prepare the columns for material table
@@ -103,7 +103,7 @@ const ColumnNamesTable = () => {
       { title: 'Active', type: 'boolean', field: 'isActive' },
       {
         title: 'Modified On',
-        field: 'timestamp',
+        field: 'updatedAt',
         editComponent: () => {
           return <div></div>;
         },
@@ -134,7 +134,7 @@ const ColumnNamesTable = () => {
   // Record user and time when an action occurs 
   function recordUpdate(columnName: Attribute) {
     columnName.updatedBy = localStorage.getItem('currentUser') || '';
-    columnName.timestamp = new Date().toLocaleString(); 
+    columnName.updatedAt = new Date().toLocaleString(); 
   }
   const editable = useMemo(
     () => ({

@@ -3,7 +3,6 @@ export default interface Program {
   code: string;
   isActive: boolean;
   name: string;
-  timestamp: string;
   updatedAt: string;
   updatedBy: string;
 }

@@ -109,7 +109,7 @@ const processData = async (file: File, cb: (allData: AllDataType) => void) => {
             categoryIds[groupName] = [];
           }
           if (name.split(' ')[0].toLowerCase() !== 'total') {
-            categoryIds[groupName].push({ id: id.toString(), name, unitOfMeasure, COA: "", timestamp: (new Date()).toString() });
+            categoryIds[groupName].push({ id: id.toString(), name, unitOfMeasure, COA: "", updatedAt: (new Date()).toString() });
           }
         }
       });
@@ -157,7 +157,7 @@ const buildObjects = async (data: AllDataType) => {
       if (!foundGroup) {
         foundGroup = await COAGroupController.create({
           name: ctgGroup,
-          timestamp: (new Date()).toString(),
+          updatedAt: (new Date()).toString(),
           updatedBy: localStorage.getItem('currentUser') || '',
         });
       }

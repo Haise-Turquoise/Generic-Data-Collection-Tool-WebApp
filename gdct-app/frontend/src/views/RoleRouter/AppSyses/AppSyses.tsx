@@ -43,12 +43,12 @@ const AppSysesTable = () => {
     _id: '',
     code: '',
     isActive: false,
-    timestamp: '',
+    updatedAt: '',
   }]
 
   // Convert Date format
   appSyses?.forEach(appSys => {
-    appSys.timestamp = formatTimestamp(appSys.timestamp);
+    appSys.updatedAt = formatTimestamp(appSys.updatedAt);
   });
 
   const columns: Column<AppSysMT>[] = useMemo(
@@ -57,7 +57,7 @@ const AppSysesTable = () => {
       { title: 'Name', field: 'name', validate: rowData => checkDuplicates(rowData, appSyses, 'name') },
       {
         title: 'Modified On',
-        field: 'timestamp',
+        field: 'updatedAt',
         editComponent: () => {
           return <div></div>;
         },
@@ -80,7 +80,7 @@ const AppSysesTable = () => {
     //get username and record in Modified By column
     appSys.updatedBy = localStorage.getItem('currentUser') || '';
     //record new date and time in Modified On column 
-    appSys.timestamp = new Date().toLocaleString(); 
+    appSys.updatedAt = new Date().toLocaleString(); 
   }
   // Prepare the editing functionalities for the material table
   const editable = useMemo(

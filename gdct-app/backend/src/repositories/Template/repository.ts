@@ -37,7 +37,7 @@ export default class TemplateRepository extends BaseRepository<Template, Templat
     workflowProcessId,
     googleSheetId,
     updatedBy,
-    timestamp,
+    updatedAt,
   }: Template) {
     return this.templateTypeRepository
       .validate(templateTypeId || [])
@@ -52,7 +52,7 @@ export default class TemplateRepository extends BaseRepository<Template, Templat
           workflowProcessId,
           googleSheetId,
           updatedBy,
-          timestamp,
+          updatedAt,
         }),
       ).then(template => new TemplateEntity(template));
   }
@@ -68,7 +68,7 @@ export default class TemplateRepository extends BaseRepository<Template, Templat
       expirationDate,
       workflowProcessId,
       updatedBy,
-      timestamp,
+      updatedAt,
     }: Partial<Template>,
   ) {
     const formattedTemplate: Partial<Template> = {
@@ -79,7 +79,7 @@ export default class TemplateRepository extends BaseRepository<Template, Templat
       expirationDate,
       workflowProcessId,
       updatedBy,
-      timestamp,
+      updatedAt,
     };
 
     if (templateData) formattedTemplate.templateData = templateData;

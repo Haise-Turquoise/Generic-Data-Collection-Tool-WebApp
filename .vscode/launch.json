@@ -1,0 +1,36 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "pwa-node",
+            "request": "launch",
+            "name": "Debug Backend",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "program": "${workspaceFolder}\\gdct-app\\backend\\src\\index.ts",
+            "preLaunchTask": "tsc: build - gdct-app/backend/tsconfig.json",
+            "outFiles": [
+                "${workspaceFolder}/**/backend/dist/**/*.js"
+            ],
+            "envFile": "${workspaceFolder}\\gdct-app\\backend\\.env"
+        },
+        {
+            "type": "pwa-msedge",
+            "request": "launch",
+            "name": "Debug Frontend (Windows/Edge)",
+            "url": "http://localhost:3003",
+            "webRoot": "${workspaceFolder}\\gdct-app\\frontend",
+        },
+        {
+            "type": "pwa-chrome",
+            "request": "launch",
+            "name": "Debug Frontend (Windows/Chrome)",
+            "url": "http://localhost:3003",
+            "webRoot": "${workspaceFolder}\\gdct-app\\frontend"
+        },
+    ]
+}

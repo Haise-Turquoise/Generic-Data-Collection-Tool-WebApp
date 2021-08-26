@@ -70,14 +70,14 @@ const AppConfigsTable = () => {
       key: '',
       appSys: '',
       sys: '',
-      timestamp: '',
+      updatedAt: '',
       updatedBy: '',
     },
   ];
 
   // Convert Date format
   appConfigs?.forEach((appConfig: AppConfig) => {
-    appConfig.timestamp = formatTimestamp(appConfig.timestamp)
+    appConfig.updatedAt = formatTimestamp(appConfig.updatedAt)
   });
   // Assign code as name
   const lookupSysRoles = appSyses?.reduce(function (acc: {[key:string]: string}, appSys: AppSys) {
@@ -93,7 +93,7 @@ const AppConfigsTable = () => {
       { title: 'System', field: 'appSys', lookup: lookupSysRoles },
       {
         title: 'Modified On',
-        field: 'timestamp',
+        field: 'updatedAt',
         editComponent: () => {
           return <div></div>;
         },
@@ -125,7 +125,7 @@ const AppConfigsTable = () => {
     //get username and record in Modified By column
     appConfig.updatedBy = localStorage.getItem('currentUser') || '';
     //record new date and time in Modified On column
-    appConfig.timestamp = new Date().toLocaleString();
+    appConfig.updatedAt = new Date().toLocaleString();
   }
   // Prepare the editing functionalities for the material table
   const editable = useMemo(
