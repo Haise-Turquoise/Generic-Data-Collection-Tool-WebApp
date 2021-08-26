@@ -10,7 +10,7 @@ export default class TemplatePackageEntity {
   public creationDate: Date;
   public userCreatorId: ObjectId;
   public programIds: ObjectId[];
-  public timestamp: Date;
+  public updatedAt: Date;
   public updatedBy: string;
 
   constructor({
@@ -22,7 +22,7 @@ export default class TemplatePackageEntity {
     creationDate,
     userCreatorId,
     programIds,
-    timestamp,
+    updatedAt,
     updatedBy,
   }: TemplatePackageDoc) {
     this._id = _id;
@@ -33,7 +33,7 @@ export default class TemplatePackageEntity {
     this.creationDate = creationDate;
     this.userCreatorId = userCreatorId;
     this.programIds = programIds;
-    this.timestamp = timestamp;
+    this.updatedAt = updatedAt;
     this.updatedBy = updatedBy;
   }
 }

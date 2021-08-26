@@ -21,7 +21,7 @@ export default interface Organization {
   programId: ObjectId[],
   effectiveDate: Date,
   expiryDate: Date,
-  timestamp: Date,
+  updatedAt: Date,
   updatedBy: string,
 }
 

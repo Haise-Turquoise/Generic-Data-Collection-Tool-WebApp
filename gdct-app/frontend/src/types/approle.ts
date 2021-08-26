@@ -4,5 +4,5 @@ export default interface AppRole {
   name: string,
   isActive: boolean,
   updatedBy: string,
-  timestamp: string,
+  updatedAt: string,
 }

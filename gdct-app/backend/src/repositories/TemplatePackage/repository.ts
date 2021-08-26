@@ -43,7 +43,7 @@ export default class TemplatePackageRepository extends BaseRepository<TemplatePa
     userCreatorId,
     programIds,
     updatedBy,
-    timestamp,
+    updatedAt,
   }: TemplatePackage) {
     return this.submissionPeriodRepository
       .validate(submissionPeriodId)
@@ -59,7 +59,7 @@ export default class TemplatePackageRepository extends BaseRepository<TemplatePa
           userCreatorId,
           programIds,
           updatedBy,
-          timestamp,
+          updatedAt,
         }),
       )
       .then(templatePackage => new TemplatePackageEntity(templatePackage));
@@ -67,7 +67,7 @@ export default class TemplatePackageRepository extends BaseRepository<TemplatePa
 
   async update(
     id: string,
-    { name, submissionPeriodId, templateIds, statusId, creationDate, userCreatorId, programIds, updatedBy, timestamp, }: Partial<TemplatePackage>,
+    { name, submissionPeriodId, templateIds, statusId, creationDate, userCreatorId, programIds, updatedBy, updatedAt, }: Partial<TemplatePackage>,
     isPopulated?: boolean,
   ) {
     // console.log('programIds', programIds)
@@ -91,7 +91,7 @@ export default class TemplatePackageRepository extends BaseRepository<TemplatePa
             userCreatorId,
             programIds,
             updatedBy,
-            timestamp,
+            updatedAt,
           },
           { upsert: true, new: true },
         ).populate(isPopulated ? populatedParams : ''),

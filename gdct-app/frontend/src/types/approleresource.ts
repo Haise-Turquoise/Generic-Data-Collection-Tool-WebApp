@@ -4,6 +4,6 @@ export default interface AppRoleResource {
   // conflicting info for this one - needs to be fixed
   appSysRoleId: { roleId: string, roleName: string } | string,
   updatedBy: string,
-  timestamp: string,
+  updatedAt: string,
   __v?: number,
 }

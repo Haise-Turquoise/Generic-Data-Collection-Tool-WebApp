@@ -20,14 +20,14 @@ const selectSelectedNodeCOAIds = createSelector([selectSelectedNodeContent], sel
   selectedNodeContent ? selectedNodeContent.categoryId : [],
 );
 
-// const selectSelectedTimestamp = createSelector(
+// const selectSelectedupdatedAt = createSelector(
 //   [selectCOATreeStore],
 //   COATreeStore => COATreeStore.selectedNodeProps,
 // );
 
-// export const selectCOATreeTimestamp = createSelector(
+// export const selectCOATreeupdatedAt = createSelector(
 //   [selectCOATreeStore],
-//   COATreeStore => COATreeStore.timestamp,
+//   COATreeStore => COATreeStore.updatedAt,
 // );
 
 export const selectSelectedCOAIdsMap = createSelector([selectSelectedNodeCOAIds], categoryId => {

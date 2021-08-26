@@ -5,6 +5,6 @@ export default interface AppConfig {
   appSys: string;
   sys: string;
   isActive?: boolean;
-  timestamp: string;
+  updatedAt: string;
   updatedBy: string;
 }

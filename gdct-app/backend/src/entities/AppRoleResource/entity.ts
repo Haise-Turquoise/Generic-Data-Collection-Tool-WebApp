@@ -5,14 +5,14 @@ export default class AppRoleResourceEntity {
   public _id: ObjectId;
   public appSysRoleId: AppRoleResourceDoc["appSysRoleId"];
   public resourceId: AppRoleResourceDoc["resourceId"];
-  public timestamp: Date;
+  public updatedAt: Date;
   public updatedBy: string;
 
-  constructor({ _id, appSysRoleId, resourceId, timestamp, updatedBy }: AppRoleResourceDoc) {
+  constructor({ _id, appSysRoleId, resourceId, updatedAt, updatedBy }: AppRoleResourceDoc) {
     this._id = _id;
     this.appSysRoleId = appSysRoleId;
     this.resourceId = resourceId;
-    this.timestamp = timestamp;
+    this.updatedAt = updatedAt;
     this.updatedBy = updatedBy;
   }
 }

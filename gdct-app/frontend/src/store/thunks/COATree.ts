@@ -41,7 +41,7 @@ interface NormalizedTree {
   categoryGroupId: string | CategoryGroup;
   sheetNameId: string;
   content: undefined;
-  timestamp?: string;
+  updatedAt?: string;
   updatedBy?: string;
 }
 
@@ -239,10 +239,10 @@ export const updateCOATreesBySheetNameRequest = (sheetNameId: string) => (
   dispatch(COATreesStore.actions.REQUEST(''));
 
   const normalizedTrees = normalizeTrees(treeCopy);
-  // add timestamp and updatedBy attributes to normalizedTree obj
+  // add updatedAt and updatedBy attributes to normalizedTree obj
   normalizedTrees.forEach(normalizedTree => {
     //TODO please test
-    normalizedTree.timestamp = new Date().toString();
+    normalizedTree.updatedAt = new Date().toString();
     normalizedTree.updatedBy = localStorage.getItem('currentUser') || undefined;
   });
   COATreeController.updateBySheetName(normalizedTrees, sheetNameId)

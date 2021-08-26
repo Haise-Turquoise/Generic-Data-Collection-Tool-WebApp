@@ -38,7 +38,7 @@ const AppResourceList = ({ resourceId, isEditable = true, onClickAdd, onClickDel
     isProtected: '',
     resourceName: status,
     resourcePath: '',
-    timestamp: '',
+    updatedAt: '',
     updatedBy: '',
   }]
   const preNonOrgProgs: AppResource[] = [{
@@ -47,7 +47,7 @@ const AppResourceList = ({ resourceId, isEditable = true, onClickAdd, onClickDel
     isProtected: '',
     resourceName: status,
     resourcePath: '',
-    timestamp: '',
+    updatedAt: '',
     updatedBy: '',
   }]
   
@@ -65,7 +65,7 @@ const AppResourceList = ({ resourceId, isEditable = true, onClickAdd, onClickDel
     [
       { title: 'ResourceName', field: 'resourceName', defaultSort: 'asc' },
       { title: 'ResourcePath', field: 'resourcePath' },
-      //   { title: 'TimeStamp', field: 'timestamp' },
+      //   { title: 'TimeStamp', field: 'updatedAt' },
       //   { title: 'UpdatedBy', field: 'updatedBy' },
     ],
     [],

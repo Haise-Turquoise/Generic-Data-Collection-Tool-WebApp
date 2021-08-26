@@ -19,7 +19,7 @@ export const initialWorkflowState: WorkflowState = {
   name: '',
   error: null,
   _id: null,
-  timestamp: new Date(),
+  updatedAt: new Date(),
   updatedBy: localStorage.getItem('currentUser') || '',
 };
 
@@ -47,8 +47,8 @@ const UPDATE_WORKFLOW_ERROR = (state: WorkflowState, action: { payload: Workflow
   return state;
 };
 
-const UPDATE_WORKFLOW_TIMESTAMP = (state: WorkflowState, action: { payload: WorkflowState["timestamp"] }) => {
-  state.timestamp = action.payload;
+const UPDATE_WORKFLOW_TIMESTAMP = (state: WorkflowState, action: { payload: WorkflowState["updatedAt"] }) => {
+  state.updatedAt = action.payload;
   return state;
 };
 

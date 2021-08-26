@@ -16,7 +16,7 @@ export default class UsersEntity {
   public creationDate: Date;
   public approvedDate: Date;
   public ext: string;
-  public timestamp: Date;
+  public updatedAt: Date;
   public updatedBy: string;
   public pendingPermissions: any[];
 
@@ -34,7 +34,7 @@ export default class UsersEntity {
     creationDate,
     approvedDate,
     ext,
-    timestamp,
+    updatedAt,
     updatedBy,
     pendingPermissions,
     toBeApproved,
@@ -52,7 +52,7 @@ export default class UsersEntity {
     this.creationDate = creationDate;
     this.approvedDate = approvedDate;
     this.ext = ext;
-    this.timestamp = timestamp;
+    this.updatedAt = updatedAt;
     this.updatedBy = updatedBy;
     this.pendingPermissions = pendingPermissions;
     this.toBeApproved = toBeApproved;
