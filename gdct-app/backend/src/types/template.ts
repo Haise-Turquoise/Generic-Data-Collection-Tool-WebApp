@@ -10,7 +10,6 @@ export default interface Template {
   userCreatorId: ObjectId;
   creationDate: Date;
   createdAt: Date;
-  updatedAt: Date;
   expirationDate: Date;
   statusId: ObjectId;
   googleSheetId: ObjectId;
@@ -31,7 +30,7 @@ export interface SheetData{
 };
 
 export interface SheetDataRows{
-  [index:string]:{cells?:SheetDataCells, hide?:boolean},
+  [index:string]:{cells?:SheetDataCells, height:number, hide?:boolean},
 };
 
 export interface SheetDataConditionalFormatting{
