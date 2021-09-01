@@ -14,7 +14,6 @@ export default class TemplateEntity {
   public updatedAt: Date;
   public updatedBy: string;
   public createdAt: Date;
-  public updatedAt: Date;
 
   constructor({
     _id,
@@ -28,7 +27,6 @@ export default class TemplateEntity {
     updatedAt,
     updatedBy,
     createdAt,
-    updatedAt
   }: TemplateDoc) {
     this._id = _id;
     this.name = name;
@@ -41,6 +39,5 @@ export default class TemplateEntity {
     this.updatedAt = updatedAt;
     this.updatedBy = updatedBy;
     this.createdAt = createdAt;
-    this.updatedAt = updatedAt;
   }
 }
