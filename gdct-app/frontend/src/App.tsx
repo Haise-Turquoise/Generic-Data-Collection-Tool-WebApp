@@ -35,6 +35,8 @@ import { ROUTE_WORKFLOW, ROUTE_TEMPLATE_PCKGS, ROUTE_CATEGORY } from './constant
 import './App.scss';
 // import './i18n';
 
+//here are some comments
+
 const PrivateRouter = ({ setLoggedIn }: {setLoggedIn: (value: boolean) => void}) => {
   return (
     <Switch>
