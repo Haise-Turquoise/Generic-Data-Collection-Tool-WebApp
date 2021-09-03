@@ -34,7 +34,7 @@ export default class ProgramRepository extends BaseRepository<Program, ProgramDo
   }
 
   async find(query: Partial<Program>) {
-    const realQuery: FilterQuery<ProgramDoc> = { isActive: false };
+    const realQuery: FilterQuery<ProgramDoc> = {};
 
     let key: keyof Program
     for (key in query) {
@@ -44,7 +44,7 @@ export default class ProgramRepository extends BaseRepository<Program, ProgramDo
   }
 
   async findByIds(ids: string[]) {
-    return ProgramModel.find({ _id: { $in: ids }, isActive: false });
+    return ProgramModel.find({ _id: { $in: ids }, isActive: true });
   }
 
   async findById(id: string) {

@@ -18,7 +18,7 @@ function FilesHeader() {
   return (
     <div>
       <Typography variant='h4'>Offline Tool:</Typography>
-      <Button download="GT5.xlam" href={path.join(__dirname, '../../../public/GT5.xlam')} color="primary" variant="contained">Download</Button>
+      <Button download="GT.xlam" href={path.join(__dirname, '../../../public/GT.xlam')} color="primary" variant="contained">Download</Button>
     </div>
   )
 }
