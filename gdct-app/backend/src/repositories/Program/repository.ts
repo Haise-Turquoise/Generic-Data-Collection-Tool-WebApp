@@ -34,7 +34,7 @@ export default class ProgramRepository extends BaseRepository<Program, ProgramDo
   }
 
   async find(query: Partial<Program>) {
-    const realQuery: FilterQuery<ProgramDoc> = { isActive: true };
+    const realQuery: FilterQuery<ProgramDoc> = {};
 
     let key: keyof Program
     for (key in query) {
