@@ -905,7 +905,7 @@ export const deleteUserPermission = (userPermission: userPermission) => (dispatc
   dispatch(userRegistrationStore.actions.setUserPermissionList(userPermissionsCopy));
 };
 
-export const submit = () => (getState: () => state) => {
+export const submit = () => (_dispatch: Dispatch, getState: () => state) => {
   const {
     // @ts-ignore
     UserRegistrationStore: { registrationData, userPermissions, userAppSys },
