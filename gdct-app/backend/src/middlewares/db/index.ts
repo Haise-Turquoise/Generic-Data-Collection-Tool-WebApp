@@ -23,7 +23,7 @@ export default class Database {
   initializeMongoose() {
     log.info(logTag, 'Connecting...');
 
-    mongoose.connect(process.env.DATABASE_TEST_KEY!, {
+    mongoose.connect(process.env.DATABASE_KEY!, {
       useNewUrlParser: true,
       useCreateIndex: true,
       useFindAndModify: false,
