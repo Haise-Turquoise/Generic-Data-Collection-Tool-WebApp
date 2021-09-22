@@ -16,6 +16,9 @@ export default function Logout({ setLoggedIn }: { setLoggedIn: (val: boolean) =>
         // Audit Logout
         CreateAuditLog(email, 'Logout', 'Logout', null, {}, {});
         // Set Status
+        localStorage.removeItem('currentUser')
+        localStorage.removeItem('currentRole')
+        localStorage.removeItem('currentUserID')
         setLoggedIn(false);
         history.push('/');
       }
