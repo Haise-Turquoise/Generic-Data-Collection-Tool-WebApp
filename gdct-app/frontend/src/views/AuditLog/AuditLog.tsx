@@ -14,6 +14,8 @@ import AuditLogController from '../../controllers/AuditLog'
 import AuditLog from '../../types/auditlog';
 import { fetchWithStatus } from '../../tools/misc';
 
+
+
 // Title Text
 const AuditLogHeader = () => {
   return (
@@ -83,6 +85,8 @@ const CustomDatePicker = (props: {
 
 // Table contents
 const AuditLogTable = () => {
+  
+  const [readRowNum, setRowNum] = useState(1);
   const [auditlogs, setAuditLogs] = useState<AuditLog[] | undefined>(undefined)
   const [status, setStatus] = useState<'LOADING...' | 'NOT ALLOWED'>('LOADING...')
 
@@ -130,21 +134,6 @@ const AuditLogTable = () => {
 
   //= =================================================================================================
 
-  // Prepare the options for MaterialTable
-  const options: Options<AuditLog> = useMemo(
-    () => (
-      {
-        actionsColumnIndex: -1,
-        search: false,
-        showTitle: false,
-        filtering: true
-      }
-    ), 
-    []
-  );
-
-  //= =================================================================================================
-
   // Prepare the data for MaterialTable
   // Convert Auditlogs' time format
   auditlogs?.forEach(auditlog => {
@@ -152,6 +141,27 @@ const AuditLogTable = () => {
   })
 
   //= =================================================================================================
+  
+  // Prepare the options for MaterialTable
+
+  const auditlogOptions = (itemCount:number) => {
+    let length = itemCount;
+    if(length > 100) length = 100;
+    return {
+      actionsColumnIndex: -1,
+      search: false,
+      showTitle: false,
+      filtering: true,
+      maxBodyHeight: '400px',
+      pageSizeOptions: [10, 25, 50, 100, { value: itemCount, label: 'All' }],
+      pageSize: length,
+    } as Options<any>;
+  };
+  
+  const options = useMemo(() => auditlogOptions(readRowNum), [readRowNum]);
+
+  //= =================================================================================================
+
 
   // Prepare the action for the MaterialTable
   const [open, setOpen] = React.useState(false);
@@ -185,11 +195,15 @@ const AuditLogTable = () => {
       }
     }
   ]
+  useEffect(() => { 
+    setRowNum(auditlogs?.length || 0)
+  }, [auditlogs]);
 
   //==================================================================================================
 
   return <Fragment>
-            <MaterialTable 
+            <MaterialTable
+              key={readRowNum}
               columns={!!auditlogs ? columns : preColumns} 
               data={!!auditlogs ? auditlogs : preLogs} 
               options={options} 
