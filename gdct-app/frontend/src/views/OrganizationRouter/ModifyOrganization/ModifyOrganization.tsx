@@ -24,6 +24,9 @@ import Program from '../../../types/program';
 
 import Swal from 'sweetalert2'
 
+import { Formik } from 'formik';
+import * as yup from 'yup';
+
 type genObject = { [key: string]: any };
 
 interface MOProps {
@@ -32,6 +35,7 @@ interface MOProps {
 
 interface MOState {
   id: number;
+  error_id: boolean;
   takenIds: number[];
   error: string;
   [key: string]: any;
@@ -104,18 +108,44 @@ interface TextGroupProps extends InputProps {
   fullWidth?: boolean;
 }
 
-const Input = ({ object, attribute, text, handleChanges, type, cannotEdit }: InputProps) => (
-  <TextField
-    name={attribute}
-    type={type}
-    placeholder={`Enter ${text}`}
-    {...getValue(object, attribute)}
-    variant="outlined"
-    onChange={handleChanges}
-    fullWidth={true}
-    disabled={!object.active || cannotEdit}
-  />
-);
+
+//Added validation scheme in here, and is extendable to the other form fields as well
+//first, it is checked in componentDidUpdate, 
+//then the necessary fields (error_item and object.item) are properly set in componentDidUpdate
+//
+const Input = ({ object, attribute, text, handleChanges, type, cannotEdit }: InputProps) => {
+  let errorSignal = false;
+  let errorMessage = '';
+  
+  switch (attribute) {
+    case 'id':
+      if (isNaN(object.id ) && object.error_id) {
+        errorSignal = true;
+        errorMessage = 'This ID is not valid';
+      }
+      if(object.takenIds.includes(Number(object.id))) {
+        errorSignal = true;
+        errorMessage = 'This ID is a duplicate';
+      }
+
+    //add cases for other validations here, matching preliminary checks in componentDidUpdate
+  }
+  
+  return (
+    <TextField
+      name={attribute}
+      type={type}
+      placeholder={`Enter ${text}`}
+      {...getValue(object, attribute)}
+      variant="outlined"
+      onChange={handleChanges}
+      fullWidth={true}
+      disabled={!object.active || cannotEdit}
+      error={errorSignal}
+      helperText={errorMessage}
+    />
+  )
+};
 
 const TextGroup = (props: TextGroupProps) => (
   <div className="InputGroup" style={{ width: props.fullWidth ? '100%' : '23%' }}>
@@ -143,13 +173,6 @@ const ButtonGroup = (props: ButtonGroupProps) => (
   </div>
 );
 
-const NumberGroup = (props: InputProps) => (
-  <div className="InputGroup" style={{ width: '23%' }}>
-    <Label {...props} />
-    <br />
-    <Input {...props} type="number" />
-  </div>
-);
 
 const OrgInfo = (props: OrgFormProps) => (
   <div>
@@ -177,7 +200,7 @@ const OrgInfo = (props: OrgFormProps) => (
     />
 
     <div className="formRow" id="basicInfo">
-      <NumberGroup {...props} attribute={'id'} text={'Organization ID*'} type="number" />
+      <TextGroup {...props} attribute={'id'} text={'Organization ID*'} type="number" />
       <TextGroup {...props} attribute={'code'} text={'Organization Code'} type="text" />
       <TextGroup {...props} attribute={'IFISNum'} text={'IFIS Number*'} type="text" />
       <TextGroup {...props} attribute={'effectiveDate'} text={'Effective Date'} type="text" />
@@ -344,6 +367,9 @@ class ModifyOrganization extends React.Component<MOProps, MOState> {
   }
 
   componentDidUpdate (prevProps: MOProps, prevState: MOState) {
+    //error_id indicates that there is an error with the id field
+    let error_id = false;
+    
     if (!prevProps.object && this.props.object) {
       this.setState({
         ...this.props.object
@@ -354,7 +380,9 @@ class ModifyOrganization extends React.Component<MOProps, MOState> {
         || prevState.name !== this.state.name
         || prevState.IFISNum !== this.state.IFISNum
       ) {
-        if (this.state.takenIds.includes(this.state.id)) {
+        if (this.state.takenIds.includes(Number(this.state.id))) {
+          error_id = true;
+          this.setState({error_id: error_id});
           this.setState({
             error: 'Duplicate ID not allowed',
           });
@@ -362,6 +390,11 @@ class ModifyOrganization extends React.Component<MOProps, MOState> {
           this.setState({
             error: '',
           });
+        }
+        if (isNaN(this.state.id)) {
+          error_id = true;
+          this.setState({ error: 'ID format is incorrect'})
+          this.setState({error_id: error_id});
         }
         if (!this.state.name) {
           this.setState({ error: 'Name is required' })
