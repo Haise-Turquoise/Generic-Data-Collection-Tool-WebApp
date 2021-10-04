@@ -32,11 +32,13 @@ export const memoizeFunction = (f:any) => {
 };
 
 export const calculateOptions = (itemCount:number, opt: {search:boolean, showTitle:boolean, filtering:boolean}) => {
+  
   let length = itemCount;
   if (length > 100) length = 100;
-  //else if (length == 0) length = 1;
+  
   const sizes = [5,10, 25, 50, 100];
   const sizeOptions= [ ...sizes.filter(x => x < itemCount),  { value: itemCount, label: 'All' }];
+  
   return {
     actionsColumnIndex: -1,
     search: opt.search,
