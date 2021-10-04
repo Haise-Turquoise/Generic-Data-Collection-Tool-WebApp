@@ -31,8 +31,7 @@ export const memoizeFunction = (f:any) => {
   };
 };
 
-export const calculateOptions = (itemCount:number, opt: {search:boolean, showTitle:boolean, filtering:boolean}) => {
-  
+export const calculateOptions = (itemCount:number, opt?:Object) => {
   let length = itemCount;
   if (length > 100) length = 100;
   
@@ -41,14 +40,14 @@ export const calculateOptions = (itemCount:number, opt: {search:boolean, showTit
   
   return {
     actionsColumnIndex: -1,
-    search: opt.search,
-    showTitle: opt.showTitle,
-    filtering: opt.filtering,
+    search: true,
+    showTitle: false,
+    filtering: false,
     maxBodyHeight: '400px',
     pageSizeOptions: sizeOptions,
     pageSize: length,
     addRowPosition: 'first',
-  } as Options<any>;
+    ...opt} as Options<any>;
 };
 
 
