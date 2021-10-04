@@ -4,7 +4,7 @@ import MaterialTable, { Action, Column, Options } from 'material-table';
 import AddIcon from '@material-ui/icons/Add';
 import DeleteIcon from '@material-ui/icons/Delete';
 import {
-  calculateOptionsWithTitle,
+  calculateOptions,
 } from '../../../tools/misc';
 import RoleSubmissionButtonController from '../../../controllers/RoleSubmissionButton'
 import statusController from '../../../controllers/status';
@@ -104,9 +104,9 @@ const AppButtonList = ({ role, isEditable = true, onClickAdd, onClickDelete }: {
 
   const right_actions: Action<nameObj>[] = useMemo(() => [{ icon: AddIcon, tooltip: 'Add to Mapping', onClick: addButton }], []);
   // const orgOptions: Options<AppResource> = useMemo(() => calculateOptions(readOrgRowNum), [readOrgRowNum]);
-  const orgOptions: any = useMemo(() => calculateOptionsWithTitle(readButtonsNum), [readButtonsNum]);
+  const orgOptions: any = useMemo(() => calculateOptions(readButtonsNum,{search: true, showTitle: true, filtering: false}), [readButtonsNum]);
   // const nonOrgOptions: Options<AppResource> = useMemo(() => calculateOptions(readNonOrgRowNum), [readNonOrgRowNum]);
-  const nonOrgOptions: any = useMemo(() => calculateOptionsWithTitle(readNonButtonsNum), [readNonButtonsNum]);
+  const nonOrgOptions: any = useMemo(() => calculateOptions(readNonButtonsNum,{search: true, showTitle: true, filtering: false}), [readNonButtonsNum]);
   return (
     <div className="tableContainer">
       <div className="tableWrapper-linked">

@@ -335,7 +335,7 @@ const SubmissionDashboard = ({ history }:{history:History}) => {
       {statuses.length > 0 ? 
         statuses.map(status => {
           const data = getSubmissionsInRange(status)
-          const options = calculateOptions(data.length)
+          const options = calculateOptions(data.length,{search: true, showTitle: false, filtering: false})
           return (
             <ExpansionPanel>
               <ExpansionPanelSummary 

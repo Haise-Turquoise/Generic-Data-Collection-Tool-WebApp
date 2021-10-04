@@ -74,7 +74,7 @@ const AppRolesTable = () => {
     [appRoles],
   );
 
-  const options: Options<AppRoleMT> = useMemo(() => calculateOptions(readRowNum), [readRowNum]);
+  const options: Options<AppRoleMT> = useMemo(() => calculateOptions(readRowNum,{search: true, showTitle: false, filtering: false}), [readRowNum]);
 
   // Record user and time when an action occurs 
   function recordUpdate(appRole: AppRoleMT) {

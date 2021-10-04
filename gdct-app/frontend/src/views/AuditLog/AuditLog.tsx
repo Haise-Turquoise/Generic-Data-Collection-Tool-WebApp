@@ -12,7 +12,7 @@ import FindInPageIcon from '@material-ui/icons/FindInPage';
 import AuditLogController from '../../controllers/AuditLog'
 
 import AuditLog from '../../types/auditlog';
-import { fetchWithStatus } from '../../tools/misc';
+import { fetchWithStatus, calculateOptions } from '../../tools/misc';
 
 
 
@@ -144,21 +144,9 @@ const AuditLogTable = () => {
   
   // Prepare the options for MaterialTable
 
-  const auditlogOptions = (itemCount:number) => {
-    let length = itemCount;
-    if(length > 100) length = 100;
-    return {
-      actionsColumnIndex: -1,
-      search: false,
-      showTitle: false,
-      filtering: true,
-      maxBodyHeight: '400px',
-      pageSizeOptions: [10, 25, 50, 100, { value: itemCount, label: 'All' }],
-      pageSize: length,
-    } as Options<any>;
-  };
   
-  const options = useMemo(() => auditlogOptions(readRowNum), [readRowNum]);
+  
+  const options = useMemo(() => calculateOptions(readRowNum,{search: true, showTitle: false, filtering: true}), [readRowNum]);
 
   //= =================================================================================================
 

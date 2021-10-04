@@ -130,7 +130,7 @@ const SubmissionStatusTable = () => {
     [],
   );
 
-  const options: Options<SubmissionStatus> = useMemo(() => ({...calculateOptions(readRowNum), filtering: true}), [readRowNum]);
+  const options: Options<SubmissionStatus> = useMemo(() => ({...calculateOptions(readRowNum,{search: true, showTitle: false, filtering: false}), filtering: true}), [readRowNum]);
 
   const actions: ((rowData: SubmissionStatus) => Action<SubmissionStatus>)[] = [
     (actionRowData: SubmissionStatus) => ({

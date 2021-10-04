@@ -167,7 +167,7 @@ const TemplatesTable = ({ history }: RouterProps) => {
     [history],
   );
 
-  const options = useMemo(() => calculateOptions(readRowNum), [readRowNum]);
+  const options = useMemo(() => calculateOptions(readRowNum,{search: true, showTitle: false, filtering: false}), [readRowNum]);
 
   const editable = useMemo(
     () => ({

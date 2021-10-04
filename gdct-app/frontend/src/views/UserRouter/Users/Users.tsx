@@ -144,7 +144,7 @@ const UsersTable = () => {
     [],
   );
 
-  const options: Options<User> = useMemo(() => calculateOptions(readRowNum),[readRowNum]);
+  const options: Options<User> = useMemo(() => calculateOptions(readRowNum,{search: true, showTitle: false, filtering: false}),[readRowNum]);
 
   // Customization for search bar
   const localization = useMemo(

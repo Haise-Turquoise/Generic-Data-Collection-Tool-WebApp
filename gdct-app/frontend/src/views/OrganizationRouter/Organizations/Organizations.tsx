@@ -70,7 +70,7 @@ const Organizations = ({ history }: RouterProps) => {
     [],
   );
 
-  const options = useMemo(() => calculateOptions(readRowNum), [readRowNum]);
+  const options = useMemo(() => calculateOptions(readRowNum,{search: true, showTitle: false, filtering: false}), [readRowNum]);
 
   // Prepare the actions for material table
   const actions: Action<Organization>[] = useMemo(

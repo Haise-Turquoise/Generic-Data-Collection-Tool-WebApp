@@ -144,7 +144,7 @@ const SheetNamesTable = () => {
     [sheetNames],
   );
 
-  const options: Options<SheetNameMT> = useMemo(() => calculateOptions(readRowNum), [readRowNum]);
+  const options: Options<SheetNameMT> = useMemo(() => calculateOptions(readRowNum,{search: true, showTitle: false, filtering: false}), [readRowNum]);
 
   // Record who and when of the action
   const recordUpdate = (sheetName: SheetNameMT) => {

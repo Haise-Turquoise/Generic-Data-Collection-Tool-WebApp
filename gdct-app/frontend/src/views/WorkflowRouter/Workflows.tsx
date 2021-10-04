@@ -84,7 +84,7 @@ const Workflows = () => {
     [],
   );
 
-  const options: Options<WorkflowMT> = useMemo(() => calculateOptions(readRowNum), [readRowNum]);
+  const options: Options<WorkflowMT> = useMemo(() => calculateOptions(readRowNum,{search: true, showTitle: false, filtering: false}), [readRowNum]);
 
   // Record user and time when an action occurs
   function recordUpdate(workflow: WorkflowMT) {

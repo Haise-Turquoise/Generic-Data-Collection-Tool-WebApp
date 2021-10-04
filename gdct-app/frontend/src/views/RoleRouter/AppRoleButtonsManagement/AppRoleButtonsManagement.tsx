@@ -94,7 +94,7 @@ const AppRoleResourceTable = ({ history }: RouteComponentProps) => {
     [history],
   );
 
-  const options: Options<AppRolePlus> = useMemo(() => calculateOptions(readRowNum), [readRowNum]);
+  const options: Options<AppRolePlus> = useMemo(() => calculateOptions(readRowNum,{search: true, showTitle: false, filtering: false}), [readRowNum]);
 
   return (
     <MaterialTable

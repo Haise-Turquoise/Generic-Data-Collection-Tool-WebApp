@@ -101,7 +101,7 @@ const AppSysRolesTable = () => {
     [lookupSysRoles, lookupAppRoles, appSysRoles],
   );
 
-  const options: Options<AppSysRoleMT> = useMemo(() => calculateOptions(readNumRow), [readNumRow]);
+  const options: Options<AppSysRoleMT> = useMemo(() => calculateOptions(readNumRow,{search: true, showTitle: false, filtering: false}), [readNumRow]);
   
   // Record user and time when an action occurs 
   function recordUpdate(appSysRole: AppSysRoleMT) {

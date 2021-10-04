@@ -68,7 +68,7 @@ const TemplateTypeTable = ({
     setRowNum(templateType.length);
   }, [templateType]);
 
-  const options: Options<TemplateType> = useMemo(() => calculateOptions(readRowNum), [readRowNum]);
+  const options: Options<TemplateType> = useMemo(() => calculateOptions(readRowNum,{search: true, showTitle: false, filtering: false}), [readRowNum]);
 
   useEffect(() => {
     dispatch(getTemplateTypesRequest());

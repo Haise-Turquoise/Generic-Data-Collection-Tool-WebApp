@@ -202,7 +202,7 @@ const UserInfo = ({
   );
 
   const options: Options<TableData> = useMemo(
-    () => calculateOptions(readRowNum),
+    () => calculateOptions(readRowNum,{search: true, showTitle: false, filtering: false}),
     [readRowNum],
   );
 

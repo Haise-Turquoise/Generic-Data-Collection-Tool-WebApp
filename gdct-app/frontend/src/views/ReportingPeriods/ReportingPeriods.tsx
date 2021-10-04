@@ -95,7 +95,7 @@ const ReportingPeriodsTable = () => {
     [reportingPeriods],
   );
 
-  const options: Options<ReportingPeriodMT> = useMemo(() => calculateOptions(readRowNum), [
+  const options: Options<ReportingPeriodMT> = useMemo(() => calculateOptions(readRowNum,{search: true, showTitle: false, filtering: false}), [
     readRowNum,
   ]);
 
