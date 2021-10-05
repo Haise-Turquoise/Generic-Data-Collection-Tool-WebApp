@@ -131,7 +131,7 @@ const COATreesTable = ({ history }: RouterProps) => {
     [],
   );
 
-  const options: Options<DetectEmptyTree> = useMemo(() => calculateOptions(readRowNum,{search: true, showTitle: false, filtering: false}), [readRowNum]);
+  const options: Options<DetectEmptyTree> = useMemo(() => calculateOptions(readRowNum), [readRowNum]);
 
   useEffect(()=>{
     setRowNum(sheetNames?.length || 1)

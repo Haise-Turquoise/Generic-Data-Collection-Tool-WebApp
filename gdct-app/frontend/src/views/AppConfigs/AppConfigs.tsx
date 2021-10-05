@@ -112,7 +112,7 @@ const AppConfigsTable = () => {
   );
 
   // Prepare the options
-  const options = useMemo(() => calculateOptions(readRowNum,{search: true, showTitle: false, filtering: false}), [readRowNum]);
+  const options = useMemo(() => calculateOptions(readRowNum), [readRowNum]);
 
   // Record who and when of the action
   function recordUpdate(appConfig: AppConfigMT) {

@@ -119,7 +119,7 @@ const ColumnNamesTable = () => {
     [columnNames],
   );
   
-  const options = useMemo(() => calculateOptions(readRowNum,{search: true, showTitle: false, filtering: false}), [readRowNum]);
+  const options = useMemo(() => calculateOptions(readRowNum), [readRowNum]);
 
   // Record user and time when an action occurs 
   function recordUpdate(columnName: Attribute) {

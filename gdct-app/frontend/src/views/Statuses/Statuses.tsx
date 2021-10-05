@@ -91,7 +91,7 @@ const StatusesTable = () => {
     [statuses],
   );
 
-  const options: Options<StatusMT> = useMemo(() => calculateOptions(readRowNum,{search: true, showTitle: false, filtering: false}), [readRowNum]);
+  const options: Options<StatusMT> = useMemo(() => calculateOptions(readRowNum), [readRowNum]);
 
   // Record who and when of the action
   function recordUpdate(status: StatusMT) {

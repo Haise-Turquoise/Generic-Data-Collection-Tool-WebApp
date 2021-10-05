@@ -118,7 +118,7 @@ const COAsTable = () => {
     [COAs],
   );
   
-  const options: Options<Category> = useMemo(() => calculateOptions(readRowNum,{search: true, showTitle: false, filtering: false}), [readRowNum]);
+  const options: Options<Category> = useMemo(() => calculateOptions(readRowNum), [readRowNum]);
 
   // Record user and time when an action occurs 
   function recordUpdate(COA: Category) {

@@ -105,7 +105,7 @@ const RequestManagementTable = () => {
     [],
   );
 
-  const options: Options<ToBeApproved> = useMemo(() => calculateOptions(readRowNum,{search: true, showTitle: false, filtering: false}), [readRowNum]);
+  const options: Options<ToBeApproved> = useMemo(() => calculateOptions(readRowNum), [readRowNum]);
 
   // Record who and when of the action
   // function recordUpdate(status) {
