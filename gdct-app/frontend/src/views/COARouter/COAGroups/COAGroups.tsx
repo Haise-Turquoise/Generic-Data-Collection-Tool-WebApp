@@ -81,6 +81,8 @@ const COAGroupsTable = () => {
     [COAGroups],
   );
 
+  
+
   const options: Options<CategoryGroupMT> = useMemo(() => calculateOptions(readRowNum), [readRowNum]);
   
   // Record user and time when an action occurs 

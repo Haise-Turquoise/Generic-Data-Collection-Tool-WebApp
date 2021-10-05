@@ -11,6 +11,7 @@ import {
   controllerDeleteRow,
   formatTimestamp,
   fetchWithStatus,
+  calculateOptions
 } from '../../tools/misc'
 
 import AppConfig from '../../types/appconfig';
@@ -52,6 +53,7 @@ const AppConfigsHeader = () => {
 const AppConfigsTable = () => {
   const [appConfigs, setAppConfigs] = useState<AppConfig[] | undefined>(undefined)
   const [appSyses, setAppSyses] = useState<AppSys[] | undefined>(undefined)
+  const [readRowNum, setRowNum] = useState(1);
   const [status, setStatus] = useState<'LOADING...' | 'NOT ALLOWED'>('LOADING...')
 
   useEffect(() => {
@@ -110,15 +112,7 @@ const AppConfigsTable = () => {
   );
 
   // Prepare the options
-  const options: Options<AppConfigMT> = useMemo(
-    () => ({
-      actionsColumnIndex: -1,
-      search: true,
-      showTitle: false,
-      addRowPosition: 'first',
-    }),
-    [],
-  );
+  const options = useMemo(() => calculateOptions(readRowNum), [readRowNum]);
 
   // Record who and when of the action
   function recordUpdate(appConfig: AppConfigMT) {
@@ -197,8 +191,13 @@ const AppConfigsTable = () => {
     [],
   );
 
+  useEffect(()=>{
+    setRowNum(appConfigs?.length || 0)
+  }, [appConfigs]);
+
   return (
     <MaterialTable
+      key={readRowNum}
       columns={!!appConfigs ? columns : preColumns}
       data={!!appConfigs ? appConfigs : preConfigs}
       editable={!!appConfigs ? editable : undefined}
