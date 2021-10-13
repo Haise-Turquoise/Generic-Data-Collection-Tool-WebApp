@@ -8,6 +8,7 @@ const AppConfig = new Schema<AppConfigDoc>(
     appSys: { type: String },
     timestamp: { type: Date },
     updatedBy: { type: String },
+    updatedAt: { type: String },
     isActive: {
       type: Boolean,
       default: true,

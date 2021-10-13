@@ -9,7 +9,7 @@ import { selectFactoryRESTError } from '../../store/common/REST/selectors';
 import { selectColumnNamesStore } from '../../store/ColumnNamesStore/selectors';
 import CreateAuditLog from '../AuditLog_Global';
 import columnNameController from '../../controllers/columnName';
-import { checkDuplicates, controllerAddRow, controllerEditRow, controllerDeleteRow, formatTimestamp, fetchWithStatus } from '../../tools/misc'
+import { checkDuplicates, controllerAddRow, controllerEditRow, controllerDeleteRow, formatTimestamp, fetchWithStatus,calculateOptions} from '../../tools/misc'
 
 import Attribute from '../../types/attrubute';
 
@@ -119,17 +119,7 @@ const ColumnNamesTable = () => {
     [columnNames],
   );
   
-  const options: Options<Attribute> = useMemo(
-    () => (
-      {
-        actionsColumnIndex: -1,
-        search: true,
-        showTitle: false,
-        addRowPosition: "first",
-      }
-    ), 
-    []
-  );
+  const options = useMemo(() => calculateOptions(readRowNum), [readRowNum]);
 
   // Record user and time when an action occurs 
   function recordUpdate(columnName: Attribute) {
