@@ -20,22 +20,17 @@ import RoleWorkflowStatus from '../../types/roleWorkflowStatus';
 import  User  from '../../types/user';
 import WorkflowProcess from '../../types/workflowprocess';
 import Typography from '@material-ui/core/Typography';
-// @ts-ignore
 import { getSubmissionsRequest } from '../../store/thunks/submission';
-// @ts-ignore
 import { selectSubmissionsStore } from '../../store/SubmissionsStore/selectors';
-// @ts-ignore
 import { selectFactoryRESTResponseTableValues } from '../../store/common/REST/selectors';
-// @ts-ignore
 import { calculateOptions } from '../../tools/misc'
-// @ts-ignore
 import UsersController from '../../controllers/Users';
-// @ts-ignore
 import roleWorkflowStatusController from '../../controllers/RoleWorkflowStatus';
-// @ts-ignore
 import workflowController from '../../controllers/workflow';
+import statusController from '../../controllers/status';
 
 import './SubmissionDashboard.scss'
+import Status from '../../types/status';
 
 const useStyles = makeStyles((theme) => ({
   formControl: {
@@ -65,6 +60,7 @@ const SubmissionDashboard = ({ history }:{history:History}) => {
   const [programFilter, setFilter] = useState<string[]>([]);
   const currRole = localStorage.getItem('currentRole');
   const [readBaseGrouping, setBaseGrouping] = useState<string[]>([]);
+  const [statusMap, setStatusMap] = useState<{[key: string]: number} | undefined>()
 
   // let allowedGrouping:string[] = [];
 
@@ -111,6 +107,17 @@ const SubmissionDashboard = ({ history }:{history:History}) => {
     roleWorkflowStatusController.fetchStatusByRole(role).then((data:RoleWorkflowStatus) =>{
       setBaseGrouping(data.workflowStatus);
     });
+    statusController.fetch().then((res: Status[]) => {
+      const map: {[key: string]: number} = {}
+      for (let status of res) {
+        if (status.order) {
+          map[status.name] = status.order
+        } else {
+          map[status.name] = 100
+        }
+      }
+      setStatusMap(map)
+    })
   }, [])
 
   
@@ -141,7 +148,6 @@ const SubmissionDashboard = ({ history }:{history:History}) => {
   }
 
   let filteredSubmission = [...submissions];
-  console.log(filteredSubmission)
   useEffect(()=>{
     if (filteredSubmission[0] !== undefined) {
 
@@ -181,6 +187,14 @@ const SubmissionDashboard = ({ history }:{history:History}) => {
       // filter out the empty section that does not exist in submissions
       filteredGrouping = filteredGrouping.filter(e=>existingPhaseSet.has(e));
 
+      // sort filteredGrouping
+      filteredGrouping = filteredGrouping.sort((a, b) => {
+        if (statusMap) {
+          return statusMap[a] - statusMap[b]
+        } else {
+          return 0
+        }
+      })
 
       filteredSubmission.forEach(e => {
         const workFlowId = String(e.workflowId)
