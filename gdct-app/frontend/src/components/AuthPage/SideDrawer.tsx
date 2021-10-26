@@ -27,7 +27,7 @@ export default function SideDrawer(props:any) {
 
 
   const handleItemClick = (event: React.MouseEvent) => {
-    setMenuPosition(null)
+    //setMenuPosition(null)
   }
 
   
