@@ -1,7 +1,6 @@
 import React, { useState, Fragment, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import clsx from 'clsx';
-
 import { makeStyles, useTheme, Theme} from '@material-ui/core/styles';
 import {
   AppBar,
@@ -30,6 +29,8 @@ import createUserNavigation from './createUserNavigation';
 import TopItemList from './TopItemList';
 import './_chip.scss';
 import './_listitem.scss';
+
+
 //@ts-ignore
 import Usernavigation from '../../types/usernavigation';
 
@@ -199,9 +200,12 @@ const Header = ({
         isTopMenu={isTopMenu}
       />
       <Link to="/" className={classes.title}>
+      <div style={{ display: 'flex', marginLeft: 'auto' }}>
+        <img src={'./Onlogo.png'} alt="logo" width="30" height="30"/>
         <HeaderTitle title={title} />
+        </div>
       </Link>
-      {isTopMenu && <TopItemList config={config}  isMobile={isMobile} />}
+       <TopItemList config={config}  isMobile={isMobile} />
       <Chip
         label={
           <span>
@@ -216,20 +220,7 @@ const Header = ({
         id="MuiChip-label-Authpage"
         className={classes.chip}
       />
-      <FormControlLabel
-        className={classes.flexItem}
-        control={
-          <Switch
-            checked={isTopMenu}
-            onChange={() => {
-              setTopMenu(!isTopMenu);
-              setOpen(false);
-            }}
-            aria-label="login switch"
-          />
-        }
-        label={isTopMenu ? 'Top' : 'Left'}
-      />
+     
     </Toolbar>
   </AppBar>
 );
@@ -427,12 +418,12 @@ const AuthPage = ({
   const theme = useTheme();
   const [config, setConfig] = useState([]);
   const [open, setOpen] = useState(false);
-  const [isTopMenu, setTopMenu] = useState(true);
+  const [isTopMenu, setTopMenu] = useState(false);
   const [isMobile, setMobile] = useState(window.matchMedia('(max-width: 1000px)').matches);
   useEffect(() => {
     const handler = (e:any) => setMobile(e.matches);
     window.matchMedia('(max-width: 1000px)').addListener(handler);
-    setTopMenu(!isMobile);
+    //setTopMenu(!isMobile);
     createUserNavigation().then((res:any) => {
       console.log('res', res)
       setConfig(res);
