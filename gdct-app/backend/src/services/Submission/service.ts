@@ -354,6 +354,7 @@ export default class SubmissionService {
       program2TypesMap.set(String(e.program), e.templateTypes.map(type=>String(type.templateTypeId)))
     })
     const packages:any[] = await this.templatePackageRepository
+    //@ts-ignore
     .retrieveFullPkgInfoByProgramId(programAndTempTypes.map(e=>e.program));
 
     console.log(program2TypesMap);

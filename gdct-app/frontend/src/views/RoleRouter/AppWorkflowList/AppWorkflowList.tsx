@@ -4,7 +4,7 @@ import MaterialTable, { Action, Column } from 'material-table';
 import AddIcon from '@material-ui/icons/Add';
 import DeleteIcon from '@material-ui/icons/Delete';
 import {
-  calculateOptionsWithTitle,
+  calculateOptions,
 } from '../../../tools/misc';
 import roleWorkflowStatusController from '../../../controllers/RoleWorkflowStatus'
 import statusController from '../../../controllers/status';
@@ -94,9 +94,9 @@ const AppWorkflowList = ({ role, isEditable = true, onClickAdd, onClickDelete }:
 
   const right_actions: Action<nameObj>[] = useMemo(() => [{ icon: AddIcon, tooltip: 'Add to Mapping', onClick: addButton }], []);
   // const orgOptions: Options<AppResource> = useMemo(() => calculateOptions(readOrgRowNum), [readOrgRowNum]);
-  const orgOptions: any = useMemo(() => calculateOptionsWithTitle(readWorkflowsNum), [readWorkflowsNum]);
+  const orgOptions: any = useMemo(() => calculateOptions(readWorkflowsNum,{search: true, showTitle: true, filtering: false}), [readWorkflowsNum]);
   // const nonOrgOptions: Options<AppResource> = useMemo(() => calculateOptions(readNonOrgRowNum), [readNonOrgRowNum]);
-  const nonOrgOptions: any = useMemo(() => calculateOptionsWithTitle(readNonWorkflowsNum), [readNonWorkflowsNum]);
+  const nonOrgOptions: any = useMemo(() => calculateOptions(readNonWorkflowsNum,{search: true, showTitle: true, filtering: false}), [readNonWorkflowsNum]);
   return (
     <div className="tableContainer">
       <div className="tableWrapper-linked">
