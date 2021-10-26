@@ -29,6 +29,7 @@ import createUserNavigation from './createUserNavigation';
 import TopItemList from './TopItemList';
 import './_chip.scss';
 import './_listitem.scss';
+import '../../images/Onlogo.png';
 
 
 //@ts-ignore
@@ -201,7 +202,7 @@ const Header = ({
       />
       <Link to="/" className={classes.title}>
       <div style={{ display: 'flex', marginLeft: 'auto' }}>
-        <img src={'./Onlogo.png'} alt="logo" width="30" height="30"/>
+        <img src={'/Onlogo.png'} alt="logo" width="30" height="30"/>
         <HeaderTitle title={title} />
         </div>
       </Link>
