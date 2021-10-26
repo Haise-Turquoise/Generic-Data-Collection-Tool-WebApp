@@ -18,6 +18,9 @@ import {
   Collapse,
   Switch,
   FormControlLabel,
+  Menu,
+  Popover,
+  MenuItem,
 } from '@material-ui/core';
 import MenuIcon from '@material-ui/icons/Menu';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
@@ -34,7 +37,7 @@ import KeyboardArrowRightIcon from '@material-ui/icons/KeyboardArrowRight';
 import KeyboardArrowLeftIcon from '@material-ui/icons/KeyboardArrowLeft';
 import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 import { completeBorderStyleMap } from '../../constants/styles';
-
+import SideDrawer from './SideDrawer';
 
 
 const drawerWidth = 240;
@@ -279,9 +282,10 @@ const MenuItems = ({ menuItems, level }:{
 }) => {
   return menuItems.map((menuItem:any, index:number) => {
     if (menuItem.type === 'drawer') {
+      const { type, name, icon, url } = menuItem;
       return (
-        <MenuDrawer key={`${menuItem.type}-${menuItem.name}-${index}`} {...menuItem} level="2" />
-      );
+          <MenuDrawer key={`${menuItem.type}-${menuItem.name}-${index}`} {...menuItem} level="2" />        
+          );
     }
     return (
       <MenuItemLink
@@ -342,7 +346,6 @@ const MenuDrawer = ({ name, icon, children, level = 1 }:{
   level:number|string,
 }) => {
   const [open, setOpen] = useState(false);
-
   const handleToggle = useCallback(target => setOpen(!open), [open]);
   //@ts-ignore
   return (
@@ -362,7 +365,8 @@ const NavigationContent = ({ config }:{config:any}) => {
     const { type, name } = item;
     switch (type) {
       case 'drawer':
-        Component = MenuDrawer;
+        //was menudrawer
+        Component = SideDrawer;
         break;
       default:
         Component = MenuItemLink;
