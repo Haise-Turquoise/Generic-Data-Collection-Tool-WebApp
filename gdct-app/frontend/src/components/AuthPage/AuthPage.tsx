@@ -22,8 +22,6 @@ import {
 import MenuIcon from '@material-ui/icons/Menu';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
-import ExpandMore from '@material-ui/icons/ExpandMore';
-import ExpandLess from '@material-ui/icons/ExpandLess';
 //@ts-ignore
 import createUserNavigation from './createUserNavigation';
 //@ts-ignore
@@ -32,6 +30,10 @@ import './_chip.scss';
 import './_listitem.scss';
 //@ts-ignore
 import Usernavigation from '../../types/usernavigation';
+import KeyboardArrowRightIcon from '@material-ui/icons/KeyboardArrowRight';
+import KeyboardArrowLeftIcon from '@material-ui/icons/KeyboardArrowLeft';
+import ClickAwayListener from '@material-ui/core/ClickAwayListener';
+import { completeBorderStyleMap } from '../../constants/styles';
 
 
 
@@ -68,6 +70,7 @@ const useStyles = makeStyles(theme => ({
   },
   drawerPaper: {
     width: drawerWidth,
+    marginTop: 64,
   },
   drawerHeader: {
     display: 'flex',
@@ -127,7 +130,7 @@ const useStyles = makeStyles(theme => ({
     color: 'gray',
   },
 }));
-
+const check = ()=>console.log("jewifjwif");
 const HeaderHandle = ({ open, classes, handleDrawerOpen, isTopMenu }:{
   open:boolean,
   classes:any,
@@ -186,7 +189,7 @@ const Header = ({
   <AppBar
     position="fixed"
     className={clsx(classes.appBar, {
-      [classes.appBarShift]: open,
+      [classes.appBarShift]: false,  
     })}
   >
     <Toolbar className={classes.flex}>
@@ -232,22 +235,6 @@ const Header = ({
       />
     </Toolbar>
   </AppBar>
-);
-
-const DrawerHandle = ({ title, classes, handleDrawerClose, theme }:{
-  title:string,
-  classes:any,
-  handleDrawerClose:()=>void,
-  theme:Theme,
-}) => (
-  <div className={classes.toolbar}>
-    <Typography className={classes.toolbarTitle}>{title}</Typography>
-    <div className={classes.drawerHeader}>
-      <IconButton onClick={handleDrawerClose}>
-        {theme.direction === 'ltr' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
-      </IconButton>
-    </div>
-  </div>
 );
 
 const MenuItemIcon = ({ icon }:{
@@ -344,7 +331,7 @@ const MenuDrawerTitle = ({ button = true, name, icon, open, handleClick, level }
     ) : (
       <ListItemText primary={name} />
     )}
-    {open ? <ExpandLess /> : <ExpandMore />}
+    {open ? <KeyboardArrowLeftIcon /> : <KeyboardArrowRightIcon />}
   </ListItem>
 );
 
@@ -368,7 +355,7 @@ const MenuDrawer = ({ name, icon, children, level = 1 }:{
 };
 
 const NavigationContent = ({ config }:{config:any}) => {
-  // console.log('config', config);
+  console.log('config', config);
   return config.map((item:Usernavigation, index:number) => {
     let Component;
 
@@ -385,42 +372,41 @@ const NavigationContent = ({ config }:{config:any}) => {
   });
 };
 
-const NavigationDrawer = ({ title, open, theme, config, classes, handleDrawerClose }:{
-  title:string,
+const closeMenu = () => {
+
+};
+
+const NavigationDrawer = ({open, theme, config, classes, handleDrawerClose }:{
   open:boolean,
   theme:Theme,
   config:any,
   classes:any,
   handleDrawerClose:()=>void,
 }) => (
-  <Drawer
-    className={classes.drawer}
-    variant="persistent"
-    anchor="left"
-    open={open}
-    classes={{
-      paper: classes.drawerPaper,
-    }}
+  <ClickAwayListener onClickAway={handleDrawerClose}>
+    <Drawer
+      className={classes.drawer}
+      variant="persistent"
+      anchor="left"
+      open={open} 
+      onBlur={()=> console.log("hi i am here")}
+      // onClose={handleDrawerClose}
+      classes={{
+        paper: classes.drawerPaper,
+      }}
   >
-    <DrawerHandle
-      title={title}
-      classes={classes}
-      handleDrawerClose={handleDrawerClose}
-      theme={theme}
-    />
-    <NavigationContent config={config} />
-  </Drawer>
+      <NavigationContent config={config} />
+    </Drawer>
+  </ClickAwayListener> 
 );
 
 const AuthPage = ({
   // headerTitle = 'MOHLTC - Generic Data Collection Tool',
   headerTitle = 'MOH - OHFS Budgeting and Forecasting',
-  drawerTitle = 'MOH - OHFS Budgeting and Forecasting',
 
   children,
 }:{
   headerTitle?:string,
-  drawerTitle?:string,
   children:Object,
 }) => {
   const classes = useStyles();
@@ -438,12 +424,28 @@ const AuthPage = ({
       setConfig(res);
     });
   }, [isMobile]);
+  // const state = {count : 0}
+
+  const [count, setCount] = useState(0);
 
   const handleDrawerOpen = () => setOpen(true);
   const handleDrawerClose = () => setOpen(false);
-  const style = open
-    ? { paddingTop: '5.7rem' }
-    : { paddingTop: '5.7rem', marginLeft: `-${drawerWidth}px` };
+  
+  const handleDrawerClose2 = () => {
+    if(open === true){
+      setCount(prev => prev + 1)
+      console.log(count)
+    }
+    if((open === true) && count == 1){
+      setOpen(false);
+      setCount(0);
+    }
+    console.log("you clicked away from the drawer");
+    console.log(open);
+    console.log(count);
+  };
+  const style = { paddingTop: '5.7rem', marginLeft: `-${drawerWidth}px` };
+          
   return (
     <div className={classes.root}>
       <CssBaseline />
@@ -459,12 +461,11 @@ const AuthPage = ({
         isMobile = {isMobile}
       />
       <NavigationDrawer
-        title={drawerTitle}
         theme={theme}
         classes={classes}
         open={open}
         config={config}
-        handleDrawerClose={handleDrawerClose}
+        handleDrawerClose={handleDrawerClose2}
       />
       <main
         style={style}
@@ -477,5 +478,6 @@ const AuthPage = ({
     </div>
   );
 };
+
 
 export default AuthPage;
