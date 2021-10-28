@@ -166,4 +166,12 @@ export default class SubmissionRepository extends BaseRepository<Submission, Sub
   async findQuery(query: Partial<Submission>) {
     return SubmissionModel.find(query)
   }
+
+  async findQueryPopulate(query: Partial<Submission>) {
+    return SubmissionModel.find(query)
+      .populate('statusId')
+      .populate('workflowProcessId')
+      .populate('submissionPeriodId')
+      .populate('programId')
+  }
 }
