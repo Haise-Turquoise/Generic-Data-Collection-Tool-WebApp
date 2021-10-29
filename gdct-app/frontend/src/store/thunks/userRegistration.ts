@@ -439,7 +439,7 @@ const getTemplateType = (userPrograms: Array<userProgram>) => {
 
     templateTypes.forEach(templateType => {
       userPrograms.forEach(userProgram => {
-        const check = templateType.programIds.includes(userProgram._id);
+        const check = templateType.programId.includes(userProgram._id);
         if (check) {
           submissionList.push({
             organization: userProgram.org,

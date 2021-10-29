@@ -7,7 +7,7 @@ export default class TemplateTypeEntity {
   public description: string;
   public templateWorkflowId: ObjectId;
   public submissionWorkflowId: ObjectId;
-  public programIds: ObjectId[];
+  public programId: ObjectId[];
   public isApprovable: boolean;
   public isReviewable: boolean;
   public isSubmittable: boolean;
@@ -24,7 +24,7 @@ export default class TemplateTypeEntity {
     description,
     templateWorkflowId,
     submissionWorkflowId,
-    programIds,
+    programId,
     isApprovable,
     isReviewable,
     isSubmittable,
@@ -40,7 +40,7 @@ export default class TemplateTypeEntity {
     this.templateWorkflowId = templateWorkflowId;
     this.submissionWorkflowId = submissionWorkflowId;
     this.description = description;
-    this.programIds = programIds;
+    this.programId = programId;
     this.isApprovable = isApprovable;
     this.isReviewable = isReviewable;
     this.isSubmittable = isSubmittable;
