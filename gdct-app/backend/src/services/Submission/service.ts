@@ -109,7 +109,7 @@ export default class SubmissionService {
     //@ts-ignore
     const submissions: SubmissionPopulated[] = await this.submissionRepository.findQueryPopulate({ orgId: +role.orgId, programId: role.progId })
     // determine acceptable statuses
-    const statuses = (await this.roleWorkflowStatusRepository.findByRole(role.role)).workflowStatus
+    const statuses = (await this.roleWorkflowStatusRepository.findByRole(role.role))?.workflowStatus
     const statusIds = []
     for (let status of statuses) {
       statusIds.push((await this.statusRepository.findByName(status))[0]._id)
@@ -117,7 +117,7 @@ export default class SubmissionService {
     }
     for (let i = 0; i < submissions.length; i++) {
       // workflow processes this user can see, depends on submission workflow
-      const workflows: WorkflowProcess[] = await this.workflowProcessRepository.findNeighbors(submissions[i].workflowId.toString(), statusIds)
+      const workflows: WorkflowProcess[] = await this.workflowProcessRepository.findNeighbors(submissions[i].workflowId.toString(), statusIds.map(id => id.toString()))
       // from available processes -> available statuses
       const statusRes = []
       for (let workflowProcess of workflows) {
