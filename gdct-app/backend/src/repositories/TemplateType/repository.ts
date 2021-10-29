@@ -22,7 +22,7 @@ export default class TemplateTypeRepository extends BaseRepository<TemplateType,
     description,
     templateWorkflowId,
     submissionWorkflowId,
-    programIds,
+    programId,
     isApprovable,
     isReviewable,
     isSubmittable,
@@ -34,14 +34,14 @@ export default class TemplateTypeRepository extends BaseRepository<TemplateType,
     updatedBy,
   }: TemplateType) {
     return this.programRepository
-      .validateMany(programIds)
+      .validateMany(programId)
       .then(() =>
         TemplateTypeModel.create({
           name,
           description,
           templateWorkflowId,
           submissionWorkflowId,
-          programIds,
+          programId,
           isApprovable,
           isReviewable,
           isSubmittable,
@@ -63,7 +63,7 @@ export default class TemplateTypeRepository extends BaseRepository<TemplateType,
 
   async update(id: string, templateType: Partial<TemplateType>) {
     return this.programRepository
-      .validateMany(templateType.programIds || [])
+      .validateMany(templateType.programId || [])
       .then(() => TemplateTypeModel.findByIdAndUpdate(id, templateType))
       .then((templateType:TemplateTypeDoc|null) => {
         if(!templateType) throw new AppError(`Update failed, Item not found for TemplateType item with ID: ${id}`)

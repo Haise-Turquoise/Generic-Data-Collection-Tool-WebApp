@@ -62,7 +62,6 @@ const TemplateTypesTable = ({ history }: RouterProps) => {
     isReviewable: false,
     isSubmittable: false,
     isViweable: false,
-    programIds: [],
     updatedAt: '',
     updatedBy: '',
   }]
