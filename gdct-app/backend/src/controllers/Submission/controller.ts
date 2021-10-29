@@ -1,6 +1,7 @@
 import { Service } from 'typedi';
 import { Router } from 'express';
 import SubmissionService from '../../services/Submission';
+import { SubmissionPopulated } from '../../types/submission';
 
 const SubmissionController = Service([SubmissionService], service => {
   const router = Router();
@@ -23,6 +24,23 @@ const SubmissionController = Service([SubmissionService], service => {
         .findQuery(query)
         .then(submissions => res.json({ submissions }))
         .catch(next)
+    })
+
+    router.post('/submissions/findByRole', async (req, res, next) => {
+      interface role {
+        orgId: string,
+        progId: string,
+        tempTypeId: string,
+        role: string
+      }
+      const { roles }: {roles:role[]} = req.body
+
+      let submissions: SubmissionPopulated[] = []
+      for (let role of roles) {
+        const res = await service.findByRole(role)
+        submissions = submissions.concat(res)
+      }
+      res.json({ submissions })
     })
 
     router.post('/submissions/uploadSubmission', (req, res, next) => {

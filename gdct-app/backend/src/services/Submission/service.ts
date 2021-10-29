@@ -21,7 +21,7 @@ import {ObjectId} from 'mongodb';
 import User ,{UserDoc} from '../../types/user'
 import Program, {ProgramDoc} from '../../types/program';
 import TemplatePackage from '../../types/templatepackage';
-import Submission from '../../types/submission';
+import Submission, { SubmissionPopulated } from '../../types/submission';
 import SubmissionNote from '../../types/submissionnote';
 import SubmissionPeriod from '../../types/submissionperiod';
 import Status from '../../types/status';
@@ -29,6 +29,7 @@ import WorkflowProcess from '../../types/workflowprocess';
 import TemplateType from '../../types/templatetype';
 import Template from '../../types/template';
 import AppError from '../../utils/AppError';
+import RoleWorkflowStatusRepository from '../../repositories/RoleWorkflowStatus/repository';
 // @Service()
 export default class SubmissionService {
   private submissionRepository:SubmissionRepository;
@@ -44,6 +45,7 @@ export default class SubmissionService {
   private submissionPeriodRepository : SubmissionPeriodRepository;
   private usersRepository : UsersRepository;
   private reportingPeriodRepository : ReportingPeriodRepository;
+  private roleWorkflowStatusRepository: RoleWorkflowStatusRepository;
   
   constructor() {
     this.submissionRepository = Container.get(SubmissionRepository);
@@ -59,6 +61,7 @@ export default class SubmissionService {
     this.submissionPeriodRepository = Container.get(SubmissionPeriodRepository);
     this.usersRepository = Container.get(UsersRepository);
     this.reportingPeriodRepository = Container.get(ReportingPeriodRepository);
+    this.roleWorkflowStatusRepository = Container.get(RoleWorkflowStatusRepository);
     // this.submissionPeriodRepository = Container.get(SubmissionPeriodRepository);
   }
 
@@ -100,6 +103,32 @@ export default class SubmissionService {
 
   async findQuery(query: Partial<Submission>) {
     return await this.submissionRepository.findQuery(query)
+  }
+
+  async findByRole(role: {orgId: string, progId: string, tempTypeId: string, role: string}) {
+    //@ts-ignore
+    const submissions: SubmissionPopulated[] = await this.submissionRepository.findQueryPopulate({ orgId: +role.orgId, programId: role.progId })
+    // determine acceptable statuses
+    const statuses = (await this.roleWorkflowStatusRepository.findByRole(role.role)).workflowStatus
+    const statusIds = []
+    for (let status of statuses) {
+      statusIds.push((await this.statusRepository.findByName(status))[0]._id)
+      // console.log('statuses', statusIds)
+    }
+    for (let i = 0; i < submissions.length; i++) {
+      // workflow processes this user can see, depends on submission workflow
+      const workflows: WorkflowProcess[] = await this.workflowProcessRepository.findNeighbors(submissions[i].workflowId.toString(), statusIds)
+      // from available processes -> available statuses
+      const statusRes = []
+      for (let workflowProcess of workflows) {
+        statusRes.push((await this.statusRepository.findById(workflowProcess.statusId)).name)
+      }
+      const tempTypeId = (await this.templateRepository.findById(submissions[i].templateId)).templateTypeId
+      if (tempTypeId.toString() !== role.tempTypeId.toString() || !statusRes.includes(submissions[i].statusId.name)) {
+        submissions.splice(i,1)
+      }
+    }
+    return submissions
   }
 
   async findReportingPeriod(_id:string){

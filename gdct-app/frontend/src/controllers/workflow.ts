@@ -17,6 +17,8 @@ const workflowController = (() => {
     fetchById: async (_id: string): Promise<{workflow: Workflow, workflowProcesses: WorkflowProcess[]} | null> => workflowAxios.post('/fetchById', { _id }).then(res => res.data.data),
     fetchByStatusId: async (id: string): Promise<Workflow | null> =>
       workflowAxios.post('/fetchByStatusId', { id }).then(res => res.data),
+    fetchNeighbors: async (workflowId: string, statusIds: string[]): Promise<WorkflowProcess[]> => 
+      workflowAxios.post('/workflows/findNeighbors', {workflowId, statusIds}).then(res => res.data),
     fetchOnlyWorkflowById: async (_id: string): Promise<Workflow | null> =>
       workflowAxios.post('/fetchOnlyWorkflowById', { _id }).then(res => res.data),
     fetchProcess: async (processId: string): Promise<WorkflowProcess | null> =>
