@@ -101,6 +101,10 @@ const NestedMenuItem = React.forwardRef<
     }
   }
 
+  const handleMouseClick = (event: React.MouseEvent<HTMLElement>) => {
+    setIsSubMenuOpen(false)
+  }
+
   // Check if any immediate children are active
   const isSubmenuFocused = () => {
     const active = containerRef.current?.ownerDocument?.activeElement
@@ -174,6 +178,7 @@ const NestedMenuItem = React.forwardRef<
         {...MenuItemProps}
         className={clsx(menuItemClasses.root, className)}
         ref={menuItemRef}
+        onClick={handleMouseClick}
       >
         {label}
         {rightIcon}
@@ -198,6 +203,7 @@ const NestedMenuItem = React.forwardRef<
         autoFocus={false}
         disableAutoFocus
         disableEnforceFocus
+        onClick={handleMouseClick}
         onClose={() => {
           setIsSubMenuOpen(false)
         }}
