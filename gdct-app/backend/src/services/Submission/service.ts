@@ -112,7 +112,10 @@ export default class SubmissionService {
     const statuses = (await this.roleWorkflowStatusRepository.findByRole(role.role))?.workflowStatus
     const statusIds = []
     for (let status of statuses) {
-      statusIds.push((await this.statusRepository.findByName(status))[0]._id)
+      const stat = await this.statusRepository.findByName(status)
+      if (stat && stat.length > 0) {
+        statusIds.push(stat[0]._id)
+      }
       // console.log('statuses', statusIds)
     }
     for (let i = 0; i < submissions.length; i++) {
@@ -121,7 +124,10 @@ export default class SubmissionService {
       // from available processes -> available statuses
       const statusRes = []
       for (let workflowProcess of workflows) {
-        statusRes.push((await this.statusRepository.findById(workflowProcess.statusId)).name)
+        const stat = await this.statusRepository.findById(workflowProcess.statusId)
+        if (stat) {
+          statusRes.push(stat.name)
+        }
       }
       const tempTypeId = (await this.templateRepository.findById(submissions[i].templateId)).templateTypeId
       if (tempTypeId.toString() !== role.tempTypeId.toString() || !statusRes.includes(submissions[i].statusId.name)) {
