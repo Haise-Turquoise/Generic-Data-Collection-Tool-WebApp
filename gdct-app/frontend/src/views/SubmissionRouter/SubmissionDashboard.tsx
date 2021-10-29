@@ -65,19 +65,15 @@ const SubmissionDashboard = ({ history }:{history:History}) => {
   const [submissions, setSubmissions] = useState<SubmissionPopulated[]>([]);
   const [submitterFlag, setSubmitterFlag] = useState(false)
 
-  // StatusController.fetch().then(res => {
-  //     const valid = res
-  //       .filter(status => status.isActive && !status.forPackage)
-  //       .sort((a, b) => a.order - b.order)
-  //     setStatuses(valid.map(status => status.name));
-  //   })
-
   const timeOption = { year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric' };
   useEffect(() => {
     // load data
     (async function() {
       const sysRole = (await usersController.fetchById(currUID || ''))?.sysRole
-      const parsed = sysRoleTraversal(sysRole || [])
+      let parsed = sysRoleTraversal(sysRole || [])
+      // we are only concerned with roles that match current selected user role
+      // ex someone who is Submitter + Approver should only see whichever they signed in to
+      parsed = parsed.filter(role => role.role === localStorage.getItem('currentRole'))
       const submissions = await submissionController.fetchByRole(parsed)
       console.log('sub', submissions)
       setSubmissions(submissions)
