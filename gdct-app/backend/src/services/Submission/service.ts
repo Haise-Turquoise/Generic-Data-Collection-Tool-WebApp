@@ -109,7 +109,7 @@ export default class SubmissionService {
     //@ts-ignore
     const submissions: SubmissionPopulated[] = await this.submissionRepository.findQueryPopulate({ orgId: +role.orgId, programId: role.progId })
     // determine acceptable statuses
-    const statuses = (await this.roleWorkflowStatusRepository.findByRole(role.role))?.workflowStatus || []
+    const statuses: string[] = (await this.roleWorkflowStatusRepository.findByRole(role.role))?.workflowStatus || []
     const statusIds = []
     for (let status of statuses) {
       const stat = await this.statusRepository.findByName(status)

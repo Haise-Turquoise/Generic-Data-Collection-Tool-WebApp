@@ -17,8 +17,7 @@ const MenuItemIcon = ({ icon }:{
 
 
 export default function SideDrawer(props:any) {
-  const { name, icon, url, children, isSubMenu, option, closeParent } = props;
-  const [anchorEl, setAnchorEl] = React.useState<(EventTarget & Element)|null>(null);
+  const { name, icon, url, children, isSubMenu, option, closeParent} = props;
 
 
   //setup props for nestedmenuitem 
@@ -26,14 +25,26 @@ export default function SideDrawer(props:any) {
   const menuItemRef = useRef<any>(null);
 
 
-  const handleItemClick = (event: React.MouseEvent) => {
-    //setMenuPosition(null)
+  const handleRightClick = (event: React.MouseEvent) => {
+    if (menuPosition) {
+      return
+    }
+    event.preventDefault()
+    setMenuPosition({
+      top: event.pageY,
+      left: event.pageX
+    })
   }
 
-  
+  const handleItemClick = (event: React.MouseEvent) => {
+    //something is wrong here
+    //setMenuPosition(null)
+    props.handleClose
+    console.log("this ran")
+  }
 
   return (
-    <div>
+    <div onContextMenu={handleRightClick}>
 
       <NestedMenuItem
         ref={menuItemRef}
@@ -56,12 +67,17 @@ export default function SideDrawer(props:any) {
                 key={`${type}-${name}`}
                 {...item}
                 isSubMenu={true}
-
+                handleClose={props.handleClose}
               />
             );
           }
           return (
-            <ListItem key={name} component={url && Link} button to={url}>
+            <ListItem 
+              key={name} 
+              component={url && Link} 
+              button to={url}
+              onClick={props.handleClose}
+            >
               <ListItemIcon>{icon}</ListItemIcon>
               <ListItemText primary={name} />
 
