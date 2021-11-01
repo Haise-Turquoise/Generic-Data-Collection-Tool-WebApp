@@ -1,0 +1,38 @@
+
+.subDasboard{
+    max-width: 800px;
+    max-height: 1000px;
+    
+    position: flex;
+    margin:0 auto;
+
+}
+
+.subDasboardTitle{
+    background-color: blue;
+    overflow: auto;
+    
+    text-align: center;
+    height: 50px;
+}
+
+.subright{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    
+    color: white;
+    height: 100%;
+    float: right;
+}
+
+.subleft{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    
+    color: white;
+    height: 100%;
+    float: left; 
+    
+}
