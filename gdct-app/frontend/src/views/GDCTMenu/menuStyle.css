@@ -9,7 +9,7 @@
 }
 
 .subDasboardTitle{
-    background-color: blue;
+    background-color: #3f51b5;
     overflow: auto;
     
     text-align: center;
@@ -23,6 +23,7 @@
     
     color: white;
     height: 100%;
+    width: 33.33%;
     float: right;
 }
 
@@ -33,6 +34,51 @@
     
     color: white;
     height: 100%;
+    width: 33.33%;
     float: left; 
+    
+}
+
+.rowContainer{
+    background-color: gray;
+    overflow: auto;
+    
+    text-align: center;
+    height: 50px;
+}
+
+.rowRight{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+ 
+    color: white;
+    height: 100%;
+    width: 33.33%;
+    float: left;
+}
+
+.rowLeft{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    
+    color: white;
+    height: 100%;
+    width: 33.33%;
+    float: left; 
+}
+
+.rowMiddle{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    
+    color: white;
+    text-align: center;
+    float: left;
+    height: 100%;
+    width: 33.33%;
+   
     
 }
