@@ -6,7 +6,7 @@ export default interface TemplateType {
   description: string;
   templateWorkflowId: ObjectId;
   submissionWorkflowId: ObjectId;
-  programIds: ObjectId[];
+  programId: ObjectId[];
   isApprovable: boolean;
   isReviewable: boolean;
   isSubmittable: boolean;

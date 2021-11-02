@@ -101,6 +101,10 @@ const NestedMenuItem = React.forwardRef<
     }
   }
 
+  const handleMouseClick = (event: React.MouseEvent<HTMLElement>) => {
+    setIsSubMenuOpen(false)
+  }
+
   // Check if any immediate children are active
   const isSubmenuFocused = () => {
     const active = containerRef.current?.ownerDocument?.activeElement
@@ -174,6 +178,7 @@ const NestedMenuItem = React.forwardRef<
         {...MenuItemProps}
         className={clsx(menuItemClasses.root, className)}
         ref={menuItemRef}
+        onClick={handleMouseClick}
       >
         {label}
         {rightIcon}
@@ -182,6 +187,9 @@ const NestedMenuItem = React.forwardRef<
         // Set pointer events to 'none' to prevent the invisible Popover div
         // from capturing events for clicks and hovers
         style={{pointerEvents: 'none'}}
+        PaperProps={{
+          style: { pointerEvents: "auto" }
+        }}
         anchorEl={menuItemRef.current}
         anchorOrigin={{
           vertical: 'top',
@@ -195,11 +203,13 @@ const NestedMenuItem = React.forwardRef<
         autoFocus={false}
         disableAutoFocus
         disableEnforceFocus
+        onClick={handleMouseClick}
         onClose={() => {
           setIsSubMenuOpen(false)
         }}
       >
-        <div ref={menuContainerRef} style={{pointerEvents: 'auto'}}>
+        {/* <div ref={menuContainerRef} style={{pointerEvents: 'auto'}}> */}
+        <div ref={menuContainerRef}>
           {children}
         </div>
       </Menu>

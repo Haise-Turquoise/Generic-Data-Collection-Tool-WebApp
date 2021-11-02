@@ -116,7 +116,7 @@ const LinkProgramTable = ({
     if (Array.isArray(rowData)) {
       return
     }
-    templateType.programIds = templateType.programIds.concat([rowData._id]);
+    templateType.programId = templateType.programId.concat([rowData._id]);
     dispatch(updateTemplateTypeRequest(templateType, () => {}, reject));
     // Refresh templateType because dispatch makes object read-only, not allowing multiple adding.
     templateType = { ...templateType };
@@ -126,7 +126,7 @@ const LinkProgramTable = ({
     if (Array.isArray(rowData)) {
       return
     }
-    templateType.programIds = templateType.programIds.filter(elem => elem !== rowData._id);
+    templateType.programId = templateType.programId.filter(elem => elem !== rowData._id);
     dispatch(updateTemplateTypeRequest(templateType, () => {}, reject));
     // Refresh templateType because dispatch makes object read-only, not allowing multiple deleting.
     templateType = { ...templateType };
@@ -142,7 +142,7 @@ const LinkProgramTable = ({
   ) : (
     <div>
       <ProgramList
-        programIds={templateType.programIds}
+        programIds={templateType.programId}
         onClickAdd={onClickAdd}
         onClickDelete={onClickDelete}
       />

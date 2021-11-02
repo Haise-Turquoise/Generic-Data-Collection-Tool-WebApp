@@ -1,42 +1,31 @@
-import React, { useState, Fragment, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, } from 'react';
 import { Link } from 'react-router-dom';
 import clsx from 'clsx';
-
 import { makeStyles, useTheme, Theme} from '@material-ui/core/styles';
 import {
   AppBar,
   Drawer,
   Chip,
   Toolbar,
-  List,
   CssBaseline,
   Typography,
   IconButton,
   ListItem,
   ListItemIcon,
   ListItemText,
-  Collapse,
-  Switch,
-  FormControlLabel,
-  Menu,
-  Popover,
-  MenuItem,
 } from '@material-ui/core';
 import MenuIcon from '@material-ui/icons/Menu';
-import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
-import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 //@ts-ignore
 import createUserNavigation from './createUserNavigation';
 //@ts-ignore
 import TopItemList from './TopItemList';
 import './_chip.scss';
 import './_listitem.scss';
+import '../../images/Onlogo.png';
+
 //@ts-ignore
 import Usernavigation from '../../types/usernavigation';
-import KeyboardArrowRightIcon from '@material-ui/icons/KeyboardArrowRight';
-import KeyboardArrowLeftIcon from '@material-ui/icons/KeyboardArrowLeft';
 import ClickAwayListener from '@material-ui/core/ClickAwayListener';
-import { completeBorderStyleMap } from '../../constants/styles';
 import SideDrawer from './SideDrawer';
 
 
@@ -202,9 +191,12 @@ const Header = ({
         isTopMenu={isTopMenu}
       />
       <Link to="/" className={classes.title}>
+      <div style={{ display: 'flex', marginLeft: 'auto' }}>
+        <img src={'/Onlogo.png'} alt="logo" width="30" height="30"/>
         <HeaderTitle title={title} />
+        </div>
       </Link>
-      {isTopMenu && <TopItemList config={config}  isMobile={isMobile} />}
+       <TopItemList config={config}  isMobile={isMobile} />
       <Chip
         label={
           <span>
@@ -219,20 +211,7 @@ const Header = ({
         id="MuiChip-label-Authpage"
         className={classes.chip}
       />
-      <FormControlLabel
-        className={classes.flexItem}
-        control={
-          <Switch
-            checked={isTopMenu}
-            onChange={() => {
-              setTopMenu(!isTopMenu);
-              setOpen(false);
-            }}
-            aria-label="login switch"
-          />
-        }
-        label={isTopMenu ? 'Top' : 'Left'}
-      />
+     
     </Toolbar>
   </AppBar>
 );
@@ -241,18 +220,20 @@ const MenuItemIcon = ({ icon }:{
   icon:string,
 }) => <ListItemIcon>{icon}</ListItemIcon>;
 
-const MenuItemLink = ({ name, icon, url, type, level }:{
+const MenuItemLink = ({ name, icon, url, type, level, handleClose}:{
   name:string,
   icon:string,
   url:any,
   type:string,
-  level:string|number
+  level:string|number,
+  handleClose:()=>void, 
 }) => (
   <ListItem
     component={url && Link}
     button
     to={url}
     id={window.location.pathname.includes(url) ? 'active' : ''}
+    onClick={handleClose}
   >
     <MenuItemIcon icon={icon} />
     {level === '2' ? (
@@ -273,88 +254,12 @@ const MenuItemLink = ({ name, icon, url, type, level }:{
   </ListItem>
 );
 
-const MenuItems = ({ menuItems, level }:{
-  menuItems:any,
-  level:string|number,
-}) => {
-  return menuItems.map((menuItem:any, index:number) => {
-    if (menuItem.type === 'drawer') {
-      const { type, name, icon, url } = menuItem;
-      return (
-          <MenuDrawer key={`${menuItem.type}-${menuItem.name}-${index}`} {...menuItem} level="2" />        
-          );
-    }
-    return (
-      <MenuItemLink
-        key={`${menuItem.type}-${menuItem.name}-${index}`}
-        {...menuItem}
-        level={level}
-      />
-    );
-  });
-};
 
-const MenuItemsList = ({ menuItems, level }:{
-  menuItems:any,
-  level:string|number,
-}) => (
-  <List component="div" disablePadding>
-    <MenuItems menuItems={menuItems} level={level} />
-  </List>
-);
 
-const MenuDrawerItems = ({ menuItems, open, level }:{
-  menuItems:any,
-  open:boolean,
-  level:string|number,
-}) => (
-  <Collapse in={open} timeout="auto" unmountOnExit style={{ minHeight: '1' }}>
-    <MenuItemsList menuItems={menuItems} level={level} />
-  </Collapse>
-);
-
-const MenuDrawerTitle = ({ button = true, name, icon, open, handleClick, level }:{
-  button:true,
-  name:string,
-  icon:any,
-  open:boolean,
-  handleClick:(target:any)=>void,
-  level:string|number,
-}) => (
-  <ListItem button={button} onClick={handleClick}>
-    {icon && <MenuItemIcon icon={icon} />}
-    {level === '2' ? (
-      <ListItemText
-        primary={
-          <Typography style={{ fontSize: '0.9rem', marginLeft: '1.2rem' }}>{name}</Typography>
-        }
-      />
-    ) : (
-      <ListItemText primary={name} />
-    )}
-    {open ? <KeyboardArrowLeftIcon /> : <KeyboardArrowRightIcon />}
-  </ListItem>
-);
-
-const MenuDrawer = ({ name, icon, children, level = 1 }:{
-  name:string,
-  icon:any,
-  children:Object,
-  level:number|string,
-}) => {
-  const [open, setOpen] = useState(false);
-  const handleToggle = useCallback(target => setOpen(!open), [open]);
-  //@ts-ignore
-  return (
-    //@ts-ignore
-    <Fragment>
-      <MenuDrawerTitle name={name} icon={icon} handleClick={handleToggle} level={level} open={open} button={true}/>
-      <MenuDrawerItems open={open} menuItems={children} level={level} />
-    </Fragment>
-  );
-};
-
-const NavigationContent = ({ config }:{config:any}) => {
+const NavigationContent = ({ config, handleClose }:{
+  config:any, 
+  handleClose:()=>void,
+  }) => {
   console.log('config', config);
   return config.map((item:Usernavigation, index:number) => {
     let Component;
@@ -369,20 +274,18 @@ const NavigationContent = ({ config }:{config:any}) => {
         Component = MenuItemLink;
         break;
     }
-    return <Component key={`${type}-${name}-${index}`} {...item} />;
+    return <Component key={`${type}-${name}-${index}`} {...item} handleClose={handleClose}/>;
   });
 };
 
-const closeMenu = () => {
 
-};
-
-const NavigationDrawer = ({open, theme, config, classes, handleDrawerClose }:{
+const NavigationDrawer = ({open, theme, config, classes, handleDrawerClose, handleClose }:{
   open:boolean,
   theme:Theme,
   config:any,
   classes:any,
   handleDrawerClose:()=>void,
+  handleClose:()=>void,
 }) => (
   <ClickAwayListener onClickAway={handleDrawerClose}>
     <Drawer
@@ -396,7 +299,7 @@ const NavigationDrawer = ({open, theme, config, classes, handleDrawerClose }:{
         paper: classes.drawerPaper,
       }}
   >
-      <NavigationContent config={config} />
+      <NavigationContent config={config} handleClose={handleClose}/>
     </Drawer>
   </ClickAwayListener> 
 );
@@ -414,12 +317,12 @@ const AuthPage = ({
   const theme = useTheme();
   const [config, setConfig] = useState([]);
   const [open, setOpen] = useState(false);
-  const [isTopMenu, setTopMenu] = useState(true);
+  const [isTopMenu, setTopMenu] = useState(false);
   const [isMobile, setMobile] = useState(window.matchMedia('(max-width: 1000px)').matches);
   useEffect(() => {
     const handler = (e:any) => setMobile(e.matches);
     window.matchMedia('(max-width: 1000px)').addListener(handler);
-    setTopMenu(!isMobile);
+    //setTopMenu(!isMobile);
     createUserNavigation().then((res:any) => {
       console.log('res', res)
       setConfig(res);
@@ -467,6 +370,7 @@ const AuthPage = ({
         open={open}
         config={config}
         handleDrawerClose={handleDrawerClose2}
+        handleClose={handleDrawerClose2}
       />
       <main
         style={style}
