@@ -4,6 +4,7 @@ import { Options } from 'material-table';
 import moment from 'moment';
 import React, { ReactText } from 'react';
 import { unauthorized_dialog } from '../components/Unauthorized_Dialog/Unauthorized_Dialog';
+import User from '../types/user';
 
 export const isObjectEmpty = (object:any) => {
   for (let key in object) return false;
@@ -781,4 +782,37 @@ export const fetchWithStatus = async <T>(
         setStatus('NOT ALLOWED')
       }
     })
+}
+
+interface role {
+  role: string,
+  orgId: string,
+  progId: string,
+  tempTypeId: string,
+}
+/**
+ * Parses a user's sysRole object and returns array of data
+ * @param sysRole A user.sysRole object
+ * @returns an array of objects of the form {role, orgId, progId, templateTypeId}
+ */
+export const sysRoleTraversal = (sysRole: User["sysRole"]): role[] => {
+  if (sysRole.length === 0) {
+    return []
+  }
+  const parsed: role[] = []
+  for (let srole of sysRole) {
+    for (let org of srole.org) {
+      for (let prog of org.program) {
+        for (let temp of prog.template) {
+          parsed.push({
+            role: srole.role,
+            orgId: org.orgId,
+            progId: prog.programId,
+            tempTypeId: temp.templateTypeId,
+          })
+        }
+      }
+    }
+  }
+  return parsed
 }

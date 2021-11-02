@@ -15,7 +15,7 @@ import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
 import { History } from 'history';
-import { Submission } from '../../types/submissions'
+import Submission, { SubmissionPopulated } from '../../types/submission'
 import RoleWorkflowStatus from '../../types/roleWorkflowStatus';
 import  User  from '../../types/user';
 import WorkflowProcess from '../../types/workflowprocess';
@@ -23,7 +23,9 @@ import Typography from '@material-ui/core/Typography';
 import { getSubmissionsRequest } from '../../store/thunks/submission';
 import { selectSubmissionsStore } from '../../store/SubmissionsStore/selectors';
 import { selectFactoryRESTResponseTableValues } from '../../store/common/REST/selectors';
-import { calculateOptions } from '../../tools/misc'
+import { calculateOptions, sysRoleTraversal } from '../../tools/misc'
+import submissionController from '../../controllers/submission';
+import submissionPeriodController from '../../controllers/submissionPeriod';
 import UsersController from '../../controllers/Users';
 import roleWorkflowStatusController from '../../controllers/RoleWorkflowStatus';
 import workflowController from '../../controllers/workflow';
@@ -31,6 +33,7 @@ import statusController from '../../controllers/status';
 
 import './SubmissionDashboard.scss'
 import Status from '../../types/status';
+import usersController from '../../controllers/Users';
 
 const useStyles = makeStyles((theme) => ({
   formControl: {
@@ -52,185 +55,53 @@ const SubmissionDashboard = ({ history }:{history:History}) => {
   const styleFactor = '0.2%';
   const classTheme = useStyles();
 
+  const [filterOptions, setFilterOptions] = useState<string[]>([])
   const [readFilterFrom, setFilterFrom] = useState('All');
   const [readFilterTo, setFilterTo] = useState('All');
   const [readMessage, setMessage] = useState('Loading submissions...');
 
   const [statuses, setStatuses] = useState<string[]>([]);
-  const [programFilter, setFilter] = useState<string[]>([]);
-  const currRole = localStorage.getItem('currentRole');
-  const [readBaseGrouping, setBaseGrouping] = useState<string[]>([]);
-  const [statusMap, setStatusMap] = useState<{[key: string]: number} | undefined>()
-
-  // let allowedGrouping:string[] = [];
-
-  // switch(currRole){
-  //   case('Inputter'):
-  //     allowedGrouping = ['Inputted', 'Unsubmitted'];
-  //     break;
-
-  //   case('Submitter'):
-  //     allowedGrouping = ['Unsubmitted', 'Inputted', 'Submitted', 'review', 'Approved' ,'Returned', 'Rejected'];
-  //     break;
-
-  //   case('Reviewer'):
-  //     allowedGrouping = ['Submitted', 'Returned', 'Approved', 'review'];
-  //     break;
-
-  //   case('Submission Approver'):
-  //      allowedGrouping = ['Submitted', 'Returned', 'Approved', 'review', 'Rejected'];
-  //     break;
-
-  //   default:
-  //     allowedGrouping = ['Unsubmitted', 'Inputted', 'Submitted', 'Approved',
-  //     'pre_view', 'review', 'Returned', 'Rejected'];
-  //     break;
-  // }
-
-  // StatusController.fetch().then(res => {
-  //     const valid = res
-  //       .filter(status => status.isActive && !status.forPackage)
-  //       .sort((a, b) => a.order - b.order)
-  //     setStatuses(valid.map(status => status.name));
-  //   })
-
-  const timeOption = { year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric' };
-  let { submissions }:{submissions:Submission[]} = useSelector(
-    state => ({
-      submissions: selectFactoryRESTResponseTableValues(selectSubmissionsStore)(state),
-    }),
-    shallowEqual,
-  )
-  
-  useEffect(() =>{
-    const role = localStorage.getItem('currentRole') || '';
-    roleWorkflowStatusController.fetchStatusByRole(role).then((data:RoleWorkflowStatus) =>{
-      setBaseGrouping(data.workflowStatus);
-    });
-    statusController.fetch().then((res: Status[]) => {
-      const map: {[key: string]: number} = {}
-      for (let status of res) {
-        if (status.order) {
-          map[status.name] = status.order
-        } else {
-          map[status.name] = 100
-        }
-      }
-      setStatusMap(map)
-    })
-  }, [])
-
-  
-
-  useEffect(() => {
-    
-    // const submissionGroups = submissions.map(e=>e.phase);
-    // const allowedStatus = allowedGrouping.filter(e=>submissionGroups.includes(e));
-    // setStatuses(allowedStatus);
-    UsersController.fetchByEmail(localStorage.getItem('currentUser') || '').then((res:User | null)=>{
-      let filter:string[] = [];
-      res?.sysRole.forEach(role => {
-        if (role.role === currRole && currRole !== 'Business Admin'){
-          role.org.forEach(orginfo => {
-            filter = filter.concat(orginfo.program.map(e=>String(e.programId)))
-          });
-        }
-      });
-      setFilter(filter);
-    });
-  }, [submissions])
-
+  const currUID = localStorage.getItem('currentUserID');
+  const [submissions, setSubmissions] = useState<SubmissionPopulated[]>([]);
   const [submitterFlag, setSubmitterFlag] = useState(false)
 
-  if (!Array.isArray(submissions)) {
-    submissions = [];
-    dispatch(getSubmissionsRequest(()=>{setMessage('Nothing to show');}));
-  }
+  const timeOption = { year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric' };
+  useEffect(() => {
+    // load data
+    (async function() {
+      const sysRole = (await usersController.fetchById(currUID || ''))?.sysRole
+      let parsed = sysRoleTraversal(sysRole || [])
+      // we are only concerned with roles that match current selected user role
+      // ex someone who is Submitter + Approver should only see whichever they signed in to
+      parsed = parsed.filter(role => role.role === localStorage.getItem('currentRole'))
+      const submissions = await submissionController.fetchByRole(parsed)
+      console.log('sub', submissions)
+      setSubmissions(submissions)
 
-  let filteredSubmission = [...submissions];
-  useEffect(()=>{
-    if (filteredSubmission[0] !== undefined) {
-
-      if (localStorage.getItem('currentRole') !== 'Business Admin'){
-        filteredSubmission = filteredSubmission.filter(submission=>
-          programFilter.includes(String(submission.programId))
-        );
+      // set submitter flag
+      if (parsed.find(role => role.role === 'Submitter')) {
+        setSubmitterFlag(true)
       }
-
-      filteredSubmission.forEach(submission => {
-        const createdAt = new Date(submission.createdAt);
-        const modifiedAt = new Date(submission.updatedAt);
-        // @ts-ignore
-        submission.createdAt = createdAt.toLocaleDateString("en-US", timeOption);
-        // @ts-ignore
-        submission.updatedAt = modifiedAt.toLocaleDateString("en-US", timeOption);
-        if (!submissionPeriod[submission.period]) {
-          submissionPeriod[submission.period] = 1;
-        }
-
-        if (submission !== undefined) {
-          if (
-            submission.permission.find(
-              permission => permission === 'Submitter' || permission === 'Inputter',
-            ) !== undefined
-          )
-            setSubmitterFlag(true);
-        } else {
-          // should remove invalid (undefined/out of range) submissions
-          filteredSubmission.filter(element => element !== submission)
-        }
-      });
-
-      const workFlowsArray:string[] = []
-      let filteredGrouping = [...readBaseGrouping];
-      const existingPhaseSet = new Set(filteredSubmission.map(e=>e.phase));
-      // filter out the empty section that does not exist in submissions
-      filteredGrouping = filteredGrouping.filter(e=>existingPhaseSet.has(e));
-
-      // sort filteredGrouping
-      filteredGrouping = filteredGrouping.sort((a, b) => {
-        if (statusMap) {
-          return statusMap[a] - statusMap[b]
-        } else {
-          return 0
-        }
-      })
-
-      filteredSubmission.forEach(e => {
-        const workFlowId = String(e.workflowId)
-        if (!workFlowsArray.includes(workFlowId)){
-          workFlowsArray.push(workFlowId);
-        }
-      });
       
-      
-      workflowController.fetchProcessesByWorkflowIds(workFlowsArray).then((workflowProcesses:WorkflowProcess[])=>{
-        const processToStausMapping = new Map<string, string>();
-        // create a new map to map id to status name mapping
-        workflowProcesses.forEach(e=>{
-          const status = e.statusId.name;
-          const id = String(e._id);
-          if(!processToStausMapping.has(id)){
-            processToStausMapping.set(id, status);
-          }
-        });
+      // get all statuses from submissions
+      let statuses = submissions.map(sub => sub.statusId.name)
+      // remove duplicates
+      statuses = [...new Set(statuses)]
 
-        const baseGrouping = [...filteredGrouping];
-        // check if the next status is in the filtered based role group
-        workflowProcesses.forEach(workflowProcess=>{
-          const currentStatus = workflowProcess.statusId.name;
-          workflowProcess.to.forEach(nextId=>{
-            const nextStatus = processToStausMapping.get(String(nextId))!;
-            if (existingPhaseSet.has(currentStatus) && filteredGrouping.includes(nextStatus) && !baseGrouping.includes(currentStatus)){
-              const nextIndex = baseGrouping.indexOf(nextStatus)
-              baseGrouping.splice(nextIndex, 0, currentStatus);
-            }
-          });
-        });
-        setStatuses(baseGrouping);
-      });
-    }
-  }, [submissions])
+      // sort statuses
+      const statusMap: {[key: string]: number} = 
+        (await statusController.fetch())
+        .reduce((acc, curr) => ({...acc, [curr.name]: curr.order || 100}), {})
+      // sort
+      statuses.sort((a, b) => statusMap[a] - statusMap[b])
+      setStatuses(statuses)
+
+      // find submission periods
+      let periods = new Set<string>()
+      submissions.forEach(sub => periods.add(sub.submissionPeriodId.name))
+      setFilterOptions([...periods])
+    })()
+  }, [])
 
 
   const handleFilterFrom = (event:ChangeEvent<{ value: any; }>) => {
@@ -244,13 +115,13 @@ const SubmissionDashboard = ({ history }:{history:History}) => {
 
   const checkBoxColumns = useMemo(
     () => [
-      { title: 'Period', field: 'period', headerStyle: { padding: styleFactor }, cellStyle: { padding: styleFactor } },
+      { title: 'Period', field: 'submissionPeriodId.name', headerStyle: { padding: styleFactor }, cellStyle: { padding: styleFactor } },
       { title: 'Submission', field: 'name', headerStyle: { padding: styleFactor }, cellStyle: { padding: styleFactor } },
-      { title: 'Program', field: 'programName', headerStyle: { padding: styleFactor }, cellStyle: { padding: styleFactor } },
+      { title: 'Program', field: 'programId.name', headerStyle: { padding: styleFactor }, cellStyle: { padding: styleFactor } },
       { title: 'Approver', field: 'approver' , headerStyle: { padding: styleFactor }, cellStyle: { padding: styleFactor } },
       { title: 'Health Service Provider', field: 'orgId', headerStyle: { padding: styleFactor }, cellStyle: { padding: styleFactor } },
-      { title: 'Template Package Name', field: 'templatePackageName', headerStyle: { padding: styleFactor }, cellStyle: { padding: styleFactor } },
-      { title: 'Status', field: 'phase', headerStyle: { padding: styleFactor }, cellStyle: { padding: styleFactor } },
+      { title: 'Template Package Name', field: 'templateName', headerStyle: { padding: styleFactor }, cellStyle: { padding: styleFactor } },
+      { title: 'Status', field: 'statusId.name', headerStyle: { padding: styleFactor }, cellStyle: { padding: styleFactor } },
       { title: 'Created On', field: 'createdAt', headerStyle: { padding: styleFactor }, cellStyle: { padding: styleFactor } },
       { title: 'Modified By', field: 'updatedBy', headerStyle: { padding: styleFactor }, cellStyle: { padding: styleFactor } },
       { title: 'Modified on', field: 'updatedAt', headerStyle: { padding: styleFactor }, cellStyle: { padding: styleFactor } },
@@ -264,7 +135,7 @@ const SubmissionDashboard = ({ history }:{history:History}) => {
       {
         icon: CreateOutlinedIcon,
         tooltip: 'View/Edit Submission',
-        onClick: (_event:MouseEvent, submission:Submission) =>
+        onClick: (_event:MouseEvent, submission:SubmissionPopulated) =>
           history.push({
             pathname: `/submission/dashboard/editSubmission/${submission._id}`,
             state: { detail: submission, submissionList: submissions},
@@ -274,24 +145,24 @@ const SubmissionDashboard = ({ history }:{history:History}) => {
     [history],
   );
   const noUpload = ['Submitted', 'Reviewed', 'Approved']
-  const actions: (Action<Submission> | ((rowData: Submission) => Action<Submission>))[] = useMemo(
+  const actions: (Action<SubmissionPopulated> | ((rowData: SubmissionPopulated) => Action<SubmissionPopulated>))[] = useMemo(
     () => [
-      (rowData: Submission) => ({
+      (rowData: SubmissionPopulated) => ({
         icon: (LaunchIcon as any),
         tooltip: 'Upload Submission',
-        onClick: (_event:MouseEvent, submission:Submission | Submission[]) => {
+        onClick: (_event:MouseEvent, submission:SubmissionPopulated | SubmissionPopulated[]) => {
           if (Array.isArray(submission)) return
           history.push({
             pathname: `/submission/createSubmission/${submission._id}`,
             state: { detail: submission },
           })
         },
-        hidden: noUpload.includes(rowData.phase)
+        hidden: noUpload.includes(rowData.statusId.name)
       }),
       {
         icon: CreateOutlinedIcon,
         tooltip: 'View/Edit Submission',
-        onClick: (_event:MouseEvent, submission:Submission | Submission[]) => {
+        onClick: (_event:MouseEvent, submission:SubmissionPopulated | SubmissionPopulated[]) => {
           if (Array.isArray(submission)) return
           history.push({
             pathname: `/submission/dashboard/editSubmission/${submission._id}`,
@@ -303,16 +174,25 @@ const SubmissionDashboard = ({ history }:{history:History}) => {
     [history],
   );
 
-  useEffect(() => {
-    dispatch(getSubmissionsRequest(()=>{setMessage('Nothing to show')}));
-  }, [dispatch]);
+  // compare two period names, return false if p1 before p2, true otherwise 
+  const periodIsAfter = (p1: string, p2: string) => {
+    const p1Year = p1.substring(0,4)
+    const p2Year = p2.substring(0,4)
+    const p1Q = p1.substring(9,10)
+    const p2Q = p2.substring(9,10)
+    if (p1Year !== p2Year) {
+      return !!(+p2Year <= +p1Year)
+    } else {
+      return !!(+p2Q <= +p1Q)
+    }
+  }
 
-  const getSubmissionsInRange = (status:string) => filteredSubmission.filter(
+  const getSubmissionsInRange = (status:string) => submissions.filter(
     (submission) =>
       // get submissions for given status and selected period 
-      submission.phase === status && 
-      (readFilterFrom === 'All' || submission.period >= readFilterFrom) && 
-      (readFilterTo === 'All' || submission.period <= readFilterTo)
+      (submission.statusId.name || '') === status && 
+      (readFilterFrom === 'All' || periodIsAfter(submission.submissionPeriodId.name, readFilterFrom)) && 
+      (readFilterTo === 'All' || periodIsAfter(readFilterTo, submission.submissionPeriodId.name))
     )
 
   return (
@@ -327,7 +207,7 @@ const SubmissionDashboard = ({ history }:{history:History}) => {
           onChange={handleFilterFrom}
         >
           <MenuItem value='All'>All</MenuItem>
-          {Object.keys(submissionPeriod).map((element) => {
+          {filterOptions.map((element) => {
             return <MenuItem value={element}>{element}</MenuItem>
           })}
         </Select>
@@ -341,7 +221,7 @@ const SubmissionDashboard = ({ history }:{history:History}) => {
           onChange={handleFilterTo}
         >
           <MenuItem value='All'>All</MenuItem>
-          {Object.keys(submissionPeriod).map((element) => {
+          {filterOptions.map((element) => {
             return <MenuItem value={element}>{element}</MenuItem>
           })}
         </Select>
@@ -350,7 +230,7 @@ const SubmissionDashboard = ({ history }:{history:History}) => {
         statuses.map(status => {
           const data = getSubmissionsInRange(status)
           const options = calculateOptions(data.length)
-          return (
+          return data.length > 0 && (
             <ExpansionPanel>
               <ExpansionPanelSummary 
                 expandIcon={<ExpandMoreIcon />}

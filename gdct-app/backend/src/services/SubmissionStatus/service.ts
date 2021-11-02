@@ -1,5 +1,6 @@
 import Container from 'typedi';
 import SubmissionStatusRepository from '../../repositories/SubmissionStatus'
+import SubmissionStatus from '../../types/submissionstatus';
 
 export default class SubmissionStatusService {
   private submissionStatusRepository: SubmissionStatusRepository;
@@ -10,5 +11,9 @@ export default class SubmissionStatusService {
   
   async findAll() {
     return this.submissionStatusRepository.findAll()
+  }
+
+  async find(query: Partial<SubmissionStatus>) {
+    return this.submissionStatusRepository.find(query)
   }
 }

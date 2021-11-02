@@ -109,4 +109,30 @@ export default class WorkflowProcessRepository extends BaseRepository<WorkflowPr
         );
       });
   }
+
+  async findNeighbors(workflowId: string, statusIds: string[]) {
+    const allWorkflows: WorkflowProcess[] = await this.findAll()
+    // find specified process
+    const specified = allWorkflows.filter(wkfl => {
+      return wkfl.workflowId.toString() === workflowId.toString() && statusIds.find(id => id.toString() === wkfl.statusId.toString()) // TEST
+    })
+    // find processes that follow specified
+    const following = allWorkflows.filter(wkfl => {
+      const follows = !!specified.find(workflow2 => workflow2.to.find(id => id.toString() === wkfl._id.toString())) // TEST
+      return wkfl.workflowId.toString() === workflowId.toString() && follows
+    })
+    // find processes before specified
+    const before = allWorkflows.filter(wkfl => {
+      let isBefore = false
+      for (let wkfl2 of specified) {
+        if (wkfl.to.find(id => id.toString() === wkfl2._id.toString())) { // TEST
+          isBefore = true
+          break
+        }
+      }
+      return wkfl.workflowId.toString() === workflowId.toString() && isBefore
+    })
+    return [...specified, ...following, ...before]
+  }
+
 }

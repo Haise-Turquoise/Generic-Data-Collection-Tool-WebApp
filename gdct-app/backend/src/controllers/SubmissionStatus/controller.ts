@@ -12,6 +12,13 @@ const PackageStatusController = Service([SubmissionStatusService], service => {
         .catch(next);
     });
 
+    router.get('/submissionStatus/open', (req, res, next) => {
+      service
+        .find({ reportingPeriod: {submissionClosed: false} })
+        .then(submissionStatus => res.json( submissionStatus ))
+        .catch(next)
+    })
+
     return router;
   })();
 });
