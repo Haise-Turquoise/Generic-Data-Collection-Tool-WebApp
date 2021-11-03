@@ -23,6 +23,13 @@ export default class ProgramService {
     const masterValueEntry = await this.masterValueRepository.findOneByProgramId(id);
     if (masterValueEntry != null) throw new Error("This program is referenced in the master value table");
 
+    const orgEntry = await this.programRepository.findOrgByProgramID(id);
+    const templateTypeModelEntry = await this.programRepository.findTemplateTypeModelByProgramID(id);
+    console.log(templateTypeModelEntry);
+    if (orgEntry.length > 0 || templateTypeModelEntry.length > 0 ) {
+      return false;
+    }
+
     return this.programRepository.delete(id);
   }
 

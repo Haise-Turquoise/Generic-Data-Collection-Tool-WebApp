@@ -3,6 +3,7 @@ import React, { useMemo, useEffect, useState } from 'react';
 import MaterialTable, { Column, Options } from 'material-table';
 import { Paper, Typography } from '@material-ui/core';
 import { selectProgramsStore } from '../../store/ProgramsStore/selectors';
+import Swal, { SweetAlertResult } from 'sweetalert2';
 import {
   calculateOptions,
   checkDuplicates,
@@ -140,9 +141,27 @@ const ProgramsTable = () => {
           CreateAuditLog(null, "Delete Program", "Program", program._id, program_trim, {});
           controllerDeleteRow(ProgramController, setPrograms, program._id)
             .then((res: boolean) => {
+              console.log("res : "  + res);
               if (res) {
+                
                 resolve(res)
               }
+              else{
+
+                Swal.fire({
+                  title: 'Warning!',
+                  text:
+                    'Connot delete program',
+                  icon: 'error',
+                  confirmButtonColor: '#3085d6',
+                  confirmButtonText: 'OK',
+                }).then((result:SweetAlertResult<any>) => {
+                  if (result.isConfirmed) {
+                    window.location.reload();
+                  }
+                });
+              }
+              
               reject()
             })
         }),
