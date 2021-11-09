@@ -137,6 +137,10 @@ export default class SubmissionService {
     return submissions
   }
 
+  async createSubmissions(submissions: Submission[]) {
+    this.submissionRepository.createMany(submissions)
+  }
+
   async findReportingPeriod(_id:string){
     const submission = await this.submissionRepository.findById(_id);
     

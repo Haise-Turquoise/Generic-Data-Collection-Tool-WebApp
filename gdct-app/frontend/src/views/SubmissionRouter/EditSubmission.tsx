@@ -169,6 +169,7 @@ const EditSubmission = ({ history }:{history:History}) => {
           const promiseQuery2 = [];
           for (const workflowProcess of workflowProcesses) {
             promiseQuery2.push(
+              //@ts-ignore
               statusController.fetchStatus(workflowProcess.statusId).then((status:Status | null) => {
                 const workflowProcessCopy = cloneDeep(workflowProcess) as VisitedNode;
                 workflowProcessCopy.statusName = status?.name || '';
@@ -249,6 +250,9 @@ const EditSubmission = ({ history }:{history:History}) => {
     dispatch(SubmissionNoteStore.actions.RECEIVE(''));
   }, [location, dispatch, refresh]);
   useEffect(()=>{
+    if (!currentRole) {
+      return
+    }
     roleSubmissionButtonController.fetchSubmissionButtonByRole(currentRole[0]).then((data:RoleSubmissionButton)=>{
       
       if(data){
