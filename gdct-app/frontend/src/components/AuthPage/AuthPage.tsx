@@ -223,18 +223,20 @@ const MenuItemIcon = ({ icon }:{
   icon:string,
 }) => <ListItemIcon>{icon}</ListItemIcon>;
 
-const MenuItemLink = ({ name, icon, url, type, level }:{
+const MenuItemLink = ({ name, icon, url, type, level, handleClose}:{
   name:string,
   icon:string,
   url:any,
   type:string,
-  level:string|number
+  level:string|number,
+  handleClose:()=>void, 
 }) => (
   <ListItem
     component={url && Link}
     button
     to={url}
     id={window.location.pathname.includes(url) ? 'active' : ''}
+    onClick={handleClose}
   >
     <MenuItemIcon icon={icon} />
     {level === '2' ? (
@@ -257,7 +259,10 @@ const MenuItemLink = ({ name, icon, url, type, level }:{
 
 
 
-const NavigationContent = ({ config }:{config:any}) => {
+const NavigationContent = ({ config, handleClose }:{
+  config:any, 
+  handleClose:()=>void,
+  }) => {
   console.log('config', config);
   return config.map((item:Usernavigation, index:number) => {
     let Component;
@@ -272,20 +277,18 @@ const NavigationContent = ({ config }:{config:any}) => {
         Component = MenuItemLink;
         break;
     }
-    return <Component key={`${type}-${name}-${index}`} {...item} />;
+    return <Component key={`${type}-${name}-${index}`} {...item} handleClose={handleClose}/>;
   });
 };
 
-const closeMenu = () => {
 
-};
-
-const NavigationDrawer = ({open, theme, config, classes, handleDrawerClose }:{
+const NavigationDrawer = ({open, theme, config, classes, handleDrawerClose, handleClose }:{
   open:boolean,
   theme:Theme,
   config:any,
   classes:any,
   handleDrawerClose:()=>void,
+  handleClose:()=>void,
 }) => (
   <ClickAwayListener onClickAway={handleDrawerClose}>
     <Drawer
@@ -299,7 +302,7 @@ const NavigationDrawer = ({open, theme, config, classes, handleDrawerClose }:{
         paper: classes.drawerPaper,
       }}
   >
-      <NavigationContent config={config} />
+      <NavigationContent config={config} handleClose={handleClose}/>
     </Drawer>
   </ClickAwayListener> 
 );
@@ -370,6 +373,7 @@ const AuthPage = ({
         open={open}
         config={config}
         handleDrawerClose={handleDrawerClose2}
+        handleClose={handleDrawerClose2}
       />
       <main
         style={style}
