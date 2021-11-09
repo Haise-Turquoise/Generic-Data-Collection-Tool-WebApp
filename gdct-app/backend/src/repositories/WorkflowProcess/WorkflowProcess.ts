@@ -135,4 +135,24 @@ export default class WorkflowProcessRepository extends BaseRepository<WorkflowPr
     return [...specified, ...following, ...before]
   }
 
+  async findPrevious(workflowId: string, statusIds: string[]) {
+    const allWorkflows: WorkflowProcess[] = await this.findAll()
+    // find specified process
+    const specified = allWorkflows.filter(wkfl => {
+      return wkfl.workflowId.toString() === workflowId.toString() && statusIds.find(id => id.toString() === wkfl.statusId.toString()) // TEST
+    })
+    // find processes before specified
+    const before = allWorkflows.filter(wkfl => {
+      let isBefore = false
+      for (let wkfl2 of specified) {
+        if (wkfl.to.find(id => id.toString() === wkfl2._id.toString())) { // TEST
+          isBefore = true
+          break
+        }
+      }
+      return wkfl.workflowId.toString() === workflowId.toString() && isBefore
+    })
+    return before
+  }
+
 }

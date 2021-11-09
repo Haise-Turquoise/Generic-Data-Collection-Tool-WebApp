@@ -356,7 +356,7 @@ class ModifyOrganization extends React.Component<MOProps, MOState> {
   }
 
   componentDidMount() {
-    orgController.fetch().then((orgs: Organization[]) => {
+    orgController.fetch({}).then((orgs: Organization[]) => {
       if (orgs) {
         this.setState({
           // all organization ids except the one currently being edited

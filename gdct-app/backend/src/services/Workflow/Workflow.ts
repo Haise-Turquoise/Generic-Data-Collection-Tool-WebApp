@@ -157,4 +157,8 @@ export default class WorkflowService {
   async findNeighbors(workflowId: string, statusIds: string[]) {
     return this.workflowProcessesRepository.findNeighbors(workflowId, statusIds);
   }
+
+  async findPrevious(workflowId: string, statusIds: string[]) {
+    return this.workflowProcessesRepository.findPrevious(workflowId, statusIds)
+  }
 }
