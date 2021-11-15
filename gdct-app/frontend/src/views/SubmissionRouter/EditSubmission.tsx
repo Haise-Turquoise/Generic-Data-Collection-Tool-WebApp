@@ -253,7 +253,7 @@ const EditSubmission = ({ history }:{history:History}) => {
     if (!currentRole) {
       return
     }
-    roleSubmissionButtonController.fetchSubmissionButtonByRole(currentRole[0]).then((data:RoleSubmissionButton)=>{
+    roleSubmissionButtonController.fetchSubmissionButtonByRole(localStorage.getItem('currentRole') || '').then((data:RoleSubmissionButton)=>{
       
       if(data){
         setRoleButtons(data.button)

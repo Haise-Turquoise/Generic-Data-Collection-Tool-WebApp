@@ -178,5 +178,6 @@ export default class SubmissionRepository extends BaseRepository<Submission, Sub
       .populate('workflowProcessId')
       .populate('submissionPeriodId')
       .populate('programId')
+      .populate('updatedBy')
   }
 }
