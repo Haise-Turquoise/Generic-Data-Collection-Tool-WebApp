@@ -53,9 +53,6 @@ const useStyles = makeStyles(theme => ({
   menuButton: {
     marginRight: theme.spacing(2),
   },
-  hide: {
-    display: 'none',
-  },
   drawer: {
     width: drawerWidth,
     flexShrink: 0,
@@ -136,7 +133,7 @@ const HeaderHandle = ({ open, classes, handleDrawerOpen, isTopMenu }:{
         aria-label="open drawer"
         onClick={handleDrawerOpen}
         edge="start"
-        className={clsx(classes.menuButton, open && classes.hide)}
+        className={clsx(classes.menuButton, open)}
       >
         <MenuIcon />
       </IconButton>
@@ -195,7 +192,8 @@ const Header = ({
       />
       <Link to="/" className={classes.title}>
       <div style={{ display: 'flex', marginLeft: 'auto' }}>
-        <img src={'/Onlogo.png'} alt="logo" width="30" height="30"/>
+        <div style={{paddingRight: '10px'}}><img src={'/Onlogo.png'} alt="logo" width="30" height="30"/></div>
+        
         <HeaderTitle title={title} />
         </div>
       </Link>
