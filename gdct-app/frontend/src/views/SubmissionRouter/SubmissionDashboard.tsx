@@ -23,7 +23,7 @@ import Typography from '@material-ui/core/Typography';
 import { getSubmissionsRequest } from '../../store/thunks/submission';
 import { selectSubmissionsStore } from '../../store/SubmissionsStore/selectors';
 import { selectFactoryRESTResponseTableValues } from '../../store/common/REST/selectors';
-import { calculateOptions, sysRoleTraversal } from '../../tools/misc'
+import { calculateOptions, formatTimestamp, sysRoleTraversal } from '../../tools/misc'
 import submissionController from '../../controllers/submission';
 import submissionPeriodController from '../../controllers/submissionPeriod';
 import UsersController from '../../controllers/Users';
@@ -39,6 +39,8 @@ import templatePackageController from '../../controllers/templatePackage';
 import { TemplatePackagePopulated } from '../../types/templatepackage';
 import Template from '../../types/template'
 import programController from '../../controllers/Program';
+import Loading from '../../components/Loading';
+import userController from '../../controllers/user';
 
 const useStyles = makeStyles((theme) => ({
   formControl: {
@@ -63,12 +65,12 @@ const SubmissionDashboard = ({ history }:{history:History}) => {
   const [filterOptions, setFilterOptions] = useState<string[]>([])
   const [readFilterFrom, setFilterFrom] = useState('All');
   const [readFilterTo, setFilterTo] = useState('All');
-  const [readMessage, setMessage] = useState('Loading submissions...');
 
   const [statuses, setStatuses] = useState<string[]>([]);
   const currUID = localStorage.getItem('currentUserID');
   const [submissions, setSubmissions] = useState<SubmissionPopulated[]>([]);
   const [submitterFlag, setSubmitterFlag] = useState(false)
+  const [loading, setLoading] = useState(true)
 
   const timeOption = { year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric' };
   useEffect(() => {
@@ -151,13 +153,17 @@ const SubmissionDashboard = ({ history }:{history:History}) => {
               // skipping
               continue
             }
-            console.log('tteemmpp', sub.pack._id)
+            const userId = localStorage.getItem('currentUserID') || ''
+            const user = await usersController.fetchById(userId)
+            if (!user) {
+              continue
+            }
             const populated: SubmissionPopulated = {
               templateId: sub.template._id,
               templateName: sub.template.name,
               submissionPeriodId: sub.pack.submissionPeriodId,
               updatedAt: (new Date()).toLocaleDateString(),
-              updatedBy: localStorage.getItem('currentUserID') || '',
+              updatedBy: user,
               version: 0,
               workflowId: process.workflowId,
               workflowProcessId: process,
@@ -182,6 +188,7 @@ const SubmissionDashboard = ({ history }:{history:History}) => {
               statusId: (process.statusId as unknown) as string,
               programId: programId._id,
               workflowProcessId: process._id || '',
+              updatedBy: userId,
             }
             newPopulated.push(populated)
             newSubmissions.push(submission)
@@ -201,6 +208,7 @@ const SubmissionDashboard = ({ history }:{history:History}) => {
       if (parsed.find(role => role.role === 'Submitter')) {
         setSubmitterFlag(true)
       }
+      setLoading(false)
     })()
   }, [])
 
@@ -237,7 +245,12 @@ const SubmissionDashboard = ({ history }:{history:History}) => {
   const handleFilterTo = (event:ChangeEvent<{ value: any; }>) => {
     setFilterTo(event.target.value);
   }
-
+  
+  // Convert Date format
+  submissions.forEach(sub => {
+    sub.updatedAt = formatTimestamp(sub.updatedAt);
+    sub.createdAt = formatTimestamp(sub.createdAt);
+  });
 
   const checkBoxColumns = useMemo(
     () => [
@@ -249,7 +262,7 @@ const SubmissionDashboard = ({ history }:{history:History}) => {
       { title: 'Template Package Name', field: 'templateName', headerStyle: { padding: styleFactor }, cellStyle: { padding: styleFactor } },
       { title: 'Status', field: 'statusId.name', headerStyle: { padding: styleFactor }, cellStyle: { padding: styleFactor } },
       { title: 'Created On', field: 'createdAt', headerStyle: { padding: styleFactor }, cellStyle: { padding: styleFactor } },
-      { title: 'Modified By', field: 'updatedBy', headerStyle: { padding: styleFactor }, cellStyle: { padding: styleFactor } },
+      { title: 'Modified By', field: 'updatedBy.username', headerStyle: { padding: styleFactor }, cellStyle: { padding: styleFactor } },
       { title: 'Modified on', field: 'updatedAt', headerStyle: { padding: styleFactor }, cellStyle: { padding: styleFactor } },
       { title: 'version', field: 'version', headerStyle: { padding: styleFactor }, cellStyle: { padding: styleFactor } },
       { title: 'Template Name', field: 'templateName', headerStyle: { padding: styleFactor }, cellStyle: { padding: styleFactor } },
@@ -321,7 +334,11 @@ const SubmissionDashboard = ({ history }:{history:History}) => {
       (readFilterTo === 'All' || periodIsAfter(readFilterTo, submission.submissionPeriodId.name))
     )
 
-  return (
+  useEffect(() => {
+    console.log('loading', loading)
+  }, [loading])
+
+  return loading ? <Loading /> : (
     <div className="submissions">
       <SubmissionHeader />
 
@@ -378,7 +395,7 @@ const SubmissionDashboard = ({ history }:{history:History}) => {
             </ExpansionPanel>
           )
         }):(<Typography variant="h6" align='center'>
-              {readMessage}
+              No Submissions Found
             </Typography>)
       }
     </div>

@@ -1,6 +1,7 @@
 import Program from "./program";
 import Status from "./status";
 import SubmissionPeriod from "./submissionperiod";
+import User from "./user";
 import WorkflowProcess from "./workflowprocess";
 
 export default interface Submission {
@@ -44,7 +45,7 @@ export interface SubmissionPopulated {
   year?: string;
   createdAt: string;
   updatedAt: string;
-  updatedBy: string;
+  updatedBy: User;
   isPublished: boolean;
   version: number;
   isLatest: boolean;
