@@ -12,6 +12,13 @@ const PackageStatusController = Service([SubmissionStatusService], service => {
         .catch(next);
     });
 
+    router.get('/submissionState', (req, res, next) => {
+      service
+        .findEach()
+        .then(submissionState => res.json( submissionState ))
+        .catch(next);
+    })
+
     return router;
   })();
 });

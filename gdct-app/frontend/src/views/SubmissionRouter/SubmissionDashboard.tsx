@@ -1,4 +1,4 @@
-import React, { useMemo, useEffect, useState, MouseEvent, ChangeEvent } from 'react';
+import React, { useMemo, useEffect, useState, MouseEvent, ChangeEvent, Fragment } from 'react';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 
 import MenuItem from '@material-ui/core/MenuItem';
@@ -193,69 +193,69 @@ const SubmissionDashboard = ({ history }:{history:History}) => {
       (submission.statusId.name || '') === status && 
       (readFilterFrom === 'All' || periodIsAfter(submission.submissionPeriodId.name, readFilterFrom)) && 
       (readFilterTo === 'All' || periodIsAfter(readFilterTo, submission.submissionPeriodId.name))
-    )
+  ) 
 
   return (
-    <div className="submissions">
-      <SubmissionHeader />
+      <div className="submissions">
+        <SubmissionHeader />
 
-      <FormControl className={classTheme.formControl}>
-        <InputLabel id="demo-controlled-open-select-label">Filter Start:</InputLabel>
-        <Select
-          labelId="demo-controlled-open-select-label"
-          id="demo-controlled-open-select"
-          onChange={handleFilterFrom}
-        >
-          <MenuItem value='All'>All</MenuItem>
-          {filterOptions.map((element) => {
-            return <MenuItem value={element}>{element}</MenuItem>
-          })}
-        </Select>
-      </FormControl>
+        <FormControl className={classTheme.formControl}>
+          <InputLabel id="demo-controlled-open-select-label">Filter Start:</InputLabel>
+          <Select
+            labelId="demo-controlled-open-select-label"
+            id="demo-controlled-open-select"
+            onChange={handleFilterFrom}
+          >
+            <MenuItem value='All'>All</MenuItem>
+            {filterOptions.map((element) => {
+              return <MenuItem value={element}>{element}</MenuItem>
+            })}
+          </Select>
+        </FormControl>
 
-      <FormControl className={classTheme.formControl}>
-        <InputLabel id="demo-controlled-open-select-label">Filter Ends:</InputLabel>
-        <Select
-          labelId="demo-controlled-open-select-label"
-          id="demo-controlled-open-select"
-          onChange={handleFilterTo}
-        >
-          <MenuItem value='All'>All</MenuItem>
-          {filterOptions.map((element) => {
-            return <MenuItem value={element}>{element}</MenuItem>
-          })}
-        </Select>
-      </FormControl>
-      {statuses.length > 0 ? 
-        statuses.map(status => {
-          const data = getSubmissionsInRange(status)
-          const options = calculateOptions(data.length)
-          return data.length > 0 && (
-            <ExpansionPanel>
-              <ExpansionPanelSummary 
-                expandIcon={<ExpandMoreIcon />}
-                aria-controls="panel1a-content"
-                id="panel1a-header"
-              >
-                <Typography>{status === 'Unsubmitted' ? 'To-do' : status}</Typography>
-              </ExpansionPanelSummary>
-              <div className="MuiTableContainer">
-                <MaterialTable
-                  key={data.length}
-                  columns={checkBoxColumns}
-                  options={options}
-                  data={data}
-                  //@ts-ignore
-                  actions={submitterFlag ? actions : notEditableActions}
-                />
-              </div>
-            </ExpansionPanel>
-          )
-        }):(<Typography variant="h6" align='center'>
-              {readMessage}
-            </Typography>)
-      }
-    </div>
+        <FormControl className={classTheme.formControl}>
+          <InputLabel id="demo-controlled-open-select-label">Filter Ends:</InputLabel>
+          <Select
+            labelId="demo-controlled-open-select-label"
+            id="demo-controlled-open-select"
+            onChange={handleFilterTo}
+          >
+            <MenuItem value='All'>All</MenuItem>
+            {filterOptions.map((element) => {
+              return <MenuItem value={element}>{element}</MenuItem>
+            })}
+          </Select>
+        </FormControl>
+        {statuses.length > 0 ? 
+          statuses.map(status => {
+            const data = getSubmissionsInRange(status)
+            const options = calculateOptions(data.length)
+            return data.length > 0 && (
+              <ExpansionPanel>
+                <ExpansionPanelSummary 
+                  expandIcon={<ExpandMoreIcon />}
+                  aria-controls="panel1a-content"
+                  id="panel1a-header"
+                >
+                  <Typography>{status === 'Unsubmitted' ? 'To-do' : status}</Typography>
+                </ExpansionPanelSummary>
+                <div className="MuiTableContainer">
+                  <MaterialTable
+                    key={data.length}
+                    columns={checkBoxColumns}
+                    options={options}
+                    data={data}
+                    //@ts-ignore
+                    actions={submitterFlag ? actions : notEditableActions}
+                  />
+                </div>
+              </ExpansionPanel>
+            )
+          }):(<Typography variant="h6" align='center'>
+                {readMessage}
+              </Typography>)
+        }
+      </div>
   );
 };
 

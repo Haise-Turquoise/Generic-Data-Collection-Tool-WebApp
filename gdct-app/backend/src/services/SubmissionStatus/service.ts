@@ -11,4 +11,9 @@ export default class SubmissionStatusService {
   async findAll() {
     return this.submissionStatusRepository.findAll()
   }
+
+  async findEach() {
+    return this.submissionStatusRepository.count()
+    
+  }
 }

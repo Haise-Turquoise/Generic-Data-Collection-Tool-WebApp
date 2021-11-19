@@ -20,3 +20,13 @@ export interface MappedMenu {
     icon: React.ReactElement<SvgIconProps>,
     orderId: number,
 }
+
+export interface SubmissionStatus {
+    _id: {
+      submissionPeriod: string, 
+      name: string,
+    };
+    countSubmitted : number;
+    countUnsubmitted: number;
+  
+}

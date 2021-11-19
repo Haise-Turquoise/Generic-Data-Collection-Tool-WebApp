@@ -5,11 +5,12 @@ import SubmissionStatus from '../types/packagestatus';
 
 const SubmissionStatusController = (() => {
   const SubmissionStatusAxios = axios.create({
-    baseURL: `${host}/report/submissionStatus`,
+    baseURL: `${host}/report`,
     withCredentials: true,
   });
   return {
-    fetch: async (): Promise<SubmissionStatus[]> => SubmissionStatusAxios.get('').then(res => res.data),
+    fetch: async (): Promise<SubmissionStatus[]> => SubmissionStatusAxios.get('/submissionStatus').then(res => res.data),
+    fetchStatus: async (): Promise<SubmissionStatus[]> => SubmissionStatusAxios.get('/submissionState').then(res => res.data),
   };
 })();
 

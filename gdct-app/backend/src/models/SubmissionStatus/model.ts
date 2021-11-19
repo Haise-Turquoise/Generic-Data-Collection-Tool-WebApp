@@ -36,11 +36,14 @@ const SubmissionStatusModel = model<SubmissionStatusDoc>(
         submissionId: ObjectId,
         updatedDate: String,
         updatedBy: String,
+      },
+      reportingPeriod: {
+        submissionClosed: Boolean,
       }
     },
     { minimize: false, autoIndex: true },
   ),
-  'SubmissionStatus',
+  'vw_SubmissionStatus',
 );
 
 export default SubmissionStatusModel;
