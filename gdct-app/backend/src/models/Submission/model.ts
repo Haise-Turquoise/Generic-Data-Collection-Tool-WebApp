@@ -24,7 +24,7 @@ const SubmissionModel = model<SubmissionDoc>(
       submissionPeriodId: { type: ObjectId, ref: 'SubmissionPeriod' },
       createdAt: { type: Date },
       updatedAt: { type: Date },
-      updatedBy: { type: ObjectId, ref: 'User' },
+      updatedBy: { type: ObjectId },
       isPublished: { type: Boolean, default: false },
       version: { type: Number, default: 0 },
       isLatest: { type: Boolean, default: true },

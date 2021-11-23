@@ -7,7 +7,7 @@ import COAGroupRepository from '../../repositories/COAGroup';
 import SheetNameRepository from '../../repositories/SheetName';
 import MasterValueRepository from '../../repositories/MasterValue';
 import { SubmissionDoc } from '../../types/submission';
-import { ObjectId } from 'mongodb';;
+import { ObjectID, ObjectId } from 'mongodb';;
 import { MasterValueDoc, MasterValueOrg } from '../../types/mastervalue';
 import { extractAttributeIds, extractCategoryIds } from './mastervaluePrepopulation';
 import { CategoryTreeDoc } from '../../types/categorytree';
@@ -27,7 +27,7 @@ export async function mastervalueExtraction(
     id:string,
     submission: SubmissionDoc,
     org:MasterValueOrg,
-    program:{ _id: ObjectId; name: string; },
+    program:{ _id: ObjectID; name: string; },
     template:string,
     templateType: {_id: ObjectId, name: string},
     reportingPeriod:{ name: string },

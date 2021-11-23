@@ -1,6 +1,6 @@
 import { ObjectId } from 'mongodb';
 import { Schema, model } from 'mongoose';
-import { SubmissionStatusDoc } from '../../types/submissionstatus';
+import { SubmissionStatusDoc } from '../../types/packagestatus';
 
 const SubmissionStatusModel = model<SubmissionStatusDoc>(
   'PackageStatus',
