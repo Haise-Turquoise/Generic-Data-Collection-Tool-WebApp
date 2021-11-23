@@ -47,7 +47,7 @@ const getWorkflowProcesses = (workflowData: WorkflowData): WorkflowProcess[] => 
   if (statusData.length < 2) throw 'There must be at least two node';
   if (!workflowProcessesData.length) throw 'There must be at least one link';
 
-  workflow._id = workflow._id ? workflow._id : new ObjectId();
+  workflow._id = workflow._id ? workflow._id : objectId();
 
   // Create a workflow process for each node
   for (const item of statusData) {
@@ -134,7 +134,7 @@ export default class WorkflowService {
   }
 
   async findWorkflowProessByStatus(statusId: string){
-    return this.workflowProcessesRepository.find({statusId: new ObjectId(statusId)});
+    return this.workflowProcessesRepository.find({statusId:objectId(statusId)});
   }
 
   async findWorkflowProessesById(ids: string[]){
@@ -156,9 +156,5 @@ export default class WorkflowService {
 
   async findNeighbors(workflowId: string, statusIds: string[]) {
     return this.workflowProcessesRepository.findNeighbors(workflowId, statusIds);
-  }
-
-  async findPrevious(workflowId: string, statusIds: string[]) {
-    return this.workflowProcessesRepository.findPrevious(workflowId, statusIds)
   }
 }

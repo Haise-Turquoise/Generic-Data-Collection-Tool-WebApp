@@ -5,20 +5,20 @@ import SubmissionPeriod from './submissionperiod';
 import WorkflowProcess from './workflowprocess';
 
 export default interface Submission {
-  _id?: ObjectId;
+  _id: ObjectId;
   templateId: ObjectId;
   templatePackageId: ObjectId;
   name: string;
   orgId: number;
   programId: ObjectId;
-  submittedDate: Date | null;
+  submittedDate: Date;
   workbookData: any;
   templateName: string;
   approved: string;
   workflowProcessId: ObjectId|null;
   workflowId: ObjectId;
   statusId: ObjectId;
-  year?: string;
+  year: string;
   submissionPeriodId: ObjectId;
   createdAt: Date;
   updatedAt: Date;
@@ -27,8 +27,8 @@ export default interface Submission {
   version: number;
   isLatest: boolean;
   approver:string;
-  _doc?:any;
-  parentId?: ObjectId;
+  _doc:any;
+  parentId: ObjectId;
   updatedDate:Date;
 }
 

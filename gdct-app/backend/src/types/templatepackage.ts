@@ -13,7 +13,6 @@ export default interface TemplatePackage {
   forPackage: boolean;
   updatedAt: Date;
   updatedBy: string;
-  deadline: string;
 }
 
 export interface TemplatePackageDoc extends TemplatePackage, Document {
