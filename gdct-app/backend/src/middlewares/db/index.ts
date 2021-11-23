@@ -35,4 +35,3 @@ export default class Database {
 }
 
 export const dbUtil = new Database();
-

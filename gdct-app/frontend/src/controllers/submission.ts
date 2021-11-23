@@ -24,8 +24,6 @@ const submissionController = (() => {
       .post('/uploadSubmission', { submission, submissionNote })
       // TODO maybe should be .submissions
         .then(res => res.data.submission),
-    create: async (submissions: Submission[]): Promise<Submission[]> =>
-      submissionAxios.post('/createSubmissions', { submissions }).then(res => res.data.submissions),
     update: async (submission: Partial<Submission>) => submissionAxios.put(`/updateSubmission`, { submission }),
     updateStatus: async (
       submission: Submission,
