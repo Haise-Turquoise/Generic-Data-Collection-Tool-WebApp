@@ -60,7 +60,7 @@ const SubmissionStatusTable = () => {
 
   useEffect(() => {
     SubmissionStatusController.fetch().then((res: unknown) => {
-      if (!res) {
+      if (!res || !Array.isArray(res)) {
         setStatus('NOT ALLOWED')
         return
       }
