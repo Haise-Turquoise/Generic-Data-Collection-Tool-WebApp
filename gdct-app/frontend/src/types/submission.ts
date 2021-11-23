@@ -1,10 +1,12 @@
 import Program from "./program";
 import Status from "./status";
 import SubmissionPeriod from "./submissionperiod";
+import TemplatePackage from "./templatepackage";
+import User from "./user";
 import WorkflowProcess from "./workflowprocess";
 
 export default interface Submission {
-  _id: string,
+  _id?: string,
   id: number,
   templateId: string,
   templatePackageId: string,
@@ -16,7 +18,7 @@ export default interface Submission {
   workflowProcessId: string,
   workflowId: string,
   statusId: string,
-  year: string,
+  year?: string,
   submissionPeriodId: string,
   createdAt: string,
   updatedAt: string,
@@ -24,34 +26,33 @@ export default interface Submission {
   isPublished: boolean,
   version: number,
   isLatest: boolean,
-  parentId: string,
+  parentId?: string,
 }
 export interface SubmissionPopulated {
   statusId: Status,
   workflowProcessId: WorkflowProcess,
   submissionPeriodId: SubmissionPeriod,
   programId: Program;
-  _id: string;
+  _id?: string;
   templateId: string;
-  templatePackageId: string;
+  templatePackageId: TemplatePackage;
   name: string;
   orgId: number;
-  submittedDate: Date;
+  submittedDate: string;
   workbookData: any;
   templateName: string;
-  approved: string;
+  approved?: string;
   workflowId: string;
-  year: string;
-  createdAt: Date;
-  updatedAt: Date;
-  updatedBy: string;
+  year?: string;
+  createdAt: string;
+  updatedAt: string;
+  updatedBy: User;
   isPublished: boolean;
   version: number;
   isLatest: boolean;
   approver:string;
-  _doc:any;
-  parentId: string;
-  updatedDate:Date;
+  parentId?: string;
+  updatedDate:string;
 }
 
 export interface submissionSpreadsheetProps{

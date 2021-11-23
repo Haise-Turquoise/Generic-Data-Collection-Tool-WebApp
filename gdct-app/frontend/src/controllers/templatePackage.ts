@@ -20,6 +20,8 @@ const templatePackageController = (() => {
     delete: async (_id: string) => templatePackageAxios.post('/delete', { _id }),
     fetchPopulated: async (_id: string) =>
       templatePackageAxios.post('/fetchPopulated', { _id }).then(res => res.data),
+    queryPopulated: async (query?: Partial<TemplatePackage>) =>
+      templatePackageAxios.post('/queryPopulated', { query }).then(res => res.data),
     updatePopulated: async (templatePackage: Partial<TemplatePackage>) =>
       templatePackageAxios
         .put('/updatePopulated', { templatePackage })

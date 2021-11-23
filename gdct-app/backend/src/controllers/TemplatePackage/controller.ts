@@ -77,6 +77,13 @@ const TemplatePackageController = Service([TemplatePackageService], service => {
         .catch(next);
     });
 
+    router.post('/templatePackages/queryPopulated', (req, res, next) => {
+      const { query } = req.body
+
+      service.findTemplatePackage(query, true)
+        .then((templatePackages) => res.json( templatePackages ))
+    })
+
     router.put('/templatePackages/updatePopulated', (req, res, next) => {
       const { templatePackage } = req.body;
       const _id = templatePackage._id;
