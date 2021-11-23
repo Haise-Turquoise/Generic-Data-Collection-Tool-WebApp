@@ -348,7 +348,7 @@ class ModifyOrganization extends React.Component<MOProps, MOState> {
     this.state = {
       ...temp,
       takenIds: [],
-      error: 'Please fill in the form',
+      error: null,
     };
     this.updateState = this.updateState.bind(this);
     this.handleChanges = this.handleChanges.bind(this);

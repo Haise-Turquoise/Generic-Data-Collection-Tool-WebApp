@@ -2,6 +2,7 @@ import { ObjectId } from 'mongodb';
 import { Document } from 'mongoose';
 
 export default interface Template {
+  _id?: ObjectId;
   name: string;
   workflowId: ObjectId;
   workflowProcessId: ObjectId;
@@ -74,5 +75,5 @@ export interface SheetDataBorder{
   right?:[string, string],
 };
 
-
+//@ts-ignore
 export interface TemplateDoc extends Template, Document {}

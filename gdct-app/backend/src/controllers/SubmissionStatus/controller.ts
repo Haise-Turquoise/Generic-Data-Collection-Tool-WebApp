@@ -19,6 +19,14 @@ const PackageStatusController = Service([SubmissionStatusService], service => {
         .catch(next)
     })
 
+    router.post('/submissionStatus/createByRoles', (req, res, next) => {
+      const { roles, userId } = req.body
+      service
+        .createByRoles(roles, userId)
+        .then(status => res.json(status))
+        .catch(next);
+    })
+
     return router;
   })();
 });
