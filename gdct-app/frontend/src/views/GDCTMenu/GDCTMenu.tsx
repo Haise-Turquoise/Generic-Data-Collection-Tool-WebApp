@@ -6,15 +6,10 @@ import createUserNavigation from '../../components/AuthPage/createUserNavigation
 import DrawerItem from '../../components/AuthPage/DrawerItem';
 //@ts-ignore
 import IconItem from '../../components/AuthPage/IconItem';
-import { OverridableComponent } from '@material-ui/core/OverridableComponent';
 import { MappedMenu , SubmissionStatus } from '../../types/menu';
 
 import submissionStatusController from '../../controllers/SubmissionStatus';
 import BarGroupComponent from './BarGroup';
-import { fetchWithStatus } from '../../tools/misc';
-
-import {FormControl, InputLabel, Select, MenuItem} from '@material-ui/core';
-
 
 const MenuHeader = () => {
   const [anchorEl, setAnchorEl] = React.useState<EventTarget | null>(null);
@@ -111,6 +106,8 @@ const GDCTMenu = () => {
       </div>
       <Grid 
         item
+        alignItems="center"
+        justifyContent="center"
         xs={12}
         style={{ display: "flex", gap: "1rem", alignItems: "center", height: '100%'}}
         >
