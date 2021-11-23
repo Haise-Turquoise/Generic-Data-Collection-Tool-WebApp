@@ -8,7 +8,7 @@ const orgController = (() => {
     withCredentials: true,
   });
   return {
-    fetch: async (query: Partial<Organization>): Promise<Organization[]> => orgAxios.post('/fetch', { query }).then(res => res.data),
+    fetch: async (): Promise<Organization[]> => orgAxios.get('/fetch').then(res => res.data),
     create: async (Org: Organization): Promise<Organization | null> => orgAxios.post('/create', { Org }).then(res => res.data.Org),
     update: async (Org: Partial<Organization>) => orgAxios.put('/update', { Org }),
     delete: async (_id: string) => orgAxios.post('/delete', { _id }),

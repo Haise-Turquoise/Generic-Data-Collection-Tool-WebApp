@@ -5,7 +5,7 @@ import WorkflowProcessModel from '../../models/WorkflowProcess/WorkflowProcess';
 import StatusRepository from '../Status';
 import WorkflowProcess, { WorkflowProcessDoc } from '../../types/workflowprocess';
 import { FilterQuery } from 'mongoose';
-import { ObjectId } from 'mongodb';
+import { ObjectID } from 'mongodb';
 import AppError from '../../utils/AppError';
 
 const populateStatusId = {
@@ -97,7 +97,7 @@ export default class WorkflowProcessRepository extends BaseRepository<WorkflowPr
     );
   }
 
-  async findMany(ids: (ObjectId|string)[], isPopulated = false):Promise<WorkflowProcessEntity[]> {
+  async findMany(ids: (ObjectID|string)[], isPopulated = false):Promise<WorkflowProcessEntity[]> {
     return WorkflowProcessModel.find()
       .populate(isPopulated ? populateTo : '')
       .populate(isPopulated ? populateStatusId : '')
@@ -133,26 +133,6 @@ export default class WorkflowProcessRepository extends BaseRepository<WorkflowPr
       return wkfl.workflowId.toString() === workflowId.toString() && isBefore
     })
     return [...specified, ...following, ...before]
-  }
-
-  async findPrevious(workflowId: string, statusIds: string[]) {
-    const allWorkflows: WorkflowProcess[] = await this.findAll()
-    // find specified process
-    const specified = allWorkflows.filter(wkfl => {
-      return wkfl.workflowId.toString() === workflowId.toString() && statusIds.find(id => id.toString() === wkfl.statusId.toString()) // TEST
-    })
-    // find processes before specified
-    const before = allWorkflows.filter(wkfl => {
-      let isBefore = false
-      for (let wkfl2 of specified) {
-        if (wkfl.to.find(id => id.toString() === wkfl2._id.toString())) { // TEST
-          isBefore = true
-          break
-        }
-      }
-      return wkfl.workflowId.toString() === workflowId.toString() && isBefore
-    })
-    return before
   }
 
 }

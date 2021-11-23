@@ -36,7 +36,7 @@ export default class OrgRepository extends BaseRepository<Organization, Organiza
     for (key in query) {
       if (query[key]) realQuery[key] = query[key];
     }
-    return OrgModel.find(realQuery).then((Orgs: OrganizationDoc[]) => Orgs.map(Org => new OrgEntity(Org)));
+    return OrgModel.find({}).then((Orgs: OrganizationDoc[]) => Orgs.map(Org => new OrgEntity(Org)));
   }
 
   async findByOrgGroupId(orgGroupId: string) {
