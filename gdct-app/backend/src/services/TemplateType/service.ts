@@ -24,7 +24,7 @@ export default class TemplateTypeService {
 
   async deleteTemplateType(id: string) {
     const templates = await this.templateRepository.findTemplateIDByTypeID(id);
-    const templateIds = templates.map((template: TemplateDoc)=>template._id);
+    const templateIds = templates.map((template: TemplateDoc)=>template._id?.toString() || '');
     const submission = await this.submissionRepository.findOneByTemplateIDs(templateIds);
     if (submission != null) throw new Error('Template types already referenced');
     return this.templateTypeRepository.delete(id);
