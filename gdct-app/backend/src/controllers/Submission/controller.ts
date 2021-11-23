@@ -45,7 +45,6 @@ const SubmissionController = Service([SubmissionService], service => {
 
       let submissions: SubmissionPopulated[] = []
       for (let role of roles) {
-        console.log('finding nothing', role)
         const res = await service.findByRole(role)
         submissions = submissions.concat(res)
       }
