@@ -3,7 +3,7 @@ import { TemplateDoc } from "../../types/template";
 
 // It's possible that we can extend an object for all entity classes
 export default class TemplateEntity {
-  public _id: ObjectId;
+  public _id: ObjectId | undefined;
   public name: string;
   public templateData: any[];
   public templateTypeId: ObjectId;

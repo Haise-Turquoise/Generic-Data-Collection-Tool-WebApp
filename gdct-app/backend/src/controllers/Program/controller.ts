@@ -31,10 +31,18 @@ const ProgramController = Service([ProgramService], service => {
 
     router.post('/programs/delete', (req, res, next) => {
       const { _id } = req.body;
-
+      
       service
         .deleteProgram(_id)
-        .then(() => res.end())
+        .then((x) => {
+          if(x == false){
+            console.log("hit");
+            res.status(201).end();
+          }
+          else{
+            res.end();
+          }
+        })
         .catch(next);
     });
 
