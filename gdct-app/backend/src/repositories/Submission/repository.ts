@@ -179,5 +179,6 @@ export default class SubmissionRepository extends BaseRepository<Submission, Sub
       .populate('submissionPeriodId')
       .populate('programId')
       .populate('updatedBy')
+      .populate('templatePackageId')
   }
 }

@@ -283,7 +283,7 @@ export default class SubmissionService {
   }
 
   async updateSubmission(submission:Submission) {
-    return this.submissionRepository.update(submission._id.toString(), submission).then(submission => {
+    return this.submissionRepository.update(submission._id!.toString(), submission).then(submission => {
       //@ts-ignore
       if (submission.phase === 'Approved') return this.phaseSubmission(String(submission._id));
     });
@@ -330,8 +330,8 @@ export default class SubmissionService {
       submission.version += 1;
       submission.isLatest = true;
       submission.parentId = submission.parentId ? submission.parentId : submission._id;
-      const oldSubmissionId = submission._id.toString();
-      await this.submissionRepository.findAndSetFalse(submission._id);
+      const oldSubmissionId = submission._id!.toString();
+      await this.submissionRepository.findAndSetFalse(submission._id!);
       //@ts-ignore
       delete submission._id;
       const newSubmission = await this.submissionRepository.create(submission);
@@ -352,7 +352,7 @@ export default class SubmissionService {
 
     submission.isLatest = true;
 
-    const newSubmission = await this.submissionRepository.update(submission._id.toString(), submission);
+    const newSubmission = await this.submissionRepository.update(submission._id!.toString(), submission);
     //@ts-ignore
     if (role === 'Approved') this.phaseSubmission(newSubmission._id);
 
