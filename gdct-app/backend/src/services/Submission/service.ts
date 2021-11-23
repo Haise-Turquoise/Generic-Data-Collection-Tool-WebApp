@@ -107,7 +107,7 @@ export default class SubmissionService {
 
   async findByRole(role: {orgId: string, progId: string, tempTypeId: string, role: string}) {
     //@ts-ignore
-    const submissions: SubmissionPopulated[] = await this.submissionRepository.findQueryPopulate({ orgId: +role.orgId, programId: role.progId })
+    let submissions: SubmissionPopulated[] = await this.submissionRepository.findQueryPopulate({ orgId: +role.orgId, programId: role.progId })
     // determine acceptable statuses
     const statuses: string[] = (await this.roleWorkflowStatusRepository.findByRole(role.role))?.workflowStatus || []
     const statusIds = []
@@ -118,6 +118,7 @@ export default class SubmissionService {
       }
       // console.log('statuses', statusIds)
     }
+    const flaggedIndicies: number[] = [] // indicies flagged for deletion
     for (let i = 0; i < submissions.length; i++) {
       // workflow processes this user can see, depends on submission workflow
       const workflows: WorkflowProcess[] = await this.workflowProcessRepository.findNeighbors(submissions[i].workflowId.toString(), statusIds.map(id => id.toString()))
@@ -131,9 +132,11 @@ export default class SubmissionService {
       }
       const tempTypeId = (await this.templateRepository.findById(submissions[i].templateId)).templateTypeId
       if (tempTypeId.toString() !== role.tempTypeId.toString() || !statusRes.includes(submissions[i].statusId.name)) {
-        submissions.splice(i,1)
+        flaggedIndicies.push(i)
       }
     }
+    submissions = submissions.filter((_sub, index) => !flaggedIndicies.includes(index))
+    // console.log('res', submissions)
     return submissions
   }
 

@@ -76,6 +76,7 @@ export default class SubmissionStatusService {
       const allSubmissionPeriods: SubmissionPeriod[] = await this.submissionPeriodRepository.findAll()
       const allTemplates: Template[] = await this.templateRepository.findAll()
       const allWorkflowProcesses: WorkflowProcess[] = await this.workflowProcessRepository.findAll()
+      const allRoleWorkflowStatuses: RoleWorkflowStatus[] = await this.roleWorkflowStatusRepository.findAll()
       // map workflowId to first Status -- we'll need this later
       const firstMap: {[key: string]: ObjectId} = {}
       // only create for proper roles
@@ -85,6 +86,12 @@ export default class SubmissionStatusService {
         const workflowProcesses: WorkflowProcess[] = allWorkflowProcesses.filter(wp => {
           return wp.workflowId.toString() === templateType.submissionWorkflowId.toString()
         })
+        const roleWorkflowStatuses = allRoleWorkflowStatuses.find(rws => rws.role === r.role)?.workflowStatus || []
+        const roleStatuses = allStatuses.filter(s => roleWorkflowStatuses.includes(s.name))
+        const roleWPs = workflowProcesses.filter(wp => roleStatuses.find(s => s._id.toString() === wp.statusId.toString()))
+        if (roleWPs.length === 0) {
+          continue
+        }
         // find which process is first, find which process matches current user role
         const first = workflowProcesses.find((process) => {
           // first should have no previous processes
@@ -94,6 +101,9 @@ export default class SubmissionStatusService {
           return !prev
         })
         if (first) {
+          if (!first.to.find(to => roleWPs.find(rwp => rwp._id.toString() === to.toString()))) {
+            continue
+          }
           firstMap[templateType.submissionWorkflowId.toString()] = first.statusId
         } else {
           console.log('first not found...', templateType.submissionWorkflowId)
@@ -113,7 +123,7 @@ export default class SubmissionStatusService {
       // now we have roles that have correct position to create new submissions
       // we find submission status entries that match org/program/templateType and create
       let queries: Partial<SubmissionStatus>[] = []
-      for (let r of roles) {
+      for (let r of filteredRoles) {
         const program = allPrograms.find(p => p._id.toString() === r.progId)
         const tempType = allTemplateTypes.find(t => t._id.toString() === r.tempTypeId)
         const query = {
