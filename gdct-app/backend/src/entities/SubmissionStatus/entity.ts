@@ -4,7 +4,7 @@ import SubmissionStatusType from "../../types/submissionstatus";
 
 // It's possible that we can extend an object for all entity classes
 export default class SubmissionStatusEntity {
-  public _id: ObjectId | undefined;
+  public _id: ObjectId;
   public name: string;
   public org: {id: number, name: string};
   public template: {name: string};

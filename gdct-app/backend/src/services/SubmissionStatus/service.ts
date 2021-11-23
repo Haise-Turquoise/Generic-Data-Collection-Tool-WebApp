@@ -109,7 +109,7 @@ export default class SubmissionStatusService {
           console.log('first not found...', templateType.submissionWorkflowId)
         }
         // find process matching current user role TEST OUTPUT
-        const { workflowStatus }: RoleWorkflowStatus = await this.roleWorkflowStatusRepository.findByRole(r.role)
+        const workflowStatus: string[] = (await this.roleWorkflowStatusRepository.findByRole(r.role))?.workflowStatus || []
         const matchingProcesses = workflowProcesses.filter((process) => {
           const procStatus = allStatuses.find((status) => status._id.toString() === process.statusId.toString())
           return workflowStatus.includes(procStatus?.name || '')
