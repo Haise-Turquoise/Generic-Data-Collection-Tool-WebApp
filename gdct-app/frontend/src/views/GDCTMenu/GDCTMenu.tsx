@@ -70,11 +70,15 @@ const GDCTMenu = () => {
   const getSubmissions = async () => {
     await submissionStatusController.fetchStatus()
       .then( (res: any) => {
-        setStatuses(res);
-        console.log("ff");
+        console.log("yy");
         console.log(res);
+        if(typeof res !== 'string'){
+          setStatuses(res);
+        }
+        
       })
       .catch((e: Error) => {
+        console.log("error1111");
         console.log(e);
       })
   }
