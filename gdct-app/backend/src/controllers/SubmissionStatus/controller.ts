@@ -27,10 +27,25 @@ const PackageStatusController = Service([SubmissionStatusService], service => {
         .catch(next);
     })
 
-    router.get('/submissionState', (req, res, next) => {
+    router.get('/submissionStatus/submissionState', (req, res, next) => {
       service
         .findEach()
         .then(submissionState => res.json( submissionState ))
+        .catch(next);
+    })
+
+    router.get('/submissionStatus/open', (req, res, next) => {
+      service
+        .find({ reportingPeriod: {submissionClosed: false} })
+        .then(submissionStatus => res.json( submissionStatus ))
+        .catch(next)
+    })
+
+    router.post('/submissionStatus/createByRoles', (req, res, next) => {
+      const { roles, userId } = req.body
+      service
+        .createByRoles(roles, userId)
+        .then(status => res.json(status))
         .catch(next);
     })
 

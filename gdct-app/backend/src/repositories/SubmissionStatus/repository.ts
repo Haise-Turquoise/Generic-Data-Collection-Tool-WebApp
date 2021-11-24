@@ -27,10 +27,7 @@ export default class SubmissionStatusRepository extends BaseRepository<Submissio
   async count(){
     let reportingPeriods = [];
     let numbers = [];
-
-
     return SubmissionStatusModel.aggregate([
-
       // {
       //     $group: 
       //     {
@@ -70,8 +67,6 @@ export default class SubmissionStatusRepository extends BaseRepository<Submissio
               $cond: [
                 {
                   $ne: ["$status.name", "Approved"],
-
-
                 }, 1, 0,
               ],}
           },
