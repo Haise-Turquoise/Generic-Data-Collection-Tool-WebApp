@@ -743,15 +743,16 @@ export const controllerDeleteRow = async (Controller:any, setState:Function, _id
   try {
     // res has type AxiosResponse
     const res = await Controller.delete(_id)
+    console.log(res)
     if (res.status !== 200) {
+      console.log("res not 200")
       return false
     }
     setState((prev:any) => prev ? prev.filter((el:any) => el._id !== _id) : prev)
-  } catch (e) {
-    console.log('an error has occurred')
-    return false
-  } finally {
     return true
+  } catch (e) {
+    console.log('an error has occurred ')
+    return false
   }
 }
 

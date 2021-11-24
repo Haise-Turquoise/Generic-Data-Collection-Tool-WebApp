@@ -4,7 +4,10 @@ import { selectSubmissionsStore } from '../../store/SubmissionsStore/selectors';
 import { Submission } from '../../types/submissions';
 import { getSubmissionsRequest } from '../../store/thunks/submission';
 import { selectFactoryRESTResponseTableValues } from '../../store/common/REST/selectors';
-// import './menuStyle.css'; CAN'T RESOLVE
+
+
+import './menuStyle.css';
+
 
 const SubmissionMenu = () => {
     const dispatch = useDispatch();
@@ -31,8 +34,9 @@ const SubmissionMenu = () => {
     },[submissions])
 
     return(
-        
-      
+        <div>
+      <p>Welcome back to GDCT</p>
+
       
       <div className="subDasboard">
         <div className="subDasboardTitle">
@@ -61,7 +65,8 @@ const SubmissionMenu = () => {
         
       </div>
        
-    
+    </div>
+
     );
 };
 

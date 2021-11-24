@@ -9,7 +9,7 @@ const statusController = (() => {
   });
   return {
     fetch: async (): Promise<Status[]> => statusAxios.get('/fetch').then(res => res.data),
-    fetchStatus: async (_id: string | Partial<Status>): Promise<Status | null> =>
+    fetchStatus: async (_id: string): Promise<Status | null> =>
       statusAxios.post('/fetchStatus', { _id }).then(res => res.data.status),
     fetchByName: async (name: string): Promise<Status[] | null> =>
       statusAxios.post('/fetchByName', {name}).then(res => res.data.status),

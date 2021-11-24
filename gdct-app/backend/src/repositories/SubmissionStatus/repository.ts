@@ -74,7 +74,8 @@ export default class SubmissionStatusRepository extends BaseRepository<Submissio
         
         }
         //
-    }
-    ])
+
+    }]);
+  
   }
 }

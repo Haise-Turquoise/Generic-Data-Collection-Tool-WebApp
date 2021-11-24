@@ -18,11 +18,24 @@ export default class ProgramRepository extends BaseRepository<Program, ProgramDo
     OrgModel.find({ programId: temp }, function (err, program1) {
       TemplateTypeModel.find({ programId: temp }, function (err, program2) {
         if (program1.length > 0 || program2.length > 0) {
-          return ProgramModel;
+          console.log(program2); 
+          return program2;
         }
         return ProgramModel.findByIdAndDelete(id).then(() => {});
       });
     });
+  }
+
+
+  async findOrgByProgramID(id:string){
+    const mongoose = require('mongoose');
+    const temp = mongoose.Types.ObjectId(id);
+    return OrgModel.find({ programId: temp });
+  }
+  async findTemplateTypeModelByProgramID(id:string){
+    const mongoose = require('mongoose');
+    const temp = mongoose.Types.ObjectId(id);
+    return TemplateTypeModel.find({ programIds: temp });
   }
 
   async create(program: Program) {
