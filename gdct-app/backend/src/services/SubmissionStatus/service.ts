@@ -7,6 +7,12 @@ export default class SubmissionStatusService {
   constructor() {
     this.submissionStatusRepository = Container.get(SubmissionStatusRepository);
   }
+
+
+  async findEach() {
+    return this.submissionStatusRepository.count()
+    
+  }
   
   async findAll() {
     return this.submissionStatusRepository.findAll()
