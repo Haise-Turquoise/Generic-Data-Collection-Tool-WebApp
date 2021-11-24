@@ -6,7 +6,8 @@ import createUserNavigation from '../../components/AuthPage/createUserNavigation
 import DrawerItem from '../../components/AuthPage/DrawerItem';
 //@ts-ignore
 import IconItem from '../../components/AuthPage/IconItem';
-import { MappedMenu , SubmissionStatus } from '../../types/menu';
+import { MappedMenu } from '../../types/menu';
+import SubmissionStatus from '../../types/submissionstatus'
 
 import submissionStatusController from '../../controllers/SubmissionStatus';
 import BarGroupComponent from './BarGroup';

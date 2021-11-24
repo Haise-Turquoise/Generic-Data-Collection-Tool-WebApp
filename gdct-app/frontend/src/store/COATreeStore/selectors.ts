@@ -11,12 +11,13 @@ const selectSelectedNode = createSelector(
   [selectSelectedNodeProps],
   selectedNodeProps => selectedNodeProps.node,
 );
-
+//@ts-ignore
 const selectSelectedNodeContent = createSelector([selectSelectedNode], selectedNode =>
   selectedNode ? selectedNode.content : undefined,
 );
 
 const selectSelectedNodeCOAIds = createSelector([selectSelectedNodeContent], selectedNodeContent =>
+  //@ts-ignore
   selectedNodeContent ? selectedNodeContent.categoryId : [],
 );
 
@@ -40,5 +41,6 @@ export const selectSelectedCOAIdsMap = createSelector([selectSelectedNodeCOAIds]
 
 export const selectSelectedCOATreeId = createSelector(
   [selectSelectedNodeContent],
+  //@ts-ignore
   selectedNodeContent => (selectedNodeContent ? selectedNodeContent._id : undefined),
 );

@@ -14,6 +14,15 @@ export default class SubmissionStatusRepository extends BaseRepository<Submissio
     })
   }
 
+  // handle many queries at once
+  async findMany(queries: Partial<SubmissionStatus>[] = [{}]) {
+    let result: SubmissionStatus[] = []
+    for (let query of queries) {
+      const found = await SubmissionStatusModel.find(query)
+      result = result.concat(found)
+    }
+    return result
+  }
 
   async count(){
     let reportingPeriods = [];
@@ -67,15 +76,5 @@ export default class SubmissionStatusRepository extends BaseRepository<Submissio
         //
     }
     ])
-  }
-
-  // handle many queries at once
-  async findMany(queries: Partial<SubmissionStatus>[] = [{}]) {
-    let result: SubmissionStatus[] = []
-    for (let query of queries) {
-      const found = await SubmissionStatusModel.find(query)
-      result = result.concat(found)
-    }
-    return result
   }
 }
