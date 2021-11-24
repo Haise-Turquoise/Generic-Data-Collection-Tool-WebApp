@@ -1,6 +1,6 @@
 import React, { Fragment , useState} from "react";
 import Chart from "react-google-charts";
-import { SubmissionStatus } from '../../types/menu';
+import SubmissionStatus from '../../types/submissionstatus';
 import {FormControl, InputLabel, Select, MenuItem, Grid, Card} from '@material-ui/core';
 
 

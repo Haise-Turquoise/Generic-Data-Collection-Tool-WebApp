@@ -58,12 +58,6 @@ export default class SubmissionStatusService {
       return await this.submissionStatusRepository.find(query)
     }
   }
-
-
-  async findEach() {
-    return this.submissionStatusRepository.count()
-    
-  }
   
   async findAll() {
     return this.submissionStatusRepository.findAll()
