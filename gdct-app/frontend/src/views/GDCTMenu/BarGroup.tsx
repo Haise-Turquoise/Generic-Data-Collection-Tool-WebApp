@@ -23,30 +23,24 @@ const defaultMargin = { top: 40, right: 0, bottom: 40, left: 0 };
 
 
 
-const BarGroupComponent =  ({
-  width,
-  height,
-  events = false,
-  margin = defaultMargin,
-  submissionData,
-}: BarGroupProps) => {
+const BarGroupComponent =  (props:any) => {
   // bounds
 
-  const [currentPeriod, setCurrentPeriod] = useState('');
+  const [currentPeriod, setCurrentPeriod] = useState(props.submissionData[0]._id.submissionPeriod);
 
   let submissionPeriods = [];
   let dict : any = {};
  
 
-  for (let i = 0; i< submissionData.length; i++){
-    submissionPeriods.push(submissionData[i]._id.submissionPeriod);
-    !(submissionData[i]._id.submissionPeriod in dict) && (dict[submissionData[i]._id.submissionPeriod] = [])
-    dict[submissionData[i]._id.submissionPeriod].push([      
-      submissionData[i]._id.name, 
-      submissionData[i].countSubmitted, 
-      submissionData[i].countSubmitted, 
-      submissionData[i].countUnsubmitted,
-      submissionData[i].countUnsubmitted, 
+  for (let i = 0; i< props.submissionData.length; i++){
+    submissionPeriods.push(props.submissionData[i]._id.submissionPeriod);
+    !(props.submissionData[i]._id.submissionPeriod in dict) && (dict[props.submissionData[i]._id.submissionPeriod] = [])
+    dict[props.submissionData[i]._id.submissionPeriod].push([      
+      props.submissionData[i]._id.name, 
+      props.submissionData[i].countSubmitted, 
+      props.submissionData[i].countSubmitted, 
+      props.submissionData[i].countUnsubmitted,
+      props.submissionData[i].countUnsubmitted, 
     ]);
 
 
@@ -63,7 +57,7 @@ const BarGroupComponent =  ({
     console.log(dict);
   }
 
-  return width < 10 ? null : (
+  return props.width < 10 ? null : (
     <Fragment>
 
       <Grid 

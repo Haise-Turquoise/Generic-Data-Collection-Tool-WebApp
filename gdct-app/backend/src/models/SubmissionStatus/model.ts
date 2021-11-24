@@ -43,7 +43,7 @@ const SubmissionStatusModel = model<SubmissionStatusDoc>(
     },
     { minimize: false, autoIndex: true },
   ),
-  'vw_SubmissionStatus',
+  'SubmissionStatus',
 );
 
 export default SubmissionStatusModel;

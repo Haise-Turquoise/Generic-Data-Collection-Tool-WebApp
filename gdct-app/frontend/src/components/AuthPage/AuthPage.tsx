@@ -122,7 +122,7 @@ const useStyles = makeStyles(theme => ({
     color: 'gray',
   },
 }));
-
+const check = ()=>console.log("jewifjwif");
 const HeaderHandle = ({ open, classes, handleDrawerOpen, isTopMenu }:{
   open:boolean,
   classes:any,
@@ -263,6 +263,7 @@ const NavigationContent = ({ config, handleClose }:{
   config:any, 
   handleClose:()=>void,
   }) => {
+  console.log('config', config);
   return config.map((item:Usernavigation, index:number) => {
     let Component;
 
@@ -295,6 +296,7 @@ const NavigationDrawer = ({open, theme, config, classes, handleDrawerClose, hand
       variant="persistent"
       anchor="left"
       open={open} 
+      onBlur={()=> console.log("hi i am here")}
       // onClose={handleDrawerClose}
       classes={{
         paper: classes.drawerPaper,
@@ -325,6 +327,7 @@ const AuthPage = ({
     window.matchMedia('(max-width: 1000px)').addListener(handler);
     //setTopMenu(!isMobile);
     createUserNavigation().then((res:any) => {
+      console.log('res', res)
       setConfig(res);
     });
   }, [isMobile]);
@@ -338,11 +341,15 @@ const AuthPage = ({
   const handleDrawerClose2 = () => {
     if(open === true){
       setCount(prev => prev + 1)
+      console.log(count)
     }
     if((open === true) && count == 1){
       setOpen(false);
       setCount(0);
     }
+    console.log("you clicked away from the drawer");
+    console.log(open);
+    console.log(count);
   };
   const style = { paddingTop: '5.7rem', marginLeft: `-${drawerWidth}px` };
           
