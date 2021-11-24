@@ -31,8 +31,8 @@ const SubmissionMenu = () => {
     },[submissions])
 
     return(
-        <div>
-      <p>Welcome back to GDCT</p>
+        
+      
       
       <div className="subDasboard">
         <div className="subDasboardTitle">
@@ -61,7 +61,7 @@ const SubmissionMenu = () => {
         
       </div>
        
-    </div>
+    
     );
 };
 
