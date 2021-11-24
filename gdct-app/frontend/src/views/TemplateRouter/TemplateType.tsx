@@ -43,7 +43,7 @@ const TemplateTypeTable = ({
     state => ({
       templateType: selectFactoryRESTResponseTableValues(selectTemplateTypesStore)(state).filter(
         (elem: TemplateType) => elem._id === _id,
-      ) || {},
+      ) || [{}],
     }),
     shallowEqual,
   );

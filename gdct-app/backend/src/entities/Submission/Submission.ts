@@ -9,13 +9,13 @@ export default class SubmissionEntity {
   public templateId: ObjectId;
   public templatePackageId: ObjectId;
   public templateName:String;
-  public submittedDate: Date | null;
+  public submittedDate: Date;
   public programId: ObjectId;
   public workbookData: any;
   public workflowProcessId: ObjectId|null;
   public workflowId: ObjectId;
   public statusId: ObjectId;
-  public year: string | undefined;
+  public year: string;
   public submissionPeriodId: ObjectId;
   public createdAt: Date;
   public updatedAt: Date;
@@ -23,7 +23,7 @@ export default class SubmissionEntity {
   public isPublished: boolean;
   public version: number;
   public isLatest: boolean;
-  public parentId: ObjectId | undefined;
+  public parentId: ObjectId;
 
   constructor({
     _id,

@@ -53,6 +53,9 @@ const useStyles = makeStyles(theme => ({
   menuButton: {
     marginRight: theme.spacing(2),
   },
+  hide: {
+    display: 'none',
+  },
   drawer: {
     width: drawerWidth,
     flexShrink: 0,
@@ -119,7 +122,7 @@ const useStyles = makeStyles(theme => ({
     color: 'gray',
   },
 }));
-
+const check = ()=>console.log("jewifjwif");
 const HeaderHandle = ({ open, classes, handleDrawerOpen, isTopMenu }:{
   open:boolean,
   classes:any,
@@ -133,7 +136,7 @@ const HeaderHandle = ({ open, classes, handleDrawerOpen, isTopMenu }:{
         aria-label="open drawer"
         onClick={handleDrawerOpen}
         edge="start"
-        className={clsx(classes.menuButton, open)}
+        className={clsx(classes.menuButton, open && classes.hide)}
       >
         <MenuIcon />
       </IconButton>
@@ -192,8 +195,7 @@ const Header = ({
       />
       <Link to="/" className={classes.title}>
       <div style={{ display: 'flex', marginLeft: 'auto' }}>
-        <div style={{paddingRight: '10px'}}><img src={'/Onlogo.png'} alt="logo" width="30" height="30"/></div>
-        
+        <img src={'/Onlogo.png'} alt="logo" width="30" height="30"/>
         <HeaderTitle title={title} />
         </div>
       </Link>
@@ -261,6 +263,7 @@ const NavigationContent = ({ config, handleClose }:{
   config:any, 
   handleClose:()=>void,
   }) => {
+  console.log('config', config);
   return config.map((item:Usernavigation, index:number) => {
     let Component;
 
@@ -293,6 +296,7 @@ const NavigationDrawer = ({open, theme, config, classes, handleDrawerClose, hand
       variant="persistent"
       anchor="left"
       open={open} 
+      onBlur={()=> console.log("hi i am here")}
       // onClose={handleDrawerClose}
       classes={{
         paper: classes.drawerPaper,
@@ -323,6 +327,7 @@ const AuthPage = ({
     window.matchMedia('(max-width: 1000px)').addListener(handler);
     //setTopMenu(!isMobile);
     createUserNavigation().then((res:any) => {
+      console.log('res', res)
       setConfig(res);
     });
   }, [isMobile]);
@@ -336,11 +341,15 @@ const AuthPage = ({
   const handleDrawerClose2 = () => {
     if(open === true){
       setCount(prev => prev + 1)
+      console.log(count)
     }
     if((open === true) && count == 1){
       setOpen(false);
       setCount(0);
     }
+    console.log("you clicked away from the drawer");
+    console.log(open);
+    console.log(count);
   };
   const style = { paddingTop: '5.7rem', marginLeft: `-${drawerWidth}px` };
           
