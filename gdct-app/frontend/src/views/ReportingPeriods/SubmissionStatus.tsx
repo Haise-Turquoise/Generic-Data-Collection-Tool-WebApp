@@ -129,6 +129,7 @@ const SubmissionStatusTable = () => {
       { title: 'Submission', field: 'submission.name' },
       { title: 'Status', field: 'status.name', lookup: statusLookup },
       { title: 'isOpen', field: 'reportingPeriod.submissionClosed', lookup: {false: 'Open', true: 'Closed'}},
+
       { title: 'Updated At', field: 'submissionNote.updatedDate' },
     ],
     [],

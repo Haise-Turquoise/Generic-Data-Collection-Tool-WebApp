@@ -252,6 +252,10 @@ const EditSubmission = ({ history }:{history:History}) => {
   }, [location, dispatch, refresh]);
   useEffect(()=>{
     console.log('role', localStorage.getItem('currentRole'))
+    if (!currentRole) {
+      return
+    }
+
     roleSubmissionButtonController.fetchSubmissionButtonByRole(localStorage.getItem('currentRole') || '').then((data:RoleSubmissionButton)=>{
       
       if(data){

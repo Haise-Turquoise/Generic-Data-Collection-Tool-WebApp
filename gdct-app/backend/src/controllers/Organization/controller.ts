@@ -5,9 +5,9 @@ import OrgService from '../../services/Organization';
 const OrgController = Service([OrgService], service => {
   const router = Router();
   return (() => {
-    router.get('/organizations/fetch', (req, res, next) => {
+
+    router.post('/organizations/fetch', (req, res, next) => {
       const { query } = req.body
-      
       service
         .findOrg(query)
         .then(Orgs => res.json( Orgs ))

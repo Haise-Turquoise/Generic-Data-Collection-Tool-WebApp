@@ -146,6 +146,7 @@ export default class WorkflowProcessRepository extends BaseRepository<WorkflowPr
       let isBefore = false
       for (let wkfl2 of specified) {
         if (wkfl.to.find(id => id.toString() === wkfl2._id.toString())) {
+
           isBefore = true
           break
         }

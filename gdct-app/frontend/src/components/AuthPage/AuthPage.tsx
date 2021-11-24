@@ -195,6 +195,7 @@ const Header = ({
         <div style={{paddingRight: '10px'}}>
           <img src={'/Onlogo.png'} alt="logo" width="30" height="30"/>
         </div>
+
         <HeaderTitle title={title} />
         </div>
       </Link>
