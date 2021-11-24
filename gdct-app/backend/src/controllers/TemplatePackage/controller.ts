@@ -79,16 +79,11 @@ const TemplatePackageController = Service([TemplatePackageService], service => {
 
     router.post('/templatePackages/queryPopulated', (req, res, next) => {
       const { query } = req.body
-
-<<<<<<< HEAD
       service
         .findTemplatePackage(query, true)
         .then((templatePackages) => res.json( templatePackages ))
-        .catch(next)
-=======
-      service.findTemplatePackage(query, true)
-        .then((templatePackages) => res.json( templatePackages ))
->>>>>>> parent of e784f7ed (Revert "Merged PR 324: refresh")
+        .catch(next);
+
     })
 
     router.put('/templatePackages/updatePopulated', (req, res, next) => {

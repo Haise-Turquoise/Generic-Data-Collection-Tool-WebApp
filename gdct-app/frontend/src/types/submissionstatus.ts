@@ -31,10 +31,7 @@ export default interface SubmissionStatus {
     updatedBy: string,
   },
   reportingPeriod: {
-<<<<<<< HEAD:gdct-app/frontend/src/types/submissionstatus.ts
     submissionClosed: boolean;
-=======
-    submissionClosed: boolean,
->>>>>>> parent of e784f7ed (Revert "Merged PR 324: refresh"):gdct-app/frontend/src/types/packagestatus.ts
+
   }
 }

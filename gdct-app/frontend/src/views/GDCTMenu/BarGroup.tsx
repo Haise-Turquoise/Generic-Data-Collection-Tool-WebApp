@@ -30,7 +30,8 @@ const BarGroupComponent =  (props:any) => {
 
   let submissionPeriods = [];
   let dict : any = {};
- 
+  console.log("ll");
+  console.log(props.submissionData);
 
   for (let i = 0; i< props.submissionData.length; i++){
     submissionPeriods.push(props.submissionData[i]._id.submissionPeriod);

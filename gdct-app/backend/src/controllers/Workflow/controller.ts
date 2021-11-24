@@ -72,11 +72,8 @@ const WorkflowController = Service([WorkflowService], service => {
       service
         .findPrevious(workflowId, statusIds)
         .then(workflows => res.json({ workflows }))
-<<<<<<< HEAD
         .catch(next);
-=======
-        .catch(next)
->>>>>>> parent of e784f7ed (Revert "Merged PR 324: refresh")
+
     })
 
     router.post('/workflows/fetchOnlyWorkflowById', (req, res, next) => {

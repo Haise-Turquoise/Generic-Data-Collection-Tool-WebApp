@@ -5,6 +5,15 @@ import SubmissionStatusService from '../../services/SubmissionStatus'
 const PackageStatusController = Service([SubmissionStatusService], service => {
   const router = Router();
   return (() => {
+
+    router.get('/submissionStatus/submissionStateCount', (req, res, next) => {
+      console.log("ggg");
+      service
+        .findEach()
+        .then(submissionState => res.json( submissionState ))
+        .catch(next);
+    })
+
     router.get('/submissionStatus', (req, res, next) => {
       service
         .findAll()
@@ -13,7 +22,6 @@ const PackageStatusController = Service([SubmissionStatusService], service => {
     });
 
     router.get('/submissionStatus/open', (req, res, next) => {
-<<<<<<< HEAD
       service
         .find({ reportingPeriod: {submissionClosed: false} })
         .then(submissionStatus => res.json( submissionStatus ))
@@ -29,8 +37,7 @@ const PackageStatusController = Service([SubmissionStatusService], service => {
     })
 
     router.get('/submissionStatus/submissionState', (req, res, next) => {
-=======
->>>>>>> parent of e784f7ed (Revert "Merged PR 324: refresh")
+
       service
         .find({ reportingPeriod: {submissionClosed: false} })
         .then(submissionStatus => res.json( submissionStatus ))

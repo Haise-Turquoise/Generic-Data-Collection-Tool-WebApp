@@ -22,11 +22,8 @@ const SubmissionController = Service([SubmissionService], service => {
       service
         .createSubmissions(submissions)
         .then(() => res.json({submissions}))
-<<<<<<< HEAD
         .catch(next);
-=======
-        .catch(next)
->>>>>>> parent of e784f7ed (Revert "Merged PR 324: refresh")
+
     })
 
     router.post('/submissions/findQuery', (req, res, next) => {

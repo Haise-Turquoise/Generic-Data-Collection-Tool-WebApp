@@ -128,11 +128,8 @@ const SubmissionStatusTable = () => {
       { title: 'Organization', field: 'org.name' },
       { title: 'Submission', field: 'submission.name' },
       { title: 'Status', field: 'status.name', lookup: statusLookup },
-<<<<<<< HEAD
       { title: 'isOpen', field: 'reportingPeriod.submissionClosed', lookup: {false: 'Open', true: 'Closed'}},
-=======
-      { title: 'isOpen', field: 'reportingPeriod.submissionClosed', lookup: {false: 'Open', true: 'Closed'} },
->>>>>>> parent of e784f7ed (Revert "Merged PR 324: refresh")
+
       { title: 'Updated At', field: 'submissionNote.updatedDate' },
     ],
     [],

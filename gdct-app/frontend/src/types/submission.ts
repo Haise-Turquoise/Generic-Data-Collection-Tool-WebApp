@@ -51,10 +51,8 @@ export interface SubmissionPopulated {
   version: number;
   isLatest: boolean;
   approver:string;
-<<<<<<< HEAD
   _doc:any;
-=======
->>>>>>> parent of e784f7ed (Revert "Merged PR 324: refresh")
+
   parentId?: string;
   updatedDate:string;
 }

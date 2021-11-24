@@ -23,11 +23,9 @@ import Typography from '@material-ui/core/Typography';
 import { getSubmissionsRequest } from '../../store/thunks/submission';
 import { selectSubmissionsStore } from '../../store/SubmissionsStore/selectors';
 import { selectFactoryRESTResponseTableValues } from '../../store/common/REST/selectors';
-<<<<<<< HEAD
+
 import { calculateOptions, sysRoleTraversal, formatTimestamp } from '../../tools/misc'
-=======
-import { calculateOptions, formatTimestamp, sysRoleTraversal } from '../../tools/misc'
->>>>>>> parent of e784f7ed (Revert "Merged PR 324: refresh")
+
 import submissionController from '../../controllers/submission';
 import submissionPeriodController from '../../controllers/submissionPeriod';
 import UsersController from '../../controllers/Users';
@@ -35,7 +33,7 @@ import roleWorkflowStatusController from '../../controllers/RoleWorkflowStatus';
 import workflowController from '../../controllers/workflow';
 import statusController from '../../controllers/status';
 import orgController from '../../controllers/organization';
-<<<<<<< HEAD
+
 import templatePackageController from '../../controllers/templatePackage';
 import { TemplatePackagePopulated } from '../../types/templatepackage';
 import Template from '../../types/template'
@@ -43,23 +41,12 @@ import programController from '../../controllers/Program';
 import Loading from '../../components/Loading';
 import userController from '../../controllers/user';
 import SubmissionStatusController from '../../controllers/SubmissionStatus';
-=======
->>>>>>> parent of e784f7ed (Revert "Merged PR 324: refresh")
+
 
 import './SubmissionDashboard.scss'
 import Status from '../../types/status';
 import usersController from '../../controllers/Users';
-<<<<<<< HEAD
-import { SignalCellularNoSimOutlined } from '@material-ui/icons';
-=======
-import templatePackageController from '../../controllers/templatePackage';
-import { TemplatePackagePopulated } from '../../types/templatepackage';
-import Template from '../../types/template'
-import programController from '../../controllers/Program';
-import Loading from '../../components/Loading';
-import userController from '../../controllers/user';
-import SubmissionStatusController from '../../controllers/SubmissionStatus';
->>>>>>> parent of e784f7ed (Revert "Merged PR 324: refresh")
+
 
 const useStyles = makeStyles((theme) => ({
   formControl: {
@@ -103,12 +90,7 @@ const SubmissionDashboard = ({ history }:{history:History}) => {
       // we are only concerned with roles that match current selected user role
       // ex someone who is Submitter + Approver should only see whichever they signed in to
       parsed = parsed.filter(role => role.role === localStorage.getItem('currentRole'))
-<<<<<<< HEAD
-      
-=======
 
->>>>>>> parent of e784f7ed (Revert "Merged PR 324: refresh")
-      // for creating submissions
       await SubmissionStatusController.createByRoles(parsed, currUID)
       // for finding submissions
       let submissions = await submissionController.fetchByRole(parsed)
@@ -119,10 +101,7 @@ const SubmissionDashboard = ({ history }:{history:History}) => {
         const found = unique.find(uniqueSub => current.name === uniqueSub.name)
         return !!found ? unique : [...unique, current]
       }, [])
-<<<<<<< HEAD
-      // set submissions
-=======
->>>>>>> parent of e784f7ed (Revert "Merged PR 324: refresh")
+
       setSubmissions(submissions)
 
       // set submitter flag
@@ -134,18 +113,12 @@ const SubmissionDashboard = ({ history }:{history:History}) => {
   }, [currUID])
 
   useEffect(() => {
-<<<<<<< HEAD
-    if (!submissions) {
-      return
-    }
-    // get all statuses from submissions
-=======
+
     // we put these fetches here since they depend on updated submissions
     // get all statuses from submissions
     if (!submissions) {
       return
     }
->>>>>>> parent of e784f7ed (Revert "Merged PR 324: refresh")
     let statuses = submissions.map(sub => sub.statusId.name)
     // remove duplicates
     statuses = [...new Set(statuses)]
@@ -165,10 +138,7 @@ const SubmissionDashboard = ({ history }:{history:History}) => {
     submissions.forEach(sub => periods.add(sub.submissionPeriodId.name))
     setFilterOptions([...periods])
   }, [submissions])
-<<<<<<< HEAD
 
-=======
->>>>>>> parent of e784f7ed (Revert "Merged PR 324: refresh")
 
   const handleFilterFrom = (event:ChangeEvent<{ value: any; }>) => {
     setFilterFrom(event.target.value);
@@ -177,21 +147,13 @@ const SubmissionDashboard = ({ history }:{history:History}) => {
   const handleFilterTo = (event:ChangeEvent<{ value: any; }>) => {
     setFilterTo(event.target.value);
   }
-<<<<<<< HEAD
 
-=======
-  
->>>>>>> parent of e784f7ed (Revert "Merged PR 324: refresh")
   // Convert Date format
   submissions.forEach(sub => {
     sub.updatedAt = formatTimestamp(sub.updatedAt);
     sub.createdAt = formatTimestamp(sub.createdAt);
-<<<<<<< HEAD
-  })
 
-=======
   });
->>>>>>> parent of e784f7ed (Revert "Merged PR 324: refresh")
 
   const checkBoxColumns = useMemo(
     () => [
@@ -273,13 +235,7 @@ const SubmissionDashboard = ({ history }:{history:History}) => {
       (submission.statusId.name || '') === status && 
       (readFilterFrom === 'All' || periodIsAfter(submission.submissionPeriodId.name, readFilterFrom)) && 
       (readFilterTo === 'All' || periodIsAfter(readFilterTo, submission.submissionPeriodId.name))
-<<<<<<< HEAD
-  )
 
-  return loading ? <Loading /> : (
-      <div className="submissions">
-        <SubmissionHeader />
-=======
     )
 
   useEffect(() => {
@@ -289,7 +245,7 @@ const SubmissionDashboard = ({ history }:{history:History}) => {
   return loading ? <Loading /> : (
     <div className="submissions">
       <SubmissionHeader />
->>>>>>> parent of e784f7ed (Revert "Merged PR 324: refresh")
+
 
       <FormControl className={classTheme.formControl}>
         <InputLabel id="demo-controlled-open-select-label">Filter Start:</InputLabel>
@@ -305,51 +261,7 @@ const SubmissionDashboard = ({ history }:{history:History}) => {
         </Select>
       </FormControl>
 
-<<<<<<< HEAD
-        <FormControl className={classTheme.formControl}>
-          <InputLabel id="demo-controlled-open-select-label">Filter Ends:</InputLabel>
-          <Select
-            labelId="demo-controlled-open-select-label"
-            id="demo-controlled-open-select"
-            onChange={handleFilterTo}
-          >
-            <MenuItem value='All'>All</MenuItem>
-            {filterOptions.map((element) => {
-              return <MenuItem value={element}>{element}</MenuItem>
-            })}
-          </Select>
-        </FormControl>
-        {statuses.length > 0 ? 
-          statuses.map(status => {
-            const data = getSubmissionsInRange(status)
-            const options = calculateOptions(data.length)
-            return data.length > 0 && (
-              <ExpansionPanel>
-                <ExpansionPanelSummary 
-                  expandIcon={<ExpandMoreIcon />}
-                  aria-controls="panel1a-content"
-                  id="panel1a-header"
-                >
-                  <Typography>{status === 'Unsubmitted' ? 'To-do' : status}</Typography>
-                </ExpansionPanelSummary>
-                <div className="MuiTableContainer">
-                  <MaterialTable
-                    key={data.length}
-                    columns={checkBoxColumns}
-                    options={options}
-                    data={data}
-                    //@ts-ignore
-                    actions={submitterFlag ? actions : notEditableActions}
-                  />
-                </div>
-              </ExpansionPanel>
-            )
-          }):(<Typography variant="h6" align='center'>
-                No Submissions Found
-              </Typography>)
-        }
-      </div>
-=======
+
       <FormControl className={classTheme.formControl}>
         <InputLabel id="demo-controlled-open-select-label">Filter Ends:</InputLabel>
         <Select
@@ -393,7 +305,7 @@ const SubmissionDashboard = ({ history }:{history:History}) => {
             </Typography>)
       }
     </div>
->>>>>>> parent of e784f7ed (Revert "Merged PR 324: refresh")
+
   );
 };
 

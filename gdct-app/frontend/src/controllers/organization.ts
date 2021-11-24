@@ -8,11 +8,7 @@ const orgController = (() => {
     withCredentials: true,
   });
   return {
-<<<<<<< HEAD
-    fetch: async (query: Partial<Organization>): Promise<Organization[]> => orgAxios.get('/fetch').then(res => res.data),
-=======
     fetch: async (query: Partial<Organization>): Promise<Organization[]> => orgAxios.post('/fetch', { query }).then(res => res.data),
->>>>>>> parent of e784f7ed (Revert "Merged PR 324: refresh")
     create: async (Org: Organization): Promise<Organization | null> => orgAxios.post('/create', { Org }).then(res => res.data.Org),
     update: async (Org: Partial<Organization>) => orgAxios.put('/update', { Org }),
     delete: async (_id: string) => orgAxios.post('/delete', { _id }),

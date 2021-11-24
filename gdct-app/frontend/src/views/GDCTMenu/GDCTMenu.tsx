@@ -71,6 +71,8 @@ const GDCTMenu = () => {
     await submissionStatusController.fetchStatus()
       .then( (res: any) => {
         setStatuses(res);
+        console.log("ff");
+        console.log(res);
       })
       .catch((e: Error) => {
         console.log(e);

@@ -251,13 +251,11 @@ const EditSubmission = ({ history }:{history:History}) => {
     dispatch(SubmissionNoteStore.actions.RECEIVE(''));
   }, [location, dispatch, refresh]);
   useEffect(()=>{
-<<<<<<< HEAD
     console.log('role', localStorage.getItem('currentRole'))
-=======
     if (!currentRole) {
       return
     }
->>>>>>> parent of e784f7ed (Revert "Merged PR 324: refresh")
+
     roleSubmissionButtonController.fetchSubmissionButtonByRole(localStorage.getItem('currentRole') || '').then((data:RoleSubmissionButton)=>{
       
       if(data){
