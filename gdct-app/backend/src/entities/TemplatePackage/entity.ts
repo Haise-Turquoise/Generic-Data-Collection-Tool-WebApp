@@ -12,6 +12,7 @@ export default class TemplatePackageEntity {
   public programIds: ObjectId[];
   public updatedAt: Date;
   public updatedBy: string;
+  public deadline: string;
 
   constructor({
     _id,
@@ -24,6 +25,7 @@ export default class TemplatePackageEntity {
     programIds,
     updatedAt,
     updatedBy,
+    deadline
   }: TemplatePackageDoc) {
     this._id = _id;
     this.name = name;
@@ -35,5 +37,6 @@ export default class TemplatePackageEntity {
     this.programIds = programIds;
     this.updatedAt = updatedAt;
     this.updatedBy = updatedBy;
+    this.deadline = deadline;
   }
 }

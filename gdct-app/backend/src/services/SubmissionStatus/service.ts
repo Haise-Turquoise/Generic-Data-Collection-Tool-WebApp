@@ -63,10 +63,13 @@ export default class SubmissionStatusService {
     return this.submissionStatusRepository.findAll()
   }
 
+<<<<<<< HEAD
   async findEach() {
     return this.submissionStatusRepository.count()
   }
 
+=======
+>>>>>>> parent of e784f7ed (Revert "Merged PR 324: refresh")
   async find(query: Partial<SubmissionStatus>) {
     return this.submissionStatusRepository.find(query)
   }

@@ -134,7 +134,11 @@ export default class WorkflowService {
   }
 
   async findWorkflowProessByStatus(statusId: string){
+<<<<<<< HEAD
     return this.workflowProcessesRepository.find({statusId:new ObjectId(statusId)});
+=======
+    return this.workflowProcessesRepository.find({statusId: new ObjectId(statusId)});
+>>>>>>> parent of e784f7ed (Revert "Merged PR 324: refresh")
   }
 
   async findWorkflowProessesById(ids: string[]){

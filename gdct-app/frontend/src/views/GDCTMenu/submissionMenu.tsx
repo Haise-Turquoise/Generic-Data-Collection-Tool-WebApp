@@ -4,7 +4,11 @@ import { selectSubmissionsStore } from '../../store/SubmissionsStore/selectors';
 import { Submission } from '../../types/submissions';
 import { getSubmissionsRequest } from '../../store/thunks/submission';
 import { selectFactoryRESTResponseTableValues } from '../../store/common/REST/selectors';
+<<<<<<< HEAD
 // import './menuStyle.css'; CAN'T RESOLVE
+=======
+import './menuStyle.css';
+>>>>>>> parent of e784f7ed (Revert "Merged PR 324: refresh")
 
 const SubmissionMenu = () => {
     const dispatch = useDispatch();
@@ -31,8 +35,13 @@ const SubmissionMenu = () => {
     },[submissions])
 
     return(
+<<<<<<< HEAD
         
       
+=======
+        <div>
+      <p>Welcome back to GDCT</p>
+>>>>>>> parent of e784f7ed (Revert "Merged PR 324: refresh")
       
       <div className="subDasboard">
         <div className="subDasboardTitle">
@@ -61,7 +70,11 @@ const SubmissionMenu = () => {
         
       </div>
        
+<<<<<<< HEAD
     
+=======
+    </div>
+>>>>>>> parent of e784f7ed (Revert "Merged PR 324: refresh")
     );
 };
 

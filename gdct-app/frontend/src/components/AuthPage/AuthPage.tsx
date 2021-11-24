@@ -192,9 +192,14 @@ const Header = ({
       />
       <Link to="/" className={classes.title}>
       <div style={{ display: 'flex', marginLeft: 'auto' }}>
+<<<<<<< HEAD
         <div style={{paddingRight: '10px'}}>
           <img src={'/Onlogo.png'} alt="logo" width="30" height="30"/>
         </div>
+=======
+        <div style={{paddingRight: '10px'}}><img src={'/Onlogo.png'} alt="logo" width="30" height="30"/></div>
+        
+>>>>>>> parent of e784f7ed (Revert "Merged PR 324: refresh")
         <HeaderTitle title={title} />
         </div>
       </Link>

@@ -44,6 +44,7 @@ export default class TemplatePackageRepository extends BaseRepository<TemplatePa
     programIds,
     updatedBy,
     updatedAt,
+    deadline,
   }: TemplatePackage) {
     return this.submissionPeriodRepository
       .validate(submissionPeriodId)
@@ -60,6 +61,7 @@ export default class TemplatePackageRepository extends BaseRepository<TemplatePa
           programIds,
           updatedBy,
           updatedAt,
+          deadline,
         }),
       )
       .then(templatePackage => new TemplatePackageEntity(templatePackage));
@@ -97,6 +99,10 @@ export default class TemplatePackageRepository extends BaseRepository<TemplatePa
         ).populate(isPopulated ? populatedParams : ''),
       )
       .then(templatePackage => new TemplatePackageEntity(templatePackage));
+  }
+
+  async updateDeadline(id: string,date: string){
+    return TemplatePackageModel.findByIdAndUpdate(id,{deadline: date});
   }
 
   async findByProgramId(programId: string) {

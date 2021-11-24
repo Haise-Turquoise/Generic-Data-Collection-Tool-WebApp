@@ -20,6 +20,7 @@ export default class SubmissionStatusRepository extends BaseRepository<Submissio
     for (let query of queries) {
       const found = await SubmissionStatusModel.find(query)
       result = result.concat(found)
+<<<<<<< HEAD
     }
     return result
   }
@@ -74,7 +75,9 @@ export default class SubmissionStatusRepository extends BaseRepository<Submissio
         
         }
         //
+=======
+>>>>>>> parent of e784f7ed (Revert "Merged PR 324: refresh")
     }
-    ])
+    return result
   }
 }

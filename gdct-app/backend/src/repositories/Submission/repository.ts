@@ -26,7 +26,12 @@ export default class SubmissionRepository extends BaseRepository<Submission, Sub
   }
 
   async createMany(submissions: Submission[]) {
+<<<<<<< HEAD
     return SubmissionModel.create(...submissions).then(res => res)
+=======
+    return SubmissionModel.create(...submissions)
+      .then(res => res)
+>>>>>>> parent of e784f7ed (Revert "Merged PR 324: refresh")
   }
 
   async update(id: string, submission: Partial<Submission>) {

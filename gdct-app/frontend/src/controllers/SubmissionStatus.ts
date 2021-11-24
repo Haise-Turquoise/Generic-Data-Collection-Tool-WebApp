@@ -19,7 +19,10 @@ const SubmissionStatusController = (() => {
     fetch: async (): Promise<SubmissionStatus[]> => SubmissionStatusAxios.get('').then(res => res.data),
     fetchOpen: async (): Promise<SubmissionStatus[]> => SubmissionStatusAxios.get('/open').then(res => res.data),
     createByRoles: async (roles: role[], userId: string): Promise<boolean> => SubmissionStatusAxios.post('/createByRoles', { roles, userId }).then(res => res.data),
+<<<<<<< HEAD
     fetchStatus: async (): Promise<SubmissionStatus[]> => SubmissionStatusAxios.get('/submissionState').then(res => res.data),
+=======
+>>>>>>> parent of e784f7ed (Revert "Merged PR 324: refresh")
   };
 })();
 

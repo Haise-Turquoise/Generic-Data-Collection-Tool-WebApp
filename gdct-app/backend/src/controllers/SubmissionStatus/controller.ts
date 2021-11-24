@@ -13,6 +13,7 @@ const PackageStatusController = Service([SubmissionStatusService], service => {
     });
 
     router.get('/submissionStatus/open', (req, res, next) => {
+<<<<<<< HEAD
       service
         .find({ reportingPeriod: {submissionClosed: false} })
         .then(submissionStatus => res.json( submissionStatus ))
@@ -28,9 +29,19 @@ const PackageStatusController = Service([SubmissionStatusService], service => {
     })
 
     router.get('/submissionStatus/submissionState', (req, res, next) => {
+=======
+>>>>>>> parent of e784f7ed (Revert "Merged PR 324: refresh")
       service
-        .findEach()
-        .then(submissionState => res.json( submissionState ))
+        .find({ reportingPeriod: {submissionClosed: false} })
+        .then(submissionStatus => res.json( submissionStatus ))
+        .catch(next)
+    })
+
+    router.post('/submissionStatus/createByRoles', (req, res, next) => {
+      const { roles, userId } = req.body
+      service
+        .createByRoles(roles, userId)
+        .then(status => res.json(status))
         .catch(next);
     })
 

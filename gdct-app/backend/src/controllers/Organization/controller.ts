@@ -5,9 +5,15 @@ import OrgService from '../../services/Organization';
 const OrgController = Service([OrgService], service => {
   const router = Router();
   return (() => {
+<<<<<<< HEAD
     router.get('/organizations/fetch', (req, res, next) => {
       const { query } = req.body
       
+=======
+    router.post('/organizations/fetch', (req, res, next) => {
+      const { query } = req.body
+
+>>>>>>> parent of e784f7ed (Revert "Merged PR 324: refresh")
       service
         .findOrg(query)
         .then(Orgs => res.json( Orgs ))
