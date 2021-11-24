@@ -34,6 +34,9 @@ export default interface SubmissionStatus {
     updatedDate: Date | '';
     updatedBy?: string;
   };
+  reportingPeriod: {
+    submissionClosed: boolean;
+  }
 }
 
 export interface SubmissionStatusDoc extends SubmissionStatus, Document {

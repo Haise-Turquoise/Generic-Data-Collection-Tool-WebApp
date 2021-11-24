@@ -169,6 +169,7 @@ const EditSubmission = ({ history }:{history:History}) => {
           const promiseQuery2 = [];
           for (const workflowProcess of workflowProcesses) {
             promiseQuery2.push(
+              //@ts-ignore
               statusController.fetchStatus(workflowProcess.statusId).then((status:Status | null) => {
                 const workflowProcessCopy = cloneDeep(workflowProcess) as VisitedNode;
                 workflowProcessCopy.statusName = status?.name || '';
@@ -192,6 +193,7 @@ const EditSubmission = ({ history }:{history:History}) => {
             const headStatusName = findTheHeadNode(workflowProcessesList)
             setVisitedWorkFlowProcesses(workflowProcessesList);
             const buttonArray = workflowProcessesList.filter((ele:VisitedNode)=>ele.statusName!=headStatusName);
+            console.log('arr', buttonArray)
             setButtonList(buttonArray);
           });
         });
@@ -249,7 +251,8 @@ const EditSubmission = ({ history }:{history:History}) => {
     dispatch(SubmissionNoteStore.actions.RECEIVE(''));
   }, [location, dispatch, refresh]);
   useEffect(()=>{
-    roleSubmissionButtonController.fetchSubmissionButtonByRole(currentRole[0]).then((data:RoleSubmissionButton)=>{
+    console.log('role', localStorage.getItem('currentRole'))
+    roleSubmissionButtonController.fetchSubmissionButtonByRole(localStorage.getItem('currentRole') || '').then((data:RoleSubmissionButton)=>{
       
       if(data){
         setRoleButtons(data.button)

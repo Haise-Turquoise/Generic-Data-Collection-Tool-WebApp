@@ -9,7 +9,7 @@ const TemplateType = new Schema<TemplateTypeDoc>(
     description: { type: String },
     templateWorkflowId: { type: ObjectId, ref: 'Workflow' },
     submissionWorkflowId: { type: ObjectId, ref: 'Workflow' },
-    programIds: [{ type: ObjectId, ref: 'Program' }],
+    programId: [{ type: ObjectId, ref: 'Program' }],
     isApprovable: { type: Boolean },
     isReviewable: { type: Boolean },
     isSubmittable: { type: Boolean },
