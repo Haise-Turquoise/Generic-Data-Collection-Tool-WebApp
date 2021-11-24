@@ -8,6 +8,8 @@ import DrawerItem from '../../components/AuthPage/DrawerItem';
 import IconItem from '../../components/AuthPage/IconItem';
 import { OverridableComponent } from '@material-ui/core/OverridableComponent';
 import { MappedMenu } from '../../types/menu';
+import './menuStyle.css';
+import AuditMenu from './auditMenu';
 
 const MenuHeader = () => {
   const [anchorEl, setAnchorEl] = React.useState<EventTarget | null>(null);
@@ -55,17 +57,10 @@ const MenuHeader = () => {
 
 const GDCTMenu = () => {
   return (
-    <div
-      style={{
-        maxWidth: '1280px',
-        margin: '0 auto',
-        display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fill, minmax(400px, auto))',
-        gap: '1em',
-      }}
-    >
-      <MenuHeader />
+    <div>
+      <AuditMenu/>
     </div>
+      
   );
 };
 
