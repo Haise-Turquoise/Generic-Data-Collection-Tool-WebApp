@@ -1,0 +1,81 @@
+import React, { useState, useEffect, MouseEventHandler, MouseEvent } from 'react';
+import { useDispatch, useSelector, shallowEqual } from 'react-redux';
+import { selectSubmissionsStore } from '../../store/SubmissionsStore/selectors';
+import { Submission } from '../../types/submissions';
+import { getSubmissionsRequest } from '../../store/thunks/submission';
+import { selectFactoryRESTResponseTableValues } from '../../store/common/REST/selectors';
+import './menuStyle.css';
+import { Button } from 'reactstrap';
+import AuditLog from '../../types/auditlog';
+import { fetchWithStatus, calculateOptions } from '../../tools/misc';
+import AuditLogController from '../../controllers/AuditLog'
+import { Link } from 'react-router-dom';
+
+const auditMenu = () => {
+
+  const curUser = localStorage.getItem("currentUser")
+  const [status, setStatus] = useState<'LOADING...' | 'NOT ALLOWED'>('LOADING...')
+  const [auditlogs, setAuditLogs] = useState<AuditLog[] | undefined>(undefined)
+  useEffect(() => {
+    fetchWithStatus(AuditLogController, setAuditLogs, setStatus)
+  }, [])
+  console.log(auditlogs)
+
+  // filter out from auditlogs
+  let result = auditlogs?.filter(person => (person.user.email == curUser) && (person.activity != "Login")
+  && (person.activity != "Logout"));
+
+  result?.sort((a, b) => {
+    return new Date(a.updatedAt!).getTime() > new Date(b.updatedAt!).getTime() ? -1 : 1
+  });
+
+  console.log(result)
+
+  let routePage = null;
+  console.log(result == undefined ? "nope": result[0].moduleName); 
+  
+
+
+    return(
+      
+        <div>
+      
+      <div className="subDasboard">
+        <div className="subDasboardTitle">
+          <div className="subleft">Jump back in...</div>
+    
+        </div>
+        <div className="rowContainer">
+        <div className="rowCell">{result == undefined ? "loading": result[0].activity}</div>
+        <div className="rowCell">{result == undefined ? "loading": (result[0].updatedAt?.substring(0,10) + " " + result[0].updatedAt?.substring(11,19))}</div>
+        <div className="rowCell"> <Button> Resume </Button> </div>
+        </div>
+        <div className="rowContainer1">
+        <div className="rowCell">{result == undefined ? "loading": result[1].activity}</div>
+        <div className="rowCell">{result == undefined ? "loading": (result[1].updatedAt?.substring(0,10) + " " + result[1].updatedAt?.substring(11,19))}</div>
+        <div className="rowCell"> <Link to="/user/profile/personaldetails" className="btn btn-primary">Resume</Link> </div>
+        </div>
+        <div className="rowContainer">
+        <div className="rowCell">{result == undefined ? "loading": result[2].activity}</div>
+        <div className="rowCell">{result == undefined ? "loading": (result[2].updatedAt?.substring(0,10) + " " + result[2].updatedAt?.substring(11,19))}</div>
+        <div className="rowCell"> <Button> Resume </Button> </div>
+        </div>
+        <div className="rowContainer1">
+        <div className="rowCell">{result == undefined ? "loading": result[3].activity}</div>
+        <div className="rowCell">{result == undefined ? "loading": (result[3].updatedAt?.substring(0,10) + " " + result[3].updatedAt?.substring(11,19))}</div>
+        <div className="rowCell"> <Button> Resume </Button> </div>
+        </div>
+        <div className="rowContainer">
+        <div className="rowCell">{result == undefined ? "loading": result[4].activity}</div>
+        <div className="rowCell">{result == undefined ? "loading": (result[4].updatedAt?.substring(0,10) + " " + result[4].updatedAt?.substring(11,19))}</div>
+        <div className="rowCell"> <Button> Resume </Button> </div>
+        </div>
+
+        
+      </div>
+       
+    </div>
+    );
+};
+
+export default auditMenu;
