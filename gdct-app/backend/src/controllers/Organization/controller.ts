@@ -6,8 +6,10 @@ const OrgController = Service([OrgService], service => {
   const router = Router();
   return (() => {
     router.get('/organizations/fetch', (req, res, next) => {
+      const { query } = req.body
+      
       service
-        .findOrg({})
+        .findOrg(query)
         .then(Orgs => res.json( Orgs ))
         .catch(next);
     });

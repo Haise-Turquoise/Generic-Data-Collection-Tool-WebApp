@@ -4,7 +4,7 @@ import { selectSubmissionsStore } from '../../store/SubmissionsStore/selectors';
 import { Submission } from '../../types/submissions';
 import { getSubmissionsRequest } from '../../store/thunks/submission';
 import { selectFactoryRESTResponseTableValues } from '../../store/common/REST/selectors';
-import './menuStyle.css';
+// import './menuStyle.css'; CAN'T RESOLVE
 
 const SubmissionMenu = () => {
     const dispatch = useDispatch();

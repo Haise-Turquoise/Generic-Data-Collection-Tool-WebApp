@@ -348,7 +348,7 @@ class ModifyOrganization extends React.Component<MOProps, MOState> {
     this.state = {
       ...temp,
       takenIds: [],
-      error: 'Please fill in the form',
+      error: null,
     };
     this.updateState = this.updateState.bind(this);
     this.handleChanges = this.handleChanges.bind(this);
@@ -356,7 +356,7 @@ class ModifyOrganization extends React.Component<MOProps, MOState> {
   }
 
   componentDidMount() {
-    orgController.fetch().then((orgs: Organization[]) => {
+    orgController.fetch({}).then((orgs: Organization[]) => {
       if (orgs) {
         this.setState({
           // all organization ids except the one currently being edited

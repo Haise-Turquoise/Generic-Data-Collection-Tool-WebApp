@@ -23,17 +23,26 @@ import Typography from '@material-ui/core/Typography';
 import { getSubmissionsRequest } from '../../store/thunks/submission';
 import { selectSubmissionsStore } from '../../store/SubmissionsStore/selectors';
 import { selectFactoryRESTResponseTableValues } from '../../store/common/REST/selectors';
-import { calculateOptions, sysRoleTraversal } from '../../tools/misc'
+import { calculateOptions, sysRoleTraversal, formatTimestamp } from '../../tools/misc'
 import submissionController from '../../controllers/submission';
 import submissionPeriodController from '../../controllers/submissionPeriod';
 import UsersController from '../../controllers/Users';
 import roleWorkflowStatusController from '../../controllers/RoleWorkflowStatus';
 import workflowController from '../../controllers/workflow';
 import statusController from '../../controllers/status';
+import orgController from '../../controllers/organization';
+import templatePackageController from '../../controllers/templatePackage';
+import { TemplatePackagePopulated } from '../../types/templatepackage';
+import Template from '../../types/template'
+import programController from '../../controllers/Program';
+import Loading from '../../components/Loading';
+import userController from '../../controllers/user';
+import SubmissionStatusController from '../../controllers/SubmissionStatus';
 
 import './SubmissionDashboard.scss'
 import Status from '../../types/status';
 import usersController from '../../controllers/Users';
+import { SignalCellularNoSimOutlined } from '@material-ui/icons';
 
 const useStyles = makeStyles((theme) => ({
   formControl: {
@@ -64,44 +73,67 @@ const SubmissionDashboard = ({ history }:{history:History}) => {
   const currUID = localStorage.getItem('currentUserID');
   const [submissions, setSubmissions] = useState<SubmissionPopulated[]>([]);
   const [submitterFlag, setSubmitterFlag] = useState(false)
+  const [loading, setLoading] = useState(true)
 
   const timeOption = { year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric' };
   useEffect(() => {
+    if (!currUID) {
+      return
+    }
     // load data
     (async function() {
-      const sysRole = (await usersController.fetchById(currUID || ''))?.sysRole
+      const sysRole = (await usersController.fetchById(currUID))?.sysRole
       let parsed = sysRoleTraversal(sysRole || [])
       // we are only concerned with roles that match current selected user role
       // ex someone who is Submitter + Approver should only see whichever they signed in to
       parsed = parsed.filter(role => role.role === localStorage.getItem('currentRole'))
-      const submissions = await submissionController.fetchByRole(parsed)
-      console.log('sub', submissions)
+      
+      // for creating submissions
+      await SubmissionStatusController.createByRoles(parsed, currUID)
+      // for finding submissions
+      let submissions = await submissionController.fetchByRole(parsed)
+      // filter to latest submissions
+      submissions = submissions.filter(sub => sub.isLatest)
+      // temporary fix for duplicates
+      submissions = submissions.reduce((unique: SubmissionPopulated[], current: SubmissionPopulated) => {
+        const found = unique.find(uniqueSub => current.name === uniqueSub.name)
+        return !!found ? unique : [...unique, current]
+      }, [])
+      // set submissions
       setSubmissions(submissions)
 
       // set submitter flag
       if (parsed.find(role => role.role === 'Submitter')) {
         setSubmitterFlag(true)
       }
-      
-      // get all statuses from submissions
-      let statuses = submissions.map(sub => sub.statusId.name)
-      // remove duplicates
-      statuses = [...new Set(statuses)]
+      setLoading(false)
+    })()
+  }, [currUID])
 
-      // sort statuses
-      const statusMap: {[key: string]: number} = 
-        (await statusController.fetch())
-        .reduce((acc, curr) => ({...acc, [curr.name]: curr.order || 100}), {})
-      // sort
+  useEffect(() => {
+    if (!submissions) {
+      return
+    }
+    // get all statuses from submissions
+    let statuses = submissions.map(sub => sub.statusId.name)
+    // remove duplicates
+    statuses = [...new Set(statuses)]
+
+    // sort statuses
+    statusController.fetch().then((res: Status[]) => {
+      const statusMap: {[key: string]: number} = res.reduce((acc, curr) => ({
+        ...acc,
+        [curr.name]: curr.order || 100
+      }), {})
       statuses.sort((a, b) => statusMap[a] - statusMap[b])
       setStatuses(statuses)
+    })
 
-      // find submission periods
-      let periods = new Set<string>()
-      submissions.forEach(sub => periods.add(sub.submissionPeriodId.name))
-      setFilterOptions([...periods])
-    })()
-  }, [])
+    // find submission periods
+    let periods = new Set<string>()
+    submissions.forEach(sub => periods.add(sub.submissionPeriodId.name))
+    setFilterOptions([...periods])
+  }, [submissions])
 
 
   const handleFilterFrom = (event:ChangeEvent<{ value: any; }>) => {
@@ -112,6 +144,12 @@ const SubmissionDashboard = ({ history }:{history:History}) => {
     setFilterTo(event.target.value);
   }
 
+  // Convert Date format
+  submissions.forEach(sub => {
+    sub.updatedAt = formatTimestamp(sub.updatedAt);
+    sub.createdAt = formatTimestamp(sub.createdAt);
+  })
+
 
   const checkBoxColumns = useMemo(
     () => [
@@ -120,10 +158,10 @@ const SubmissionDashboard = ({ history }:{history:History}) => {
       { title: 'Program', field: 'programId.name', headerStyle: { padding: styleFactor }, cellStyle: { padding: styleFactor } },
       { title: 'Approver', field: 'approver' , headerStyle: { padding: styleFactor }, cellStyle: { padding: styleFactor } },
       { title: 'Health Service Provider', field: 'orgId', headerStyle: { padding: styleFactor }, cellStyle: { padding: styleFactor } },
-      { title: 'Template Package Name', field: 'templateName', headerStyle: { padding: styleFactor }, cellStyle: { padding: styleFactor } },
+      { title: 'Template Package Name', field: 'templatePackageId.name', headerStyle: { padding: styleFactor }, cellStyle: { padding: styleFactor } },
       { title: 'Status', field: 'statusId.name', headerStyle: { padding: styleFactor }, cellStyle: { padding: styleFactor } },
       { title: 'Created On', field: 'createdAt', headerStyle: { padding: styleFactor }, cellStyle: { padding: styleFactor } },
-      { title: 'Modified By', field: 'updatedBy', headerStyle: { padding: styleFactor }, cellStyle: { padding: styleFactor } },
+      { title: 'Modified By', field: 'updatedBy.username', headerStyle: { padding: styleFactor }, cellStyle: { padding: styleFactor } },
       { title: 'Modified on', field: 'updatedAt', headerStyle: { padding: styleFactor }, cellStyle: { padding: styleFactor } },
       { title: 'version', field: 'version', headerStyle: { padding: styleFactor }, cellStyle: { padding: styleFactor } },
       { title: 'Template Name', field: 'templateName', headerStyle: { padding: styleFactor }, cellStyle: { padding: styleFactor } },
@@ -193,9 +231,9 @@ const SubmissionDashboard = ({ history }:{history:History}) => {
       (submission.statusId.name || '') === status && 
       (readFilterFrom === 'All' || periodIsAfter(submission.submissionPeriodId.name, readFilterFrom)) && 
       (readFilterTo === 'All' || periodIsAfter(readFilterTo, submission.submissionPeriodId.name))
-  ) 
+  )
 
-  return (
+  return loading ? <Loading /> : (
       <div className="submissions">
         <SubmissionHeader />
 
@@ -252,7 +290,7 @@ const SubmissionDashboard = ({ history }:{history:History}) => {
               </ExpansionPanel>
             )
           }):(<Typography variant="h6" align='center'>
-                {readMessage}
+                No Submissions Found
               </Typography>)
         }
       </div>
