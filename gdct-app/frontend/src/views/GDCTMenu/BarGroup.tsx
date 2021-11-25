@@ -18,10 +18,12 @@ const BarGroupComponent =  (props:any) => {
   // bounds
 
   const [currentPeriod, setCurrentPeriod] = useState(props.submissionData[0]._id.submissionPeriod);
+  console.log("ll");
+  console.log(currentPeriod);
 
   let submissionPeriods = [];
   let dict : any = {};
-  console.log("ll");
+  
   console.log(props.submissionData);
 
   for (let i = 0; i< props.submissionData.length; i++){
