@@ -68,11 +68,9 @@ const GDCTMenu = () => {
   //fetch submission state information
 
   const getSubmissions = async () => {
-    await submissionStatusController.fetchStatus()
+    submissionStatusController.fetchStatus()
       .then( (res: any) => {
         setStatuses(res);
-        console.log("ff");
-        console.log(res);
       })
       .catch((e: Error) => {
         console.log(e);
@@ -82,7 +80,7 @@ const GDCTMenu = () => {
   useEffect(() => {
     // send HTTP request
     // save response to variable
-    getSubmissions();
+    if (localStorage.getItem('currentRole') === 'Business Admin') getSubmissions();
   }, [])
 
 
@@ -92,23 +90,22 @@ const GDCTMenu = () => {
   }
 
   return (
-    // <div>
-    //     <SubmissionMenu />
-    //     {statuses == undefined ? <div>loading...</div> :  <div style={barGroupStyle as React.CSSProperties}> <BarGroupComponent width={500} height={500} submissionData={statuses} events={true} /> </div> }
-    // </div>
 
-    <Grid 
-    item
-    alignItems="center"
-    justifyContent="center"
-    xs={12}
-    style={{ display: "flex", gap: "1rem", alignItems: "center", height: '100%'}}
-    >
-    <Grid item xs={8} >
-      <SubmissionMenu />
-      {statuses == undefined ? <div>loading...</div> :   <BarGroupComponent width={800} height={1000} submissionData={statuses} events={true} />  }
-    </Grid>
-  </Grid>
+  //conditionally render the component based if the current user is Admin or not 
+  <div>
+    {localStorage.getItem('currentRole') === 'Business Admin' ?
+    <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', textAlign: 'center', flexFlow: 'row-wrap',  }}>
+      {statuses == undefined ? <div>loading...</div> :  <div style={barGroupStyle as React.CSSProperties}> <BarGroupComponent width={700} height={500} submissionData={statuses} events={true} /> </div> }
+    </div>
+    :
+    <div>
+        <SubmissionMenu />
+    </div>
+    }
+
+  </div>
+
+
         
   );
 };
