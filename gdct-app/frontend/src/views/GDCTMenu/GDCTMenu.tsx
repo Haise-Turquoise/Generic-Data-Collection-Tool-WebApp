@@ -7,6 +7,8 @@ import DrawerItem from '../../components/AuthPage/DrawerItem';
 //@ts-ignore
 import IconItem from '../../components/AuthPage/IconItem';
 import { MappedMenu } from '../../types/menu';
+import './menuStyle.css';
+import AuditMenu from './auditMenu';
 import SubmissionStatus from '../../types/submissionstatus'
 
 import submissionStatusController from '../../controllers/SubmissionStatus';
@@ -90,9 +92,11 @@ const GDCTMenu = () => {
   }
 
   return (
-
-  //conditionally render the component based if the current user is Admin or not 
   <div>
+
+    <div>
+      <AuditMenu/>
+    </div>
     {localStorage.getItem('currentRole') === 'Business Admin' ?
     <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', textAlign: 'center', flexFlow: 'row-wrap',  }}>
       {statuses == undefined ? <div>loading...</div> :  <div style={barGroupStyle as React.CSSProperties}> <BarGroupComponent width={700} height={500} submissionData={statuses} events={true} /> </div> }
@@ -101,12 +105,10 @@ const GDCTMenu = () => {
     <div>
         <SubmissionMenu />
     </div>
+
     }
 
   </div>
-
-
-        
   );
 };
 
