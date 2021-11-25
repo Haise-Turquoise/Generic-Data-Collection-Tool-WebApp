@@ -192,8 +192,10 @@ const Header = ({
       />
       <Link to="/" className={classes.title}>
       <div style={{ display: 'flex', marginLeft: 'auto' }}>
-        <div style={{paddingRight: '10px'}}><img src={'/Onlogo.png'} alt="logo" width="30" height="30"/></div>
-        
+        <div style={{paddingRight: '10px'}}>
+          <img src={'/Onlogo.png'} alt="logo" width="30" height="30"/>
+        </div>
+
         <HeaderTitle title={title} />
         </div>
       </Link>

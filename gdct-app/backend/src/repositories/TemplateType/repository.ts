@@ -58,7 +58,7 @@ export default class TemplateTypeRepository extends BaseRepository<TemplateType,
 
   async findByProgramIds(programIds: ObjectId[]) {
     // @ts-ignore
-    return TemplateTypeModel.find({ programIds: { $in: programIds } });
+    return TemplateTypeModel.find({ programId: { $in: programIds } });
   }
 
   async update(id: string, templateType: Partial<TemplateType>) {

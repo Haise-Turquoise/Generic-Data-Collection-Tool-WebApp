@@ -17,6 +17,15 @@ const SubmissionController = Service([SubmissionService], service => {
         .catch(next);
     });
 
+    router.post('/submissions/createSubmissions', (req, res, next) => {
+      const { submissions } = req.body
+      service
+        .createSubmissions(submissions)
+        .then(() => res.json({submissions}))
+        .catch(next);
+
+    })
+
     router.post('/submissions/findQuery', (req, res, next) => {
       const { query } = req.body
       

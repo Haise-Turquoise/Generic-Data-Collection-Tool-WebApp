@@ -85,6 +85,8 @@ export default class SubmissionService {
   //   });
   //   console.log('permission', permission)
   // }
+
+
   async checkUserRole(userInfo:User, submission:Submission, permission:string[]){
     for (const sysRole of userInfo.sysRole){
       for(const org of sysRole.org){
@@ -101,13 +103,15 @@ export default class SubmissionService {
     }
   }
 
+  
+
   async findQuery(query: Partial<Submission>) {
     return await this.submissionRepository.findQuery(query)
   }
 
   async findByRole(role: {orgId: string, progId: string, tempTypeId: string, role: string}) {
     //@ts-ignore
-    const submissions: SubmissionPopulated[] = await this.submissionRepository.findQueryPopulate({ orgId: +role.orgId, programId: role.progId })
+    let submissions: SubmissionPopulated[] = await this.submissionRepository.findQueryPopulate({ orgId: +role.orgId, programId: role.progId })
     // determine acceptable statuses
     const statuses: string[] = (await this.roleWorkflowStatusRepository.findByRole(role.role))?.workflowStatus || []
     const statusIds = []
@@ -118,6 +122,8 @@ export default class SubmissionService {
       }
       // console.log('statuses', statusIds)
     }
+    const flaggedIndicies: number[] = [] // indicies flagged for deleting
+
     for (let i = 0; i < submissions.length; i++) {
       // workflow processes this user can see, depends on submission workflow
       const workflows: WorkflowProcess[] = await this.workflowProcessRepository.findNeighbors(submissions[i].workflowId.toString(), statusIds.map(id => id.toString()))
@@ -131,10 +137,15 @@ export default class SubmissionService {
       }
       const tempTypeId = (await this.templateRepository.findById(submissions[i].templateId)).templateTypeId
       if (tempTypeId.toString() !== role.tempTypeId.toString() || !statusRes.includes(submissions[i].statusId.name)) {
-        submissions.splice(i,1)
+        flaggedIndicies.push(i)
       }
     }
+    submissions = submissions.filter((_sub, index) => !flaggedIndicies.includes(index))
     return submissions
+  }
+
+  async createSubmissions(submissions: Submission[]) {
+    this.submissionRepository.createMany(submissions)
   }
 
   async findReportingPeriod(_id:string){
@@ -279,7 +290,7 @@ export default class SubmissionService {
   }
 
   async updateSubmission(submission:Submission) {
-    return this.submissionRepository.update(submission._id.toString(), submission).then(submission => {
+    return this.submissionRepository.update(submission._id!.toString(), submission).then(submission => {
       //@ts-ignore
       if (submission.phase === 'Approved') return this.phaseSubmission(String(submission._id));
     });
@@ -326,8 +337,8 @@ export default class SubmissionService {
       submission.version += 1;
       submission.isLatest = true;
       submission.parentId = submission.parentId ? submission.parentId : submission._id;
-      const oldSubmissionId = submission._id.toString();
-      await this.submissionRepository.findAndSetFalse(submission._id);
+      const oldSubmissionId = submission._id!.toString();
+      await this.submissionRepository.findAndSetFalse(submission._id!);
       //@ts-ignore
       delete submission._id;
       const newSubmission = await this.submissionRepository.create(submission);
@@ -348,7 +359,7 @@ export default class SubmissionService {
 
     submission.isLatest = true;
 
-    const newSubmission = await this.submissionRepository.update(submission._id.toString(), submission);
+    const newSubmission = await this.submissionRepository.update(submission._id!.toString(), submission);
     //@ts-ignore
     if (role === 'Approved') this.phaseSubmission(newSubmission._id);
 
