@@ -13,15 +13,6 @@ export type BarGroupProps = {
 };
 
 
-const blue = "#aeeef8";
-const green = "#e5fd3d";
-export const background = "#612efb";
-
-
-const defaultMargin = { top: 40, right: 0, bottom: 40, left: 0 };
-
-
-
 
 const BarGroupComponent =  (props:any) => {
   // bounds
@@ -84,8 +75,8 @@ const BarGroupComponent =  (props:any) => {
             </Select>
         </FormControl>
         <Chart
-          width={'500px'}
-          height={'300px'}
+          width={props.width}
+          height={props.height}
           chartType="ComboChart"
           loader={<div>Loading Chart</div>}
           data={fixedData}
