@@ -63,3 +63,14 @@
     width: 33.33%;
     float: left;
 }
+
+.rowCellSub{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+ 
+    color: black;
+    height: 100%;
+    
+    float: left;
+}
