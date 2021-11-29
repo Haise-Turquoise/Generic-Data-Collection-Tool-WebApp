@@ -7,6 +7,7 @@ import { DatePicker } from '@material-ui/pickers'
 
 import MaterialTable, { Action, Column, Options } from 'material-table';
 import moment from 'moment';
+import Swal, { SweetAlertResult } from 'sweetalert2';
 
 import { useHistory } from 'react-router-dom';
 //@ts-ignore
@@ -345,6 +346,21 @@ const TemplatePackages = () => {
           controllerDeleteRow(templatePackageController, setTemplatePackages, templatePackage._id).then((res: boolean) => {
             if (res) {
               resolve(res)
+            }
+            else{
+
+              Swal.fire({
+                title: 'Warning!',
+                text:
+                  'This package is published, it cannot be removed',
+                icon: 'error',
+                confirmButtonColor: '#3085d6',
+                confirmButtonText: 'OK',
+              }).then((result:SweetAlertResult<any>) => {
+                if (result.isConfirmed) {
+                  window.location.reload();
+                }
+              });
             }
             reject()
           })
