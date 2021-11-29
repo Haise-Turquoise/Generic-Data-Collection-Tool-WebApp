@@ -93,10 +93,13 @@ const GDCTMenu = () => {
 
   return (
   <div>
-
+    <br/>
+    <div className="welcomeTitle">Welcome To GDCT</div>
+    <br/><br/><br/>
     <div>
       <AuditMenu/>
     </div>
+    <br/><br/><br/>
     {localStorage.getItem('currentRole') === 'Business Admin' ?
     <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', textAlign: 'center', flexFlow: 'row-wrap',  }}>
       {statuses == undefined ? <div>loading...</div> :  <div style={barGroupStyle as React.CSSProperties}> <BarGroupComponent width={700} height={500} submissionData={statuses} events={true} /> </div> }

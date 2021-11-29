@@ -35,6 +35,7 @@ import Status from '../../types/status';
 import { DateTimePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
 import DateFnsUtils from '@date-io/date-fns';
 
+
 interface TemplatePackageMT extends TemplatePackage {
   tableData?: any,
 }
@@ -64,7 +65,7 @@ const CostumeDatePicker = (props: any) =>{
   return (
     <MuiPickersUtilsProvider utils={DateFnsUtils}>
        <DatePicker
-        format='yyyy-MM-dd 23:59:99'
+        format='yyyy-MM-dd 23:59:59'
         InputProps={{
           disableUnderline: true,
          }}
@@ -73,6 +74,11 @@ const CostumeDatePicker = (props: any) =>{
           console.log(JSON.stringify(newDate))
           controllerUpdateDeadline(props.data._id,newDate);
           setDate(newDate)}}
+        inputProps={{
+          style: {
+            fontSize: 14,
+        }
+        }}
       />
     </MuiPickersUtilsProvider>
     
@@ -255,7 +261,7 @@ const TemplatePackages = () => {
         title: "Close Date",
         field: "deadline",
         type: "date",
-        render: (row) => <div><CostumeDatePicker data={row}/></div>,
+        render: (row) => <div style={{fontSize: "3px"}}><CostumeDatePicker data={row}/></div>,
       },
       {
         title: 'Updated By',
