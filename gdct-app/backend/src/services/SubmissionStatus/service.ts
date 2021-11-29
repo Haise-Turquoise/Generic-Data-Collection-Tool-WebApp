@@ -63,6 +63,10 @@ export default class SubmissionStatusService {
     return this.submissionStatusRepository.findAll()
   }
 
+  async findEach() {
+    return this.submissionStatusRepository.count()
+  }
+
   async find(query: Partial<SubmissionStatus>) {
     return this.submissionStatusRepository.find(query)
   }

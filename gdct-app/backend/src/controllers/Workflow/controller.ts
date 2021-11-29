@@ -72,7 +72,8 @@ const WorkflowController = Service([WorkflowService], service => {
       service
         .findPrevious(workflowId, statusIds)
         .then(workflows => res.json({ workflows }))
-        .catch(next)
+        .catch(next);
+
     })
 
     router.post('/workflows/fetchOnlyWorkflowById', (req, res, next) => {

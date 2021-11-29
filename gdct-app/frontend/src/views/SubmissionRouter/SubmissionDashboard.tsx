@@ -23,7 +23,9 @@ import Typography from '@material-ui/core/Typography';
 import { getSubmissionsRequest } from '../../store/thunks/submission';
 import { selectSubmissionsStore } from '../../store/SubmissionsStore/selectors';
 import { selectFactoryRESTResponseTableValues } from '../../store/common/REST/selectors';
-import { calculateOptions, formatTimestamp, sysRoleTraversal } from '../../tools/misc'
+
+import { calculateOptions, sysRoleTraversal, formatTimestamp } from '../../tools/misc'
+
 import submissionController from '../../controllers/submission';
 import submissionPeriodController from '../../controllers/submissionPeriod';
 import UsersController from '../../controllers/Users';
@@ -32,9 +34,6 @@ import workflowController from '../../controllers/workflow';
 import statusController from '../../controllers/status';
 import orgController from '../../controllers/organization';
 
-import './SubmissionDashboard.scss'
-import Status from '../../types/status';
-import usersController from '../../controllers/Users';
 import templatePackageController from '../../controllers/templatePackage';
 import { TemplatePackagePopulated } from '../../types/templatepackage';
 import Template from '../../types/template'
@@ -42,6 +41,12 @@ import programController from '../../controllers/Program';
 import Loading from '../../components/Loading';
 import userController from '../../controllers/user';
 import SubmissionStatusController from '../../controllers/SubmissionStatus';
+
+
+import './SubmissionDashboard.scss'
+import Status from '../../types/status';
+import usersController from '../../controllers/Users';
+
 
 const useStyles = makeStyles((theme) => ({
   formControl: {
@@ -86,7 +91,6 @@ const SubmissionDashboard = ({ history }:{history:History}) => {
       // ex someone who is Submitter + Approver should only see whichever they signed in to
       parsed = parsed.filter(role => role.role === localStorage.getItem('currentRole'))
 
-      // for creating submissions
       await SubmissionStatusController.createByRoles(parsed, currUID)
       // for finding submissions
       let submissions = await submissionController.fetchByRole(parsed)
@@ -97,6 +101,7 @@ const SubmissionDashboard = ({ history }:{history:History}) => {
         const found = unique.find(uniqueSub => current.name === uniqueSub.name)
         return !!found ? unique : [...unique, current]
       }, [])
+
       setSubmissions(submissions)
 
       // set submitter flag
@@ -108,6 +113,7 @@ const SubmissionDashboard = ({ history }:{history:History}) => {
   }, [currUID])
 
   useEffect(() => {
+
     // we put these fetches here since they depend on updated submissions
     // get all statuses from submissions
     if (!submissions) {
@@ -133,6 +139,7 @@ const SubmissionDashboard = ({ history }:{history:History}) => {
     setFilterOptions([...periods])
   }, [submissions])
 
+
   const handleFilterFrom = (event:ChangeEvent<{ value: any; }>) => {
     setFilterFrom(event.target.value);
   }
@@ -140,11 +147,12 @@ const SubmissionDashboard = ({ history }:{history:History}) => {
   const handleFilterTo = (event:ChangeEvent<{ value: any; }>) => {
     setFilterTo(event.target.value);
   }
-  
+
   // Convert Date format
   submissions.forEach(sub => {
     sub.updatedAt = formatTimestamp(sub.updatedAt);
     sub.createdAt = formatTimestamp(sub.createdAt);
+
   });
 
   const checkBoxColumns = useMemo(
@@ -227,6 +235,7 @@ const SubmissionDashboard = ({ history }:{history:History}) => {
       (submission.statusId.name || '') === status && 
       (readFilterFrom === 'All' || periodIsAfter(submission.submissionPeriodId.name, readFilterFrom)) && 
       (readFilterTo === 'All' || periodIsAfter(readFilterTo, submission.submissionPeriodId.name))
+
     )
 
   useEffect(() => {
@@ -236,6 +245,7 @@ const SubmissionDashboard = ({ history }:{history:History}) => {
   return loading ? <Loading /> : (
     <div className="submissions">
       <SubmissionHeader />
+
 
       <FormControl className={classTheme.formControl}>
         <InputLabel id="demo-controlled-open-select-label">Filter Start:</InputLabel>
@@ -250,6 +260,7 @@ const SubmissionDashboard = ({ history }:{history:History}) => {
           })}
         </Select>
       </FormControl>
+
 
       <FormControl className={classTheme.formControl}>
         <InputLabel id="demo-controlled-open-select-label">Filter Ends:</InputLabel>
@@ -294,6 +305,7 @@ const SubmissionDashboard = ({ history }:{history:History}) => {
             </Typography>)
       }
     </div>
+
   );
 };
 

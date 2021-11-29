@@ -19,6 +19,8 @@ const SubmissionStatusController = (() => {
     fetch: async (): Promise<SubmissionStatus[]> => SubmissionStatusAxios.get('').then(res => res.data),
     fetchOpen: async (): Promise<SubmissionStatus[]> => SubmissionStatusAxios.get('/open').then(res => res.data),
     createByRoles: async (roles: role[], userId: string): Promise<boolean> => SubmissionStatusAxios.post('/createByRoles', { roles, userId }).then(res => res.data),
+    fetchStatus: async (): Promise<SubmissionStatus[]> => SubmissionStatusAxios.get('/submissionStateCount').then(res => res.data),
+
   };
 })();
 

@@ -193,6 +193,7 @@ const EditSubmission = ({ history }:{history:History}) => {
             const headStatusName = findTheHeadNode(workflowProcessesList)
             setVisitedWorkFlowProcesses(workflowProcessesList);
             const buttonArray = workflowProcessesList.filter((ele:VisitedNode)=>ele.statusName!=headStatusName);
+            console.log('arr', buttonArray)
             setButtonList(buttonArray);
           });
         });
@@ -250,9 +251,11 @@ const EditSubmission = ({ history }:{history:History}) => {
     dispatch(SubmissionNoteStore.actions.RECEIVE(''));
   }, [location, dispatch, refresh]);
   useEffect(()=>{
+    console.log('role', localStorage.getItem('currentRole'))
     if (!currentRole) {
       return
     }
+
     roleSubmissionButtonController.fetchSubmissionButtonByRole(localStorage.getItem('currentRole') || '').then((data:RoleSubmissionButton)=>{
       
       if(data){

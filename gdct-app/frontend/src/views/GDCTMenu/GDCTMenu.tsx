@@ -1,19 +1,27 @@
-import React, { useState, useEffect, MouseEventHandler, MouseEvent } from 'react';
-import { Button, SvgIconProps, SvgIconTypeMap } from '@material-ui/core';
+import React, { useState, useEffect, MouseEventHandler, MouseEvent, Fragment } from 'react';
+import { Button, Grid, SvgIconProps, SvgIconTypeMap } from '@material-ui/core';
 //@ts-ignore
 import createUserNavigation from '../../components/AuthPage/createUserNavigation';
 //@ts-ignore
 import DrawerItem from '../../components/AuthPage/DrawerItem';
 //@ts-ignore
 import IconItem from '../../components/AuthPage/IconItem';
-import { OverridableComponent } from '@material-ui/core/OverridableComponent';
 import { MappedMenu } from '../../types/menu';
+import './menuStyle.css';
+import AuditMenu from './auditMenu';
+import SubmissionStatus from '../../types/submissionstatus'
+
+import submissionStatusController from '../../controllers/SubmissionStatus';
+import BarGroupComponent from './BarGroup';
+import SubmissionMenu from './submissionMenu';
 
 const MenuHeader = () => {
   const [anchorEl, setAnchorEl] = React.useState<EventTarget | null>(null);
   const handleClick = (event: MouseEvent) => {
     setAnchorEl(event.currentTarget);
   };
+
+
   const [config, setConfig] = useState<MappedMenu[]>([]);
   useEffect(() => {
     createUserNavigation().then((res: MappedMenu[]) => {
@@ -47,25 +55,60 @@ const MenuHeader = () => {
           </Button>
         ) : (
           <DrawerItem key={`${type}-${name}-${index}`} {...item} option="main" />
-        );
+        ); 
       })}
     </>
   );
 };
 
+
+
+
+
 const GDCTMenu = () => {
+  const [statuses, setStatuses] = useState<SubmissionStatus[] | undefined>(undefined);
+  //fetch submission state information
+
+  const getSubmissions = async () => {
+    submissionStatusController.fetchStatus()
+      .then( (res: any) => {
+        setStatuses(res);
+      })
+      .catch((e: Error) => {
+        console.log(e);
+      })
+  }
+
+  useEffect(() => {
+    // send HTTP request
+    // save response to variable
+    if (localStorage.getItem('currentRole') === 'Business Admin') getSubmissions();
+  }, [])
+
+
+  const barGroupStyle = {
+    position: "flex", 
+    margin:"0 auto"
+  }
+
   return (
-    <div
-      style={{
-        maxWidth: '1280px',
-        margin: '0 auto',
-        display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fill, minmax(400px, auto))',
-        gap: '1em',
-      }}
-    >
-      <MenuHeader />
+  <div>
+
+    <div>
+      <AuditMenu/>
     </div>
+    {localStorage.getItem('currentRole') === 'Business Admin' ?
+    <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', textAlign: 'center', flexFlow: 'row-wrap',  }}>
+      {statuses == undefined ? <div>loading...</div> :  <div style={barGroupStyle as React.CSSProperties}> <BarGroupComponent width={700} height={500} submissionData={statuses} events={true} /> </div> }
+    </div>
+    :
+    <div>
+        <SubmissionMenu />
+    </div>
+
+    }
+
+  </div>
   );
 };
 

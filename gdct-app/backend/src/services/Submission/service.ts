@@ -85,6 +85,8 @@ export default class SubmissionService {
   //   });
   //   console.log('permission', permission)
   // }
+
+
   async checkUserRole(userInfo:User, submission:Submission, permission:string[]){
     for (const sysRole of userInfo.sysRole){
       for(const org of sysRole.org){
@@ -100,6 +102,8 @@ export default class SubmissionService {
       }
     }
   }
+
+  
 
   async findQuery(query: Partial<Submission>) {
     return await this.submissionRepository.findQuery(query)
@@ -118,7 +122,8 @@ export default class SubmissionService {
       }
       // console.log('statuses', statusIds)
     }
-    const flaggedIndicies: number[] = [] // indicies flagged for deletion
+    const flaggedIndicies: number[] = [] // indicies flagged for deleting
+
     for (let i = 0; i < submissions.length; i++) {
       // workflow processes this user can see, depends on submission workflow
       const workflows: WorkflowProcess[] = await this.workflowProcessRepository.findNeighbors(submissions[i].workflowId.toString(), statusIds.map(id => id.toString()))
@@ -136,7 +141,6 @@ export default class SubmissionService {
       }
     }
     submissions = submissions.filter((_sub, index) => !flaggedIndicies.includes(index))
-    // console.log('res', submissions)
     return submissions
   }
 
