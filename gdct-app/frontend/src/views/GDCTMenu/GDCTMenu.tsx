@@ -26,6 +26,7 @@ const MenuHeader = () => {
   useEffect(() => {
     createUserNavigation().then((res: MappedMenu[]) => {
       setConfig(res);
+      console.log(config)
     });
   }, []);
   return (
@@ -98,8 +99,8 @@ const GDCTMenu = () => {
       <AuditMenu/>
     </div>
     {localStorage.getItem('currentRole') === 'Business Admin' ?
-    <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', textAlign: 'center', flexFlow: 'row-wrap',  }}>
-      {statuses == undefined ? <div>loading...</div> :  <div style={barGroupStyle as React.CSSProperties}> <BarGroupComponent width={700} height={500} submissionData={statuses} events={true} /> </div> }
+    <div >
+      {statuses == undefined ? <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', textAlign: 'center', flexFlow: 'row-wrap' }}>loading Submission Overview...</div> :  <BarGroupComponent submissionData={statuses} events={true} /> }
     </div>
     :
     <div>

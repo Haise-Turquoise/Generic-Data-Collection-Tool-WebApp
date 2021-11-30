@@ -2,7 +2,7 @@ import React, { Fragment , useState} from "react";
 import Chart from "react-google-charts";
 import SubmissionStatus from '../../types/submissionstatus';
 import {FormControl, InputLabel, Select, MenuItem, Grid, Card} from '@material-ui/core';
-
+import './menuStyle.css';
 
 export type BarGroupProps = {
   width: number;
@@ -52,55 +52,46 @@ const BarGroupComponent =  (props:any) => {
   }
 
   return props.width < 10 ? null : (
-    <Fragment>
-
-      <Grid 
-        item
-        xs={12}
-        style={{ display: "flex", gap: "1rem", alignItems: "center", height: '100%'}}
+    <div className="subDasboard">
+      <div className="subDasboardTitle">
+        <div className="subleft">Submission Overview</div>
+      </div>
+      <FormControl fullWidth>
+        <Select
+                labelId="submission-label"
+                id="submission-label"
+                value={currentPeriod}
+                onChange={handleChange}
+                label="SubmissionPeriod"
         >
-        <Grid item >
-        <FormControl fullWidth>
-          <InputLabel id="submission-label">Submission Period</InputLabel>
-            <Select
-                    labelId="submission-label"
-                    id="submission-label"
-                    value={currentPeriod}
-                    onChange={handleChange}
-                    label="SubmissionPeriod"
-            >
-              {submissionPeriods.map((element, index) => {
-                return <MenuItem value={element}>{element} </MenuItem>
-              })}
-            </Select>
-        </FormControl>
-        <Chart
-          width={props.width}
-          height={props.height}
-          chartType="ComboChart"
-          loader={<div>Loading Chart</div>}
-          data={fixedData}
-          
-          options={{
-            // Material design options
-            bar: {
-              groupWidth: 40
-            },
-            seriesType: 'bars',
-            chart: {
-              title: 'Submission Status Overview',
-              subtitle: 'GDCT Submission Tracker',
-            },
-          }}
-        />
+          {submissionPeriods.map((element, index) => {
+            return <MenuItem value={element}>{element} </MenuItem>
+          })}
+        </Select>
+      </FormControl>
+      <Chart
+        width="100%"
+        height="500px"
+        chartType="ComboChart"
+        loader={<div>Loading Chart</div>}
+        data={fixedData}
+        
+        options={{
+          // Material design options
+          bar: {
+            groupWidth: 40
+          },
+          seriesType: 'bars',
+          chart: {
+            title: 'Submission Status Overview',
+            subtitle: 'GDCT Submission Tracker',
+          },
+        }}
+      />
 
 
-        </Grid>
-      </Grid>
-     
-    </Fragment>
-
-
+  </div>
+    
   );
 }
 
