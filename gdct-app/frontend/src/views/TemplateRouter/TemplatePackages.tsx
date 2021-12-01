@@ -270,7 +270,7 @@ const TemplatePackages = () => {
         title: "Close Date",
         field: "deadline",
         type: "date",
-        render: (row) => <div>{formatedTimestamp(new Date(row.deadline),"23:59:59")}</div>,
+        render: (row) => <div>{row.deadline ? formatedTimestamp(new Date(row.deadline),"23:59:59") : ''}</div>,
         editComponent: (props) => {
           return <div><CostumeDatePicker {...props}/></div>;
         }
