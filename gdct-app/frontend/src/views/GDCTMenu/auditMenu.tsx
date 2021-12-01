@@ -30,7 +30,7 @@ const auditMenu = () => {
   }, []);
   
   console.log("config!!")
-  console.log(config)
+  console.log(config[0])
 
   // filter out from auditlogs
   let result = auditlogs?.filter(person => (person.user.email == curUser) && (person.activity != "Login")
@@ -41,6 +41,7 @@ const auditMenu = () => {
   });
 
   // log out filtered auditlog
+  console.log("magic")
   console.log(result)
 
     return(
