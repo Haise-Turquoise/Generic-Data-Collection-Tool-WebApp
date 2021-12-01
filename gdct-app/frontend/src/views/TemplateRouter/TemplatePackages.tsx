@@ -55,10 +55,19 @@ const controllerUpdateDeadline = async (id: string, date: any) =>{
   }
 }
 
+const formatedTimestamp = (d: Date,time:string)=> {
+  
+  var date = d.toISOString().split('T')[0];
+  
+  return `${date} ${time}`
+}
+
 const CostumeDatePicker = (props: any) =>{
+  console.log("props ! !");
+  console.log(props)
   var checkDealine = null;
-  if(props.data.deadline != undefined){
-    checkDealine = props.data.deadline;
+  if(props.rowData.deadline != undefined){
+    checkDealine = props.rowData.deadline;
   }
   const [date, setDate] = useState<Date | null>(checkDealine);
 
@@ -67,14 +76,13 @@ const CostumeDatePicker = (props: any) =>{
     <MuiPickersUtilsProvider utils={DateFnsUtils}>
        <DatePicker
         format='yyyy-MM-dd 23:59:59'
-        InputProps={{
-          disableUnderline: true,
-         }}
         value={date}
         onChange = {(newDate) => {
-          console.log(JSON.stringify(newDate))
-          controllerUpdateDeadline(props.data._id,newDate);
-          setDate(newDate)}}
+          setDate(newDate)
+          props.onChange(newDate)
+        }
+          
+        }
         inputProps={{
           style: {
             fontSize: 14,
@@ -262,7 +270,10 @@ const TemplatePackages = () => {
         title: "Close Date",
         field: "deadline",
         type: "date",
-        render: (row) => <div style={{fontSize: "3px"}}><CostumeDatePicker data={row}/></div>,
+        render: (row) => <div>{formatedTimestamp(new Date(row.deadline),"23:59:59")}</div>,
+        editComponent: (props) => {
+          return <div><CostumeDatePicker {...props}/></div>;
+        }
       },
       {
         title: 'Updated By',
@@ -332,6 +343,7 @@ const TemplatePackages = () => {
             );
           })();
           // Do Update
+          
           controllerEditRow(templatePackageController, setTemplatePackages, templatePackage).then((res: boolean) => {
             if (res) {
               resolve(templatePackage)
