@@ -24,9 +24,9 @@ const OrgController = Service([OrgService], service => {
     router.put('/organizations/update', (req, res, next) => {
       const { Org } = req.body;
       const _id = Org._id;
-
+     
       service
-        .updateOrg(_id, req.body)
+        .updateOrg(_id, Org)
         .then(() => res.end())
         .catch(next);
     });

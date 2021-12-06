@@ -76,7 +76,28 @@ const EditOrganization = ({
       newOrganization['_id'] = oldOrganization?._id || '';
       const organization_trim = (({ tableData, ...o }) => o)(newOrganization);
       // Update
-      dispatch(updateOrgsRequest(organization_trim, accept, reject));
+      const OrgData = {
+        name: organization_trim.name,
+        _id: organization_trim._id,
+        id: organization_trim.id,
+        effectiveDate: organization_trim.effectiveDate,
+        expiryDate: organization_trim.expiryDate,
+        IFISNum: organization_trim.IFISNum,
+        province: organization_trim.province,
+        organizationGroupId: organization_trim.organizationGroupId,
+        programId: organization_trim.programId,
+        authorizedPerson: organization_trim.authorizedPerson,
+        active: organization_trim.active,
+        address: organization_trim.address,
+        city: organization_trim.city,
+        code: organization_trim.code,
+        legalName: organization_trim.legalName,
+        location: organization_trim.location,
+        manageUserIds: organization_trim.manageUserIds,
+        postalCode: organization_trim.postalCode,
+      }
+     
+      dispatch(updateOrgsRequest(OrgData, accept, reject));
     })();
   };
 
