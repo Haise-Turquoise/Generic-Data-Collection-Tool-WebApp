@@ -21,7 +21,6 @@ const auditMenu = () => {
     fetchWithStatus(AuditLogController, setAuditLogs, setStatus)
   }, [])
 
-
   //filter out from auditlogs
   let result = auditlogs?.filter(person => (person.user.email == curUser) && (person.activity != "Login")
   && (person.activity != "Logout"));
@@ -47,6 +46,7 @@ const auditMenu = () => {
     {"TemplateType" : "/admin/template/type"},
     {"CategoryGroup" : "/admin/coa/group"},
     {"Category" : "/admin/coa/category"},
+    {"Submisson" : "/submission/dashboard"},
   ]
 
   const findUrl = (activity: string) => {
