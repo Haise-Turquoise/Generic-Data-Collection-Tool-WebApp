@@ -148,7 +148,7 @@ export default class SubmissionStatusService {
           const subPeriod = allSubmissionPeriods.find(sp => sp.name === unopened.submissionPeriod.name)
           const template = allTemplates.find(t => t.name === unopened.template.name)
           const workflowProcess = allWorkflowProcesses.find(wp => wp._id.toString() === template?.workflowProcessId.toString())
-          const workflowId = workflowProcess?.workflowId
+          const workflowId = templateType?.submissionWorkflowId
           // sanity checks - delete if possible
           if (!workflowId) {
             console.log('WHY', workflowProcess, workflowId)

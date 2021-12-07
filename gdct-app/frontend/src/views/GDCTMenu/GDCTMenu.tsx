@@ -26,6 +26,7 @@ const MenuHeader = () => {
   useEffect(() => {
     createUserNavigation().then((res: MappedMenu[]) => {
       setConfig(res);
+      console.log(config)
     });
   }, []);
   return (
@@ -70,17 +71,11 @@ const GDCTMenu = () => {
   //fetch submission state information
 
   const getSubmissions = async () => {
-    await submissionStatusController.fetchStatus()
+    submissionStatusController.fetchStatus()
       .then( (res: any) => {
-        console.log("yy");
-        console.log(res);
-        if(typeof res !== 'string'){
-          setStatuses(res);
-        }
-        
+        setStatuses(res);
       })
       .catch((e: Error) => {
-        console.log("error1111");
         console.log(e);
       })
   }
@@ -88,7 +83,7 @@ const GDCTMenu = () => {
   useEffect(() => {
     // send HTTP request
     // save response to variable
-    getSubmissions();
+    if (localStorage.getItem('currentRole') === 'Business Admin') getSubmissions();
   }, [])
 
 
@@ -98,28 +93,25 @@ const GDCTMenu = () => {
   }
 
   return (
+  <div>
+    <br/>
+    <div className="welcomeTitle">Welcome To GDCT</div>
+    <br/><br/><br/>
     <div>
-      {/* // <div>
-      //     <SubmissionMenu />
-      //     {statuses == undefined ? <div>loading...</div> :  <div style={barGroupStyle as React.CSSProperties}> <BarGroupComponent width={500} height={500} submissionData={statuses} events={true} /> </div> }
-      // </div> */}
-
-      <div>
-        <AuditMenu/>
-      </div>
-
-      <Grid 
-      item
-      alignItems="center"
-      justifyContent="center"
-      xs={12}
-      style={{ display: "flex", gap: "1rem", alignItems: "center", height: '100%'}}
-      >
-      <Grid item xs={8} >
+      <AuditMenu/>
+    </div>
+    <br/><br/><br/>
+    {localStorage.getItem('currentRole') === 'Business Admin' ?
+    <div >
+      {statuses == undefined ? <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', textAlign: 'center', flexFlow: 'row-wrap' }}>loading Submission Overview...</div> :  <BarGroupComponent submissionData={statuses} events={true} /> }
+    </div>
+    :
+    <div>
         <SubmissionMenu />
-        {statuses == undefined ? <div>loading...</div> :   <BarGroupComponent width={800} height={1000} submissionData={statuses} events={true} />  }
-      </Grid>
-    </Grid>
+    </div>
+
+    }
+
   </div>
   );
 };

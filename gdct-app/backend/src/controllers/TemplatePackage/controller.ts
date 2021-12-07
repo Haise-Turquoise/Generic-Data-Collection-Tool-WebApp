@@ -23,7 +23,7 @@ const TemplatePackageController = Service([TemplatePackageService], service => {
         .catch(next);
     });
     router.post('/templatePackages/updateDeadline',(req, res, next) => {
-      console.log("hi");
+      
       const {_id,date} = req.body 
       service
         .updateDeadline(_id,date)
