@@ -98,27 +98,29 @@ const GDCTMenu = () => {
   }
 
   return (
-    // <div>
-    //     <SubmissionMenu />
-    //     {statuses == undefined ? <div>loading...</div> :  <div style={barGroupStyle as React.CSSProperties}> <BarGroupComponent width={500} height={500} submissionData={statuses} events={true} /> </div> }
-    // </div>
-
     <div>
-      <AuditMenu/>
-    </div>
+      {/* // <div>
+      //     <SubmissionMenu />
+      //     {statuses == undefined ? <div>loading...</div> :  <div style={barGroupStyle as React.CSSProperties}> <BarGroupComponent width={500} height={500} submissionData={statuses} events={true} /> </div> }
+      // </div> */}
 
-    <Grid 
-    item
-    alignItems="center"
-    justifyContent="center"
-    xs={12}
-    style={{ display: "flex", gap: "1rem", alignItems: "center", height: '100%'}}
-    >
-    <Grid item xs={8} >
-      <SubmissionMenu />
-      {statuses == undefined ? <div>loading...</div> :   <BarGroupComponent width={800} height={1000} submissionData={statuses} events={true} />  }
+      <div>
+        <AuditMenu/>
+      </div>
+
+      <Grid 
+      item
+      alignItems="center"
+      justifyContent="center"
+      xs={12}
+      style={{ display: "flex", gap: "1rem", alignItems: "center", height: '100%'}}
+      >
+      <Grid item xs={8} >
+        <SubmissionMenu />
+        {statuses == undefined ? <div>loading...</div> :   <BarGroupComponent width={800} height={1000} submissionData={statuses} events={true} />  }
+      </Grid>
     </Grid>
-  </Grid>
+  </div>
   );
 };
 
