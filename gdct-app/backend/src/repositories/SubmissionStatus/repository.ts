@@ -25,18 +25,7 @@ export default class SubmissionStatusRepository extends BaseRepository<Submissio
   }
 
   async count(){
-    let reportingPeriods = [];
-    let numbers = [];
     return SubmissionStatusModel.aggregate([
-      // {
-      //     $group: 
-      //     {
-      //       _id: '$name', 
-      //       total_products: { $sum: 1 }
-          
-      //     }
-      // }
-      // ,
       {
         $group: 
         {
@@ -65,9 +54,17 @@ export default class SubmissionStatusRepository extends BaseRepository<Submissio
           countUnsubmitted: {
             $sum: { 
               $cond: [
-                {
-                  $ne: ["$status.name", "Approved"],
-                }, 1, 0,
+                { $and: 
+                  [ {
+                    $ne: ["$status.name", "Approved"],
+                  }, 
+                  {
+                    $ne: ["$status.name", "Submitted"],
+                  }, 
+                  {
+                    $ne: ["$status.name", "Reviewed"],
+                  }, 
+                    ] }, 1, 0,
               ],}
           },
           //total_products: { $sum: 1 }

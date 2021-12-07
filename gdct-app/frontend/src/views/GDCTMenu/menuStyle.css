@@ -4,7 +4,18 @@
     
     position: flex;
     margin:0 auto;
+    margin-bottom: 50px;
 
+}
+
+.welcomeTitle{
+    display: flex; 
+    justify-content: center; 
+    align-items: center;
+    text-align: center;
+    flex-flow: row-wrap;
+    font-size: 25px;
+    font-weight: bold;
 }
 
 .subDasboardTitle{
@@ -61,5 +72,16 @@
     color: black;
     height: 100%;
     width: 33.33%;
+    float: left;
+}
+
+.rowCellSub{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+ 
+    color: black;
+    height: 100%;
+    
     float: left;
 }

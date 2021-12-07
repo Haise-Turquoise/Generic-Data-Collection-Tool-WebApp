@@ -7,6 +7,7 @@ import { DatePicker } from '@material-ui/pickers'
 
 import MaterialTable, { Action, Column, Options } from 'material-table';
 import moment from 'moment';
+import Swal, { SweetAlertResult } from 'sweetalert2';
 
 import { useHistory } from 'react-router-dom';
 //@ts-ignore
@@ -35,6 +36,7 @@ import Status from '../../types/status';
 import { DateTimePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
 import DateFnsUtils from '@date-io/date-fns';
 
+
 interface TemplatePackageMT extends TemplatePackage {
   tableData?: any,
 }
@@ -53,10 +55,19 @@ const controllerUpdateDeadline = async (id: string, date: any) =>{
   }
 }
 
+const formatedTimestamp = (d: Date,time:string)=> {
+  
+  var date = d.toISOString().split('T')[0];
+  
+  return `${date} ${time}`
+}
+
 const CostumeDatePicker = (props: any) =>{
+  console.log("props ! !");
+  console.log(props)
   var checkDealine = null;
-  if(props.data.deadline != undefined){
-    checkDealine = props.data.deadline;
+  if(props.rowData.deadline != undefined){
+    checkDealine = props.rowData.deadline;
   }
   const [date, setDate] = useState<Date | null>(checkDealine);
 
@@ -64,15 +75,19 @@ const CostumeDatePicker = (props: any) =>{
   return (
     <MuiPickersUtilsProvider utils={DateFnsUtils}>
        <DatePicker
-        format='yyyy-MM-dd 23:59:99'
-        InputProps={{
-          disableUnderline: true,
-         }}
+        format='yyyy-MM-dd 23:59:59'
         value={date}
         onChange = {(newDate) => {
-          console.log(JSON.stringify(newDate))
-          controllerUpdateDeadline(props.data._id,newDate);
-          setDate(newDate)}}
+          setDate(newDate)
+          props.onChange(newDate)
+        }
+          
+        }
+        inputProps={{
+          style: {
+            fontSize: 14,
+        }
+        }}
       />
     </MuiPickersUtilsProvider>
     
@@ -255,7 +270,10 @@ const TemplatePackages = () => {
         title: "Close Date",
         field: "deadline",
         type: "date",
-        render: (row) => <div><CostumeDatePicker data={row}/></div>,
+        render: (row) => <div>{row.deadline ? formatedTimestamp(new Date(row.deadline),"23:59:59") : ''}</div>,
+        editComponent: (props) => {
+          return <div><CostumeDatePicker {...props}/></div>;
+        }
       },
       {
         title: 'Updated By',
@@ -325,6 +343,7 @@ const TemplatePackages = () => {
             );
           })();
           // Do Update
+          
           controllerEditRow(templatePackageController, setTemplatePackages, templatePackage).then((res: boolean) => {
             if (res) {
               resolve(templatePackage)
@@ -339,6 +358,21 @@ const TemplatePackages = () => {
           controllerDeleteRow(templatePackageController, setTemplatePackages, templatePackage._id).then((res: boolean) => {
             if (res) {
               resolve(res)
+            }
+            else{
+
+              Swal.fire({
+                title: 'Warning!',
+                text:
+                  'This package is published, it cannot be removed',
+                icon: 'error',
+                confirmButtonColor: '#3085d6',
+                confirmButtonText: 'OK',
+              }).then((result:SweetAlertResult<any>) => {
+                if (result.isConfirmed) {
+                  window.location.reload();
+                }
+              });
             }
             reject()
           })
