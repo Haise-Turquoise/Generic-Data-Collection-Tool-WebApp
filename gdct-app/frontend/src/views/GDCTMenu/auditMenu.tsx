@@ -21,6 +21,8 @@ const auditMenu = () => {
     fetchWithStatus(AuditLogController, setAuditLogs, setStatus)
   }, [])
 
+  console.log("This is the current User!")
+  console.log(curUser);
 
   //filter out from auditlogs
   let result = auditlogs?.filter(person => (person.user.email == curUser) && (person.activity != "Login")
@@ -29,6 +31,10 @@ const auditMenu = () => {
   result?.sort((a, b) => {
     return new Date(a.updatedAt!).getTime() > new Date(b.updatedAt!).getTime() ? -1 : 1
   });
+
+  console.log("This is the auditlog collection!")
+  console.log(result);
+
 
   const listofURL = [
     {"Program" : "/admin/program"},
@@ -47,6 +53,7 @@ const auditMenu = () => {
     {"TemplateType" : "/admin/template/type"},
     {"CategoryGroup" : "/admin/coa/group"},
     {"Category" : "/admin/coa/category"},
+    {"Submisson" : "/submission/dashboard"},
   ]
 
   const findUrl = (activity: string) => {
