@@ -5,7 +5,7 @@ import WorkflowProcessModel from '../../models/WorkflowProcess/WorkflowProcess';
 import StatusRepository from '../Status';
 import WorkflowProcess, { WorkflowProcessDoc } from '../../types/workflowprocess';
 import { FilterQuery } from 'mongoose';
-import { ObjectID } from 'mongodb';
+import { ObjectId } from 'mongodb';
 import AppError from '../../utils/AppError';
 
 const populateStatusId = {
@@ -97,7 +97,7 @@ export default class WorkflowProcessRepository extends BaseRepository<WorkflowPr
     );
   }
 
-  async findMany(ids: (ObjectID|string)[], isPopulated = false):Promise<WorkflowProcessEntity[]> {
+  async findMany(ids: (ObjectId|string)[], isPopulated = false):Promise<WorkflowProcessEntity[]> {
     return WorkflowProcessModel.find()
       .populate(isPopulated ? populateTo : '')
       .populate(isPopulated ? populateStatusId : '')
