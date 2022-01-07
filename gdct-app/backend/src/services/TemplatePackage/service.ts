@@ -34,5 +34,7 @@ export default class TemplatePackageService {
     return this.templatePackageRepository.find(templatePackage, isPopulated);
   }
 
-  
+  async updateDeadline(id: string,date: string){
+    return this.templatePackageRepository.updateDeadline(id,date);
+  }
 }

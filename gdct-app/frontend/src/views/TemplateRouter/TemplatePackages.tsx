@@ -3,9 +3,11 @@ import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 
 import { Paper, Typography } from '@material-ui/core';
 import LaunchIcon from '@material-ui/icons/Launch';
+import { DatePicker } from '@material-ui/pickers'
 
 import MaterialTable, { Action, Column, Options } from 'material-table';
 import moment from 'moment';
+import Swal, { SweetAlertResult } from 'sweetalert2';
 
 import { useHistory } from 'react-router-dom';
 //@ts-ignore
@@ -28,13 +30,69 @@ import { calculateOptions, controllerAddRow, controllerEditRow, controllerDelete
 import CreateAuditLog from '../AuditLog_Global';
 import templatePackageController from '../../controllers/templatePackage';
 
+
 import TemplatePackage from '../../types/templatepackage';
 import Status from '../../types/status';
+import { DateTimePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
+import DateFnsUtils from '@date-io/date-fns';
+
 
 interface TemplatePackageMT extends TemplatePackage {
   tableData?: any,
 }
 
+const controllerUpdateDeadline = async (id: string, date: any) =>{
+  try{
+    const res = await templatePackageController.updateDeadline(id, date);
+    if (res.status !== 200) {
+      return false
+    }
+    console.log("sucessfull");
+    return true; 
+  }catch(e){
+    console.log("error occured for updating deadline")
+    return false
+  }
+}
+
+const formatedTimestamp = (d: Date,time:string)=> {
+  
+  var date = d.toISOString().split('T')[0];
+  
+  return `${date} ${time}`
+}
+
+const CostumeDatePicker = (props: any) =>{
+  console.log("props ! !");
+  console.log(props)
+  var checkDealine = null;
+  if(props.rowData.deadline != undefined){
+    checkDealine = props.rowData.deadline;
+  }
+  const [date, setDate] = useState<Date | null>(checkDealine);
+
+
+  return (
+    <MuiPickersUtilsProvider utils={DateFnsUtils}>
+       <DatePicker
+        format='yyyy-MM-dd 23:59:59'
+        value={date}
+        onChange = {(newDate) => {
+          setDate(newDate)
+          props.onChange(newDate)
+        }
+          
+        }
+        inputProps={{
+          style: {
+            fontSize: 14,
+        }
+        }}
+      />
+    </MuiPickersUtilsProvider>
+    
+  );
+}
 
 const TemplatePackageHeader = () => {
   return (
@@ -54,6 +112,7 @@ const TemplatePackages = () => {
 
   useEffect(() => {
     fetchWithStatus<TemplatePackage>(templatePackageController, setTemplatePackages, setStatus)
+    console.log(templatePackages);
   }, [])
 
   // table vars while loading
@@ -68,6 +127,7 @@ const TemplatePackages = () => {
     templateIds: [],
     updatedAt: '',
     updatedBy: '',
+    deadline: '',
   }]
 
   // Prepare the data for material table
@@ -94,6 +154,8 @@ const TemplatePackages = () => {
     templatePackage.updatedAt = formatTimestamp(templatePackage.updatedAt);
     templatePackage.creationDate = formatTimestamp(templatePackage.creationDate);
   });
+
+  console.log(templatePackages);
 
   // Prepare the actions for material table
   const actions: Action<TemplatePackageMT>[] = useMemo(
@@ -205,6 +267,15 @@ const TemplatePackages = () => {
         },
       },
       {
+        title: "Close Date",
+        field: "deadline",
+        type: "date",
+        render: (row) => <div>{row.deadline ? formatedTimestamp(new Date(row.deadline),"23:59:59") : ''}</div>,
+        editComponent: (props) => {
+          return <div><CostumeDatePicker {...props}/></div>;
+        }
+      },
+      {
         title: 'Updated By',
         field: 'updatedBy',
         editComponent: () => {
@@ -227,9 +298,12 @@ const TemplatePackages = () => {
     () => ({
       onRowAdd: (templatePackage: TemplatePackageMT) =>
         new Promise<TemplatePackage | undefined>((resolve, reject) => {
+          
           recordUpdate(templatePackage);
           templatePackage = { ...templatePackage, templateIds: [], programIds: [] };
           templatePackage.creationDate = moment().format();
+          console.log("XD");
+          console.log(templatePackage);
           controllerAddRow(templatePackageController, setTemplatePackages, templatePackage)
             .then((res?: TemplatePackage) => {
             if (res) {
@@ -269,6 +343,7 @@ const TemplatePackages = () => {
             );
           })();
           // Do Update
+          
           controllerEditRow(templatePackageController, setTemplatePackages, templatePackage).then((res: boolean) => {
             if (res) {
               resolve(templatePackage)
@@ -283,6 +358,21 @@ const TemplatePackages = () => {
           controllerDeleteRow(templatePackageController, setTemplatePackages, templatePackage._id).then((res: boolean) => {
             if (res) {
               resolve(res)
+            }
+            else{
+
+              Swal.fire({
+                title: 'Warning!',
+                text:
+                  'This package is published, it cannot be removed',
+                icon: 'error',
+                confirmButtonColor: '#3085d6',
+                confirmButtonText: 'OK',
+              }).then((result:SweetAlertResult<any>) => {
+                if (result.isConfirmed) {
+                  window.location.reload();
+                }
+              });
             }
             reject()
           })
@@ -331,6 +421,7 @@ const TemplatePackages = () => {
         options={options}
         actions={!!templatePackages ? actions : undefined}
       />
+      
     </div>
   );
 };

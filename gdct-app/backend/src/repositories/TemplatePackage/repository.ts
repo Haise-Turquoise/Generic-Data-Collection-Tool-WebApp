@@ -44,6 +44,7 @@ export default class TemplatePackageRepository extends BaseRepository<TemplatePa
     programIds,
     updatedBy,
     updatedAt,
+    deadline,
   }: TemplatePackage) {
     return this.submissionPeriodRepository
       .validate(submissionPeriodId)
@@ -60,6 +61,7 @@ export default class TemplatePackageRepository extends BaseRepository<TemplatePa
           programIds,
           updatedBy,
           updatedAt,
+          deadline,
         }),
       )
       .then(templatePackage => new TemplatePackageEntity(templatePackage));
@@ -67,7 +69,7 @@ export default class TemplatePackageRepository extends BaseRepository<TemplatePa
 
   async update(
     id: string,
-    { name, submissionPeriodId, templateIds, statusId, creationDate, userCreatorId, programIds, updatedBy, updatedAt, }: Partial<TemplatePackage>,
+    { name, submissionPeriodId, templateIds, statusId, creationDate, userCreatorId, programIds, updatedBy, updatedAt, deadline, }: Partial<TemplatePackage>,
     isPopulated?: boolean,
   ) {
     // console.log('programIds', programIds)
@@ -92,11 +94,16 @@ export default class TemplatePackageRepository extends BaseRepository<TemplatePa
             programIds,
             updatedBy,
             updatedAt,
+            deadline,
           },
           { upsert: true, new: true },
         ).populate(isPopulated ? populatedParams : ''),
       )
       .then(templatePackage => new TemplatePackageEntity(templatePackage));
+  }
+
+  async updateDeadline(id: string,date: string){
+    return TemplatePackageModel.findByIdAndUpdate(id,{deadline: date});
   }
 
   async findByProgramId(programId: string) {

@@ -1,6 +1,7 @@
 import Program from "./program";
 import Status from "./status";
 import SubmissionPeriod from "./submissionperiod";
+import TemplatePackage from "./templatepackage";
 import User from "./user";
 import WorkflowProcess from "./workflowprocess";
 
@@ -34,7 +35,7 @@ export interface SubmissionPopulated {
   programId: Program;
   _id?: string;
   templateId: string;
-  templatePackageId: string;
+  templatePackageId: TemplatePackage;
   name: string;
   orgId: number;
   submittedDate: string;
@@ -50,6 +51,8 @@ export interface SubmissionPopulated {
   version: number;
   isLatest: boolean;
   approver:string;
+  _doc:any;
+
   parentId?: string;
   updatedDate:string;
 }

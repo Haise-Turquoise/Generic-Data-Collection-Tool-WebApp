@@ -13,6 +13,7 @@ export default interface TemplatePackage {
   creationDate: string,
   updatedBy: string,
   updatedAt: string,
+  deadline: string,
   __v?: number,
   userCreatorId?: null
 }

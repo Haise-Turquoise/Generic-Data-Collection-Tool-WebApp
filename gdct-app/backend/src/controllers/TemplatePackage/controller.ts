@@ -11,15 +11,24 @@ const TemplatePackageController = Service([TemplatePackageService], service => {
     router.get('/templatePackages/fetch', (req, res, next) => {
       service
         .findTemplatePackage(req.body)
-        .then(templatePackages =>
+        .then((templatePackages) => {
+          console.log(templatePackages);
           res.json(
             templatePackages.map((templatePackage: TemplatePackage) => ({
               ...templatePackage,
               templatePackageData: undefined,
             })),
-          ),
-        )
+          )},
+          )
         .catch(next);
+    });
+    router.post('/templatePackages/updateDeadline',(req, res, next) => {
+      
+      const {_id,date} = req.body 
+      service
+        .updateDeadline(_id,date)
+        .then(() => res.end())
+        .catch(next);    
     });
 
     router.post('/templatePackages/fetchTemplatePackage', (req, res, next) => {
@@ -34,7 +43,9 @@ const TemplatePackageController = Service([TemplatePackageService], service => {
     router.post('/templatePackages/create', (req, res, next) => {
       service
         .createTemplatePackage(req.body.templatePackage)
-        .then(templatePackage => res.json({ templatePackage }))
+        .then((templatePackage) => {
+          console.log(templatePackage)
+          res.json({ templatePackage })})
         .catch(next);
     });
 
@@ -68,9 +79,11 @@ const TemplatePackageController = Service([TemplatePackageService], service => {
 
     router.post('/templatePackages/queryPopulated', (req, res, next) => {
       const { query } = req.body
-
-      service.findTemplatePackage(query, true)
+      service
+        .findTemplatePackage(query, true)
         .then((templatePackages) => res.json( templatePackages ))
+        .catch(next);
+
     })
 
     router.put('/templatePackages/updatePopulated', (req, res, next) => {

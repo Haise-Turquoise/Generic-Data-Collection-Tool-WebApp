@@ -1,11 +1,21 @@
-
 .subDasboard{
     max-width: 800px;
     max-height: 1000px;
     
     position: flex;
     margin:0 auto;
+    margin-bottom: 50px;
 
+}
+
+.welcomeTitle{
+    display: flex; 
+    justify-content: center; 
+    align-items: center;
+    text-align: center;
+    flex-flow: row-wrap;
+    font-size: 25px;
+    font-weight: bold;
 }
 
 .subDasboardTitle{
@@ -40,45 +50,38 @@
 }
 
 .rowContainer{
-    background-color: gray;
+    background-color: rgb(248, 246, 246);
     overflow: auto;
     
     text-align: center;
     height: 50px;
 }
 
-.rowRight{
+.rowContainer1{
+    background-color: rgb(211, 226, 255);
+    overflow: auto;
+    text-align: center;
+    height: 50px;
+}
+
+.rowCell{
     display: flex;
     justify-content: center;
     align-items: center;
  
-    color: white;
+    color: black;
     height: 100%;
     width: 33.33%;
     float: left;
 }
 
-.rowLeft{
+.rowCellSub{
     display: flex;
     justify-content: center;
     align-items: center;
-    
-    color: white;
+ 
+    color: black;
     height: 100%;
-    width: 33.33%;
-    float: left; 
-}
-
-.rowMiddle{
-    display: flex;
-    justify-content: center;
-    align-items: center;
     
-    color: white;
-    text-align: center;
     float: left;
-    height: 100%;
-    width: 33.33%;
-   
-    
 }

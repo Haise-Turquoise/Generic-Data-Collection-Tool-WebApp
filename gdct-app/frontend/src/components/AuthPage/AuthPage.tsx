@@ -192,8 +192,10 @@ const Header = ({
       />
       <Link to="/" className={classes.title}>
       <div style={{ display: 'flex', marginLeft: 'auto' }}>
-        <div style={{paddingRight: '10px'}}><img src={'/Onlogo.png'} alt="logo" width="30" height="30"/></div>
-        
+        <div style={{paddingRight: '10px'}}>
+          <img src={'/Onlogo.png'} alt="logo" width="30" height="30"/>
+        </div>
+
         <HeaderTitle title={title} />
         </div>
       </Link>
@@ -261,7 +263,6 @@ const NavigationContent = ({ config, handleClose }:{
   config:any, 
   handleClose:()=>void,
   }) => {
-  console.log('config', config);
   return config.map((item:Usernavigation, index:number) => {
     let Component;
 
@@ -339,15 +340,11 @@ const AuthPage = ({
   const handleDrawerClose2 = () => {
     if(open === true){
       setCount(prev => prev + 1)
-      console.log(count)
     }
     if((open === true) && count == 1){
       setOpen(false);
       setCount(0);
     }
-    console.log("you clicked away from the drawer");
-    console.log(open);
-    console.log(count);
   };
   const style = { paddingTop: '5.7rem', marginLeft: `-${drawerWidth}px` };
           

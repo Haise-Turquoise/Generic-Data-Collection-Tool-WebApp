@@ -26,8 +26,7 @@ export default class SubmissionRepository extends BaseRepository<Submission, Sub
   }
 
   async createMany(submissions: Submission[]) {
-    return SubmissionModel.create(...submissions)
-      .then(res => res)
+    return SubmissionModel.create(...submissions).then(res => res);
   }
 
   async update(id: string, submission: Partial<Submission>) {
@@ -179,5 +178,6 @@ export default class SubmissionRepository extends BaseRepository<Submission, Sub
       .populate('submissionPeriodId')
       .populate('programId')
       .populate('updatedBy')
+      .populate('templatePackageId')
   }
 }

@@ -31,6 +31,7 @@ export default interface SubmissionStatus {
     updatedBy: string,
   },
   reportingPeriod: {
-    submissionClosed: boolean,
+    submissionClosed: boolean;
+
   }
 }
