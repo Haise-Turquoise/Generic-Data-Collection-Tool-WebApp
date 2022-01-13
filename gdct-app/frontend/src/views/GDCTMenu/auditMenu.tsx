@@ -67,6 +67,7 @@ const auditMenu = () => {
       return result.length >= nums;
     }
   }
+  console.log(menuitems);
 
     return(
       
