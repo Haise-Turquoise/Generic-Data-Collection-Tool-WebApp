@@ -3,7 +3,7 @@ import dotenv from 'dotenv';
 import { Schema, model } from 'mongoose';
 import { UserDoc } from '../../types/user';
 //@ts-ignore
-import bcrypt from 'bcryptjs';
+import bcrypt from 'bcrypt-nodejs';
 
 const { ObjectId } = Schema.Types;
 

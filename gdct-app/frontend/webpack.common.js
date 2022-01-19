@@ -7,13 +7,9 @@ module.exports = {
   entry: path.join(__dirname, '/src/index.tsx'),
   resolve: {
     extensions: ['*', '.js', '.jsx', '.ts', '.tsx'],
-    fallback: {
-      "crypto": require.resolve("crypto-browserify"),
-      "stream": require.resolve("stream-browserify")
-    }
   },
   watchOptions: {
-    ignored: ["node_modules"]
+    ignored: [/node_modules/]
   },
   module: {
     rules: [
@@ -47,9 +43,9 @@ module.exports = {
       },
     ],
   },
-  // node: {
-  //   // fs: 'empty',
-  // },
+  node: {
+    fs: 'empty',
+  },
   plugins: [
     new Dotenv({ path: path.join(__dirname, './.env') }),
     new CleanWebpackPlugin(),
@@ -62,7 +58,4 @@ module.exports = {
       favicon: path.join(__dirname, '/public/favicon.ico'),
     }),
   ],
-  output: {
-    path: path.resolve(__dirname, "dist"),
-  },
 };

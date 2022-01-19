@@ -54,7 +54,7 @@ const getWorkflowProcesses = (workflowData: WorkflowData): WorkflowProcess[] => 
     const { id, statusId, position } = item;
 
     workflowProcessesMap[id] = {
-      _id: new ObjectId(),
+      _id: objectId(),
       workflowId: workflow._id,
       statusId,
       to: [],
@@ -135,6 +135,7 @@ export default class WorkflowService {
 
   async findWorkflowProessByStatus(statusId: string){
     return this.workflowProcessesRepository.find({statusId:new ObjectId(statusId)});
+
   }
 
   async findWorkflowProessesById(ids: string[]){

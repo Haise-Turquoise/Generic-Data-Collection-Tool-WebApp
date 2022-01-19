@@ -36,7 +36,6 @@ import SessionController from '../controllers/Session/Session';
 import SubmissionStatusController from './SubmissionStatus'
 import RoleWorkflowStatusController from '../controllers/RoleWorkflowStatus'
 import RoleSubmissionButtonController from '../controllers/RoleSubmissionButton';
-import UnitOfMeasurementController from './UnitOfMeasurement';
 export const routerManager = (app: Application) => {
   app.use('/', Container.get(AuthController));
   app.use('/', Container.get(MenuController));
@@ -94,6 +93,6 @@ export const routerManager = (app: Application) => {
     // Created by Jie on 2021/07/29
   // Use to handle roleSubmissionButton
   app.use('/roleSubmissionButton', Container.get(RoleSubmissionButtonController));
-  app.use('/unitOfMeasurement', Container.get(UnitOfMeasurementController))
+
 };
 
