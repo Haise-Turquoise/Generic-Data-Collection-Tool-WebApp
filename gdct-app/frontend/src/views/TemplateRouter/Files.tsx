@@ -1,5 +1,6 @@
 import { Button, Paper, makeStyles, Typography, Table, TableRow, TableBody, TableCell } from '@material-ui/core'
 import React from 'react'
+import path from 'path'
 import '../../images/1download.png';
 import '../../images/2open.png';
 import '../../images/3developer.png';
@@ -17,7 +18,7 @@ function FilesHeader() {
   return (
     <div>
       <Typography variant='h4'>Offline Tool:</Typography>
-      <Button download="GT.xlam" href={'../../../public/GT.xlam'} color="primary" variant="contained">Download</Button>
+      <Button download="GT.xlam" href={path.join(__dirname, '../../../public/GT.xlam')} color="primary" variant="contained">Download</Button>
     </div>
   )
 }
