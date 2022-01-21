@@ -34,6 +34,10 @@ const Instruction = () => {
         The options are currently int(arg1), decimal(arg1,arg2), date, and text(arg1), where each arg is an optional argument to specify length.
         Any arg can take on the following forms
       </Typography>
+      <Typography variant="body1">
+        Decimals will always accept integers or any number of decimal points up to the specified amount. For example decimal(1,3) will accept
+        9, 9.5, 9.54, 9.543
+      </Typography>
       <Table>
         <TableHead>
           <TableCell>Argument</TableCell>
@@ -130,6 +134,9 @@ const ValidationTable = () => {
         return "^\\d+\\.\\d+$"
       }
       const params = desc.substring(8, desc.length - 1).split(",").map(param => parseArg(param))
+      if (params.length >= 2 && !params[1]!.includes(",")) {
+        params[1] = "," + params[1]
+      }
       return `^\\d{${params[0]}}\\.\\d{${params[1]}}$`
     } else if (desc.startsWith("date")) {
       return "^[0123]\\d-[01]\\d-\\d{4}$"
