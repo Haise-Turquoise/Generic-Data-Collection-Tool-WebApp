@@ -124,20 +124,20 @@ const ValidationTable = () => {
   function generatePattern(desc: string): string {
     if (desc.startsWith("int")) {
       if (!desc.includes("(")) {
-        return "^\\d+$"
+        return "^-?\\d+$"
       } else {
         const arg = parseArg(desc.substring(5, desc.length - 1))
-        return `^\\d{${arg}}$`
+        return `^-?\\d{${arg}}$`
       }
     } else if (desc.startsWith("decimal")) {
       if (!desc.includes("(")) {
-        return "^\\d+\\.\\d+$"
+        return "^-?\\d+\\.\\d+$"
       }
       const params = desc.substring(8, desc.length - 1).split(",").map(param => parseArg(param))
       if (params.length >= 2 && !params[1]!.includes(",")) {
-        params[1] = "," + params[1]
+        params[1] = "1," + params[1]
       }
-      return `^\\d{${params[0]}}\\.\\d{${params[1]}}$`
+      return `^-?\\d{${params[0]}}(\\.\\d{${params[1]}})?$`
     } else if (desc.startsWith("date")) {
       return "^[0123]\\d-[01]\\d-\\d{4}$"
     } else if (desc.startsWith("text")) {
@@ -162,9 +162,9 @@ const ValidationTable = () => {
     if (/^\d+$/.test(arg)) { // just a number
       return arg
     } else if (arg[0] === "<") {
-      return `,${num - 1}`
+      return `1,${num - 1}`
     } else if (arg[0] === ">") {
-      return `${num + 1},`
+      return `${num + 1},99999`
     } else if (arg.includes("-")) {
       const [low, high] = arg.split("-")
       return `${low},${high}`
