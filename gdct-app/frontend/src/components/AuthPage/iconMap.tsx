@@ -110,7 +110,7 @@ const ItemMap :{[key:string]:React.ReactElement<SvgIconProps>} =  {
   'Application Role Workflow Management': <GroupWorkIcon style={SubMenuItemStyle} />,
   
   // Admin Configuration
-  'Configuration': <BuildIcon style={MenuItemStyle} />,
+  'Application Configuration': <BuildIcon style={MenuItemStyle} />,
 
   // Admin User Management
   'User Management': <PeopleAltIcon style={MenuItemStyle} />,
@@ -134,7 +134,7 @@ const ItemMap :{[key:string]:React.ReactElement<SvgIconProps>} =  {
   'Workflow': <CallSplitIcon style={MenuItemStyle} />,
 
   // Admin Sheet Name
-  'Sheet Name': <ListAltIcon style={MenuItemStyle} />,
+  'Sheet': <ListAltIcon style={MenuItemStyle} />,
 
   // Admin Auditlog
   'AuditLog': <SubjectIcon style={MenuItemStyle} />,
