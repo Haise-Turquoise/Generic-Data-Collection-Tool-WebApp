@@ -136,7 +136,7 @@ const ItemMap :{[key:string]:React.ReactElement<SvgIconProps>} =  {
   'Workflow': <CallSplitIcon style={MenuItemStyle} />,
 
   // Admin Sheet Name
-  'Sheet': <ListAltIcon style={MenuItemStyle} />,
+  'Sheet Name': <ListAltIcon style={MenuItemStyle} />,
 
   // Admin Auditlog
   'AuditLog': <SubjectIcon style={MenuItemStyle} />,
