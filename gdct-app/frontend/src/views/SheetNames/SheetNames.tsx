@@ -173,7 +173,7 @@ const SheetNamesTable = () => {
           if (newSheetName) {
             CreateAuditLog(
               null,
-              "Create Sheet",
+              "Create Sheet Name",
               "SheetName",
               newSheetName._id,
               {},
@@ -189,7 +189,7 @@ const SheetNamesTable = () => {
             const oldSheetName = await sheetNameController.fetchById(sheetName._id);
             CreateAuditLog(
               null,
-              'Update Sheet',
+              'Update Sheet Name',
               'SheetName',
               oldSheetName?._id,
               oldSheetName,
