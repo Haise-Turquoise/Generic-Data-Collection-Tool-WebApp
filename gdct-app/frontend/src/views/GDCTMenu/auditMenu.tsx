@@ -56,53 +56,6 @@ const auditMenu = () => {
     return new Date(a.updatedAt!).getTime() > new Date(b.updatedAt!).getTime() ? -1 : 1
   });
 
-  type listofURLType = {
-    [index: string]: string
-    "Program" : "/admin/program",
-    "Status" : "/admin/status",
-    "AppConfig" : "/admin/configuration",
-    "TemplatePackage" : "/admin/template/package",
-    "AppSysRole" : "/admin/role/appsysrole",
-    "Organization" : "/admin/organization/org",
-    "SheetName" : "/admin/sheetName",
-    "User" : "/admin/user_management",
-    "AppSys" : "/admin/role/appsystem",
-    "Workflow" : "/admin/workflow",
-    "CategoryTree" : "/admin/coa/tree",
-    "ReportingPeriod" : "/admin/reporting_period",
-    "AppRoleResource" : "/admin/role/app_role_resource_management",
-    "TemplateType" : "/admin/template/type",
-    "CategoryGroup" : "/admin/coa/group",
-    "Category" : "/admin/coa/category",
-    "Submisson" : "/submission/dashboard",
-    "AppResource" : "/admin/role/appresource",
-  }
-
-  const listofURL : listofURLType = {
-    "Program" : "/admin/program",
-    "Status" : "/admin/status",
-    "AppConfig" : "/admin/configuration",
-    "TemplatePackage" : "/admin/template/package",
-    "AppSysRole" : "/admin/role/appsysrole",
-    "Organization" : "/admin/organization/org",
-    "SheetName" : "/admin/sheetName",
-    "User" : "/admin/user_management",
-    "AppSys" : "/admin/role/appsystem",
-    "Workflow" : "/admin/workflow",
-    "CategoryTree" : "/admin/coa/tree",
-    "ReportingPeriod" : "/admin/reporting_period",
-    "AppRoleResource" : "/admin/role/app_role_resource_management",
-    "TemplateType" : "/admin/template/type",
-    "CategoryGroup" : "/admin/coa/group",
-    "Category" : "/admin/coa/category",
-    "Submisson" : "/submission/dashboard",
-    "AppResource" : "/admin/role/appresource",
-  }
-
-  const findUrl = (activity: string) => {
-      return listofURL[activity];
-  }
-
   const currentTime = (obj: AuditLog) => {
     if(obj != undefined){
       return moment(obj.updatedAt).format("YYYY-MM-DD HH:mm:ss")
