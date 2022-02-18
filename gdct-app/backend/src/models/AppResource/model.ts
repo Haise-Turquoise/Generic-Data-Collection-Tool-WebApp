@@ -11,6 +11,7 @@ const AppResourceModel = model<AppResourceDoc>(
       isProtected: { type: String },
       timestamp: { type: Date },
       updatedBy: { type: String },
+      updatedAt: { type: String },
     },
     { minimize: false, autoIndex: true },
   ),
