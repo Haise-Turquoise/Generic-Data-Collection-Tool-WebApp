@@ -14,8 +14,10 @@ const AppRoleResourceModel = model<AppRoleResourceDoc>(
       //    updatedDate: { type: Date },
       //    userCreatorId: { type: ObjectId, ref: 'User' },
       updatedBy: { type: String },
+      updatedAt: { type: String },
     },
     { minimize: false },
+
   ),
   'AppRoleResource',
 );
