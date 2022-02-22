@@ -72,15 +72,7 @@ const LinkProgramTable = ({
     useEffect(() => {
       if (roleSubmissionButton?.role === 'Create Me') {
         // create new one
-        Swal.fire({
-          title: 'Resource Not Found',
-          text: 'Would you like to create it?',
-          showDenyButton: true,
-          denyButtonText: 'Return',
-          confirmButtonText: 'Create',
-          icon: 'question',
-        }).then(res => {
-          if (res.isConfirmed) {
+          if (true) {
             // create the resource
             roleSubmissionButtonController.create({
               role: role.replace("_", " "),
@@ -89,13 +81,10 @@ const LinkProgramTable = ({
               modifiedOn: new Date().toLocaleString()
             }).then(res => {
               setRoleSubmissionButton(res)
+              window.location.reload();
               return
             })
-          } else {
-            redirect();
-            return
           }
-        })
       } else if (roleSubmissionButton?.role === 'Not Found') {
         Swal.fire({
           title: 'Resource Not Found',
