@@ -8,6 +8,16 @@
 
 }
 
+.welcomeTitle{
+    display: flex; 
+    justify-content: center; 
+    align-items: center;
+    text-align: center;
+    flex-flow: row-wrap;
+    font-size: 25px;
+    font-weight: bold;
+}
+
 .subDasboardTitle{
     background-color: #3f51b5;
     overflow: auto;

@@ -24,6 +24,11 @@ import {PreviewData, Coordinate, SpreadSheetProps, CategorySelection, IdMapping,
 import { MasterValue } from '../../../types/mastervalue';
 import Template, { SheetData } from '../../../types/template';
 import AppConfig from '../../../types/appconfig';
+import columnNameController from "../../../controllers/columnName";
+import Attribute from "../../../types/attrubute";
+import UpdatePeriod from "./UpdatePeriod";
+import { CodeSharp } from "@material-ui/icons";
+import swal from 'sweetalert2'
 
 // Sheet style Option
 const sheetOption = {
@@ -64,7 +69,7 @@ const sheetOption = {
 
 // We use compoenent instead of hooks since hooks will cause undefined behavior
 
-class SpreadSheet extends Component<SpreadSheetProps>{
+class SpreadSheet extends Component<SpreadSheetProps, {hasSheet: boolean}>{
 
   id: ObjectId;
   workBookName: string;
@@ -93,12 +98,17 @@ class SpreadSheet extends Component<SpreadSheetProps>{
     this.insertVariance = this.insertVariance.bind(this);
     this.getCurrentSheet = this.getCurrentSheet.bind(this);
     this.lineNumberInsertion = this.lineNumberInsertion.bind(this);
+    this.getBasePeriod = this.getBasePeriod.bind(this);
+    this.updatePeriod = this.updatePeriod.bind(this);
     this.workBookName = this.props.name;
     this.currentCoord = {row:0, col:0};
     this.insertedPreview = [];
     this.prevVarianceSelection = '';
     this.validationThreshold = 0.05;
     this.attrbuteRow = 9;
+    this.state = {
+      hasSheet: false
+    }
   }
 
   // After component mount, initailize spreadsheet and load data from DB
@@ -111,9 +121,22 @@ class SpreadSheet extends Component<SpreadSheetProps>{
     }
     templateController.fetchTemplate(this.id).then((template:Template | null)=>{
       const data = template?.templateData;
+      console.log('got data', template?.templateData);
+      // bandaid solution
+      template?.templateData?.forEach(data => {
+        if (data.rows.len === 0) {
+          const newRows: {[key: string]: any} = {}
+          Object.keys(data.rows).forEach(key => {
+            if (key !== "len") {
+              newRows[key] = data.rows[key]
+            }
+          })
+          data.rows = newRows
+        } 
+      })
       // @ts-ignore
       this.sheet = new Spreadsheet("#x-spreadsheet", sheetOption).loadData(data).reRender();
-      
+      this.setState({hasSheet: true})
       // This event listner handles user close the tab without saving
       window.addEventListener('beforeunload', this.handleSave as EventListener);
       this.sheet.on('cell-selected',(cell:object, row:number, col:number)=>{
@@ -154,7 +177,7 @@ class SpreadSheet extends Component<SpreadSheetProps>{
     if (this.sheet){
       this.disablePreview();
       const workBookData = this.sheet.getData();
-      console.log(workBookData);
+      console.log('saving', workBookData);
       templateController.sheetUpdate(this.id, workBookData);
     }
   }
@@ -381,6 +404,166 @@ class SpreadSheet extends Component<SpreadSheetProps>{
     excelImportHandler(event, (data:object)=>{this.sheet.loadData(data).reRender()});
   }
 
+  getBasePeriod = () => {
+    if (!this.sheet) {
+      return ""
+    }
+    // return reporting period as string from main menu
+    const mainMenu = this.sheet.datas.find((datas: any) => datas.name.toUpperCase() == 'MAIN MENU');
+    if (!mainMenu) {
+      return ""
+    }    
+    const year = mainMenu.getCellTextOrDefault(4, 2);
+    const q = mainMenu.getCellTextOrDefault(5, 2);
+    return !!q ? `${year} ${q}` : `${year}`;
+  }
+
+  getUpdateCells = async (year_D: number, q_D: number): Promise<{proxy: any, ci: number, newAttr: string, newId: string}[]> => {
+    // all column names
+    const attributes: Attribute[] = await columnNameController.fetch();
+    const notFound: string[] = [];
+    const cells: {proxy: any, ci: number, newAttr: string, newId: string}[] = [];
+    // find each attribute and attempt to update
+    // don't update if the attribute does not exist
+    this.sheet.datas.forEach((proxy: any) => {
+      if (['MAIN MENU', 'IDENTIFICATION'].includes(proxy.name.toUpperCase())) {
+        return;
+      }
+      proxy.rows.eachCells(9, (ci: number, cell: any) => {
+        console.log('trying for', 9, ci, cell.text)
+        // if attribute has a date and is an attribute (has id at row 1)
+        let rgx = /20\d\d\/\d\d( Q1| Q2| Q3| YE)?/g;
+        if (!rgx.test(cell.text) || !proxy.getCell(0, ci)) {
+          return
+        }
+        // generate new attribute to look for
+        let attribute = cell.text;
+        const critical = (attribute.match(rgx) || [''])[0];
+        const [yr, q] = critical.split(' ');
+        if (!!yr) {
+          const newYear = parseInt(yr.substring(0,4)) + year_D;
+          const newQ = !!q ? ((parseInt(q.substring(1)) || 4) + q_D) % 4 : -1;
+          let newQs = "";
+          if (newQ == 0) {
+            newQs = " YE";
+          } else if (newQ > 0) {
+            newQs = " Q" + newQ;
+          }
+          const newYearS = `${newYear}/${(newYear + 1) % 100}`;
+          attribute = attribute.replace(rgx, newYearS + newQs);
+        }
+        // verify and update
+        if (attribute !== cell.text) {
+          // attribute was updated, see if it exists and update
+          const id = attributes.find(attr => attr.name === attribute)?.id || -1;
+          if (id !== -1) { 
+            // proxy.setCellText(9, ci, attribute, 'finished');
+            // proxy.setCellText(0, ci, id, 'finished');
+            cells.push({proxy: proxy, ci: ci, newAttr: attribute, newId: id})
+          } else {
+            notFound.push(attribute)
+          }
+        }
+      })
+    })
+    if (notFound.length > 0) {
+      const notFoundMsg = 'Update unsuccessful. Did not find the following attributes: ' + notFound.reduce((acc, curr) => acc += curr + ", ", "")
+      swal.fire({
+        title: 'Some Attributes Not Found',
+        icon: "error",
+        text: notFoundMsg
+      })
+      return []
+    } else {
+      return cells
+    }
+  }
+
+  updatePeriod = async (year_D: number, q_D: number) => {
+    if (!this.sheet) {
+      return
+    }
+    const cells = await this.getUpdateCells(year_D, q_D)
+    if (cells.length === 0) {
+      return
+    }
+    // update reference on Main Menu
+    const mainMenu = this.sheet.datas.find((datas: any) => datas.name.toUpperCase() == 'MAIN MENU');
+    const yearCell = mainMenu.getCell(4, 2);
+    const qCell = mainMenu.getCell(5, 2);
+    if (yearCell && yearCell.text) {
+      // expect year cell [Main Menu (4,7)] to be 20xx-xy
+      const newYear = parseInt(yearCell.text.substring(0,4)) + year_D;
+      mainMenu.setCellText(4, 2, `${newYear}-${(newYear + 1) % 100}`, 'input'); // state??
+    }
+    if (qCell && qCell.text) {
+      // expect Q1, Q2, Q3, YE
+      const newNum = /^Q(1|2|3)$/.test(qCell.text) ? (parseInt(qCell.text.substring(1)) + q_D) % 4 : (4 + q_D) % 4;
+      const newQ = newNum == 0 ? "YE" : "Q" + newNum;
+      mainMenu.setCellText(5, 2, newQ, 'finished');
+    }
+
+    cells.forEach(data => {
+      data.proxy.setCellText(9, data.ci, data.newAttr, 'finished')
+      data.proxy.setCellText(0, data.ci, data.newId, 'finished')
+    })
+    // console.log('updated cells')
+    // all column names
+    // const attributes: Attribute[] = await columnNameController.fetch();
+    // const notFound: string[] = []
+    // find each attribute and attempt to update
+    // don't update if the attribute does not exist
+    // this.sheet.datas.forEach((proxy: any) => {
+    //   if (['MAIN MENU', 'IDENTIFICATION'].includes(proxy.name.toUpperCase())) {
+    //     return;
+    //   }
+    //   proxy.rows.eachCells(9, (ci: number, cell: any) => {
+    //     console.log('trying for', 9, ci, cell.text)
+    //     // if attribute has a date and is an attribute (has id at row 1)
+    //     let rgx = /20\d\d\/\d\d( Q1| Q2| Q3| YE)?/g;
+    //     if (!rgx.test(cell.text) || !proxy.getCell(0, ci)) {
+    //       return
+    //     }
+    //     // generate new attribute to look for
+    //     let attribute = cell.text;
+    //     const critical = (attribute.match(rgx) || [''])[0];
+    //     const [yr, q] = critical.split(' ');
+    //     if (!!yr) {
+    //       const newYear = parseInt(yr.substring(0,4)) + year_D;
+    //       const newQ = !!q ? ((parseInt(q.substring(1)) || 4) + q_D) % 4 : -1;
+    //       let newQs = "";
+    //       if (newQ == 0) {
+    //         newQs = " YE";
+    //       } else if (newQ > 0) {
+    //         newQs = " Q" + newQ;
+    //       }
+    //       const newYearS = `${newYear}/${(newYear + 1) % 100}`;
+    //       attribute = attribute.replace(rgx, newYearS + newQs);
+    //     }
+    //     // verify and update
+    //     if (attribute !== cell.text) {
+    //       // attribute was updated, see if it exists and update
+    //       const id = attributes.find(attr => attr.name === attribute)?.id || -1;
+    //       if (id !== -1) { 
+    //         proxy.setCellText(9, ci, attribute, 'finished');
+    //         proxy.setCellText(0, ci, id, 'finished');
+    //       } else {
+    //         notFound.push(attribute)
+    //       }
+    //     }
+    //   })
+    // })
+    // if (notFound.length > 0) {
+    //   const notFoundMsg = 'Update successful but did not find the following attributes: ' + notFound.reduce((acc, curr) => acc += curr + ", ", "")
+    //   swal.fire({
+    //     title: 'Some Attributes Not Found',
+    //     icon: "warning",
+    //     text: notFoundMsg
+    //   })
+    // }
+    this.sheet.reRender();
+  }
+
   render(){
       return (
         <div>
@@ -392,6 +575,7 @@ class SpreadSheet extends Component<SpreadSheetProps>{
               <AttributeInsertMenu callback={this.insertAttribute}/>
               <PopulationSelectionMenu callback={this.enablePreview}/>
               <VarianceInsertionMenu callback={this.insertVariance} getSheet={this.getCurrentSheet}/>
+              <UpdatePeriod callback={this.updatePeriod} getBasePeriod={this.getBasePeriod} runBP={this.state.hasSheet} />
               <Button variant="outlined" color="primary" onClick={()=>this.disablePreview()}>
                 Disable preview
               </Button>

@@ -41,11 +41,12 @@ import QueryBuilderIcon from '@material-ui/icons/QueryBuilder';
 import LockIcon from '@material-ui/icons/Lock';
 import PermIdentityIcon from '@material-ui/icons/PermIdentity';
 import {SvgIconProps} from '@material-ui/core';
+import CheckBoxTwoToneIcon from '@material-ui/icons/CheckBoxTwoTone';
 // Universal Style
 const MenuItemStyle = { fontSize: '1.2rem', marginLeft: '1.2rem' };
 const SubMenuItemStyle = { fontSize: '1.2rem', marginLeft: '2rem' };
 
-// The only source for icons: https://material-ui.com/components/material-icons/
+// The only source for icons: https://v4.mui.com/components/material-icons/
 // To modify any of the icons, please directly reference its literal name string in the menu (if their strings does not match exactly, icons will not appear).
 // To add icons, please add their url reference directly into the menuitem collection in the database.
 const ItemMap :{[key:string]:React.ReactElement<SvgIconProps>} =  {
@@ -87,6 +88,7 @@ const ItemMap :{[key:string]:React.ReactElement<SvgIconProps>} =  {
   'Template Type': <InboxIcon style={SubMenuItemStyle} />,
   'Template Package': <AllInboxIcon style={SubMenuItemStyle} />,
   'Offline Tool': <WifiOffIcon style={SubMenuItemStyle} />,
+  'Unit Of Measure': <CheckBoxTwoToneIcon style={SubMenuItemStyle} />,
 
   // Admin Organization
   'Organization': <AccountBalance style={MenuItemStyle} />,
@@ -110,7 +112,7 @@ const ItemMap :{[key:string]:React.ReactElement<SvgIconProps>} =  {
   'Application Role Workflow Management': <GroupWorkIcon style={SubMenuItemStyle} />,
   
   // Admin Configuration
-  'Configuration': <BuildIcon style={MenuItemStyle} />,
+  'Application Configuration': <BuildIcon style={MenuItemStyle} />,
 
   // Admin User Management
   'User Management': <PeopleAltIcon style={MenuItemStyle} />,

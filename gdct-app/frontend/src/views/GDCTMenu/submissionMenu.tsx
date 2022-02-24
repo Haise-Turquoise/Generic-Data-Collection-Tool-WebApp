@@ -14,6 +14,14 @@ import Submission, { SubmissionPopulated } from '../../types/submission';
 import './menuStyle.css';
 
 
+const formatedTimestamp = (d: Date)=> {
+  
+  var date = d.toISOString().split('T')[0];
+  var time = d.toTimeString().split(' ')[0];
+  return `${date} ${time}`
+}
+
+
 const SubmissionMenu = () => {
     const currUID = localStorage.getItem('currentUserID');
     const dispatch = useDispatch();
@@ -55,29 +63,29 @@ const SubmissionMenu = () => {
 
     return(
         <div>
-      <p>Welcome back to GDCT</p>
 
       
       <div className="subDasboard">
         <div className="subDasboardTitle">
-          <div className="subleft">Submission Dashboard To-do..</div>
+          <div className="subleft">Submission Dashboard </div>
           <div className="subright"> <a style={{color: 'white'}} href='/submission/dashboard'> See more in submission dashboard </a></div>
         </div>
         {
           renderSubmissions.length < 1 ? <div>Loading...</div> : renderSubmissions.slice(0,5).map((item, i) => {
+
             if(i % 2 == 0){
               return <div className="rowContainer">
                     <div className="rowCellSub" style={{width: '35%'}}>{item.name}</div>
                     <div className="rowCellSub" style={{width: '20%'}}>{item.submissionPeriodId.name}</div>
                     <div className="rowCellSub" style={{width: '20%'}}>{item.statusId.name }</div>
-                    <div className="rowCellSub" style={{width: '25%'}}>{new Date(item.updatedAt).toLocaleString()}</div>
+                    <div className="rowCellSub" style={{width: '25%'}}>{ formatTimestamp(new Date(item.updatedAt).toLocaleString())}</div>
                    </div>
             }
             return <div className="rowContainer1">
                     <div className="rowCellSub" style={{width: '35%'}}>{item.name}</div>
                     <div className="rowCellSub" style={{width: '20%'}}>{item.submissionPeriodId.name}</div>
                     <div className="rowCellSub" style={{width: '20%'}}>{item.statusId.name }</div>
-                    <div className="rowCellSub" style={{width: '25%'}}>{new Date(item.updatedAt).toLocaleString()}</div>
+                    <div className="rowCellSub" style={{width: '25%'}}>{formatTimestamp(new Date(item.updatedAt).toLocaleString())}</div>
                    </div>
           })
         }
