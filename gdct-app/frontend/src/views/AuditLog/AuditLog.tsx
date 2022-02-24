@@ -39,7 +39,8 @@ const CustomDatePicker = (props: {
   useEffect(()=>{
     AuditLogController.fetchLatest()
     .then(res => { 
-      setStartDate(new Date(res.archiveMarkerDate))
+      if (res != null)
+        setStartDate(new Date(res.archiveMarkerDate))
     })
   }, []) 
 
@@ -116,7 +117,8 @@ const AuditLogTable = () => {
     fetchWithStatus(AuditLogController, setAuditLogs, setStatus)
     AuditLogController.fetchLatest()
     .then(res => { 
-      setArchivedDate(new Date(res.archiveMarkerDate))
+      if (res != null)
+        setArchivedDate(new Date(res.archiveMarkerDate))
     })
   }, [])
 

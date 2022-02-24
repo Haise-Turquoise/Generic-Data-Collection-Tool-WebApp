@@ -77,8 +77,10 @@ const PurgeArchive = (props: any) => {
     useEffect(() => {    
       AuditLogController.fetchLatest()
         .then(res => { 
-          setStartDate(new Date(res.archiveMarkerDate))
-          setSelectedDate(new Date(res.archiveMarkerDate))
+          if (res != null){
+            setStartDate(new Date(res.archiveMarkerDate))
+            setSelectedDate(new Date(res.archiveMarkerDate))
+          }
       })
       AuditLogController.fetchPurge()
       .then(res => { 
