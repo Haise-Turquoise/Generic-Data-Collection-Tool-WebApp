@@ -9,6 +9,7 @@ const SheetName = new Schema<SheetNameDoc>(
     timestamp: { type: Date },
     templateTypeId: { type: String },
     updatedBy: { type: String },
+    updatedAt: { type: String },
     isActive: { type: Boolean },
   },
   { minimize: false },
