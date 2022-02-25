@@ -12,7 +12,7 @@ const templateTypeController = (() => {
     fetchById: async (_id: string): Promise<TemplateType | null> => templateTypeAxios.post('/fetchById', { _id }).then(res => res.data),
     fetchByProgramIds: async (programId: string[]): Promise<TemplateType[]> =>
       templateTypeAxios
-        .post('/fetchByProgramIds', { programId })
+        .post('/fetchByProgramIds', { programIds: programId })
         .then(res => res.data.templateTypes),
     create: async (templateType: TemplateType): Promise<TemplateType | null> =>
       templateTypeAxios
