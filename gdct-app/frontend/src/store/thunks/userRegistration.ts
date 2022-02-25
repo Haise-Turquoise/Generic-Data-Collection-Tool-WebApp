@@ -431,14 +431,11 @@ const getProgram = (programInfo: Array<program>) => {
 const getTemplateType = (userPrograms: Array<userProgram>) => {
   const programList: any[] = [];
   userPrograms.forEach(userProgram => {
-    console.log("this is the greatest userProgram " )
-    console.log(userProgram)
     programList.push(userProgram._id);
   });
   return templateTypeController.fetchByProgramIds(programList).then(templateTypes => {
     const submissionList: any[] = [];
     let index = 0;
-
     templateTypes.forEach(templateType => {
       userPrograms.forEach(userProgram => {
         const check = templateType.programId.includes(userProgram._id);

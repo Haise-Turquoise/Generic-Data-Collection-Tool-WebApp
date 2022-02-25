@@ -4,7 +4,7 @@ import BaseRepository from '../repository';
 import TemplateTypeModel from '../../models/TemplateType/model';
 import ProgramRepository from '../Program';
 import {ObjectId} from 'mongodb';
-import {FilterQuery } from 'mongoose';
+import {FilterQuery, Types } from 'mongoose';
 import TemplateType, { TemplateTypeDoc } from '../../types/templatetype';
 import AppError from '../../utils/AppError';
 
@@ -56,10 +56,14 @@ export default class TemplateTypeRepository extends BaseRepository<TemplateType,
       .then(templateType => new TemplateTypeEntity(templateType));
   }
 
-  async findByProgramIds(programIds: ObjectId[]) {
+  async findByProgramIds(programIds: string[]) {
     // @ts-ignore
-    console.log(programIds)
-    return TemplateTypeModel.find({ programId: { $in: programIds } });
+    if (programIds){
+      let objectIdArray = programIds.map(s => Types.ObjectId(s));
+      return TemplateTypeModel.find({ programId: { $in: objectIdArray } });
+    }
+    // return TemplateTypeModel.find({ programId: { $in: programIds } });
+    return;
   }
 
   async update(id: string, templateType: Partial<TemplateType>) {

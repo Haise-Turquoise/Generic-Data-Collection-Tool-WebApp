@@ -7,7 +7,6 @@ const PackageStatusController = Service([SubmissionStatusService], service => {
   return (() => {
 
     router.get('/submissionStatus/submissionStateCount', (req, res, next) => {
-      console.log("ggg");
       service
         .findEach()
         .then(submissionState => res.json( submissionState ))
