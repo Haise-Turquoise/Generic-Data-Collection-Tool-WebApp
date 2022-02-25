@@ -23,7 +23,7 @@
             "request": "launch",
             "name": "Debug Frontend (Windows/Edge)",
             "url": "http://localhost:3003",
-            "webRoot": "${workspaceFolder}\\gdct-app\\frontend",
+            "webRoot": "${workspaceFolder}\\gdct-app\\frontend\\src",
         },
         {
             "type": "pwa-chrome",
