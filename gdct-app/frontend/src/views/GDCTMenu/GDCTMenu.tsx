@@ -73,7 +73,10 @@ const GDCTMenu = () => {
   const getSubmissions = async () => {
     submissionStatusController.fetchStatus()
       .then( (res: any) => {
-        setStatuses(res);
+        if (res) {
+          console.log(res)
+          setStatuses(res);
+        }
       })
       .catch((e: Error) => {
         console.log(e);
@@ -103,7 +106,8 @@ const GDCTMenu = () => {
     <br/><br/><br/>
     {localStorage.getItem('currentRole') === 'Business Admin' ?
     <div >
-      {statuses == undefined ? <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', textAlign: 'center', flexFlow: 'row-wrap' }}>loading Submission Overview...</div> :  <BarGroupComponent submissionData={statuses} events={true} /> }
+      {statuses === undefined ? <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', textAlign: 'center', flexFlow: 'row-wrap' }}>loading Submission Overview...</div> : 
+      statuses.length === 0 ? <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', textAlign: 'center', flexFlow: 'row-wrap' }}>No Submission Data Found</div> : <BarGroupComponent submissionData={statuses} events={true} /> }
     </div>
     :
     <div>

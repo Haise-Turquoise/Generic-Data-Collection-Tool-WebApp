@@ -121,6 +121,19 @@ class SpreadSheet extends Component<SpreadSheetProps, {hasSheet: boolean}>{
     }
     templateController.fetchTemplate(this.id).then((template:Template | null)=>{
       const data = template?.templateData;
+      console.log('got data', template?.templateData);
+      // bandaid solution
+      template?.templateData?.forEach(data => {
+        if (data.rows.len === 0) {
+          const newRows: {[key: string]: any} = {}
+          Object.keys(data.rows).forEach(key => {
+            if (key !== "len") {
+              newRows[key] = data.rows[key]
+            }
+          })
+          data.rows = newRows
+        } 
+      })
       // @ts-ignore
       this.sheet = new Spreadsheet("#x-spreadsheet", sheetOption).loadData(data).reRender();
       this.setState({hasSheet: true})
@@ -164,7 +177,7 @@ class SpreadSheet extends Component<SpreadSheetProps, {hasSheet: boolean}>{
     if (this.sheet){
       this.disablePreview();
       const workBookData = this.sheet.getData();
-      console.log(workBookData);
+      console.log('saving', workBookData);
       templateController.sheetUpdate(this.id, workBookData);
     }
   }
