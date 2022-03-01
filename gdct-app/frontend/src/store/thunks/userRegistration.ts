@@ -436,7 +436,6 @@ const getTemplateType = (userPrograms: Array<userProgram>) => {
   return templateTypeController.fetchByProgramIds(programList).then(templateTypes => {
     const submissionList: any[] = [];
     let index = 0;
-
     templateTypes.forEach(templateType => {
       userPrograms.forEach(userProgram => {
         const check = templateType.programId.includes(userProgram._id);

@@ -1,4 +1,4 @@
-import React, { Fragment, useMemo, useEffect, useState } from 'react';
+import React, { Fragment, useMemo, useEffect, useState, ChangeEvent } from 'react';
 
 import moment from 'moment';
 //@ts-ignore
@@ -7,10 +7,12 @@ import 'react-datepicker/dist/react-datepicker.css';
 
 import MaterialTable, { Action, Column, EditCellColumnDef, Filter, Options } from 'material-table';
 import { Paper, Typography, Button,
-         Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@material-ui/core';
+         Dialog, DialogActions, DialogContent, 
+         DialogContentText, DialogTitle, Box, Tabs, Tab, AppBar} from '@material-ui/core';
 import FindInPageIcon from '@material-ui/icons/FindInPage';
 import AuditLogController from '../../controllers/AuditLog'
 
+import PurgeArchive from './PurgeArchive';
 import AuditLog from '../../types/auditlog';
 import { fetchWithStatus, calculateOptions } from '../../tools/misc';
 
@@ -20,7 +22,7 @@ import { fetchWithStatus, calculateOptions } from '../../tools/misc';
 const AuditLogHeader = () => {
   return (
     <Paper className="header">
-      <Typography variant="h5">Audit Log</Typography>
+      <Typography variant="h5" component={'span'}>Audit Log</Typography>
     </Paper>
   );
 };
@@ -29,9 +31,20 @@ const AuditLogHeader = () => {
 const CustomDatePicker = (props: {
   columnDef: Column<AuditLog>,
   onFilterChanged: (rowId: string, value: any) => void,
+  merge: (start: Date) => void, 
 }) => {
   const [startDate, setStartDate] = React.useState(new Date());
   const [endDate, setEndDate] = React.useState(new Date());
+
+  useEffect(()=>{
+    AuditLogController.fetchLatest()
+    .then(res => { 
+      if (res != null)
+        setStartDate(new Date(res.archiveMarkerDate))
+    })
+  }, []) 
+
+
   return (
     <Fragment>
       <label>From:</label>
@@ -40,11 +53,13 @@ const CustomDatePicker = (props: {
         selected={startDate}
         dateFormat={"yyyy-MM-dd HH:mm"}
         onChange={(selectedDate:any) => {
+
           if (!selectedDate) {
             return
           } else if (Array.isArray(selectedDate)) {
             selectedDate = selectedDate[0]
           }
+          props.merge(new Date(selectedDate))
           setStartDate(selectedDate)
           props.onFilterChanged(
             (props.columnDef as EditCellColumnDef).tableData.id.toString(),
@@ -55,6 +70,7 @@ const CustomDatePicker = (props: {
         showTimeSelect
         showMonthDropdown
         showYearDropdown
+        maxDate={new Date()}
         dropdownMode="select"
       />
       <br />
@@ -77,6 +93,7 @@ const CustomDatePicker = (props: {
         showTimeSelect
         showMonthDropdown
         showYearDropdown
+        maxDate={new Date()}
         dropdownMode="select"
       />
     </Fragment>
@@ -87,11 +104,22 @@ const CustomDatePicker = (props: {
 const AuditLogTable = () => {
   
   const [readRowNum, setRowNum] = useState(1);
-  const [auditlogs, setAuditLogs] = useState<AuditLog[] | undefined>(undefined)
-  const [status, setStatus] = useState<'LOADING...' | 'NOT ALLOWED'>('LOADING...')
+  const [status, setStatus] = useState<'LOADING...' | 'NOT ALLOWED'>('LOADING...');
+
+  const [archivedDate, setArchivedDate] = useState(new Date());
+
+  const [auditlogs, setAuditLogs] = useState<AuditLog[] | undefined>(undefined);
+  const [archivelogs, setArchiveLogs] = useState<AuditLog[] | undefined>(undefined);
+  const [combinedlogs, setCombinedLogs] = useState<AuditLog[] | undefined>(undefined);
+
 
   useEffect(() => {
     fetchWithStatus(AuditLogController, setAuditLogs, setStatus)
+    AuditLogController.fetchLatest()
+    .then(res => { 
+      if (res != null)
+        setArchivedDate(new Date(res.archiveMarkerDate))
+    })
   }, [])
 
   // table vars for loading
@@ -107,6 +135,8 @@ const AuditLogTable = () => {
     updatedAt: '',
   }]
 
+
+
   // Prepare the table columns for MaterialTable
   const columns: Column<AuditLog>[] = useMemo(
     () => [
@@ -114,8 +144,8 @@ const AuditLogTable = () => {
         title: 'Time',
         field: 'updatedAt',
         // Use Datepicker as filter
-        filterComponent: props => <CustomDatePicker {...props} />,
-        // must have "term" as an input even it is not used
+        filterComponent: props => <CustomDatePicker {...props }  merge={merge}/>,
+        //must have "term" as an input even it is not used
         customFilterAndSearch: (_term, rowData) => {
           const startDate = document.getElementById("startDatePicker")!.getAttribute("value")
           const endDate = document.getElementById("endDatePicker")!.getAttribute("value")
@@ -132,6 +162,7 @@ const AuditLogTable = () => {
     [],
   );
 
+    //<CustomDatePicker {...props} />,
   //= =================================================================================================
 
   // Prepare the data for MaterialTable
@@ -183,19 +214,53 @@ const AuditLogTable = () => {
       }
     }
   ]
-  useEffect(() => { 
+
+  //update combinedlogs format
+  useEffect(() => {
+    setRowNum(combinedlogs?.length || 0)
+    combinedlogs?.forEach(auditlog => {
+      auditlog.updatedAt = moment(auditlog.updatedAt).format("YYYY-MM-DD HH:mm:ss")
+    })
+  }, [combinedlogs])
+
+  //update auditlogs format and feed it into combinedlogs
+  useEffect(() => {
     setRowNum(auditlogs?.length || 0)
-  }, [auditlogs]);
+    setCombinedLogs(auditlogs)
+  }, [auditlogs])
+
+  //merge the auditlogs with the fetched archivelogs, if they exist
+  useEffect(() => { 
+    archivelogs?.forEach(auditlog => {
+      auditlog.updatedAt = moment(auditlog.updatedAt).format("YYYY-MM-DD HH:mm:ss")
+    })
+    if(auditlogs !== undefined&& archivelogs !== undefined) {
+      //setAuditLogs(auditlogs.concat(archivelogs)) 
+      setCombinedLogs(auditlogs.concat(archivelogs))
+    }
+  }, [ archivelogs]);
+
+  //function to retrieve the archives from the archivelog
+  const merge = (start: Date) => {
+    if (start < archivedDate){
+      console.log(start + " " + archivedDate)
+      AuditLogController.fetchArchive(new Date(start), new Date(archivedDate))
+      .then(res => { 
+        setArchiveLogs(res)
+      })
+      setArchivedDate(start)
+    }
+  }
 
   //==================================================================================================
 
   return <Fragment>
             <MaterialTable
               key={readRowNum}
-              columns={!!auditlogs ? columns : preColumns} 
-              data={!!auditlogs ? auditlogs : preLogs} 
+              columns={!!combinedlogs ? columns : preColumns} 
+              data={!!combinedlogs ? combinedlogs : preLogs} 
               options={options} 
-              actions={!!auditlogs ? actions : undefined} 
+              actions={!!combinedlogs ? actions : undefined} 
             />
             <Dialog
               open={open}
@@ -220,12 +285,87 @@ const AuditLogTable = () => {
           </Fragment>
 } // End of defining Table contents
 
+
+//tools needed for tabs: a11yProps, TabPanel
+interface TabPanelProps {
+  children?: React.ReactNode;
+  index: number;
+  value: number;
+}
+
+function TabPanel(props: TabPanelProps) {
+  const { children, value, index, ...other } = props;
+
+  return (
+    <div
+      role="tabpanel"
+      hidden={value !== index}
+      id={`simple-tabpanel-${index}`}
+      aria-labelledby={`simple-tab-${index}`}
+      {...other}
+    >
+      {value === index && (
+        <Box sx={{ p: 3 }}>
+          <Typography component={'span'}>{children}</Typography>
+        </Box>
+      )}
+    </div>
+  );
+}
+
+//props used for tabs
+function a11yProps(index: number) {
+  return {
+    id: `simple-tab-${index}`,
+    'aria-controls': `simple-tabpanel-${index}`,
+  };
+}
+
+
 // any type since props unused
-const AuditLog = (props: any) => (
-  <div className="AuditLogPage">
+const AuditLog = (props: any) => {
+  const [value, setValue] = React.useState(0);
+
+  const handleChange = (event: any, newValue: any) => {
+    setValue(newValue);
+  };
+
+  return  (
+  <div>
     <AuditLogHeader />
-    <AuditLogTable {...props} />
+    <Paper>
+      
+      {/* Tab structure defined here */}
+      <AppBar
+        position="static"
+        color="transparent"
+        style={{ background: 'transparent', boxShadow: 'none' }}
+      >
+        <Tabs 
+          value={value} 
+          onChange={handleChange} 
+          aria-label="basic tabs"
+          indicatorColor="primary"
+          >
+          <Tab label="AuditLog" {...a11yProps(0)} />
+          <Tab label="Purge and Archive" {...a11yProps(1)} />
+        </Tabs>
+      </AppBar>
+
+      {/* Corresponding tab contents here */}
+      <TabPanel value={value} index={0}>
+        <div className="AuditLogPage">
+          <AuditLogTable {...props} />
+        </div>
+      </TabPanel>
+      <TabPanel value={value} index={1}>
+        <PurgeArchive></PurgeArchive>
+      </TabPanel>
+    </Paper>
   </div>
-);
+  
+  );
+
+}
 
 export default AuditLog;
