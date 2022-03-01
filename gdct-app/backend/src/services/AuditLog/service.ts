@@ -14,7 +14,23 @@ export default class AuditLogService {
     return this.AuditLogRepository.findAll();
   }
 
+  async findAllPurgeLog() {
+    return this.AuditLogRepository.findAllPurge();
+  }
+
   async createAuditLog(AuditLogInfo: AuditLog) {
     return this.AuditLogRepository.create(AuditLogInfo);
+  }
+
+  async moveAuditLog(date: Date, user: String) {
+    return this.AuditLogRepository.move(date, user);
+  }
+
+  async findLatest() {
+    return this.AuditLogRepository.findLast();
+  }
+
+  async findArchiveLog(startDate: Date, endDate: Date) {
+    return this.AuditLogRepository.findArchives(startDate, endDate);
   }
 }

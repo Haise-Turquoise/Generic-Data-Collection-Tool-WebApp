@@ -17,7 +17,7 @@ export type BarGroupProps = {
 const BarGroupComponent =  (props:any) => {
   // bounds
 
-  const [currentPeriod, setCurrentPeriod] = useState(props.submissionData[0]._id.submissionPeriod);
+  const [currentPeriod, setCurrentPeriod] = useState(props.submissionData[0]._id.submissionPeriod || '');
   console.log("ll");
   console.log(currentPeriod);
 
