@@ -6,6 +6,7 @@ const Workflow = new Schema<WorkflowDoc>(
     name: { type: String },
     timestamp: { type: Date, default: Date.now },
     updatedBy: { type: String },
+    updatedAt: { type: String },
     isActive: {
       type: Boolean,
       default: true,
