@@ -100,7 +100,7 @@
     "uniqid": "^5.0.3",
     "webpack-bundle-analyzer": "^3.6.0",
     "webpack-dev-server": "^3.11.0",
-    "x-data-spreadsheet": "git+https://github.com/txijierf/x-spreadsheet.git#merge-up",
+    "x-data-spreadsheet": "git+https://github.com/txijierf/x-spreadsheet.git#master",
     "xlsx-populate": "https://github.com/greylemon/xlsx-populate",
     "yup": "^0.29.1"
   },
