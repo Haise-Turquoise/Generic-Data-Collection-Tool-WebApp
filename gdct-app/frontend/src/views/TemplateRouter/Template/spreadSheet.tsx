@@ -490,10 +490,10 @@ class SpreadSheet extends Component<SpreadSheetProps, {hasSheet: boolean}>{
   }
 
   validateSheet = async () => {
-    this.sheet.datas[this.sheet.getCurrentSheetIndex()].validateAll();
+    this.sheet.datas[this.sheet.getCurrentSheetIndex()].resetCommentsandErrors();
     this.sheet.reRender();
   }
-
+  
   updatePeriod = async (year_D: number, q_D: number) => {
     if (!this.sheet) {
       return
