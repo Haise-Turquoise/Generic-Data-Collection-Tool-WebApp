@@ -25,6 +25,7 @@ import { MasterValue } from '../../../types/mastervalue';
 import Template, { SheetData } from '../../../types/template';
 import AppConfig from '../../../types/appconfig';
 import columnNameController from "../../../controllers/columnName";
+import UnitOfMeasurementController from "../../../controllers/UnitOfMeasurement";
 import Attribute from "../../../types/attrubute";
 import UpdatePeriod from "./UpdatePeriod";
 import { CodeSharp } from "@material-ui/icons";
@@ -479,6 +480,20 @@ class SpreadSheet extends Component<SpreadSheetProps, {hasSheet: boolean}>{
     }
   }
 
+  unitOfMeasure = async () => {
+
+    const unitOfMeasureInfo = await UnitOfMeasurementController.fetch();
+    console.log("unit of measureInfo");
+    console.log(unitOfMeasureInfo);
+    this.sheet.datas[this.sheet.getCurrentSheetIndex()].UnitValidation.validate(unitOfMeasureInfo);
+    this.sheet.reRender();
+  }
+
+  validateSheet = async () => {
+    this.sheet.datas[this.sheet.getCurrentSheetIndex()].resetCommentsandErrors();
+    this.sheet.reRender();
+  }
+  
   updatePeriod = async (year_D: number, q_D: number) => {
     if (!this.sheet) {
       return
@@ -595,6 +610,13 @@ class SpreadSheet extends Component<SpreadSheetProps, {hasSheet: boolean}>{
              
               <Button variant="outlined" color="primary" onClick={()=>this.openUploadMenu()}>
                 Upload Template
+              </Button>
+              <Button variant="outlined" color="primary" onClick={() => {this.validateSheet()}}>
+                Validate
+              </Button>
+
+              <Button variant="outlined" color="primary" onClick={() => {this.unitOfMeasure()}}>
+                Unit of Measure Validation
               </Button>
              
               <Button variant="outlined" color="primary" onClick={()=>this.backButton()}>
