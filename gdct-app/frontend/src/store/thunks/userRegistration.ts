@@ -936,7 +936,7 @@ export const submit = () => (_dispatch: Dispatch, getState: () => state) => {
   sendRegistrationData(userData);
 };
 
-export const updatePermission = () => (getState: () => state) => {
+export const updatePermission = () => (_dispatch: Dispatch, getState: () => state) => {
   const {
     // @ts-ignore
     UserRegistrationStore: { userPermissions, registrationData, userAppSys },
