@@ -72,7 +72,8 @@ const PurgeArchive = (props: any) => {
         // Add a timeout to eliminate race condition between move() and fetchpurge(), may need to adjust based on future sizes
         await sleep(3000)
         const resi = await AuditLogController.fetchPurge()
-        setPurgeLogs(resi.sort((a,b)=>b.purgeDate!.localeCompare(a.purgeDate!)))
+        if (resi)
+          setPurgeLogs(resi.sort((a,b)=>b.purgeDate!.localeCompare(a.purgeDate!)))
       } catch (err) {
         console.trace(err);
       }
@@ -90,7 +91,9 @@ const PurgeArchive = (props: any) => {
       })
       AuditLogController.fetchPurge()
       .then(res => { 
-        setPurgeLogs(res.sort((a,b)=>b.purgeDate!.localeCompare(a.purgeDate!)))
+        if (res != null){
+          setPurgeLogs(res.sort((a,b)=>b.purgeDate!.localeCompare(a.purgeDate!)))
+        }
       })
 
     },[]);
