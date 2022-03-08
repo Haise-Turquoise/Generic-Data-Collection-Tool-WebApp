@@ -36,7 +36,7 @@ const BarGroupComponent =  (props:any) => {
   }
   //sort by date, so it always will be correct
 
-  submissionPeriods = [ ... new Set(submissionPeriods)]
+  submissionPeriods = [ ... new Set(submissionPeriods)].sort(function (a: any, b: any) {return a.localeCompare(b);})
   let fixedData : any = [['Template', 'Submitted', {role: 'annotation'}, 'Unsubmitted', {role: 'annotation'}]]
     .concat(dict[currentPeriod]
       .sort(function (a: any, b: any) {return a[0].localeCompare(b[0]);}));
