@@ -37,7 +37,9 @@ const BarGroupComponent =  (props:any) => {
   //sort by date, so it always will be correct
 
   submissionPeriods = [ ... new Set(submissionPeriods)]
-  let fixedData : any = [['Template', 'Submitted', {role: 'annotation'}, 'Unsubmitted', {role: 'annotation'}]].concat(dict[currentPeriod]);
+  let fixedData : any = [['Template', 'Submitted', {role: 'annotation'}, 'Unsubmitted', {role: 'annotation'}]]
+    .concat(dict[currentPeriod]
+      .sort(function (a: any, b: any) {return a[0].localeCompare(b[0]);}));
   console.log(fixedData)
   // update scale output dimensions
 
