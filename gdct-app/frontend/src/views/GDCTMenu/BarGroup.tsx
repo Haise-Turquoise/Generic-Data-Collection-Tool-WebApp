@@ -18,14 +18,9 @@ const BarGroupComponent =  (props:any) => {
   // bounds
 
   const [currentPeriod, setCurrentPeriod] = useState(props.submissionData[0]._id.submissionPeriod || '');
-  console.log("ll");
-  console.log(currentPeriod);
 
   let submissionPeriods = [];
   let dict : any = {};
-  
-  console.log(props.submissionData);
-
   for (let i = 0; i< props.submissionData.length; i++){
     submissionPeriods.push(props.submissionData[i]._id.submissionPeriod);
     !(props.submissionData[i]._id.submissionPeriod in dict) && (dict[props.submissionData[i]._id.submissionPeriod] = [])
@@ -41,9 +36,9 @@ const BarGroupComponent =  (props:any) => {
   }
   //sort by date, so it always will be correct
 
-
+  submissionPeriods = [ ... new Set(submissionPeriods)]
   let fixedData : any = [['Template', 'Submitted', {role: 'annotation'}, 'Unsubmitted', {role: 'annotation'}]].concat(dict[currentPeriod]);
- 
+  console.log(fixedData)
   // update scale output dimensions
 
   const handleChange = (event: any) => {
