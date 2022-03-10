@@ -178,7 +178,7 @@ export default class SubmissionStatusService {
             updatedBy: userId,
             updatedDate: (new Date()),
             version: 0,
-            workbookData: [], //ASK ABOUT THIS
+            workbookData: template?.templateData,
             workflowId: workflowId,
             workflowProcessId: template!.workflowProcessId,
           }

@@ -131,7 +131,7 @@ const CreateSubmission = ({ history }: RouterProps) => {
 
           <div style={{ visibility: showSave, color: messageColour, fontSize: 16 }}>
             <DoneIcon />
-            <text>{message}</text>
+            <Typography>{message}</Typography>
           </div>
         </div>
       </Paper>
