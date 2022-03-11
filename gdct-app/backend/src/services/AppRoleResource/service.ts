@@ -31,14 +31,15 @@ export default class AppRoleResourceService {
 
   async updateAppRoleResource(id: string, appRoleResource: Partial<AppRoleResource>) {
     // update the resourceId
-    if(appRoleResource.appSysRoleId?.roleId){
+    console.log('id flag', id)
+    if(typeof appRoleResource.appSysRoleId !== "string"){
       return this.AppRoleResourceRepository.update(id, appRoleResource);
     }
     // update the appSysRoleId
     else{
       // replace the ObjectId with the object contains more information
-      let appSysRole = await this.AppSysRoleRepository.findById(appRoleResource.appSysRoleId!.roleId || '')
-      const roleId = appRoleResource.appSysRoleId!.roleId;
+      let appSysRole = await this.AppSysRoleRepository.findById(appRoleResource.appSysRoleId || '')
+      const roleId = appSysRole._id;
       appRoleResource.appSysRoleId = { roleId, roleName: appSysRole.appSys + " " + appSysRole.role }
       return this.AppRoleResourceRepository.update(id, appRoleResource);
     }

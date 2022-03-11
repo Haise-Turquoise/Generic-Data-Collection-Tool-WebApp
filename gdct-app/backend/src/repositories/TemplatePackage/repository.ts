@@ -43,7 +43,8 @@ export default class TemplatePackageRepository extends BaseRepository<TemplatePa
     userCreatorId,
     programIds,
     updatedBy,
-    timestamp,
+    updatedAt,
+    deadline,
   }: TemplatePackage) {
     return this.submissionPeriodRepository
       .validate(submissionPeriodId)
@@ -59,7 +60,8 @@ export default class TemplatePackageRepository extends BaseRepository<TemplatePa
           userCreatorId,
           programIds,
           updatedBy,
-          timestamp,
+          updatedAt,
+          deadline,
         }),
       )
       .then(templatePackage => new TemplatePackageEntity(templatePackage));
@@ -67,7 +69,7 @@ export default class TemplatePackageRepository extends BaseRepository<TemplatePa
 
   async update(
     id: string,
-    { name, submissionPeriodId, templateIds, statusId, creationDate, userCreatorId, programIds, updatedBy, timestamp, }: Partial<TemplatePackage>,
+    { name, submissionPeriodId, templateIds, statusId, creationDate, userCreatorId, programIds, updatedBy, updatedAt, deadline, }: Partial<TemplatePackage>,
     isPopulated?: boolean,
   ) {
     // console.log('programIds', programIds)
@@ -91,12 +93,17 @@ export default class TemplatePackageRepository extends BaseRepository<TemplatePa
             userCreatorId,
             programIds,
             updatedBy,
-            timestamp,
+            updatedAt,
+            deadline,
           },
           { upsert: true, new: true },
         ).populate(isPopulated ? populatedParams : ''),
       )
       .then(templatePackage => new TemplatePackageEntity(templatePackage));
+  }
+
+  async updateDeadline(id: string,date: string){
+    return TemplatePackageModel.findByIdAndUpdate(id,{deadline: date});
   }
 
   async findByProgramId(programId: string) {
@@ -108,7 +115,6 @@ export default class TemplatePackageRepository extends BaseRepository<TemplatePa
     //@ts-ignore
     const result = await TemplatePackageModel.find({ programIds: {$in:programIds}})
     .populate('templateIds', 'templateTypeId')
-    console.log(result[0].templateIds)
     return result;
   }
 

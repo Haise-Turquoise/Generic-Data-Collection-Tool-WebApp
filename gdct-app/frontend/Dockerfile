@@ -1,4 +1,4 @@
-FROM node:14
+FROM node:14.10.1
 
 WORKDIR /app
 
@@ -10,6 +10,6 @@ RUN npm install --no-optional && npm cache clean --force
 
 COPY . .
 
-EXPOSE 3003
+EXPOSE 3000
 
 CMD [ "npm", "start" ]

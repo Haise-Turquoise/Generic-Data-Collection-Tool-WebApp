@@ -41,7 +41,7 @@ interface NormalizedTree {
   categoryGroupId: string | CategoryGroup;
   sheetNameId: string;
   content: undefined;
-  timestamp?: string;
+  updatedAt?: string;
   updatedBy?: string;
 }
 
@@ -214,7 +214,14 @@ export const updateCOATreesBySheetNameRequest = (sheetNameId: string) => (
   const {
     COATreeStore: { localTree },
   } = getState();
-
+  // check duplicates
+  const found: string[] = []
+  for (let item of localTree) {
+    if (found.includes(item.content.categoryGroupId._id)) {
+      return 'Duplicate category group not allowed'
+    }
+    found.push(item.content.categoryGroupId._id)
+  }
   // let treeCopy = cloneDeep(toggleExpandedForAll({ treeData:localTree, expanded : true }))
   const treeCopy = cloneDeep(localTree);
   const getNodeKey = ({ treeIndex }: { treeIndex: number }) => treeIndex;
@@ -232,10 +239,10 @@ export const updateCOATreesBySheetNameRequest = (sheetNameId: string) => (
   dispatch(COATreesStore.actions.REQUEST(''));
 
   const normalizedTrees = normalizeTrees(treeCopy);
-  // add timestamp and updatedBy attributes to normalizedTree obj
+  // add updatedAt and updatedBy attributes to normalizedTree obj
   normalizedTrees.forEach(normalizedTree => {
     //TODO please test
-    normalizedTree.timestamp = new Date().toString();
+    normalizedTree.updatedAt = new Date().toString();
     normalizedTree.updatedBy = localStorage.getItem('currentUser') || undefined;
   });
   COATreeController.updateBySheetName(normalizedTrees, sheetNameId)

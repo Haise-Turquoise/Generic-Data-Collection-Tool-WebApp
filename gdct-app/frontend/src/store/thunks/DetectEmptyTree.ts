@@ -20,7 +20,7 @@ export const getDetectEmptyTree = () => (dispatch: Dispatch) => {
             _id: sheetName._id,
             name: sheetName.name,
             // treeContent is an array that may be empty
-            timestamp: treeContent.length > 0 ? treeContent[0].timestamp : '',
+            updatedAt: treeContent.length > 0 ? treeContent[0].updatedAt : '',
             updatedBy: treeContent.length > 0 ? treeContent[0].updatedBy : 'N/A',
             value: treeContent,
           };

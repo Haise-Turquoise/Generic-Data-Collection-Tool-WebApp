@@ -3,6 +3,8 @@ import {SheetDataStyle, SheetData} from '../types/template';
 import { Options } from 'material-table';
 import moment from 'moment';
 import React, { ReactText } from 'react';
+import { unauthorized_dialog } from '../components/Unauthorized_Dialog/Unauthorized_Dialog';
+import User from '../types/user';
 
 export const isObjectEmpty = (object:any) => {
   for (let key in object) return false;
@@ -30,38 +32,23 @@ export const memoizeFunction = (f:any) => {
   };
 };
 
-export const calculateOptions = (itemCount:number) => {
+export const calculateOptions = (itemCount:number, opt?:Object) => {
   let length = itemCount;
   if (length > 100) length = 100;
-  else if (length == 0) length = 1;
-  const sizeOptions = [10, 25, 50, 100, itemCount];
-  sizeOptions.sort((a, b) => a - b);
+  
+  const sizes = [5,10, 25, 50, 100];
+  const sizeOptions= [ ...sizes.filter(x => x < itemCount),  { value: itemCount, label: 'All' }];
+  
   return {
     actionsColumnIndex: -1,
     search: true,
     showTitle: false,
+    filtering: false,
     maxBodyHeight: '400px',
     pageSizeOptions: sizeOptions,
     pageSize: length,
     addRowPosition: 'first',
-  } as Options<any>;
-};
-
-export const calculateOptionsWithTitle = (itemCount:number) => {
-  let length = itemCount;
-  if (length > 100) length = 100;
-  else if (length == 0) length = 1;
-  const sizeOptions = [10, 25, 50, 100, itemCount];
-  sizeOptions.sort((a, b) => a - b);
-  return {
-    actionsColumnIndex: -1,
-    search: true,
-    showTitle: true,
-    maxBodyHeight: '400px',
-    pageSizeOptions: sizeOptions,
-    pageSize: length,
-    addRowPosition: 'first',
-  } as Options<any>;
+    ...opt} as Options<any>;
 };
 
 
@@ -655,7 +642,6 @@ export const excelImportHandler = (event:React.ChangeEvent<HTMLInputElement>, da
 export const checkDuplicates = (rowData:any, tableData:any, field:string) => {
   // field of element being edited -- null if not editing
   let current:any = null;
-  console.log(rowData);
   if (rowData.tableData) {
     if (rowData.tableData.editing === 'delete') {
       return true;
@@ -757,21 +743,22 @@ export const controllerDeleteRow = async (Controller:any, setState:Function, _id
   try {
     // res has type AxiosResponse
     const res = await Controller.delete(_id)
+    console.log(res)
     if (res.status !== 200) {
+      console.log("res not 200")
       return false
     }
     setState((prev:any) => prev ? prev.filter((el:any) => el._id !== _id) : prev)
-  } catch (e) {
-    console.log('an error has occurred')
-    return false
-  } finally {
     return true
+  } catch (e) {
+    console.log('an error has occurred ')
+    return false
   }
 }
 
 // returns properly formatted date or empty string
-export const formatTimestamp = (timestamp: string) => {
-  let time = moment(new Date(timestamp)).format('YYYY-MM-DD HH:mm:ss');
+export const formatTimestamp = (updatedAt: string) => {
+  let time = moment(new Date(updatedAt)).format('YYYY-MM-DD HH:mm:ss');
   return (time === 'Invalid date') ? '' : time
 }
 
@@ -786,11 +773,46 @@ export const fetchWithStatus = async <T>(
     setRes: React.Dispatch<React.SetStateAction<T[] | undefined>>,
     setStatus: React.Dispatch<React.SetStateAction<'LOADING...' | 'NOT ALLOWED'>>
   ) => {
-    controller.fetch().then((res: T[] | undefined) => {
-      if (res) {
+    controller.fetch().then((res: T[] | undefined | 'UNAUTHORIZED ACCESS') => {
+      if (res === 'UNAUTHORIZED ACCESS') {
+        unauthorized_dialog();
+      } else if (res) {
         setRes(res)
       } else {
         setStatus('NOT ALLOWED')
       }
     })
+}
+
+interface role {
+  role: string,
+  orgId: string,
+  progId: string,
+  tempTypeId: string,
+}
+/**
+ * Parses a user's sysRole object and returns array of data
+ * @param sysRole A user.sysRole object
+ * @returns an array of objects of the form {role, orgId, progId, templateTypeId}
+ */
+export const sysRoleTraversal = (sysRole: User["sysRole"]): role[] => {
+  if (sysRole.length === 0) {
+    return []
+  }
+  const parsed: role[] = []
+  for (let srole of sysRole) {
+    for (let org of srole.org) {
+      for (let prog of org.program) {
+        for (let temp of prog.template) {
+          parsed.push({
+            role: srole.role,
+            orgId: org.orgId,
+            progId: prog.programId,
+            tempTypeId: temp.templateTypeId,
+          })
+        }
+      }
+    }
+  }
+  return parsed
 }

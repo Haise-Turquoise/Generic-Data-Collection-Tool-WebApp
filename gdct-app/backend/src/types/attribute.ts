@@ -4,7 +4,7 @@ export default interface Attribute {
   _id: ObjectId;
   name: string;
   id: string;
-  timestamp: Date;
+  updatedAt: Date;
   updatedBy: string;
 }
 

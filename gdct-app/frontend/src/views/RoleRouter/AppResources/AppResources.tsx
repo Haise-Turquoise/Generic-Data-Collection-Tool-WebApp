@@ -44,12 +44,12 @@ const AppResourcesTable = () => {
     isProtected: '',
     resourceName: status,
     resourcePath: '',
-    timestamp: '',
+    updatedAt: '',
     updatedBy: '',
   }]
   // Convert Date format
   appResources?.forEach(appResource => {
-    appResource.timestamp = formatTimestamp(appResource.timestamp);
+    appResource.updatedAt = formatTimestamp(appResource.updatedAt);
   });
 
   // Prepare the columns for material table
@@ -75,7 +75,7 @@ const AppResourcesTable = () => {
       { title: 'Protection', field: 'isProtected', lookup: {'FALSE': 'FALSE', 'TRUE': 'TRUE'} },
       {
         title: 'Modified On',
-        field: 'timestamp',
+        field: 'updatedAt',
         editComponent: () => {
           return <div></div>;
         },
@@ -98,8 +98,7 @@ const AppResourcesTable = () => {
     // get email and record in Modified By columns
     appResource.updatedBy = localStorage.getItem('currentUser') || '';
     // record new date and time in Modified On column 
-    const event = new Date();
-    appResource.timestamp = event.toDateString();    
+    appResource.updatedAt = new Date().toLocaleString(); 
   }
   const editable = useMemo(
     () => ({

@@ -11,6 +11,7 @@ import {
   controllerDeleteRow,
   formatTimestamp,
   fetchWithStatus,
+  calculateOptions
 } from '../../tools/misc'
 
 import AppConfig from '../../types/appconfig';
@@ -52,6 +53,7 @@ const AppConfigsHeader = () => {
 const AppConfigsTable = () => {
   const [appConfigs, setAppConfigs] = useState<AppConfig[] | undefined>(undefined)
   const [appSyses, setAppSyses] = useState<AppSys[] | undefined>(undefined)
+  const [readRowNum, setRowNum] = useState(1);
   const [status, setStatus] = useState<'LOADING...' | 'NOT ALLOWED'>('LOADING...')
 
   useEffect(() => {
@@ -70,14 +72,14 @@ const AppConfigsTable = () => {
       key: '',
       appSys: '',
       sys: '',
-      timestamp: '',
+      updatedAt: '',
       updatedBy: '',
     },
   ];
 
   // Convert Date format
   appConfigs?.forEach((appConfig: AppConfig) => {
-    appConfig.timestamp = formatTimestamp(appConfig.timestamp)
+    appConfig.updatedAt = formatTimestamp(appConfig.updatedAt)
   });
   // Assign code as name
   const lookupSysRoles = appSyses?.reduce(function (acc: {[key:string]: string}, appSys: AppSys) {
@@ -93,7 +95,7 @@ const AppConfigsTable = () => {
       { title: 'System', field: 'appSys', lookup: lookupSysRoles },
       {
         title: 'Modified On',
-        field: 'timestamp',
+        field: 'updatedAt',
         editComponent: () => {
           return <div></div>;
         },
@@ -110,22 +112,14 @@ const AppConfigsTable = () => {
   );
 
   // Prepare the options
-  const options: Options<AppConfigMT> = useMemo(
-    () => ({
-      actionsColumnIndex: -1,
-      search: true,
-      showTitle: false,
-      addRowPosition: 'first',
-    }),
-    [],
-  );
+  const options = useMemo(() => calculateOptions(readRowNum), [readRowNum]);
 
   // Record who and when of the action
   function recordUpdate(appConfig: AppConfigMT) {
     //get username and record in Modified By column
     appConfig.updatedBy = localStorage.getItem('currentUser') || '';
     //record new date and time in Modified On column
-    appConfig.timestamp = new Date().toLocaleString();
+    appConfig.updatedAt = new Date().toLocaleString();
   }
   // Prepare the editing functionalities for the material table
   const editable = useMemo(
@@ -197,8 +191,13 @@ const AppConfigsTable = () => {
     [],
   );
 
+  useEffect(()=>{
+    setRowNum(appConfigs?.length || 0)
+  }, [appConfigs]);
+
   return (
     <MaterialTable
+      key={readRowNum}
       columns={!!appConfigs ? columns : preColumns}
       data={!!appConfigs ? appConfigs : preConfigs}
       editable={!!appConfigs ? editable : undefined}

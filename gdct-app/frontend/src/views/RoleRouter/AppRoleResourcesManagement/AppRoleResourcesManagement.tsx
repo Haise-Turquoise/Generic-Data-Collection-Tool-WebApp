@@ -23,9 +23,17 @@ import AppResource from '../../../types/appresource';
 import AppRoleResource from '../../../types/approleresource';
 import AppSysRole from '../../../types/appsysrole';
 import SysRole from '../../../types/sysrole';
+import AppRole from '../../../types/approle';
+import { any } from 'prop-types';
 
 interface AppRoleResourceMT extends AppRoleResource {
   tableData?: any,
+}
+
+// add an interface for modified Date
+interface AppRolePlus extends AppRole {
+  modifiedOn: string,
+  updatedBy: string,
 }
 
 const AppRoleResourceHeader = () => {
@@ -46,7 +54,7 @@ const AppRoleResourceTable = ({ history }: RouteComponentProps) => {
   const [appResources, setAppResources] =
     useState<AppResource[] | undefined>(undefined)
   const [status, setStatus] = useState<'LOADING...' | 'NOT ALLOWED'>('LOADING...')
-
+ 
   useEffect(() => {
     fetchWithStatus<AppRoleResource>(AppRoleResourceController, setAppRoleResources, setStatus)
     AppSysRoleController.fetch().then((res: unknown) => {
@@ -63,23 +71,23 @@ const AppRoleResourceTable = ({ history }: RouteComponentProps) => {
     _id: '',
     appSysRoleId: { roleId: '', roleName: '' },
     resourceId: [],
-    timestamp: '',
+    updatedAt: '',
     updatedBy: status,
   }]
+
+  appRoleResources?.forEach(appRoleResource => {
+    appRoleResource.updatedAt = formatTimestamp(appRoleResource.updatedAt);
+  });
 
   useEffect(()=>{
     setRowNum(appRoleResources?.length || 1)
   }, [appRoleResources])
-  // Convert Date format
-  appRoleResources?.forEach(appRoleResource => {
-    appRoleResource.timestamp = formatTimestamp(appRoleResource.timestamp);
-  });
+
   //convert appSysRoleId from object to objectId if necessary
-  appRoleResources?.forEach(appRoleResource => {
+  appRoleResources?.forEach(appRoleResource => {   
     if(typeof appRoleResource.appSysRoleId !== 'string'){
       appRoleResource.appSysRoleId = appRoleResource.appSysRoleId.roleId
-    }
-    
+    }    
   })
   const lookupSysRoles = appSysRoles?.reduce(function (acc: {[key: string]: string}, sysRole: SysRole) {
     acc[sysRole._id!] = `${sysRole.appSys} - ${sysRole.role}`;
@@ -97,7 +105,7 @@ const AppRoleResourceTable = ({ history }: RouteComponentProps) => {
       { title: 'Application System Role', field: 'appSysRoleId', lookup: lookupSysRoles, validate: rowData => checkDuplicates(rowData, appRoleResources, 'appSysRoleId') },
       {
         title: 'Modified On',
-        field: 'timestamp',
+        field: 'updatedAt',
         editComponent: () => {
           return <div></div>;
         },
@@ -134,7 +142,8 @@ const AppRoleResourceTable = ({ history }: RouteComponentProps) => {
   // Record user and time when an action occurs 
   function recordUpdate(appRoleResource: AppRoleResourceMT) {
     appRoleResource.updatedBy = localStorage.getItem('currentUser') || '';
-    appRoleResource.timestamp = new Date().toLocaleString(); 
+    appRoleResource.updatedAt = new Date().toLocaleString(); 
+    console.log(appRoleResource);
   }
   // Prepare the editing functionalities for the material table
   const editable = useMemo(
@@ -172,6 +181,7 @@ const AppRoleResourceTable = ({ history }: RouteComponentProps) => {
         })();
         // Do Update
         controllerEditRow(AppRoleResourceController, setAppRoleResources, appRoleResource)
+        
           .then((res: boolean) => {
             if (res) {
               resolve(res)
@@ -196,6 +206,7 @@ const AppRoleResourceTable = ({ history }: RouteComponentProps) => {
     }),
     [],
   );
+
 
   return (
     <MaterialTable

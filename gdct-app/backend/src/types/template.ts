@@ -2,6 +2,7 @@ import { ObjectId } from 'mongodb';
 import { Document } from 'mongoose';
 
 export default interface Template {
+  _id?: ObjectId;
   name: string;
   workflowId: ObjectId;
   workflowProcessId: ObjectId;
@@ -9,10 +10,11 @@ export default interface Template {
   templateTypeId: ObjectId;
   userCreatorId: ObjectId;
   creationDate: Date;
+  createdAt: Date;
   expirationDate: Date;
   statusId: ObjectId;
   googleSheetId: ObjectId;
-  timestamp: Date;
+  updatedAt: Date;
   updatedBy: string;
 }
 
@@ -29,7 +31,7 @@ export interface SheetData{
 };
 
 export interface SheetDataRows{
-  [index:string]:{cells?:SheetDataCells, hide?:boolean},
+  [index:string]:{cells?:SheetDataCells, height?:number, hide?:boolean},
 };
 
 export interface SheetDataConditionalFormatting{
@@ -73,5 +75,5 @@ export interface SheetDataBorder{
   right?:[string, string],
 };
 
-
+//@ts-ignore
 export interface TemplateDoc extends Template, Document {}

@@ -3,9 +3,10 @@ import { Document } from "mongoose";
 export default interface AppSysRole {
   appSys: string,
   role: string,
-  timestamp: Date,
+  updatedAt: Date,
   updatedBy: string,
   isActive: boolean,
+  isSuperRole?: boolean,
 }
 
 export interface AppSysRoleDoc extends AppSysRole, Document {}

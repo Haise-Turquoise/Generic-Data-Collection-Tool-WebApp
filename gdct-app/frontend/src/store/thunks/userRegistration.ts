@@ -1,7 +1,7 @@
 import hash from 'object-hash';
 //@ts-ignore
 import cloneDeep from 'clone-deep';
-import bcrypt from 'bcrypt-nodejs';
+import bcrypt from 'bcryptjs';
 import organizationController from '../../controllers/organization';
 import AppSysController from '../../controllers/AppSys';
 import organizationGroupController from '../../controllers/organizationGroup';
@@ -240,7 +240,7 @@ const handleInputProgram = (programSet: Array<program>, submission: userSubmissi
     name: '',
     template: [],
   };
-  console.log(programSet, submission);
+  
   let programSelected = programSet.find((element: program) => {
     return element.programId === submission.program._id;
   });
@@ -289,7 +289,7 @@ const handleInputOrg = (organization: Array<organization>, submission: userSubmi
       email: ''
     }
   };
-  console.log(organization, submission);
+  
   let organizationSelected = organization.find((element: organization) => {
     return element.orgId === submission.organization.id;
   });
@@ -436,10 +436,9 @@ const getTemplateType = (userPrograms: Array<userProgram>) => {
   return templateTypeController.fetchByProgramIds(programList).then(templateTypes => {
     const submissionList: any[] = [];
     let index = 0;
-
     templateTypes.forEach(templateType => {
       userPrograms.forEach(userProgram => {
-        const check = templateType.programIds.includes(userProgram._id);
+        const check = templateType.programId.includes(userProgram._id);
         if (check) {
           submissionList.push({
             organization: userProgram.org,
@@ -722,7 +721,7 @@ export const searchOrganization = () => (dispatch: Dispatch, getState: () => sta
   dispatch(userRegistrationStore.actions.setOrganizationOptions(orgOptions));
 };
 
-export const loadModifyPermissionPage = () => async (dispatch: Dispatch, getState: () => state) => {
+export const loadModifyPermissionPage = () =>  async (dispatch: Dispatch, getState: () => state) => {
   const email = localStorage.getItem('currentUser');
   const {
     // @ts-ignore
@@ -730,7 +729,7 @@ export const loadModifyPermissionPage = () => async (dispatch: Dispatch, getStat
   } = getState();
 
   const user = await usersController.fetchByEmail(email!);
-
+  
   if (user!.sysRole && tempUserSubmissions.length === 0) {
     let UserSysRole = [];
     // if there is no pending templates in the database
@@ -743,7 +742,7 @@ export const loadModifyPermissionPage = () => async (dispatch: Dispatch, getStat
       // @ts-ignore
       UserSysRole = user!.tempSysRole;
     }
-
+    console.log('orgUserSysRole', UserSysRole)
     // eslint-disable-next-line no-restricted-syntax
     for (const sysRole of UserSysRole) {
       const userSubmission = {
@@ -781,8 +780,10 @@ export const loadModifyPermissionPage = () => async (dispatch: Dispatch, getStat
         userSubmission.viewCognos = true;
       }
       // loop over each organization
-      sysRole.org.forEach(async (org: organization) => {
+      for(const org of sysRole.org){
+      // sysRole.org.forEach(async (org: organization) => {
         // fetch the organization info
+        console.log('org', org)
         const orgInfo = await organizationController.fetchById(org.orgId);
         // @ts-ignore
         userSubmission.organization = {
@@ -792,7 +793,9 @@ export const loadModifyPermissionPage = () => async (dispatch: Dispatch, getStat
           IsActive: org.IsActive,
         };
         // loop over each program
-        org.program.forEach(async (program: program) => {
+        for(const program of org.program){
+          
+        // org.program.forEach(async (program: program) => {
           // fetch additional program info
           const programInfo = await programController.fetchById(program.programId);
           // @ts-ignore
@@ -802,7 +805,8 @@ export const loadModifyPermissionPage = () => async (dispatch: Dispatch, getStat
             _id: programInfo!._id,
           };
           // loop over each template
-          program.template.forEach(async (template: template) => {
+          for(const template of program.template){
+          // program.template.forEach(async (template: template) => {
             // @ts-ignore
             userSubmission.submission = {
               name: template.templateCode,
@@ -811,8 +815,9 @@ export const loadModifyPermissionPage = () => async (dispatch: Dispatch, getStat
             };
             const userSubmissionCopy = cloneDeep(userSubmission);
             // get specific template information
+            console.log('orgtype',template.templateTypeId)
             const templateTypeInfo = await templateTypeController.fetchById(template.templateTypeId);
-
+            console.log('orghere')
             userSubmissionCopy.approveAvailable = templateTypeInfo!.isApprovable;
             userSubmissionCopy.reviewAvailable = templateTypeInfo!.isReviewable;
             userSubmissionCopy.submitAvailable = templateTypeInfo!.isSubmittable;
@@ -834,9 +839,10 @@ export const loadModifyPermissionPage = () => async (dispatch: Dispatch, getStat
 
             const permissionList = submissionChange(userSubmissionsCopy);
             dispatch(userRegistrationStore.actions.setUserPermissionList(permissionList));
-          });
-        });
-      });
+          };
+        };
+        
+      };
     }
   }
 
@@ -898,7 +904,7 @@ export const deleteUserPermission = (userPermission: userPermission) => (dispatc
   dispatch(userRegistrationStore.actions.setUserPermissionList(userPermissionsCopy));
 };
 
-export const submit = () => (getState: () => state) => {
+export const submit = () => (_dispatch: Dispatch, getState: () => state) => {
   const {
     // @ts-ignore
     UserRegistrationStore: { registrationData, userPermissions, userAppSys },
@@ -930,7 +936,7 @@ export const submit = () => (getState: () => state) => {
   sendRegistrationData(userData);
 };
 
-export const updatePermission = () => (getState: () => state) => {
+export const updatePermission = () => (_dispatch: Dispatch, getState: () => state) => {
   const {
     // @ts-ignore
     UserRegistrationStore: { userPermissions, registrationData, userAppSys },

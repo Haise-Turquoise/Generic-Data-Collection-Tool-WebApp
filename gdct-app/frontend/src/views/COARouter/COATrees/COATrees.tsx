@@ -22,7 +22,7 @@ const buildDET = async (sheetNames: SheetName[]) => {
       _id: sheetName._id,
       name: sheetName.name,
       // treeContent is an array that may be empty
-      timestamp: treeContent.length > 0 ? treeContent[0].timestamp : '',   
+      updatedAt: treeContent.length > 0 ? treeContent[0].updatedAt : '',   
       updatedBy: treeContent.length > 0 ? treeContent[0].updatedBy : 'N/A',
       value: treeContent 
     })
@@ -98,7 +98,7 @@ const COATreesTable = ({ history }: RouterProps) => {
   const preTrees: DetectEmptyTree[] = [{
     name: status,
     _id: '',
-    timestamp: '',
+    updatedAt: '',
     updatedBy: '',
     value: [],
   }]
@@ -107,7 +107,7 @@ const COATreesTable = ({ history }: RouterProps) => {
 
   // Convert Date format
   detectEmptyTree?.forEach((detectEmptyTree: DetectEmptyTree) => {
-    detectEmptyTree.timestamp = formatTimestamp(detectEmptyTree.timestamp || '');
+    detectEmptyTree.updatedAt = formatTimestamp(detectEmptyTree.updatedAt || '');
   });
 
   const columns: Column<DetectEmptyTree>[] = useMemo(
@@ -115,7 +115,7 @@ const COATreesTable = ({ history }: RouterProps) => {
       { title: 'Sheet Name', field: 'name' },
       {
         title: 'Modified On',
-        field: 'timestamp',
+        field: 'updatedAt',
         editComponent: () => {
           return <div></div>;
         },
@@ -165,7 +165,7 @@ const COATreesTable = ({ history }: RouterProps) => {
         new Promise((resolve, reject) => {
           console.log(sheetName)
           sheetName.updatedBy=localStorage.getItem('currentUser') || '';
-          sheetName.timestamp = new Date().toLocaleString(); 
+          sheetName.updatedAt = new Date().toLocaleString(); 
           // deleteCOATreeBySheetName(sheetName._id, resolve);
           deleteCOATreeBySheetName(sheetName._id, resolve)
           setRefresh(true);

@@ -6,14 +6,14 @@ export default interface TemplateType {
   description: string;
   templateWorkflowId: ObjectId;
   submissionWorkflowId: ObjectId;
-  programIds: ObjectId[];
+  programId: ObjectId[];
   isApprovable: boolean;
   isReviewable: boolean;
   isSubmittable: boolean;
   isInputtable: boolean;
   isViewable: boolean;
   isReportable: boolean;
-  timestamp: Date;
+  updatedAt: Date;
   updatedBy: string;
   isActive: boolean;
 }

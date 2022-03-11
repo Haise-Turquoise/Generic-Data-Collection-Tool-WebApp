@@ -11,23 +11,24 @@ const selectSelectedNode = createSelector(
   [selectSelectedNodeProps],
   selectedNodeProps => selectedNodeProps.node,
 );
-
+//@ts-ignore
 const selectSelectedNodeContent = createSelector([selectSelectedNode], selectedNode =>
   selectedNode ? selectedNode.content : undefined,
 );
 
 const selectSelectedNodeCOAIds = createSelector([selectSelectedNodeContent], selectedNodeContent =>
+  //@ts-ignore
   selectedNodeContent ? selectedNodeContent.categoryId : [],
 );
 
-// const selectSelectedTimestamp = createSelector(
+// const selectSelectedupdatedAt = createSelector(
 //   [selectCOATreeStore],
 //   COATreeStore => COATreeStore.selectedNodeProps,
 // );
 
-// export const selectCOATreeTimestamp = createSelector(
+// export const selectCOATreeupdatedAt = createSelector(
 //   [selectCOATreeStore],
-//   COATreeStore => COATreeStore.timestamp,
+//   COATreeStore => COATreeStore.updatedAt,
 // );
 
 export const selectSelectedCOAIdsMap = createSelector([selectSelectedNodeCOAIds], categoryId => {
@@ -40,5 +41,6 @@ export const selectSelectedCOAIdsMap = createSelector([selectSelectedNodeCOAIds]
 
 export const selectSelectedCOATreeId = createSelector(
   [selectSelectedNodeContent],
+  //@ts-ignore
   selectedNodeContent => (selectedNodeContent ? selectedNodeContent._id : undefined),
 );

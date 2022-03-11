@@ -7,14 +7,14 @@ export default class TemplateTypeEntity {
   public description: string;
   public templateWorkflowId: ObjectId;
   public submissionWorkflowId: ObjectId;
-  public programIds: ObjectId[];
+  public programId: ObjectId[];
   public isApprovable: boolean;
   public isReviewable: boolean;
   public isSubmittable: boolean;
   public isInputtable: boolean;
   public isViewable: boolean;
   public isReportable: boolean;
-  public timestamp: Date;
+  public updatedAt: Date;
   public updatedBy: string;
   public isActive: boolean;
 
@@ -24,14 +24,14 @@ export default class TemplateTypeEntity {
     description,
     templateWorkflowId,
     submissionWorkflowId,
-    programIds,
+    programId,
     isApprovable,
     isReviewable,
     isSubmittable,
     isInputtable,
     isViewable,
     isReportable,
-    timestamp,
+    updatedAt,
     updatedBy,
     isActive,
   }: TemplateTypeDoc) {
@@ -40,14 +40,14 @@ export default class TemplateTypeEntity {
     this.templateWorkflowId = templateWorkflowId;
     this.submissionWorkflowId = submissionWorkflowId;
     this.description = description;
-    this.programIds = programIds;
+    this.programId = programId;
     this.isApprovable = isApprovable;
     this.isReviewable = isReviewable;
     this.isSubmittable = isSubmittable;
     this.isInputtable = isInputtable;
     this.isViewable = isViewable;
     this.isReportable = isReportable;
-    this.timestamp = timestamp;
+    this.updatedAt = updatedAt;
     this.updatedBy = updatedBy;
     this.isActive = isActive;
   }

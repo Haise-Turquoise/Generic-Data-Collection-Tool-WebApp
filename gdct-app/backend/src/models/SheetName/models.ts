@@ -9,15 +9,11 @@ const SheetName = new Schema<SheetNameDoc>(
     timestamp: { type: Date },
     templateTypeId: { type: String },
     updatedBy: { type: String },
+    updatedAt: { type: String },
     isActive: { type: Boolean },
   },
   { minimize: false },
 )
-
-SheetName.pre(/^find/, function (this: Model<SheetNameDoc>, next: (err: CallbackError) => void) {
-  this.find({ isActive: { $ne: false } });
-  next(null);
-});
 
 const SheetNameModel = model<SheetNameDoc>('SheetName', SheetName, 'SheetName');
 

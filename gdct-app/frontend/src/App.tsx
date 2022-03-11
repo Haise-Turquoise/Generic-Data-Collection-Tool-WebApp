@@ -33,7 +33,10 @@ import TransferStatus from './views/TransferStatus/TransferStatus';
 import { ROUTE_WORKFLOW, ROUTE_TEMPLATE_PCKGS, ROUTE_CATEGORY } from './constants/routes';
 
 import './App.scss';
+import UnitValidation from './views/UnitValidation';
 // import './i18n';
+
+//here are some comments
 
 const PrivateRouter = ({ setLoggedIn }: {setLoggedIn: (value: boolean) => void}) => {
   return (
@@ -63,6 +66,7 @@ const PrivateRouter = ({ setLoggedIn }: {setLoggedIn: (value: boolean) => void})
       {/* <Route path="/submission_manager" component={SubmissionRouter} /> */}
       <Route exact path="/admin/sheetName" component={SheetNames} />
       {/* <Route path={ROUTE_COLUMN_NAMES} component={ColumnNames} /> */}
+      <Route exact path="/admin/unitOfMeasurement" component={UnitValidation} />
       <Route
         exact
         path="/logout"

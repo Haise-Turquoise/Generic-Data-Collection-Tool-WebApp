@@ -1,38 +1,32 @@
-import React, { useState, Fragment, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, } from 'react';
 import { Link } from 'react-router-dom';
 import clsx from 'clsx';
-
 import { makeStyles, useTheme, Theme} from '@material-ui/core/styles';
 import {
   AppBar,
   Drawer,
   Chip,
   Toolbar,
-  List,
   CssBaseline,
   Typography,
   IconButton,
   ListItem,
   ListItemIcon,
   ListItemText,
-  Collapse,
-  Switch,
-  FormControlLabel,
 } from '@material-ui/core';
 import MenuIcon from '@material-ui/icons/Menu';
-import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
-import ChevronRightIcon from '@material-ui/icons/ChevronRight';
-import ExpandMore from '@material-ui/icons/ExpandMore';
-import ExpandLess from '@material-ui/icons/ExpandLess';
 //@ts-ignore
 import createUserNavigation from './createUserNavigation';
 //@ts-ignore
 import TopItemList from './TopItemList';
 import './_chip.scss';
 import './_listitem.scss';
+import '../../images/Onlogo.png';
+
 //@ts-ignore
 import Usernavigation from '../../types/usernavigation';
-
+import ClickAwayListener from '@material-ui/core/ClickAwayListener';
+import SideDrawer from './SideDrawer';
 
 
 const drawerWidth = 240;
@@ -59,15 +53,13 @@ const useStyles = makeStyles(theme => ({
   menuButton: {
     marginRight: theme.spacing(2),
   },
-  hide: {
-    display: 'none',
-  },
   drawer: {
     width: drawerWidth,
     flexShrink: 0,
   },
   drawerPaper: {
     width: drawerWidth,
+    marginTop: 64,
   },
   drawerHeader: {
     display: 'flex',
@@ -127,7 +119,7 @@ const useStyles = makeStyles(theme => ({
     color: 'gray',
   },
 }));
-
+const check = ()=>console.log("jewifjwif");
 const HeaderHandle = ({ open, classes, handleDrawerOpen, isTopMenu }:{
   open:boolean,
   classes:any,
@@ -141,7 +133,7 @@ const HeaderHandle = ({ open, classes, handleDrawerOpen, isTopMenu }:{
         aria-label="open drawer"
         onClick={handleDrawerOpen}
         edge="start"
-        className={clsx(classes.menuButton, open && classes.hide)}
+        className={clsx(classes.menuButton, open)}
       >
         <MenuIcon />
       </IconButton>
@@ -186,7 +178,7 @@ const Header = ({
   <AppBar
     position="fixed"
     className={clsx(classes.appBar, {
-      [classes.appBarShift]: open,
+      [classes.appBarShift]: false,  
     })}
   >
     <Toolbar className={classes.flex}>
@@ -199,9 +191,15 @@ const Header = ({
         isTopMenu={isTopMenu}
       />
       <Link to="/" className={classes.title}>
+      <div style={{ display: 'flex', marginLeft: 'auto' }}>
+        <div style={{paddingRight: '10px'}}>
+          <img src={'/Onlogo.png'} alt="logo" width="30" height="30"/>
+        </div>
+
         <HeaderTitle title={title} />
+        </div>
       </Link>
-      {isTopMenu && <TopItemList config={config}  isMobile={isMobile} />}
+       <TopItemList config={config}  isMobile={isMobile} />
       <Chip
         label={
           <span>
@@ -216,56 +214,29 @@ const Header = ({
         id="MuiChip-label-Authpage"
         className={classes.chip}
       />
-      <FormControlLabel
-        className={classes.flexItem}
-        control={
-          <Switch
-            checked={isTopMenu}
-            onChange={() => {
-              setTopMenu(!isTopMenu);
-              setOpen(false);
-            }}
-            aria-label="login switch"
-          />
-        }
-        label={isTopMenu ? 'Top' : 'Left'}
-      />
+     
     </Toolbar>
   </AppBar>
-);
-
-const DrawerHandle = ({ title, classes, handleDrawerClose, theme }:{
-  title:string,
-  classes:any,
-  handleDrawerClose:()=>void,
-  theme:Theme,
-}) => (
-  <div className={classes.toolbar}>
-    <Typography className={classes.toolbarTitle}>{title}</Typography>
-    <div className={classes.drawerHeader}>
-      <IconButton onClick={handleDrawerClose}>
-        {theme.direction === 'ltr' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
-      </IconButton>
-    </div>
-  </div>
 );
 
 const MenuItemIcon = ({ icon }:{
   icon:string,
 }) => <ListItemIcon>{icon}</ListItemIcon>;
 
-const MenuItemLink = ({ name, icon, url, type, level }:{
+const MenuItemLink = ({ name, icon, url, type, level, handleClose}:{
   name:string,
   icon:string,
   url:any,
   type:string,
-  level:string|number
+  level:string|number,
+  handleClose:()=>void, 
 }) => (
   <ListItem
     component={url && Link}
     button
     to={url}
     id={window.location.pathname.includes(url) ? 'active' : ''}
+    onClick={handleClose}
   >
     <MenuItemIcon icon={icon} />
     {level === '2' ? (
@@ -286,164 +257,97 @@ const MenuItemLink = ({ name, icon, url, type, level }:{
   </ListItem>
 );
 
-const MenuItems = ({ menuItems, level }:{
-  menuItems:any,
-  level:string|number,
-}) => {
-  return menuItems.map((menuItem:any, index:number) => {
-    if (menuItem.type === 'drawer') {
-      return (
-        <MenuDrawer key={`${menuItem.type}-${menuItem.name}-${index}`} {...menuItem} level="2" />
-      );
-    }
-    return (
-      <MenuItemLink
-        key={`${menuItem.type}-${menuItem.name}-${index}`}
-        {...menuItem}
-        level={level}
-      />
-    );
-  });
-};
 
-const MenuItemsList = ({ menuItems, level }:{
-  menuItems:any,
-  level:string|number,
-}) => (
-  <List component="div" disablePadding>
-    <MenuItems menuItems={menuItems} level={level} />
-  </List>
-);
 
-const MenuDrawerItems = ({ menuItems, open, level }:{
-  menuItems:any,
-  open:boolean,
-  level:string|number,
-}) => (
-  <Collapse in={open} timeout="auto" unmountOnExit style={{ minHeight: '1' }}>
-    <MenuItemsList menuItems={menuItems} level={level} />
-  </Collapse>
-);
-
-const MenuDrawerTitle = ({ button = true, name, icon, open, handleClick, level }:{
-  button:true,
-  name:string,
-  icon:any,
-  open:boolean,
-  handleClick:(target:any)=>void,
-  level:string|number,
-}) => (
-  <ListItem button={button} onClick={handleClick}>
-    {icon && <MenuItemIcon icon={icon} />}
-    {level === '2' ? (
-      <ListItemText
-        primary={
-          <Typography style={{ fontSize: '0.9rem', marginLeft: '1.2rem' }}>{name}</Typography>
-        }
-      />
-    ) : (
-      <ListItemText primary={name} />
-    )}
-    {open ? <ExpandLess /> : <ExpandMore />}
-  </ListItem>
-);
-
-const MenuDrawer = ({ name, icon, children, level = 1 }:{
-  name:string,
-  icon:any,
-  children:Object,
-  level:number|string,
-}) => {
-  const [open, setOpen] = useState(false);
-
-  const handleToggle = useCallback(target => setOpen(!open), [open]);
-  //@ts-ignore
-  return (
-    //@ts-ignore
-    <Fragment>
-      <MenuDrawerTitle name={name} icon={icon} handleClick={handleToggle} level={level} open={open} button={true}/>
-      <MenuDrawerItems open={open} menuItems={children} level={level} />
-    </Fragment>
-  );
-};
-
-const NavigationContent = ({ config }:{config:any}) => {
-  // console.log('config', config);
+const NavigationContent = ({ config, handleClose }:{
+  config:any, 
+  handleClose:()=>void,
+  }) => {
   return config.map((item:Usernavigation, index:number) => {
     let Component;
 
     const { type, name } = item;
     switch (type) {
       case 'drawer':
-        Component = MenuDrawer;
+        //was menudrawer
+        Component = SideDrawer;
         break;
       default:
         Component = MenuItemLink;
         break;
     }
-    return <Component key={`${type}-${name}-${index}`} {...item} />;
+    return <Component key={`${type}-${name}-${index}`} {...item} handleClose={handleClose}/>;
   });
 };
 
-const NavigationDrawer = ({ title, open, theme, config, classes, handleDrawerClose }:{
-  title:string,
+
+const NavigationDrawer = ({open, theme, config, classes, handleDrawerClose, handleClose }:{
   open:boolean,
   theme:Theme,
   config:any,
   classes:any,
   handleDrawerClose:()=>void,
+  handleClose:()=>void,
 }) => (
-  <Drawer
-    className={classes.drawer}
-    variant="persistent"
-    anchor="left"
-    open={open}
-    classes={{
-      paper: classes.drawerPaper,
-    }}
+  <ClickAwayListener onClickAway={handleDrawerClose}>
+    <Drawer
+      className={classes.drawer}
+      variant="persistent"
+      anchor="left"
+      open={open} 
+      onBlur={()=> console.log("hi i am here")}
+      // onClose={handleDrawerClose}
+      classes={{
+        paper: classes.drawerPaper,
+      }}
   >
-    <DrawerHandle
-      title={title}
-      classes={classes}
-      handleDrawerClose={handleDrawerClose}
-      theme={theme}
-    />
-    <NavigationContent config={config} />
-  </Drawer>
+      <NavigationContent config={config} handleClose={handleClose}/>
+    </Drawer>
+  </ClickAwayListener> 
 );
 
 const AuthPage = ({
   // headerTitle = 'MOHLTC - Generic Data Collection Tool',
   headerTitle = 'MOH - OHFS Budgeting and Forecasting',
-  drawerTitle = 'MOH - OHFS Budgeting and Forecasting',
 
   children,
 }:{
   headerTitle?:string,
-  drawerTitle?:string,
   children:Object,
 }) => {
   const classes = useStyles();
   const theme = useTheme();
   const [config, setConfig] = useState([]);
   const [open, setOpen] = useState(false);
-  const [isTopMenu, setTopMenu] = useState(true);
+  const [isTopMenu, setTopMenu] = useState(false);
   const [isMobile, setMobile] = useState(window.matchMedia('(max-width: 1000px)').matches);
   useEffect(() => {
     const handler = (e:any) => setMobile(e.matches);
     window.matchMedia('(max-width: 1000px)').addListener(handler);
-    setTopMenu(!isMobile);
+    //setTopMenu(!isMobile);
     createUserNavigation().then((res:any) => {
       console.log('res', res)
       setConfig(res);
     });
   }, [isMobile]);
+  // const state = {count : 0}
+
+  const [count, setCount] = useState(0);
 
   const handleDrawerOpen = () => setOpen(true);
   const handleDrawerClose = () => setOpen(false);
-  const style = open
-    ? { paddingTop: '5.7rem' }
-    : { paddingTop: '5.7rem', marginLeft: `-${drawerWidth}px` };
+  
+  const handleDrawerClose2 = () => {
+    if(open === true){
+      setCount(prev => prev + 1)
+    }
+    if((open === true) && count == 1){
+      setOpen(false);
+      setCount(0);
+    }
+  };
+  const style = { paddingTop: '5.7rem', marginLeft: `-${drawerWidth}px` };
+          
   return (
     <div className={classes.root}>
       <CssBaseline />
@@ -459,12 +363,12 @@ const AuthPage = ({
         isMobile = {isMobile}
       />
       <NavigationDrawer
-        title={drawerTitle}
         theme={theme}
         classes={classes}
         open={open}
         config={config}
-        handleDrawerClose={handleDrawerClose}
+        handleDrawerClose={handleDrawerClose2}
+        handleClose={handleDrawerClose2}
       />
       <main
         style={style}
@@ -477,5 +381,6 @@ const AuthPage = ({
     </div>
   );
 };
+
 
 export default AuthPage;

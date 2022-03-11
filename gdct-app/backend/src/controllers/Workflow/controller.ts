@@ -57,6 +57,25 @@ const WorkflowController = Service([WorkflowService], service => {
         .catch(next);
     });
 
+    router.post('/workflows/findNeighbors', (req, res, next) => {
+      const {workflowId, statusIds} = req.body;
+
+      service
+        .findNeighbors(workflowId, statusIds)
+        .then(workflows => res.json({ data: workflows }))
+        .catch(next);
+    });
+
+    router.post('/workflows/findPrevious', (req, res, next) => {
+      const {workflowId, statusIds} = req.body;
+
+      service
+        .findPrevious(workflowId, statusIds)
+        .then(workflows => res.json({ workflows }))
+        .catch(next);
+
+    })
+
     router.post('/workflows/fetchOnlyWorkflowById', (req, res, next) => {
       const { _id } = req.body;
 

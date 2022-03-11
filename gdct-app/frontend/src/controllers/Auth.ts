@@ -13,7 +13,7 @@ const AuthController = (() => {
       AuthAxios.post('/login', data).then(res => res.data),
     register: async (data: registerParams) =>
       AuthAxios.post('/register', data).then(res => res.data),
-    profile: async (): Promise<authRes> => AuthAxios.get('/profile').then(res => res.data),
+    profile: async (): Promise<authRes> => AuthAxios.post('/profile', { email: localStorage.getItem('currentUser') || '' }).then(res => res.data),
     logout: async (): Promise<authRes> => AuthAxios.get('/logout').then(res => res.data),
   };
 })();

@@ -11,9 +11,7 @@ export default interface TemplateType {
   isActive: boolean,
   // issue in DB?
   isViewable?: boolean | null,
-  programIds: string[],
   updatedAt: string,
-  timestamp: string,
   updatedBy: string,
   name: string,
   submissionWorkflowId?: string,

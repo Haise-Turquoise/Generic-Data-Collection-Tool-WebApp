@@ -62,14 +62,12 @@ const TemplateTypesTable = ({ history }: RouterProps) => {
     isReviewable: false,
     isSubmittable: false,
     isViweable: false,
-    programIds: [],
-    timestamp: '',
     updatedAt: '',
     updatedBy: '',
   }]
   // Convert Date format
   templateTypes?.forEach(templateType => {
-    templateType.timestamp = formatTimestamp(templateType.timestamp);
+    templateType.updatedAt = formatTimestamp(templateType.updatedAt);
   });
 
   // Config the lookup function for columns
@@ -96,7 +94,7 @@ const TemplateTypesTable = ({ history }: RouterProps) => {
     // { title: 'Reportable', type: 'boolean', field: 'isReportable' },
     {
       title: 'Modified On',
-      field: 'timestamp',
+      field: 'updatedAt',
       editComponent: props => {
         return <div></div>;
       },
@@ -132,7 +130,7 @@ const TemplateTypesTable = ({ history }: RouterProps) => {
   // Record user and time when an action occurs 
   function recordUpdate(templateType: TemplateTypeMT) {
     templateType.updatedBy = localStorage.getItem('currentUser') || '';
-    templateType.timestamp = new Date().toLocaleString(); 
+    templateType.updatedAt = new Date().toLocaleString(); 
   }
   // Prepare the editing functionalities for the material table
   const editable = useMemo(

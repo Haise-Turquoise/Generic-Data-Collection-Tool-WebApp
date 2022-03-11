@@ -11,8 +11,9 @@ export default interface TemplatePackage {
   userCreatorId: ObjectId;
   programIds: ObjectId[];
   forPackage: boolean;
-  timestamp: Date;
+  updatedAt: Date;
   updatedBy: string;
+  deadline: string;
 }
 
 export interface TemplatePackageDoc extends TemplatePackage, Document {

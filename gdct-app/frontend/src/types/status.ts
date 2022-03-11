@@ -3,9 +3,8 @@ export default interface Status {
   name: string;
   description: string;
   isActive: boolean;
-  updatedAt: string;
   forPackage: boolean;
   order?: number;
-  timestamp: string;
+  updatedAt: string;
   updatedBy: string;
 }

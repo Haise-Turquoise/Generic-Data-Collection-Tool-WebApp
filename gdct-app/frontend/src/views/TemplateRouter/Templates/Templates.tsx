@@ -34,7 +34,7 @@ import { getWorkflowProcessesRequest } from '../../../store/thunks/workflow';
 import { selectWorkflowProcessesStore } from '../../../store/WorkflowProcessesStore/selectors';
 import WorkflowProcessesStore from '../../../store/WorkflowProcessesStore/store';
 //@ts-ignore
-import { calculateOptions } from '../../../tools/misc';
+import { calculateOptions, checkDuplicates, formatTimestamp } from '../../../tools/misc';
 import { RouterProps } from 'react-router';
 import WorkflowProcess from '../../../types/workflowprocess';
 import Template from '../../../types/template';
@@ -77,7 +77,6 @@ const TemplatesTable = ({ history }: RouterProps) => {
   useEffect(()=>{
     // console.log('lookupTemplateTypes', lookupTemplateTypes)
     const keys = Object.keys(lookupTemplateTypes);
-    console.log('keys', keys)
     const nameArray: string[] = [];
 
     keys.forEach(key=>{
@@ -116,7 +115,8 @@ const TemplatesTable = ({ history }: RouterProps) => {
   console.log(readIndexName)
   const columns = useMemo(
     () => [
-      { title: 'Name', field: 'name' },
+      //@ts-ignore
+      { title: 'Name', field: 'name', validate: rowData => checkDuplicates(rowData, readTemplate, 'name')},
       {
         title: 'Template Type ID',
         field: 'templateTypeId',
@@ -125,15 +125,18 @@ const TemplatesTable = ({ history }: RouterProps) => {
       {
         title: 'Creation Date',
         // type: 'date',
-        field: 'timestamp',
+        field: 'createdAt',
+        editComponent: (props: any) => {
+          return <div></div>;
+        },
         // editable: 'onAdd',
         // initialEditValue: new Date(),
       },
-      { title: 'Expiration Date', type: 'date', field: 'expirationDate' },
+      { title: 'Expiration Date', field: 'expirationDate' },
       { title: 'Workflow', field: 'workflowProcessId', lookup: lookupProcesses, editable: 'never' },
       {
         title: 'Modified On',
-        field: 'timestamp',
+        field: 'updatedAt',
         editComponent: (props: any) => {
           return <div></div>;
         },
@@ -143,7 +146,7 @@ const TemplatesTable = ({ history }: RouterProps) => {
       {
         title: 'Updated By',
         field: 'updatedBy',
-        editComponent: props => {
+        editComponent: (props: any) => {
           return <div></div>;
         },
       },
@@ -174,7 +177,7 @@ const TemplatesTable = ({ history }: RouterProps) => {
           template.updatedBy = localStorage.getItem('currentUser') || '';
           // record new date and time in Modified On column
           const event = new Date();
-          template.timestamp = event.toLocaleString(); 
+          template.updatedAt = event.toLocaleString(); 
           const convertedTemplate = Object.assign({}, template);
           convertedTemplate.templateTypeId = (readIndex && readIndex[template.templateTypeId]) || '';
           dispatch(createTemplateRequest(convertedTemplate, resolve, reject));
@@ -185,7 +188,7 @@ const TemplatesTable = ({ history }: RouterProps) => {
           template.updatedBy = localStorage.getItem('currentUser') || '';
           // record new date and time in Modified On column
           const event = new Date();
-          template.timestamp = event.toLocaleString();
+          template.updatedAt = event.toLocaleString();
           delete template.templateData;
           const convertedTemplate = Object.assign({}, template);
           convertedTemplate.templateTypeId = (readIndex && readIndex[template.templateTypeId]) || '';
@@ -197,7 +200,7 @@ const TemplatesTable = ({ history }: RouterProps) => {
           template.updatedBy = localStorage.getItem('currentUser') || '';
           // record new date and time in Modified On column
           const event = new Date();
-          template.timestamp = event.toLocaleString(); 
+          template.updatedAt = event.toLocaleString(); 
           const convertedTemplate = Object.assign({}, template);
           convertedTemplate.templateTypeId = (readIndex && readIndex[template.templateTypeId]) || '';
           dispatch(deleteTemplateRequest(convertedTemplate._id, resolve, reject));
@@ -207,14 +210,11 @@ const TemplatesTable = ({ history }: RouterProps) => {
   );
 
   // Convert Date format
-  templates.forEach(templates => {
-    if (templates.timestamp != null) {
-      const event = new Date(templates.timestamp.toString());
-      templates.timestamp = event.toLocaleString();
-    } else {
-      const event = new Date('2021-02-16T03:59:32.015Z');
-      templates.timestamp = event.toLocaleString();
-    }
+  templates.forEach(template => {
+    console.log(template)
+    template.createdAt = formatTimestamp(template.createdAt)
+    template.updatedAt = formatTimestamp(template.updatedAt)
+    template.expirationDate = formatTimestamp(template.expirationDate)
   });
 
   useEffect(() => {
@@ -232,7 +232,6 @@ const TemplatesTable = ({ history }: RouterProps) => {
   useEffect(() => {
     setRowNum(templates.length);
   }, [templates]);
-  console.log('readTemplate', readTemplate)
   return (
     // @ts-ignore
     <MaterialTable

@@ -3,7 +3,7 @@ import { TemplateDoc } from "../../types/template";
 
 // It's possible that we can extend an object for all entity classes
 export default class TemplateEntity {
-  public _id: ObjectId;
+  public _id: ObjectId | undefined;
   public name: string;
   public templateData: any[];
   public templateTypeId: ObjectId;
@@ -11,8 +11,9 @@ export default class TemplateEntity {
   public creationDate: Date;
   public expirationDate: Date;
   public workflowProcessId: ObjectId;
-  public timestamp: Date;
+  public updatedAt: Date;
   public updatedBy: string;
+  public createdAt: Date;
 
   constructor({
     _id,
@@ -23,8 +24,9 @@ export default class TemplateEntity {
     creationDate,
     expirationDate,
     workflowProcessId,
-    timestamp,
+    updatedAt,
     updatedBy,
+    createdAt,
   }: TemplateDoc) {
     this._id = _id;
     this.name = name;
@@ -34,7 +36,8 @@ export default class TemplateEntity {
     this.creationDate = creationDate;
     this.expirationDate = expirationDate;
     this.workflowProcessId = workflowProcessId;
-    this.timestamp = timestamp;
+    this.updatedAt = updatedAt;
     this.updatedBy = updatedBy;
+    this.createdAt = createdAt;
   }
 }

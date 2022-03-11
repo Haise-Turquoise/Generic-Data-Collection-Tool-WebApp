@@ -14,6 +14,7 @@ import {
 import statusController from '../../controllers/status';
 import CreateAuditLog from '../AuditLog_Global';
 import Status from '../../types/status';
+import Checkbox from '@material-ui/core/Checkbox';
 
 interface StatusMT extends Status {
   tableData?: any;
@@ -42,15 +43,14 @@ const StatusesTable = () => {
     _id: '',
     description: '',
     isActive: true,
-    updatedAt: '',
     forPackage: true,
-    timestamp: '',
+    updatedAt: '',
     updatedBy: '',
   }]
   
   // Convert Date format
   statuses?.forEach((status: Status) => {
-    status.timestamp = formatTimestamp(status.timestamp);
+    status.updatedAt = formatTimestamp(status.updatedAt);
   });
 
   // Prepare the columns for material table
@@ -58,11 +58,24 @@ const StatusesTable = () => {
     () => [
       { title: 'Name', field: 'name', validate: rowData => checkDuplicates(rowData, statuses, 'name') },
       { title: 'Description', field: 'description' },
-      { title: 'Active', type: 'boolean', field: 'isActive' },
-      { title: 'For Package', type: 'boolean', field: 'forPackage' },
+      { title: 'Active', type: 'boolean', field: 'isActive', initialEditValue: 'true' },
+      { title: 'For Package', type: 'boolean', field: 'forPackage', initialEditValue: 'false',
+      editComponent: (props) => (
+        <Checkbox
+          checked={props.value === 'true'}
+          onChange={e => {
+            console.log(props.value)
+            if (props.value === 'true'){
+              props.onChange('false')
+            } else {
+              props.onChange('true')
+            }
+          }}
+        />
+      )},
       {
         title: 'Modified On',
-        field: 'timestamp',
+        field: 'updatedAt',
         editComponent: () => {
           return <div></div>;
         },
@@ -85,7 +98,7 @@ const StatusesTable = () => {
     //get username and record in Modified By column
     status.updatedBy = localStorage.getItem('currentUser') || '';
     //record new date and time in Modified On column
-    status.timestamp = new Date().toLocaleString();
+    status.updatedAt = new Date().toLocaleString();
   }
   // Prepare the editing functionalities for the material table
   const editable = useMemo(

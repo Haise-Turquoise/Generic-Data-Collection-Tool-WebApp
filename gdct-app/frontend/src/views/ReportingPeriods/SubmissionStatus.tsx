@@ -13,7 +13,7 @@ import {
 import ErrorBanner from '../ErrorBanner';
 import SubmissionStatusController from '../../controllers/SubmissionStatus';
 import SubmissionNoteController from '../../controllers/submissionNote'
-import SubmissionStatus from '../../types/packagestatus';
+import SubmissionStatus from '../../types/submissionstatus';
 import SubmissionNote from '../../types/submissionnote';
 
 const SubmissionStatusHeader = () => {
@@ -60,7 +60,7 @@ const SubmissionStatusTable = () => {
 
   useEffect(() => {
     SubmissionStatusController.fetch().then((res: unknown) => {
-      if (!res) {
+      if (!res || !Array.isArray(res)) {
         setStatus('NOT ALLOWED')
         return
       }
@@ -106,6 +106,9 @@ const SubmissionStatusTable = () => {
       templateType: {
         name: ''
       },
+      reportingPeriod: {
+        submissionClosed: false,
+      }
     },
   ];
 
@@ -125,6 +128,8 @@ const SubmissionStatusTable = () => {
       { title: 'Organization', field: 'org.name' },
       { title: 'Submission', field: 'submission.name' },
       { title: 'Status', field: 'status.name', lookup: statusLookup },
+      { title: 'isOpen', field: 'reportingPeriod.submissionClosed', lookup: {false: 'Open', true: 'Closed'}},
+
       { title: 'Updated At', field: 'submissionNote.updatedDate' },
     ],
     [],

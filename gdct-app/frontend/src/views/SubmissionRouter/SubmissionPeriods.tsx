@@ -32,6 +32,7 @@ import {
   controllerDeleteRow,
   formatTimestamp,
   fetchWithStatus,
+  checkDuplicates,
   //@ts-ignore
 } from '../../tools/misc'
 //@ts-ignore
@@ -112,6 +113,7 @@ const SubmissionPeriod = () => {
         modifiedSubmissionPeriods.push(modifiedSubmissionPeriod);
       });
       setModifiedSubmissionPeriod(modifiedSubmissionPeriods);
+      console.log(readsubmissionPeriods)
       setIndex(IndexToId);
       setIndexName(IndexToName);
       
@@ -123,12 +125,12 @@ const SubmissionPeriod = () => {
   
   // Convert Date format
   submissionPeriods?.forEach(submissionPeriod => {
-    submissionPeriod.timestamp = formatTimestamp(submissionPeriod.timestamp);
+    submissionPeriod.updatedAt = formatTimestamp(submissionPeriod.updatedAt);
   });
 
   const columns: Column<SubmissionPeriod>[] = useMemo(
     () => [
-      { title: 'Name', field: 'name' },
+      { title: 'Name', field: 'name', validate: rowData => checkDuplicates(rowData, readsubmissionPeriods, 'name')},
       { title: 'Start Date', type: 'date', field: 'startDate' },
       { title: 'End Date', type: 'date', field: 'endDate' },
       {
@@ -138,7 +140,7 @@ const SubmissionPeriod = () => {
       },
       {
         title: 'Modified On',
-        field: 'timestamp',
+        field: 'updatedAt',
         editComponent: () => {
           return <div></div>;
         },
@@ -159,7 +161,7 @@ const SubmissionPeriod = () => {
     //get username and record in Modified By column
     submissionPeriod.updatedBy = localStorage.getItem('currentUser');
     // record new date and time in Modified On column
-    submissionPeriod.timestamp = new Date().toLocaleString();
+    submissionPeriod.updatedAt = new Date().toLocaleString();
   }
 
   const options: Options<SubmissionPeriod> = useMemo(() => calculateOptions(readRowNum), [readRowNum]);

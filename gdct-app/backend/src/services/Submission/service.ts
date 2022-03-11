@@ -21,7 +21,7 @@ import {ObjectId} from 'mongodb';
 import User ,{UserDoc} from '../../types/user'
 import Program, {ProgramDoc} from '../../types/program';
 import TemplatePackage from '../../types/templatepackage';
-import Submission from '../../types/submission';
+import Submission, { SubmissionPopulated } from '../../types/submission';
 import SubmissionNote from '../../types/submissionnote';
 import SubmissionPeriod from '../../types/submissionperiod';
 import Status from '../../types/status';
@@ -29,6 +29,7 @@ import WorkflowProcess from '../../types/workflowprocess';
 import TemplateType from '../../types/templatetype';
 import Template from '../../types/template';
 import AppError from '../../utils/AppError';
+import RoleWorkflowStatusRepository from '../../repositories/RoleWorkflowStatus/repository';
 // @Service()
 export default class SubmissionService {
   private submissionRepository:SubmissionRepository;
@@ -44,6 +45,7 @@ export default class SubmissionService {
   private submissionPeriodRepository : SubmissionPeriodRepository;
   private usersRepository : UsersRepository;
   private reportingPeriodRepository : ReportingPeriodRepository;
+  private roleWorkflowStatusRepository: RoleWorkflowStatusRepository;
   
   constructor() {
     this.submissionRepository = Container.get(SubmissionRepository);
@@ -59,6 +61,7 @@ export default class SubmissionService {
     this.submissionPeriodRepository = Container.get(SubmissionPeriodRepository);
     this.usersRepository = Container.get(UsersRepository);
     this.reportingPeriodRepository = Container.get(ReportingPeriodRepository);
+    this.roleWorkflowStatusRepository = Container.get(RoleWorkflowStatusRepository);
     // this.submissionPeriodRepository = Container.get(SubmissionPeriodRepository);
   }
 
@@ -82,6 +85,8 @@ export default class SubmissionService {
   //   });
   //   console.log('permission', permission)
   // }
+
+
   async checkUserRole(userInfo:User, submission:Submission, permission:string[]){
     for (const sysRole of userInfo.sysRole){
       for(const org of sysRole.org){
@@ -98,8 +103,49 @@ export default class SubmissionService {
     }
   }
 
+  
+
   async findQuery(query: Partial<Submission>) {
     return await this.submissionRepository.findQuery(query)
+  }
+
+  async findByRole(role: {orgId: string, progId: string, tempTypeId: string, role: string}) {
+    //@ts-ignore
+    let submissions: SubmissionPopulated[] = await this.submissionRepository.findQueryPopulate({ orgId: +role.orgId, programId: role.progId })
+    // determine acceptable statuses
+    const statuses: string[] = (await this.roleWorkflowStatusRepository.findByRole(role.role))?.workflowStatus || []
+    const statusIds: string[] = []
+    for (let status of statuses) {
+      const stat = await this.statusRepository.findByName(status)
+      if (stat && stat.length > 0) {
+        statusIds.push(stat[0]._id.toString())
+      }
+      // console.log('statuses', statusIds)
+    }
+    const flaggedIndicies: number[] = [] // indicies flagged for deleting
+
+    for (let i = 0; i < submissions.length; i++) {
+      // workflow processes this user can see, depends on submission workflow
+      const workflows: WorkflowProcess[] = await this.workflowProcessRepository.findNeighbors(submissions[i].workflowId.toString(), statusIds.map(id => id.toString()))
+      // from available processes -> available statuses
+      const statusRes = []
+      for (let workflowProcess of workflows) {
+        const stat = await this.statusRepository.findById(workflowProcess.statusId)
+        if (stat) {
+          statusRes.push(stat.name)
+        }
+      }
+      const tempTypeId = (await this.templateRepository.findById(submissions[i].templateId)).templateTypeId
+      if (tempTypeId.toString() !== role.tempTypeId.toString() || !statusRes.includes(submissions[i].statusId.name)) {
+        flaggedIndicies.push(i)
+      }
+    }
+    submissions = submissions.filter((_sub, index) => !flaggedIndicies.includes(index))
+    return submissions
+  }
+
+  async createSubmissions(submissions: Submission[]) {
+    this.submissionRepository.createMany(submissions)
   }
 
   async findReportingPeriod(_id:string){
@@ -244,7 +290,7 @@ export default class SubmissionService {
   }
 
   async updateSubmission(submission:Submission) {
-    return this.submissionRepository.update(submission._id.toString(), submission).then(submission => {
+    return this.submissionRepository.update(submission._id!.toString(), submission).then(submission => {
       //@ts-ignore
       if (submission.phase === 'Approved') return this.phaseSubmission(String(submission._id));
     });
@@ -253,7 +299,6 @@ export default class SubmissionService {
 
   
   async updateStatus(submission:Submission, submissionNote:SubmissionNote, role:string, nextProcessId:string, updatedBy:string) {
-    
     const submissionNotes :any= {
       note: submissionNote,
       submissionId: submission._id,
@@ -292,8 +337,8 @@ export default class SubmissionService {
       submission.version += 1;
       submission.isLatest = true;
       submission.parentId = submission.parentId ? submission.parentId : submission._id;
-      const oldSubmissionId = submission._id.toString();
-      await this.submissionRepository.findAndSetFalse(submission._id);
+      const oldSubmissionId = submission._id!.toString();
+      await this.submissionRepository.findAndSetFalse(submission._id!);
       //@ts-ignore
       delete submission._id;
       const newSubmission = await this.submissionRepository.create(submission);
@@ -314,7 +359,7 @@ export default class SubmissionService {
 
     submission.isLatest = true;
 
-    const newSubmission = await this.submissionRepository.update(submission._id.toString(), submission);
+    const newSubmission = await this.submissionRepository.update(submission._id!.toString(), submission);
     //@ts-ignore
     if (role === 'Approved') this.phaseSubmission(newSubmission._id);
 
@@ -355,6 +400,7 @@ export default class SubmissionService {
       program2TypesMap.set(String(e.program), e.templateTypes.map(type=>String(type.templateTypeId)))
     })
     const packages:any[] = await this.templatePackageRepository
+    //@ts-ignore
     .retrieveFullPkgInfoByProgramId(programAndTempTypes.map(e=>e.program));
 
     console.log(program2TypesMap);

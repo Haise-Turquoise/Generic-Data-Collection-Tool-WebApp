@@ -86,12 +86,12 @@ const COAsTable = () => {
     id: '',
     COA: '',
     unitOfMeasure: '',
-    timestamp: '', 
+    updatedAt: '', 
   }]
 
   // Convert Date format
   COAs?.forEach((COA: Category) => {
-    COA.timestamp = formatTimestamp(COA.timestamp);
+    COA.updatedAt = formatTimestamp(COA.updatedAt);
   });
 
   // Prepare the columns for material table
@@ -102,7 +102,7 @@ const COAsTable = () => {
       { title: 'OHFS Mapping', field: 'COA' },
       {
         title: 'Modified On',
-        field: 'timestamp',
+        field: 'updatedAt',
         editComponent: () => {
           return <div></div>;
         },
@@ -123,7 +123,7 @@ const COAsTable = () => {
   // Record user and time when an action occurs 
   function recordUpdate(COA: Category) {
     COA.updatedBy = localStorage.getItem('currentUser') || '';
-    COA.timestamp = new Date().toLocaleString(); 
+    COA.updatedAt = new Date().toLocaleString(); 
   }
   const editable = useMemo(
     () => ({

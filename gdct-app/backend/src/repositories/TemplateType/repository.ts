@@ -4,7 +4,7 @@ import BaseRepository from '../repository';
 import TemplateTypeModel from '../../models/TemplateType/model';
 import ProgramRepository from '../Program';
 import {ObjectId} from 'mongodb';
-import {FilterQuery } from 'mongoose';
+import {FilterQuery, Types } from 'mongoose';
 import TemplateType, { TemplateTypeDoc } from '../../types/templatetype';
 import AppError from '../../utils/AppError';
 
@@ -22,7 +22,7 @@ export default class TemplateTypeRepository extends BaseRepository<TemplateType,
     description,
     templateWorkflowId,
     submissionWorkflowId,
-    programIds,
+    programId,
     isApprovable,
     isReviewable,
     isSubmittable,
@@ -30,18 +30,18 @@ export default class TemplateTypeRepository extends BaseRepository<TemplateType,
     isViewable,
     isReportable,
     isActive,
-    timestamp,
+    updatedAt,
     updatedBy,
   }: TemplateType) {
     return this.programRepository
-      .validateMany(programIds)
+      .validateMany(programId)
       .then(() =>
         TemplateTypeModel.create({
           name,
           description,
           templateWorkflowId,
           submissionWorkflowId,
-          programIds,
+          programId,
           isApprovable,
           isReviewable,
           isSubmittable,
@@ -49,21 +49,26 @@ export default class TemplateTypeRepository extends BaseRepository<TemplateType,
           isViewable,
           isReportable,
           isActive,
-          timestamp,
+          updatedAt,
           updatedBy,
         }),
       )
       .then(templateType => new TemplateTypeEntity(templateType));
   }
 
-  async findByProgramIds(programIds: ObjectId[]) {
+  async findByProgramIds(programIds: string[]) {
     // @ts-ignore
-    return TemplateTypeModel.find({ programIds: { $in: programIds } });
+    if (programIds){
+      let objectIdArray = programIds.map(s => Types.ObjectId(s));
+      return TemplateTypeModel.find({ programId: { $in: objectIdArray } });
+    }
+    // return TemplateTypeModel.find({ programId: { $in: programIds } });
+    return;
   }
 
   async update(id: string, templateType: Partial<TemplateType>) {
     return this.programRepository
-      .validateMany(templateType.programIds || [])
+      .validateMany(templateType.programId || [])
       .then(() => TemplateTypeModel.findByIdAndUpdate(id, templateType))
       .then((templateType:TemplateTypeDoc|null) => {
         if(!templateType) throw new AppError(`Update failed, Item not found for TemplateType item with ID: ${id}`)

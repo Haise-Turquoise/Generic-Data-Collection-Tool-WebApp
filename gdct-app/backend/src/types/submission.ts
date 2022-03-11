@@ -1,7 +1,41 @@
 import { ObjectId } from 'mongodb';
 import { Document } from 'mongoose';
+import Status from './status';
+import SubmissionPeriod from './submissionperiod';
+import WorkflowProcess from './workflowprocess';
 
 export default interface Submission {
+  _id?: ObjectId;
+  templateId: ObjectId;
+  templatePackageId: ObjectId;
+  name: string;
+  orgId: number;
+  programId: ObjectId;
+  submittedDate: Date | null;
+  workbookData: any;
+  templateName: string;
+  approved: string;
+  workflowProcessId: ObjectId|null;
+  workflowId: ObjectId;
+  statusId: ObjectId;
+  year?: string;
+  submissionPeriodId: ObjectId;
+  createdAt: Date;
+  updatedAt: Date;
+  updatedBy: ObjectId;
+  isPublished: boolean;
+  version: number;
+  isLatest: boolean;
+  approver:string;
+  _doc?:any;
+  parentId?: ObjectId;
+  updatedDate:Date;
+}
+
+export interface SubmissionPopulated {
+  statusId: Status,
+  workflowProcessId: WorkflowProcess,
+  submissionPeriodId: SubmissionPeriod,
   _id: ObjectId;
   templateId: ObjectId;
   templatePackageId: ObjectId;
@@ -12,11 +46,8 @@ export default interface Submission {
   workbookData: any;
   templateName: string;
   approved: string;
-  workflowProcessId: ObjectId|null;
   workflowId: ObjectId;
-  statusId: ObjectId;
   year: string;
-  submissionPeriodId: ObjectId;
   createdAt: Date;
   updatedAt: Date;
   updatedBy: ObjectId;

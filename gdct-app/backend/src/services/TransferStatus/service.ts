@@ -2,45 +2,52 @@ import Container from 'typedi';
 import TransferStatusRepository from '../../repositories/TransferStatus'
 import startTransfer from '../../mongoToSql'
 
-// @Service()
-class TemplateTypeService {
+// Singlton service
+class TransferStatusService {
   private transferStatusRepository: TransferStatusRepository;
-  private currentTimer: null | NodeJS.Timeout;
+  private static currentTimer: null | NodeJS.Timeout = null;
   constructor() {
     this.transferStatusRepository = Container.get(TransferStatusRepository);
-    this.currentTimer = null;
   }
 
-  async startTransferProccess(time: number){
-    if (time <= 0) throw new Error("Cannot set transfer to less or equal to 0 minutes")
-    const millis = time*1000*60;
+  static getCurrentTimer(){
+    return this.currentTimer;
+  }
 
+  static setCurrentTimer(newTimerObject:NodeJS.Timeout){
     if (this.currentTimer){
-      console.log('test 1')
       clearInterval(this.currentTimer);
     }
+    this.currentTimer = newTimerObject;
+  }
 
-    console.log('Test point 3') 
-    const newTimer = startTransfer(millis);
-    this.currentTimer = newTimer;
-    console.log('Test point 4')
+  static clearCurrentTimer(){
+    if (this.currentTimer){
+      clearInterval(this.currentTimer);
+      this.currentTimer = null;
+    }
+  }
+
+
+  async startTransferProccess(time: number){
+    if (time <= 1) throw new Error("Cannot set transfer to less or equal to 1 minutes")
+    const minutes = time*1000*60;
+
+    const newTimer = startTransfer(minutes);
+    TransferStatusService.setCurrentTimer(newTimer);
     return this.transferStatusRepository.updateTimerID(time, true)
     .catch(err=>{
-      if (this.currentTimer) {
-        clearInterval(this.currentTimer);
-      }
-      this.currentTimer = null;
+     TransferStatusService.clearCurrentTimer();
     })
   }
 
   async getTransferStatus(){
-    console.log('I ran')
     return this.transferStatusRepository.findTransferStatus();
   }
 
   async closeCurrentTransferProcess(){
-    if (this.currentTimer){
-      clearInterval(this.currentTimer);
+    if (TransferStatusService.getCurrentTimer()){
+      TransferStatusService.clearCurrentTimer();
       // TODO double check this
       return this.transferStatusRepository.updateTimerID(0, false);
     }
@@ -48,4 +55,4 @@ class TemplateTypeService {
   }
 }
 
-export default TemplateTypeService;
+export default TransferStatusService;

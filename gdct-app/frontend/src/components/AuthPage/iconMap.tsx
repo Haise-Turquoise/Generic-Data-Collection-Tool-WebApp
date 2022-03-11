@@ -34,32 +34,39 @@ import CallSplitIcon from '@material-ui/icons/CallSplit';
 import InboxIcon from '@material-ui/icons/Inbox';
 import DnsIcon from '@material-ui/icons/Dns';
 import ScatterPlotIcon from '@material-ui/icons/ScatterPlot';
-import EnhancedEncryptionIcon from '@material-ui/icons/EnhancedEncryption';
-import SettingsApplicationsIcon from '@material-ui/icons/SettingsApplications';
 import NatureIcon from '@material-ui/icons/Nature';
+import MultilineChartIcon from '@material-ui/icons/MultilineChart';
+import WifiOffIcon from '@material-ui/icons/WifiOff';
+import QueryBuilderIcon from '@material-ui/icons/QueryBuilder';
+import LockIcon from '@material-ui/icons/Lock';
+import PermIdentityIcon from '@material-ui/icons/PermIdentity';
 import {SvgIconProps} from '@material-ui/core';
+import CheckBoxTwoToneIcon from '@material-ui/icons/CheckBoxTwoTone';
 // Universal Style
 const MenuItemStyle = { fontSize: '1.2rem', marginLeft: '1.2rem' };
 const SubMenuItemStyle = { fontSize: '1.2rem', marginLeft: '2rem' };
 
-// The only source for icons: https://material-ui.com/components/material-icons/
+// The only source for icons: https://v4.mui.com/components/material-icons/
 // To modify any of the icons, please directly reference its literal name string in the menu (if their strings does not match exactly, icons will not appear).
 // To add icons, please add their url reference directly into the menuitem collection in the database.
 const ItemMap :{[key:string]:React.ReactElement<SvgIconProps>} =  {
   // Main Menu Submission
   'Submission': <SendIcon />,
   'Dashboard': <SendIcon style={MenuItemStyle} />,
+  
   // Main Menu User
   'User': <AccountCircleIcon />,
   'Profile': <AccountCircleIcon style={MenuItemStyle} />,
-  'Submission Permissions': <EnhancedEncryptionIcon style={SubMenuItemStyle} />,
-  'Personal Details': <SettingsApplicationsIcon style={SubMenuItemStyle} />,
+  'Submission Permissions': <LockIcon style={SubMenuItemStyle} />,
+  'Personal Details': <PermIdentityIcon style={SubMenuItemStyle} />,
   'Request Management': <AccountCircleIcon style={MenuItemStyle} />,
-
   'Logout': <ExitToAppIcon style={MenuItemStyle} />,
+
   // Main Menu Report
   'Report': <ReportIcon />,
   'Reports': <ReportIcon style={MenuItemStyle} />,
+  'Submission Status': <MultilineChartIcon style={MenuItemStyle} />,
+
   // Main Menu Template Design
   'Template Design': <FileCopyIcon style={{ fontSize: '1.4rem', marginTop: '0.1rem' }} />,
   'Template Designs': (
@@ -80,6 +87,8 @@ const ItemMap :{[key:string]:React.ReactElement<SvgIconProps>} =  {
   'Template': <TableChartIcon style={MenuItemStyle} />,
   'Template Type': <InboxIcon style={SubMenuItemStyle} />,
   'Template Package': <AllInboxIcon style={SubMenuItemStyle} />,
+  'Offline Tool': <WifiOffIcon style={SubMenuItemStyle} />,
+  'Unit Of Measure': <CheckBoxTwoToneIcon style={SubMenuItemStyle} />,
 
   // Admin Organization
   'Organization': <AccountBalance style={MenuItemStyle} />,
@@ -103,7 +112,7 @@ const ItemMap :{[key:string]:React.ReactElement<SvgIconProps>} =  {
   'Application Role Workflow Management': <GroupWorkIcon style={SubMenuItemStyle} />,
   
   // Admin Configuration
-  'Configuration': <BuildIcon style={MenuItemStyle} />,
+  'Application Configuration': <BuildIcon style={MenuItemStyle} />,
 
   // Admin User Management
   'User Management': <PeopleAltIcon style={MenuItemStyle} />,
@@ -131,6 +140,9 @@ const ItemMap :{[key:string]:React.ReactElement<SvgIconProps>} =  {
 
   // Admin Auditlog
   'AuditLog': <SubjectIcon style={MenuItemStyle} />,
+
+  // Admin ETL
+  'ETL': <QueryBuilderIcon style={MenuItemStyle} />,
 
   // UNKNOWN
   'Download': <CloudDownloadIcon style={MenuItemStyle} />,

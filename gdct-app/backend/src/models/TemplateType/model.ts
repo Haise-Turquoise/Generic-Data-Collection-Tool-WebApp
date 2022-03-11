@@ -9,7 +9,7 @@ const TemplateType = new Schema<TemplateTypeDoc>(
     description: { type: String },
     templateWorkflowId: { type: ObjectId, ref: 'Workflow' },
     submissionWorkflowId: { type: ObjectId, ref: 'Workflow' },
-    programIds: [{ type: ObjectId, ref: 'Program' }],
+    programId: [{ type: ObjectId, ref: 'Program' }],
     isApprovable: { type: Boolean },
     isReviewable: { type: Boolean },
     isSubmittable: { type: Boolean },
@@ -23,10 +23,6 @@ const TemplateType = new Schema<TemplateTypeDoc>(
   { minimize: false, timestamps: true },
 )
 
-TemplateType.pre(/^find/, function (this: Model<TemplateTypeDoc>, next: (err: CallbackError) => void) {
-  this.find({ isActive: { $ne: false } });
-  next(null);
-});
 
 const TemplateTypeModel = model<TemplateTypeDoc>('TemplateType', TemplateType, 'TemplateType');
 

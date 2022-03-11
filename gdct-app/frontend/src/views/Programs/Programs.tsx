@@ -3,6 +3,7 @@ import React, { useMemo, useEffect, useState } from 'react';
 import MaterialTable, { Column, Options } from 'material-table';
 import { Paper, Typography } from '@material-ui/core';
 import { selectProgramsStore } from '../../store/ProgramsStore/selectors';
+import Swal, { SweetAlertResult } from 'sweetalert2';
 import {
   calculateOptions,
   checkDuplicates,
@@ -49,13 +50,12 @@ const ProgramsTable = () => {
       isActive: true,
       updatedAt: '',
       updatedBy: '',
-      timestamp: '',
     },
   ];
 
   // Convert Date format
   programs?.forEach((program: Program) => {
-    program.timestamp = formatTimestamp(program.timestamp);
+    program.updatedAt = formatTimestamp(program.updatedAt);
   });
 
   // Prepare the columns for material table
@@ -69,7 +69,7 @@ const ProgramsTable = () => {
       },
       {
         title: 'Modified On',
-        field: 'timestamp',
+        field: 'updatedAt',
         editComponent: () => {
           return <div></div>;
         },
@@ -93,7 +93,7 @@ const ProgramsTable = () => {
     //get username and record in Modified By column
     program.updatedBy = localStorage.getItem('currentUser') || '';
     //record new date and time in Modified On column
-    program.timestamp = new Date().toLocaleString();
+    program.updatedAt = new Date().toLocaleString();
   }
   // Prepare the editing functionalities for the material table
   const editable = useMemo(
@@ -141,9 +141,27 @@ const ProgramsTable = () => {
           CreateAuditLog(null, "Delete Program", "Program", program._id, program_trim, {});
           controllerDeleteRow(ProgramController, setPrograms, program._id)
             .then((res: boolean) => {
+              console.log("res : "  + res);
               if (res) {
+                
                 resolve(res)
               }
+              else{
+
+                Swal.fire({
+                  title: 'Warning!',
+                  text:
+                    'Connot delete program',
+                  icon: 'error',
+                  confirmButtonColor: '#3085d6',
+                  confirmButtonText: 'OK',
+                }).then((result:SweetAlertResult<any>) => {
+                  if (result.isConfirmed) {
+                    window.location.reload();
+                  }
+                });
+              }
+              
               reject()
             })
         }),

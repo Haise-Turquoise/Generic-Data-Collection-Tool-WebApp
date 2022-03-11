@@ -9,7 +9,7 @@ import { selectFactoryRESTError } from '../../store/common/REST/selectors';
 import { selectColumnNamesStore } from '../../store/ColumnNamesStore/selectors';
 import CreateAuditLog from '../AuditLog_Global';
 import columnNameController from '../../controllers/columnName';
-import { checkDuplicates, controllerAddRow, controllerEditRow, controllerDeleteRow, formatTimestamp, fetchWithStatus } from '../../tools/misc'
+import { checkDuplicates, controllerAddRow, controllerEditRow, controllerDeleteRow, formatTimestamp, fetchWithStatus,calculateOptions} from '../../tools/misc'
 
 import Attribute from '../../types/attrubute';
 
@@ -86,12 +86,12 @@ const ColumnNamesTable = () => {
     name: status,
     _id: '',
     id: '',
-    timestamp: '',
+    updatedAt: '',
   }]
 
   // Convert Date format
   columnNames?.forEach((columnName: Attribute) => {
-    columnName.timestamp = formatTimestamp(columnName.timestamp);
+    columnName.updatedAt = formatTimestamp(columnName.updatedAt);
   });
 
   // Prepare the columns for material table
@@ -103,7 +103,7 @@ const ColumnNamesTable = () => {
       { title: 'Active', type: 'boolean', field: 'isActive' },
       {
         title: 'Modified On',
-        field: 'timestamp',
+        field: 'updatedAt',
         editComponent: () => {
           return <div></div>;
         },
@@ -119,22 +119,12 @@ const ColumnNamesTable = () => {
     [columnNames],
   );
   
-  const options: Options<Attribute> = useMemo(
-    () => (
-      {
-        actionsColumnIndex: -1,
-        search: true,
-        showTitle: false,
-        addRowPosition: "first",
-      }
-    ), 
-    []
-  );
+  const options = useMemo(() => calculateOptions(readRowNum), [readRowNum]);
 
   // Record user and time when an action occurs 
   function recordUpdate(columnName: Attribute) {
     columnName.updatedBy = localStorage.getItem('currentUser') || '';
-    columnName.timestamp = new Date().toLocaleString(); 
+    columnName.updatedAt = new Date().toLocaleString(); 
   }
   const editable = useMemo(
     () => ({

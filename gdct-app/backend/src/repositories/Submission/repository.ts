@@ -25,6 +25,10 @@ export default class SubmissionRepository extends BaseRepository<Submission, Sub
     );
   }
 
+  async createMany(submissions: Submission[]) {
+    return SubmissionModel.create(...submissions).then(res => res);
+  }
+
   async update(id: string, submission: Partial<Submission>) {
     return SubmissionModel.findByIdAndUpdate(id, submission)
     .then((submission: SubmissionDoc|null) => {
@@ -165,5 +169,15 @@ export default class SubmissionRepository extends BaseRepository<Submission, Sub
 
   async findQuery(query: Partial<Submission>) {
     return SubmissionModel.find(query)
+  }
+
+  async findQueryPopulate(query: Partial<Submission>) {
+    return SubmissionModel.find(query)
+      .populate('statusId')
+      .populate('workflowProcessId')
+      .populate('submissionPeriodId')
+      .populate('programId')
+      .populate('updatedBy')
+      .populate('templatePackageId')
   }
 }

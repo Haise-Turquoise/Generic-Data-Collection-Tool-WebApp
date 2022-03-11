@@ -12,11 +12,6 @@ const Program = new Schema<ProgramDoc>(
   { minimize: false, timestamps: true },
 )
 
-Program.pre(/^find/, function (this: Model<ProgramDoc>, next: (err: CallbackError) => void) {
-  this.find({ isActive: { $ne: false } });
-  next(null);
-});
-
 const ProgramModel = model<ProgramDoc>('Program', Program, 'Program');
 
 export default ProgramModel;

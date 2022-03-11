@@ -94,7 +94,7 @@ const SheetNamesTable = () => {
       _id: '',
       id: 0,
       isActive: true,
-      timestamp: '',
+      updatedAt: '',
       updatedBy: '',
       templateTypeId: '',
     },
@@ -102,7 +102,7 @@ const SheetNamesTable = () => {
 
   // Convert Date format
   sheetNames?.forEach((sheetName: SheetName) => {
-    sheetName.timestamp = formatTimestamp(sheetName.timestamp);
+    sheetName.updatedAt = formatTimestamp(sheetName.updatedAt);
   });
 
   // Prepare the columns for material table
@@ -128,7 +128,7 @@ const SheetNamesTable = () => {
       { title: 'Active', field: 'isActive', type: 'boolean' },
       {
         title: 'Modified On',
-        field: 'timestamp',
+        field: 'updatedAt',
         editComponent: () => {
           return <div></div>;
         },
@@ -151,7 +151,7 @@ const SheetNamesTable = () => {
     //get username and record in Modified By column
     sheetName.updatedBy = localStorage.getItem('currentUser') || '';
     //record new date and time in Modified On column
-    sheetName.timestamp = new Date().toLocaleString();
+    sheetName.updatedAt = new Date().toLocaleString();
   };
 
   // Prepare the editing functionalities for the material table
@@ -173,7 +173,7 @@ const SheetNamesTable = () => {
           if (newSheetName) {
             CreateAuditLog(
               null,
-              "Create Sheet",
+              "Create Sheet Name",
               "SheetName",
               newSheetName._id,
               {},
@@ -189,7 +189,7 @@ const SheetNamesTable = () => {
             const oldSheetName = await sheetNameController.fetchById(sheetName._id);
             CreateAuditLog(
               null,
-              'Update Sheet',
+              'Update Sheet Name',
               'SheetName',
               oldSheetName?._id,
               oldSheetName,

@@ -45,12 +45,12 @@ const COAGroupsTable = () => {
   const preGroups: CategoryGroupMT[] = [{ 
     name: status,
     _id: '',
-    timestamp: '',
+    updatedAt: '',
   }]
 
   // Convert Date format
   COAGroups?.forEach((COAGroup: CategoryGroup) => {
-    COAGroup.timestamp = formatTimestamp(COAGroup.timestamp)
+    COAGroup.updatedAt = formatTimestamp(COAGroup.updatedAt)
   });
 
   // Prepare the columns for material table
@@ -65,7 +65,7 @@ const COAGroupsTable = () => {
       { title: 'Active', type: 'boolean', field: 'isActive' },
       {
         title: 'Modified On',
-        field: 'timestamp',
+        field: 'updatedAt',
         editComponent: () => {
           return <div></div>;
         },
@@ -81,12 +81,14 @@ const COAGroupsTable = () => {
     [COAGroups],
   );
 
+  
+
   const options: Options<CategoryGroupMT> = useMemo(() => calculateOptions(readRowNum), [readRowNum]);
   
   // Record user and time when an action occurs 
   function recordUpdate(COAGroup: CategoryGroupMT) {
     COAGroup.updatedBy = localStorage.getItem('currentUser') || '';
-    COAGroup.timestamp = new Date().toLocaleString(); 
+    COAGroup.updatedAt = new Date().toLocaleString(); 
   }
   const editable = useMemo(
     () => ({
