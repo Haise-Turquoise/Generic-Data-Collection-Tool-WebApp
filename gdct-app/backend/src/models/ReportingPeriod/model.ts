@@ -13,6 +13,7 @@ const ReportingPeriodModel = model<ReportingPeriodDoc>(
       submissionClosed: { type: Boolean },
       timestamp: { type: Date },
       updatedBy: { type: String },
+      updatedAt: { type: String },
     },
     { minimize: false },
   ),

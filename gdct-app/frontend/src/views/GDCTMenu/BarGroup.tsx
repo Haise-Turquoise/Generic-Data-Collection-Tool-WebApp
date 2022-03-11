@@ -17,7 +17,7 @@ export type BarGroupProps = {
 const BarGroupComponent =  (props:any) => {
   // bounds
 
-  const [currentPeriod, setCurrentPeriod] = useState(props.submissionData[0]._id.submissionPeriod || '');
+  //const [currentPeriod, setCurrentPeriod] = useState(props.submissionData[0]._id.submissionPeriod || '');
 
   let submissionPeriods = [];
   let dict : any = {};
@@ -36,7 +36,10 @@ const BarGroupComponent =  (props:any) => {
   }
   //sort by date, so it always will be correct
 
-  submissionPeriods = [ ... new Set(submissionPeriods)].sort(function (a: any, b: any) {return a.localeCompare(b);})
+  submissionPeriods = [ ... new Set(submissionPeriods)].sort(function (a: any, b: any) {return a.localeCompare(b);}).reverse()
+  
+  const [currentPeriod, setCurrentPeriod] = useState(submissionPeriods[0] || '');
+
   let fixedData : any = [['Template', 'Submitted', {role: 'annotation'}, 'Unsubmitted', {role: 'annotation'}]]
     .concat(dict[currentPeriod]
       .sort(function (a: any, b: any) {return a[0].localeCompare(b[0]);}));
