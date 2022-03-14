@@ -13,6 +13,7 @@ const SubmissionPeriodModel = model<SubmissionPeriodDoc>(
       endDate: { type: Date },
       timestamp: { type: Date },
       updatedBy: { type: String },
+      updatedAt: {type: String},
     },
     { minimize: false, autoIndex: true },
   ),
