@@ -13,6 +13,7 @@ import {
     Typography,
     Box,
     makeStyles,
+    Dialog,
     TextField,
     Grid
 } from '@material-ui/core';
@@ -37,42 +38,48 @@ const useStyles = makeStyles(theme => ({
 
 
 const PurgeArchive = (props: any) => {
-    const [startDate, setStartDate] = useState(new Date("2010-05-10 00:00"));
-    const [selectedDate, setSelectedDate] = useState(new Date("2010-05-10 00:00"));
     const classes = useStyles();
-    const [readRowNum, setRowNum] = useState(1);
-    const options = useMemo(() => calculateOptions(readRowNum,{search: true, showTitle: true, filtering: false}), [readRowNum]);
-
-    const [reloadNum, setReloadNum] = useState(1);
     const user = localStorage.getItem('currentUser') || '';
+
+    // States
+      // startDate is the initial date in the selector, we will grab the latest log in the purgelog and set it to startDate
+    const [startDate, setStartDate] = useState(new Date("2010-05-10 00:00"));
+      // selectedDate is the currently selected date in the selector, this will initially be the same as startDate
+    const [selectedDate, setSelectedDate] = useState(new Date("2010-05-10 00:00"));
+
+      // state used to store the purgearchive logs we get from the database
     const [purgelogs, setPurgeLogs] = useState<PurgeLog[] | undefined>(undefined);
 
-    const callMove = () => {
-      setStartDate(selectedDate)
-      AuditLogController.move(selectedDate, user).then(res=>{
-        setReloadNum(reloadNum+1)
-        AuditLogController.fetchPurge()
-        .then(res => { 
-          setPurgeLogs(res)
-        })
-       }
-      )
+      // state used to set row numbers on row entries in the purgearchivelog
+    const [readRowNum, setRowNum] = useState(1);
+      // state used to buffer the table when it is awaiting new logs from the database
+    const [isLoading, setIsLoading] = useState(false);
+    
+    const sleep = (time: number) => {
+      return new Promise(resolve => setTimeout(resolve, time));
+    };
 
-      // AuditLogController.fetchLatest()
-      // .then(res => { 
-      //   setStartDate(new Date(res.archiveMarkerDate))
-      //   setSelectedDate(new Date(res.archiveMarkerDate))
-      // })
+
+    // callmove first performs the purge and archiving using axios call (move) using parameters set by datepicker, 
+    //  then it fetches the purgelog and sets it so the user can see the updated log in real time
+    const callMove = async () => {
+      setIsLoading(true);
+      // Add a timeout to eliminate race condition between move() and fetchpurge()
+      await sleep(3000);
+      setStartDate(selectedDate)
+      try {
+        const temp = await AuditLogController.move(selectedDate, user)
+        // Add a timeout to eliminate race condition between move() and fetchpurge(), may need to adjust based on future sizes
+        await sleep(3000)
+        const resi = await AuditLogController.fetchPurge()
+        if (resi)
+          setPurgeLogs(resi.sort((a,b)=>b.purgeDate!.localeCompare(a.purgeDate!)))
+      } catch (err) {
+        console.trace(err);
+      }
+      setIsLoading(false);
 
     }
-
-    useEffect(()=> {
-      AuditLogController.fetchPurge()
-      .then(res => { 
-        setPurgeLogs(res)
-      })
-    }, [reloadNum])
-
 
     useEffect(() => {    
       AuditLogController.fetchLatest()
@@ -84,13 +91,12 @@ const PurgeArchive = (props: any) => {
       })
       AuditLogController.fetchPurge()
       .then(res => { 
-        setPurgeLogs(res)
+        if (res != null){
+          setPurgeLogs(res.sort((a,b)=>b.purgeDate!.localeCompare(a.purgeDate!)))
+        }
       })
 
     },[]);
-
-
-
     useEffect(() => {
       setRowNum(purgelogs?.length || 0)
       purgelogs?.forEach(purgelogs => {
@@ -102,6 +108,9 @@ const PurgeArchive = (props: any) => {
       })
       
     }, [purgelogs])
+
+
+    //the following are mandatory props required for the materialtable to function
 
     const preColumns: Column<PurgeLog>[] = [{ title: 'Name', field: 'moduleName' }]
     const preLogs: PurgeLog[] = [{
@@ -126,6 +135,9 @@ const PurgeArchive = (props: any) => {
       ],
       [],
     );
+
+    const options = useMemo(() => calculateOptions(readRowNum,{search: true, showTitle: true, filtering: false, pageSize: 5}), [readRowNum]);
+
 
     return (
       <Box mx="auto" className={classes.root}>
@@ -176,6 +188,7 @@ const PurgeArchive = (props: any) => {
           <MaterialTable
             title="Purge and Archive log"
             key={readRowNum}
+            isLoading={isLoading}
             options={options}
             columns={!!purgelogs ? columns : preColumns}
             data={!!purgelogs ? purgelogs : preLogs}
