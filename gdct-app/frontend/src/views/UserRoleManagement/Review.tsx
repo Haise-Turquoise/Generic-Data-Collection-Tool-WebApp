@@ -58,19 +58,19 @@ export default function Review({
           </Typography>
           <Grid container>
             <Grid item xs={6}>
-              <Typography gutterBottom>firstName</Typography>
+              <Typography gutterBottom>First Name</Typography>
             </Grid>
             <Grid item xs={6}>
               <Typography gutterBottom>{firstName}</Typography>
             </Grid>
             <Grid item xs={6}>
-              <Typography gutterBottom>lastName</Typography>
+              <Typography gutterBottom>Last Name</Typography>
             </Grid>
             <Grid item xs={6}>
               <Typography gutterBottom>{lastName}</Typography>
             </Grid>
             <Grid item xs={6}>
-              <Typography gutterBottom>email</Typography>
+              <Typography gutterBottom>Email</Typography>
             </Grid>
             <Grid item xs={6}>
               <Typography gutterBottom>{email}</Typography>
@@ -83,13 +83,13 @@ export default function Review({
           </Typography>
           <Grid container>
             <Grid item xs={6}>
-              <Typography gutterBottom>title</Typography>
+              <Typography gutterBottom>Title</Typography>
             </Grid>
             <Grid item xs={6}>
               <Typography gutterBottom>{title}</Typography>
             </Grid>
             <Grid item xs={6}>
-              <Typography gutterBottom>phoneNumber</Typography>
+              <Typography gutterBottom>Phone Number</Typography>
             </Grid>
             <Grid item xs={6}>
               <Typography gutterBottom>{`${phoneNumber} ${ext}`}</Typography>

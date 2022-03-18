@@ -53,7 +53,7 @@ export default function MandatoryInfo({
     firstName: Yup.string().required('Required'),
     lastName: Yup.string().required('Required'),
     username: Yup.string().required('Required'),
-    email: Yup.string().required('Required'),
+    email: Yup.string().email('Must be a valid email').required('Required'),
     password: Yup.string().required('Required'),
     passwordConfirm: Yup.string()
       .oneOf([Yup.ref('password'), undefined], 'Password should match')
