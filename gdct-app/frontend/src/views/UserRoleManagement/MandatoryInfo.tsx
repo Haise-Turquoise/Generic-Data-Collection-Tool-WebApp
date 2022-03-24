@@ -48,12 +48,16 @@ export default function MandatoryInfo({
   handleBack: () => void,
 }) {
   const classes = useStyles();
+  const phoneRegExp = /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/
+
 
   const myFormSchema = Yup.object().shape({
     firstName: Yup.string().required('Required'),
     lastName: Yup.string().required('Required'),
     username: Yup.string().required('Required'),
-    email: Yup.string().required('Required'),
+    phoneNumber: Yup.string().required('Required').matches(phoneRegExp, 'Phone number is not valid'),
+    ext: Yup.number().required('Required').typeError("Extension must be a number"),
+    email: Yup.string().email('Must be a valid email').required('Required'),
     password: Yup.string().required('Required'),
     passwordConfirm: Yup.string()
       .oneOf([Yup.ref('password'), undefined], 'Password should match')
@@ -68,6 +72,8 @@ export default function MandatoryInfo({
             firstName: '',
             lastName: '',
             username: '',
+            phoneNumber: '',
+            ext: '',
             email: '',
             password: '',
             passwordConfirm: '',
@@ -77,6 +83,8 @@ export default function MandatoryInfo({
             parentHandleChange('firstName', values.firstName);
             parentHandleChange('lastName', values.lastName);
             parentHandleChange('username', values.username);
+            parentHandleChange('phoneNumber', values.phoneNumber);
+            parentHandleChange('ext', values.ext);
             parentHandleChange('email', values.email);
             parentHandleChange('password', values.password);
             parentHandleChange('password', values.passwordConfirm);
@@ -136,6 +144,38 @@ export default function MandatoryInfo({
                   />
                   {errors.username && touched.username ? (
                     <div style={{ color: 'red' }}>{errors.username}</div>
+                  ) : null}
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    variant="standard"
+                    fullWidth
+                    id="phoneNumber"
+                    label="Phone Number"
+                    name="phoneNumber"
+                    value={values.phoneNumber}
+                    autoComplete="phoneNumber"
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                  />
+                  {errors.phoneNumber && touched.phoneNumber ? (
+                    <div style={{ color: 'red' }}>{errors.phoneNumber}</div>
+                  ) : null}
+                </Grid>
+                <Grid item xs={12}>
+                  <TextField
+                    variant="standard"
+                    fullWidth
+                    id="ext"
+                    label="Ext"
+                    name="ext"
+                    value={values.ext}
+                    autoComplete="ext"
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                  />
+                  {errors.ext && touched.ext? (
+                    <div style={{ color: 'red' }}>{errors.ext}</div>
                   ) : null}
                 </Grid>
                 <Grid item xs={12}>

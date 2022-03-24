@@ -12,6 +12,8 @@ import MenuItem from '@material-ui/core/MenuItem';
 import InputLabel from '@material-ui/core/InputLabel';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
+import * as Yup from 'yup';
+import { Formik } from 'formik';
 
 import { Button, Theme } from '@material-ui/core';
 import { getAppSysRolesRequest } from '../../store/thunks/AppSysRole';
@@ -91,13 +93,19 @@ export default function SignUp({ parentHandleChange, steps, activeStep, handleNe
       role.role === 'Template Approver'
     );
   });
-
   const classes = useStyles();
   const theme = useTheme();
   const [title, setTitle] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [ext, setExt] = useState('');
   const [sysRoles, setSysRoles] = useState<string[]>([]);
+  const [errors, setErrors] = useState<{phoneNumber: string}>();
+
+  let sysRoleEmpty = true;
+
+  const phoneRegExp = /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/
+ 
+
   const handleChange = (e: ChangeEvent<{name?: string, value: unknown}>) => {
     const { name, value } = e.target;
     switch (name) {
@@ -106,7 +114,11 @@ export default function SignUp({ parentHandleChange, steps, activeStep, handleNe
         parentHandleChange(name, value);
         break;
       case 'phoneNumber':
+        setErrors({phoneNumber: ''})
         setPhoneNumber(value as string);
+        if (!phoneRegExp.test(value as string)) {
+          setErrors({phoneNumber: 'Error: not a phone number'})
+        }
         parentHandleChange(name, value);
         break;
       case 'ext':
@@ -126,13 +138,20 @@ export default function SignUp({ parentHandleChange, steps, activeStep, handleNe
   useEffect(() => {
     dispatch(getAppSysRolesRequest());
   }, [dispatch]);
+
+  useEffect(() => {
+    console.log(sysRoles)
+    if (sysRoles.length != 0){
+      sysRoleEmpty = false;
+    }
+  }, [sysRoles])
   return (
     <Container component="main" maxWidth="xs">
       <CssBaseline />
       <div className={classes.paper}>
-        <form className={classes.form} noValidate>
+        <form className={classes.form}>
           <Grid container spacing={2}>
-            <Grid item xs={12} sm={6}>
+            {/* <Grid item xs={12} sm={6}>
               <TextField
                 autoComplete="title"
                 name="title"
@@ -144,14 +163,16 @@ export default function SignUp({ parentHandleChange, steps, activeStep, handleNe
                 onChange={handleChange}
                 autoFocus
               />
-            </Grid>
-            <Grid item xs={12} sm={6}>
+            </Grid> */}
+            {/* <Grid item xs={12} sm={6}>
               <TextField
                 variant="outlined"
                 fullWidth
                 id="phoneNumber"
                 label="Phone Number"
                 name="phoneNumber"
+                error={Boolean(errors?.phoneNumber)}
+                helperText={(errors?.phoneNumber)}
                 value={phoneNumber}
                 autoComplete="phoneNumber"
                 onChange={handleChange}
@@ -168,14 +189,15 @@ export default function SignUp({ parentHandleChange, steps, activeStep, handleNe
                 autoComplete="ext"
                 onChange={handleChange}
               />
-            </Grid>
+            </Grid> */}
             <Grid item xs={12}>
-              <InputLabel id="demo-mutiple-chip-label">Sys Roles</InputLabel>
+              <InputLabel id="demo-mutiple-chip-label">Select Role(s)</InputLabel>
               <Select
                 fullWidth
                 labelId="demo-mutiple-chip-label"
                 id="demo-mutiple-chip"
                 multiple
+                required
                 name="sysRoles"
                 value={sysRoles}
                 onChange={handleChange}
@@ -211,7 +233,8 @@ export default function SignUp({ parentHandleChange, steps, activeStep, handleNe
             <Button
               variant="contained"
               color="primary"
-              onClick={handleNext}
+              disabled={ sysRoles.length===0 || (Boolean(errors?.phoneNumber) && Boolean(phoneNumber))}
+              onClick={ handleNext }
               className={classes.button}
               type="submit"
             >
