@@ -49,7 +49,7 @@ export default function Review({
   return (
     <React.Fragment>
       <Typography variant="h6" gutterBottom>
-        Personal information
+        Overview
       </Typography>
       <Grid container spacing={2}>
         <Grid item xs={12} sm={6}>
