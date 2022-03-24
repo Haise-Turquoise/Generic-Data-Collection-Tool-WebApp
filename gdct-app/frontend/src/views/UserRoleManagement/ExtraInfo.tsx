@@ -164,7 +164,7 @@ export default function SignUp({ parentHandleChange, steps, activeStep, handleNe
                 autoFocus
               />
             </Grid> */}
-            <Grid item xs={12} sm={6}>
+            {/* <Grid item xs={12} sm={6}>
               <TextField
                 variant="outlined"
                 fullWidth
@@ -189,7 +189,7 @@ export default function SignUp({ parentHandleChange, steps, activeStep, handleNe
                 autoComplete="ext"
                 onChange={handleChange}
               />
-            </Grid>
+            </Grid> */}
             <Grid item xs={12}>
               <InputLabel id="demo-mutiple-chip-label">Select Role(s)</InputLabel>
               <Select

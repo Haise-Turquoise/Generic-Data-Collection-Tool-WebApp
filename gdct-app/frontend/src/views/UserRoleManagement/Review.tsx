@@ -53,9 +53,6 @@ export default function Review({
       </Typography>
       <Grid container spacing={2}>
         <Grid item xs={12} sm={6}>
-          <Typography variant="h6" gutterBottom className={classes.title}>
-            Mandatory
-          </Typography>
           <Grid container>
             <Grid item xs={6}>
               <Typography gutterBottom>First Name</Typography>
@@ -75,12 +72,24 @@ export default function Review({
             <Grid item xs={6}>
               <Typography gutterBottom>{email}</Typography>
             </Grid>
+            <Grid item xs={12}>
+              <Typography gutterBottom>Roles</Typography>
+            </Grid>
+              <ol>
+              {sysRoles.map(appSys => (
+                <li>
+                  <React.Fragment key={appSys._id}>
+                  <Grid item xs={12}>
+                    <Typography gutterBottom>{appSys.appSys}</Typography>
+                    <Typography gutterBottom>{appSys.role}</Typography>
+                  </Grid>
+                </React.Fragment>
+                </li>
+              ))}
+              </ol>
           </Grid>
         </Grid>
         <Grid item container direction="column" xs={12} sm={6}>
-          <Typography variant="h6" gutterBottom className={classes.title}>
-            Extra
-          </Typography>
           <Grid container>
             <Grid item xs={6}>
               <Typography gutterBottom>Title</Typography>
@@ -94,20 +103,8 @@ export default function Review({
             <Grid item xs={6}>
               <Typography gutterBottom>{`${phoneNumber} ${ext}`}</Typography>
             </Grid>
-            <Grid item xs={12}>
-              <Typography gutterBottom>Roles</Typography>
-            </Grid>
-            {sysRoles.map(appSys => (
-              <React.Fragment key={appSys._id}>
-                <Grid item xs={6}>
-                  <Typography gutterBottom>{appSys.appSys}</Typography>
-                </Grid>
-                <Grid item xs={6}>
-                  <Typography gutterBottom>{appSys.role}</Typography>
-                </Grid>
-              </React.Fragment>
-            ))}
-          </Grid>
+
+           </Grid>
         </Grid>
       </Grid>
       <div className={classes.buttons} style={{ marginTop: '2rem', textAlign: 'right' }}>
