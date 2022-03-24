@@ -16,6 +16,7 @@ import Button from '@material-ui/core/Button';
 import Submission, { submissionSpreadsheetProps } from '../../types/submission';
 import Status from '../../types/status';
 import { SheetData } from '../../types/template';
+import UnitOfMeasurementController from "../../controllers/UnitOfMeasurement";
 
 // Sheet style Option
 const sheetOption = {
@@ -167,6 +168,20 @@ class SubmissionSpreadSheet extends Component<submissionSpreadsheetProps>{
     }
   };
 
+  unitOfMeasure = async () => {
+
+    const unitOfMeasureInfo = await UnitOfMeasurementController.fetch();
+    console.log("unit of measureInfo");
+    console.log(unitOfMeasureInfo);
+    this.sheet.datas[this.sheet.getCurrentSheetIndex()].UnitValidation.validate(unitOfMeasureInfo);
+    this.sheet.reRender();
+  }
+
+  validateSheet = async () => {
+    this.sheet.datas[this.sheet.getCurrentSheetIndex()].resetCommentsandErrors();
+    this.sheet.reRender();
+  }
+
   insertOrg = async (orgId:number) => {
     if (this.edit) {
       // Get org data
@@ -208,6 +223,14 @@ class SubmissionSpreadSheet extends Component<submissionSpreadsheetProps>{
             <ArrowBackIcon></ArrowBackIcon>
             back
           </Button>
+          <Button variant="outlined" color="primary" onClick={() => {this.validateSheet()}}>
+            Validate
+          </Button>
+
+          <Button variant="outlined" color="primary" onClick={() => {this.unitOfMeasure()}}>
+            Unit of Measure Validation
+          </Button>
+
           
         </div>
         <div id="x-spreadsheet"></div>

@@ -10,6 +10,7 @@ const COAGroupModel = model<CategoryGroupDoc>(
       timestamp: { type: Date },
       updatedBy: { type: String },
       isActive: { type: Boolean },
+      updatedAt: { type: String },
     },
     { minimize: false },
   ),
