@@ -151,45 +151,6 @@ export default function SignUp({ parentHandleChange, steps, activeStep, handleNe
       <div className={classes.paper}>
         <form className={classes.form}>
           <Grid container spacing={2}>
-            {/* <Grid item xs={12} sm={6}>
-              <TextField
-                autoComplete="title"
-                name="title"
-                value={title}
-                variant="outlined"
-                fullWidth
-                id="title"
-                label="Title"
-                onChange={handleChange}
-                autoFocus
-              />
-            </Grid> */}
-            {/* <Grid item xs={12} sm={6}>
-              <TextField
-                variant="outlined"
-                fullWidth
-                id="phoneNumber"
-                label="Phone Number"
-                name="phoneNumber"
-                error={Boolean(errors?.phoneNumber)}
-                helperText={(errors?.phoneNumber)}
-                value={phoneNumber}
-                autoComplete="phoneNumber"
-                onChange={handleChange}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <TextField
-                variant="outlined"
-                fullWidth
-                id="ext"
-                label="Ext"
-                name="ext"
-                value={ext}
-                autoComplete="ext"
-                onChange={handleChange}
-              />
-            </Grid> */}
             <Grid item xs={12}>
               <InputLabel id="demo-mutiple-chip-label">Select Role(s)</InputLabel>
               <Select
