@@ -89,7 +89,7 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-const steps = ['Basic Info', 'Grant Role', 'Review info.'];
+const steps = ['Basic Info', 'Grant Role', 'Review info'];
 
 function getStepContent(
     step: number,

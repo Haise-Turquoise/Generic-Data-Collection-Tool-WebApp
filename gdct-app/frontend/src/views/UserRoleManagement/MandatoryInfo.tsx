@@ -56,7 +56,7 @@ export default function MandatoryInfo({
     lastName: Yup.string().required('Required'),
     username: Yup.string().required('Required'),
     phoneNumber: Yup.string().required('Required').matches(phoneRegExp, 'Phone number is not valid'),
-    ext: Yup.number().required('Required').typeError("Extension must be a number"),
+    ext: Yup.number().typeError("Extension must be a number"),
     email: Yup.string().email('Must be a valid email').required('Required'),
     password: Yup.string().required('Required'),
     passwordConfirm: Yup.string()
