@@ -140,6 +140,7 @@ const TemplatesTable = ({ history }: RouterProps) => {
         editComponent: (props: any) => {
           return <div></div>;
         },
+        defaultSort: 'desc'
       },
       //      { title: 'Modified On', field: 'updatedDate', type: 'date',
       //      initialEditValue: Date.now,},
