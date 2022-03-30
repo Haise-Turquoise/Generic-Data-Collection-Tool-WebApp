@@ -35,8 +35,8 @@ const BarGroupComponent =  (props:any) => {
 
   }
   //sort by date, so it always will be correct
-
-  submissionPeriods = [ ... new Set(submissionPeriods)].sort(function (a: any, b: any) {return a.localeCompare(b);}).reverse()
+  if (submissionPeriods)
+    submissionPeriods = [ ... new Set(submissionPeriods)].sort(function (a: any, b: any) {return a.localeCompare(b);}).reverse()
   
   const [currentPeriod, setCurrentPeriod] = useState(submissionPeriods[0] || '');
 
