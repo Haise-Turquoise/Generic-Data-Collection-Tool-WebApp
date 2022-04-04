@@ -123,6 +123,16 @@ const SubmissionController = Service([SubmissionService], service => {
         .catch(next);
     });
 
+    router.post('/submissions/fetchNamesOfIds', (req,res, next) =>{
+      console.log(req.body)
+      const {programId, submissionPeriodId } = req.body;
+
+      service
+        .fetchNamesOfIds(programId, submissionPeriodId)
+        .then(info => res.json(info))
+        .catch(next);
+    })
+
     return router;
   })();
 });

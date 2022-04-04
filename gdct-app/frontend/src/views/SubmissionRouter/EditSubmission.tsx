@@ -12,7 +12,7 @@ import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import { makeStyles } from '@material-ui/core/styles';
 
 // @ts-ignore
-import { templateDownloader } from '../../tools/misc';
+import { templateDownloader, templateCSVFormat } from '../../tools/misc';
 // @ts-ignore
 import { getSubmissionNoteRequest } from '../../store/thunks/submissionNote';
 // @ts-ignore
@@ -335,6 +335,20 @@ const EditSubmission = ({ history }:{history:History}) => {
     return true;
 
   };
+
+  const  downloadCSV = async () => {
+
+    console.log(submission)
+    let info = await SubmissionController.fetchNamesOfIds(submission.programId,submission.submissionPeriodId);
+    console.log(info)
+    let {programInfo, submissionPeriodInfo} = info.data
+    for(var sheetN in submission.workbookData){
+      console.log(submission.workbookData[sheetN])
+      templateCSVFormat(submission.workbookData[sheetN],submission,submission.name+"_"+submission.workbookData[sheetN].name+".csv",{programName: programInfo.name, reportingPeriod: submissionPeriodInfo.name})
+    }
+    console.log(submission)
+    
+  }
   // decide button display base on current Status
   const handleButtonDisplayByStatus = (button:string, visitedWorkFlowProcesses:VisitedNode[], status:string|undefined) => {
     // the map represent the clickable button
@@ -427,6 +441,16 @@ const EditSubmission = ({ history }:{history:History}) => {
             disabled={isReviewerOrApprover}
           >
             Download
+          </Button>
+          <Button
+            color="primary"
+            variant="contained"
+            style={{ cursor }}
+            size="large"
+            onClick={() => downloadCSV()}
+            disabled={isReviewerOrApprover}
+          >
+            Download CSV .. 
           </Button>
 
           {/* <Button

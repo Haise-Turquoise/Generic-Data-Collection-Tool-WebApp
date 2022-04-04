@@ -15,7 +15,7 @@ import { digitToAlpha,
   generateCategoryMap, generateAttributeMap, 
   findWordInRow, findLastAttributeCol, 
   //@ts-ignore
-  templateDownloader, excelImportHandler, generateFullMap} from '../../../tools/misc';
+  templateDownloader,templateCSVFormat, excelImportHandler, generateFullMap} from '../../../tools/misc';
 //@ts-ignore
 import appConfigController from '../../../controllers/AppConfig';
 //@ts-ignore
@@ -81,6 +81,7 @@ class SpreadSheet extends Component<SpreadSheetProps, {hasSheet: boolean}>{
   attrbuteRow: number;
   backButton:Function;
   sheet: any;
+  
 
   constructor(props:SpreadSheetProps) {
     super(props);
@@ -96,6 +97,7 @@ class SpreadSheet extends Component<SpreadSheetProps, {hasSheet: boolean}>{
     this.disablePreview = this.disablePreview.bind(this);
     this.fileImportHandler = this.fileImportHandler.bind(this);
     this.downloadTemplate = this.downloadTemplate.bind(this);
+   
     this.insertVariance = this.insertVariance.bind(this);
     this.getCurrentSheet = this.getCurrentSheet.bind(this);
     this.lineNumberInsertion = this.lineNumberInsertion.bind(this);
@@ -480,6 +482,8 @@ class SpreadSheet extends Component<SpreadSheetProps, {hasSheet: boolean}>{
     }
   }
 
+  
+
   unitOfMeasure = async () => {
 
     const unitOfMeasureInfo = await UnitOfMeasurementController.fetch();
@@ -600,6 +604,7 @@ class SpreadSheet extends Component<SpreadSheetProps, {hasSheet: boolean}>{
               <Button variant="outlined" color="primary" onClick={()=>this.downloadTemplate(this.sheet.getData())}>
                 Download Template
               </Button>
+              
               <input
                 type="file"
                 accept=".xlsx, .xlsm"
