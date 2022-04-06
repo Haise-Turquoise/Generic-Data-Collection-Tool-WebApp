@@ -98,7 +98,7 @@ const ItemMap :{[key:string]:React.ReactElement<SvgIconProps>} =  {
   // Admin Submission-lookup
   'Submission-Lookup': <FindReplaceIcon style={MenuItemStyle} />,
   'Submission Type': <DnsIcon style={SubMenuItemStyle} />,
-  'Submission Period': <HourglassEmptyIcon style={SubMenuItemStyle} />,
+  'Submission Period': <HourglassEmptyIcon style={MenuItemStyle} />,
 
   // Admin Role
   'Role': <AppsIcon style={MenuItemStyle} />,
