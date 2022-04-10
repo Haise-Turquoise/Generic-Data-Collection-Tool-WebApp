@@ -2,6 +2,7 @@ import { Service } from 'typedi';
 import { Router } from 'express';
 import SubmissionService from '../../services/Submission';
 import { SubmissionPopulated } from '../../types/submission';
+import  submissionValidation from  '../../utils/submissionValidation';
 
 const SubmissionController = Service([SubmissionService], service => {
   const router = Router();
@@ -15,6 +16,17 @@ const SubmissionController = Service([SubmissionService], service => {
           res.json({ submissions });
         })
         .catch(next);
+    });
+
+
+    router.post('/submissions/validateAndUpdate',(req,res, next) =>{
+     
+      const {submission} = req.body;
+
+      var s = new submissionValidation();
+      s.validateAll(submission);
+      //console.log(submission);
+      res.end();
     });
 
     router.post('/submissions/createSubmissions', (req, res, next) => {
@@ -131,7 +143,8 @@ const SubmissionController = Service([SubmissionService], service => {
         .fetchNamesOfIds(programId, submissionPeriodId)
         .then(info => res.json(info))
         .catch(next);
-    })
+    });
+
 
     return router;
   })();

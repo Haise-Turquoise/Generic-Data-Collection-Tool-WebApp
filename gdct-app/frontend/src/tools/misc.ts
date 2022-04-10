@@ -532,6 +532,7 @@ export const templateCSVFormat = (currentSheetData:any, submissonInfo:Submission
   var cat_locations = [];
   var cat_ids = [];
   var csvData = ['programId,programName,orgId,templatePackageId,templateId,reportingPeriod,categoryId,attributeId,value'];
+  console.log('hit1');
   for(var key in attr_row){
     if(attr_row[key].text != undefined && !isNaN(attr_row[key].text)){
       attr_locations.push(key);
@@ -540,14 +541,15 @@ export const templateCSVFormat = (currentSheetData:any, submissonInfo:Submission
   }
   for(var key in currentSheetData.rows){
     let check = currentSheetData.rows[key].cells;
-    if(check != undefined){
+    if(check != undefined && check[0] != undefined){
+      //console.log('hit12: ',check);
       if(check[0].text != undefined && !isNaN(check[0].text)){
         cat_locations.push(key);
         cat_ids.push(check[0].text);
       }
     }
   }
-
+  console.log('hit2');
   console.log(attr_locations)
   console.log(cat_locations)
   for(var i = 0; i<cat_locations.length;i++){
@@ -565,6 +567,7 @@ export const templateCSVFormat = (currentSheetData:any, submissonInfo:Submission
       csvData.push(programId+","+ info.programName +","+orgId+","+templatePackageId+","+templateId+","+ info.reportingPeriod+","+cat_ids[i]+","+attr_ids[j]+","+val);
     }
   }
+  console.log('hit3');
   let csvString = csvData.join("\n");
   //console.log(csvString);
   //console.log(csvString.length);
