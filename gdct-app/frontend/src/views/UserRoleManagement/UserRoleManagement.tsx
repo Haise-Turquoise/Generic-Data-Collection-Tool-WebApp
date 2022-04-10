@@ -89,7 +89,7 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-const steps = ['Mandatory step', 'Extra step', 'Review your info.'];
+const steps = ['Basic Info', 'Grant Role', 'Review info'];
 
 function getStepContent(
     step: number,
@@ -241,7 +241,7 @@ export default function SignUp() {
           <LockOutlinedIcon />
         </Avatar>
         <Typography component="h1" variant="h5">
-          User Role Management
+          Power User Role Management
         </Typography>
         <Stepper activeStep={activeStep} className={classes.stepper}>
           {steps.map(label => (

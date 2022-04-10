@@ -49,65 +49,62 @@ export default function Review({
   return (
     <React.Fragment>
       <Typography variant="h6" gutterBottom>
-        Personal information
+        Overview
       </Typography>
       <Grid container spacing={2}>
         <Grid item xs={12} sm={6}>
-          <Typography variant="h6" gutterBottom className={classes.title}>
-            Mandatory
-          </Typography>
           <Grid container>
             <Grid item xs={6}>
-              <Typography gutterBottom>firstName</Typography>
+              <Typography gutterBottom>First Name</Typography>
             </Grid>
             <Grid item xs={6}>
               <Typography gutterBottom>{firstName}</Typography>
             </Grid>
             <Grid item xs={6}>
-              <Typography gutterBottom>lastName</Typography>
+              <Typography gutterBottom>Last Name</Typography>
             </Grid>
             <Grid item xs={6}>
               <Typography gutterBottom>{lastName}</Typography>
             </Grid>
             <Grid item xs={6}>
-              <Typography gutterBottom>email</Typography>
+              <Typography gutterBottom>Email</Typography>
             </Grid>
             <Grid item xs={6}>
               <Typography gutterBottom>{email}</Typography>
             </Grid>
+            <Grid item xs={12}>
+              <Typography gutterBottom>Roles</Typography>
+            </Grid>
+              <ol>
+              {sysRoles.map(appSys => (
+                <li>
+                  <React.Fragment key={appSys._id}>
+                  <Grid item xs={12}>
+                    <Typography gutterBottom>{appSys.appSys}</Typography>
+                    <Typography gutterBottom>{appSys.role}</Typography>
+                  </Grid>
+                </React.Fragment>
+                </li>
+              ))}
+              </ol>
           </Grid>
         </Grid>
         <Grid item container direction="column" xs={12} sm={6}>
-          <Typography variant="h6" gutterBottom className={classes.title}>
-            Extra
-          </Typography>
           <Grid container>
             <Grid item xs={6}>
-              <Typography gutterBottom>title</Typography>
+              <Typography gutterBottom>Title</Typography>
             </Grid>
             <Grid item xs={6}>
               <Typography gutterBottom>{title}</Typography>
             </Grid>
             <Grid item xs={6}>
-              <Typography gutterBottom>phoneNumber</Typography>
+              <Typography gutterBottom>Phone Number</Typography>
             </Grid>
             <Grid item xs={6}>
               <Typography gutterBottom>{`${phoneNumber} ${ext}`}</Typography>
             </Grid>
-            <Grid item xs={12}>
-              <Typography gutterBottom>Roles</Typography>
-            </Grid>
-            {sysRoles.map(appSys => (
-              <React.Fragment key={appSys._id}>
-                <Grid item xs={6}>
-                  <Typography gutterBottom>{appSys.appSys}</Typography>
-                </Grid>
-                <Grid item xs={6}>
-                  <Typography gutterBottom>{appSys.role}</Typography>
-                </Grid>
-              </React.Fragment>
-            ))}
-          </Grid>
+
+           </Grid>
         </Grid>
       </Grid>
       <div className={classes.buttons} style={{ marginTop: '2rem', textAlign: 'right' }}>
