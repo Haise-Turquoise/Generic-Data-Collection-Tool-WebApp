@@ -92,7 +92,7 @@ export default class submissionValidation {
     }
 
 
-    validate(ci: any,cat: any,vData: any){
+    validate(ci: any,cat: any,vData: any){  
     //     let {type,vInfo} = vData;
     //     let y = ci;
         
