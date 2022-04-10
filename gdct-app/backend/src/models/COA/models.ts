@@ -11,6 +11,7 @@ const COAModel = model<Category>(
       unitOfMeasure : {type: String},
       timestamp: { type: Date },
       updatedBy: { type: String },
+      updatedAt: { type: String },
     },
     { minimize: false },
   ),

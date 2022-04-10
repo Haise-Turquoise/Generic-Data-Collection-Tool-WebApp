@@ -199,9 +199,11 @@ const ButtonBox = ({
     >
       COMPLETE REGISTRATION
     </Button>
-    <Typography className="register__inputTitle">
-      To navigate from one page to the next for registration, please use the button provided on the
-      page. Do not use your browsers's Back and Forward buttons.
+    <br />
+    <br />
+    <Typography className="register__subtext" >
+    Please use the navigation buttons on this page to move between the registration steps. 
+    Using the browser's Back and Forward buttons will remove the inputted information.
     </Typography>
   </Box>
 );

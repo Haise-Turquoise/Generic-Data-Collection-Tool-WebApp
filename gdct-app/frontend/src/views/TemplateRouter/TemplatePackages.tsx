@@ -265,6 +265,7 @@ const TemplatePackages = () => {
         editComponent: () => {
           return <div></div>;
         },
+        defaultSort: 'desc'
       },
       {
         title: "Close Date",

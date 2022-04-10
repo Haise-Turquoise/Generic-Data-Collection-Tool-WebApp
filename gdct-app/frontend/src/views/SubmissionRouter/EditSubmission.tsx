@@ -10,6 +10,7 @@ import { useLocation } from 'react-router-dom';
 import MaterialTable from 'material-table';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import { makeStyles } from '@material-ui/core/styles';
+import Swal from 'sweetalert2';
 
 // @ts-ignore
 import { templateDownloader, templateCSVFormat } from '../../tools/misc';
@@ -373,25 +374,35 @@ const EditSubmission = ({ history }:{history:History}) => {
     return true;
   };
   const handleChangeStatus = async (submission:Submission, submissionNote:SubmissionNote, role:string, newProcessId:string) => {
-    const result = await dispatch(
-      updateSubmissionStatusRequest(submission, submissionNote, role, newProcessId),
-    );
-
-    //@ts-ignore odd warning here
-    if (result) {
-      if (!role) {
-        role = 'ChangeNote';
+    if (!submissionNote){
+      Swal.fire({
+        title: 'Note cannot be empty!',
+        icon: 'error',
+        showConfirmButton: false,
+        showDenyButton: true,
+        denyButtonText: 'Return',
+      })
+    }else {
+      const result = await dispatch(
+        updateSubmissionStatusRequest(submission, submissionNote, role, newProcessId),
+      );
+  
+      //@ts-ignore odd warning here
+      if (result) {
+        if (!role) {
+          role = 'ChangeNote';
+        }
+  
+        setUserFeedback(`${role} successfully !`);
+        setRefresh(true);
+        setTimeout(function () {
+          setRefresh(false);
+        }, 500);
+  
+        setTimeout(function () {
+          setUserFeedback('');
+        }, 2000);
       }
-
-      setUserFeedback(`${role} successfully !`);
-      setRefresh(true);
-      setTimeout(function () {
-        setRefresh(false);
-      }, 500);
-
-      setTimeout(function () {
-        setUserFeedback('');
-      }, 2000);
     }
   };
   return (
