@@ -156,4 +156,93 @@ export default class submissionValidation {
     //     }
 
     }
+
+
+    // validateNumber(n,v){
+    //     let {operator, value } = v;
+        
+    //     let pinput = parseInt(n);
+        
+    //     console.log("pinput " + pinput + " pvalue " + value + " ??? " + operator);
+    //     switch(operator){
+    //         case 'gt':
+    //             return pinput > parseInt(value);
+    //         case 'lt':
+    //             return pinput < parseInt(value);
+    //         case 'gte':
+    //             return pinput >= parseInt(value);
+    //         case 'lte':
+    //             return pinput <= parseInt(value);
+    //         case 'eq':
+    //             return pinput == parseInt(value);
+    //         case 'neq':
+    //             return pinput != parseInt(value);
+    //         case 'be':
+    //             return pinput > parseInt(value[0]) && pinput < parseInt(value[1]);
+    //         case 'nbe':
+    //             return pinput < parseInt(value[0]) || pinput > parseInt(value[1]);
+    //     }
+    // }
+
+
+
+
+    // validateAttribute(n,v,ri,cat){
+    //     let {operator, value,sheet_name } = v;
+        
+    //     let pinput = Number(n);
+
+
+    //     if(operator === 'be' || operator === 'nbe'){
+
+    //         let attrcol = this.datas.findInputColOnRow(9,value[0]);
+    //         let attrcol2 = this.datas.findInputColOnRow(9,value[1]);
+
+    //         if(attrcol === undefined || attrcol2 === undefined){return true;}
+            
+    //         let attrtext = this.datas.getCell(ri,Number(attrcol));
+    //         let attrtext2 = this.datas.getCell(ri,Number(attrcol2));
+
+    //         if(attrtext.text === undefined|| attrtext2.text === undefined){ return true;}
+
+            
+
+    //         switch(operator){
+    //             case 'be':
+    //                 return pinput > parseInt(attrtext.text) && pinput < parseInt(attrtext2.text);
+    //             case 'nbe':
+    //                 return pinput < parseInt(attrtext.text) || pinput > parseInt(attrtext2.text);
+    //         }
+
+    //     }else{
+    //         let sheetData = this.spread.findDataSheetbyName(sheet_name);
+    //         let attrcol = this.findAttrCol(value,sheet_name)//this.datas.findInputColOnRow(9,value);
+    //         let colrow = this.findCategoryRow(cat,this.spread.findDataSheetbyName(sheet_name))
+    //         if(attrcol === undefined || colrow === null ){return true; console.log("cant find")}
+    //         console.log("NINJA WE MADE IT !!!!!")
+    //         let attrtext = sheetData.getCell(colrow,Number(attrcol));
+    //         console.log("hiii " + attrtext.text)
+    //         if(attrtext.text === undefined){ return true;}
+
+    //         switch(operator){
+    //             case 'gt':
+    //                 return pinput > Number(attrtext.text);
+    //             case 'lt':
+    //                 return pinput < Number(attrtext.text);
+    //             case 'gte':
+    //                 return pinput >= Number(attrtext.text);
+    //             case 'lte':
+    //                 return pinput <= Number(attrtext.text);
+    //             case 'eq':
+    //                 return pinput == Number(attrtext.text);
+    //             case 'neq':
+    //                 return pinput != Number(attrtext.text);
+    //         }
+    //     }
+
+    //     return true;
+
+
+    // }
+
 }
