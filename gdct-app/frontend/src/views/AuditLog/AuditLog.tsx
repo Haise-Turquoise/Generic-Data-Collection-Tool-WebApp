@@ -231,11 +231,11 @@ const AuditLogTable = () => {
 
   //merge the auditlogs with the fetched archivelogs, if they exist
   useEffect(() => { 
-    if (archivelogs){
+    if (archivelogs !== undefined){
       archivelogs?.forEach(auditlog => {
         auditlog.updatedAt = moment(auditlog.updatedAt).format("YYYY-MM-DD HH:mm:ss")
       })
-      if(auditlogs !== undefined&& archivelogs !== undefined) {
+      if(auditlogs !== undefined ) {
         //setAuditLogs(auditlogs.concat(archivelogs)) 
         setCombinedLogs(auditlogs.concat(archivelogs).sort((a,b)=>b.updatedAt!.localeCompare(a.updatedAt!)))
       }
