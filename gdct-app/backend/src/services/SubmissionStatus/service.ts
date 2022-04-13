@@ -22,6 +22,7 @@ import SubmissionPeriod from '../../types/submissionperiod';
 import Template from '../../types/template';
 import TemplatePackage from '../../types/templatepackage';
 import { ObjectId } from 'mongodb';
+import UserSysRole from '../../types/usersysrole';
 
 interface role {
   role: string,
@@ -71,7 +72,7 @@ export default class SubmissionStatusService {
     return this.submissionStatusRepository.find(query)
   }
 
-  async createByRoles(roles: role[], userId: string) {
+  async createByRoles(roles: UserSysRole[], userId: string) {
     try {
       // needed resources
       const allStatuses: Status[] = await this.statusRepository.findAll()
@@ -84,13 +85,13 @@ export default class SubmissionStatusService {
       // map workflowId to first Status -- we'll need this later
       const firstMap: {[key: string]: ObjectId} = {}
       // only create for proper roles
-      const filteredRoles: role[] = []
+      const filteredRoles: UserSysRole[] = []
       for (let r of roles) {
-        const templateType: TemplateType = allTemplateTypes.find(tt => tt._id == r.tempTypeId)!
+        const templateType: TemplateType = allTemplateTypes.find(tt => tt._id.toString() === r.templateTypeId.toString())!
         const workflowProcesses: WorkflowProcess[] = allWorkflowProcesses.filter(wp => {
           return wp.workflowId.toString() === templateType.submissionWorkflowId.toString()
         })
-        const roleWorkflowStatuses = allRoleWorkflowStatuses.find(rws => rws.role === r.role)?.workflowStatus || []
+        const roleWorkflowStatuses = allRoleWorkflowStatuses.find(rws => rws.role === r.appSysRole)?.workflowStatus || []
         const roleStatuses = allStatuses.filter(s => roleWorkflowStatuses.includes(s.name))
         const roleWPs = workflowProcesses.filter(wp => roleStatuses.find(s => s._id.toString() === wp.statusId.toString()))
         if (roleWPs.length === 0) {
@@ -113,7 +114,7 @@ export default class SubmissionStatusService {
           console.log('first not found...', templateType.submissionWorkflowId)
         }
         // find process matching current user role TEST OUTPUT
-        const workflowStatus: string[] = (await this.roleWorkflowStatusRepository.findByRole(r.role))?.workflowStatus || []
+        const workflowStatus: string[] = (await this.roleWorkflowStatusRepository.findByRole(r.appSysRole))?.workflowStatus || []
         const matchingProcesses = workflowProcesses.filter((process) => {
           const procStatus = allStatuses.find((status) => status._id.toString() === process.statusId.toString())
           return workflowStatus.includes(procStatus?.name || '')
@@ -128,11 +129,11 @@ export default class SubmissionStatusService {
       // we find submission status entries that match org/program/templateType and create
       let queries: Partial<SubmissionStatus>[] = []
       for (let r of filteredRoles) {
-        const program = allPrograms.find(p => p._id.toString() === r.progId)
-        const tempType = allTemplateTypes.find(t => t._id.toString() === r.tempTypeId)
+        const program = allPrograms.find(p => p._id.toString() === r.programId.toString())
+        const tempType = allTemplateTypes.find(t => t._id.toString() === r.templateTypeId.toString())
         const query = {
           subIndex: null,
-          "org.id": +r.orgId,
+          "org.id": +r.organizationId,
           "program.code": program?.code,
           "templateType.name": tempType?.name,
         }
@@ -174,17 +175,15 @@ export default class SubmissionStatusService {
             templateName: unopened.template.name,
             templatePackageId: unopened._id,
             updatedAt: (new Date()),
-            //@ts-ignore
-            updatedBy: userId,
+            updatedBy: new ObjectId(userId),
             updatedDate: (new Date()),
             version: 0,
-            workbookData: template?.templateData,
+            workbookData: template?.templateData || [],
             workflowId: workflowId,
             workflowProcessId: template!.workflowProcessId,
           }
           return submission
         })
-        console.log('sending', newSubmissions)
         await this.submissionRepository.createMany(newSubmissions)
         return true
       })

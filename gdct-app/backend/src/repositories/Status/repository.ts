@@ -39,6 +39,15 @@ export default class StatusRepository extends BaseRepository<Status, StatusDoc> 
     return StatusModel.findById(id);
   }
 
+  async findManyById(ids: string[] | ObjectId[]) {
+    return StatusModel.find({ _id: { $in: ids }});
+  }
+
+  async findByNames(names: string[]) {
+    return StatusModel.find({name: {$in: names}})
+      .then((statuses: StatusDoc[]) => statuses.map(status => new StatusEntity(status)))
+  }
+
   async find(query: Partial<Status>) {
     const realQuery: FilterQuery<StatusDoc> = {};
     let key: keyof Status;

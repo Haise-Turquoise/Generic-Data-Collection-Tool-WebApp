@@ -2,6 +2,7 @@ import { ObjectId } from 'mongodb';
 import { Document } from 'mongoose';
 import Status from './status';
 import SubmissionPeriod from './submissionperiod';
+import { SheetData } from './template';
 import WorkflowProcess from './workflowprocess';
 
 export default interface Submission {
@@ -12,7 +13,7 @@ export default interface Submission {
   orgId: number;
   programId: ObjectId;
   submittedDate: Date | null;
-  workbookData: any;
+  workbookData: SheetData[];
   templateName: string;
   approved: string;
   workflowProcessId: ObjectId|null;
@@ -63,4 +64,8 @@ export interface SubmissionPopulated {
 export interface SubmissionDoc extends Submission, Document {
   _id:ObjectId
   id: number;
+}
+
+export interface SubmissionAggregated {
+  [key: string]: SubmissionPopulated[]
 }
