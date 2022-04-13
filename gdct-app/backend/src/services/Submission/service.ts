@@ -298,7 +298,7 @@ export default class SubmissionService {
 
 
   
-  async updateStatus(submission:Submission, submissionNote:SubmissionNote, role:string, nextProcessId:string, updatedBy:string) {
+  async updateStatus(submission:Submission, submissionNote:SubmissionNote, role:string, nextProcessId:string, updatedBy:string, statusChangedFlag: boolean) {
     const submissionNotes :any= {
       note: submissionNote,
       submissionId: submission._id,
@@ -306,6 +306,9 @@ export default class SubmissionService {
       updatedBy,
       role,
     };
+    if (statusChangedFlag){
+      submissionNotes.note = "Status Changed"
+    }
     const currentStatus = await this.statusRepository.findById(new ObjectId(submission.statusId));
     if (!currentStatus) throw new AppError(`Cannot find status by id ${submission.statusId}`);
     
