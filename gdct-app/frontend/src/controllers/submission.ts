@@ -3,13 +3,7 @@ import Submission, { SubmissionPopulated } from '../types/submission';
 import SubmissionPeriod from '../types/submissionperiod';
 import SubmissionNote from '../types/submissionnote';
 import { host } from '../constants/domain';
-
-interface role {
-  role: string,
-  orgId: string,
-  progId: string,
-  tempTypeId: string,
-}
+import UserSysRole from '../types/usersysrole';
 
 const submissionController = (() => {
   const submissionAxios = axios.create({
@@ -45,7 +39,7 @@ const submissionController = (() => {
         .then(res => res.data.submission),
     fetch: async (query: Partial<Submission>): Promise<Submission[]> => submissionAxios.post('/findQuery', { query }).then(res => res.data.submissions),
     delete: async (_id: string) => submissionAxios.post('/delete', { _id }),
-    fetchByRole: async (roles: role[]): Promise<SubmissionPopulated[]> => submissionAxios.post('/findByRole', { roles }).then(res => res.data.submissions),
+    fetchByRole: async (roles: UserSysRole[]): Promise<SubmissionPopulated[]> => submissionAxios.post('/findByRole', { roles }).then(res => res.data.submissions),
   };
 })();
 
