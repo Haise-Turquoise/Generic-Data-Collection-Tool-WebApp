@@ -239,7 +239,7 @@ const AuditLogTable = () => {
 
   //merge the auditlogs with the fetched archivelogs, if they exist
   useEffect(() => { 
-    if (archivelogs !== undefined){
+    if (archivelogs){
       archivelogs?.forEach(auditlog => {
         auditlog.updatedAt = moment(auditlog.updatedAt).format("YYYY-MM-DD HH:mm:ss")
       })
