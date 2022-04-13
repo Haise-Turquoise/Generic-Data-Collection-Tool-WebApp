@@ -40,7 +40,7 @@ export default class TemplateRepository extends BaseRepository<Template, Templat
     updatedAt,
   }: Template) {
     return this.templateTypeRepository
-      .validate(templateTypeId || [])
+      .validate(templateTypeId)
       .then(() =>
         TemplateModel.create({
           name,
