@@ -52,6 +52,7 @@ const CustomDatePicker = (props: {
         id="startDatePicker"
         selected={startDate}
         dateFormat={"yyyy-MM-dd HH:mm"}
+        popperPlacement="bottom-start"
         onChange={(selectedDate:any) => {
 
           if (!selectedDate) {
@@ -72,6 +73,9 @@ const CustomDatePicker = (props: {
         showYearDropdown
         maxDate={new Date()}
         dropdownMode="select"
+        popperProps={{
+          positionFixed: true // use this to make the popper position: fixed
+        }}
       />
       <br />
       <label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;To:</label>
@@ -79,6 +83,7 @@ const CustomDatePicker = (props: {
         id="endDatePicker"
         selected={endDate}
         dateFormat={'yyyy-MM-dd HH:mm'}
+        popperPlacement="bottom-start"
         onChange={(selectedDate:any) => {
           // @ts-ignore
           setEndDate(selectedDate)
@@ -95,6 +100,9 @@ const CustomDatePicker = (props: {
         showYearDropdown
         maxDate={new Date()}
         dropdownMode="select"
+        popperProps={{
+          positionFixed: true // use this to make the popper position: fixed
+        }}
       />
     </Fragment>
   );
