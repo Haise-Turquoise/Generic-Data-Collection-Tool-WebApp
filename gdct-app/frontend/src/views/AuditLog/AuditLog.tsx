@@ -177,7 +177,7 @@ const AuditLogTable = () => {
 
   
   
-  const options = useMemo(() => calculateOptions(readRowNum,{search: true, showTitle: false, filtering: true}), [readRowNum]);
+  const options = useMemo(() => calculateOptions(readRowNum,{search: true, showTitle: false, filtering: true, sorting: true}), [readRowNum]);
 
   //= =================================================================================================
 
@@ -226,17 +226,19 @@ const AuditLogTable = () => {
   //update auditlogs format and feed it into combinedlogs
   useEffect(() => {
     setRowNum(auditlogs?.length || 0)
-    setCombinedLogs(auditlogs)
+    setCombinedLogs(auditlogs?.sort((a,b)=>b.updatedAt!.localeCompare(a.updatedAt!)))
   }, [auditlogs])
 
   //merge the auditlogs with the fetched archivelogs, if they exist
   useEffect(() => { 
-    archivelogs?.forEach(auditlog => {
-      auditlog.updatedAt = moment(auditlog.updatedAt).format("YYYY-MM-DD HH:mm:ss")
-    })
-    if(auditlogs !== undefined&& archivelogs !== undefined) {
-      //setAuditLogs(auditlogs.concat(archivelogs)) 
-      setCombinedLogs(auditlogs.concat(archivelogs))
+    if (archivelogs !== undefined){
+      archivelogs?.forEach(auditlog => {
+        auditlog.updatedAt = moment(auditlog.updatedAt).format("YYYY-MM-DD HH:mm:ss")
+      })
+      if(auditlogs !== undefined ) {
+        //setAuditLogs(auditlogs.concat(archivelogs)) 
+        setCombinedLogs(auditlogs.concat(archivelogs).sort((a,b)=>b.updatedAt!.localeCompare(a.updatedAt!)))
+      }
     }
   }, [ archivelogs]);
 

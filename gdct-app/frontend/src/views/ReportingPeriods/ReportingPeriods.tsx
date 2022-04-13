@@ -90,7 +90,7 @@ const ReportingPeriodsTable = () => {
           return <div></div>;
         },
       },
-      { title: 'submissionClosed', field: 'submissionClosed', initialEditValue: 'false'},
+      { title: 'SubmissionClosed', type: 'boolean', field: 'submissionClosed' },
     ],
     [reportingPeriods],
   );

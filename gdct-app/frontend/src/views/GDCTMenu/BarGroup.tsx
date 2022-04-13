@@ -17,15 +17,10 @@ export type BarGroupProps = {
 const BarGroupComponent =  (props:any) => {
   // bounds
 
-  const [currentPeriod, setCurrentPeriod] = useState(props.submissionData[0]._id.submissionPeriod || '');
-  console.log("ll");
-  console.log(currentPeriod);
+  //const [currentPeriod, setCurrentPeriod] = useState(props.submissionData[0]._id.submissionPeriod || '');
 
   let submissionPeriods = [];
   let dict : any = {};
-  
-  console.log(props.submissionData);
-
   for (let i = 0; i< props.submissionData.length; i++){
     submissionPeriods.push(props.submissionData[i]._id.submissionPeriod);
     !(props.submissionData[i]._id.submissionPeriod in dict) && (dict[props.submissionData[i]._id.submissionPeriod] = [])
@@ -40,10 +35,15 @@ const BarGroupComponent =  (props:any) => {
 
   }
   //sort by date, so it always will be correct
+  if (submissionPeriods)
+    submissionPeriods = [ ... new Set(submissionPeriods)].sort(function (a: any, b: any) {return a.localeCompare(b);}).reverse()
+  
+  const [currentPeriod, setCurrentPeriod] = useState(submissionPeriods[0] || '');
 
-
-  let fixedData : any = [['Template', 'Submitted', {role: 'annotation'}, 'Unsubmitted', {role: 'annotation'}]].concat(dict[currentPeriod]);
- 
+  let fixedData : any = [['Template', 'Submitted', {role: 'annotation'}, 'Unsubmitted', {role: 'annotation'}]]
+    .concat(dict[currentPeriod]
+      .sort(function (a: any, b: any) {return a[0].localeCompare(b[0]);}));
+  console.log(fixedData)
   // update scale output dimensions
 
   const handleChange = (event: any) => {

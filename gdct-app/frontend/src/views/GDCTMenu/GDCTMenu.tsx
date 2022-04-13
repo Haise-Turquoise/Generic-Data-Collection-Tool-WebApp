@@ -74,7 +74,6 @@ const GDCTMenu = () => {
     submissionStatusController.fetchStatus()
       .then( (res: any) => {
         if (res) {
-          console.log(res)
           setStatuses(res);
         }
       })
