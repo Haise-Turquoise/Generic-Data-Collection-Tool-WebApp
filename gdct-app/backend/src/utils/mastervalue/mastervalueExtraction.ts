@@ -102,9 +102,9 @@ export async function mastervalueExtraction(
           for (const attributeID of filteredAttributes){
             let ri = categoryMap[categoryID];
             let ci = attributeMap[attributeID];
-            const targetCell = sheet.rows[ri].cells[ci];
+            const targetCell = sheet.rows[ri].cells ? sheet.rows[ri].cells![ci] : undefined;
             // Run if the cell is not empty
-            if (targetCell && targetCell.text !== '' && !isNaN(targetCell.text)){
+            if (targetCell && targetCell.text !== '' && !isNaN(parseFloat(targetCell.text || ""))){
 
               // For categoryTree 
               let iteration = 0;
@@ -152,7 +152,7 @@ export async function mastervalueExtraction(
                           categoryId: categoryID,
                           COATreeId: COATreeId._id,
                           categoryGroup: string,
-                          value: targetCell.text, //change this line back
+                          value: parseFloat(targetCell.text || "") || undefined, //change this line back
                           categoryName:categoryIdTable[categoryID],
                           attributeName:attributeIdTable[attributeID],
                         });
