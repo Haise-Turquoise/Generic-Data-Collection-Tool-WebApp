@@ -124,11 +124,12 @@ export const updateSubmissionStatusRequest = (
   submission: Submission,
   submissionNote: SubmissionNote,
   role: SubmissionNote["role"],
-  newProcessId: string
+  newProcessId: string,
+  statusChangedFlag: boolean
 ) => async (dispatch: Dispatch) => {
   const updatedBy = localStorage.getItem('currentUser') || '';
   await submissionController
-    .updateStatus(submission, submissionNote, role, newProcessId, updatedBy)
+    .updateStatus(submission, submissionNote, role, newProcessId, updatedBy, statusChangedFlag)
     .then((updatedSubmission) => {
       
       Object.assign(updatedSubmission, {phase: role});
