@@ -21,12 +21,23 @@ const SubmissionController = Service([SubmissionService], service => {
 
     router.post('/submissions/validateAndUpdate',(req,res, next) =>{
      
-      const {submission} = req.body;
+      const {submission, submissionNote} = req.body;
 
-      var s = new submissionValidation();
+      var s = new submissionValidation(submission);
       s.validateAll(submission);
-      //console.log(submission);
-      res.end();
+      console.log(s.errors);
+      if(s.errors.size === 0){
+        service
+        .uploadSubmissionWorkbook(submission, submission.workbookData, submissionNote)
+        .then(submissions => res.send(JSON.stringify([...s.errors])));
+      }else{
+        res.send(JSON.stringify([...s.errors]));
+      }
+      
+      
+      
+     
+      
     });
 
     router.post('/submissions/createSubmissions', (req, res, next) => {
@@ -66,7 +77,7 @@ const SubmissionController = Service([SubmissionService], service => {
 
     router.post('/submissions/uploadSubmission', (req, res, next) => {
       const { submission, submissionNote } = req.body;
-
+      
       service
         .uploadSubmissionWorkbook(submission, submission.workbookData, submissionNote)
         .then(submissions => res.json({ submissions }));

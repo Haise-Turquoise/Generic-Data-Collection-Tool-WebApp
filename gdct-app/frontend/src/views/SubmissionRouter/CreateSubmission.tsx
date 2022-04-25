@@ -1,5 +1,6 @@
 import { shallowEqual, useDispatch, useSelector } from 'react-redux';
-import React, { ChangeEvent, useCallback, useEffect, useState, useRef} from 'react';
+import React, { ChangeEvent, useCallback, useEffect, useState, useRef, createRef} from 'react';
+import Spreadsheet from 'x-data-spreadsheet';
 import Button from '@material-ui/core/Button';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import TextField from '@material-ui/core/TextField';
@@ -17,6 +18,21 @@ import { selectSubmissionNoteStore } from '../../store/SubmissionNoteStore/selec
 import { selectSubmissionWorkbookStore } from '../../store/SubmissionWorkbookStore/selectors';
 import { updateWorkbookRequest } from '../../store/thunks/submission';
 import submissionController from '../../controllers/submission';
+import UploadPreview from './uploadPreview';
+
+
+import InputLabel from '@material-ui/core/InputLabel';
+import MenuItem from '@material-ui/core/MenuItem';
+import FormControl from '@material-ui/core/FormControl';
+import Select from '@material-ui/core/Select';
+import objectHash from 'object-hash';
+
+
+
+
+
+
+
 
 const SubmissionHeader = () => (
   <Paper className="header">
@@ -24,35 +40,76 @@ const SubmissionHeader = () => (
   </Paper>
 );
 
-const FileUpload = () => {
-  const dispatch = useDispatch();
-  const handleChange = useCallback(
-    async event => {
-      excelImportHandler(event, (workBookData: any) => {
-        dispatch(SubmissionWorkbookStore.actions.RECEIVE(workBookData));
-      });
-    },
-    [dispatch],
-  );
+// const FileUpload = () => {
+//   const dispatch = useDispatch();
+//   const handleChange = useCallback(
+//     async event => {
+      // excelImportHandler(event, (workBookData: any) => {
+      //   dispatch(SubmissionWorkbookStore.actions.RECEIVE(workBookData));
+      // });
+//     },
+//     [dispatch],
+//   );
 
-  return (
-    <Button className="submission_upload_button">
+//   return (
+//     <Button className="submission_upload_button">
       
-      <input type="file" onChange={handleChange} />
-    </Button>
-  );
-};
+//       <input type="file" onChange={handleChange} />
+//     </Button>
+//   );
+// };
 
+const sheetOption = { 
+  mode: 'read', // edit | read
+  showToolbar: false,
+  showGrid: true,
+  showContextmenu: false,
+  view: {
+    height: () => document.documentElement.clientHeight * 0.86,
+    width: () => document.documentElement.clientWidth * 0.975,
+  },
+  row: {
+    len: 100,
+    height: 25,
+  },
+  col: {
+    len: 26,
+    width: 100,
+    indexWidth: 60,
+    minWidth: 60,
+  },
+  style: {
+    bgcolor: '#ffffff',
+    align: 'left',
+    valign: 'middle',
+    textwrap: false,
+    strike: false,
+    underline: false,
+    color: '#0a0a0a',
+    font: {
+      name: 'Helvetica',
+      size: 10,
+      bold: false,
+      italic: false,
+    },
+  },
+} as any ;
 
 
 const CreateSubmission = ({ history }: RouterProps) => {
+  
   //  const [workflowProcess, setWorkflowProcess] = useState()
   const inputEl = useRef<HTMLInputElement>(null);
   const dispatch = useDispatch();
   const [showSave, setSave] = useState<'visible' | 'hidden'>('hidden');
   const [message, setMessage] = useState('hidden');
   const [messageColour, setMessageColour] = useState('green');
-  const [prevSubmission, setPrevSubmission] = useState<any>(undefined);
+  const [csvInput, setCsvInput] = useState<boolean>(false);
+  const [xlsxInput, setXlsxInput] = useState<boolean>(false);
+  const [buttoncolor, setbuttoncolor] = useState<"inherit" | "primary" | "secondary" | "default">("default");
+  //const [sheet,setSheet] = useState<any>(null)
+  const datasheet = createRef<any>();
+  const [prevSubmission, setPrevSubmission] = useState<any>((history.location.state as any).detail);
 
   
 
@@ -93,8 +150,10 @@ const CreateSubmission = ({ history }: RouterProps) => {
   }
 
   const findColrow = (rows: any,id:string | undefined) => {
+    
     for(var key in rows){
-      if(rows[key].cells[0].text != undefined && rows[key].cells[0].text === id){
+      
+      if(rows[key].cells != undefined && rows[key].cells[0].text != undefined && rows[key].cells[0].text === id){
         return key
       }
     }
@@ -102,17 +161,18 @@ const CreateSubmission = ({ history }: RouterProps) => {
     return null;
   }
 
-  const updateWorkbook = (csvArray: any) =>{
+  const updateWorkbook = (csvArray: any, sheetName?: string) =>{
     
-    var x =  history.location.state as any;
-    var sub = x.detail;
-    var workData = x.detail.workbookData;
+    
+    var workData = prevSubmission.workbookData;
     var test_Index = 0;
     for(var key in workData){
-      if(workData[key].name == "Balance Sheet"){
+      if(workData[key].name == sheetName){
         test_Index = Number(key);
       }
     }
+
+    console.log(workData)
     var rowsData = workData[test_Index].rows; 
 
     csvArray.forEach((element: string) => {
@@ -127,35 +187,71 @@ const CreateSubmission = ({ history }: RouterProps) => {
 
         if(catRowNum != null && attColNum != null){
           rowsData[catRowNum].cells[attColNum].text = val
-          console.log("hiiiiit")
-          console.log("val: " + val +" row: " +catRowNum+ " col: "+ attColNum);
+          
         }
-        else{
-          console.log("hit the wrong spot")
-        }
+        // else{
+        //   console.log("hit the wrong spot")
+        // }
       }
     });
 
-    console.log(sub)
+    setPrevSubmission(prevSubmission)
     
-    submissionController.validateAndUpdate(sub);
+    
   }
   
-  //updateWorkbook();
-
-  
+  const handleXlsFile  = async (event: any) =>{
+    
+    excelImportHandler(event, (workBookData: any) => {
+      prevSubmission.workbookData = workBookData;
+      setPrevSubmission(prevSubmission);
+      console.log(prevSubmission);
+      setXlsxInput(true);
+      setbuttoncolor("primary");
+    });
+  }
 
   const handleCSVFile = async (event: any) =>{
+    console.log(prevSubmission)
     if(inputEl.current?.files){
       let file = inputEl.current.files.item(0);
       if(file){
+        var sheetName = file.name.split('_').at(-1)?.split('.csv')[0];
+        console.log("PPPPPPP")
+        console.log(sheetName)
         var text = await file.text()
         var split_text = text.split('\n');
-        updateWorkbook(split_text);
+        updateWorkbook(split_text, sheetName);
+        setCsvInput(true);
+        setbuttoncolor("primary");
+        
       }
     }
     
   }
+
+  const uploadFile = async (event: any) =>{
+    console.log(prevSubmission)
+    submissionController.validateAndUpdate(prevSubmission,submissionNote).then(res =>{
+      if(res.data.length >0){
+        setSave('visible');
+        setMessage('submission was invalid');
+        setMessageColour('red');
+      }
+      else{
+        setSave('visible');
+        setMessage('Sucessfully uplaoded to database');
+        setMessageColour('green');
+      }
+      
+    })
+      
+     
+      
+    
+    
+  
+}
 
   const backButtonAction = () => {
     history.push({
@@ -163,23 +259,26 @@ const CreateSubmission = ({ history }: RouterProps) => {
     });
   };
 
-  const handleCreateSubmission = useCallback(
-    (submissionNote, submissionWorkbook) =>
-    //TODO need help on this
-    //@ts-ignore
-      dispatch(updateWorkbookRequest(submissionNote, submissionWorkbook, location.state.detail)),
-    [dispatch],
-  );
+  const handleCreateSubmission = () =>{
+    console.log(prevSubmission)
+    submissionController
+    .updateWorkbook(prevSubmission, submissionNote)
+  }
 
   return (
     <div className="submissions">
       <SubmissionHeader />
       <Paper className="pl-4 pr-4 pb-5 pt-4">
-        <FileUpload />
+      <Button className="submission_upload_button">
+        upload xlsx
+        <input type="file" disabled={csvInput} onChange={handleXlsFile} />
+      </Button>
         <Button className="submission_csv_upload_button">
-          upload csv 
-          <input type="file"  accept=".csv" ref={inputEl}  />
+          upload csv
+          
+          <input type="file"  accept=".csv" disabled={xlsxInput} ref={inputEl} onChange ={handleCSVFile} />
         </Button>
+        
         <br />
         <div className="submission__label">
           <Typography className="submission__inputTitle"> Note </Typography>
@@ -200,7 +299,7 @@ const CreateSubmission = ({ history }: RouterProps) => {
             <ArrowBackIcon></ArrowBackIcon>
             Back
           </Button>
-          <Button
+          {/* <Button
             color="primary"
             variant="contained"
             size="large"
@@ -210,7 +309,7 @@ const CreateSubmission = ({ history }: RouterProps) => {
             }
             onClick={() => {
               try {
-                handleCreateSubmission(submissionNote, submissionWorkbook);
+                handleCreateSubmission();
                 setSave('visible');
                 setMessage('Sucessfully Saved!');
                 setMessageColour('green');
@@ -222,20 +321,20 @@ const CreateSubmission = ({ history }: RouterProps) => {
             }}
           >
             Upload
-          </Button>
+          </Button> */}
+          
+            <Button
+              color= {buttoncolor}
+              variant="contained"
+              size="large"
+              disabled={csvInput === false && xlsxInput === false}
+              onClick={uploadFile}
+            >
+              Upload 
+            </Button>
 
-          <Button
-            color="primary"
-            variant="contained"
-            size="large"
-            disabled={
-              location.state.detail.phase === 'Submitted' ||
-              location.state.detail.phase === 'Approved'
-            }
-            onClick={handleCSVFile}
-          >
-            Upload CSV
-          </Button>
+          
+          
 
           <div style={{ visibility: showSave, color: messageColour, fontSize: 16 }}>
             <DoneIcon />
@@ -243,7 +342,12 @@ const CreateSubmission = ({ history }: RouterProps) => {
           </div>
         </div>
       </Paper>
+      <div style={{fontSize:25}}>PREVIEW</div>
+      {csvInput || xlsxInput ? <UploadPreview  ref={datasheet} submission={prevSubmission}/> : <div></div>}
     </div>
+
+    
+
   );
 };
 
