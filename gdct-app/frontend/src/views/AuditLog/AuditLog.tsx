@@ -39,7 +39,7 @@ const CustomDatePicker = (props: {
   useEffect(()=>{
     AuditLogController.fetchLatest()
     .then(res => { 
-      if (res != null)
+      if (res != null && res.archiveMarkerDate != undefined)
         setStartDate(new Date(res.archiveMarkerDate))
     })
   }, []) 
@@ -60,12 +60,14 @@ const CustomDatePicker = (props: {
           } else if (Array.isArray(selectedDate)) {
             selectedDate = selectedDate[0]
           }
-          props.merge(new Date(selectedDate))
-          setStartDate(selectedDate)
-          props.onFilterChanged(
-            (props.columnDef as EditCellColumnDef).tableData.id.toString(),
-            selectedDate
-          );
+          if (selectedDate != undefined){
+            props.merge(new Date(selectedDate))
+            setStartDate(selectedDate)
+            props.onFilterChanged(
+              (props.columnDef as EditCellColumnDef).tableData.id.toString(),
+              selectedDate
+            );
+          }
         }}
         closeOnScroll={(e:any) => e.target === document}
         showTimeSelect
