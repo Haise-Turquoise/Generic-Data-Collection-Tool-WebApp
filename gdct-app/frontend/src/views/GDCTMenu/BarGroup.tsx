@@ -21,17 +21,20 @@ const BarGroupComponent =  (props:any) => {
 
   let submissionPeriods = [];
   let dict : any = {};
-  for (let i = 0; i< props.submissionData.length; i++){
-    submissionPeriods.push(props.submissionData[i]._id.submissionPeriod);
-    !(props.submissionData[i]._id.submissionPeriod in dict) && (dict[props.submissionData[i]._id.submissionPeriod] = [])
-    dict[props.submissionData[i]._id.submissionPeriod].push([      
-      props.submissionData[i]._id.name, 
-      props.submissionData[i].countSubmitted, 
-      props.submissionData[i].countSubmitted, 
-      props.submissionData[i].countUnsubmitted,
-      props.submissionData[i].countUnsubmitted, 
-    ]);
 
+
+  for (let i = 0; i< props.submissionData.length; i++){
+    if (props.submissionData[i]._id.submissionPeriod){
+      submissionPeriods.push(props.submissionData[i]._id.submissionPeriod);
+      !(props.submissionData[i]._id.submissionPeriod in dict) && (dict[props.submissionData[i]._id.submissionPeriod] = [])
+      dict[props.submissionData[i]._id.submissionPeriod].push([      
+        props.submissionData[i]._id.name, 
+        props.submissionData[i].countSubmitted, 
+        props.submissionData[i].countSubmitted, 
+        props.submissionData[i].countUnsubmitted,
+        props.submissionData[i].countUnsubmitted, 
+      ]);
+    }
 
   }
   //sort by date, so it always will be correct
