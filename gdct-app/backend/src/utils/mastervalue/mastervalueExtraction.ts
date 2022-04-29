@@ -172,7 +172,7 @@ export async function mastervalueExtraction(
             categoryId: categoryID,
             COATreeId: categoryTree._id,
             categoryGroup: string,
-            value: parseFloat(targetCell.text), //change this line back
+            value: parseFloat(targetCell.text || "") || undefined, //change this line back
             categoryName:categoryIdTable[categoryID],
             attributeName:attributeIdTable[attributeID],
           });

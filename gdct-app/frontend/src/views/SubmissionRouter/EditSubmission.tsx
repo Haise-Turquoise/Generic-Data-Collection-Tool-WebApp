@@ -359,8 +359,8 @@ const EditSubmission = ({ history }:{history:History}) => {
     }
     return true;
   };
-  const handleChangeStatus = async (submission:Submission, submissionNote:SubmissionNote, role:string, newProcessId:string) => {
-    if (!submissionNote){
+  const handleChangeStatus = async (submission:Submission, submissionNote:SubmissionNote, role:string, newProcessId:string, statusChangedFlag: boolean) => {
+    if (!submissionNote && !statusChangedFlag){
       Swal.fire({
         title: 'Note cannot be empty!',
         icon: 'error',
@@ -369,9 +369,17 @@ const EditSubmission = ({ history }:{history:History}) => {
         denyButtonText: 'Return',
       })
     }else {
-      const result = await dispatch(
-        updateSubmissionStatusRequest(submission, submissionNote, role, newProcessId),
-      );
+      let result;
+      if (statusChangedFlag){
+        result = await dispatch(
+          updateSubmissionStatusRequest(submission, submissionNote, role, newProcessId, true),
+        );
+      }else{
+        result = await dispatch(
+          updateSubmissionStatusRequest(submission, submissionNote, role, newProcessId, false),
+        );
+      }
+
   
       //@ts-ignore odd warning here
       if (result) {
@@ -506,6 +514,7 @@ const EditSubmission = ({ history }:{history:History}) => {
                     status.statusName,
                     // @ts-ignore
                     nextStepIdMap[status.statusName],
+                    true
                   );
                 }}
               >
