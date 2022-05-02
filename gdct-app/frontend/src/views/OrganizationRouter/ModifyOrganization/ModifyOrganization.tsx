@@ -237,7 +237,7 @@ OrgInfo.propTypes = {
   props: PropTypes.object,
 };
 
-const TabPanel = (props: TabPanelProps) => {
+const TabPanel = (props: any) => {
   const { children, value, index, ...other } = props;
   const display = value === index ? 'inline' : 'none';
 

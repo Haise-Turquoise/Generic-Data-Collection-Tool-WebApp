@@ -313,7 +313,7 @@ const AuthPage = ({
   children,
 }:{
   headerTitle?:string,
-  children:Object,
+  children:any,
 }) => {
   const classes = useStyles();
   const theme = useTheme();
