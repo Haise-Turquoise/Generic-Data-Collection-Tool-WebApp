@@ -39,7 +39,7 @@ const CustomDatePicker = (props: {
   useEffect(()=>{
     AuditLogController.fetchLatest()
     .then(res => { 
-      if (res != null)
+      if (res != null && res.archiveMarkerDate != undefined)
         setStartDate(new Date(res.archiveMarkerDate))
     })
   }, []) 
@@ -52,6 +52,7 @@ const CustomDatePicker = (props: {
         id="startDatePicker"
         selected={startDate}
         dateFormat={"yyyy-MM-dd HH:mm"}
+        popperPlacement="bottom-start"
         onChange={(selectedDate:any) => {
 
           if (!selectedDate) {
@@ -59,12 +60,14 @@ const CustomDatePicker = (props: {
           } else if (Array.isArray(selectedDate)) {
             selectedDate = selectedDate[0]
           }
-          props.merge(new Date(selectedDate))
-          setStartDate(selectedDate)
-          props.onFilterChanged(
-            (props.columnDef as EditCellColumnDef).tableData.id.toString(),
-            selectedDate
-          );
+          if (selectedDate != undefined){
+            props.merge(new Date(selectedDate))
+            setStartDate(selectedDate)
+            props.onFilterChanged(
+              (props.columnDef as EditCellColumnDef).tableData.id.toString(),
+              selectedDate
+            );
+          }
         }}
         closeOnScroll={(e:any) => e.target === document}
         showTimeSelect
@@ -72,6 +75,9 @@ const CustomDatePicker = (props: {
         showYearDropdown
         maxDate={new Date()}
         dropdownMode="select"
+        popperProps={{
+          positionFixed: true // use this to make the popper position: fixed
+        }}
       />
       <br />
       <label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;To:</label>
@@ -79,6 +85,7 @@ const CustomDatePicker = (props: {
         id="endDatePicker"
         selected={endDate}
         dateFormat={'yyyy-MM-dd HH:mm'}
+        popperPlacement="bottom-start"
         onChange={(selectedDate:any) => {
           // @ts-ignore
           setEndDate(selectedDate)
@@ -95,6 +102,9 @@ const CustomDatePicker = (props: {
         showYearDropdown
         maxDate={new Date()}
         dropdownMode="select"
+        popperProps={{
+          positionFixed: true // use this to make the popper position: fixed
+        }}
       />
     </Fragment>
   );
@@ -235,7 +245,7 @@ const AuditLogTable = () => {
       archivelogs?.forEach(auditlog => {
         auditlog.updatedAt = moment(auditlog.updatedAt).format("YYYY-MM-DD HH:mm:ss")
       })
-      if(auditlogs !== undefined&& archivelogs !== undefined) {
+      if(auditlogs !== undefined ) {
         //setAuditLogs(auditlogs.concat(archivelogs)) 
         setCombinedLogs(auditlogs.concat(archivelogs).sort((a,b)=>b.updatedAt!.localeCompare(a.updatedAt!)))
       }

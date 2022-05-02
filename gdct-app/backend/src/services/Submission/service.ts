@@ -19,9 +19,10 @@ import { mastervaluePrepopulation } from '../../utils/mastervalue/mastervaluePre
 import {ObjectId} from 'mongodb';
 
 import User ,{UserDoc} from '../../types/user'
+import UserSysRole from '../../types/usersysrole';
 import Program, {ProgramDoc} from '../../types/program';
 import TemplatePackage from '../../types/templatepackage';
-import Submission, { SubmissionPopulated } from '../../types/submission';
+import Submission, { SubmissionAggregated, SubmissionPopulated } from '../../types/submission';
 import SubmissionNote from '../../types/submissionnote';
 import SubmissionPeriod from '../../types/submissionperiod';
 import Status from '../../types/status';
@@ -30,6 +31,7 @@ import TemplateType from '../../types/templatetype';
 import Template from '../../types/template';
 import AppError from '../../utils/AppError';
 import RoleWorkflowStatusRepository from '../../repositories/RoleWorkflowStatus/repository';
+import { RoleWorkflowStatusDoc } from '../../types/RoleWorkflowStatus';
 // @Service()
 export default class SubmissionService {
   private submissionRepository:SubmissionRepository;
@@ -62,30 +64,7 @@ export default class SubmissionService {
     this.usersRepository = Container.get(UsersRepository);
     this.reportingPeriodRepository = Container.get(ReportingPeriodRepository);
     this.roleWorkflowStatusRepository = Container.get(RoleWorkflowStatusRepository);
-    // this.submissionPeriodRepository = Container.get(SubmissionPeriodRepository);
   }
-
-  // checkUserRole(userInfo, submission, permission) {
-  //   userInfo.sysRole.forEach(sysRole => {
-  //   if (sysRole.org[0]){
-  //       sysRole.org[0].program.forEach(program => {
-  //         if (
-  //           sysRole.org[0].orgId == submission.orgId &&
-  //           program.programId.toString() == submission.programId.toString()
-  //         ) {
-  //           console.log('first case')
-  //           permission.push(sysRole.role);
-  //         }
-  //       });
-  //   }
-  //   else{
-  //     console.log('second case')
-  //     permission.push(sysRole.role);
-  //   }
-  //   });
-  //   console.log('permission', permission)
-  // }
-
 
   async checkUserRole(userInfo:User, submission:Submission, permission:string[]){
     for (const sysRole of userInfo.sysRole){
@@ -103,45 +82,36 @@ export default class SubmissionService {
     }
   }
 
-  
-
   async findQuery(query: Partial<Submission>) {
     return await this.submissionRepository.findQuery(query)
   }
 
-  async findByRole(role: {orgId: string, progId: string, tempTypeId: string, role: string}) {
-    //@ts-ignore
-    let submissions: SubmissionPopulated[] = await this.submissionRepository.findQueryPopulate({ orgId: +role.orgId, programId: role.progId })
-    // determine acceptable statuses
-    const statuses: string[] = (await this.roleWorkflowStatusRepository.findByRole(role.role))?.workflowStatus || []
-    const statusIds: string[] = []
-    for (let status of statuses) {
-      const stat = await this.statusRepository.findByName(status)
-      if (stat && stat.length > 0) {
-        statusIds.push(stat[0]._id.toString())
-      }
-      // console.log('statuses', statusIds)
-    }
-    const flaggedIndicies: number[] = [] // indicies flagged for deleting
-
-    for (let i = 0; i < submissions.length; i++) {
-      // workflow processes this user can see, depends on submission workflow
-      const workflows: WorkflowProcess[] = await this.workflowProcessRepository.findNeighbors(submissions[i].workflowId.toString(), statusIds.map(id => id.toString()))
-      // from available processes -> available statuses
-      const statusRes = []
-      for (let workflowProcess of workflows) {
-        const stat = await this.statusRepository.findById(workflowProcess.statusId)
-        if (stat) {
-          statusRes.push(stat.name)
+  async findByRole(roles: UserSysRole[]) {
+    const allSubmissions = await this.submissionRepository.aggregateRoles(roles, true);
+    const appSysRoles = roles.map(role => role.appSysRole)
+    const workflowStatuses = await this.roleWorkflowStatusRepository.findByRoles(appSysRoles)
+    let filtered: SubmissionPopulated[] = [];
+    // filter statuses
+    for (let role of roles) {
+      let submissions = allSubmissions[`${role.programId}_${role.organizationId}_${role.templateTypeId}`];
+      const workflowStatusNames = workflowStatuses.filter(w => w.role === role.appSysRole).reduce((acc, w) => [...acc, ...w.workflowStatus], new Array<string>());
+      const statuses = await this.statusRepository.findByNames(workflowStatusNames)
+      const flaggedIndicies: number[] = []
+  
+      for (let i = 0; i < submissions.length; i++) {
+        // workflow processes this user can see, depends on submission workflow
+        const workflows: WorkflowProcess[] = await this.workflowProcessRepository.findNeighbors(submissions[i].workflowId.toString(), statuses.map(s => s._id.toString()))
+        // from available processes -> available statuses
+        const statusNames = (await this.statusRepository.findManyById(workflows.map(w => w.statusId))).map(s => s.name);
+        
+        if (!statusNames.includes(submissions[i].statusId.name)) {
+          flaggedIndicies.push(i)
         }
       }
-      const tempTypeId = (await this.templateRepository.findById(submissions[i].templateId)).templateTypeId
-      if (tempTypeId.toString() !== role.tempTypeId.toString() || !statusRes.includes(submissions[i].statusId.name)) {
-        flaggedIndicies.push(i)
-      }
+      submissions = submissions.filter((_sub, index) => !flaggedIndicies.includes(index))
+      filtered = filtered.concat(submissions);
     }
-    submissions = submissions.filter((_sub, index) => !flaggedIndicies.includes(index))
-    return submissions
+    return filtered
   }
 
   async createSubmissions(submissions: Submission[]) {
@@ -298,7 +268,7 @@ export default class SubmissionService {
 
 
   
-  async updateStatus(submission:Submission, submissionNote:SubmissionNote, role:string, nextProcessId:string, updatedBy:string) {
+  async updateStatus(submission:Submission, submissionNote:SubmissionNote, role:string, nextProcessId:string, updatedBy:string, statusChangedFlag: boolean) {
     const submissionNotes :any= {
       note: submissionNote,
       submissionId: submission._id,
@@ -306,6 +276,9 @@ export default class SubmissionService {
       updatedBy,
       role,
     };
+    if (statusChangedFlag){
+      submissionNotes.note = "Status Changed"
+    }
     const currentStatus = await this.statusRepository.findById(new ObjectId(submission.statusId));
     if (!currentStatus) throw new AppError(`Cannot find status by id ${submission.statusId}`);
     
@@ -361,7 +334,8 @@ export default class SubmissionService {
 
     const newSubmission = await this.submissionRepository.update(submission._id!.toString(), submission);
     //@ts-ignore
-    if (role === 'Approved') this.phaseSubmission(newSubmission._id);
+    console.log("===== WHAT IS:", role);
+    if (role === 'Approved') this.phaseSubmission(newSubmission._id.toString());
 
     return newSubmission;
 

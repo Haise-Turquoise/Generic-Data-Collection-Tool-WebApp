@@ -57,6 +57,8 @@ const SubmissionStatusTable = () => {
   }
 
   const statusLookup: {[key: string]: string} = {}
+  const templateTypeLookup: {[key: string]: string} = {}
+  const programLookup: {[key: string]: string} = {}
 
   useEffect(() => {
     SubmissionStatusController.fetch().then((res: unknown) => {
@@ -71,6 +73,12 @@ const SubmissionStatusTable = () => {
         }
         if (!statusLookup[subStat.status!.name]) {
           statusLookup[subStat.status!.name] = subStat.status!.name
+        }
+        if (!templateTypeLookup[subStat.templateType.name]) {
+          templateTypeLookup[subStat.templateType.name] = subStat.templateType.name
+        }
+        if (!programLookup[subStat.program.code]) {
+          programLookup[subStat.program.code] = subStat.program.code
         }
       })
       setSubmissionStatus(res as SubmissionStatus[])
@@ -122,14 +130,14 @@ const SubmissionStatusTable = () => {
     () => [
       { title: 'Package', field: 'name' },
       { title: 'Template', field: 'template.name' },
-      { title: 'Template Type', field: 'templateType.name' },
+      { title: 'Template Type', field: 'templateType.name', lookup: templateTypeLookup },
       { title: 'Reporting Period', field: 'submissionPeriod.name' },
       { title: 'Org ID', field: 'org.id' },
+      { title: 'Program', field: 'program.code', lookup: programLookup },
       { title: 'Organization', field: 'org.name' },
       { title: 'Submission', field: 'submission.name' },
       { title: 'Status', field: 'status.name', lookup: statusLookup },
       { title: 'isOpen', field: 'reportingPeriod.submissionClosed', lookup: {false: 'Open', true: 'Closed'}},
-
       { title: 'Updated At', field: 'submissionNote.updatedDate' },
     ],
     [],

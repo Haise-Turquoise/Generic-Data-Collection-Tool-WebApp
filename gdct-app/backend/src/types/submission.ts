@@ -1,7 +1,11 @@
 import { ObjectId } from 'mongodb';
 import { Document } from 'mongoose';
+import TemplatePackage from '../entities/TemplatePackage';
+import Program from './program';
 import Status from './status';
 import SubmissionPeriod from './submissionperiod';
+import { SheetData } from './template';
+import User from './user';
 import WorkflowProcess from './workflowprocess';
 
 export default interface Submission {
@@ -12,7 +16,7 @@ export default interface Submission {
   orgId: number;
   programId: ObjectId;
   submittedDate: Date | null;
-  workbookData: any;
+  workbookData: SheetData[];
   templateName: string;
   approved: string;
   workflowProcessId: ObjectId|null;
@@ -38,10 +42,10 @@ export interface SubmissionPopulated {
   submissionPeriodId: SubmissionPeriod,
   _id: ObjectId;
   templateId: ObjectId;
-  templatePackageId: ObjectId;
+  templatePackageId: TemplatePackage;
   name: string;
   orgId: number;
-  programId: ObjectId;
+  programId: Program;
   submittedDate: Date;
   workbookData: any;
   templateName: string;
@@ -50,7 +54,7 @@ export interface SubmissionPopulated {
   year: string;
   createdAt: Date;
   updatedAt: Date;
-  updatedBy: ObjectId;
+  updatedBy: User;
   isPublished: boolean;
   version: number;
   isLatest: boolean;
@@ -63,4 +67,8 @@ export interface SubmissionPopulated {
 export interface SubmissionDoc extends Submission, Document {
   _id:ObjectId
   id: number;
+}
+
+export interface SubmissionAggregated {
+  [key: string]: SubmissionPopulated[]
 }

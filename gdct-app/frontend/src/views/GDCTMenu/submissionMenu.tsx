@@ -40,7 +40,7 @@ const SubmissionMenu = () => {
         let parsed = sysRoleTraversal(sysRole || [])
         // we are only concerned with roles that match current selected user role
         // ex someone who is Submitter + Approver should only see whichever they signed in to
-        parsed = parsed.filter(role => role.role === localStorage.getItem('currentRole'))
+        parsed = parsed.filter(role => role.appSysRole === localStorage.getItem('currentRole'))
 
         await SubmissionStatusController.createByRoles(parsed, currUID)
         // for finding submissions

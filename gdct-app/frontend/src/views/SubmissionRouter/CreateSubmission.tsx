@@ -40,24 +40,8 @@ const SubmissionHeader = () => (
   </Paper>
 );
 
-// const FileUpload = () => {
-//   const dispatch = useDispatch();
-//   const handleChange = useCallback(
-//     async event => {
-      // excelImportHandler(event, (workBookData: any) => {
-      //   dispatch(SubmissionWorkbookStore.actions.RECEIVE(workBookData));
-      // });
-//     },
-//     [dispatch],
-//   );
 
-//   return (
-//     <Button className="submission_upload_button">
-      
-//       <input type="file" onChange={handleChange} />
-//     </Button>
-//   );
-// };
+
 
 const sheetOption = { 
   mode: 'read', // edit | read
@@ -264,6 +248,7 @@ const CreateSubmission = ({ history }: RouterProps) => {
     submissionController
     .updateWorkbook(prevSubmission, submissionNote)
   }
+
 
   return (
     <div className="submissions">

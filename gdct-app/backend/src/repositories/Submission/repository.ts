@@ -1,10 +1,11 @@
 import SubmissionEntity from '../../entities/Submission/Submission';
 import BaseRepository from '../repository';
 import SubmissionModel from '../../models/Submission';
-import Submission, { SubmissionDoc } from '../../types/submission';
+import Submission, { SubmissionAggregated, SubmissionDoc } from '../../types/submission';
 import { ObjectId } from 'mongodb';
 import { FilterQuery } from 'mongoose';
 import AppError from '../../utils/AppError';
+import UserSysRole from '../../types/usersysrole';
 
 export default class SubmissionRepository extends BaseRepository<Submission, SubmissionDoc> {
   constructor() {
@@ -179,5 +180,114 @@ export default class SubmissionRepository extends BaseRepository<Submission, Sub
       .populate('programId')
       .populate('updatedBy')
       .populate('templatePackageId')
+  }
+
+  populateIdStep(from: string, localField: string) {
+    return ({
+      from,
+      localField,
+      foreignField: '_id',
+      as: localField,
+    })
+  }
+
+  async aggregateRoles(roles: UserSysRole[], populated = false): Promise<SubmissionAggregated> {
+    const facets: {[key: number]: UserSysRole[]} = roles.reduce((acc, curr, index) => populated ? ({
+      ...acc,
+      [`${curr.programId}_${curr.organizationId}_${curr.templateTypeId}`]: [
+        {
+          $match: {orgId: parseInt(curr.organizationId), programId: new ObjectId(curr.programId)},
+        },
+        // populate needed fields
+        {
+          $lookup: this.populateIdStep("Status", "statusId")
+        },
+        {
+          $lookup: this.populateIdStep("WorkflowProcess", "workflowProcessId")
+        },
+        {
+          $lookup: this.populateIdStep("SubmissionPeriod", "submissionPeriodId")
+        },
+        {
+          $lookup: this.populateIdStep("User", "updatedBy")
+        },
+        {
+          $lookup: this.populateIdStep("TemplatePackage", "templatePackageId")
+        },
+        {
+          $lookup: this.populateIdStep("Program", "programId")
+        },
+        {
+          $lookup: {
+            from: "Template",
+            as: "templateId",
+            let: { tmpid: "$templateId" },
+            pipeline: [
+              {
+                $match: {
+                  $expr: {
+                    $and: [
+                      {
+                        $eq: [
+                          '$_id',
+                          '$$tmpid'
+                        ]
+                      },
+                      {
+                        $eq: [
+                          '$templateTypeId',
+                          new ObjectId(curr.templateTypeId)
+                        ]
+                      }
+                    ]
+                  }
+                }
+              }
+            ]
+          }
+        },
+        // unwind lookups to first element
+        {
+          $project: {
+            statusId: {$arrayElemAt: ["$statusId", 0]},
+            workflowProcessId: {$arrayElemAt: ["$workflowProcessId", 0]},
+            submissionPeriodId: {$arrayElemAt: ["$submissionPeriodId", 0]},
+            updatedBy: {$arrayElemAt: ["$updatedBy", 0]},
+            templatePackageId: {$arrayElemAt: ["$templatePackageId", 0]},
+            programId: {$arrayElemAt: ["$programId", 0]},
+            templateId: {$arrayElemAt: ["$templateId", 0]},
+            // include all other fields as-is
+            _id: 1,
+            isPublished: 1,
+            version: 1,
+            isLatest: 1,
+            name: 1,
+            approver: 1,
+            createdAt: 1,
+            orgId: 1,
+            submittedDate: 1,
+            templateName: 1,
+            updatedAt: 1,
+            workbookData: 1,
+            workflowId: 1,
+          }
+        },
+      ]
+    }) : ({
+      ...acc,
+      [`${curr.programId}_${curr.organizationId}_${curr.templateTypeId}`]:
+        [{$match: {orgId: +curr.organizationId, programId: new ObjectId(curr.programId)}}]
+    }), {});
+    try {
+      const pipeline = this._model.aggregate([
+        {
+          $facet: facets
+        }
+      ])
+      return (await pipeline)[0]
+    } catch (e) {
+      console.error(e)
+      return {};
+    }
   }
 }

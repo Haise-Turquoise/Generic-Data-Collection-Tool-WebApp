@@ -133,7 +133,7 @@ const WorkflowHeader = ({ type, id }: { type: actionType; id: string }) => {
 
   let name = useSelector((state: state) => selectWorkflowName(state), shallowEqual);
   const handleChangeName = useCallback(
-    ({ target: { value } }) => {
+    ({ target: { value } }: any) => {
       if (type === 'create' && workflows.find(wrk => wrk.name === value)) {
         console.log('will block')
         setError('duplicate name not allowed')
@@ -268,7 +268,7 @@ const WorkflowStatuses = () => {
   }, []);
 
   const handleChangeFilter = useCallback(
-    ({ target: { value } }) => {
+    ({ target: { value } }: any) => {
       dispatch(WorkflowStoreActions.UPDATE_WORKFLOW_FILTER(value));
     },
     [dispatch],

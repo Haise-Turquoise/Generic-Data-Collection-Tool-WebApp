@@ -31,7 +31,7 @@ const SubmissionPeriodDialog = ({ handleChange }:{handleChange:(data:SubmissionP
   );
 
   const handleSelect = useCallback(
-    data => {
+    (data: any) => {
       handleChange(data);
       handleClose();
     },

@@ -3,13 +3,7 @@ import Submission, { SubmissionPopulated } from '../types/submission';
 import SubmissionPeriod from '../types/submissionperiod';
 import SubmissionNote from '../types/submissionnote';
 import { host } from '../constants/domain';
-
-interface role {
-  role: string,
-  orgId: string,
-  progId: string,
-  tempTypeId: string,
-}
+import UserSysRole from '../types/usersysrole';
 
 const submissionController = (() => {
   const submissionAxios = axios.create({
@@ -33,8 +27,9 @@ const submissionController = (() => {
       role: string | undefined,
       nextProcessId: string,
       updatedBy: string,
+      statusChangedFlag: boolean,
     ): Promise<Submission | null> =>
-      submissionAxios.put(`/updateSubmissionStatus`, {submission, submissionNote, role, nextProcessId, updatedBy}).then(res=>res.data.updatedSubmission),
+      submissionAxios.put(`/updateSubmissionStatus`, {submission, submissionNote, role, nextProcessId, updatedBy, statusChangedFlag}).then(res=>res.data.updatedSubmission),
     fetchSubmission: async (_id: string): Promise<Submission | null> => 
       submissionAxios.post('/findSubmission', { _id }).then(res => res.data.submission),
     fetchSubmissionReportingPeriod: async (_id: string): Promise<SubmissionPeriod | null> =>
@@ -46,9 +41,10 @@ const submissionController = (() => {
     fetch: async (query: Partial<Submission>): Promise<Submission[]> => submissionAxios.post('/findQuery', { query }).then(res => res.data.submissions),
     fetchNamesOfIds: async (programId: string, submissionPeriodId: string ): Promise<any> => submissionAxios.post('/fetchNamesOfIds',{programId, submissionPeriodId}).then(res => res),
     delete: async (_id: string) => submissionAxios.post('/delete', { _id }),
-    fetchByRole: async (roles: role[]): Promise<SubmissionPopulated[]> => submissionAxios.post('/findByRole', { roles }).then(res => res.data.submissions),
     validateAndUpdate: async (submission: Submission, submissionNote: SubmissionNote): Promise<any | null> => submissionAxios.post('/validateAndUpdate', {submission, submissionNote}).then(res => res),
-  };
+
+    fetchByRole: async (roles: UserSysRole[]): Promise<SubmissionPopulated[]> => submissionAxios.post('/findByRole', { roles }).then(res => res.data.submissions),
+};
 })();
 
 export default submissionController;

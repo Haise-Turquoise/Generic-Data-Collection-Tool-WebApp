@@ -41,7 +41,7 @@ const TemplateDialog = ({ selectedTemplates, shouldClose, handleChange }:
   ]);
 
   const handleSelect = useCallback(
-    data => {
+    (data: any) => {
       handleChange(data);
       if (shouldClose) handleClose();
     },

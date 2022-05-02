@@ -2,7 +2,10 @@ import { Service } from 'typedi';
 import { Router } from 'express';
 import SubmissionService from '../../services/Submission';
 import { SubmissionPopulated } from '../../types/submission';
+
 import  submissionValidation from  '../../utils/submissionValidation';
+
+import UserSysRole from '../../types/usersysrole';
 
 const SubmissionController = Service([SubmissionService], service => {
   const router = Router();
@@ -59,19 +62,9 @@ const SubmissionController = Service([SubmissionService], service => {
     })
 
     router.post('/submissions/findByRole', async (req, res, next) => {
-      interface role {
-        orgId: string,
-        progId: string,
-        tempTypeId: string,
-        role: string
-      }
-      const { roles }: {roles:role[]} = req.body
+      const { roles }: {roles:UserSysRole[]} = req.body
 
-      let submissions: SubmissionPopulated[] = []
-      for (let role of roles) {
-        const res = await service.findByRole(role)
-        submissions = submissions.concat(res)
-      }
+      const submissions = await service.findByRole(roles)
       res.json({ submissions })
     })
 
@@ -95,10 +88,10 @@ const SubmissionController = Service([SubmissionService], service => {
 
     router.put('/submissions/updateSubmissionStatus', (req, res, next) => {
       // Get query from middleware -- auth handler
-      const { submission, submissionNote, role, nextProcessId, updatedBy } = req.body;
+      const { submission, submissionNote, role, nextProcessId, updatedBy, statusChangedFlag } = req.body;
 
       service
-        .updateStatus(submission, submissionNote, role, nextProcessId, updatedBy)
+        .updateStatus(submission, submissionNote, role, nextProcessId, updatedBy, statusChangedFlag)
         .then((data) => res.json({updatedSubmission:data}))
         .catch(next);
     });

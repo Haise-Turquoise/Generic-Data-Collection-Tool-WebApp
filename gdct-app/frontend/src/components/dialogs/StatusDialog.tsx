@@ -30,7 +30,7 @@ const StatusDialog = ({ handleChange }:{handleChange:(data:any)=>void}) => {
   ]);
 
   const handleSelect = useCallback(
-    data => {
+    (data: any) => {
       handleChange(data);
       handleClose();
     },

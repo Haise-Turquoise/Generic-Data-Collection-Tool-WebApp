@@ -12,15 +12,20 @@ const masterValueRepository = Container.get(MasterValueRepository);
 const orgRepository = Container.get(OrgRepository);
 const submissionPeriodRepository = Container.get(SubmissionPeriodRepository);
 
-
+/**
+ * Returns an object mapping attr ids to their index in the attribute row
+ * @param sheet The sheet to extract from
+ * @returns Object {[id: string]: number}
+ */
 export const extractAttributeIds = (sheet:SheetData):{[index:string]:number}=>{
   const targetRow = sheet.rows[0];
   const attributeMap = {}
   if (targetRow){
     const attributeRow = targetRow.cells;
     for (const key in attributeRow){
+      const i = parseInt(key) // for in loops are forced to be strings
       // Record the col if entry in cell is a number
-      if (attributeRow[key] && !isNaN(Number(attributeRow[key].text)) && attributeRow[key].text !== ""){
+      if (attributeRow[i] && !isNaN(Number(attributeRow[i].text)) && attributeRow[i].text !== ""){
         //@ts-ignore
         attributeMap[attributeRow[key].text] = key;
       }
@@ -29,6 +34,11 @@ export const extractAttributeIds = (sheet:SheetData):{[index:string]:number}=>{
   return attributeMap
 }
 
+/**
+ * Returns an object mapping cat ids to their index in the category col
+ * @param sheet The sheet to extract from
+ * @returns Object {[id: string]: number}
+ */
 export const extractCategoryIds = (sheet:SheetData):{[index:string]:number}=>{
   // @ts-ignore
   const maxRowNum = Math.max(...Object.keys(sheet.rows).slice(0, -1))

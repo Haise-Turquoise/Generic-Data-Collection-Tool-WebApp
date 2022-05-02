@@ -78,6 +78,8 @@ const SubmissionDashboard = ({ history }:{history:History}) => {
   const [submitterFlag, setSubmitterFlag] = useState(false)
   const [loading, setLoading] = useState(true)
 
+  const [message, setMessage] = useState("Loading...");
+
   const timeOption = { year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric' };
   useEffect(() => {
     if (!currUID) {
@@ -85,16 +87,19 @@ const SubmissionDashboard = ({ history }:{history:History}) => {
     }
     // load data
     (async function() {
+      setMessage("Examining Your Permissions")
       const sysRole = (await usersController.fetchById(currUID))?.sysRole
       let parsed = sysRoleTraversal(sysRole || [])
       // we are only concerned with roles that match current selected user role
       // ex someone who is Submitter + Approver should only see whichever they signed in to
-      parsed = parsed.filter(role => role.role === localStorage.getItem('currentRole'))
-
+      parsed = parsed.filter(role => role.appSysRole === localStorage.getItem('currentRole'))
+      setMessage("Creating New Submissions")
       await SubmissionStatusController.createByRoles(parsed, currUID)
       // for finding submissions
+      setMessage("Loading Your Submissions")
       let submissions = await submissionController.fetchByRole(parsed)
       // filter to latest submissions
+      setMessage("Filtering Received Submissions")
       submissions = submissions.filter(sub => sub.isLatest)
       // temporary fix for duplicates
       submissions = submissions.reduce((unique: SubmissionPopulated[], current: SubmissionPopulated) => {
@@ -105,7 +110,7 @@ const SubmissionDashboard = ({ history }:{history:History}) => {
       setSubmissions(submissions)
 
       // set submitter flag
-      if (parsed.find(role => role.role === 'Submitter')) {
+      if (parsed.find(role => role.appSysRole === 'Submitter')) {
         setSubmitterFlag(true)
       }
       setLoading(false)
@@ -242,7 +247,7 @@ const SubmissionDashboard = ({ history }:{history:History}) => {
     console.log('loading', loading)
   }, [loading])
 
-  return loading ? <Loading /> : (
+  return loading ? <Loading message={message} /> : (
     <div className="submissions">
       <SubmissionHeader />
 

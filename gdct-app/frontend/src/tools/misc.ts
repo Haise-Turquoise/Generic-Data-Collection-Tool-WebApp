@@ -7,6 +7,7 @@ import { unauthorized_dialog } from '../components/Unauthorized_Dialog/Unauthori
 import User from '../types/user';
 import { Submission } from '../types/submissions';
 import reportingPeriodController from '../controllers/reportingPeriod';
+import UserSysRole from '../types/usersysrole';
 
 export const isObjectEmpty = (object:any) => {
   for (let key in object) return false;
@@ -883,20 +884,20 @@ interface role {
  * @param sysRole A user.sysRole object
  * @returns an array of objects of the form {role, orgId, progId, templateTypeId}
  */
-export const sysRoleTraversal = (sysRole: User["sysRole"]): role[] => {
+export const sysRoleTraversal = (sysRole: User["sysRole"]): UserSysRole[] => {
   if (sysRole.length === 0) {
     return []
   }
-  const parsed: role[] = []
+  const parsed: UserSysRole[] = []
   for (let srole of sysRole) {
     for (let org of srole.org) {
       for (let prog of org.program) {
         for (let temp of prog.template) {
           parsed.push({
-            role: srole.role,
-            orgId: org.orgId,
-            progId: prog.programId,
-            tempTypeId: temp.templateTypeId,
+            appSysRole: srole.role,
+            organizationId: org.orgId,
+            programId: prog.programId,
+            templateTypeId: temp.templateTypeId
           })
         }
       }
