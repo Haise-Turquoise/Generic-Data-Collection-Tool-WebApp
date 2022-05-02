@@ -275,7 +275,7 @@ export default class SubmissionRepository extends BaseRepository<Submission, Sub
       ]
     }) : ({
       ...acc,
-      [`${curr.programId}_${curr.organizationId}`]:
+      [`${curr.programId}_${curr.organizationId}_${curr.templateTypeId}`]:
         [{$match: {orgId: +curr.organizationId, programId: new ObjectId(curr.programId)}}]
     }), {});
     try {

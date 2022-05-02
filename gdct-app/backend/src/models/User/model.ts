@@ -1,5 +1,5 @@
 // import bcrypt from 'bcrypt';
-import dotenv from 'dotenv';
+import {config} from 'dotenv';
 import { Schema, model } from 'mongoose';
 import { UserDoc } from '../../types/user';
 //@ts-ignore
@@ -7,7 +7,7 @@ import bcrypt from 'bcryptjs';
 
 const { ObjectId } = Schema.Types;
 
-dotenv.config();
+config();
 
 const User = new Schema<UserDoc>(
   {
