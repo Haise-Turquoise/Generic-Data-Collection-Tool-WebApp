@@ -7,14 +7,14 @@ export const lockSheet = (cols:number[], rows:number[], sheet:SheetData)=>{
     if (sheet.rows[rowNum]){
       const cells = sheet.rows[rowNum].cells as SheetDataCells;
       Object.keys(cells).forEach(colNum=>{
-        cells[colNum].editable = false;
+        cells[parseInt(colNum)].editable = false;
       });
     }
   });
 
   // Go through all the columns
   Object.keys(sheet.rows).forEach(rowNum=>{
-    const cells = sheet.rows[rowNum].cells;
+    const cells = sheet.rows[parseInt(rowNum)]?.cells;
     if (cells){
       cols.forEach(colNum=>{
         if (cells[colNum]){
@@ -38,8 +38,9 @@ export const findFirstAttributeCol = (sheet:SheetData)=>{
     const attributeRow = targetRow.cells as SheetDataCells;
     const attributeKeys = Object.keys(attributeRow);
     for (const key of attributeKeys){
+      const i = parseInt(key)
       // return the col if entry in cell is a number
-      if (attributeRow[key] && !isNaN(Number(attributeRow[key].text))){
+      if (attributeRow[i] && !isNaN(Number(attributeRow[i].text))){
         return Number(key);
       }
     }
