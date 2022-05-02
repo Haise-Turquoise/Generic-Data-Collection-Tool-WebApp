@@ -811,7 +811,7 @@ const Register_container = (props: any) => {
   console.log(props)
   const dispatch = useDispatch();
   const history = useHistory();
-  const handleOrgGroupChange = useCallback(event => {
+  const handleOrgGroupChange = useCallback((event: any) => {
     dispatch(orgGroupChange(event));
   }, []);
   const handleSnackbarClose = useCallback(() => {
@@ -820,7 +820,7 @@ const Register_container = (props: any) => {
   const handleBack = useCallback(() => {
     dispatch(stepBack());
   }, []);
-  const handleNext = useCallback(values => {
+  const handleNext = useCallback((values: any) => {
     dispatch(stepNext(values));
   }, []);
   const handleSubmit = useCallback(() => {
@@ -838,19 +838,19 @@ const Register_container = (props: any) => {
       }
     });
   }, []);
-  const handleAppSysChange = useCallback(event => {
+  const handleAppSysChange = useCallback((event: any) => {
     dispatch(appSysChange(event));
   }, []);
-  const handleOrgChange = useCallback(selectedOrganization => {
+  const handleOrgChange = useCallback((selectedOrganization: any) => {
     dispatch(orgChange(selectedOrganization));
   }, []);
-  const handleProgramChange = useCallback(selectedPrograms => {
+  const handleProgramChange = useCallback((selectedPrograms: any) => {
     dispatch(programChange(selectedPrograms));
   }, []);
   const handleChangeSubmission = useCallback(() => {
     dispatch(changeSubmission());
   }, []);
-  const handleChangePermission = useCallback((rowData, permission) => {
+  const handleChangePermission = useCallback((rowData: any, permission: any) => {
     dispatch(changePermission(rowData, permission));
   }, []);
 

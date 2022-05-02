@@ -114,12 +114,12 @@ const COATreeTreeStructure = ({ sheetNameId }: { sheetNameId: string }) => {
     shallowEqual,
   );
   const handleChange = useCallback(
-    tree => dispatch(COATreeStore.actions.UPDATE_LOCAL_COA_TREE_UI({ tree })),
+    (tree:any) => dispatch(COATreeStore.actions.UPDATE_LOCAL_COA_TREE_UI({ tree })),
     [dispatch],
   );
 
   const nodeProps = useCallback(
-    nodeProps => {
+    (nodeProps:any) => {
       const handleDelete = () => {
         dispatch(COATreeStore.actions.DELETE_COA_TREE_UI({ node: nodeProps }));
         if (nodeProps.node.content) {

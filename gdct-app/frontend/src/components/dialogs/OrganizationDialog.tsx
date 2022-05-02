@@ -32,7 +32,7 @@ const OrganizationDialog = ({ handleChange }:{handleChange:(_id:string)=>void}) 
   ]);
 
   const handleSelect = useCallback(
-    data => {
+    (data: any) => {
       handleChange(data._id);
       handleClose();
     },

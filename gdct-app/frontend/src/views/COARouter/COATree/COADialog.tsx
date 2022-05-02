@@ -38,9 +38,9 @@ const COADialog = ({ Auditlog_Operations }: { Auditlog_Operations: string[] }) =
     shallowEqual,
   );
 
-  const getKey = useCallback(item => item.id, []);
+  const getKey = useCallback((item: any) => item.id, []);
   const handleSelect = useCallback(
-    item => {
+    (item: any) => {
       dispatch(COATreeStore.actions.SELECT_COA_COA_TREE_UI({ item }));
       Auditlog_Operations.push(`        Added Node: ${item.name}`);
     },

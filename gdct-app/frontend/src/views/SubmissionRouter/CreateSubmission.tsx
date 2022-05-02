@@ -25,7 +25,7 @@ const SubmissionHeader = () => (
 const FileUpload = () => {
   const dispatch = useDispatch();
   const handleChange = useCallback(
-    async event => {
+    async (event: any) => {
       excelImportHandler(event, (workBookData: any) => {
         dispatch(SubmissionWorkbookStore.actions.RECEIVE(workBookData));
       });
@@ -73,7 +73,7 @@ const CreateSubmission = ({ history }: RouterProps) => {
   };
 
   const handleCreateSubmission = useCallback(
-    (submissionNote, submissionWorkbook) =>
+    (submissionNote: any, submissionWorkbook: any) =>
     //TODO need help on this
     //@ts-ignore
       dispatch(updateWorkbookRequest(submissionNote, submissionWorkbook, location.state.detail)),

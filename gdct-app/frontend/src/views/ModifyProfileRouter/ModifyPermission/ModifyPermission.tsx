@@ -454,7 +454,7 @@ const getStepContent = (
 // Get the state and shown it on the website
 const ModifyPermission_container = (props:any) => {
   const dispatch = useDispatch();
-  const handleOrgGroupChange = useCallback(event => {
+  const handleOrgGroupChange = useCallback((event: any) => {
     console.log(event)
     dispatch(orgGroupChange(event));
   }, []);
@@ -479,19 +479,19 @@ const ModifyPermission_container = (props:any) => {
       }
     });
   }, []);
-  const handleAppSysChange = useCallback(event => {
+  const handleAppSysChange = useCallback((event: any) => {
     dispatch(appSysChange(event));
   }, []);
-  const handleOrgChange = useCallback(selectedOrganization => {
+  const handleOrgChange = useCallback((selectedOrganization: any) => {
     dispatch(orgChange(selectedOrganization));
   }, []);
-  const handleProgramChange = useCallback(selectedPrograms => {
+  const handleProgramChange = useCallback((selectedPrograms: any) => {
     dispatch(programChange(selectedPrograms));
   }, []);
   const handleChangeSubmission = useCallback(() => {
     dispatch(changeSubmissionInModifyPermission());
   }, []);
-  const handleChangePermission = useCallback((rowData, permission) => {
+  const handleChangePermission = useCallback((rowData: any, permission: any) => {
     dispatch(changePermission(rowData, permission));
   }, []);
 

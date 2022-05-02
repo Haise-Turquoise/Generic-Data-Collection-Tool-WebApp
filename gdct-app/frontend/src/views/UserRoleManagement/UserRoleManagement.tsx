@@ -259,7 +259,7 @@ export default function SignUp() {
               <Typography variant="subtitle1">
                 You will be redirected to authorized pages. Please wait in 2 sec.
               </Typography>
-              {processSignUp()}
+              <>{processSignUp()}</>
             </React.Fragment>
           ) : (
             <React.Fragment>
