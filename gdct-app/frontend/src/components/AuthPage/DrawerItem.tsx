@@ -54,8 +54,8 @@ export default function DrawerItem(props:any) {
         {/*@ts-ignore*/}
         <IconItem name={name} url={url} icon={icon} isSubMenu={isSubMenu} option={option} />
       </Button>
+      {/*@ts-ignore*/}
       <StyledMenu
-        //@ts-ignore
         id="customized-menu"
         anchorEl={anchorEl}
         keepMounted
