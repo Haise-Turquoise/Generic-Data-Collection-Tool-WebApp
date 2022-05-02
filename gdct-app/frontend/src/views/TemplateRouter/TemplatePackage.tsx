@@ -200,7 +200,7 @@ const Sections = ({
 // For handling changes in each section, and popups for template and program addition
 const Content = ({ setFieldValue, handleChange, values }: FormProps) => {
   const handleChangeField = useCallback(
-    field => (data: any) => {
+    (field: any) => (data: any) => {
       setFieldValue(field, data);
     },
     [setFieldValue, values],
@@ -226,7 +226,7 @@ const Content = ({ setFieldValue, handleChange, values }: FormProps) => {
   }, [values]);
 
   const handleAddTemplate = useCallback(
-    template => {
+    (template: any) => {
       let newTemplates = values.templateIds.filter(({ _id }: { _id: string }) => _id !== template._id);
 
       if (newTemplates.length === values.templateIds.length)
@@ -238,7 +238,7 @@ const Content = ({ setFieldValue, handleChange, values }: FormProps) => {
   );
 
   const handleAddProgram = useCallback(
-    program => {
+    (program: any) => {
       let newPrograms = values.programIds.filter(({ _id }: { _id: string }) => _id !== program._id);
 
       if (newPrograms.length === values.programIds.length)
@@ -250,14 +250,14 @@ const Content = ({ setFieldValue, handleChange, values }: FormProps) => {
   );
 
   const handleRemoveTemplate = useCallback(
-    template => {
+    (template: any) => {
       handleChangeTemplates(values.templateIds.filter(({ _id }: { _id: string }) => _id !== template._id));
     },
     [values, handleChangeTemplates],
   );
 
   const handleRemoveProgram = useCallback(
-    program => {
+    (program: any) => {
       handleChangePrograms(values.programIds.filter(({ _id }: { _id: string }) => _id !== program._id));
     },
     [values, handleChangePrograms],
@@ -353,7 +353,7 @@ const TemplatePackage = ({
     };
   }, [dispatch, _id]);
 
-  const handleSubmit = useCallback(populatedData => {
+  const handleSubmit = useCallback((populatedData: any) => {
     // Reformat data based on the callback of dispatch below
     const formattedTemplatePackage = {
       _id,

@@ -260,7 +260,7 @@ const ModifyUserInfo = () => {
   }, [dispatch]);
 
   const handleSubmit = useCallback(
-    populatedData => {
+    (populatedData: any) => {
       // Reformat data based on the callback of dispatch below
       const formattedUserInfo = {
         _id: userID,

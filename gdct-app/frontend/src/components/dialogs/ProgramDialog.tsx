@@ -35,7 +35,7 @@ const ProgramDialog = ({ selectedPrograms, handleChange, shouldClose = true }:{
   ]);
 
   const handleSelect = useCallback(
-    data => {
+    (data: any) => {
       handleChange(data);
       if (shouldClose) handleClose();
     },

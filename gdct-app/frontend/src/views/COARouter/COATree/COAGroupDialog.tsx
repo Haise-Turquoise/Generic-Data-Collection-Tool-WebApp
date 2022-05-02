@@ -50,7 +50,7 @@ const COAGroupDialog = ({ sheetNameId, Auditlog_Operations }:
   }, [dispatch]);
 
   const handleSelect = useCallback(
-    COAGroup => {
+    (COAGroup: any) => {
       dispatch(createCOATreeRequest(COAGroup, sheetNameId, true));
       Auditlog_Operations.push(`Added Group: ${COAGroup.name}`);
     },

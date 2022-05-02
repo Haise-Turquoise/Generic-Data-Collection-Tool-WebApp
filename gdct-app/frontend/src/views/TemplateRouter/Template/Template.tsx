@@ -48,7 +48,7 @@ const TemplatePhases = ({ template }: { template: Template }) => {
   }, [template]);
 
   const handleClickWorkflow = useCallback(
-    processId => {
+    (processId: any) => {
       dispatch(updateTemplateWorkflowProcess(template._id, processId));
     },
     [template, dispatch],
