@@ -6,6 +6,7 @@ import React, { ReactText } from 'react';
 import { unauthorized_dialog } from '../components/Unauthorized_Dialog/Unauthorized_Dialog';
 import User from '../types/user';
 import { Submission } from '../types/submissions';
+import reportingPeriodController from '../controllers/reportingPeriod';
 
 export const isObjectEmpty = (object:any) => {
   for (let key in object) return false;
@@ -523,7 +524,7 @@ export const templateDownloader = (workBookName:string, sheetData:SheetData[]) =
 
 
 
-export const templateCSVFormat = (currentSheetData:any, submissonInfo:Submission,filename?:string, info?:any) =>{
+export const templateCSVFormat = async (currentSheetData:any, submissonInfo:Submission,filename?:string, info?:any) =>{
   
   var attr_row = currentSheetData.rows[0].cells;
   
@@ -532,7 +533,7 @@ export const templateCSVFormat = (currentSheetData:any, submissonInfo:Submission
   var cat_locations = [];
   var cat_ids = [];
   var csvData = ['programId,programName,orgId,templatePackageId,templateId,reportingPeriod,categoryId,attributeId,value'];
-  console.log('hit1');
+ 
   for(var key in attr_row){
     if(attr_row[key].text != undefined && !isNaN(attr_row[key].text)){
       attr_locations.push(key);
@@ -549,9 +550,30 @@ export const templateCSVFormat = (currentSheetData:any, submissonInfo:Submission
       }
     }
   }
-  console.log('hit2');
-  console.log(attr_locations)
-  console.log(cat_locations)
+  console.log("before")
+  console.log(attr_ids)
+ 
+  if( attr_ids.length > 0){
+    let firstSix = attr_ids.map(id => id.substring(0,6))
+    //console.log(firstSix)
+    let fetches = await reportingPeriodController.fetchSpecificReportingPeriods(firstSix);
+    console.log("DING DING DING")
+    console.log(fetches.reportingPeriods)
+
+    for(var i = 0; i < attr_ids.length; i++){
+      for(var report in fetches.reportingPeriods){
+        if(fetches.reportingPeriods[report].code === firstSix[i] && fetches.reportingPeriods[report].submissionClosed === true){
+          attr_ids.splice(i,1);
+          attr_locations.splice(i,1);
+        }
+      }
+    }
+    console.log('after')
+    console.log(attr_ids)
+  }
+  
+
+  
   for(var i = 0; i<cat_locations.length;i++){
     for(var j= 0; j<attr_locations.length;j++){
 
@@ -567,10 +589,9 @@ export const templateCSVFormat = (currentSheetData:any, submissonInfo:Submission
       csvData.push(programId+","+ info.programName +","+orgId+","+templatePackageId+","+templateId+","+ info.reportingPeriod+","+cat_ids[i]+","+attr_ids[j]+","+val);
     }
   }
-  console.log('hit3');
+
   let csvString = csvData.join("\n");
-  //console.log(csvString);
-  //console.log(csvString.length);
+  
   const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
     const link:any = document.createElement('a');
     if (link.download !== undefined) {

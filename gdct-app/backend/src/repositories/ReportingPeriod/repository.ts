@@ -44,6 +44,11 @@ export default class ReportPeriodRepository extends BaseRepository<ReportingPeri
     );
   }
 
+  async findSpecificPeriods(ids: any){
+
+    return ReportingPeriodModel.find({code: {$in : ids} });
+
+  }
   async findSubmissionClosed(query: FilterQuery<ReportingPeriodDoc>) {
     return ReportingPeriodModel.find(query, { name: 0, _id: 0, endDate: 0, application: 0, code: 0});
   }

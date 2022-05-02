@@ -34,6 +34,10 @@ export default class ReportingPeriodService {
     return this.reportingPeriodRepository.find(reportingPeriod);
   }
 
+  async findSpecificPeriods(ids: any){
+    return this.reportingPeriodRepository.findSpecificPeriods(ids);
+  }
+
   async findReportingPeriodById(id: string) {
     return this.reportingPeriodRepository.findById(id);
   }

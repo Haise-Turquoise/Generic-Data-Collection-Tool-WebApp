@@ -46,6 +46,7 @@ import SubmissionNote from '../../types/submissionnote';
 // import { Submission } from '../../types/submissions';
 //@ts-ignore
 import roleSubmissionButtonController from '../../controllers/RoleSubmissionButton';
+import reportingPeriodController from '../../controllers/reportingPeriod';
 import RoleSubmissionButton from '../../types/rolesubmissionbutton';
 import Submission from '../../types/submission';
 const timeOption = {
@@ -320,6 +321,21 @@ const EditSubmission = ({ history }:{history:History}) => {
     });
   };
 
+
+  // useEffect(() =>{
+
+  //   (async function() {
+  //     console.log("LOOOOOOOOl");
+  //     let arr = ['201992','201791'];
+
+  //     let fetches = await reportingPeriodController.fetchSpecificReportingPeriods(arr);
+  //     console.log("DING DING DING");
+  //     console.log(fetches)
+  //   })
+   
+
+  // })
+
   const UserFeedback = (feedback:string) => {
     setUserFeedback(feedback);
   };
@@ -339,15 +355,15 @@ const EditSubmission = ({ history }:{history:History}) => {
 
   const  downloadCSV = async () => {
 
-    console.log(submission)
+   console.log(submission)
     let info = await SubmissionController.fetchNamesOfIds(submission.programId,submission.submissionPeriodId);
-    console.log(info)
+   console.log(info)
     let {programInfo, submissionPeriodInfo} = info.data
     for(var sheetN in submission.workbookData){
-      console.log(submission.workbookData[sheetN])
-      templateCSVFormat(submission.workbookData[sheetN],submission,submission.name+"_"+submission.workbookData[sheetN].name+".csv",{programName: programInfo.name, reportingPeriod: submissionPeriodInfo.name})
+     console.log(submission.workbookData[sheetN])
+      await templateCSVFormat(submission.workbookData[sheetN],submission,submission.name+"_"+submission.workbookData[sheetN].name+".csv",{programName: programInfo.name, reportingPeriod: submissionPeriodInfo.name})
     }
-    console.log(submission)
+   // console.log(submission)
     
   }
   // decide button display base on current Status

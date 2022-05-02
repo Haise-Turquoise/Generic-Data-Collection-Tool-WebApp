@@ -38,6 +38,15 @@ const ReportingPeriodController = Service([ReportingPeriodService], service => {
         .catch(next);
     });
 
+    router.post('/reportingPeriods/fecthSpecificPeriods', (req,res,next) => {
+      const {ids} = req.body;
+
+      service
+        .findSpecificPeriods(ids)
+        .then(reportingPeriods => res.json({ reportingPeriods }))
+        .catch(next)
+    })
+
     router.post('/reportingPeriods/delete', (req, res, next) => {
       const { _id } = req.body;
 
