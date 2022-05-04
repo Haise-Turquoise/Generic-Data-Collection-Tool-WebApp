@@ -581,7 +581,7 @@ export const templateCSVFormat = async (currentSheetData:any, submissonInfo:Subm
       let val = currentSheetData.rows[cat_locations[i]].cells[attr_locations[j]];
       
       if(val === undefined || val.text === undefined){
-        val = 'n/a';
+        val = '';
       }
       else{
         val = val.text;
