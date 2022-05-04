@@ -15,6 +15,7 @@ export interface Submission{
   submittedDate: string,
   tableData: any,
   templateId: string,
+  templateName: string, 
   templatePackageId: string,
   templatePackageName: string,
   updatedAt: string,

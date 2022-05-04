@@ -5,6 +5,8 @@ import moment from 'moment';
 import React, { ReactText } from 'react';
 import { unauthorized_dialog } from '../components/Unauthorized_Dialog/Unauthorized_Dialog';
 import User from '../types/user';
+import { Submission } from '../types/submissions';
+import reportingPeriodController from '../controllers/reportingPeriod';
 import UserSysRole from '../types/usersysrole';
 
 export const isObjectEmpty = (object:any) => {
@@ -520,6 +522,92 @@ export const templateDownloader = (workBookName:string, sheetData:SheetData[]) =
     targetEle.click();
   });
 };
+
+
+
+export const templateCSVFormat = async (currentSheetData:any, submissonInfo:Submission,filename?:string, info?:any) =>{
+  
+  var attr_row = currentSheetData.rows[0].cells;
+  
+  var attr_ids = [];
+  var attr_locations = [];
+  var cat_locations = [];
+  var cat_ids = [];
+  var csvData = ['programId,programName,orgId,templatePackageId,templateId,reportingPeriod,categoryId,attributeId,value'];
+ 
+  for(var key in attr_row){
+    if(attr_row[key].text != undefined && !isNaN(attr_row[key].text)){
+      attr_locations.push(key);
+      attr_ids.push(attr_row[key].text);
+    }
+  }
+  for(var key in currentSheetData.rows){
+    let check = currentSheetData.rows[key].cells;
+    if(check != undefined && check[0] != undefined){
+      //console.log('hit12: ',check);
+      if(check[0].text != undefined && !isNaN(check[0].text)){
+        cat_locations.push(key);
+        cat_ids.push(check[0].text);
+      }
+    }
+  }
+  console.log("before")
+  console.log(attr_ids)
+ 
+  if( attr_ids.length > 0){
+    let firstSix = attr_ids.map(id => id.substring(0,6))
+    //console.log(firstSix)
+    let fetches = await reportingPeriodController.fetchSpecificReportingPeriods(firstSix);
+    console.log("DING DING DING")
+    console.log(fetches.reportingPeriods)
+
+    for(var i = 0; i < attr_ids.length; i++){
+      for(var report in fetches.reportingPeriods){
+        if(fetches.reportingPeriods[report].code === firstSix[i] && fetches.reportingPeriods[report].submissionClosed === true){
+          attr_ids.splice(i,1);
+          attr_locations.splice(i,1);
+        }
+      }
+    }
+    console.log('after')
+    console.log(attr_ids)
+  }
+  
+
+  
+  for(var i = 0; i<cat_locations.length;i++){
+    for(var j= 0; j<attr_locations.length;j++){
+
+      let val = currentSheetData.rows[cat_locations[i]].cells[attr_locations[j]];
+      
+      if(val === undefined || val.text === undefined){
+        val = '';
+      }
+      else{
+        val = val.text;
+      }
+      let {programId, orgId, templatePackageId,templateId} = submissonInfo;
+      csvData.push(programId+","+ info.programName +","+orgId+","+templatePackageId+","+templateId+","+ info.reportingPeriod+","+cat_ids[i]+","+attr_ids[j]+","+val);
+    }
+  }
+
+  let csvString = csvData.join("\n");
+  
+  const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
+    const link:any = document.createElement('a');
+    if (link.download !== undefined) {
+      // Browsers that support HTML5 download attribute
+      const url = URL.createObjectURL(blob);
+      link.setAttribute('href', url);
+      link.setAttribute('download', filename);
+      link.style.visibility = 'hidden';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+  return;
+}
 
 /*
  * Create by Sheldon Su 2021/04/21
