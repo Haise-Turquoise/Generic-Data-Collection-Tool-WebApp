@@ -38,6 +38,7 @@ import { calculateOptions, checkDuplicates, formatTimestamp } from '../../../too
 import { RouterProps } from 'react-router';
 import WorkflowProcess from '../../../types/workflowprocess';
 import Template from '../../../types/template';
+import CreateAuditLog from '../../AuditLog_Global';
 
 // const TemplateFileDropzone = () => {}
 
@@ -112,7 +113,6 @@ const TemplatesTable = ({ history }: RouterProps) => {
   }, [templates, lookupTemplateTypes]);
   
 
-  console.log(readIndexName)
   const columns = useMemo(
     () => [
       //@ts-ignore
@@ -169,6 +169,11 @@ const TemplatesTable = ({ history }: RouterProps) => {
   );
 
   const options = useMemo(() => calculateOptions(readRowNum), [readRowNum]);
+  const foo = async  (template: Template) => {
+    let oldTemplate = await dispatch(getTemplatesRequest(template._id ));
+    console.log(oldTemplate)
+    return oldTemplate 
+  };
 
   const editable = useMemo(
     () => ({
@@ -182,29 +187,42 @@ const TemplatesTable = ({ history }: RouterProps) => {
           const convertedTemplate = Object.assign({}, template);
           convertedTemplate.templateTypeId = (readIndex && readIndex[template.templateTypeId]) || '';
           dispatch(createTemplateRequest(convertedTemplate, resolve, reject));
+          
+          //auditlog
+          CreateAuditLog(null, "Create Template", "Template", convertedTemplate._id, {}, convertedTemplate);
         }),
       onRowUpdate: (template: Template) =>
         new Promise((resolve, reject) => {
           // get username and record in Modified By column
+          let oldTemplate: any;
+          foo(template)
           template.updatedBy = localStorage.getItem('currentUser') || '';
           // record new date and time in Modified On column
           const event = new Date();
           template.updatedAt = event.toLocaleString();
+          const oldtemplate = template;
           delete template.templateData;
           const convertedTemplate = Object.assign({}, template);
           convertedTemplate.templateTypeId = (readIndex && readIndex[template.templateTypeId]) || '';
           dispatch(updateTemplateRequest(convertedTemplate, resolve, reject));
+
+          //auditlog
+          CreateAuditLog(null, 'Update Template', 'Template', oldTemplate?._id, oldTemplate, convertedTemplate);
         }),
       onRowDelete: (template: Template) =>
         new Promise((resolve, reject) => {
           // get username and record in Modified By column
           template.updatedBy = localStorage.getItem('currentUser') || '';
           // record new date and time in Modified On column
+          const template_trim = (({ templateData, ...o }) => o)(template);
           const event = new Date();
           template.updatedAt = event.toLocaleString(); 
           const convertedTemplate = Object.assign({}, template);
           convertedTemplate.templateTypeId = (readIndex && readIndex[template.templateTypeId]) || '';
           dispatch(deleteTemplateRequest(convertedTemplate._id, resolve, reject));
+
+          //auditlog
+          CreateAuditLog(null, "Delete Template", "Template", convertedTemplate._id, template_trim, {});
         }),
     }),
     [dispatch, readIndex],
@@ -212,7 +230,6 @@ const TemplatesTable = ({ history }: RouterProps) => {
 
   // Convert Date format
   templates.forEach(template => {
-    console.log(template)
     template.createdAt = formatTimestamp(template.createdAt)
     template.updatedAt = formatTimestamp(template.updatedAt)
     template.expirationDate = formatTimestamp(template.expirationDate)
