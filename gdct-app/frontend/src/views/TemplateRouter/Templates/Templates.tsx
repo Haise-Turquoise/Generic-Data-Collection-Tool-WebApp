@@ -38,6 +38,7 @@ import { calculateOptions, checkDuplicates, formatTimestamp } from '../../../too
 import { RouterProps } from 'react-router';
 import WorkflowProcess from '../../../types/workflowprocess';
 import Template from '../../../types/template';
+import CreateAuditLog from '../../AuditLog_Global';
 
 // const TemplateFileDropzone = () => {}
 
@@ -182,6 +183,8 @@ const TemplatesTable = ({ history }: RouterProps) => {
           const convertedTemplate = Object.assign({}, template);
           convertedTemplate.templateTypeId = (readIndex && readIndex[template.templateTypeId]) || '';
           dispatch(createTemplateRequest(convertedTemplate, resolve, reject));
+          //AUDITLOG
+          CreateAuditLog(null, "Create Template", "Template", convertedTemplate._id, {}, convertedTemplate);
         }),
       onRowUpdate: (template: Template) =>
         new Promise((resolve, reject) => {
@@ -194,6 +197,7 @@ const TemplatesTable = ({ history }: RouterProps) => {
           const convertedTemplate = Object.assign({}, template);
           convertedTemplate.templateTypeId = (readIndex && readIndex[template.templateTypeId]) || '';
           dispatch(updateTemplateRequest(convertedTemplate, resolve, reject));
+          CreateAuditLog(null, "Update Template", "Template", convertedTemplate._id, {}, convertedTemplate);
         }),
       onRowDelete: (template: Template) =>
         new Promise((resolve, reject) => {
@@ -205,6 +209,7 @@ const TemplatesTable = ({ history }: RouterProps) => {
           const convertedTemplate = Object.assign({}, template);
           convertedTemplate.templateTypeId = (readIndex && readIndex[template.templateTypeId]) || '';
           dispatch(deleteTemplateRequest(convertedTemplate._id, resolve, reject));
+          CreateAuditLog(null, "Delete Template", "Template", convertedTemplate._id, {}, convertedTemplate);
         }),
     }),
     [dispatch, readIndex],
