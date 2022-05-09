@@ -465,6 +465,14 @@ export default class SubmissionService {
     });
   }
 
+  async fetchNamesOfIds(programId: string, sumbmissionPeriodId: string){
+    let submissionPeriodInfo = await this.submissionPeriodRepository.findById(sumbmissionPeriodId);
+    let programInfo = await this.programRepository.findById(programId);
+
+    return {submissionPeriodInfo,programInfo}
+
+  }
+
  
   async findSubmission(email:any) {
     const userInfo: User = await this.usersRepository.findByEmail(email) as User;

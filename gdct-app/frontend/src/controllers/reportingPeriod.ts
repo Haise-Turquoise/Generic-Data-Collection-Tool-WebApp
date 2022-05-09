@@ -20,6 +20,10 @@ const reportingPeriodController = (() => {
     update: async (reportingPeriod: Partial<ReportingPeriod>) =>
       reportingPeriodAxios.put('/update', { reportingPeriod }),
     delete: async (_id: string) => reportingPeriodAxios.post('/delete', { _id }),
+    fetchSpecificReportingPeriods: async (ids: Array<string>): Promise<any> => 
+      reportingPeriodAxios
+        .post('/fecthSpecificPeriods', { ids })
+        .then(res => res.data),
   };
 })();
 

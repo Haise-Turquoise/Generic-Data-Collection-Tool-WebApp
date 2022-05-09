@@ -17,6 +17,7 @@ import Submission, { submissionSpreadsheetProps } from '../../types/submission';
 import Status from '../../types/status';
 import { SheetData } from '../../types/template';
 import UnitOfMeasurementController from "../../controllers/UnitOfMeasurement";
+import {templateCSVFormat} from '../../tools/misc';
 
 // Sheet style Option
 const sheetOption = {
@@ -92,7 +93,7 @@ class SubmissionSpreadSheet extends Component<submissionSpreadsheetProps>{
           if (status && status.name === 'Approved') {
             sheetOption.mode = 'read';
             this.edit = false;
-          } else {
+          } else { 
             sheetOption.mode = 'edit';
             this.edit = true;
           }
@@ -168,6 +169,36 @@ class SubmissionSpreadSheet extends Component<submissionSpreadsheetProps>{
     }
   };
 
+  // downloadCSV(){
+  //   const currentSheetData = this.sheet.datas[this.sheet.getCurrentSheetIndex()]
+
+  //   let csvContent = templateCSVFormat(currentSheetData);
+  //   let filename = "testfile.csv";
+  //   // let a:any = document.getElementById('download');
+  //   // if (!a) throw new Error("tag with id='dowload' not found");
+  //   // a.href = 'text/csv' + d;
+  //   // a.target = "_Blank";
+  //   // a.download= "testfile.csv";
+
+  //   // //document.appendChild(a);
+  //   // a.click();
+
+  //   const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+  //   const link:any = document.createElement('a');
+  //   if (link.download !== undefined) {
+  //     // Browsers that support HTML5 download attribute
+  //     const url = URL.createObjectURL(blob);
+  //     link.setAttribute('href', url);
+  //     link.setAttribute('download', filename);
+  //     link.style.visibility = 'hidden';
+  //     document.body.appendChild(link);
+  //     link.click();
+  //     document.body.removeChild(link);
+  //   }
+    
+  // }
+
+
   unitOfMeasure = async () => {
 
     const unitOfMeasureInfo = await UnitOfMeasurementController.fetch();
@@ -230,7 +261,9 @@ class SubmissionSpreadSheet extends Component<submissionSpreadsheetProps>{
           <Button variant="outlined" color="primary" onClick={() => {this.unitOfMeasure()}}>
             Unit of Measure Validation
           </Button>
-
+          {/* <Button variant="outlined" color="primary" onClick={()=>this.downloadCSV()}>
+                Download csv
+              </Button> */}
           
         </div>
         <div id="x-spreadsheet"></div>

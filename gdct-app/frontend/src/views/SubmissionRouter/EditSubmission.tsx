@@ -13,7 +13,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import Swal from 'sweetalert2';
 
 // @ts-ignore
-import { templateDownloader } from '../../tools/misc';
+import { templateDownloader, templateCSVFormat } from '../../tools/misc';
 // @ts-ignore
 import { getSubmissionNoteRequest } from '../../store/thunks/submissionNote';
 // @ts-ignore
@@ -46,6 +46,7 @@ import SubmissionNote from '../../types/submissionnote';
 // import { Submission } from '../../types/submissions';
 //@ts-ignore
 import roleSubmissionButtonController from '../../controllers/RoleSubmissionButton';
+import reportingPeriodController from '../../controllers/reportingPeriod';
 import RoleSubmissionButton from '../../types/rolesubmissionbutton';
 import Submission from '../../types/submission';
 const timeOption = {
@@ -320,6 +321,21 @@ const EditSubmission = ({ history }:{history:History}) => {
     });
   };
 
+
+  // useEffect(() =>{
+
+  //   (async function() {
+  //     console.log("LOOOOOOOOl");
+  //     let arr = ['201992','201791'];
+
+  //     let fetches = await reportingPeriodController.fetchSpecificReportingPeriods(arr);
+  //     console.log("DING DING DING");
+  //     console.log(fetches)
+  //   })
+   
+
+  // })
+
   const UserFeedback = (feedback:string) => {
     setUserFeedback(feedback);
   };
@@ -336,6 +352,20 @@ const EditSubmission = ({ history }:{history:History}) => {
     return true;
 
   };
+
+  const  downloadCSV = async () => {
+
+   console.log(submission)
+    let info = await SubmissionController.fetchNamesOfIds(submission.programId,submission.submissionPeriodId);
+   console.log(info)
+    let {programInfo, submissionPeriodInfo} = info.data
+    for(var sheetN in submission.workbookData){
+     console.log(submission.workbookData[sheetN])
+      await templateCSVFormat(submission.workbookData[sheetN],submission,submission.name+"_"+submission.workbookData[sheetN].name+".csv",{programName: programInfo.name, reportingPeriod: submissionPeriodInfo.name})
+    }
+   // console.log(submission)
+    
+  }
   // decide button display base on current Status
   const handleButtonDisplayByStatus = (button:string, visitedWorkFlowProcesses:VisitedNode[], status:string|undefined) => {
     // the map represent the clickable button
@@ -446,6 +476,16 @@ const EditSubmission = ({ history }:{history:History}) => {
             disabled={isReviewerOrApprover}
           >
             Download
+          </Button>
+          <Button
+            color="primary"
+            variant="contained"
+            style={{ cursor }}
+            size="large"
+            onClick={() => downloadCSV()}
+            disabled={isReviewerOrApprover}
+          >
+            Download CSV .. 
           </Button>
 
           {/* <Button

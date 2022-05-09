@@ -2,6 +2,9 @@ import { Service } from 'typedi';
 import { Router } from 'express';
 import SubmissionService from '../../services/Submission';
 import { SubmissionPopulated } from '../../types/submission';
+
+import  submissionValidation from  '../../utils/submissionValidation';
+
 import UserSysRole from '../../types/usersysrole';
 
 const SubmissionController = Service([SubmissionService], service => {
@@ -16,6 +19,28 @@ const SubmissionController = Service([SubmissionService], service => {
           res.json({ submissions });
         })
         .catch(next);
+    });
+
+
+    router.post('/submissions/validateAndUpdate',(req,res, next) =>{
+     
+      const {submission, submissionNote} = req.body;
+
+      var s = new submissionValidation(submission);
+      s.validateAll(submission);
+      console.log(s.errors);
+      if(s.errors.size === 0){
+        service
+        .uploadSubmissionWorkbook(submission, submission.workbookData, submissionNote)
+        .then(submissions => res.send(JSON.stringify([...s.errors])));
+      }else{
+        res.send(JSON.stringify([...s.errors]));
+      }
+      
+      
+      
+     
+      
     });
 
     router.post('/submissions/createSubmissions', (req, res, next) => {
@@ -45,7 +70,7 @@ const SubmissionController = Service([SubmissionService], service => {
 
     router.post('/submissions/uploadSubmission', (req, res, next) => {
       const { submission, submissionNote } = req.body;
-
+      
       service
         .uploadSubmissionWorkbook(submission, submission.workbookData, submissionNote)
         .then(submissions => res.json({ submissions }));
@@ -113,6 +138,17 @@ const SubmissionController = Service([SubmissionService], service => {
         .then(() => res.end())
         .catch(next);
     });
+
+    router.post('/submissions/fetchNamesOfIds', (req,res, next) =>{
+      console.log(req.body)
+      const {programId, submissionPeriodId } = req.body;
+
+      service
+        .fetchNamesOfIds(programId, submissionPeriodId)
+        .then(info => res.json(info))
+        .catch(next);
+    });
+
 
     return router;
   })();
