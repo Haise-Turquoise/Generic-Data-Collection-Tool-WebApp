@@ -187,27 +187,22 @@ const TemplatesTable = ({ history }: RouterProps) => {
           const convertedTemplate = Object.assign({}, template);
           convertedTemplate.templateTypeId = (readIndex && readIndex[template.templateTypeId]) || '';
           dispatch(createTemplateRequest(convertedTemplate, resolve, reject));
-          
-          //auditlog
+          //AUDITLOG
           CreateAuditLog(null, "Create Template", "Template", convertedTemplate._id, {}, convertedTemplate);
         }),
       onRowUpdate: (template: Template) =>
         new Promise((resolve, reject) => {
           // get username and record in Modified By column
-          let oldTemplate: any;
           foo(template)
           template.updatedBy = localStorage.getItem('currentUser') || '';
           // record new date and time in Modified On column
           const event = new Date();
           template.updatedAt = event.toLocaleString();
-          const oldtemplate = template;
           delete template.templateData;
           const convertedTemplate = Object.assign({}, template);
           convertedTemplate.templateTypeId = (readIndex && readIndex[template.templateTypeId]) || '';
           dispatch(updateTemplateRequest(convertedTemplate, resolve, reject));
-
-          //auditlog
-          CreateAuditLog(null, 'Update Template', 'Template', oldTemplate?._id, oldTemplate, convertedTemplate);
+          CreateAuditLog(null, "Update Template", "Template", convertedTemplate._id, {}, convertedTemplate);
         }),
       onRowDelete: (template: Template) =>
         new Promise((resolve, reject) => {
