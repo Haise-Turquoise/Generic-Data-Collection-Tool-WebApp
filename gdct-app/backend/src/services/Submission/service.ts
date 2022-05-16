@@ -32,6 +32,7 @@ import Template from '../../types/template';
 import AppError from '../../utils/AppError';
 import RoleWorkflowStatusRepository from '../../repositories/RoleWorkflowStatus/repository';
 import { RoleWorkflowStatusDoc } from '../../types/RoleWorkflowStatus';
+import  submissionValidation from  '../../utils/submissionValidation';
 // @Service()
 export default class SubmissionService {
   private submissionRepository:SubmissionRepository;
@@ -195,6 +196,32 @@ export default class SubmissionService {
     return this.submissionRepository.update(submission._id, submission).then(() => {
       if (submissionNotes.note) return this.submissionNoteRepository.create(submissionNotes);
     });
+  }
+
+  async validateAndUpdate(submission:any, submissionNote:SubmissionNote, sheetName: string){
+    var s = new submissionValidation(submission);
+    var unitErrors;
+
+    if(sheetName == 'All'){
+      unitErrors = await s.validateAll(submission);
+    }
+    else{
+      unitErrors = await s.findandValidatesheet(submission,sheetName);
+      if(unitErrors == null){
+        return JSON.stringify({error: 'sheet for csv upload not found'})
+      }
+    }
+
+
+    if(s.errors.size === 0 && unitErrors.size === 0){
+      await this.uploadSubmissionWorkbook(submission, submission.workbookData, submissionNote);
+
+      return JSON.stringify({submission: submission} );
+      
+    }
+
+    return JSON.stringify({errors: [...s.errors].concat([...unitErrors])} );
+
   }
 
   async findSubmissionById(id:string) {

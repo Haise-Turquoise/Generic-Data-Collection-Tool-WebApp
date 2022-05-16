@@ -105,6 +105,19 @@ class UploadPreview extends Component<any>{
        
       }
     }
+
+    update(){
+      console.log("UPDATING !!!!")
+      this.clearComponentChild();
+      // @ts-ignore
+      this.sheet = new Spreadsheet('#x-spreadsheet', sheetOption)
+      //@ts-ignore
+        .loadData(this.submissionObject.workbookData).reRender();
+      //@ts-ignore
+      this.sheet.on('cell-selected', (cell, row, col) => {
+        this.currentCoord = { row, col };
+      });
+    }
   
     // Clear the x-data-spreadsheet, or else ther is going to have duplicate sheet,
     // Don't ask me why, I have no idea =_=, this might be a async issue due to how react

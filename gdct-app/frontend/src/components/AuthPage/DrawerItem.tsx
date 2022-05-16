@@ -56,6 +56,7 @@ export default function DrawerItem(props:any) {
       </Button>
       {/*@ts-ignore*/}
       <StyledMenu
+        /*@ts-ignore*/
         id="customized-menu"
         anchorEl={anchorEl}
         keepMounted

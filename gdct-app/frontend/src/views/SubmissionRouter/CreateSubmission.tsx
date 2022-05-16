@@ -91,6 +91,7 @@ const CreateSubmission = ({ history }: RouterProps) => {
   const [csvInput, setCsvInput] = useState<boolean>(false);
   const [xlsxInput, setXlsxInput] = useState<boolean>(false);
   const [buttoncolor, setbuttoncolor] = useState<"inherit" | "primary" | "secondary" | "default">("default");
+  const [sheetUpdate, setSheetUpdate] = useState<string | undefined>('All');
   //const [sheet,setSheet] = useState<any>(null)
   const datasheet = createRef<any>();
   const [prevSubmission, setPrevSubmission] = useState<any>((history.location.state as any).detail);
@@ -203,6 +204,7 @@ const CreateSubmission = ({ history }: RouterProps) => {
         var sheetName = file.name.split('_').at(-1)?.split('.csv')[0];
         console.log("PPPPPPP")
         console.log(sheetName)
+        setSheetUpdate(sheetName);
         var text = await file.text()
         var split_text = text.split('\n');
         updateWorkbook(split_text, sheetName);
@@ -216,13 +218,18 @@ const CreateSubmission = ({ history }: RouterProps) => {
 
   const uploadFile = async (event: any) =>{
     console.log(prevSubmission)
-    submissionController.validateAndUpdate(prevSubmission,submissionNote).then(res =>{
-      if(res.data.length >0){
+    submissionController.validateAndUpdate(prevSubmission,submissionNote,sheetUpdate).then(res =>{
+      console.log(res.data)
+      if(res.data.errors != undefined){
         setSave('visible');
         setMessage('submission was invalid');
         setMessageColour('red');
       }
-      else{
+
+      
+      else if(res.data.submission != undefined){
+        setPrevSubmission(res.data.submission)
+        datasheet.current.update()
         setSave('visible');
         setMessage('Sucessfully uplaoded to database');
         setMessageColour('green');
