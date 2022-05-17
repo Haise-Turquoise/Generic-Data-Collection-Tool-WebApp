@@ -101,8 +101,7 @@ const CreateSubmission = ({ history }: RouterProps) => {
   const handleNoteChange = (event: ChangeEvent<HTMLInputElement>) => {
     dispatch(SubmissionNoteStore.actions.RECEIVE(event.target.value));
   };
-  console.log("lool")
-  console.log(history.location.state);
+  
 
   const location = useLocation<{ detail: { phase: string }}>();
 
@@ -122,9 +121,9 @@ const CreateSubmission = ({ history }: RouterProps) => {
   );
 
   
-  const findAttirbuteCol= (rows: any,id:string | undefined) => {
+  const findAttirbuteCol= (rows: any,id:string | undefined,indx: number) => {
 
-    var search_row = rows[0].cells;
+    var search_row = rows[indx].cells;
 
     for(var key in search_row){
       if(search_row[key].text != undefined && search_row[key].text === id){
@@ -156,27 +155,34 @@ const CreateSubmission = ({ history }: RouterProps) => {
         test_Index = Number(key);
       }
     }
-
+    console.log('hitting')
     console.log(workData)
+    console.log('hitting')
     var rowsData = workData[test_Index].rows; 
-
+    
     csvArray.forEach((element: string) => {
       let values = element.split(',');
       //console.log(values);
       let catId = values.at(-3);
       let attId = values.at(-2);
       let val = values.at(-1);
-      if(val != 'n/a' && val != 'value' && val != ''){
+      if(val != 'n/a' && val != 'value' && val != '' && attId != 'Note'){
         let catRowNum = findColrow(rowsData,catId);
-        let attColNum = findAttirbuteCol(rowsData,attId);
+        let attColNum = findAttirbuteCol(rowsData,attId,0);
 
         if(catRowNum != null && attColNum != null){
           rowsData[catRowNum].cells[attColNum].text = val
           
         }
-        // else{
-        //   console.log("hit the wrong spot")
-        // }
+      }
+      else if( attId === 'Note'){
+        let catRowNum = findColrow(rowsData,catId);
+        let attColNum = findAttirbuteCol(rowsData,attId,9);
+
+        if(catRowNum != null && attColNum != null){
+          rowsData[catRowNum].cells[attColNum].text = val
+          
+        }
       }
     });
 

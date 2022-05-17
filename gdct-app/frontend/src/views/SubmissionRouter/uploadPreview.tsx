@@ -10,6 +10,11 @@ import statusController from '../../controllers/status';
 import orgController from '../../controllers/organization';
 import { compareSheet } from '../../tools/misc';
 import {Coordinate} from '../../types/spreadsheetTypes/spreadSheetTypes';
+import { digitToAlpha,
+  generateCategoryMap, generateAttributeMap, 
+  findWordInRow, findLastAttributeCol, 
+  //@ts-ignore
+  templateDownloader,templateCSVFormat, excelImportHandler, generateFullMap} from '../../tools/misc';
 // @ts-ignore
 import CreateAuditLog from '../AuditLog_Global';
 import Button from '@material-ui/core/Button';
@@ -17,7 +22,8 @@ import Submission, { submissionSpreadsheetProps } from '../../types/submission';
 import Status from '../../types/status';
 import { SheetData } from '../../types/template';
 import UnitOfMeasurementController from "../../controllers/UnitOfMeasurement";
-import {templateCSVFormat} from '../../tools/misc';
+import VarianceInsertionMenu from "../TemplateRouter/Template/InsertVarianceMenu/insertVarianceMenu"
+
 
 const sheetOption = {
     mode: 'read', // edit | read
@@ -63,6 +69,8 @@ class UploadPreview extends Component<any>{
     currentCoord: Coordinate|{};
     categoryAndAttribute: {};
     submissionObject: Partial<Submission>;
+    validationThreshold: number;
+    prevVarianceSelection: string;
   
     edit: boolean;
     orginalValue: SheetData[];
@@ -80,6 +88,10 @@ class UploadPreview extends Component<any>{
       this.orginalValue = [];
       this.clearComponentChild = this.clearComponentChild.bind(this);
       this.insertOrg = this.insertOrg.bind(this);
+      this.insertVariance = this.insertVariance.bind(this);
+      this.getCurrentSheet = this.getCurrentSheet.bind(this);
+      this.prevVarianceSelection = '';
+      this.validationThreshold = 0.05;
       //@ts-ignore
       //this.history = this.props.history;
     }
@@ -104,6 +116,63 @@ class UploadPreview extends Component<any>{
           });
        
       }
+    }
+
+    insertVariance = (varianceSelection:string) => {
+
+      const currSheetIndex = this.sheet.getCurrentSheetIndex();
+  
+      // split the attribute id pairs
+      const selection = varianceSelection.split(' ');
+      const currSheet = this.sheet.getData()[currSheetIndex];
+      
+      // Generate Mappings
+      const categoryMap:any = generateCategoryMap(currSheet);
+      const attributeMap:any = generateAttributeMap(currSheet);
+  
+      // Identify the col alphabit assignment
+      const startCol = digitToAlpha(Number(attributeMap[selection[0]]) + 1);
+      const endCol = digitToAlpha(Number(attributeMap[selection[1]]) + 1);
+  
+      // Search if the variance column exist
+      const findResult = findWordInRow(currSheet, 9, 'Variance');
+      const targetCol =  findResult > 0 ? Number(findResult): Number(findLastAttributeCol(currSheet) + 1);
+  
+      // Insert the variance column if it does not exist
+      if (findResult < 0){
+        this.sheet.insertColAt(targetCol);
+        this.sheet.cellText(9, targetCol, 'Variance', currSheetIndex);
+        this.sheet.insertColAt(targetCol + 1)
+        this.sheet.cellText(9, targetCol + 1, 'Note', currSheetIndex);
+      }
+  
+      const keys = Object.keys(categoryMap);
+  
+      // Insert the variance formula for each of the cells
+      // e.g: =(A1-A2)/A2
+      const targetColAlphabit = digitToAlpha(targetCol + 1);
+      for (const attributeID of keys){
+        const rowNum = Number(categoryMap[attributeID]) + 1;
+        const text = '=' + '(' + startCol + rowNum + '-' + endCol + rowNum + ')/' + startCol + rowNum;
+        this.sheet.cellText(rowNum - 1, targetCol, text, currSheetIndex);
+        const cellCoord = targetColAlphabit.toLocaleLowerCase() + (rowNum);
+        this.sheet.cellText(rowNum - 1, targetCol, text, currSheetIndex);
+        this.sheet.cellText(rowNum - 1, targetCol + 1, '', currSheetIndex);
+        this.sheet.addOtherGreaterThan(
+          rowNum - 1, 
+          rowNum - 1, 
+          targetCol + 1, 
+          targetCol + 1,
+          `=${cellCoord}`,
+          this.validationThreshold,  
+          { bgcolor: "#FFEF00" }, 
+          currSheetIndex
+        )
+      }
+  
+      // keep the previous varaince selection to incase user insert a new attribute
+      this.prevVarianceSelection = varianceSelection;
+      this.sheet.reRender()
     }
 
     update(){
@@ -171,7 +240,9 @@ class UploadPreview extends Component<any>{
       
       return error;
     }
-
+    getCurrentSheet(){
+      return this.sheet.getData()[this.sheet.getCurrentSheetIndex()];
+    }
     
   
     insertOrg = async (orgId:number) => {
@@ -216,9 +287,10 @@ class UploadPreview extends Component<any>{
             <Button variant="outlined" color="primary" onClick={() => {this.unitOfMeasure()}}>
               Unit of Measure Validation
             </Button>
+            <VarianceInsertionMenu callback={this.insertVariance} getSheet={this.getCurrentSheet}/>
             {/* <Button variant="outlined" color="primary" onClick={()=>this.downloadCSV()}>
                   Download csv
-                </Button> */}
+                </Button> */} 
             
           </div>
           <div id="x-spreadsheet"></div>

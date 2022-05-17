@@ -553,14 +553,16 @@ export const templateCSVFormat = async (currentSheetData:any, submissonInfo:Subm
       }
     }
   }
-  // console.log("before")
-  // console.log(attr_ids)
-  // for(var key in note_row){
-  //   if(attr_row[key].text != undefined && !isNaN(attr_row[key].text) && attr_row[key].text === "Note"){
-  //     attr_locations.push(key);
-  //     attr_ids.push("Note");
-  //   }
-  // }
+  console.log("before")
+  console.log(attr_ids)
+  console.log(note_row)
+  for(var key in note_row){
+    if(note_row[key] != undefined && note_row[key].text != undefined && note_row[key].text === "Note"){
+      console.log("hit")
+      attr_locations.push(key);
+      attr_ids.push("Note");
+    }
+  }
  
   if( attr_ids.length > 0){
     let firstSix = attr_ids.map(id => id.substring(0,6))
