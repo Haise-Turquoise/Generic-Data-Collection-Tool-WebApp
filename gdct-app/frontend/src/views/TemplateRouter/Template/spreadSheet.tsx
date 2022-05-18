@@ -145,6 +145,12 @@ class SpreadSheet extends Component<SpreadSheetProps, {hasSheet: boolean}>{
       this.sheet.on('cell-selected',(cell:object, row:number, col:number)=>{
         this.currentCoord = {row, col};
       })
+      const mainMenu = this.sheet.datas.find((datas: any) => datas.name.toUpperCase() == 'MAIN MENU');
+      if (mainMenu) {  
+        mainMenu.setCellText(4, 1, "Year:", 'finished');
+        mainMenu.setCellText(5, 1, "Quarter:", 'finished');
+      }   
+
     });
 
     // fetch Validation Threshold
@@ -416,6 +422,9 @@ class SpreadSheet extends Component<SpreadSheetProps, {hasSheet: boolean}>{
     if (!mainMenu) {
       return ""
     }    
+    
+    // mainMenu.setCellText(4, 1, "Year:", 'finished');
+    // mainMenu.setCellText(5, 1, "Quarter:", 'finished');
     const year = mainMenu.getCellTextOrDefault(4, 2);
     const q = mainMenu.getCellTextOrDefault(5, 2);
     return !!q ? `${year} ${q}` : `${year}`;
