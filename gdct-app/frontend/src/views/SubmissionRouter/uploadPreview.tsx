@@ -287,7 +287,7 @@ class UploadPreview extends Component<any>{
             <Button variant="outlined" color="primary" onClick={() => {this.unitOfMeasure()}}>
               Unit of Measure Validation
             </Button>
-            <VarianceInsertionMenu callback={this.insertVariance} getSheet={this.getCurrentSheet}/>
+            {/* <VarianceInsertionMenu callback={this.insertVariance} getSheet={this.getCurrentSheet}/> */}
             {/* <Button variant="outlined" color="primary" onClick={()=>this.downloadCSV()}>
                   Download csv
                 </Button> */} 

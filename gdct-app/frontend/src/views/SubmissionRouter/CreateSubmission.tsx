@@ -339,6 +339,16 @@ const CreateSubmission = ({ history }: RouterProps) => {
             <Typography>{message}</Typography>
           </div>
         </div>
+        <div style={{ display: 'flex', float: 'right' }}>
+        <Button
+              color= {buttoncolor}
+              variant="contained"
+              size="large"
+             
+            >
+              Update Submission status 
+            </Button>
+        </div>
       </Paper>
       <div style={{fontSize:25}}>PREVIEW</div>
       {csvInput || xlsxInput ? <UploadPreview  ref={datasheet} submission={prevSubmission}/> : <div></div>}
