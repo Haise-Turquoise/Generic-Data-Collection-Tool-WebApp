@@ -1,4 +1,4 @@
-import { shallowEqual, useDispatch, useSelector, useHistory} from 'react-redux';
+import { shallowEqual, useDispatch, useSelector} from 'react-redux';
 import React, { ChangeEvent, useCallback, useEffect, useState, useRef, createRef} from 'react';
 import Spreadsheet from 'x-data-spreadsheet';
 import Button from '@material-ui/core/Button';
@@ -236,7 +236,7 @@ const CreateSubmission = ({ history }: RouterProps) => {
       
       else if(res.data.submission != undefined){
         setPrevSubmission(res.data.submission)
-        datasheet.current.update()
+        // datasheet.current.update()
         setSave('visible');
         setMessage('Sucessfully uplaoded to database');
         setMessageColour('green');

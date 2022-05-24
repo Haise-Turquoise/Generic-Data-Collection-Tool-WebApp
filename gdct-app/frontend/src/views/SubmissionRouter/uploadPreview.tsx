@@ -175,7 +175,7 @@ class UploadPreview extends Component<any>{
       this.sheet.reRender()
     }
 
-    update(){
+    componentWillUpdate(){
       console.log("UPDATING !!!!")
       this.clearComponentChild();
       // @ts-ignore
