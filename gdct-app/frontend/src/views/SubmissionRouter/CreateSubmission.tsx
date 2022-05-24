@@ -1,4 +1,4 @@
-import { shallowEqual, useDispatch, useSelector } from 'react-redux';
+import { shallowEqual, useDispatch, useSelector} from 'react-redux';
 import React, { ChangeEvent, useCallback, useEffect, useState, useRef, createRef} from 'react';
 import Spreadsheet from 'x-data-spreadsheet';
 import Button from '@material-ui/core/Button';
@@ -83,6 +83,7 @@ const sheetOption = {
 const CreateSubmission = ({ history }: RouterProps) => {
   
   //  const [workflowProcess, setWorkflowProcess] = useState()
+  
   const inputEl = useRef<HTMLInputElement>(null);
   const dispatch = useDispatch();
   const [showSave, setSave] = useState<'visible' | 'hidden'>('hidden');
@@ -91,6 +92,7 @@ const CreateSubmission = ({ history }: RouterProps) => {
   const [csvInput, setCsvInput] = useState<boolean>(false);
   const [xlsxInput, setXlsxInput] = useState<boolean>(false);
   const [buttoncolor, setbuttoncolor] = useState<"inherit" | "primary" | "secondary" | "default">("default");
+  const [sheetUpdate, setSheetUpdate] = useState<string | undefined>('All');
   //const [sheet,setSheet] = useState<any>(null)
   const datasheet = createRef<any>();
   const [prevSubmission, setPrevSubmission] = useState<any>((history.location.state as any).detail);
@@ -100,8 +102,7 @@ const CreateSubmission = ({ history }: RouterProps) => {
   const handleNoteChange = (event: ChangeEvent<HTMLInputElement>) => {
     dispatch(SubmissionNoteStore.actions.RECEIVE(event.target.value));
   };
-  console.log("lool")
-  console.log(history.location.state);
+  
 
   const location = useLocation<{ detail: { phase: string }}>();
 
@@ -121,9 +122,9 @@ const CreateSubmission = ({ history }: RouterProps) => {
   );
 
   
-  const findAttirbuteCol= (rows: any,id:string | undefined) => {
+  const findAttirbuteCol= (rows: any,id:string | undefined,indx: number) => {
 
-    var search_row = rows[0].cells;
+    var search_row = rows[indx].cells;
 
     for(var key in search_row){
       if(search_row[key].text != undefined && search_row[key].text === id){
@@ -155,27 +156,34 @@ const CreateSubmission = ({ history }: RouterProps) => {
         test_Index = Number(key);
       }
     }
-
+    console.log('hitting')
     console.log(workData)
+    console.log('hitting')
     var rowsData = workData[test_Index].rows; 
-
+    
     csvArray.forEach((element: string) => {
       let values = element.split(',');
       //console.log(values);
       let catId = values.at(-3);
       let attId = values.at(-2);
       let val = values.at(-1);
-      if(val != 'n/a' && val != 'value' && val != ''){
+      if(val != 'n/a' && val != 'value' && val != '' && attId != 'Note'){
         let catRowNum = findColrow(rowsData,catId);
-        let attColNum = findAttirbuteCol(rowsData,attId);
+        let attColNum = findAttirbuteCol(rowsData,attId,0);
 
         if(catRowNum != null && attColNum != null){
           rowsData[catRowNum].cells[attColNum].text = val
           
         }
-        // else{
-        //   console.log("hit the wrong spot")
-        // }
+      }
+      else if( attId === 'Note'){
+        let catRowNum = findColrow(rowsData,catId);
+        let attColNum = findAttirbuteCol(rowsData,attId,9);
+
+        if(catRowNum != null && attColNum != null){
+          rowsData[catRowNum].cells[attColNum].text = val
+          
+        }
       }
     });
 
@@ -203,6 +211,7 @@ const CreateSubmission = ({ history }: RouterProps) => {
         var sheetName = file.name.split('_').at(-1)?.split('.csv')[0];
         console.log("PPPPPPP")
         console.log(sheetName)
+        setSheetUpdate(sheetName);
         var text = await file.text()
         var split_text = text.split('\n');
         updateWorkbook(split_text, sheetName);
@@ -216,13 +225,18 @@ const CreateSubmission = ({ history }: RouterProps) => {
 
   const uploadFile = async (event: any) =>{
     console.log(prevSubmission)
-    submissionController.validateAndUpdate(prevSubmission,submissionNote).then(res =>{
-      if(res.data.length >0){
+    submissionController.validateAndUpdate(prevSubmission,submissionNote,sheetUpdate).then(res =>{
+      console.log(res.data)
+      if(res.data.errors != undefined){
         setSave('visible');
         setMessage('submission was invalid');
         setMessageColour('red');
       }
-      else{
+
+      
+      else if(res.data.submission != undefined){
+        setPrevSubmission(res.data.submission)
+        // datasheet.current.update()
         setSave('visible');
         setMessage('Sucessfully uplaoded to database');
         setMessageColour('green');
@@ -325,6 +339,18 @@ const CreateSubmission = ({ history }: RouterProps) => {
             <DoneIcon />
             <Typography>{message}</Typography>
           </div>
+        </div>
+        <div style={{ display: 'flex', float: 'right' }}>
+        <Button
+              color= {buttoncolor}
+              variant="contained"
+              size="large"
+              onClick={()=> {history.push({pathname: `/submission/dashboard/editSubmission/${prevSubmission._id}`,
+            state:{detail:prevSubmission}
+            })}}
+            >
+              Update Submission status 
+            </Button>
         </div>
       </Paper>
       <div style={{fontSize:25}}>PREVIEW</div>
