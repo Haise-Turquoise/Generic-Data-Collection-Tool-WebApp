@@ -64,7 +64,9 @@ const TemplateDialog = ({ selectedTemplates, shouldClose, handleChange }:
           const endedIdArray = endedProcesses.map(e => String(e._id));
 
           setTemplates(
-            templates.filter((template:Template) => endedIdArray.includes(String(template.workflowProcessId))),
+            templates.filter((template:Template) => endedIdArray.includes(String(template.workflowProcessId))).sort((a: any, b: any)=>
+            b.name.localeCompare(a.name)
+          ).reverse(),
           );
         });
       });
