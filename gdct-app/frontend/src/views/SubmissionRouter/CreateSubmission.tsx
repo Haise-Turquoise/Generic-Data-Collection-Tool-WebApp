@@ -1,4 +1,4 @@
-import { shallowEqual, useDispatch, useSelector } from 'react-redux';
+import { shallowEqual, useDispatch, useSelector, useHistory} from 'react-redux';
 import React, { ChangeEvent, useCallback, useEffect, useState, useRef, createRef} from 'react';
 import Spreadsheet from 'x-data-spreadsheet';
 import Button from '@material-ui/core/Button';
@@ -83,6 +83,7 @@ const sheetOption = {
 const CreateSubmission = ({ history }: RouterProps) => {
   
   //  const [workflowProcess, setWorkflowProcess] = useState()
+  
   const inputEl = useRef<HTMLInputElement>(null);
   const dispatch = useDispatch();
   const [showSave, setSave] = useState<'visible' | 'hidden'>('hidden');
@@ -344,7 +345,9 @@ const CreateSubmission = ({ history }: RouterProps) => {
               color= {buttoncolor}
               variant="contained"
               size="large"
-             
+              onClick={()=> {history.push({pathname: `/submission/dashboard/editSubmission/${prevSubmission._id}`,
+            state:{detail:prevSubmission}
+            })}}
             >
               Update Submission status 
             </Button>
