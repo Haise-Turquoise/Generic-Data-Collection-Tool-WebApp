@@ -176,7 +176,7 @@ class UploadPreview extends Component<any>{
     }
 
     componentWillUpdate(){
-      console.log("UPDATING !!!!")
+      
       this.clearComponentChild();
       // @ts-ignore
       this.sheet = new Spreadsheet('#x-spreadsheet', sheetOption)
