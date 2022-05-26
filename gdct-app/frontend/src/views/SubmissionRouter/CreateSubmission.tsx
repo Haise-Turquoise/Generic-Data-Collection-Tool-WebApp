@@ -93,9 +93,10 @@ const CreateSubmission = ({ history }: RouterProps) => {
   const [xlsxInput, setXlsxInput] = useState<boolean>(false);
   const [buttoncolor, setbuttoncolor] = useState<"inherit" | "primary" | "secondary" | "default">("default");
   const [sheetUpdate, setSheetUpdate] = useState<string | undefined>('All');
-  //const [sheet,setSheet] = useState<any>(null)
+  
+  var curr_submission = JSON.parse(JSON.stringify((history.location.state as any).detail))
   const datasheet = createRef<any>();
-  const [prevSubmission, setPrevSubmission] = useState<any>((history.location.state as any).detail);
+  const [prevSubmission, setPrevSubmission] = useState<any>(curr_submission);
 
   
 
@@ -156,9 +157,7 @@ const CreateSubmission = ({ history }: RouterProps) => {
         test_Index = Number(key);
       }
     }
-    console.log('hitting')
-    console.log(workData)
-    console.log('hitting')
+    
     var rowsData = workData[test_Index].rows; 
     
     csvArray.forEach((element: string) => {
@@ -225,9 +224,13 @@ const CreateSubmission = ({ history }: RouterProps) => {
 
   const uploadFile = async (event: any) =>{
     console.log(prevSubmission)
+    
+
     submissionController.validateAndUpdate(prevSubmission,submissionNote,sheetUpdate).then(res =>{
+      
       console.log(res.data)
       if(res.data.errors != undefined){
+        setPrevSubmission(JSON.parse(JSON.stringify((history.location.state as any).detail)))
         setSave('visible');
         setMessage('submission was invalid');
         setMessageColour('red');
@@ -235,13 +238,14 @@ const CreateSubmission = ({ history }: RouterProps) => {
 
       
       else if(res.data.submission != undefined){
+        (history.location.state as any).detail = res.data.submission;
         setPrevSubmission(res.data.submission)
         // datasheet.current.update()
         setSave('visible');
         setMessage('Sucessfully uplaoded to database');
         setMessageColour('green');
       }
-      
+      if(inputEl.current){inputEl.current.value = ''; setCsvInput(false)}
     })
       
      
@@ -298,29 +302,7 @@ const CreateSubmission = ({ history }: RouterProps) => {
             <ArrowBackIcon></ArrowBackIcon>
             Back
           </Button>
-          {/* <Button
-            color="primary"
-            variant="contained"
-            size="large"
-            disabled={
-              location.state.detail.phase === 'Submitted' ||
-              location.state.detail.phase === 'Approved'
-            }
-            onClick={() => {
-              try {
-                handleCreateSubmission();
-                setSave('visible');
-                setMessage('Sucessfully Saved!');
-                setMessageColour('green');
-              } catch (e) {
-                setSave('visible');
-                setMessage('Fail to save workbook');
-                setMessageColour('red');
-              }
-            }}
-          >
-            Upload
-          </Button> */}
+          
           
             <Button
               color= {buttoncolor}
