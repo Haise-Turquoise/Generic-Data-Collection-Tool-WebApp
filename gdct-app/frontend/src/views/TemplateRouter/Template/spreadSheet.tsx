@@ -148,11 +148,31 @@ class SpreadSheet extends Component<SpreadSheetProps, {hasSheet: boolean}>{
       
       const mainMenu = this.sheet.datas.find((datas: any) => datas.name.toUpperCase() == 'MAIN MENU');
       const identification = this.sheet.datas.find((datas: any) => datas.name.toUpperCase() == 'IDENTIFICATION');
-      this.sheet.addSheet("MAIN MENU").reRender();
-      this.sheet.addSheet("Identification").reRender();
+      if (!mainMenu){
+        this.sheet.addSheet("MAIN MENU")
+        const mainMenu2 = this.sheet.datas.find((datas: any) => datas.name.toUpperCase() == 'MAIN MENU');
+        mainMenu2.setCellText(4, 1, "Year:", 'finished');
+        mainMenu2.setCellText(5, 1, "Quarter:", 'finished');
+      }
+      if (!identification){
+        this.sheet.addSheet("IDENTIFICATION")
+        const identification2 = this.sheet.datas.find((datas: any) => datas.name.toUpperCase() == 'IDENTIFICATION');
+        identification2.setCellText(9,5, "0", 'finished')
+        identification2.setCellText(10,5, "Hospital Name: #FACILITY_NAME", 'finished')
+        identification2.setCellText(11.5, "-", 'finished')
+        identification2.setCellText(13,5, "Hospital Identification Form", 'finished')
+        identification2.setCellText(14,5, "Return to Main Menu", 'finished')
+      }
+
+
       mainMenu.setCellText(4, 1, "Year:", 'finished');
       mainMenu.setCellText(5, 1, "Quarter:", 'finished');
-
+      identification.setCellText(9,5, "0", 'finished')
+      identification.setCellText(10,5, "Hospital Name: #FACILITY_NAME", 'finished')
+      identification.setCellText(11.5, "-", 'finished')
+      identification.setCellText(13,5, "Hospital Identification Form", 'finished')
+      identification.setCellText(14,5, "Return to Main Menu", 'finished')
+      this.sheet.reRender()
     });
 
     // fetch Validation Threshold
