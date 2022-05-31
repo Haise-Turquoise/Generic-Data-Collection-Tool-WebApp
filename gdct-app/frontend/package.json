@@ -77,7 +77,7 @@
     "uniqid": "^5.0.3",
     "webpack-bundle-analyzer": "^3.6.0",
     "webpack-dev-server": "^3.11.0",
-    "x-data-spreadsheet": "git+https://github.com/txijierf/x-spreadsheet.git#merge-up",
+    "x-data-spreadsheet": "git+https://github.com/txijierf/x-spreadsheet.git#master",
     "yup": "^0.29.1"
   },
   "devDependencies": {
