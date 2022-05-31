@@ -248,7 +248,7 @@ class SpreadSheet extends Component<SpreadSheetProps, {hasSheet: boolean}>{
     const targetColAlphabit = digitToAlpha(targetCol + 1);
     for (const attributeID of keys){
       const rowNum = Number(categoryMap[attributeID]) + 1;
-      const text = '=' + '(' + startCol + rowNum + '-' + endCol + rowNum + ')/' + startCol + rowNum;
+      const text = '=' + 'ABS((' + startCol + rowNum + '-' + endCol + rowNum + ')/' + startCol + rowNum+')';
       this.sheet.cellText(rowNum - 1, targetCol, text, currSheetIndex);
       const cellCoord = targetColAlphabit.toLocaleLowerCase() + (rowNum);
       this.sheet.cellText(rowNum - 1, targetCol, text, currSheetIndex);
