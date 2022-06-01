@@ -157,9 +157,11 @@ class SpreadSheet extends Component<SpreadSheetProps, {hasSheet: boolean}>{
       if (!identification){
         this.sheet.addSheet("IDENTIFICATION")
         const identification2 = this.sheet.datas.find((datas: any) => datas.name.toUpperCase() == 'IDENTIFICATION');
+        identification2.styles.push({bgcolor: "#FFEE00"}) ;
         identification2.setCellText(9,5, "0", 'finished')
         identification2.setCellText(10,5, "Hospital Name: #FACILITY_NAME", 'finished')
-        identification2.setCellText(11.5, "-", 'finished')
+        identification2.rows._[15].cells[5].style = 0;
+        identification2.setCellText(11,5, "-", 'finished')
         identification2.setCellText(13,5, "Hospital Identification Form", 'finished')
         identification2.setCellText(14,5, "Return to Main Menu", 'finished')
       }
@@ -169,7 +171,8 @@ class SpreadSheet extends Component<SpreadSheetProps, {hasSheet: boolean}>{
       mainMenu.setCellText(5, 1, "Quarter:", 'finished');
       identification.setCellText(9,5, "0", 'finished')
       identification.setCellText(10,5, "Hospital Name: #FACILITY_NAME", 'finished')
-      identification.setCellText(11.5, "-", 'finished')
+      identification.rows._[15].cells[5].style = 0;
+      identification.setCellText(11,5, "-", 'finished')
       identification.setCellText(13,5, "Hospital Identification Form", 'finished')
       identification.setCellText(14,5, "Return to Main Menu", 'finished')
       this.sheet.reRender()
