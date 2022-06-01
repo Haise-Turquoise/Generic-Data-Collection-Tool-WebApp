@@ -93,6 +93,7 @@ const CreateSubmission = ({ history }: RouterProps) => {
   const [xlsxInput, setXlsxInput] = useState<boolean>(false);
   const [buttoncolor, setbuttoncolor] = useState<"inherit" | "primary" | "secondary" | "default">("default");
   const [sheetUpdate, setSheetUpdate] = useState<string | undefined>('All');
+  const [notUploaded, setNotUploaded] = useState<boolean>(true)
   
   var curr_submission = JSON.parse(JSON.stringify((history.location.state as any).detail))
   const datasheet = createRef<any>();
@@ -166,12 +167,12 @@ const CreateSubmission = ({ history }: RouterProps) => {
       let catId = values.at(-3);
       let attId = values.at(-2);
       let val = values.at(-1);
-      if(val != 'n/a' && val != 'value' && val != '' && attId != 'Note'){
+      if(val != 'n/a' && val != 'value' && val != '' && attId != 'Note' && typeof val === 'string'){
         let catRowNum = findColrow(rowsData,catId);
         let attColNum = findAttirbuteCol(rowsData,attId,0);
 
         if(catRowNum != null && attColNum != null){
-          rowsData[catRowNum].cells[attColNum].text = val
+          rowsData[catRowNum].cells[attColNum].text = val.replace(/(\r\n|\n|\r)/gm, "")
           
         }
       }
@@ -244,6 +245,7 @@ const CreateSubmission = ({ history }: RouterProps) => {
         setSave('visible');
         setMessage('Sucessfully uplaoded to database');
         setMessageColour('green');
+        setNotUploaded(false)
       }
       if(inputEl.current){inputEl.current.value = ''; setCsvInput(false)}
     })
@@ -327,8 +329,9 @@ const CreateSubmission = ({ history }: RouterProps) => {
               color= {buttoncolor}
               variant="contained"
               size="large"
+              disabled = {notUploaded}
               onClick={()=> {history.push({pathname: `/submission/dashboard/editSubmission/${prevSubmission._id}`,
-            state:{detail:prevSubmission}
+              state:{detail:prevSubmission}
             })}}
             >
               Update Submission status 
