@@ -253,7 +253,7 @@ class SpreadSheet extends Component<SpreadSheetProps, {hasSheet: boolean}>{
       const cellCoord = targetColAlphabit.toLocaleLowerCase() + (rowNum);
       this.sheet.cellText(rowNum - 1, targetCol, text, currSheetIndex);
       this.sheet.cellText(rowNum - 1, targetCol + 1, '', currSheetIndex);
-      console.log(this.sheet)
+     
       this.sheet.addOtherGreaterThan(
         rowNum - 1, 
         rowNum - 1, 
