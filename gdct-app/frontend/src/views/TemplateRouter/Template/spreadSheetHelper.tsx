@@ -157,6 +157,9 @@ const spreadsheetInitialize = (sheet: any) =>{
 
         identification2.cols._[5] = {width: 307}
         identification2.cols._[7] = {width: 307}
+        sheet.on('cell-selected', (cell:any, ri:any, ci:any) => {
+          console.log('cell:', cell, ', ri:', ri, ', ci:', ci);
+        })
         sheet.reRender();
       }
 
@@ -277,6 +280,10 @@ const spreadsheetInitialize = (sheet: any) =>{
       identification.cols._[7] = {width: 307}
 
       sheet.reRender();
+
+      sheet.on('cell-selected', (cell:any, ri:any, ci:any) => {
+        console.log('cell:', cell, ', ri:', ri, ', ci:', ci);
+      })
 }
 
 export default spreadsheetInitialize;
