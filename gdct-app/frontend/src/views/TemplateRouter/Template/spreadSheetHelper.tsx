@@ -36,6 +36,11 @@ const spreadsheetInitialize = (sheet: any) =>{
               "bold": true
           }
         })
+        identification2.styles.push({
+          color: "#01b0f1",
+          underline: "true"
+        });
+        sheet.addSheet("Sheet 1")
         sheet.reRender();
 
         //this is part of the first column, column 5
@@ -154,11 +159,14 @@ const spreadsheetInitialize = (sheet: any) =>{
         identification2.rows._[13].cells[6].style = 1;
         identification2.rows._[13].cells[7].style = 1;
 
+        identification2.rows._[12].cells[5].style = 2;
+
 
         identification2.cols._[5] = {width: 307}
         identification2.cols._[7] = {width: 307}
         sheet.on('cell-selected', (cell:any, ri:any, ci:any) => {
           console.log('cell:', cell, ', ri:', ri, ', ci:', ci);
+          sheet.bottombar.clickSwap2(sheet.bottombar.items[0])
         })
         sheet.reRender();
       }
@@ -279,11 +287,14 @@ const spreadsheetInitialize = (sheet: any) =>{
       identification.cols._[5] = {width: 307}
       identification.cols._[7] = {width: 307}
 
+      identification.rows_[12].cells[5].style = 2;
       sheet.reRender();
 
       sheet.on('cell-selected', (cell:any, ri:any, ci:any) => {
         console.log('cell:', cell, ', ri:', ri, ', ci:', ci);
+        sheet.bottombar.clickSwap2(sheet.bottombar.items[0])
       })
+      sheet.reRender();
 }
 
 export default spreadsheetInitialize;
