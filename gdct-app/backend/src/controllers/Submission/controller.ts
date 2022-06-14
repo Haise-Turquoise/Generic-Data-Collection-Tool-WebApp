@@ -24,21 +24,11 @@ const SubmissionController = Service([SubmissionService], service => {
 
     router.post('/submissions/validateAndUpdate',(req,res, next) =>{
      
-      const {submission, submissionNote} = req.body;
-
-      var s = new submissionValidation(submission);
-      s.validateAll(submission);
-      console.log(s.errors);
-      if(s.errors.size === 0){
-        service
-        .uploadSubmissionWorkbook(submission, submission.workbookData, submissionNote)
-        .then(submissions => res.send(JSON.stringify([...s.errors])));
-      }else{
-        res.send(JSON.stringify([...s.errors]));
-      }
-      
-      
-      
+      const {submission, submissionNote, sheetUpdate} = req.body;
+      console.log(sheetUpdate)
+      service
+        .validateAndUpdate(submission, submissionNote, sheetUpdate)
+        .then(errors => res.send(errors))
      
       
     });

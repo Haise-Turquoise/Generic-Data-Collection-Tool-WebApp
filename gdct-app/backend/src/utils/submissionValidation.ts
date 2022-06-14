@@ -1,12 +1,15 @@
 import Submission from "../repositories/Submission";
-
+import unitValidation from "./unitValidation";
+import UnitModel from "../models/UnitOfMeasurement/UnitOfMeasurement";
 
 export default class submissionValidation {
     errors = new Map();
     sheet: any;
+    unitValidation: any;
 
     constructor(sheet: any){
         this.sheet = sheet;
+        this.unitValidation = new unitValidation(sheet);
         
     }
 
@@ -37,14 +40,31 @@ export default class submissionValidation {
         return null;
     }
 
-    validateAll(sub: any){
+    async validateAll(sub: any){
         //
         
         
         for(var sheetNum in sub.workbookData){
-            this.validateSheet(sub.workbookData[sheetNum])
+            await this.unitValidation.validateSheet(sub.workbookData[sheetNum]);
+            this.validateSheet(sub.workbookData[sheetNum]);
         }
 
+        return this.unitValidation.errors;
+
+    }
+
+    async findandValidatesheet(sub: any,sheetName: string){
+
+        for(var sheetNum in sub.workbookData){
+            if(sub.workbookData[sheetNum].name == sheetName){
+                await this.unitValidation.validateSheet(sub.workbookData[sheetNum]);
+                this.validateSheet(sub.workbookData[sheetNum]);
+                return this.unitValidation.errors;
+            }
+            
+        }
+
+        return null;
     }
 
 
