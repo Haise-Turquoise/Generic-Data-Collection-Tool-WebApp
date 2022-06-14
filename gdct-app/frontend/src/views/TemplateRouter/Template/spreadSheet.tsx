@@ -30,7 +30,6 @@ import Attribute from "../../../types/attrubute";
 import UpdatePeriod from "./UpdatePeriod";
 import { CodeSharp } from "@material-ui/icons";
 import swal from 'sweetalert2'
-import spreadsheetInitialize from "./spreadSheetHelper";
 
 // Sheet style Option
 const sheetOption = {
@@ -146,10 +145,6 @@ class SpreadSheet extends Component<SpreadSheetProps, {hasSheet: boolean}>{
       this.sheet.on('cell-selected',(cell:object, row:number, col:number)=>{
         this.currentCoord = {row, col};
       })
-      
-
-      //the following is to prepopulate the spreadsheet with some an existing format
-      spreadsheetInitialize(this.sheet);
     });
 
     // fetch Validation Threshold
@@ -423,9 +418,6 @@ class SpreadSheet extends Component<SpreadSheetProps, {hasSheet: boolean}>{
     if (!mainMenu) {
       return ""
     }    
-    
-    // mainMenu.setCellText(4, 1, "Year:", 'finished');
-    // mainMenu.setCellText(5, 1, "Quarter:", 'finished');
     const year = mainMenu.getCellTextOrDefault(4, 2);
     const q = mainMenu.getCellTextOrDefault(5, 2);
     return !!q ? `${year} ${q}` : `${year}`;
