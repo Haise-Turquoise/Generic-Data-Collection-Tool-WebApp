@@ -166,7 +166,8 @@ const spreadsheetInitialize = (sheet: any) =>{
         identification2.cols._[7] = {width: 307}
         sheet.on('cell-selected', (cell:any, ri:any, ci:any) => {
           console.log('cell:', cell, ', ri:', ri, ', ci:', ci);
-          sheet.bottombar.clickSwap2(sheet.bottombar.items[0])
+          if (ri === 12 && ci === 5 && sheet.getCurrentSheetIndex() === 1)
+            sheet.bottombar.clickSwap2(sheet.bottombar.items[0])
         })
         sheet.reRender();
       }
@@ -292,7 +293,8 @@ const spreadsheetInitialize = (sheet: any) =>{
 
       sheet.on('cell-selected', (cell:any, ri:any, ci:any) => {
         console.log('cell:', cell, ', ri:', ri, ', ci:', ci);
-        sheet.bottombar.clickSwap2(sheet.bottombar.items[0])
+        if (ri === 12 && ci === 5 && sheet.getCurrentSheetIndex() === 1)
+          sheet.bottombar.clickSwap2(sheet.bottombar.items[0])
       })
       sheet.reRender();
 }
