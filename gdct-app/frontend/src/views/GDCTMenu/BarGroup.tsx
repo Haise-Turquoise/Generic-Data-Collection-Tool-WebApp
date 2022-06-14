@@ -21,7 +21,6 @@ const BarGroupComponent =  (props:any) => {
 
   let submissionPeriods = [];
   let dict : any = {};
-  let currentPeriod = [];
 
 
   for (let i = 0; i< props.submissionData.length; i++){
@@ -39,11 +38,10 @@ const BarGroupComponent =  (props:any) => {
 
   }
   //sort by date, so it always will be correct
-  if (submissionPeriods){
+  if (submissionPeriods)
     submissionPeriods = [ ... new Set(submissionPeriods)].sort(function (a: any, b: any) {return a.localeCompare(b);}).reverse()
-    currentPeriod = submissionPeriods[0]
-  }
-  //const [currentPeriod, setCurrentPeriod] = useState(submissionPeriods[0] || '');
+  
+  const [currentPeriod, setCurrentPeriod] = useState(submissionPeriods[0] || '');
 
   let fixedData : any = [['Template', 'Submitted', {role: 'annotation'}, 'Unsubmitted', {role: 'annotation'}]]
     .concat(dict[currentPeriod]
@@ -52,8 +50,7 @@ const BarGroupComponent =  (props:any) => {
   // update scale output dimensions
 
   const handleChange = (event: any) => {
-    //setCurrentPeriod(event.target.value);
-    currentPeriod = event.target.value;
+    setCurrentPeriod(event.target.value);
     console.log(dict);
   }
 
