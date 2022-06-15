@@ -41,7 +41,7 @@ const submissionController = (() => {
     fetch: async (query: Partial<Submission>): Promise<Submission[]> => submissionAxios.post('/findQuery', { query }).then(res => res.data.submissions),
     fetchNamesOfIds: async (programId: string, submissionPeriodId: string ): Promise<any> => submissionAxios.post('/fetchNamesOfIds',{programId, submissionPeriodId}).then(res => res),
     delete: async (_id: string) => submissionAxios.post('/delete', { _id }),
-    validateAndUpdate: async (submission: Submission, submissionNote: SubmissionNote,sheetUpdate: any): Promise<any | null> => submissionAxios.post('/validateAndUpdate', {submission, submissionNote,sheetUpdate}).then(res => res),
+    validateAndUpdate: async (submission: Submission, submissionNote: SubmissionNote): Promise<any | null> => submissionAxios.post('/validateAndUpdate', {submission, submissionNote}).then(res => res),
 
     fetchByRole: async (roles: UserSysRole[]): Promise<SubmissionPopulated[]> => submissionAxios.post('/findByRole', { roles }).then(res => res.data.submissions),
 };

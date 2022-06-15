@@ -528,8 +528,6 @@ export const templateDownloader = (workBookName:string, sheetData:SheetData[]) =
 export const templateCSVFormat = async (currentSheetData:any, submissonInfo:Submission,filename?:string, info?:any) =>{
   
   var attr_row = currentSheetData.rows[0].cells;
-
-  var note_row = currentSheetData.rows[9].cells;
   
   var attr_ids = [];
   var attr_locations = [];
@@ -555,21 +553,13 @@ export const templateCSVFormat = async (currentSheetData:any, submissonInfo:Subm
   }
   console.log("before")
   console.log(attr_ids)
-  console.log(note_row)
-  for(var key in note_row){
-    if(note_row[key] != undefined && note_row[key].text != undefined && note_row[key].text === "Note"){
-      console.log("hit")
-      attr_locations.push(key);
-      attr_ids.push("Note");
-    }
-  }
  
   if( attr_ids.length > 0){
     let firstSix = attr_ids.map(id => id.substring(0,6))
     //console.log(firstSix)
     let fetches = await reportingPeriodController.fetchSpecificReportingPeriods(firstSix);
-    // console.log("DING DING DING")
-    // console.log(fetches.reportingPeriods)
+    console.log("DING DING DING")
+    console.log(fetches.reportingPeriods)
 
     for(var i = 0; i < attr_ids.length; i++){
       for(var report in fetches.reportingPeriods){
@@ -579,8 +569,8 @@ export const templateCSVFormat = async (currentSheetData:any, submissonInfo:Subm
         }
       }
     }
-    // console.log('after')
-    // console.log(attr_ids)
+    console.log('after')
+    console.log(attr_ids)
   }
   
 

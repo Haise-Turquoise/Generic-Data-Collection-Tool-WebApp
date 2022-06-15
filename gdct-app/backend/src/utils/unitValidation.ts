@@ -1,22 +1,13 @@
-import { AnyBulkWriteOperation } from "mongodb";
-import UnitOfMeasurementRepository from "../repositories/UnitOfMeasurement"
-import { UnitOfMeasurementDoc } from "../types/unitofmeasurement";
-export default class unitValidation {
+
+
+export default class submissionValidation {
     errors = new Map();
     sheet: any;
-    unitOfMeasure: any;
-    attributeRow: number;
-    unitOfMeasureRules: any;
 
     constructor(sheet: any){
         this.sheet = sheet;
-        this.attributeRow = 9;
-        this.unitOfMeasure = new UnitOfMeasurementRepository();
         
     }
-
-
-
 
 
     findAttirbuteCol(rows: any,id:string | undefined){
@@ -45,75 +36,42 @@ export default class unitValidation {
     
         return null;
     }
-    getUnit(info:any,text:string){
-      for(let key in info){
-          
-          if(info[key].unitOfMeasurement === text){
-              return info[key]
-          }
-      }
-
-      return null;
-  }
-
-    async validateSheet(sheet: any){
-      let sheetData = sheet?.rows;
-      this.unitOfMeasureRules = await this.unitOfMeasure.findAll();
-      let hasUnit = this.findAttirbuteCol(sheet.rows,"Unit of Measure" );
-      let rowlen = Object.keys(sheet.rows).length;
-     
-      if(!hasUnit){return;}
-
-      for(var i = this.attributeRow+1; i< rowlen;i++){
-        let unit = this.getCell(i,Number(hasUnit),sheetData);
-        if(unit != undefined && unit.text != undefined){
-            let unitInfo = this.getUnit(this.unitOfMeasureRules, unit.text)
-            //console.log("pattern " + unitInfo.pattern + " for unit " + unit.text)
-            
-            if( unitInfo!= null){
-                this.validate_row(i,Number(hasUnit),sheet.rows[i],unitInfo,sheetData)
-            }
-        }
-      }
 
 
+    // validate_row(ri,uci ,row,unitInfo){
 
-    }
+    //     let numCols = this.datas.cols.len;
 
-    isAttributeColumn(ci: number, rows: any){
-      let attr = this.getCell(this.attributeRow,ci,rows);
-      let attrid = this.getCell(0,ci,rows);
-      if(attr === null || attr.text === undefined || attrid === null || attrid.text === undefined){return false;}
-      if(Number(attrid.text) === NaN){return false;}
-      return true;
+    //     let errorcells = "";
 
+    //     for(var i = uci+1; i<numCols;i++){
 
+    //         if(this.isAttributeColumn(i) && row[i] != undefined){
+                
+    //             let checkText = row[i].text;
+                
+    //             if(checkText != undefined && !checkText.match(new RegExp(unitInfo.pattern)) ){
+    //                 console.log("pattern: " + unitInfo.pattern + " text: " + checkText)
+    //                 console.log(checkText.match(new RegExp(unitInfo.pattern)))
+    //                 console.log("errors %d %d", ri, i)
+    //                 errorcells += xy2expr(i,ri) +',';
+    //             }
+    //         }
 
-  }
+    //         console.log("hello")
+    //     }
 
+    //     if(errorcells == ""){
+    //         this.errors.delete(`${ri}_${uci}`)
+    //         let sheet = this.spread.getSheet()
+    //         if(sheet){sheet.notes.clearNote(ri,uci);}
+    //     }else{
+    //         this.errors.set(`${ri}_${uci}`,unitInfo.note)
+    //         let sheet = this.spread.getSheet()
+    //         if(sheet){sheet.notes.setNote(ri,uci,'For ' + errorcells+ unitInfo.note);}
+    //     }
 
-    validate_row(rowNum: number,uci:number,row:any,unitInfo:UnitOfMeasurementDoc,rows:any){
-      let rowData = row.cells;
-      let numCols = Object.keys(rowData).length;
+        
 
-      for(var i = uci+1; i<numCols;i++){
-        if(this.isAttributeColumn(i,rows) && rowData[i] != undefined ){
-          let checkText = rowData[i].text;
-          if(checkText != undefined && !checkText.replace(/(\r\n|\n|\r)/gm, "").match(new RegExp(unitInfo.pattern)) ){
-              
-              console.log("pattern: " + unitInfo.pattern + " text: " + checkText)
-              console.log(checkText.match(/^-?\d{1,13}(\.\d{1,5})?$/))
-              this.errors.set(`${rowNum}_${i}`, unitInfo.note)
-              
-             
-          }
-          // else{
-          //   console.log('we gucci')
-          // }
-        }
-      }
-
-    }
-
-    
+    // }
 }

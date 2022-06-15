@@ -185,7 +185,6 @@ class SpreadSheet extends Component<SpreadSheetProps, {hasSheet: boolean}>{
     if (this.sheet){
       this.disablePreview();
       const workBookData = this.sheet.getData();
-      console.log(workBookData)
       console.log('saving', workBookData);
       templateController.sheetUpdate(this.id, workBookData);
     }
@@ -258,7 +257,6 @@ class SpreadSheet extends Component<SpreadSheetProps, {hasSheet: boolean}>{
       const cellCoord = targetColAlphabit.toLocaleLowerCase() + (rowNum);
       this.sheet.cellText(rowNum - 1, targetCol, text, currSheetIndex);
       this.sheet.cellText(rowNum - 1, targetCol + 1, '', currSheetIndex);
-     
       this.sheet.addOtherGreaterThan(
         rowNum - 1, 
         rowNum - 1, 
