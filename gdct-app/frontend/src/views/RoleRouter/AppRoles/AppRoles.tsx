@@ -153,7 +153,7 @@ const AppRolesTable = () => {
   useEffect(()=>{
     setRowNum(appRoles?.length || 1)
   }, [appRoles])
-
+  appRoles?.sort((a,b)=>a.code.localeCompare(b.code)); //Sort by Code in alphabetical order - Tony X
   // @ts-ignore
   return (
     <MaterialTable

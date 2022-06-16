@@ -17,6 +17,7 @@ import CreateAuditLog from '../AuditLog_Global';
 import reportingPeriodController from '../../controllers/reportingPeriod';
 import ReportingPeriod from '../../types/reportingperiod';
 
+
 interface ReportingPeriodMT extends ReportingPeriod {
   tableData?: any;
 }
@@ -28,6 +29,8 @@ const ReportingPeriodHeader = () => {
     </Paper>
   );
 };
+
+
 
 const generateCode = (name: string) => {
   const first = `${name.substring(0,4)}9`
@@ -70,11 +73,13 @@ const ReportingPeriodsTable = () => {
   reportingPeriods?.forEach((reportingPeriod: ReportingPeriod) => {
     reportingPeriod.updatedAt = formatTimestamp(reportingPeriod.updatedAt);
   });
+  reportingPeriods?.sort((a,b)=>b.name.localeCompare(a.name)); //newest to oldest sorting - Tony X
+  //reportingPeriods?.sort((a,b)=>a.name.localeCompare(b.name)); <--Would be oldest to newest
 
   // Prepare the columns for material table
   const columns: Column<ReportingPeriodMT>[] = useMemo(
     () => [
-      { title: 'Name', field: 'name', validate: rowData => checkDuplicates(rowData, reportingPeriods, 'name') },
+      { title: 'Name', field: 'name', validate: rowData => checkDuplicates(rowData, reportingPeriods, 'name') }, //Related to order sorting - Tony X
       { title: 'Code', field: 'code', editComponent: () => (<div></div>) },
       {
         title: 'Modified On',

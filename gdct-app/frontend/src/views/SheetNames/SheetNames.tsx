@@ -247,7 +247,8 @@ const SheetNamesTable = () => {
   useEffect(()=>{
     setRowNum(sheetNames?.length || 1)
   }, [sheetNames])
-
+  sheetNames?.sort((a,b)=>a.templateTypeId.localeCompare(b.templateTypeId)); //Sort by name, then sort by template type ID, not ideal it seems
+  sheetNames?.sort((a,b)=>a.name.localeCompare(b.name)); //Sort by name, Linda wanted to sort by templateTypeId as well
   return (
     <MaterialTable
       key={readRowNum}
