@@ -288,7 +288,7 @@ const spreadsheetInitialize = (sheet: any) =>{
       identification.cols._[5] = {width: 307}
       identification.cols._[7] = {width: 307}
 
-      identification.rows_[12].cells[5].style = 2;
+      identification.rows._[12].cells[5].style = 2;
       sheet.reRender();
 
       sheet.on('cell-selected', (cell:any, ri:any, ci:any) => {
