@@ -211,6 +211,7 @@ class SpreadSheet extends Component<SpreadSheetProps, {hasSheet: boolean}>{
     if (varianceCol && this.prevVarianceSelection) {
       this.insertVariance(this.prevVarianceSelection);
     }else{
+      this.sheet.datas[currentIndex].cols._[1] = {width: 307}
       this.sheet.reRender();
     }
 
