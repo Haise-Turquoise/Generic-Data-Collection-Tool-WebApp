@@ -247,7 +247,7 @@ class categoryInsertMenu extends React.Component<MenuProps>{
                      ref={this.categoryRef} onChange={()=>{ this.update_subform(1, 
                     // @ts-ignore
                     this.category)}}>
-                      <option>Please select a Catagory</option>
+                      <option>Please select a Category</option>
                       {this.data.map(x=><option>{
                       x.categoryGroup}</option>)}
                     </select>
