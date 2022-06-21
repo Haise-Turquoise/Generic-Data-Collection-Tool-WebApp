@@ -198,7 +198,7 @@ class SpreadSheet extends Component<SpreadSheetProps, {hasSheet: boolean}>{
     const insertRow = rowNum > -1? rowNum - 1:this.currentCoord.row;
     let unitCol = this.sheet.datas[currentIndex].findInputColOnRow(9, "Unit of Measure");
     let varianceCol = this.sheet.datas[currentIndex].findInputColOnRow(9, "Variance");
-
+    this.sheet.datas[currentIndex].cols._[1] = {width: 307}
     // Key is category ID, currentIndex is the index of the current sheet
     for (let key in inputs){
       let dataArr = inputs[key];
@@ -211,7 +211,7 @@ class SpreadSheet extends Component<SpreadSheetProps, {hasSheet: boolean}>{
     if (varianceCol && this.prevVarianceSelection) {
       this.insertVariance(this.prevVarianceSelection);
     }else{
-      this.sheet.datas[currentIndex].cols._[1] = {width: 307}
+
       this.sheet.reRender();
     }
 
