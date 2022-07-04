@@ -146,17 +146,6 @@ class SpreadSheet extends Component<SpreadSheetProps, {hasSheet: boolean}>{
       this.sheet.on('cell-selected',(cell:object, row:number, col:number)=>{
         this.currentCoord = {row, col};
       })
-      // this.sheet.bottombar.on('click', () => {
-      //   const mainMenu3 = this.sheet.datas.find((datas: any) => datas.name.toUpperCase() == 'MAIN MENU');
-      
-      //   for (let i = 0; i < 25; i++){
-      //     mainMenu3.setCellText(0, i, "");
-      //   }
-      //   this.sheet.reRender();
-      //   for (let i = 0; i < this.sheet.datas.length; i++){
-      //     mainMenu3.setCellText(0, i, this.sheet.datas[i].name);
-      //   }
-      // }) 
       
 
       //the following is to prepopulate the spreadsheet with some an existing format
