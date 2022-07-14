@@ -18,6 +18,7 @@ import Status from '../../types/status';
 import { SheetData } from '../../types/template';
 import UnitOfMeasurementController from "../../controllers/UnitOfMeasurement";
 import {templateCSVFormat} from '../../tools/misc';
+import spreadsheetLinksInitialize from './spreadSheetHelper';
 
 // Sheet style Option
 const sheetOption = {
@@ -109,6 +110,7 @@ class SubmissionSpreadSheet extends Component<submissionSpreadsheetProps>{
           this.sheet.on('cell-selected', (cell, row, col) => {
             this.currentCoord = { row, col };
           });
+          spreadsheetLinksInitialize(this.sheet)
         });
       });
     } else {
@@ -124,6 +126,7 @@ class SubmissionSpreadSheet extends Component<submissionSpreadsheetProps>{
         this.sheet.on('cell-selected', (cell, row, col) => {
           this.currentCoord = { row, col };
         });
+        spreadsheetLinksInitialize(this.sheet)
       });
     }
   }
