@@ -88,7 +88,7 @@ const processData = async (file: File, cb: (allData: AllDataType) => void) => {
     workbook = await workbook.xlsx.load(data);
     let allData: AllDataType = {};
 
-    workbook.eachSheet((worksheet:ExcelJS.Worksheet, sheetId:number) => {
+    workbook.eachSheet((worksheet: ExcelJS.Worksheet, sheetId: number) => {
       if (ignoreSheets.includes(worksheet.name)) {
         return;
       }
@@ -163,7 +163,7 @@ const buildObjects = async (data: AllDataType) => {
       }
       const categoryGroupId = foundGroup?._id || '';
       objects.push({
-        _id: '',
+        _id: undefined,
         categoryId,
         sheetNameId,
         categoryGroupId,
@@ -183,7 +183,7 @@ const buildObjects = async (data: AllDataType) => {
  */
 const createTrees = async (trees: CategoryTree[]) => {
   const currTrees: CategoryTree[] = await COATreeController.fetch();
-  // remove trees already in the databas
+  // remove trees already in the database
   trees = trees.filter(tree => {
     const found = currTrees.find(
       currTree =>
