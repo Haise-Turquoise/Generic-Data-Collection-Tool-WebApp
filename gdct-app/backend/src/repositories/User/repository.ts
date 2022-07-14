@@ -102,6 +102,7 @@ export default class UserRepository extends BaseRepository<User, UserDoc> {
   }
 
   async update(_id: string, user: Partial<User>) {
+    //@ts-ignore
     return UserModel.findOneAndUpdate({ _id}, { user });
   }
 
