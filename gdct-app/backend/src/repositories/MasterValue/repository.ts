@@ -62,6 +62,7 @@ export default class MasterValueRepository extends BaseRepository<MasterValue, M
     return MasterValueModel.findOne(key).then((res: MasterValueDoc | null) => {
       if (res) {
         // console.log('find the matched masterValue')
+        // @ts-ignore
         return MasterValueModel.findByIdAndUpdate(res._id, masterValue);
       }
       // console.log('create a new data')
