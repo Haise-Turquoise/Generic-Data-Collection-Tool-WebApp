@@ -493,6 +493,9 @@ class SpreadSheet extends Component<SpreadSheetProps, {hasSheet: boolean}>{
     }
   }
 
+  reload = () => {
+    window.location.reload();
+  }
   
 
   unitOfMeasure = async () => {
@@ -637,6 +640,10 @@ class SpreadSheet extends Component<SpreadSheetProps, {hasSheet: boolean}>{
              
               <Button variant="outlined" color="primary" onClick={()=>this.backButton()}>
                 Go Back
+              </Button>
+
+              <Button variant="outlined" color="primary" onClick={()=>this.reload()}>
+                Reload
               </Button>
             </div>
             <div id="x-spreadsheet"></div>

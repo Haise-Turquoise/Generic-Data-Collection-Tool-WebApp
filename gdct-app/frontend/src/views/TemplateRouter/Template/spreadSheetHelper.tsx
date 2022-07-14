@@ -1,15 +1,31 @@
 const spreadsheetInitialize = (sheet: any) =>{
+    //this function takes a spreadsheet as parameter, and generates some preset cells and styles 
+    // this function also provides functional links to pages to and from the main menu, this is done by coloring said cells in a link-like style, 
+    //    then setting an on-click activation trick upon clicking said links. This relies on Main Menu being the 0th page in the index.
+
+
+
+
     const mainMenu = sheet.datas.find((datas: any) => datas.name.toUpperCase() == 'MAIN MENU');
-      const identification = sheet.datas.find((datas: any) => datas.name.toUpperCase() == 'IDENTIFICATION');
+    const identification = sheet.datas.find((datas: any) => datas.name.toUpperCase() == 'IDENTIFICATION');
       if (!mainMenu){
         sheet.addSheet("Main Menu")
         const mainMenu2 = sheet.datas.find((datas: any) => datas.name.toUpperCase() == 'MAIN MENU');
         mainMenu2.setCellText(4, 1, "Year:", 'finished');
         mainMenu2.setCellText(5, 1, "Quarter:", 'finished');
+
+        //set the styles for each page like thus, first is the links
+        mainMenu2.styles.push({
+          color: "#01b0f1",
+          underline: "true"
+        });
+        sheet.reRender();
       }
       if (!identification){
         sheet.addSheet("Identification")
         const identification2 = sheet.datas.find((datas: any) => datas.name.toUpperCase() == 'IDENTIFICATION');
+        
+        //identification styles, first is the red, then the green boxes, then the links
         identification2.styles.push({color: "#FF0000"}) ;
         sheet.reRender();
         identification2.styles.push({bgcolor: "#E3EFD9", 
@@ -161,9 +177,11 @@ const spreadsheetInitialize = (sheet: any) =>{
 
         identification2.rows._[12].cells[5].style = 2;
 
-
+        //column size changers
         identification2.cols._[5] = {width: 307}
         identification2.cols._[7] = {width: 307}
+
+        //whenever the user clicks on a cell, check if it is a link
         sheet.on('cell-selected', (cell:any, ri:any, ci:any) => {
           console.log('cell:', cell, ', ri:', ri, ', ci:', ci);
           if (ri === 12 && ci === 5 && sheet.getCurrentSheetIndex() === 1)
@@ -172,130 +190,53 @@ const spreadsheetInitialize = (sheet: any) =>{
         sheet.reRender();
       }
 
-      identification.setCellText(7,5, "0", 'finished')
-      identification.setCellText(8,5, "Hospital Name: #FACILITY_NAME", 'finished')
-      identification.setCellText(9,5, "-", 'finished')
-      identification.setCellText(11,5, "Hospital Identification Form", 'finished')
-      identification.setCellText(12,5, "Return to Main Menu", 'finished')
-      identification.setCellText(13,5, "Description", 'finished')
-      identification.setCellText(14,5, "*Facility No.", 'finished')
-      identification.setCellText(15,5, "*Recipient # (IFIS #)", 'finished')
-      identification.setCellText(16,5, "Period", 'finished')
-      identification.setCellText(17,5, "*LHIN Name", 'finished')
-      identification.setCellText(18,5, "*Hospital Name", 'finished')
-      identification.setCellText(19,5, "*Hospital Legal Name", 'finished')
-      // 
-      identification.setCellText(21,5, "Service Provider Address", 'finished')
-      identification.setCellText(22,5, "*Address 1", 'finished')
-      identification.setCellText(23,5, "Address 2", 'finished')
-      identification.setCellText(24,5, "*City", 'finished')
-      identification.setCellText(25,5, "*Postal Code", 'finished')
-      //
-      identification.setCellText(27,5, "Chief Financial Officer", 'finished')
-      identification.setCellText(28,5, "*Name", 'finished')
-      identification.setCellText(29,5, "*Position Name", 'finished')
-      identification.setCellText(30,5, "*Telephone", 'finished')
-      identification.setCellText(31,5, "*Email", 'finished')
-      //
-      identification.setCellText(33,5, "Finance Contact", 'finished')
-      identification.setCellText(34,5, "*Name", 'finished')
-      identification.setCellText(35,5, "*Position Name", 'finished')
-      identification.setCellText(36,5, "*Telephone", 'finished')
-      identification.setCellText(37,5, "*Email", 'finished')
-      //
-      identification.setCellText(39,5, "Board Chair/Signing Authority", 'finished')
-      identification.setCellText(40,5, "*Name", 'finished')
-      identification.setCellText(41,5, "*Position Name", 'finished')
-      identification.setCellText(42,5, "*Telephone", 'finished')
-      identification.setCellText(43,5, "*Email", 'finished')
-      //
-      identification.setCellText(45,5, "Board Chair/Signing Authority (if required)", 'finished')
-      identification.setCellText(46,5, "Name", 'finished')
-      identification.setCellText(47,5, "Position Name", 'finished')
-      identification.setCellText(48,5, "Telephone", 'finished')
-      identification.setCellText(49,5, "Email", 'finished')
 
-      //following is for line numbers 
-      identification.setCellText(13,6, "Line#", 'finished')
-      identification.setCellText(14,6, "1", 'finished')
-      identification.setCellText(15,6, "2", 'finished')
-      identification.setCellText(16,6, "3", 'finished')
-      identification.setCellText(17,6, "4", 'finished')
-      identification.setCellText(18,6, "5", 'finished')
-      identification.setCellText(19,6, "6", 'finished')
-
-      identification.setCellText(22,6, "7", 'finished')
-      identification.setCellText(23,6, "8", 'finished')
-      identification.setCellText(24,6, "9", 'finished')
-      identification.setCellText(25,6, "10", 'finished')
-
-      identification.setCellText(28,6, "11", 'finished')
-      identification.setCellText(29,6, "12", 'finished')
-      identification.setCellText(30,6, "13", 'finished')
-      identification.setCellText(31,6, "14", 'finished')
-
-      identification.setCellText(34,6, "15", 'finished')
-      identification.setCellText(35,6, "16", 'finished')
-      identification.setCellText(36,6, "17", 'finished')
-      identification.setCellText(37,6, "18", 'finished')
-
-      identification.setCellText(40,6, "19", 'finished')
-      identification.setCellText(41,6, "20", 'finished')
-      identification.setCellText(42,6, "21", 'finished')
-      identification.setCellText(43,6, "22", 'finished')
-
-      identification.setCellText(46,6, "23", 'finished')
-      identification.setCellText(47,6, "24", 'finished')
-      identification.setCellText(48,6, "25", 'finished')
-      identification.setCellText(49,6, "26", 'finished')
-
-      //styles set here
-      //red 
-      identification.rows._[7].cells[5].style = 0;
-      identification.rows._[8].cells[5].style = 0;
-      identification.rows._[9].cells[5].style = 0;
-      identification.rows._[14].cells[5].style = 0;
-      identification.rows._[15].cells[5].style = 0;
-      identification.rows._[17].cells[5].style = 0;
-      identification.rows._[18].cells[5].style = 0;
-      identification.rows._[19].cells[5].style = 0;
-
-      identification.rows._[22].cells[5].style = 0;
-      identification.rows._[24].cells[5].style = 0;
-      identification.rows._[25].cells[5].style = 0;
-
-      identification.rows._[28].cells[5].style = 0;
-      identification.rows._[29].cells[5].style = 0;
-      identification.rows._[30].cells[5].style = 0;
-      identification.rows._[31].cells[5].style = 0;
-
-      identification.rows._[34].cells[5].style = 0;
-      identification.rows._[35].cells[5].style = 0;
-      identification.rows._[36].cells[5].style = 0;
-      identification.rows._[37].cells[5].style = 0;
-
-      identification.rows._[40].cells[5].style = 0;
-      identification.rows._[41].cells[5].style = 0;
-      identification.rows._[42].cells[5].style = 0;
-      identification.rows._[43].cells[5].style = 0;
-
-      //column headers
-      identification.rows._[13].cells[5].style = 1;
-      identification.rows._[13].cells[6].style = 1;
-      identification.rows._[13].cells[7].style = 1;
-
-
-      identification.cols._[5] = {width: 307}
-      identification.cols._[7] = {width: 307}
-
-      identification.rows._[12].cells[5].style = 2;
       sheet.reRender();
 
+      const mainMenu3 = sheet.datas.find((datas: any) => datas.name.toUpperCase() == 'MAIN MENU');
+      
+      for (let i = 0; i < 25; i++){
+        mainMenu3.setCellText(0, i, "");
+      }
+      sheet.reRender();
+      for (let i = 0; i < sheet.datas.length; i++){
+        mainMenu3.setCellText(i+8, 1, sheet.datas[i].name);
+        mainMenu3.rows._[i + 8].cells[1].style = 0;
+      }
+      sheet.reRender();
+
+      //whenever the user clicks on a cell, check if it is a link
       sheet.on('cell-selected', (cell:any, ri:any, ci:any) => {
         console.log('cell:', cell, ', ri:', ri, ', ci:', ci);
+        //this one is used for the return to main menu link on the identification
         if (ri === 12 && ci === 5 && sheet.getCurrentSheetIndex() === 1)
           sheet.bottombar.clickSwap2(sheet.bottombar.items[0])
+
+        //this one is used for the links in the main menu
+        for (let i = 0; i< sheet.datas.length; i++){
+          if (ri === i+8 && ci === 1 && sheet.getCurrentSheetIndex() === 0)
+            sheet.bottombar.clickSwap2(sheet.bottombar.items[i])
+        }
       })
+
+      //whenever the user switches tabs on the bottom, use this sequence to refresh
+      sheet.bottombar.on('bottom-shift',()=>{
+        console.log("shifting my ")
+        const mainMenu3 = sheet.datas.find((datas: any) => datas.name.toUpperCase() == 'MAIN MENU');
+        
+        //clear all the cells first
+        for (let i = 0; i < 25; i++){
+          mainMenu3.setCellText(i, 9, "");
+        }
+        sheet.reRender();
+
+        //set the cells here to the names of the tabs
+        for (let i = 0; i < sheet.datas.length; i++){
+          mainMenu3.setCellText(i+8, 1, sheet.datas[i].name);
+          mainMenu3.rows._[i + 8].cells[1].style = 0;
+        }
+        sheet.reRender();
+      }) 
       sheet.reRender();
 }
 
