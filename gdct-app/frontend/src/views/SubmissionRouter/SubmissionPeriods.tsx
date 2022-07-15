@@ -84,9 +84,6 @@ const SubmissionPeriod = () => {
     }),
     shallowEqual,
   );
-  
-  
-
 
   useEffect(()=>{
     if(submissionPeriods && Object.keys(submissionPeriods).length>0){
@@ -116,7 +113,6 @@ const SubmissionPeriod = () => {
       console.log(readsubmissionPeriods)
       setIndex(IndexToId);
       setIndexName(IndexToName);
-      
     }
     
 
@@ -220,6 +216,7 @@ const SubmissionPeriod = () => {
   useEffect(()=>{
     setRowNum(submissionPeriods?.length || 1)
   }, [submissionPeriods])
+  submissionPeriods?.sort((a,b)=>b.name.localeCompare(a.name)); //Sort submission periods for table - Tony X
   return (
     <div>
       <SubmissionPeriodHeader />

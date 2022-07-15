@@ -172,7 +172,7 @@ const ProgramsTable = () => {
   useEffect(()=>{
     setRowNum(programs?.length || 1)
   }, [programs])
-
+  programs?.sort((a,b)=>a.name.localeCompare(b.name)); // sort in alphabetical order - Tony x
   return (
     <MaterialTable
       key={readRowNum}

@@ -180,7 +180,7 @@ const AppSysRolesTable = () => {
   useEffect(()=>{
     setNumRow(appSysRoles?.length || 1)
   }, [appSysRoles])
-
+  appSysRoles?.sort((a,b)=>a.appSys.localeCompare(b.appSys)); // Sort Application System in alphabetical order - Tony X
   return (
     <MaterialTable
       key={readNumRow}
