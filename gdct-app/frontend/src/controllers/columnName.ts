@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 import { host } from '../constants/domain';
-import Attribute from '../types/attrubute';
+import Attribute from '../types/attribute';
 
 const columnNameController = (() => {
   const columnNameAxios = axios.create({
