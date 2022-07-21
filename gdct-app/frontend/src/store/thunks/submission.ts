@@ -131,7 +131,7 @@ export const updateSubmissionStatusRequest = (
   await submissionController
     .updateStatus(submission, submissionNote, role, newProcessId, updatedBy, statusChangedFlag)
     .then((updatedSubmission) => {
-      
+      // @ts-ignore
       Object.assign(updatedSubmission, {phase: role});
       dispatch(SubmissionsStore.actions.RECEIVE(updatedSubmission));
     })

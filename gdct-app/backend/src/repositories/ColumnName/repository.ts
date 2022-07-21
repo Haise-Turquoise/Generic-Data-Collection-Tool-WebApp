@@ -19,10 +19,15 @@ export default class ColumnNameRepository extends BaseRepository<Attribute, Attr
     );
   }
 
-  async create(columnName: Attribute) {
-    return ColumnNameModel.create(columnName).then(
-      createdColumnName => new ColumnNameEntity(createdColumnName),
-    );
+  async create(columnName: Attribute | Attribute[]) {
+    return ColumnNameModel.create(columnName).then(columnName => {
+      if(Array.isArray(columnName)) {
+        return columnName.map(attribute => {
+          return new ColumnNameEntity(attribute)
+        })
+      }
+      return new ColumnNameEntity(columnName);
+    });
   }
 
   async update(id: string, columnName: Partial<Attribute>) {

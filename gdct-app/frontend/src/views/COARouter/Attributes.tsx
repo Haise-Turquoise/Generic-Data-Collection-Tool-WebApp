@@ -158,7 +158,7 @@ const ColumnNamesTable = () => {
           recordUpdate(columnName);
           // Find the old value before updating in order to Auditlog
           (async () => {
-            const oldColumnName = await columnNameController.fetchAttribute(columnName._id);
+            const oldColumnName = await columnNameController.fetchAttribute(columnName._id || '');
             // console.log(oldColumnName);
             CreateAuditLog(
               null,
@@ -183,7 +183,7 @@ const ColumnNamesTable = () => {
         new Promise((resolve, reject) => {
           recordUpdate(columnName);
           // dispatch(deleteColumnNameRequest(columnName._id, resolve, reject));
-          controllerDeleteRow(columnNameController, setColumnNames, columnName._id).then((res: boolean) => {
+          controllerDeleteRow(columnNameController, setColumnNames, columnName._id || '').then((res: boolean) => {
             if (res) {
               resolve(columnName)
             }
@@ -192,7 +192,7 @@ const ColumnNamesTable = () => {
         }).then(() => {
           // For Auditlog
           (async () => {
-            const oldColumnName = await columnNameController.fetchAttribute(columnName._id);
+            const oldColumnName = await columnNameController.fetchAttribute(columnName._id || '');
             // Actually Deleted (Attribute might not be deleted because it is referenced in master value table)
             if (oldColumnName) {
               CreateAuditLog(null, 'Delete Attribute', 'Attribute', columnName._id, columnName, {});
