@@ -12,7 +12,7 @@ import CategoryGroup from '../../../types/categorygroup';
 import Category from '../../../types/category';
 import CategoryTree from '../../../types/categorytree';
 import columnNameController from '../../../controllers/columnName';
-import { findLastIndex } from 'lodash';
+import { findLastIndex, split } from 'lodash';
 
 import Attribute from '../../../types/attribute';
 
@@ -91,6 +91,9 @@ const buildObjects = async (data: AllDataType) => {
   const sheets: SheetName[] = await SheetNameController.fetch();
   const categories: Category[] = await COAController.fetch();
   const allNewCategories: Category[] = [];
+  const DBAttributes: Attribute[] = await columnNameController.fetch();
+  const allNewAttributes: Attribute[] = [];
+
   for (let sheetName of Object.keys(data)) {
     // get ID from existing sheetName
     const foundSheet = sheets.find(sheet => sheet.name === sheetName);
@@ -100,6 +103,24 @@ const buildObjects = async (data: AllDataType) => {
     } else {
       sheetNameId = foundSheet._id;
     }
+
+    // for attributes
+    // loop through each attribute object and add new attributes to allNewAttributes array
+    data[sheetName]['attributes'].forEach(attribute => {
+      // check if already in DB or prev added, add if it is not
+      const inAllNewAttributes = allNewAttributes.find(addedAttribute => addedAttribute.id.toString() === attribute.id.toString());
+      const inAttributeDB = DBAttributes.find(DBAttribute => DBAttribute.id.toString() === attribute.id.toString());
+      if (!inAllNewAttributes && !inAttributeDB) {
+        allNewAttributes.push(attribute);
+      }
+    })
+
+    // !Note: add code to call controller, unsure of whether to ask controller to run for each attribute or batch import attribute array
+    if (allNewAttributes.length > 0) {
+      await columnNameController.create(allNewAttributes);
+    }
+
+    // for categoryTree
     for (let ctgGroup of Object.keys(data[sheetName]['categoryTree'])) {
       const newCategories: Category[] = data[sheetName]['categoryTree'][ctgGroup];
       // add new categories to a list that will be added to DB later
@@ -135,8 +156,6 @@ const buildObjects = async (data: AllDataType) => {
   if (allNewCategories.length > 0) {
     // await COAController.create(allNewCategories);
   }
-  console.log('!debug line 138')
-  console.log(objects)
   return objects;
 };
 
@@ -200,6 +219,7 @@ export default function COAGenerator() {
   const [PA, setPA] = useState('');
   const [SA, setSA] = useState('')
   const [reportingPeriod, setReportingPeriod] = useState('');
+  const [attributeHeader, setAttributeHeader] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
 
   const classes = useStyles();
@@ -255,6 +275,37 @@ export default function COAGenerator() {
         break;
       case 'reportingPeriod':
         setReportingPeriod(value);
+        setErrorMsg("");
+        setAttributeHeader("")
+        // if length of errorMsg is 7 or 10:
+        if (value.length == 7 || value.length == 10) {
+          if (value.length == 7) {
+            // Validate YYYY-YY
+            const validator = value.split('-');
+            if (parseInt(validator[1]) != (parseInt(validator[0].substring(2,4)) + 1)) {
+              setErrorMsg("Year inputted incorrectly, must be inputted as example follows: 2020-21");
+              break;
+            }
+            setAttributeHeader(validator[0]);
+          }
+          else if (value.length == 10) {
+            // Split by ' '
+            let splitYearAndQuarter: string[] = value.split(' ');
+            // Follow same logic for YYYY-YY
+            const validator = splitYearAndQuarter[0].split('-');
+            if (parseInt(validator[1]) != (parseInt(validator[0].substring(2,4)) + 1)) {
+              setErrorMsg("Year inputted incorrectly, must be inputted as example follows: 2020-21");
+              break;
+            }
+            // check last 2 indexes and see if it matches with Q1, Q2, Q3, VE
+            const quarters: any = {"Q1": "91", "Q2": "92", "Q3": "93", "YE": "99"}
+            if (!(splitYearAndQuarter[1] in quarters)) {
+              setErrorMsg("Quarters must be inputted as Q1, Q2, Q3, or YE");
+              break;
+            }
+            setAttributeHeader(validator[0]);
+          }
+        }
         break;
       default:
     }
@@ -268,21 +319,25 @@ export default function COAGenerator() {
       return;
     }
     // Check state variables to see if they are valid for reading
-    // Check sheet name:
-    if (sheetName == '') {
-      setErrorMsg("Sheet Name cannot be empty");
+    // Check sheet name, if sheet name is not empty, the category group and category must be full
+    if (sheetName != '') {
+      if (categoryGroup == '') {
+        setErrorMsg("Category Group cannot be empty");
+        return;
+      }
+  
+      if (category == '') {
+        setErrorMsg("Category cannot be empty");
+        return;
+      }
+    }
+    // If reporting period was inputted incorrectly
+    if (attributeHeader == '') {
+      setErrorMsg("Reporting Period must be written in format: YYYY-YY or YYYY-YY XX")
       return;
     }
 
-    if (categoryGroup == '') {
-      setErrorMsg("Category Group cannot be empty");
-      return;
-    }
-
-    if (category == '') {
-      setErrorMsg("Category cannot be empty");
-      return;
-    }
+    console.log(attributeHeader);
 
     processData(file, data => buildObjects(data).then((trees) => {
       if (trees) {
@@ -310,12 +365,12 @@ export default function COAGenerator() {
 
       const mySheet = workbook.getWorksheet(sheetName);
       // Check if sheetName exists in the workbook
-      if (mySheet === undefined) {
+      if (mySheet === undefined && sheetName !== '') {
         setErrorMsg("Entered Sheet Name does not exist");
         return;
       }
 
-      if (ignoreSheets.includes(mySheet.name)) {
+      if (sheetName !== '' && ignoreSheets.includes(mySheet.name)) {
         return;
       }
 
@@ -359,11 +414,69 @@ export default function COAGenerator() {
             if (isValid) {
               // remove currentYear filter
               // determine the attribute ID (ADD LOGIC HERE)!*
+
+              // store the string into an array and just do an array search
               let attributeId = ''
-              attributeId += cellValue.split(' ')[0].split('-')[0] //first year (might try reg)
+              const splitHeader = cellValue.split(' ');
+              console.log(splitHeader);
+
+              // Iterate through string array, check if number exists in any of the indexes.
+              for (let i = 0; i < splitHeader.length; i++) {
+                if (/\d/.test(splitHeader[i])) {
+                  attributeId += splitHeader[i].split('-')[0];
+                  break;
+                }
+                // If no number exists, check for Current or Prior
+                else if ("Current" === splitHeader[i]) {
+                  attributeId += attributeHeader.substring(0,4);
+                  break;
+                }
+                else if ("Prior" === splitHeader[i]) {
+                  attributeId += (parseInt(attributeHeader) - 1).toString();
+                  break;
+                }
+              }
+              console.log(attributeId);
+              
+              // Identify the Quarter:
+              const quarters: any = {"Q1": "91", "Q2": "92", "Q3": "93", "YE": "99"}
+              let checker = false;
+              for (let i = 0; i < splitHeader.length; i++) {
+                if (splitHeader[i] in quarters) {
+                  attributeId += quarters[splitHeader[i] as string];
+                  checker = true;
+                  break;
+                }
+              }
+
+              if (!checker) {
+                attributeId += "99";
+              }
+              console.log(attributeId);
+
+              // Determine the type of attribute
+              /*   Be aware of the order (put the more specific ones ahead in the object)
+              
+              Budget: 400
+                Annual Budget: 401
+              Forecast: 200
+                Funding Forecast: 201
+              Actual: 300
+
+              Annual Funded .... 
+
+              */ 
+              const types: any = {"Annual Budget" : "401", "Budget" : "400", "Funding Forecast" : "201", "Forecast" : "200", "Actual" : "300"};
+              for (const [key, value] of Object.entries(types)) {
+                if (cellValue.includes(key)) {
+                  attributeId += value;
+                  break;
+                }
+              }
+              
+              console.log(attributeId);
 
               attributes.push({
-                _id: '',
                 name: cellValue,
                 id: attributeId,
                 updatedAt: (new Date()).toString()
@@ -398,10 +511,8 @@ export default function COAGenerator() {
         }
       });
       allData[mySheet.name]['categoryTree'] = categoryIds;
-
-      console.log("!debug line 402")
-      console.log(allData)
       cb(allData);
+      console.log(allData);
     };
   };
 
@@ -482,7 +593,7 @@ export default function COAGenerator() {
             variant="standard"
             size="small"
             name="reportingPeriod"
-            label="ex. 2020/21 Q2"
+            label="ex. 2020-21 Q2"
             value={reportingPeriod}
             onChange={handleChange}
           />

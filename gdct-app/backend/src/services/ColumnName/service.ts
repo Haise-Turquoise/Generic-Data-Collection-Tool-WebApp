@@ -14,7 +14,7 @@ export default class ColumnNameService {
     this.masterValueRepository = Container.get(MasterValueRepository);
   }
 
-  async createColumnName(columnName: Attribute) {
+  async createColumnName(columnName: Attribute | Attribute[]) {
     return this.columnNameRepository.create(columnName);
   }
 
