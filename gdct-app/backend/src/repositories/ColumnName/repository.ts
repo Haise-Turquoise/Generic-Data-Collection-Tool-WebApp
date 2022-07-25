@@ -12,7 +12,7 @@ export default class ColumnNameRepository extends BaseRepository<Attribute, Attr
 
   async delete(id: string) {
     return ColumnNameModel.findByIdAndDelete(id).then(
-      (deletedColumnName: AttributeDoc|null) => {
+      (deletedColumnName: AttributeDoc | null) => {
         if (!deletedColumnName) throw new AppError(`Delete failed, Item not found for ColumnName item with ID: ${id}`);
         return new ColumnNameEntity(deletedColumnName)
       },
@@ -21,7 +21,7 @@ export default class ColumnNameRepository extends BaseRepository<Attribute, Attr
 
   async create(columnName: Attribute | Attribute[]) {
     return ColumnNameModel.create(columnName).then(columnName => {
-      if(Array.isArray(columnName)) {
+      if (Array.isArray(columnName)) {
         return columnName.map(attribute => {
           return new ColumnNameEntity(attribute)
         })
@@ -32,7 +32,7 @@ export default class ColumnNameRepository extends BaseRepository<Attribute, Attr
 
   async update(id: string, columnName: Partial<Attribute>) {
     return ColumnNameModel.findByIdAndUpdate(id, columnName).then(
-      (updatedColumnName: AttributeDoc|null) => {
+      (updatedColumnName: AttributeDoc | null) => {
         if (!updatedColumnName) throw new AppError(`Update failed, Item not found for ColumnName item with ID: ${id}`);
         return new ColumnNameEntity(updatedColumnName)
       },
@@ -55,11 +55,11 @@ export default class ColumnNameRepository extends BaseRepository<Attribute, Attr
     );
   }
 
-  async batchFind(attributeIds: string[], option={ name: 0, _id: 0, __v: 0}):Promise<AttributeDoc[]> {
-    return ColumnNameModel.find({ id: { $in : attributeIds }}, option).then((values: AttributeDoc[]) => {return values});
+  async batchFind(attributeIds: string[], option = { name: 0, _id: 0, __v: 0 }): Promise<AttributeDoc[]> {
+    return ColumnNameModel.find({ id: { $in: attributeIds } }, option).then((values: AttributeDoc[]) => { return values });
   }
 
-  async findAll(option?: QueryOptions):Promise<AttributeDoc[]> {
+  async findAll(option?: QueryOptions): Promise<AttributeDoc[]> {
     return ColumnNameModel.find({}, option);
   }
 
@@ -71,16 +71,16 @@ export default class ColumnNameRepository extends BaseRepository<Attribute, Attr
     );
   }
 
-  async findById(id: string):Promise<ColumnNameEntity|undefined> {
+  async findById(id: string): Promise<ColumnNameEntity | undefined> {
     return ColumnNameModel.find({ _id: id })
-    .then((result: AttributeDoc[]|undefined) => {
-      if (!result) throw new AppError(`Query failed, Item not found for Column Name item with ID: ${id}`)
-      if (result.length == 0) {
-        return ;
-      }
-      else {
-        return new ColumnNameEntity(result[0]);
-      }
-    })
+      .then((result: AttributeDoc[] | undefined) => {
+        if (!result) throw new AppError(`Query failed, Item not found for Column Name item with ID: ${id}`)
+        if (result.length == 0) {
+          return;
+        }
+        else {
+          return new ColumnNameEntity(result[0]);
+        }
+      })
   }
 }

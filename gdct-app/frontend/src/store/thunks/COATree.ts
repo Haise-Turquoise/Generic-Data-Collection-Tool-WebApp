@@ -242,7 +242,7 @@ export const updateCOATreesBySheetNameRequest = (sheetNameId: string) => (
   // add updatedAt and updatedBy attributes to normalizedTree obj
   normalizedTrees.forEach(normalizedTree => {
     //TODO please test
-    normalizedTree.updatedAt = new Date().toString();
+    normalizedTree.updatedAt = new Date().toLocaleString();
     normalizedTree.updatedBy = localStorage.getItem('currentUser') || undefined;
   });
   COATreeController.updateBySheetName(normalizedTrees, sheetNameId)
