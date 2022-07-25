@@ -2,7 +2,7 @@ import React, { useMemo, useEffect, useState } from 'react';
 import { useSelector, shallowEqual } from 'react-redux';
 
 import MaterialTable, { Column, Options } from 'material-table';
-import { Paper, Typography, Collapse, IconButton }  from '@material-ui/core';
+import { Paper, Typography, Collapse, IconButton } from '@material-ui/core';
 import Alert from '@material-ui/lab/Alert';
 import CloseIcon from '@material-ui/icons/Close';
 import { selectFactoryRESTError } from '../../../store/common/REST/selectors';
@@ -79,14 +79,14 @@ const COAsTable = () => {
   }, [])
 
   // table stuff while loading
-  const preColumns: Column<Category>[] = [{title: 'Name', field: 'name'}]
-  const preCOAs: Category[] = [{ 
+  const preColumns: Column<Category>[] = [{ title: 'Name', field: 'name' }]
+  const preCOAs: Category[] = [{
     name: status,
     _id: '',
     id: '',
     COA: '',
     unitOfMeasure: '',
-    updatedAt: '', 
+    updatedAt: '',
   }]
 
   // Convert Date format
@@ -117,13 +117,13 @@ const COAsTable = () => {
     ],
     [COAs],
   );
-  
+
   const options: Options<Category> = useMemo(() => calculateOptions(readRowNum), [readRowNum]);
 
   // Record user and time when an action occurs 
   function recordUpdate(COA: Category) {
     COA.updatedBy = localStorage.getItem('currentUser') || '';
-    COA.updatedAt = new Date().toLocaleString(); 
+    COA.updatedAt = new Date().toLocaleString();
   }
   const editable = useMemo(
     () => ({
@@ -143,7 +143,7 @@ const COAsTable = () => {
             CreateAuditLog(
               null,
               "Create Category",
-              "Category", 
+              "Category",
               newCOA._id,
               {},
               newCOA
@@ -170,7 +170,7 @@ const COAsTable = () => {
           })
         }),
 
-      onRowDelete: (COA: Category) => 
+      onRowDelete: (COA: Category) =>
         new Promise((resolve, reject) => {
           recordUpdate(COA);
           controllerDeleteRow(COAController, setCOAs, COA._id || '').then((res: boolean) => {
@@ -193,7 +193,7 @@ const COAsTable = () => {
     [],
   );
 
-  useEffect(()=>{ 
+  useEffect(() => {
     setRowNum(COAs?.length || 1)
   }, [COAs])
 
