@@ -115,11 +115,6 @@ const buildObjects = async (data: AllDataType) => {
       }
     })
 
-    // !Note: add code to call controller, unsure of whether to ask controller to run for each attribute or batch import attribute array
-    if (allNewAttributes.length > 0) {
-      await columnNameController.create(allNewAttributes);
-    }
-
     // for categoryTree
     for (let ctgGroup of Object.keys(data[sheetName]['categoryTree'])) {
       const newCategories: Category[] = data[sheetName]['categoryTree'][ctgGroup];
@@ -137,11 +132,11 @@ const buildObjects = async (data: AllDataType) => {
       // get categoryGroupId
       let foundGroup: CategoryGroup | undefined | null = groups.find(group => group.name === ctgGroup);
       if (!foundGroup) {
-        // foundGroup = await COAGroupController.create({
-        //   name: ctgGroup,
-        //   updatedAt: (new Date()).toString(),
-        //   updatedBy: localStorage.getItem('currentUser') || '',
-        // });
+        foundGroup = await COAGroupController.create({
+          name: ctgGroup,
+          updatedAt: (new Date()).toString(),
+          updatedBy: localStorage.getItem('currentUser') || '',
+        });
       }
       const categoryGroupId = foundGroup?._id || '';
       objects.push({
@@ -153,8 +148,13 @@ const buildObjects = async (data: AllDataType) => {
       });
     }
   }
+  // !Note: add code to call controller, unsure of whether to ask controller to run for each attribute or batch import attribute array
+  if (allNewAttributes.length > 0) {
+    await columnNameController.create(allNewAttributes);
+  }
+
   if (allNewCategories.length > 0) {
-    // await COAController.create(allNewCategories);
+    await COAController.create(allNewCategories);
   }
   return objects;
 };
@@ -201,6 +201,9 @@ const useStyles = makeStyles({
     marginBottom: '0.5em',
     alignItems: 'center',
     justifySelf: 'center',
+  },
+  asterisk: {
+    color: "red"
   }
 });
 
@@ -242,36 +245,41 @@ export default function COAGenerator() {
         setSheetName(value);
         break;
       case 'categoryGroup':
-        setCategoryGroup(value);
-        setErrorMsg("");
-        if (!value.match(/^[A-Z]*$/)) {
-          setErrorMsg("Category Group must be a capital letter");
-          setCategoryGroup('');
+        if (value.match(/^[a-zA-Z]$/)) {
+          setCategoryGroup(value.toUpperCase());
+          setErrorMsg("");
+          break;
         }
+        setErrorMsg("Category Group must be a letter");
+        setCategoryGroup('');
         break;
       case 'category':
-        setCategory(value);
-        setErrorMsg("");
-        if (!value.match(/^[A-Z]*$/) && value != '') {
-          setErrorMsg("Category must be a capital letter");
-          setCategory('');
+        if (value.match(/^[a-zA-Z]$/)) {
+          setCategory(value.toUpperCase());
+          setErrorMsg("");
+          break;
         }
+        setErrorMsg("Category must be a letter");
+        setCategory('');
         break;
       case 'PA':
-        setPA(value);
-        setErrorMsg("");
-        if (!value.match(/^[A-Z]*$/) && value != '') {
-          setErrorMsg("PA must be a capital letter or empty");
-          setPA('');
+        if (value.match(/^[a-zA-Z]$/) || value == '') {
+          setPA(value.toUpperCase());
+          console.log(PA);
+          setErrorMsg("");
+          break;
         }
+        setErrorMsg("PA must be a letter or empty");
+        setPA('');
         break;
       case 'SA':
-        setSA(value);
-        setErrorMsg("");
-        if (!value.match(/^[A-Z]*$/)) {
-          setErrorMsg("SA must be a capital letter or empty");
-          setSA('');
+        if (value.match(/^[a-zA-Z]$/) || value == '') {
+          setSA(value.toUpperCase());
+          setErrorMsg("");
+          break;
         }
+        setErrorMsg("SA must be a letter or empty");
+        setSA('');
         break;
       case 'reportingPeriod':
         setReportingPeriod(value);
@@ -306,6 +314,10 @@ export default function COAGenerator() {
             setAttributeHeader(validator[0]);
           }
         }
+        else if (value.length > 10) {
+          setErrorMsg("Reporting Period must be in the format: YYYY-YY or YYYY-YY XX");
+          setReportingPeriod("");
+        }
         break;
       default:
     }
@@ -319,21 +331,18 @@ export default function COAGenerator() {
       return;
     }
     // Check state variables to see if they are valid for reading
-    // Check sheet name, if sheet name is not empty, the category group and category must be full
-    if (sheetName != '') {
-      if (categoryGroup == '') {
-        setErrorMsg("Category Group cannot be empty");
-        return;
-      }
+    if (categoryGroup == '') {
+      setErrorMsg("Category Group cannot be empty");
+      return;
+    }
 
-      if (category == '') {
-        setErrorMsg("Category cannot be empty");
-        return;
-      }
+    if (category == '') {
+      setErrorMsg("Category cannot be empty");
+      return;
     }
     // If reporting period was inputted incorrectly
     if (attributeHeader == '') {
-      setErrorMsg("Reporting Period must be written in format: YYYY-YY or YYYY-YY XX")
+      setErrorMsg("Reporting Period must be in the format: YYYY-YY or YYYY-YY XX")
       return;
     }
 
@@ -481,6 +490,7 @@ export default function COAGenerator() {
             Actual: 300
 
             Annual Funded .... 
+            Adjustment
 
             */
             const types: any = { "Annual Budget": "401", "Budget": "400", "Funding Forecast": "201", "Forecast": "200", "Actual": "300" };
@@ -555,6 +565,12 @@ export default function COAGenerator() {
         <div className={classes.item}>
           Category Group:
           <TextField
+            required
+            InputLabelProps={{
+              classes: {
+                asterisk: classes.asterisk
+              }
+            }}
             variant="standard"
             size="small"
             name="categoryGroup"
@@ -568,6 +584,12 @@ export default function COAGenerator() {
         <div className={classes.item}>
           Category:
           <TextField
+            required
+            InputLabelProps={{
+              classes: {
+                asterisk: classes.asterisk
+              }
+            }}
             variant="standard"
             size="small"
             name="category"
@@ -605,6 +627,12 @@ export default function COAGenerator() {
         <div className={classes.item}>
           Reporting Period:
           <TextField
+            required
+            InputLabelProps={{
+              classes: {
+                asterisk: classes.asterisk
+              }
+            }}
             variant="standard"
             size="small"
             name="reportingPeriod"
@@ -618,6 +646,7 @@ export default function COAGenerator() {
       <Button variant="contained" color="primary" onClick={processWorkbook}>
         Generate COA
       </Button>
+      <br/>
       <Typography>{errorMsg}</Typography>
     </div>
   );
