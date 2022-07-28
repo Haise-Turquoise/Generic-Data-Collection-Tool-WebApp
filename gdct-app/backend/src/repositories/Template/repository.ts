@@ -5,7 +5,7 @@ import UserRepository from '../User';
 import TemplateTypeRepository from '../TemplateType';
 import BaseRepository from '../repository';
 import WorkflowProcessRepository from '../WorkflowProcess/WorkflowProcess';
-import {ObjectId} from 'mongodb';
+import { ObjectId } from 'mongodb';
 import Template, { TemplateDoc, SheetData } from '../../types/template';
 import { WorkflowProcessDoc } from '../../types/workflowprocess';
 import { FilterQuery } from 'mongoose';
@@ -86,18 +86,18 @@ export default class TemplateRepository extends BaseRepository<Template, Templat
 
     const oldValue = await TemplateModel.findById(id);
     if (!oldValue) throw new AppError(`Update failed, Item not found for Template item with ID: ${id}`);
-    if (oldValue.templateTypeId != formattedTemplate.templateTypeId){
+    if (oldValue.templateTypeId != formattedTemplate.templateTypeId) {
       const templateWorkFlow = await this.templateTypeRepository.findById(formattedTemplate.templateTypeId || '');
       const workFlowItems: WorkflowProcessEntity[] = await this.workflowProcessRepository.find({ workflowId: templateWorkFlow.templateWorkflowId });
       const referencedIds: ObjectId[] = [];
       workFlowItems.forEach(e => {
-        e.to.forEach(element =>{
+        e.to.forEach(element => {
           referencedIds.push(element)
         })
       });
-      const itemIds = workFlowItems.map(e=>e._id);
-      const diff = itemIds.filter(item=>{
-        for (const ids of referencedIds){
+      const itemIds = workFlowItems.map(e => e._id);
+      const diff = itemIds.filter(item => {
+        for (const ids of referencedIds) {
           if (item.equals(ids)) return false;
         }
         return true;
@@ -106,11 +106,11 @@ export default class TemplateRepository extends BaseRepository<Template, Templat
       formattedTemplate.workflowProcessId = diff[0];
     }
 
-    return TemplateModel.findByIdAndUpdate(id, formattedTemplate, {new: true})
-    .then((template: TemplateDoc|null) => {
-      if (!template) throw new AppError(`Update failed, Item not found for Template item with ID: ${id}`)
-      return new TemplateEntity(template)
-    });
+    return TemplateModel.findByIdAndUpdate(id, formattedTemplate, { new: true })
+      .then((template: TemplateDoc | null) => {
+        if (!template) throw new AppError(`Update failed, Item not found for Template item with ID: ${id}`)
+        return new TemplateEntity(template)
+      });
   }
 
   async updateWorkflowProcess(_id: string, workflowProcessId: ObjectId) {
@@ -118,7 +118,7 @@ export default class TemplateRepository extends BaseRepository<Template, Templat
       //@ts-ignore Unsure about this
       .validate(workflowProcessId)
       .then(() => TemplateModel.findByIdAndUpdate(_id, { workflowProcessId }))
-      .then((template: TemplateDoc|null) =>{
+      .then((template: TemplateDoc | null) => {
         if (!template) throw new AppError(`Update WorkflowProcess, Item not found for workflowprocess item with ID: ${_id}`)
         return new TemplateEntity(template);
       });
@@ -135,16 +135,16 @@ export default class TemplateRepository extends BaseRepository<Template, Templat
       .select('-templateData')
       .then((templates: TemplateDoc[]) => templates.map(template => new TemplateEntity(template)));
   }
-  
-  async updateTemplate(_id: string, templateData: any[]){
-    return TemplateModel.findByIdAndUpdate( _id, { templateData })
+
+  async updateTemplate(_id: string, templateData: any[]) {
+    return TemplateModel.findByIdAndUpdate(_id, { templateData })
   }
 
-  async updateSheetData(_id: string, sheetData: SheetData[]){
-    return TemplateModel.findByIdAndUpdate(_id, {$set:{templateData:sheetData}})
+  async updateSheetData(_id: string, sheetData: SheetData[]) {
+    return TemplateModel.findByIdAndUpdate(_id, { $set: { templateData: sheetData } })
   }
-  
-  async findTemplateIDByTypeID(typeID: string){
-    return TemplateModel.find({templateTypeId:new ObjectId(typeID)}, {_id:1})
+
+  async findTemplateIDByTypeID(typeID: string) {
+    return TemplateModel.find({ templateTypeId: new ObjectId(typeID) }, { _id: 1 })
   }
 }

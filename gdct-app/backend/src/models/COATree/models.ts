@@ -13,7 +13,7 @@ const COATreeModel = model<CategoryTree>(
       sheetNameId: { type: ObjectId, ref: 'SheetName' },
       timestamp: { type: Date },
       updatedBy: { type: String },
-      updatedAt: { type: String },
+      updatedAt: { type: Date },
     },
     { minimize: false },
   ),
