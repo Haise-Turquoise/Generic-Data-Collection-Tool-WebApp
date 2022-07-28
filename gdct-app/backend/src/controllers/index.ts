@@ -37,6 +37,7 @@ import SubmissionStatusController from './SubmissionStatus'
 import RoleWorkflowStatusController from '../controllers/RoleWorkflowStatus'
 import RoleSubmissionButtonController from '../controllers/RoleSubmissionButton';
 import UnitOfMeasurementController from './UnitOfMeasurement';
+import AttributeConfigController from './AttributeConfig/controller';
 export const routerManager = (app: Application) => {
   app.use('/', Container.get(AuthController));
   app.use('/', Container.get(MenuController));
@@ -77,6 +78,7 @@ export const routerManager = (app: Application) => {
   app.use('/role_manager', Container.get(AppSysRoleController));
   app.use('/role_manager', Container.get(AppRoleResourceController));
   app.use('/role_manager', Container.get(AppResourceController));
+  app.use('/role_manager', Container.get(AttributeConfigController));
 
   // Oct 26, 2020
   // Used to handle requests from google
