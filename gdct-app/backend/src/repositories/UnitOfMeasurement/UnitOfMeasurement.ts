@@ -16,6 +16,7 @@ export default class UnitOfMeasurementRepository extends BaseRepository<UnitOfMe
   }
 
   async update(id: string, UnitData: UnitOfMeasurement) {
+    // @ts-ignore
     return UnitOfMeasurementModel.findByIdAndUpdate(id, UnitData)
   }
 

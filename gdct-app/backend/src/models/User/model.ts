@@ -83,6 +83,7 @@ const User = new Schema<UserDoc>(
   { timestamps: true, minimize: false },
 );
 
+//@ts-ignore
 User.post('save', async function (doc, next) {
   await doc.populate('sysRoles').execPopulate();
 });
