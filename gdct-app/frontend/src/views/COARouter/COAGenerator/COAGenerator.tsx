@@ -31,7 +31,7 @@ type AllDataType = {
 }
 
 /*
-* Sample obejct structure for AllDataType
+* Sample object structure for AllDataType
 {
   sheetName1: {
     categoryGroup1: [{
@@ -171,6 +171,75 @@ const createTrees = async (trees: CategoryTree[]) => {
   }
 };
 
+const validToken = (_token: string) => {
+  const token = _token.trim();
+  return (token.length > 0 && token.split(' ').length <= 1);
+}
+
+const validSelector = (_token: string) => {
+  const token = _token.trim();
+
+  if (token.match(/(\s|^)\d{1,4}(\s|$)/ig)) return false;
+  if (token.match(/\sto\s/ig)) {
+    const tokens = token.split(/\sto\s/ig);
+    if (tokens.length != 2) return false;
+    else return validToken(tokens[0]) && validToken(tokens[1]);
+  } else return validToken(token);
+}
+
+const parseCOA = (inp: string = '') => {
+  const REMOVE_WORDS = /(?<![a-zA-Z0-9~\*\&:])[A-Z\.\-:]+(?![a-zA-Z0-9~\*\&:])(?<![^a-zA-Z0-9~\*\&:]TO)/ig;
+  const code = inp;
+  const segments = code.replace(REMOVE_WORDS, '').split(/[\[\]\(\)\<\>]/);
+
+  let include: string[] = [], exclude: string[] = [];
+
+  for (let i = 0; i < segments.length; i++) {
+    let block = segments[i];
+    for (let j = 0; j < block.length; j++) {
+      if (block.charAt(j) == '*' && (j + 1) != block.length && block.charAt(j + 1) != " " && block.charAt(j + 1) != ",") {
+        block = block.substring(0, j) + "~" + block.substring(j + 1)
+      }
+    }
+
+    if (i & 1)
+      exclude = exclude.concat(block.split(/,/g));
+    else
+      include = include.concat(block.split(/,/g));
+  }
+  include = include.filter(block => validSelector(block)).map(block => block.replace(/\s/g, ''));
+  exclude = exclude.filter(block => validSelector(block)).map(block => block.replace(/\s/g, ''));
+
+  return {
+    include: include.join('_') || '',
+    exclude: exclude.join('_') || ''
+  };
+}
+
+const convertToQuery = (PA: string, SA: string) => {
+  const {
+    include: PA_inc,
+    exclude: PA_exc
+  } = parseCOA(PA);
+
+  const {
+    include: SA_inc,
+    exclude: SA_exc
+  } = parseCOA(SA);
+
+  if (SA_inc.length > 0) {
+    return `pa=${PA_inc}` +
+      (PA_exc.length > 0 ? `&exclude=${PA_exc}` : "") +
+      `&sa=${SA_inc}` +
+      (SA_exc.length > 0 ? `&exclude=${SA_exc}` : "")
+  }
+  else if (PA_inc.length > 0) {
+    return `include=${PA_inc}` +
+      (PA_exc.length > 0 ? `exclude=${PA_exc}` : "")
+  }
+  else return ''
+}
+
 const useStyles = makeStyles({
   container: {
     display: 'flex',
@@ -218,7 +287,7 @@ export default function COAGenerator() {
   const classes = useStyles();
 
   const handleFileUpload = (e: FormEvent<HTMLInputElement>) => {
-    if (!e || !e.currentTarget || !e.currentTarget.files) {
+    if (!e || !e.currentTarget || !e.currentTarget.files || !e.currentTarget.files[0]) {
       console.log('no files')
       return
     }
@@ -255,7 +324,6 @@ export default function COAGenerator() {
       case 'PA':
         if (value.match(/^[a-zA-Z]$/) || value == '') {
           setPA(value.toUpperCase());
-          console.log(PA);
           setErrorMsg("");
           break;
         }
@@ -387,8 +455,7 @@ export default function COAGenerator() {
   }
 
   // Given an attribute name, create a matching attribute Id
-  const makeAttributeId = (cellValue: string, DBAttributes: Attribute[]) => {
-    console.log(cellValue)
+  const makeAttributeId = (cellValue: string) => {
     // store the string into an array and just do an array search
     let attributeId = ''
     const splitHeader = cellValue.split(' ');
@@ -496,30 +563,15 @@ export default function COAGenerator() {
     }
 
     attributeId += lastThreeDigits
-    // check if attributeId already exists, if so increment last 2 digits
-
-    let attributeIdInUse = DBAttributes.find(DBAttribute => {
-      if (DBAttribute.id.toString() === attributeId && DBAttribute.name != cellValue) {
-        return DBAttribute
-      }
-    });
-    // just so while loop doesn't repeat forever
-    let counter: number = 0
-    while (attributeIdInUse && counter < 99) {
-      lastThreeDigits++
-      attributeId = attributeId.slice(0, -3) + lastThreeDigits
-      let attributeIdInUse = DBAttributes.find(DBAttribute => {
-        if (DBAttribute.id.toString() === attributeId && DBAttribute.name != cellValue) {
-          return DBAttribute
-        }
-      });
-    }
-
     return attributeId
   }
 
   // Function to get attributes and categories from sheet
   const getSheetData = async (currentSheet: Worksheet, categoryGroupColumn: number, categoryColumn: number,) => {
+    // convert PA and SA inputs to integers to use in excel
+    const PACol = colToInt(PA)
+    const SACol = colToInt(SA)
+
     let DBAttributes: Attribute[] = []
     await columnNameController.fetch()
       .then(res => DBAttributes = res)
@@ -565,12 +617,11 @@ export default function COAGenerator() {
 
         // add valid attributes to the attributes array
         if (cellValue !== '') {
-          const attributesToIgnore: string[] = ['Line #', 'Reference', 'Unit of Measure', 'Notes', 'Comments', 'Definitions', 'Variance']
+          const attributesToIgnore: string[] = ['Line #', 'Reference', 'Unit of Measure', 'Notes', 'Comments', 'Definitions', 'Variance', 'OHRS ACCOUNT  NUMBER', 'OHRS ACCOUNT NUMBER']
           let isValid: boolean = true
 
           // determine unit of measure column
           if (cellValue === 'Unit of Measure') {
-            console.log("unit of measure column is at: " + currentColumn)
             unitOfMeasureColumn = currentColumn
           }
 
@@ -588,8 +639,7 @@ export default function COAGenerator() {
             cellValue = cellValue.replace("Current Year", currentYear).replace("Current Yr", currentYear)
             cellValue = cellValue.replace("Prior Year", priorYear).replace("Prior Yr", priorYear)
 
-            let attributeId = makeAttributeId(cellValue, DBAttributes)
-            console.log(attributeId);
+            let attributeId = makeAttributeId(cellValue)
 
             attributes.push({
               name: cellValue,
@@ -600,7 +650,57 @@ export default function COAGenerator() {
         }
       }
     }
-    returnSheetData['attributes'] = attributes
+
+    let uniqueAttributes: Attribute[] = []
+    // check attribute Ids to make sure they are unique in DB and against each other
+    attributes.forEach((attribute) => {
+      let AlreadyInDB = false
+      let AnotherDBAttributeUsesId = false
+      let AnotherAttributeUsesId = false
+      let AlreadyInAttributes = false
+
+      DBAttributes.forEach((DBAttribute) => {
+        if (DBAttribute.id === attribute.id) {
+          if (DBAttribute.name !== attribute.name) AnotherDBAttributeUsesId = true
+          else AlreadyInDB = true
+        }
+      })
+      uniqueAttributes.forEach((addedAttribute) => {
+        if (addedAttribute.id === attribute.id) {
+          if (addedAttribute.name != attribute.name) AnotherAttributeUsesId = true
+          else AlreadyInAttributes = true
+        }
+      })
+
+      while (!AlreadyInDB && !AlreadyInAttributes) {
+        // if Id is still in use, get last 3 digits and increment by 1
+        if (AnotherDBAttributeUsesId || AnotherAttributeUsesId) {
+          let newId = parseInt(attribute.id.slice(-3)) + 1
+          attribute.id = attribute.id.slice(0, -3) + newId
+          AnotherDBAttributeUsesId = false
+          AnotherAttributeUsesId = false
+
+          // check if id is used again or in DB
+          DBAttributes.forEach((DBAttribute) => {
+            if (DBAttribute.id === attribute.id) {
+              if (DBAttribute.name !== attribute.name) AnotherDBAttributeUsesId = true
+              else AlreadyInDB = true
+            }
+          })
+          uniqueAttributes.forEach((addedAttribute) => {
+            if (addedAttribute.id === attribute.id) {
+              if (addedAttribute.name != attribute.name) AnotherAttributeUsesId = true
+              else AlreadyInAttributes = true
+            }
+          })
+        }
+        else {
+          uniqueAttributes.push(attribute)
+          break
+        }
+      }
+    })
+    returnSheetData['attributes'] = uniqueAttributes
 
     const categoryIds: CatIDType = {};
     currentSheet.eachRow((row, rowNumber) => {
@@ -612,15 +712,27 @@ export default function COAGenerator() {
       if (typeof groupName === 'string' && groupName.split(' ')[0] === 'Total') {
         groupName = groupName.replace('Total ', '');
       }
+      // get cell values from specified columns, or set to empty string if no value
       const name: string | undefined = row.getCell(categoryColumn).value?.toString();
-      const unitOfMeasure: string = row.getCell(unitOfMeasureColumn).value?.toString() || '';
+      let unitOfMeasure: string = ''
+      if (unitOfMeasureColumn != -1) {
+        unitOfMeasure = row.getCell(unitOfMeasureColumn).value?.toString() || '';
+      }
+      const PAValue = row.getCell(PACol).value?.toString() || '';
+      const SAValue = row.getCell(SACol).value?.toString() || '';
 
       if (id && typeof id === 'number' && groupName && name) {
         if (!categoryIds[groupName]) {
           categoryIds[groupName] = [];
         }
         if (name.split(' ')[0].toLowerCase() !== 'total') {
-          categoryIds[groupName].push({ id: id.toString(), name, unitOfMeasure, COA: "", updatedAt: new Date().toString() });
+          categoryIds[groupName].push({
+            id: id.toString(),
+            name,
+            unitOfMeasure,
+            COA: convertToQuery(PAValue, SAValue),
+            updatedAt: new Date().toString()
+          });
         }
       }
     });
