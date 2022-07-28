@@ -132,7 +132,7 @@ export const updateSubmissionStatusRequest = (
     .updateStatus(submission, submissionNote, role, newProcessId, updatedBy, statusChangedFlag)
     .then((updatedSubmission) => {
       
-      Object.assign(updatedSubmission, {phase: role});
+      Object.assign(updatedSubmission as any, {phase: role});
       dispatch(SubmissionsStore.actions.RECEIVE(updatedSubmission));
     })
     .catch(error => {
