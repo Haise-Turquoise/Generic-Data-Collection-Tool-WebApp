@@ -394,9 +394,39 @@ export default function COAGenerator() {
       return;
     }
 
+    if (categoryGroup === category || categoryGroup === PA || categoryGroup === SA) {
+      setErrorMsg("Category Group cannot be the same index as Category, PA, or SA");
+      setCategoryGroup('');
+      return;
+    }
+
     if (category == '') {
       setErrorMsg("Category cannot be empty");
       return;
+    }
+
+    if (categoryGroup === category || category === PA || category === SA) {
+      setErrorMsg("Category cannot be the same index as Category Group, PA, or SA");
+      setCategory('');
+      return;
+    }
+
+    // PA and SA are non-empty cases:
+
+    if (PA != '') {
+      if (PA === categoryGroup || PA === category || PA === SA) {
+        setErrorMsg("PA cannot be the same index as Category Group, Category, or SA");
+        setPA('');
+        return;
+      }
+    }
+
+    if (SA != '') {
+      if (SA === categoryGroup || SA === category || PA === SA) {
+        setErrorMsg("SA cannot be the same index as Category Group, Category, or PA");
+        setSA('');
+        return;
+      }
     }
 
     // If reporting period was inputted incorrectly
