@@ -78,13 +78,15 @@ const colToInt = (col: string) => {
  * @returns an array of CategoryTrees
  */
 const buildObjects = async (data: AllDataType) => {
-  const objects: CategoryTree[] = [];
+  let objects: CategoryTree[] = [];
+  const tempObjects = [];
   const groups: CategoryGroup[] = await COAGroupController.fetch();
   const sheets: SheetName[] = await SheetNameController.fetch();
   const categories: Category[] = await COAController.fetch();
   const allNewCategories: Category[] = [];
   const DBAttributes: Attribute[] = await columnNameController.fetch();
   const allNewAttributes: Attribute[] = [];
+  const allNewGroups: CategoryGroup[] = [];
 
   for (let sheetName of Object.keys(data)) {
     // get ID from existing sheetName
@@ -124,21 +126,38 @@ const buildObjects = async (data: AllDataType) => {
       // get categoryGroupId
       let foundGroup: CategoryGroup | undefined | null = groups.find(group => group.name === ctgGroup);
       if (!foundGroup) {
-        foundGroup = await COAGroupController.create({
+        const newGroup: CategoryGroup = {
           name: ctgGroup,
           updatedAt: new Date().toString(),
           updatedBy: localStorage.getItem('currentUser') || '',
-        });
+        }
+        allNewGroups.push(newGroup)
       }
-      const categoryGroupId = foundGroup?._id || '';
-      objects.push({
-        _id: undefined,
+      tempObjects.push({
         categoryId,
         sheetNameId,
-        categoryGroupId,
-        updatedBy: localStorage.getItem('currentUser') || '',
+        ctgGroup,
       });
     }
+  }
+  if (allNewGroups.length > 0) {
+    await COAGroupController.create(allNewGroups)
+    const newGroups: CategoryGroup[] = await COAGroupController.fetch();
+
+    console.log(newGroups)
+
+    objects = tempObjects.map((object) => {
+      let foundGroup: CategoryGroup | undefined | null = newGroups.find(group => group.name === object.ctgGroup);
+      const categoryGroupId = foundGroup?._id || ''
+
+      return ({
+        _id: undefined,
+        "categoryId": object.categoryId,
+        "sheetNameId": object.sheetNameId,
+        categoryGroupId,
+        updatedBy: localStorage.getItem('currentUser') || '',
+      })
+    })
   }
   if (allNewAttributes.length > 0) {
     await columnNameController.create(allNewAttributes);
@@ -146,6 +165,8 @@ const buildObjects = async (data: AllDataType) => {
   if (allNewCategories.length > 0) {
     await COAController.create(allNewCategories);
   }
+
+
   return objects;
 };
 

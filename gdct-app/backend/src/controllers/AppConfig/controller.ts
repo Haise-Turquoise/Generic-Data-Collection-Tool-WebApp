@@ -17,28 +17,28 @@ const AppConfigController = Service([AppConfigService], service => {
     router.post('/appConfigs/fetchSessionCheckingPeriod', (req, res, next) => {
       service
         .findSessionCheckingPeriod()
-        .then(SessionCheckingPeriod => res.json( SessionCheckingPeriod ))
+        .then(SessionCheckingPeriod => res.json(SessionCheckingPeriod))
         .catch(next)
     });
 
     router.get('/appConfigs/searchAllAppConfigs', (req, res, next) => {
       service
         .findAllAppConfig()
-        .then(AppConfigs => res.json( AppConfigs ))
+        .then(AppConfigs => res.json(AppConfigs))
         .catch(next);
     });
 
     router.get('/appConfigs/validationThreshold', (req, res, next) => {
       service
         .findValidationThreshold()
-        .then(thershold => res.json( thershold ))
+        .then(thershold => res.json(thershold))
         .catch(next);
     });
 
     router.get('/appConfigs/attributeRow', (req, res, next) => {
       service
         .findAttributeRow()
-        .then(thershold => res.json( thershold ))
+        .then(thershold => res.json(thershold))
         .catch(next);
     });
 
