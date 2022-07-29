@@ -18,11 +18,11 @@ interface AttributeConfigMT extends AttributeConfig {
     tableData?: any;
 }
 
-const customCheckDuplicates = (rowData: AttributeConfigMT, tableData?: AttributeConfigMT[]) => {
+const checkDuplicateKeyword = (rowData: AttributeConfigMT, tableData?: AttributeConfigMT[]) => {
     if (!tableData) {
         return true
     }
-    // custom we are checking key and appSys together
+    // Check if Code is duplicate
     // field of element being edited -- null if not editing
     let current: any = null;
     if (rowData.tableData) {
@@ -36,7 +36,36 @@ const customCheckDuplicates = (rowData: AttributeConfigMT, tableData?: Attribute
         return true;
     }
     const duplicate = tableData.find((val: any) => val.attributeKeyword === rowData.attributeKeyword && val !== current)
-    return duplicate ? "Duplicate Keywords Cannot Exist" : true
+    return duplicate ? "Duplicate Keyword Cannot Exist" : true
+}
+
+const validateCode = (rowData: AttributeConfigMT, tableData?: AttributeConfigMT[]) => {
+    // Entry must be 3 digit number
+    if (!(/^\d{3}$/).test(rowData.code)) {
+        return "Entry must be a 3 digit number"
+    }
+
+    if (!tableData) {
+        return true
+    }
+    // Validate Code -> must be non duplicate
+    // field of element being edited -- null if not editing
+    let current: any = null;
+    if (rowData.tableData) {
+        if (rowData.tableData.editing === 'delete') {
+            return true;
+        } else if (rowData.tableData.editing === 'update') {
+            current = tableData.find((el: any) => el._id === rowData._id);
+        }
+    } else if (rowData._id) {
+        // this case runs while submitting a change
+        return true;
+    }
+    const duplicate = tableData.find((val: any) => val.code === rowData.code && val !== current)
+    if (duplicate !== undefined) {
+        return "Duplicate Code Cannot Exist"
+    }
+    return true;
 }
 
 const AttributeConfigHeader = () => {
@@ -76,14 +105,14 @@ const AttributeConfigTable = () => {
     // Prepare Columns for Material Table
     const columns: Column<AttributeConfigMT>[] = useMemo(
         () => [
-            { title: 'Attribute Keyword', field: 'attributeKeyword', validate: rowData => customCheckDuplicates(rowData, attributeConfigs) },
-            { title: 'Code', field: 'code' },
+            { title: 'Attribute Keyword', field: 'attributeKeyword', validate: rowData => checkDuplicateKeyword(rowData, attributeConfigs) },
+            { title: 'Code', field: 'code', validate: rowData => validateCode(rowData, attributeConfigs) },
             {
                 title: 'Modified On',
                 field: 'updatedAt',
                 editComponent: () => {
                     return <div></div>;
-                },
+                }, 
             },
             {
                 title: 'Updated By',
