@@ -49,6 +49,7 @@ import roleSubmissionButtonController from '../../controllers/RoleSubmissionButt
 import reportingPeriodController from '../../controllers/reportingPeriod';
 import RoleSubmissionButton from '../../types/rolesubmissionbutton';
 import Submission from '../../types/submission';
+import { TextRotationAngleupTwoTone } from '@material-ui/icons';
 const timeOption = {
   year: 'numeric',
   month: 'numeric',
@@ -98,6 +99,8 @@ const EditSubmission = ({ history }:{history:History}) => {
     ],
     [],
   );
+
+  const noteInput = React.useRef(null);
 
   const options = useMemo(() => ({ actionsColumnIndex: -1, search: false, showTitle: true }), []);
 
@@ -390,7 +393,9 @@ const EditSubmission = ({ history }:{history:History}) => {
     return true;
   };
   const handleChangeStatus = async (submission:Submission, submissionNote:SubmissionNote, role:string, newProcessId:string, statusChangedFlag: boolean) => {
-    if (!submissionNote && !statusChangedFlag){
+    //@ts-ignore
+    if (noteInput.current.value === "" && !statusChangedFlag){
+      // if submission note box is empty, make sure to notify the user
       Swal.fire({
         title: 'Note cannot be empty!',
         icon: 'error',
@@ -400,6 +405,8 @@ const EditSubmission = ({ history }:{history:History}) => {
       })
     }else {
       let result;
+      //depending on the different type of statuses, (Inputted, submitted, etc), handle the API call 
+      // for notes differently using statusChangedFlag
       if (statusChangedFlag){
         result = await dispatch(
           updateSubmissionStatusRequest(submission, submissionNote, role, newProcessId, true),
@@ -409,6 +416,10 @@ const EditSubmission = ({ history }:{history:History}) => {
           updateSubmissionStatusRequest(submission, submissionNote, role, newProcessId, false),
         );
       }
+
+      // clear submission note box
+      //@ts-ignore
+      noteInput.current.value = "";
 
   
       //@ts-ignore odd warning here
@@ -443,6 +454,7 @@ const EditSubmission = ({ history }:{history:History}) => {
             variant="outlined"
             className="register__field"
             name="passwordConfirm"
+            inputRef={noteInput}
             // value={values.passwordConfirm}
             multiline
             onChange={handleNoteChange}
