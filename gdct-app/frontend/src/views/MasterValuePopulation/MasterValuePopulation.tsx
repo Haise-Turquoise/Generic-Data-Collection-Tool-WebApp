@@ -35,7 +35,7 @@ import CloseIcon from '@material-ui/icons/Close';
 import {
   selectFactoryRESTResponseTableValues,
   selectFactoryRESTIsCallInProgress,
-//@ts-ignore
+  //@ts-ignore
 } from '../../store/common/REST/selectors';
 //@ts-ignore
 import { selectOrgsStore } from '../../store/OrganizationsStore/selectors';
@@ -44,11 +44,11 @@ import { selectCOAsStore } from '../../store/COAsStore/selectors';
 //@ts-ignore
 import { selectColumnNamesStore } from '../../store/ColumnNamesStore/selectors';
 //@ts-ignore
-import {selectDataResumeStore}from '../../store/DataResumeStore/selector';
+import { selectDataResumeStore } from '../../store/DataResumeStore/selector';
 //@ts-ignore
 import Loading from '../../components/Loading';
 //@ts-ignore
-import {getDataResume,updateDataResume} from '../../store/thunks/DataResume';
+import { getDataResume, updateDataResume } from '../../store/thunks/DataResume';
 //@ts-ignore
 import { getColumnNamesRequest } from '../../store/thunks/columnName';
 //@ts-ignore
@@ -84,7 +84,7 @@ import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
 import Category from '../../types/category';
 import Organization from '../../types/organization';
-import Attribute from '../../types/attrubute';
+import Attribute from '../../types/attribute';
 import ReportingPeriod from '../../types/reportingperiod';
 import DataResume from '../../types/dataresume';
 import { createStyles, StyledComponentProps, Styles } from '@material-ui/styles';
@@ -135,7 +135,7 @@ interface headerActionsProps {
   val: string,
   data: string[],
   name: string,
-  handleChange: (event: ChangeEvent<{name?: string, value: unknown}>) => void
+  handleChange: (event: ChangeEvent<{ name?: string, value: unknown }>) => void
 }
 
 type resultType = {
@@ -182,20 +182,20 @@ const addDocument = async (masterValue: MasterValue) => {
   };
   await MasterValueController.addDocument(newMasterValue).then((_res: any) => {
     // setLoadCount(loadCount=>loadCount+1);
-    console.log('add one successfully');  
+    console.log('add one successfully');
   })
 };
 const queryREST = async (
-    { category, ap, hfk, attribute }: QueryRESTParams,
-    setGetCount: Dispatch<SetStateAction<number>>,
-    setGetTotal: Dispatch<SetStateAction<number>>,
-    setUploadCount: Dispatch<SetStateAction<number>>,
-    getCount: number,
-    getTotal: number,
-    setResumeQueries: Dispatch<SetStateAction<MasterValue[]>>,
-    resumeQueries: MasterValue[],
-    setGetButtonDisabled: Dispatch<SetStateAction<boolean>>,
-  ) => {
+  { category, ap, hfk, attribute }: QueryRESTParams,
+  setGetCount: Dispatch<SetStateAction<number>>,
+  setGetTotal: Dispatch<SetStateAction<number>>,
+  setUploadCount: Dispatch<SetStateAction<number>>,
+  getCount: number,
+  getTotal: number,
+  setResumeQueries: Dispatch<SetStateAction<MasterValue[]>>,
+  resumeQueries: MasterValue[],
+  setGetButtonDisabled: Dispatch<SetStateAction<boolean>>,
+) => {
   if (!attribute) {
     return
   }
@@ -235,7 +235,7 @@ const queryREST = async (
       'Access-Control-Allow-Origin': '*',
     },
   };
-  
+
 
 
   const addDocument = async (masterValue: MasterValue) => {
@@ -254,7 +254,7 @@ const queryREST = async (
     };
     await MasterValueController.addDocument(newMasterValue).then((_res: any) => {
       // setLoadCount(loadCount=>loadCount+1);
-      setUploadCount(uploadCount=>uploadCount+1);
+      setUploadCount(uploadCount => uploadCount + 1);
       console.log('add one successfully');
     })
   };
@@ -272,8 +272,8 @@ const queryREST = async (
       // if(i%20 == 0&& i!=0){
       //   throw `index ${i} can be divided by 20`;
       // }
-      
-      await axios.get(queries[i]).then((result)=>{
+
+      await axios.get(queries[i]).then((result) => {
         results.push(result);
       });
     } catch (e) {
@@ -290,10 +290,10 @@ const queryREST = async (
     try {
       if (results[i] == []) {
         throw `Get Iteration ${i} has already failed, corresponding url is ${queries[i]}`;
-      // I cast manually in elif because we know it's not []
+        // I cast manually in elif because we know it's not []
       } else if ((results[i] as resultType).data.length > 0) {
         console.log(`index ${i} has data`)
-        masterValueList[i].value = (results[i] as resultType).data[0][2];            
+        masterValueList[i].value = (results[i] as resultType).data[0][2];
         await addDocument(masterValueList[i]);
       }
     } catch (e) {
@@ -320,17 +320,17 @@ const queryREST = async (
 };
 
 const DoRetrieval = (
-    { category, ap, hfk, col }: PopulateParamters,
-    setGetCount: Dispatch<SetStateAction<number>>,
-    setGetTotal: Dispatch<SetStateAction<number>>,
-    setUploadCount:Dispatch<SetStateAction<number>>,
-    getCount: number,
-    getTotal: number,
-    setResumeQueries: Dispatch<SetStateAction<MasterValue[]>>,
-    resumeQueries: MasterValue[],
-    setGetSuccess: Dispatch<SetStateAction<boolean>>,
-    setGetButtonDisabled: Dispatch<SetStateAction<boolean>>,
-  ) => {
+  { category, ap, hfk, col }: PopulateParamters,
+  setGetCount: Dispatch<SetStateAction<number>>,
+  setGetTotal: Dispatch<SetStateAction<number>>,
+  setUploadCount: Dispatch<SetStateAction<number>>,
+  getCount: number,
+  getTotal: number,
+  setResumeQueries: Dispatch<SetStateAction<MasterValue[]>>,
+  resumeQueries: MasterValue[],
+  setGetSuccess: Dispatch<SetStateAction<boolean>>,
+  setGetButtonDisabled: Dispatch<SetStateAction<boolean>>,
+) => {
   setGetSuccess(false)
   if (category && ap && hfk && category.length > 0 && hfk.length > 0 && ap.length > 0) {
     // console.log(ap)
@@ -358,23 +358,23 @@ const DoRetrieval = (
     } else alert("Attribute doesn't exist in database");
   } else alert('Missing one or more parameters.');
 };
-const  handleResume = async (
-    setGetCount: Dispatch<SetStateAction<number>>,
-    setGetTotal: Dispatch<SetStateAction<number>>,
-    getCount: number,
-    getTotal: number,
-    setResumeQueries: Dispatch<SetStateAction<MasterValue[]>>,
-    resumeQueries: MasterValue[],
-    setResumeButtonDisabled: Dispatch<SetStateAction<boolean>>,
-  )=>{
+const handleResume = async (
+  setGetCount: Dispatch<SetStateAction<number>>,
+  setGetTotal: Dispatch<SetStateAction<number>>,
+  getCount: number,
+  getTotal: number,
+  setResumeQueries: Dispatch<SetStateAction<MasterValue[]>>,
+  resumeQueries: MasterValue[],
+  setResumeButtonDisabled: Dispatch<SetStateAction<boolean>>,
+) => {
   console.log(resumeQueries)
-  console.log(getCount,getTotal)
+  console.log(getCount, getTotal)
   setResumeButtonDisabled(true)
   let failedQueries = [];
   let results: (resultType | [])[] = [];
-  
-  
-  for (let i = 0;i< resumeQueries.length; i++) {
+
+
+  for (let i = 0; i < resumeQueries.length; i++) {
     let resumeQuery = '';
     let org;
     let coa;
@@ -411,7 +411,7 @@ const  handleResume = async (
       // console.log(resumeQueries[i].value[0])
 
 
-      await axios.get(resumeQuery).then((result)=>{
+      await axios.get(resumeQuery).then((result) => {
         results.push(result)
       })
     } catch (e) {
@@ -428,11 +428,11 @@ const  handleResume = async (
       continue;
     }
 
-    try{
+    try {
       if (results[i] !== [] && (results[i] as resultType).data.length > 0) {
         console.log(`index ${i} has data`)
         const masterValue = cloneDeep(resumeQueries[i])
-        masterValue.value = (results[i] as resultType).data[0][2];            
+        masterValue.value = (results[i] as resultType).data[0][2];
         await addDocument(masterValue);
       }
     } catch (e) {
@@ -539,7 +539,7 @@ function CircularProgressWithLabel(props: CircularProgressProps) {
 
 
 type footerActionProps = { getPopulateParameters: () => PopulateParamters }
-const  FooterActions =  (props: footerActionProps) =>  {
+const FooterActions = (props: footerActionProps) => {
 
   const [getCount, setGetCount] = useState<number>(props.getPopulateParameters().currentCount);
   const [getTotal, setGetTotal] = useState<number>(props.getPopulateParameters().totalCount);
@@ -554,12 +554,12 @@ const  FooterActions =  (props: footerActionProps) =>  {
   const dispatch = useDispatch();
 
   const [open, setOpen] = React.useState(false);
-  
-    const handleDialogOpen = (alertMessage: string, alertTitle: string) => {
-      setAlertMessage(alertMessage);
-      setAlertTitle(alertTitle)
-      setOpen(true);
-    };
+
+  const handleDialogOpen = (alertMessage: string, alertTitle: string) => {
+    setAlertMessage(alertMessage);
+    setAlertTitle(alertTitle)
+    setOpen(true);
+  };
 
   const handleDialogClose = () => {
     setAlertMessage('');
@@ -605,10 +605,10 @@ const  FooterActions =  (props: footerActionProps) =>  {
       padding: theme.spacing(1),
     },
   }))(MuiDialogActions);
-  
-  const  CustomizedDialogs = (props: { alertTitle: string, alertMessage: string }) => {
-    
-  
+
+  const CustomizedDialogs = (props: { alertTitle: string, alertMessage: string }) => {
+
+
     return (
       <div>
         <Dialog onClose={handleDialogClose} aria-labelledby="customized-dialog-title" open={open}>
@@ -636,7 +636,7 @@ const  FooterActions =  (props: footerActionProps) =>  {
   useEffect(() => {
     console.log('upload to database');
     console.log('getCount', getCount);
-    console.log('getTotal',getTotal);
+    console.log('getTotal', getTotal);
     console.log('uploadCount', uploadCount);
     if (!(getCount == 0 && getTotal == 0)) {
       if (getCount == getTotal) {
@@ -647,7 +647,7 @@ const  FooterActions =  (props: footerActionProps) =>  {
         const dataResumeStatues = { resumeArray: [], currentCount: 0, totalCount: 0 };
         dispatch(updateDataResume(dataResumeStatues));
         let successMessage = '';
-        successMessage+= uploadCount.toString();
+        successMessage += uploadCount.toString();
         successMessage += ' objects has been added to mastervalue collection.';
         successMessage += '\n';
         successMessage += 'finish progress successfully !';
@@ -822,7 +822,7 @@ const MasterValuePopulation = () => {
     isCallInProgress,
   });
 
-  
+
 
   const periodList: string[] = [];
   reportingPeriods.forEach(period => {

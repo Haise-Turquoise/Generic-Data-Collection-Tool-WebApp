@@ -9,9 +9,9 @@ import { selectFactoryRESTError } from '../../store/common/REST/selectors';
 import { selectColumnNamesStore } from '../../store/ColumnNamesStore/selectors';
 import CreateAuditLog from '../AuditLog_Global';
 import columnNameController from '../../controllers/columnName';
-import { checkDuplicates, controllerAddRow, controllerEditRow, controllerDeleteRow, formatTimestamp, fetchWithStatus,calculateOptions} from '../../tools/misc'
+import { checkDuplicates, controllerAddRow, controllerEditRow, controllerDeleteRow, formatTimestamp, fetchWithStatus, calculateOptions } from '../../tools/misc'
 
-import Attribute from '../../types/attrubute';
+import Attribute from '../../types/attribute';
 
 const ColumnNameHeader = () => {
   return (
@@ -81,7 +81,7 @@ const ColumnNamesTable = () => {
   }, [])
 
   // table stuff while loading
-  const preColumns: Column<Attribute>[] = [{title: 'Name', field: 'name'}]
+  const preColumns: Column<Attribute>[] = [{ title: 'Name', field: 'name' }]
   const preCols: Attribute[] = [{
     name: status,
     _id: '',
@@ -118,13 +118,13 @@ const ColumnNamesTable = () => {
     ],
     [columnNames],
   );
-  
+
   const options = useMemo(() => calculateOptions(readRowNum), [readRowNum]);
 
   // Record user and time when an action occurs 
   function recordUpdate(columnName: Attribute) {
     columnName.updatedBy = localStorage.getItem('currentUser') || '';
-    columnName.updatedAt = new Date().toLocaleString(); 
+    columnName.updatedAt = new Date().toLocaleString();
   }
   const editable = useMemo(
     () => ({
@@ -158,7 +158,7 @@ const ColumnNamesTable = () => {
           recordUpdate(columnName);
           // Find the old value before updating in order to Auditlog
           (async () => {
-            const oldColumnName = await columnNameController.fetchAttribute(columnName._id);
+            const oldColumnName = await columnNameController.fetchAttribute(columnName._id || '');
             // console.log(oldColumnName);
             CreateAuditLog(
               null,
@@ -183,7 +183,7 @@ const ColumnNamesTable = () => {
         new Promise((resolve, reject) => {
           recordUpdate(columnName);
           // dispatch(deleteColumnNameRequest(columnName._id, resolve, reject));
-          controllerDeleteRow(columnNameController, setColumnNames, columnName._id).then((res: boolean) => {
+          controllerDeleteRow(columnNameController, setColumnNames, columnName._id || '').then((res: boolean) => {
             if (res) {
               resolve(columnName)
             }
@@ -192,7 +192,7 @@ const ColumnNamesTable = () => {
         }).then(() => {
           // For Auditlog
           (async () => {
-            const oldColumnName = await columnNameController.fetchAttribute(columnName._id);
+            const oldColumnName = await columnNameController.fetchAttribute(columnName._id || '');
             // Actually Deleted (Attribute might not be deleted because it is referenced in master value table)
             if (oldColumnName) {
               CreateAuditLog(null, 'Delete Attribute', 'Attribute', columnName._id, columnName, {});
@@ -203,7 +203,7 @@ const ColumnNamesTable = () => {
     [dispatch],
   );
 
-  useEffect(()=>{
+  useEffect(() => {
     setRowNum(columnNames?.length || 1)
   }, [columnNames]);
 

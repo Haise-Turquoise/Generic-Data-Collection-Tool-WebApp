@@ -8,7 +8,7 @@ const COAController = Service([COAService], service => {
     router.get('/COAs/fetch', (req, res, next) => {
       service
         .findCOA({})
-        .then(COAs => res.json( COAs ))
+        .then(COAs => res.json(COAs))
         .catch(next);
     });
 
