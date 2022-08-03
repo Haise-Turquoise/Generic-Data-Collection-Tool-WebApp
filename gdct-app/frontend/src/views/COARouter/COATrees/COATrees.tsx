@@ -144,7 +144,7 @@ const COATreesTable = ({ history }: RouterProps) => {
         tooltip: "View Sheet's Tree",
         onClick: (_: any, sheetName: DetectEmptyTree | DetectEmptyTree[]) => {
           if (!Array.isArray(sheetName)) {
-            history.push(`${ROUTE_CATEGORY_TREES}/${sheetName._id}`)
+            history.push(`${ROUTE_CATEGORY_TREES}/${sheetName._id}`, {sheetName: sheetName.name})
           }
         },
       },
