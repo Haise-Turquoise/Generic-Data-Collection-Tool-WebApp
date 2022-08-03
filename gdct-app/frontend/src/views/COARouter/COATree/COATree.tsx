@@ -99,7 +99,7 @@ const COATreeHeader = ({ sheetNameId }: { sheetNameId: string }) => {
   const sheetName = location.state.sheetName;
   return (
     <Paper className="header">
-      <Typography variant="h5">COA Tree - {sheetName}</Typography>
+      <Typography variant="h5">COA Tree<h6>{sheetName}</h6></Typography>
       <COATreeActions sheetNameId={sheetNameId} />
     </Paper>
   );
