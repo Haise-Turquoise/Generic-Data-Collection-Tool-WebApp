@@ -617,7 +617,7 @@ export default function COAGenerator() {
     }
 
     // if "Category" title was found, get all of the cells with attribute titles in that row
-    let invalidAttributes = []
+    let invalidAttributes: string[] = []
     if (attributeRow !== -1) {
       const row = currentSheet.getRow(attributeRow)
       for (let currentColumn = categoryColumn + 1; currentColumn <= currentSheet.columnCount; currentColumn++) {
@@ -665,11 +665,16 @@ export default function COAGenerator() {
     }
 
     if (invalidAttributes.length > 0) {
-      let errorMessage = "The following attributes do not have config IDs:"
+      let messageHTML = "<h5>The following attributes do not have a valid config ID. Any valid attributes and categories will still be imported.</h5>";
       invalidAttributes.forEach(attributeName => {
-        errorMessage += attributeName
+        messageHTML += `<p>${attributeName}</p>`
       })
-      setErrorMsg(errorMessage)
+
+      Swal.fire({
+        title: 'Attribute ID Config Errors',
+        icon: "error",
+        html: messageHTML
+      })
     }
     returnSheetData['attributes'] = attributes
 
