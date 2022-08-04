@@ -12,7 +12,7 @@ export default class COAGroupService {
     this.COATreeRepository = Container.get(COATreeRepository)
   }
 
-  async createCOAGroup(COAGroup: CategoryGroup) {
+  async createCOAGroup(COAGroup: CategoryGroup | CategoryGroup[]) {
     return this.COAGroupRepository.create(COAGroup);
   }
 
@@ -31,6 +31,6 @@ export default class COAGroupService {
   }
 
   async findById(id: string) {
-    return this.COAGroupRepository.findById(id);  
+    return this.COAGroupRepository.findById(id);
   }
 }

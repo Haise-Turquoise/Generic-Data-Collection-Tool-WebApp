@@ -3,18 +3,19 @@ import { Button, Typography, TextField } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { Publish } from '@material-ui/icons';
 import ExcelJS, { Worksheet } from 'exceljs';
-import COATreeController from '../../../controllers/COATree';
-import SheetNameController from '../../../controllers/sheetName';
-import COAGroupController from '../../../controllers/COAGroup';
-import COAController from '../../../controllers/COA';
 import SheetName from '../../../types/sheetname';
+import CategoryTree from '../../../types/categorytree';
 import CategoryGroup from '../../../types/categorygroup';
 import Category from '../../../types/category';
-import CategoryTree from '../../../types/categorytree';
-import columnNameController from '../../../controllers/columnName';
-import { findLastIndex, split } from 'lodash';
-
 import Attribute from '../../../types/attribute';
+import AttributeConfig from '../../../types/attributeconfig';
+import SheetNameController from '../../../controllers/sheetName';
+import COATreeController from '../../../controllers/COATree';
+import COAGroupController from '../../../controllers/COAGroup';
+import COAController from '../../../controllers/COA';
+import ColumnNameController from '../../../controllers/columnName';
+import AttributeConfigController from '../../../controllers/AttributeConfig';
+import Swal from 'sweetalert2';
 
 let workbook = new ExcelJS.Workbook();
 
@@ -31,7 +32,7 @@ type AllDataType = {
 }
 
 /*
-* Sample obejct structure for AllDataType
+* Sample object structure for AllDataType
 {
   sheetName1: {
     categoryGroup1: [{
@@ -78,13 +79,15 @@ const colToInt = (col: string) => {
  * @returns an array of CategoryTrees
  */
 const buildObjects = async (data: AllDataType) => {
-  const objects: CategoryTree[] = [];
+  let objects: CategoryTree[] = [];
+  const tempObjects = [];
   const groups: CategoryGroup[] = await COAGroupController.fetch();
   const sheets: SheetName[] = await SheetNameController.fetch();
   const categories: Category[] = await COAController.fetch();
   const allNewCategories: Category[] = [];
-  const DBAttributes: Attribute[] = await columnNameController.fetch();
+  const DBAttributes: Attribute[] = await ColumnNameController.fetch();
   const allNewAttributes: Attribute[] = [];
+  const allNewGroups: CategoryGroup[] = [];
 
   for (let sheetName of Object.keys(data)) {
     // get ID from existing sheetName
@@ -124,28 +127,47 @@ const buildObjects = async (data: AllDataType) => {
       // get categoryGroupId
       let foundGroup: CategoryGroup | undefined | null = groups.find(group => group.name === ctgGroup);
       if (!foundGroup) {
-        foundGroup = await COAGroupController.create({
+        const newGroup: CategoryGroup = {
           name: ctgGroup,
           updatedAt: new Date().toString(),
           updatedBy: localStorage.getItem('currentUser') || '',
-        });
+        }
+        allNewGroups.push(newGroup)
       }
-      const categoryGroupId = foundGroup?._id || '';
-      objects.push({
-        _id: undefined,
+      tempObjects.push({
         categoryId,
         sheetNameId,
-        categoryGroupId,
-        updatedBy: localStorage.getItem('currentUser') || '',
+        ctgGroup,
       });
     }
   }
+  if (allNewGroups.length > 0) {
+    await COAGroupController.create(allNewGroups)
+    const newGroups: CategoryGroup[] = await COAGroupController.fetch();
+
+    console.log(newGroups)
+
+    objects = tempObjects.map((object) => {
+      let foundGroup: CategoryGroup | undefined | null = newGroups.find(group => group.name === object.ctgGroup);
+      const categoryGroupId = foundGroup?._id || ''
+
+      return ({
+        _id: undefined,
+        "categoryId": object.categoryId,
+        "sheetNameId": object.sheetNameId,
+        categoryGroupId,
+        updatedBy: localStorage.getItem('currentUser') || '',
+      })
+    })
+  }
   if (allNewAttributes.length > 0) {
-    await columnNameController.create(allNewAttributes);
+    await ColumnNameController.create(allNewAttributes);
   }
   if (allNewCategories.length > 0) {
     await COAController.create(allNewCategories);
   }
+
+
   return objects;
 };
 
@@ -170,6 +192,75 @@ const createTrees = async (trees: CategoryTree[]) => {
     COATreeController.create(trees);
   }
 };
+
+const validToken = (_token: string) => {
+  const token = _token.trim();
+  return (token.length > 0 && token.split(' ').length <= 1);
+}
+
+const validSelector = (_token: string) => {
+  const token = _token.trim();
+
+  if (token.match(/(\s|^)\d{1,4}(\s|$)/ig)) return false;
+  if (token.match(/\sto\s/ig)) {
+    const tokens = token.split(/\sto\s/ig);
+    if (tokens.length != 2) return false;
+    else return validToken(tokens[0]) && validToken(tokens[1]);
+  } else return validToken(token);
+}
+
+const parseCOA = (inp: string = '') => {
+  const REMOVE_WORDS = /(?<![a-zA-Z0-9~\*\&:])[A-Z\.\-:]+(?![a-zA-Z0-9~\*\&:])(?<![^a-zA-Z0-9~\*\&:]TO)/ig;
+  const code = inp;
+  const segments = code.replace(REMOVE_WORDS, '').split(/[\[\]\(\)\<\>]/);
+
+  let include: string[] = [], exclude: string[] = [];
+
+  for (let i = 0; i < segments.length; i++) {
+    let block = segments[i];
+    for (let j = 0; j < block.length; j++) {
+      if (block.charAt(j) == '*' && (j + 1) != block.length && block.charAt(j + 1) != " " && block.charAt(j + 1) != ",") {
+        block = block.substring(0, j) + "~" + block.substring(j + 1)
+      }
+    }
+
+    if (i & 1)
+      exclude = exclude.concat(block.split(/,/g));
+    else
+      include = include.concat(block.split(/,/g));
+  }
+  include = include.filter(block => validSelector(block)).map(block => block.replace(/\s/g, ''));
+  exclude = exclude.filter(block => validSelector(block)).map(block => block.replace(/\s/g, ''));
+
+  return {
+    include: include.join('_') || '',
+    exclude: exclude.join('_') || ''
+  };
+}
+
+const convertToQuery = (PA: string, SA: string) => {
+  const {
+    include: PA_inc,
+    exclude: PA_exc
+  } = parseCOA(PA);
+
+  const {
+    include: SA_inc,
+    exclude: SA_exc
+  } = parseCOA(SA);
+
+  if (SA_inc.length > 0) {
+    return `pa=${PA_inc}` +
+      (PA_exc.length > 0 ? `&exclude=${PA_exc}` : "") +
+      `&sa=${SA_inc}` +
+      (SA_exc.length > 0 ? `&exclude=${SA_exc}` : "")
+  }
+  else if (PA_inc.length > 0) {
+    return `include=${PA_inc}` +
+      (PA_exc.length > 0 ? `exclude=${PA_exc}` : "")
+  }
+  else return ''
+}
 
 const useStyles = makeStyles({
   container: {
@@ -218,7 +309,7 @@ export default function COAGenerator() {
   const classes = useStyles();
 
   const handleFileUpload = (e: FormEvent<HTMLInputElement>) => {
-    if (!e || !e.currentTarget || !e.currentTarget.files) {
+    if (!e || !e.currentTarget || !e.currentTarget.files || !e.currentTarget.files[0]) {
       console.log('no files')
       return
     }
@@ -387,6 +478,7 @@ export default function COAGenerator() {
       if (!data || typeof data === "string") {
         return
       }
+      const attributeIdMap = await AttributeConfigController.fetch()
       workbook = await workbook.xlsx.load(data);
       let allData: AllDataType = {};
 
@@ -395,7 +487,7 @@ export default function COAGenerator() {
         workbook.eachSheet(async (worksheet: Worksheet, id: number) => {
           let currentSheetName = worksheet.name;
           if (!ignoreSheets.includes(currentSheetName)) {
-            allData[currentSheetName] = await getSheetData(worksheet, categoryGroupColumn, categoryColumn);
+            allData[currentSheetName] = await getSheetData(worksheet, attributeIdMap, categoryGroupColumn, categoryColumn);
           }
         })
       }
@@ -406,8 +498,9 @@ export default function COAGenerator() {
           setErrorMsg("Entered Sheet Name does not exist");
           return;
         }
-        allData[sheetName] = await getSheetData(mySheet, categoryGroupColumn, categoryColumn);
-
+        if (!ignoreSheets.includes(sheetName)) {
+          allData[sheetName] = await getSheetData(mySheet, attributeIdMap, categoryGroupColumn, categoryColumn);
+        }
       }
       console.log('!debug line 381')
       console.log(allData);
@@ -416,32 +509,23 @@ export default function COAGenerator() {
   }
 
   // Given an attribute name, create a matching attribute Id
-  const makeAttributeId = (cellValue: string, DBAttributes: Attribute[]) => {
-    console.log(cellValue)
+  const makeAttributeId = (cellValue: string, attributeIdMap: AttributeConfig[]) => {
     // store the string into an array and just do an array search
     let attributeId = ''
     const splitHeader = cellValue.split(' ');
+    const quarters: any = { "Q1": "91", "Q2": "92", "Q3": "93", "YE": "99" }
 
     // Iterate through string array, check if number exists in any of the indexes.
     for (let i = 0; i < splitHeader.length; i++) {
       // if valid year pattern matches, get the beginning year
       if (/^\d{4}-\d{2}$/.test(splitHeader[i])) {
         attributeId += splitHeader[i].split('-')[0];
+        // remove splitHeader[i] (year that matched regex)
+        splitHeader.splice(i, 1)
         break;
       }
-      // If no number exists, check for Current or Prior
-      else if ("Current" === splitHeader[i]) {
-        attributeId += attributeHeader.substring(0, 4);
-        break;
-      }
-      else if ("Prior" === splitHeader[i]) {
-        attributeId += (parseInt(attributeHeader) - 1).toString();
-        break;
-      }
-
     }
-
-    const quarters: any = { "Q1": "91", "Q2": "92", "Q3": "93", "YE": "99" }
+    // Check for quarter after year is found to keep order
     let quarterChecker = false;
     for (let i = 0; i < splitHeader.length; i++) {
       if (splitHeader[i] in quarters) {
@@ -450,14 +534,11 @@ export default function COAGenerator() {
         break;
       }
     }
-    if (!quarterChecker) {
-      attributeId += "99";
-    }
+    if (!quarterChecker) attributeId += "99";
 
     let attributeDefiners = []
     // for things to ignore
     const itemsToIgnore: string[] = ["Q1", "Q2", "Q3", "YE", "Current", "Prior", "Year", "Yr", ""]
-
     // for things to substitute
     const substitutions: any = {
       "Adj": "Adjustments"
@@ -465,93 +546,42 @@ export default function COAGenerator() {
 
     // filter out year and quarter from attribute
     for (let i = 0; i < splitHeader.length; i++) {
-      splitHeader[i] = splitHeader[i].replace(/[^a-z/]/gi, '')
 
       if (splitHeader[i] in substitutions) {
         splitHeader[i] = substitutions[splitHeader[i]]
       }
-      if (/^\d{4}-\d{2}$/.test(splitHeader[i])) {
-      }
-      // If no number exists, check for Current or Prior
-      else if (itemsToIgnore.includes(splitHeader[i])) {
-
-      }
-      else {
+      // filter out any other years
+      if (/^\d{4}-\d{2}$/.test(splitHeader[i]) === false && !itemsToIgnore.includes(splitHeader[i])) {
         attributeDefiners.push(splitHeader[i])
       }
     }
 
-    let hasMainType = false
+    let attributeIdMatcher = ""
+    // form filtered string to match with AttributeIdConfig import
+    attributeDefiners.forEach(item => {
+      attributeIdMatcher += item + " "
+    })
+    attributeIdMatcher = attributeIdMatcher.trim()
 
-    // has priority; keys higher up will be searched for first
-    const mainType = {
-      "Adjustments": 500,
-      "Budget": 400,
-      "Forecast": 200,
-      "Actual": 300,
-      "Funding": 600,
-      "Funded": 700
-    };
-
-    const modifierTypes = {
-      "Annual": 10,
-      "Funding": 60,
-      "Budget": 40,
-      "Forecast": 20,
-      "Deferred/Unearned": 80,
-    }
-
-    let lastThreeDigits = 0
-
-    for (const [key, value] of Object.entries(mainType)) {
-      if (attributeDefiners.includes(key)) {
-        attributeDefiners = attributeDefiners.filter(val => val != key)
-        lastThreeDigits += value
-        hasMainType = true
-
-        for (const [key2, value2] of Object.entries(modifierTypes)) {
-          if (attributeDefiners.includes(key2)) {
-            lastThreeDigits += value2
-            break;
-          }
-        }
-        break;
+    // check attributeIdConfig database object for a matching keyword for last 3 digits, if not found return an error
+    // error allows us to find attributes not in config database
+    let inAttributeIdConfigDB = false
+    attributeIdMap.forEach(item => {
+      if (item.attributeKeyword === attributeIdMatcher) {
+        attributeId += item.code
+        inAttributeIdConfigDB = true
       }
-    }
+    })
 
-    if (!hasMainType) {
-      // setting 900 to be the "misc" category
-      lastThreeDigits += 900
-    }
-
-    attributeId += lastThreeDigits
-    // check if attributeId already exists, if so increment last 2 digits
-
-    let attributeIdInUse = DBAttributes.find(DBAttribute => {
-      if (DBAttribute.id.toString() === attributeId && DBAttribute.name != cellValue) {
-        return DBAttribute
-      }
-    });
-    // just so while loop doesn't repeat forever
-    let counter: number = 0
-    while (attributeIdInUse && counter < 99) {
-      lastThreeDigits++
-      attributeId = attributeId.slice(0, -3) + lastThreeDigits
-      let attributeIdInUse = DBAttributes.find(DBAttribute => {
-        if (DBAttribute.id.toString() === attributeId && DBAttribute.name != cellValue) {
-          return DBAttribute
-        }
-      });
-    }
-
-    return attributeId
+    if (inAttributeIdConfigDB) return attributeId
+    else return "Config Not In DB"
   }
 
   // Function to get attributes and categories from sheet
-  const getSheetData = async (currentSheet: Worksheet, categoryGroupColumn: number, categoryColumn: number,) => {
-    let DBAttributes: Attribute[] = []
-    await columnNameController.fetch()
-      .then(res => DBAttributes = res)
+  const getSheetData = async (currentSheet: Worksheet, attributeIdMap: AttributeConfig[], categoryGroupColumn: number, categoryColumn: number,) => {
+    // convert PA and SA inputs to integers to use in excel
+    const PACol = colToInt(PA)
+    const SACol = colToInt(SA)
 
     type returnObject =
       {
@@ -602,6 +632,7 @@ export default function COAGenerator() {
     }
 
     // if "Category" title was found, get all of the cells with attribute titles in that row
+    let invalidAttributes: string[] = []
     if (attributeRow !== -1) {
       const row = currentSheet.getRow(attributeRow)
       for (let currentColumn = categoryColumn + 1; currentColumn <= currentSheet.columnCount; currentColumn++) {
@@ -609,12 +640,11 @@ export default function COAGenerator() {
 
         // add valid attributes to the attributes array
         if (cellValue !== '') {
-          const attributesToIgnore: string[] = ['Line #', 'Reference', 'Unit of Measure', 'Notes', 'Comments', 'Definitions', 'Variance']
+          const attributesToIgnore: string[] = ['Line #', 'Reference', 'Unit of Measure', 'Notes', 'Comments', 'Definitions', 'Variance', 'OHRS ACCOUNT  NUMBER', 'OHRS ACCOUNT NUMBER']
           let isValid: boolean = true
 
           // determine unit of measure column
           if (cellValue === 'Unit of Measure') {
-            console.log("unit of measure column is at: " + currentColumn)
             unitOfMeasureColumn = currentColumn
           }
 
@@ -632,17 +662,34 @@ export default function COAGenerator() {
             cellValue = cellValue.replace("Current Year", currentYear).replace("Current Yr", currentYear)
             cellValue = cellValue.replace("Prior Year", priorYear).replace("Prior Yr", priorYear)
 
-            let attributeId = makeAttributeId(cellValue, DBAttributes)
-            console.log(attributeId);
-
-            attributes.push({
-              name: cellValue,
-              id: attributeId,
-              updatedAt: new Date().toString()
-            })
+            let attributeId = makeAttributeId(cellValue, attributeIdMap)
+            // if not in attributeIdMap
+            if (attributeId = "Config Not in DB") {
+              invalidAttributes.push(cellValue)
+            }
+            else {
+              attributes.push({
+                name: cellValue,
+                id: attributeId,
+                updatedAt: new Date().toString()
+              })
+            }
           }
         }
       }
+    }
+
+    if (invalidAttributes.length > 0) {
+      let messageHTML = "<h5>The following attributes do not have a valid config ID. Any valid attributes and categories will still be imported.</h5>";
+      invalidAttributes.forEach(attributeName => {
+        messageHTML += `<p>${attributeName}</p>`
+      })
+
+      Swal.fire({
+        title: 'Attribute ID Config Errors',
+        icon: "error",
+        html: messageHTML
+      })
     }
     returnSheetData['attributes'] = attributes
 
@@ -656,15 +703,27 @@ export default function COAGenerator() {
       if (typeof groupName === 'string' && groupName.split(' ')[0] === 'Total') {
         groupName = groupName.replace('Total ', '');
       }
+      // get cell values from specified columns, or set to empty string if no value
       const name: string | undefined = row.getCell(categoryColumn).value?.toString();
-      const unitOfMeasure: string = row.getCell(unitOfMeasureColumn).value?.toString() || '';
+      let unitOfMeasure: string = ''
+      if (unitOfMeasureColumn != -1) {
+        unitOfMeasure = row.getCell(unitOfMeasureColumn).value?.toString() || '';
+      }
+      const PAValue = row.getCell(PACol).value?.toString() || '';
+      const SAValue = row.getCell(SACol).value?.toString() || '';
 
       if (id && typeof id === 'number' && groupName && name) {
         if (!categoryIds[groupName]) {
           categoryIds[groupName] = [];
         }
         if (name.split(' ')[0].toLowerCase() !== 'total') {
-          categoryIds[groupName].push({ id: id.toString(), name, unitOfMeasure, COA: "", updatedAt: new Date().toString() });
+          categoryIds[groupName].push({
+            id: id.toString(),
+            name,
+            unitOfMeasure,
+            COA: convertToQuery(PAValue, SAValue),
+            updatedAt: new Date().toString()
+          });
         }
       }
     });
