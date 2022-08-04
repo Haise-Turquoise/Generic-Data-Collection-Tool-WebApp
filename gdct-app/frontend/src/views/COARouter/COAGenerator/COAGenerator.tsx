@@ -573,8 +573,12 @@ export default function COAGenerator() {
       }
     })
 
-    if (inAttributeIdConfigDB) return attributeId
-    else return "Config Not In DB"
+    if (inAttributeIdConfigDB) {
+      return attributeId
+    }
+    else {
+      return "Config Not In DB"
+    }
   }
 
   // Function to get attributes and categories from sheet
@@ -663,8 +667,9 @@ export default function COAGenerator() {
             cellValue = cellValue.replace("Prior Year", priorYear).replace("Prior Yr", priorYear)
 
             let attributeId = makeAttributeId(cellValue, attributeIdMap)
+            console.log(attributeId)
             // if not in attributeIdMap
-            if (attributeId = "Config Not in DB") {
+            if (attributeId === "Config Not In DB") {
               invalidAttributes.push(cellValue)
             }
             else {
