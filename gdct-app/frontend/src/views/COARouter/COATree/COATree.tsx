@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect } from 'react';
-import { useHistory, useParams } from 'react-router-dom';
+import { useHistory, useParams, useLocation } from 'react-router-dom';
 //@ts-ignore
 import SortableTree from 'react-sortable-tree';
 import { useSelector, shallowEqual, useDispatch, batch } from 'react-redux';
@@ -95,9 +95,11 @@ const COATreeActions = ({ sheetNameId }: { sheetNameId: string }) => {
 };
 
 const COATreeHeader = ({ sheetNameId }: { sheetNameId: string }) => {
+  const location = useLocation<LocationState>();
+  const sheetName = location.state.sheetName;
   return (
     <Paper className="header">
-      <Typography variant="h5">COA Tree</Typography>
+      <Typography variant="h5">COA Tree<h6>{sheetName}</h6></Typography>
       <COATreeActions sheetNameId={sheetNameId} />
     </Paper>
   );
@@ -171,12 +173,16 @@ const COATreeTreeStructure = ({ sheetNameId }: { sheetNameId: string }) => {
   );
 };
 
+interface LocationState {
+  sheetName?: string,
+}
+
 const COATree = () => {
-  const { _id: sheetNameId } = useParams<{ _id: string }>();
+  const { _id: sheetNameId} = useParams<{ _id: string}>();  
 
   return (
     <div className="COATree">
-      <COATreeHeader sheetNameId={sheetNameId} />
+      <COATreeHeader sheetNameId={sheetNameId}/>
       <COATreeTreeStructure sheetNameId={sheetNameId} />
       <Button
         variant="outlined"

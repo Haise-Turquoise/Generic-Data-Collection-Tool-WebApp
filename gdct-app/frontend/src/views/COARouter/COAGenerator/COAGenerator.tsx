@@ -362,7 +362,7 @@ export default function COAGenerator() {
         setSA('');
         break;
       case 'reportingPeriod':
-        setReportingPeriod(value);
+        setReportingPeriod(value.toUpperCase());
         setErrorMsg("");
         setAttributeHeader("")
         // if length of errorMsg is 7 or 10:
@@ -613,7 +613,22 @@ export default function COAGenerator() {
 
     // if "category" title was not found, return an error message and cancel function
     if (attributeRow === -1) {
-      console.log("Category was not found, should return an error")
+      setErrorMsg("Category index is incorrect");
+    }
+
+    // search for "Category Group" 
+    for (let currentRow = 0; currentRow < currentSheet.rowCount; currentRow++) {
+      const row = currentSheet.getRow(currentRow)
+      const val = row.getCell(categoryGroupColumn).value?.toString() || '';
+
+      if (typeof val === 'string' && val === "Category Group") {
+        attributeRow = currentRow
+        break;
+      }
+    }
+
+    if (attributeRow === -1) {
+      setErrorMsg("Category Group index is incorrect")
     }
 
     // if "Category" title was found, get all of the cells with attribute titles in that row
