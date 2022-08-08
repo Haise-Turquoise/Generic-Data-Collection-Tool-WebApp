@@ -640,7 +640,29 @@ export default function COAGenerator() {
     if (attributeRow !== -1) {
       const row = currentSheet.getRow(attributeRow)
       for (let currentColumn = categoryColumn + 1; currentColumn <= currentSheet.columnCount; currentColumn++) {
-        let cellValue = row.getCell(currentColumn).value?.toString() || ''
+        let rawExcelValue = row.getCell(currentColumn).value
+        let cellValue: string = ''
+
+        if (rawExcelValue != null && typeof rawExcelValue === 'object') {
+          // if cell contains some form of text
+          if ("text" in rawExcelValue) {
+            cellValue = rawExcelValue["text"]
+          }
+          // if cell contains a formula, get the formula result (what is displayed)
+          else if ("result" in rawExcelValue && rawExcelValue['result'] != undefined) {
+            cellValue = rawExcelValue["result"].toString()
+          }
+          else {
+            console.log("unsure of what to do with this: ")
+            console.log(rawExcelValue)
+          }
+        }
+        else {
+          cellValue = rawExcelValue?.toString() || ''
+        }
+
+        console.log('!debug line 661')
+        console.log(cellValue)
 
         // add valid attributes to the attributes array
         if (cellValue !== '') {
