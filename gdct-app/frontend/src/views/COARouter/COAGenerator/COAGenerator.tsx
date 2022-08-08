@@ -584,8 +584,8 @@ export default function COAGenerator() {
   // Function to get attributes and categories from sheet
   const getSheetData = async (currentSheet: Worksheet, attributeIdMap: AttributeConfig[], categoryGroupColumn: number, categoryColumn: number,) => {
     // convert PA and SA inputs to integers to use in excel
-    const PACol = colToInt(PA)
-    const SACol = colToInt(SA)
+    const PACol = PA !== '' ? colToInt(PA) : ''
+    const SACol = SA !== '' ? colToInt(SA) : ''
 
     type returnObject =
       {
@@ -618,6 +618,7 @@ export default function COAGenerator() {
     // if "category" title was not found, return an error message and cancel function
     if (attributeRow === -1) {
       setErrorMsg("Category index is incorrect");
+      console.log("category title not found")
     }
 
     // search for "Category Group" 
@@ -725,19 +726,35 @@ export default function COAGenerator() {
       if (rowNumber === 0) {
         return;
       }
-      const id = row.getCell(colToInt('A')).value;
+
+      let id: number | undefined = undefined
+      if (row.getCell(colToInt('A')).value) {
+        let tempVal = row.getCell(colToInt('A')).value
+        if (typeof tempVal === 'string') {
+          id = parseInt(tempVal)
+        }
+        else if (typeof tempVal === 'number') {
+          id = tempVal
+        }
+        else {
+          console.log('don\'t know what to do with this ID')
+          console.log(tempVal)
+        }
+      }
+
       let groupName: string | undefined = row.getCell(categoryGroupColumn).value?.toString();
       if (typeof groupName === 'string' && groupName.split(' ')[0] === 'Total') {
         groupName = groupName.replace('Total ', '');
       }
       // get cell values from specified columns, or set to empty string if no value
       const name: string | undefined = row.getCell(categoryColumn).value?.toString();
+
       let unitOfMeasure: string = ''
       if (unitOfMeasureColumn != -1) {
         unitOfMeasure = row.getCell(unitOfMeasureColumn).value?.toString() || '';
       }
-      const PAValue = row.getCell(PACol).value?.toString() || '';
-      const SAValue = row.getCell(SACol).value?.toString() || '';
+      const PAValue = PA != '' ? (row.getCell(PACol).value?.toString() || '') : '';
+      const SAValue = SA != '' ? (row.getCell(SACol).value?.toString() || '') : '';
 
       if (id && typeof id === 'number' && groupName && name) {
         if (!categoryIds[groupName]) {
