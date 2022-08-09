@@ -508,8 +508,16 @@ class SpreadSheet extends Component<SpreadSheetProps, {hasSheet: boolean}>{
   }
 
   validateSheet = async () => {
+    
     this.sheet.datas[this.sheet.getCurrentSheetIndex()].resetCommentsandErrors();
     this.sheet.reRender();
+  }
+
+  getSheetName = ()=>{
+    if(this.sheet){
+      return this.sheet.datas[this.sheet.getCurrentSheetIndex()].name;
+    }
+    return ''
   }
   
   updatePeriod = async (year_D: number, q_D: number) => {
@@ -604,7 +612,7 @@ class SpreadSheet extends Component<SpreadSheetProps, {hasSheet: boolean}>{
               <Button variant="outlined" color="primary" onClick={this.saveTemplate}>
                 Save
               </Button>
-              <CategoryInsertMenu callback={this.insertCategory}/>
+              <CategoryInsertMenu callback={this.insertCategory} getSheet={this.getSheetName}/>
               <AttributeInsertMenu callback={this.insertAttribute}/>
               <PopulationSelectionMenu callback={this.enablePreview}/>
               <VarianceInsertionMenu callback={this.insertVariance} getSheet={this.getCurrentSheet}/>

@@ -10,32 +10,39 @@ import {MenuProps, AttributeAndCategoryData, CategoryGroupData, InsertedID} from
 // This component responsible for category insertion dialog
 class categoryInsertMenu extends React.Component<MenuProps>{
   callback: any;
+  getSheet: any;
   category: CategoryGroupData[];
   InsertedID: InsertedID;
   categoryRef: React.RefObject<unknown>;
   data: CategoryGroupData[];
+  allData: CategoryGroupData[];
   constructor(props:MenuProps) {
     super(props);
     this.update_subform = this.update_subform.bind(this);
     this.insert = this.insert.bind(this);
     this.insertOptions = this.insertOptions.bind(this);
     this.deleteOption = this.deleteOption.bind(this);
+    this.selectCategory = this.selectCategory.bind(this);
+    this.getSheet = this.props.getSheet;
     this.callback = this.props.callback;
     this.category = [];
     this.InsertedID = {};
     this.state = {update:false, open:false}
     this.categoryRef = React.createRef();
     this.data = [];
+    this.allData = [];
   }
   
   // Get data from server and pass it into 
   componentDidMount(){
     spreadSheetController.fetchCategoryAndAttribute().then((data:AttributeAndCategoryData)=>{
     // TODO: change the hard code for balance sheet to the current sheet in the next line.
+    this.allData = data["Categories"];
     const unsortedData = data["Categories"].filter((entry)=> entry["sheetName"] === 'Balance Sheet');
-    console.log(data)
+    console.log(data);
     this.data = unsortedData.sort((a, b) => a.categoryGroup.localeCompare(b.categoryGroup));
     this.category = this.data;
+    
     })
   }
 
@@ -87,6 +94,9 @@ class categoryInsertMenu extends React.Component<MenuProps>{
     }
     
     let targetList = this.category;
+    console.log('this.category');
+    console.log(this.category);
+    console.log(selectionList);
     let fullJsonLayer:CategoryGroupData = targetList[0];
 
     // Navigate in the Json layer
@@ -224,6 +234,17 @@ class categoryInsertMenu extends React.Component<MenuProps>{
     }
   }
 
+  selectCategory(){
+
+    let curSheetName = this.getSheet();
+    //console.log(curSheetName)
+    //console.log(this.allData.filter((entry)=> entry["sheetName"] === curSheetName))
+    this.data = this.allData.filter((entry)=> entry["sheetName"] === curSheetName)
+    this.category = this.data;
+    console.log(this.category)
+    this.setState({open:true})
+  }
+
   deleteOption = (id:string)=>{
     let selected_field = document.getElementById('SelectedOptions') as HTMLElement;
     //@ts-ignore
@@ -235,7 +256,7 @@ class categoryInsertMenu extends React.Component<MenuProps>{
   render(){
     return (
       <div>
-        <Button variant="outlined" color="primary" onClick={()=>{this.setState({open:true})}}>
+        <Button variant="outlined" color="primary" onClick={this.selectCategory}>
           Insert Category
         </Button>
         <Dialog onClose={()=>{this.setState({open:false})}} aria-labelledby="simple-dialog-title" open={//@ts-ignore
