@@ -510,10 +510,18 @@ class SpreadSheet extends Component<SpreadSheetProps, { hasSheet: boolean }>{
   }
 
   validateSheet = async () => {
+    
     this.sheet.datas[this.sheet.getCurrentSheetIndex()].resetCommentsandErrors();
     this.sheet.reRender();
   }
 
+  getSheetName = ()=>{
+    if(this.sheet){
+      return this.sheet.datas[this.sheet.getCurrentSheetIndex()].name;
+    }
+    return ''
+  }
+  
   updatePeriod = async (year_D: number, q_D: number) => {
     if (!this.sheet) {
       return
@@ -599,27 +607,42 @@ class SpreadSheet extends Component<SpreadSheetProps, { hasSheet: boolean }>{
     this.sheet.reRender();
   }
 
-  render() {
-    return (
-      <div>
-        <div style={{ display: 'flex' }}>
-          <Button variant="outlined" color="primary" onClick={this.saveTemplate}>
-            Save
-          </Button>
-          <CategoryInsertMenu callback={this.insertCategory} />
-          <AttributeInsertMenu callback={this.insertAttribute} />
-          <PopulationSelectionMenu callback={this.enablePreview} />
-          <VarianceInsertionMenu callback={this.insertVariance} getSheet={this.getCurrentSheet} />
-          <UpdatePeriod callback={this.updatePeriod} getBasePeriod={this.getBasePeriod} runBP={this.state.hasSheet} />
-          <Button variant="outlined" color="primary" onClick={() => this.disablePreview()}>
-            Disable preview
-          </Button>
-          <Button variant="outlined" color="primary" onClick={() => this.lineNumberInsertion(true)}>
-            Organize line numbers
-          </Button>
-          <Button variant="outlined" color="primary" onClick={() => this.downloadTemplate(this.sheet.getData())}>
-            Download Template
-          </Button>
+  render(){
+      return (
+        <div>
+            <div style={{display:'flex'}}>
+              <Button variant="outlined" color="primary" onClick={this.saveTemplate}>
+                Save
+              </Button>
+              <CategoryInsertMenu callback={this.insertCategory} getSheet={this.getSheetName}/>
+              <AttributeInsertMenu callback={this.insertAttribute}/>
+              <PopulationSelectionMenu callback={this.enablePreview}/>
+              <VarianceInsertionMenu callback={this.insertVariance} getSheet={this.getCurrentSheet}/>
+              <UpdatePeriod callback={this.updatePeriod} getBasePeriod={this.getBasePeriod} runBP={this.state.hasSheet} />
+              <Button variant="outlined" color="primary" onClick={()=>this.disablePreview()}>
+                Disable preview
+              </Button>
+              <Button variant="outlined" color="primary" onClick={()=>this.lineNumberInsertion(true)}>
+                Organize line numbers
+              </Button>
+              <Button variant="outlined" color="primary" onClick={()=>this.downloadTemplate(this.sheet.getData())}>
+                Download Template
+              </Button>
+              
+              <input
+                type="file"
+                accept=".xlsx, .xlsm"
+                onChange={(e) => this.fileImportHandler(e)}
+                hidden
+                id='upload-button'
+              />
+             
+              <Button variant="outlined" color="primary" onClick={()=>this.openUploadMenu()}>
+                Upload Template
+              </Button>
+              <Button variant="outlined" color="primary" onClick={() => {this.validateSheet()}}>
+                Validate
+              </Button>
 
           <input
             type="file"

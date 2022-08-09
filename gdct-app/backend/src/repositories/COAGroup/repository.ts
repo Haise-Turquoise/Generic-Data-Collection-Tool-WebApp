@@ -13,20 +13,26 @@ export default class COAGroupRepository extends BaseRepository<CategoryGroup, Ca
 
   async delete(id: string) {
     return COAGroupModel.findByIdAndDelete(id).then(
-      (COAGroup: CategoryGroupDoc|null) => {
+      (COAGroup: CategoryGroupDoc | null) => {
         if (!COAGroup) throw new AppError(`Delete failed, Item not found for COA group item with ID: ${id}`);
         return new COAGroupEntity(COAGroup)
       }
     );
   }
 
-  async create(COAGroup: CategoryGroup) {
-    return COAGroupModel.create(COAGroup).then(COAGroup => new COAGroupEntity(COAGroup));
+  async create(COAGroup: CategoryGroup | CategoryGroup[]) {
+    return COAGroupModel.create(COAGroup).then(COAGroup => {
+      if (Array.isArray(COAGroup)) {
+        //handles adding multiple COAGroup objects
+        return COAGroup.map(categoryGroup => new COAGroupEntity(categoryGroup))
+      }
+      return new COAGroupEntity(COAGroup)
+    })
   }
 
   async update(id: string, COAGroup: Partial<CategoryGroup>) {
     return COAGroupModel.findByIdAndUpdate(id, COAGroup).then(
-      (COAGroup: CategoryGroupDoc|null) =>{
+      (COAGroup: CategoryGroupDoc | null) => {
         if (!COAGroup) throw new AppError(`Update failed, Item not found for COA group item with ID: ${id}, params:${COAGroup}`);
         return new COAGroupEntity(COAGroup)
       }
@@ -45,8 +51,8 @@ export default class COAGroupRepository extends BaseRepository<CategoryGroup, Ca
     );
   }
 
-  async batchFind(query: (ObjectId|string)[]){
-    return COAGroupModel.find({ _id: { "$in" : query }})
+  async batchFind(query: (ObjectId | string)[]) {
+    return COAGroupModel.find({ _id: { "$in": query } })
 
   }
 }
