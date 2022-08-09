@@ -1,5 +1,5 @@
 export default interface Attribute {
-  _id: string,
+  _id?: string,
   name: string,
   id: string,
   updatedAt: string,

@@ -11,22 +11,24 @@ import PopulationSelectionMenu from './PopulationSelectionMenu';
 import OrgController from '../../../controllers/organization';
 import VarianceInsertionMenu from './InsertVarianceMenu'
 import Button from '@material-ui/core/Button';
-import { digitToAlpha,
-  generateCategoryMap, generateAttributeMap, 
-  findWordInRow, findLastAttributeCol, 
+import {
+  digitToAlpha,
+  generateCategoryMap, generateAttributeMap,
+  findWordInRow, findLastAttributeCol,
   //@ts-ignore
-  templateDownloader,templateCSVFormat, excelImportHandler, generateFullMap} from '../../../tools/misc';
+  templateDownloader, templateCSVFormat, excelImportHandler, generateFullMap
+} from '../../../tools/misc';
 //@ts-ignore
 import appConfigController from '../../../controllers/AppConfig';
 //@ts-ignore
 import { ObjectId } from 'mongoose';
-import {PreviewData, Coordinate, SpreadSheetProps, CategorySelection, IdMapping, OrgPreviewData} from '../../../types/spreadsheetTypes/spreadSheetTypes';
+import { PreviewData, Coordinate, SpreadSheetProps, CategorySelection, IdMapping, OrgPreviewData } from '../../../types/spreadsheetTypes/spreadSheetTypes';
 import { MasterValue } from '../../../types/mastervalue';
 import Template, { SheetData } from '../../../types/template';
 import AppConfig from '../../../types/appconfig';
 import columnNameController from "../../../controllers/columnName";
 import UnitOfMeasurementController from "../../../controllers/UnitOfMeasurement";
-import Attribute from "../../../types/attrubute";
+import Attribute from "../../../types/attribute";
 import UpdatePeriod from "./UpdatePeriod";
 import { CodeSharp } from "@material-ui/icons";
 import swal from 'sweetalert2'
@@ -39,8 +41,8 @@ const sheetOption = {
   showGrid: true,
   showContextmenu: true,
   view: {
-    height: () => document.documentElement.clientHeight*0.7488,
-    width: () => document.documentElement.clientWidth*0.975,
+    height: () => document.documentElement.clientHeight * 0.7488,
+    width: () => document.documentElement.clientWidth * 0.975,
   },
   row: {
     len: 100,
@@ -71,20 +73,20 @@ const sheetOption = {
 
 // We use compoenent instead of hooks since hooks will cause undefined behavior
 
-class SpreadSheet extends Component<SpreadSheetProps, {hasSheet: boolean}>{
+class SpreadSheet extends Component<SpreadSheetProps, { hasSheet: boolean }>{
 
   id: ObjectId;
   workBookName: string;
   currentCoord: Coordinate;
-  insertedPreview: (PreviewData|OrgPreviewData)[];
+  insertedPreview: (PreviewData | OrgPreviewData)[];
   prevVarianceSelection: string;
   validationThreshold: number;
   attrbuteRow: number;
-  backButton:Function;
+  backButton: Function;
   sheet: any;
-  
 
-  constructor(props:SpreadSheetProps) {
+
+  constructor(props: SpreadSheetProps) {
     super(props);
     this.sheet = null;
     this.id = this.props.templateID;
@@ -98,14 +100,14 @@ class SpreadSheet extends Component<SpreadSheetProps, {hasSheet: boolean}>{
     this.disablePreview = this.disablePreview.bind(this);
     this.fileImportHandler = this.fileImportHandler.bind(this);
     this.downloadTemplate = this.downloadTemplate.bind(this);
-   
+
     this.insertVariance = this.insertVariance.bind(this);
     this.getCurrentSheet = this.getCurrentSheet.bind(this);
     this.lineNumberInsertion = this.lineNumberInsertion.bind(this);
     this.getBasePeriod = this.getBasePeriod.bind(this);
     this.updatePeriod = this.updatePeriod.bind(this);
     this.workBookName = this.props.name;
-    this.currentCoord = {row:0, col:0};
+    this.currentCoord = { row: 0, col: 0 };
     this.insertedPreview = [];
     this.prevVarianceSelection = '';
     this.validationThreshold = 0.05;
@@ -116,73 +118,73 @@ class SpreadSheet extends Component<SpreadSheetProps, {hasSheet: boolean}>{
   }
 
   // After component mount, initailize spreadsheet and load data from DB
-  componentDidMount(){
+  componentDidMount() {
     const userRole = localStorage.getItem('currentRole');
-    if (userRole ==='Template Approver'){
+    if (userRole === 'Template Approver') {
       sheetOption.mode = 'read';
-    }else{
+    } else {
       sheetOption.mode = 'edit';
     }
-    templateController.fetchTemplate(this.id).then((template:Template | null)=>{
+    templateController.fetchTemplate(this.id).then((template: Template | null) => {
       const data = template?.templateData;
       console.log('got data', template?.templateData);
       // bandaid solution
       template?.templateData?.forEach(data => {
         if (data.rows.len === 0) {
-          const newRows: {[key: string]: any} = {}
+          const newRows: { [key: string]: any } = {}
           Object.keys(data.rows).forEach(key => {
             if (key !== "len") {
               newRows[key] = data.rows[key]
             }
           })
           data.rows = newRows
-        } 
+        }
       })
       // @ts-ignore
       this.sheet = new Spreadsheet("#x-spreadsheet", sheetOption).loadData(data).reRender();
-      this.setState({hasSheet: true})
+      this.setState({ hasSheet: true })
       // This event listner handles user close the tab without saving
       window.addEventListener('beforeunload', this.handleSave as EventListener);
-      this.sheet.on('cell-selected',(cell:object, row:number, col:number)=>{
-        this.currentCoord = {row, col};
+      this.sheet.on('cell-selected', (cell: object, row: number, col: number) => {
+        this.currentCoord = { row, col };
       })
-      
+
 
       //the following is to prepopulate the spreadsheet with some an existing format
       spreadsheetInitialize(this.sheet);
     });
 
     // fetch Validation Threshold
-    appConfigController.fetchValidationThreshold().then((data:AppConfig | null)=>{
+    appConfigController.fetchValidationThreshold().then((data: AppConfig | null) => {
       // default value is 0.05
       if (data) {
-        this.validationThreshold = data.value?Number(data.value): 0.05;
+        this.validationThreshold = data.value ? Number(data.value) : 0.05;
       }
     })
 
-    appConfigController.fetchAttributeRow().then((data:AppConfig | null)=>{
+    appConfigController.fetchAttributeRow().then((data: AppConfig | null) => {
       if (data) {
-        this.attrbuteRow = data.value? Number(data.value) - 1: 9
-      } 
+        this.attrbuteRow = data.value ? Number(data.value) - 1 : 9
+      }
     })
 
   }
-  
+
   // This handles user navigate to different page without saving
-  componentWillUnmount(){
+  componentWillUnmount() {
     window.removeEventListener('beforeunload', this.handleSave);
     this.saveTemplate();
   }
 
   // Prevent default action when save
-  handleSave(e:Event){
+  handleSave(e: Event) {
     e.preventDefault();
     this.saveTemplate();
   }
 
   // Save function
-  saveTemplate = () =>{
-    if (this.sheet){
+  saveTemplate = () => {
+    if (this.sheet) {
       this.disablePreview();
       const workBookData = this.sheet.getData();
       console.log(workBookData)
@@ -192,15 +194,15 @@ class SpreadSheet extends Component<SpreadSheetProps, {hasSheet: boolean}>{
   }
 
   // This function is responsible for inserting category selections
-  insertCategory = (inputs:CategorySelection, rowNum:number=-1) =>{
+  insertCategory = (inputs: CategorySelection, rowNum: number = -1) => {
     const currentIndex = this.sheet.getCurrentSheetIndex();
 
-    const insertRow = rowNum > -1? rowNum - 1:this.currentCoord.row;
+    const insertRow = rowNum > -1 ? rowNum - 1 : this.currentCoord.row;
     let unitCol = this.sheet.datas[currentIndex].findInputColOnRow(9, "Unit of Measure");
     let varianceCol = this.sheet.datas[currentIndex].findInputColOnRow(9, "Variance");
-    this.sheet.datas[currentIndex].cols._[1] = {width: 307}
+    this.sheet.datas[currentIndex].cols._[1] = { width: 307 }
     // Key is category ID, currentIndex is the index of the current sheet
-    for (let key in inputs){
+    for (let key in inputs) {
       let dataArr = inputs[key];
       this.sheet.insertRowAt(insertRow);
       this.sheet.cellText(insertRow, 0, key, currentIndex);
@@ -210,26 +212,26 @@ class SpreadSheet extends Component<SpreadSheetProps, {hasSheet: boolean}>{
     this.lineNumberInsertion();
     if (varianceCol && this.prevVarianceSelection) {
       this.insertVariance(this.prevVarianceSelection);
-    }else{
+    } else {
 
       this.sheet.reRender();
     }
 
   }
-  
+
   // Callback funtion for variance insertion
   // the input of this function will be two attribute ids seperate by a space
-  insertVariance = (varianceSelection:string) => {
+  insertVariance = (varianceSelection: string) => {
 
     const currSheetIndex = this.sheet.getCurrentSheetIndex();
 
     // split the attribute id pairs
     const selection = varianceSelection.split(' ');
     const currSheet = this.sheet.getData()[currSheetIndex];
-    
+
     // Generate Mappings
-    const categoryMap:any = generateCategoryMap(currSheet);
-    const attributeMap:any = generateAttributeMap(currSheet);
+    const categoryMap: any = generateCategoryMap(currSheet);
+    const attributeMap: any = generateAttributeMap(currSheet);
 
     // Identify the col alphabit assignment
     const startCol = digitToAlpha(Number(attributeMap[selection[0]]) + 1);
@@ -237,10 +239,10 @@ class SpreadSheet extends Component<SpreadSheetProps, {hasSheet: boolean}>{
 
     // Search if the variance column exist
     const findResult = findWordInRow(currSheet, 9, 'Variance');
-    const targetCol =  findResult > 0 ? Number(findResult): Number(findLastAttributeCol(currSheet) + 1);
+    const targetCol = findResult > 0 ? Number(findResult) : Number(findLastAttributeCol(currSheet) + 1);
 
     // Insert the variance column if it does not exist
-    if (findResult < 0){
+    if (findResult < 0) {
       this.sheet.insertColAt(targetCol);
       this.sheet.cellText(9, targetCol, 'Variance', currSheetIndex);
       this.sheet.insertColAt(targetCol + 1)
@@ -252,22 +254,22 @@ class SpreadSheet extends Component<SpreadSheetProps, {hasSheet: boolean}>{
     // Insert the variance formula for each of the cells
     // e.g: =(A1-A2)/A2
     const targetColAlphabit = digitToAlpha(targetCol + 1);
-    for (const attributeID of keys){
+    for (const attributeID of keys) {
       const rowNum = Number(categoryMap[attributeID]) + 1;
       const text = '=' + '(' + startCol + rowNum + '-' + endCol + rowNum + ')/' + startCol + rowNum;
       this.sheet.cellText(rowNum - 1, targetCol, text, currSheetIndex);
       const cellCoord = targetColAlphabit.toLocaleLowerCase() + (rowNum);
       this.sheet.cellText(rowNum - 1, targetCol, text, currSheetIndex);
       this.sheet.cellText(rowNum - 1, targetCol + 1, '', currSheetIndex);
-     
+
       this.sheet.addOtherGreaterThan(
-        rowNum - 1, 
-        rowNum - 1, 
-        targetCol + 1, 
+        rowNum - 1,
+        rowNum - 1,
+        targetCol + 1,
         targetCol + 1,
         `=${cellCoord}`,
-        this.validationThreshold,  
-        { bgcolor: "#FFEF00" }, 
+        this.validationThreshold,
+        { bgcolor: "#FFEF00" },
         currSheetIndex
       )
     }
@@ -279,12 +281,12 @@ class SpreadSheet extends Component<SpreadSheetProps, {hasSheet: boolean}>{
 
   // This function handles download template feature, it convert Json array
   // from x-data-spreadsheet to xlsx
-  downloadTemplate(sheetData:SheetData[]){
+  downloadTemplate(sheetData: SheetData[]) {
     templateDownloader(this.workBookName, sheetData);
   }
 
   // This function handles enable preview feature
-  async enablePreview(orgID:number){
+  async enablePreview(orgID: number) {
     const orgInfo = await OrgController.fetchById(orgID);
     if (!orgInfo) {
       return;
@@ -298,10 +300,10 @@ class SpreadSheet extends Component<SpreadSheetProps, {hasSheet: boolean}>{
     const categories = Object.keys(categoryMapping);
     const attributes = Object.keys(attributeMapping);
 
-    const productOfLength = categories.length* attributes.length;
+    const productOfLength = categories.length * attributes.length;
     console.log(orgID, categories, attributes);
     // Get the master values from DB
-    const masterValueData:MasterValue[] = productOfLength > 0 ? await spreadSheetController.fetchByOrgID(orgID, categories, attributes):[];
+    const masterValueData: MasterValue[] = productOfLength > 0 ? await spreadSheetController.fetchByOrgID(orgID, categories, attributes) : [];
     console.log(masterValueData)
     // Insert mastervalue preview
     masterValueData.forEach(element => {
@@ -309,43 +311,43 @@ class SpreadSheet extends Component<SpreadSheetProps, {hasSheet: boolean}>{
       const attributeId = element["attributeId"];
       const value = element['value'];
       this.sheet.cellText(categoryMapping[COAID], attributeMapping[attributeId], value, currentSheetIndex);
-      this.insertedPreview.push({COAID, attributeId, currentSheetIndex});
+      this.insertedPreview.push({ COAID, attributeId, currentSheetIndex });
     });
 
     // Insert org info
     const sheetName = this.sheet.datas[currentSheetIndex].name;
 
     // Since org info is located differently in some sheets, we need to check for sheet names
-    if (sheetName.toLowerCase() !== 'identification'){
+    if (sheetName.toLowerCase() !== 'identification') {
       this.sheet.cellText(3, 1, 'Facility ID: ' + orgInfo.id, currentSheetIndex);
       this.sheet.cellText(2, 1, 'Hospital Name: ' + orgInfo.name, currentSheetIndex);
 
-      this.insertedPreview.push({row:3, col:1, originalValue:'Facility ID:' ,currentSheetIndex});
-      this.insertedPreview.push({row:2, col:1, originalValue:'Hospital Name:' ,currentSheetIndex});
+      this.insertedPreview.push({ row: 3, col: 1, originalValue: 'Facility ID:', currentSheetIndex });
+      this.insertedPreview.push({ row: 2, col: 1, originalValue: 'Hospital Name:', currentSheetIndex });
 
-    }else{
+    } else {
       this.sheet.cellText(8, 3, orgInfo.id, currentSheetIndex);
       this.sheet.cellText(9, 3, orgInfo.IFISNum, currentSheetIndex);
       this.sheet.cellText(12, 3, orgInfo.name, currentSheetIndex);
       this.sheet.cellText(13, 3, orgInfo.legalName, currentSheetIndex);
 
-      this.insertedPreview.push({row:8, col:3, originalValue:'' ,currentSheetIndex});
-      this.insertedPreview.push({row:9, col:3, originalValue:'' ,currentSheetIndex});
-      this.insertedPreview.push({row:12, col:3, originalValue:'' ,currentSheetIndex});
-      this.insertedPreview.push({row:13, col:3, originalValue:'' ,currentSheetIndex});
+      this.insertedPreview.push({ row: 8, col: 3, originalValue: '', currentSheetIndex });
+      this.insertedPreview.push({ row: 9, col: 3, originalValue: '', currentSheetIndex });
+      this.insertedPreview.push({ row: 12, col: 3, originalValue: '', currentSheetIndex });
+      this.insertedPreview.push({ row: 13, col: 3, originalValue: '', currentSheetIndex });
     }
 
     this.sheet.reRender();
   }
 
-  getCurrentSheet(){
+  getCurrentSheet() {
     return this.sheet.getData()[this.sheet.getCurrentSheetIndex()];
   }
-  
+
   // This function handles disable preview feature
-  disablePreview(){
-    const categoryMapping:IdMapping[] = [];
-    const attributeMapping:IdMapping[] = [];
+  disablePreview() {
+    const categoryMapping: IdMapping[] = [];
+    const attributeMapping: IdMapping[] = [];
 
     // Generate look up table for all the sheets 
     this.sheet.datas.forEach((dataProxy: { rowLookUpTable: (arg0: number) => object; colLookUpTable: (arg0: number) => object; }) => {
@@ -355,12 +357,12 @@ class SpreadSheet extends Component<SpreadSheetProps, {hasSheet: boolean}>{
 
     // delete the previews for all the sheets
     // Coord is the object in the inserted preview array
-    this.insertedPreview.forEach(coord=>{
-      if ('COAID' in coord){
-        let {COAID, attributeId, currentSheetIndex} = coord;
+    this.insertedPreview.forEach(coord => {
+      if ('COAID' in coord) {
+        let { COAID, attributeId, currentSheetIndex } = coord;
         this.sheet.cellText(categoryMapping[currentSheetIndex][COAID], attributeMapping[currentSheetIndex][attributeId], '', currentSheetIndex);
-      }else{
-        let {row, col, currentSheetIndex, originalValue} = coord;
+      } else {
+        let { row, col, currentSheetIndex, originalValue } = coord;
         this.sheet.cellText(row, col, originalValue, currentSheetIndex)
       }
     });
@@ -369,18 +371,18 @@ class SpreadSheet extends Component<SpreadSheetProps, {hasSheet: boolean}>{
     this.sheet.reRender();
   }
 
-  lineNumberInsertion(reRender=false){
+  lineNumberInsertion(reRender = false) {
     const currSheetIndex = this.sheet.getCurrentSheetIndex();
     const currSheet = this.sheet.getData()[currSheetIndex];
     const categoryMap = generateCategoryMap(currSheet);
     console.log('map', categoryMap)
 
-    let categoryIDs = Object.keys(categoryMap).sort((id1, id2)=>
+    let categoryIDs = Object.keys(categoryMap).sort((id1, id2) =>
       // @ts-ignore
       categoryMap[id1] - categoryMap[id2]
     );
 
-    for (let i = 0; i < categoryIDs.length; i++){
+    for (let i = 0; i < categoryIDs.length; i++) {
       // @ts-ignore
       this.sheet.cellText(categoryMap[categoryIDs[i]], 2, i + 1, currSheetIndex);
     }
@@ -388,7 +390,7 @@ class SpreadSheet extends Component<SpreadSheetProps, {hasSheet: boolean}>{
   }
 
   // This function is responsible for inserting atrributes
-  insertAttribute = (id:number, text:string)=>{
+  insertAttribute = (id: number, text: string) => {
     // Get current index of the current sheet
     const currentIndex = this.sheet.getCurrentSheetIndex();
     const insertCol = this.currentCoord.col;
@@ -402,7 +404,7 @@ class SpreadSheet extends Component<SpreadSheetProps, {hasSheet: boolean}>{
     this.sheet.reRender();
   }
 
-  openUploadMenu(){
+  openUploadMenu() {
     const targetElement = document.getElementById('upload-button') as HTMLInputElement;
     targetElement.click();
   }
@@ -411,8 +413,8 @@ class SpreadSheet extends Component<SpreadSheetProps, {hasSheet: boolean}>{
   // It reads the file from client's computer and converts it into Json array that
   // x-data-spreadsheet can understand. At the end we are saving this Json array 
   // to our DB.
-  fileImportHandler(event:React.ChangeEvent<HTMLInputElement>) {
-    excelImportHandler(event, (data:object)=>{this.sheet.loadData(data).reRender()});
+  fileImportHandler(event: React.ChangeEvent<HTMLInputElement>) {
+    excelImportHandler(event, (data: object) => { this.sheet.loadData(data).reRender() });
   }
 
   getBasePeriod = () => {
@@ -423,8 +425,8 @@ class SpreadSheet extends Component<SpreadSheetProps, {hasSheet: boolean}>{
     const mainMenu = this.sheet.datas.find((datas: any) => datas.name.toUpperCase() == 'MAIN MENU');
     if (!mainMenu) {
       return ""
-    }    
-    
+    }
+
     // mainMenu.setCellText(4, 1, "Year:", 'finished');
     // mainMenu.setCellText(5, 1, "Quarter:", 'finished');
     const year = mainMenu.getCellTextOrDefault(4, 2);
@@ -432,11 +434,11 @@ class SpreadSheet extends Component<SpreadSheetProps, {hasSheet: boolean}>{
     return !!q ? `${year} ${q}` : `${year}`;
   }
 
-  getUpdateCells = async (year_D: number, q_D: number): Promise<{proxy: any, ci: number, newAttr: string, newId: string}[]> => {
+  getUpdateCells = async (year_D: number, q_D: number): Promise<{ proxy: any, ci: number, newAttr: string, newId: string }[]> => {
     // all column names
     const attributes: Attribute[] = await columnNameController.fetch();
     const notFound: string[] = [];
-    const cells: {proxy: any, ci: number, newAttr: string, newId: string}[] = [];
+    const cells: { proxy: any, ci: number, newAttr: string, newId: string }[] = [];
     // find each attribute and attempt to update
     // don't update if the attribute does not exist
     this.sheet.datas.forEach((proxy: any) => {
@@ -455,7 +457,7 @@ class SpreadSheet extends Component<SpreadSheetProps, {hasSheet: boolean}>{
         const critical = (attribute.match(rgx) || [''])[0];
         const [yr, q] = critical.split(' ');
         if (!!yr) {
-          const newYear = parseInt(yr.substring(0,4)) + year_D;
+          const newYear = parseInt(yr.substring(0, 4)) + year_D;
           const newQ = !!q ? ((parseInt(q.substring(1)) || 4) + q_D) % 4 : -1;
           let newQs = "";
           if (newQ == 0) {
@@ -470,10 +472,10 @@ class SpreadSheet extends Component<SpreadSheetProps, {hasSheet: boolean}>{
         if (attribute !== cell.text) {
           // attribute was updated, see if it exists and update
           const id = attributes.find(attr => attr.name === attribute)?.id || -1;
-          if (id !== -1) { 
+          if (id !== -1) {
             // proxy.setCellText(9, ci, attribute, 'finished');
             // proxy.setCellText(0, ci, id, 'finished');
-            cells.push({proxy: proxy, ci: ci, newAttr: attribute, newId: id})
+            cells.push({ proxy: proxy, ci: ci, newAttr: attribute, newId: id })
           } else {
             notFound.push(attribute)
           }
@@ -496,7 +498,7 @@ class SpreadSheet extends Component<SpreadSheetProps, {hasSheet: boolean}>{
   reload = () => {
     window.location.reload();
   }
-  
+
 
   unitOfMeasure = async () => {
 
@@ -534,7 +536,7 @@ class SpreadSheet extends Component<SpreadSheetProps, {hasSheet: boolean}>{
     const qCell = mainMenu.getCell(5, 2);
     if (yearCell && yearCell.text) {
       // expect year cell [Main Menu (4,7)] to be 20xx-xy
-      const newYear = parseInt(yearCell.text.substring(0,4)) + year_D;
+      const newYear = parseInt(yearCell.text.substring(0, 4)) + year_D;
       mainMenu.setCellText(4, 2, `${newYear}-${(newYear + 1) % 100}`, 'input'); // state??
     }
     if (qCell && qCell.text) {
@@ -642,24 +644,39 @@ class SpreadSheet extends Component<SpreadSheetProps, {hasSheet: boolean}>{
                 Validate
               </Button>
 
-              <Button variant="outlined" color="primary" onClick={() => {this.unitOfMeasure()}}>
-                Unit of Measure Validation
-              </Button>
-             
-              <Button variant="outlined" color="primary" onClick={()=>this.backButton()}>
-                Go Back
-              </Button>
+          <input
+            type="file"
+            accept=".xlsx, .xlsm"
+            onChange={(e) => this.fileImportHandler(e)}
+            hidden
+            id='upload-button'
+          />
 
-              <Button variant="outlined" color="primary" onClick={()=>this.reload()}>
-                Reload
-              </Button>
-            </div>
-            <div id="x-spreadsheet"></div>
-            <a id="download" style={{display:'none'}}></a>
+          <Button variant="outlined" color="primary" onClick={() => this.openUploadMenu()}>
+            Upload Template
+          </Button>
+          <Button variant="outlined" color="primary" onClick={() => { this.validateSheet() }}>
+            Validate
+          </Button>
+
+          <Button variant="outlined" color="primary" onClick={() => { this.unitOfMeasure() }}>
+            Unit of Measure Validation
+          </Button>
+
+          <Button variant="outlined" color="primary" onClick={() => this.backButton()}>
+            Go Back
+          </Button>
+
+          <Button variant="outlined" color="primary" onClick={() => this.reload()}>
+            Reload
+          </Button>
         </div>
-      )
+        <div id="x-spreadsheet"></div>
+        <a id="download" style={{ display: 'none' }}></a>
+      </div>
+    )
   }
-  
+
 }
 
 export default SpreadSheet;

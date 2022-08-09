@@ -11,7 +11,7 @@ const ColumnNameModel = model<Attribute>(
       timestamp: { type: Date },
       //    userCreatorId: { type: ObjectId, ref: 'User' },
       updatedBy: { type: String },
-      updatedAt: { type: String},
+      updatedAt: { type: Date },
     },
     { minimize: false },
   ),

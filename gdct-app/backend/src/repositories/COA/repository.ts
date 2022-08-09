@@ -11,7 +11,7 @@ export default class COARepository extends BaseRepository<Category, CategoryDoc>
   }
 
   async delete(id: string) {
-    return COAModel.findByIdAndDelete(id).then((COA: CategoryDoc|null) =>{
+    return COAModel.findByIdAndDelete(id).then((COA: CategoryDoc | null) => {
       if (!COA) return undefined;
       return new COAEntity(COA)
     });
@@ -28,7 +28,7 @@ export default class COARepository extends BaseRepository<Category, CategoryDoc>
   }
 
   async update(id: string, COA: Partial<Category>) {
-    return COAModel.findByIdAndUpdate(id, COA).then((COA: CategoryDoc|null) => {
+    return COAModel.findByIdAndUpdate(id, COA).then((COA: CategoryDoc | null) => {
       if (!COA) throw new AppError(`Update failed, Item not found or not updated for COA item with ID: ${id}, params:${COA}`);
       return new COAEntity(COA)
     });
@@ -44,19 +44,19 @@ export default class COARepository extends BaseRepository<Category, CategoryDoc>
     return COAModel.find({}).then((COAs: CategoryDoc[]) => COAs.map(COA => new COAEntity(COA)));
   }
 
-  async batchFind(categoryIds: string[], option={ name: 0, _id: 0, COA: 0, __v: 0, unitOfMeassure: 0}):Promise<CategoryDoc[]> {
-    return COAModel.find({ id: { $in : categoryIds }}, option);
+  async batchFind(categoryIds: string[], option = { name: 0, _id: 0, COA: 0, __v: 0, unitOfMeassure: 0 }): Promise<CategoryDoc[]> {
+    return COAModel.find({ id: { $in: categoryIds } }, option);
   }
 
-  async batchFindFull(query: string[]){
-    return COAModel.find({ id: { $in : query }});
+  async batchFindFull(query: string[]) {
+    return COAModel.find({ id: { $in: query } });
   }
 
-  async findById(id: string):Promise<COAEntity|undefined> {
-    return COAModel.find({ _id: id }).then((result: CategoryDoc[]|undefined)=>{
+  async findById(id: string): Promise<COAEntity | undefined> {
+    return COAModel.find({ _id: id }).then((result: CategoryDoc[] | undefined) => {
       if (!result) throw new AppError(`Query failed, Item not found for COA item with ID: ${id}`)
-      if (result.length == 0){
-        return ;
+      if (result.length == 0) {
+        return;
       }
       else {
         return new COAEntity(result[0]);
