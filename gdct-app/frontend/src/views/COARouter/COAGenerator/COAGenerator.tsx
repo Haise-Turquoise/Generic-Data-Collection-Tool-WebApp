@@ -21,18 +21,55 @@ let workbook = new ExcelJS.Workbook();
 
 const ignoreSheets = ['Main Menu', 'Identification'];
 
-type CatIDType = {
-  [categoryGroup: string]: Category[]
-}
-type AllDataType = {
-  [sheetName: string]: {
-    categoryTree: CatIDType,
-    attributes: Attribute[]
-  }
+/*
+Each message will have contents (text) and an html tag (p, h1, h2, class="", etc.)
+This is so the Swal output message can be styled by bootstrap
+*/
+type generateLogMessage = {
+  content: string,
+  html: string
 }
 
 /*
-* Sample object structure for AllDataType
+The output message type
+message: An array of messages to display
+type: code has an if statement to check this property, which will change the
+icon of the Swal output message (currently if statement only has success or error)
+*/
+type generateLogType = {
+  message: generateLogMessage[],
+  type: string
+}
+
+let generateLog: generateLogType = {
+  message: [],
+  type: "success"
+}
+
+/*
+CatIDType is a type for categoryTrees
+Example object:
+{
+    categoryGroup1: [{
+      ...Category1
+    }],
+    categoryGroup2: [
+      {
+        ...Category2
+      },
+      {
+        ...Category3
+      }
+    ]
+  },
+  s
+*/
+type CatIDType = {
+  [categoryGroup: string]: Category[]
+}
+
+/*
+Sample object structure for AllDataType
 {
   sheetName1: {
     categoryGroup1: [{
@@ -52,6 +89,12 @@ type AllDataType = {
   },
 }
 */
+type AllDataType = {
+  [sheetName: string]: {
+    categoryTree: CatIDType,
+    attributes: Attribute[]
+  }
+}
 
 /**
  * Converts a column string ex: AA to an integer
@@ -80,17 +123,22 @@ const colToInt = (col: string) => {
  */
 const buildObjects = async (data: AllDataType) => {
   let objects: CategoryTree[] = [];
+  // tempObjects holds data which is then converted to CategoryTree[] for objects
   const tempObjects = [];
+
+  // !Note: .fetch fetches all from DB and is slow
   const groups: CategoryGroup[] = await COAGroupController.fetch();
   const sheets: SheetName[] = await SheetNameController.fetch();
   const categories: Category[] = await COAController.fetch();
-  const allNewCategories: Category[] = [];
   const DBAttributes: Attribute[] = await ColumnNameController.fetch();
+  const allNewCategories: Category[] = [];
   const allNewAttributes: Attribute[] = [];
   const allNewGroups: CategoryGroup[] = [];
 
+  // handle input data, add new attributes, categories, category groups to DB
+  // create a categoryTree object array (each array item is a categoryTree for a sheet)
   for (let sheetName of Object.keys(data)) {
-    // get ID from existing sheetName
+    // get ID from existing sheetName, don't create categoryTree if no ID
     const foundSheet = sheets.find(sheet => sheet.name === sheetName);
     let sheetNameId;
     if (!foundSheet) {
@@ -127,6 +175,7 @@ const buildObjects = async (data: AllDataType) => {
       // get categoryGroupId
       let foundGroup: CategoryGroup | undefined | null = groups.find(group => group.name === ctgGroup);
       if (!foundGroup) {
+        // make new group
         const newGroup: CategoryGroup = {
           name: ctgGroup,
           updatedAt: new Date().toString(),
@@ -134,6 +183,7 @@ const buildObjects = async (data: AllDataType) => {
         }
         allNewGroups.push(newGroup)
       }
+      // add categoryGroup name, which will be converted to categoryGroup ID later
       tempObjects.push({
         categoryId,
         sheetNameId,
@@ -141,24 +191,16 @@ const buildObjects = async (data: AllDataType) => {
       });
     }
   }
+
+  // for output message
+  generateLog.message.push({ content: "Total Summary:", html: "h4" })
+  generateLog.message.push({ content: `Added ${allNewGroups.length} Category Groups`, html: "p" })
+  generateLog.message.push({ content: `Added ${allNewAttributes.length} Attributes`, html: "p" })
+  generateLog.message.push({ content: `Added ${allNewCategories.length} Categories`, html: "p" })
+
+  // for adding new groups, attributes, and categories into the database
   if (allNewGroups.length > 0) {
     await COAGroupController.create(allNewGroups)
-    const newGroups: CategoryGroup[] = await COAGroupController.fetch();
-
-    console.log(newGroups)
-
-    objects = tempObjects.map((object) => {
-      let foundGroup: CategoryGroup | undefined | null = newGroups.find(group => group.name === object.ctgGroup);
-      const categoryGroupId = foundGroup?._id || ''
-
-      return ({
-        _id: undefined,
-        "categoryId": object.categoryId,
-        "sheetNameId": object.sheetNameId,
-        categoryGroupId,
-        updatedBy: localStorage.getItem('currentUser') || '',
-      })
-    })
   }
   if (allNewAttributes.length > 0) {
     await ColumnNameController.create(allNewAttributes);
@@ -167,7 +209,21 @@ const buildObjects = async (data: AllDataType) => {
     await COAController.create(allNewCategories);
   }
 
+  // convert tempObjects to valid categoryTree[] for objects
+  // mainly by changing categoryGroup name to categoryGroup ID
+  const newGroups: CategoryGroup[] = await COAGroupController.fetch();
+  objects = tempObjects.map((object) => {
+    let foundGroup: CategoryGroup | undefined | null = newGroups.find(group => group.name === object.ctgGroup);
+    const categoryGroupId = foundGroup?._id || ''
 
+    return ({
+      _id: undefined,
+      "categoryId": object.categoryId,
+      "sheetNameId": object.sheetNameId,
+      categoryGroupId,
+      updatedBy: localStorage.getItem('currentUser') || '',
+    })
+  })
   return objects;
 };
 
@@ -193,11 +249,13 @@ const createTrees = async (trees: CategoryTree[]) => {
   }
 };
 
+// Check Excel Importer folder in team files for documentation
 const validToken = (_token: string) => {
   const token = _token.trim();
   return (token.length > 0 && token.split(' ').length <= 1);
 }
 
+// Check Excel Importer folder in team files for documentation
 const validSelector = (_token: string) => {
   const token = _token.trim();
 
@@ -209,6 +267,7 @@ const validSelector = (_token: string) => {
   } else return validToken(token);
 }
 
+// Check Excel Importer folder in team files for documentation
 const parseCOA = (inp: string = '') => {
   const REMOVE_WORDS = /(?<![a-zA-Z0-9~\*\&:])[A-Z\.\-:]+(?![a-zA-Z0-9~\*\&:])(?<![^a-zA-Z0-9~\*\&:]TO)/ig;
   const code = inp;
@@ -238,6 +297,7 @@ const parseCOA = (inp: string = '') => {
   };
 }
 
+// Check Excel Importer folder in team files for documentation
 const convertToQuery = (PA: string, SA: string) => {
   const {
     include: PA_inc,
@@ -403,7 +463,11 @@ export default function COAGenerator() {
     }
   };
 
-  // process current File
+  /*
+  Handles current file, checks if file and inputs are valid
+  If valid, calls processData() and buildObjects() callback
+  to create categoryTree[] (one array item per sheet), then adds to DB
+  */
   const processWorkbook = () => {
     setErrorMsg("");
     if (!file) {
@@ -433,8 +497,7 @@ export default function COAGenerator() {
       return;
     }
 
-    // PA and SA are non-empty cases:
-
+    // Cases when PA and SA are non-empty
     if (PA != '') {
       if (PA === categoryGroup || PA === category || PA === SA) {
         setErrorMsg("PA cannot be the same index as Category Group, Category, or SA");
@@ -461,6 +524,34 @@ export default function COAGenerator() {
       if (trees) {
         createTrees(trees as CategoryTree[])
       }
+
+      // send output message using generateLog 
+      let messageHTML = "<div class=\"d-flex flex-column align-items-start\">"
+      generateLog.message.forEach(item => {
+        messageHTML += `<${item.html}>${item.content}</${item.html}>`
+      })
+      messageHTML += "</div>"
+
+      // check what type of Swal message should be sent
+      if (generateLog.type === "success") {
+        Swal.fire({
+          title: 'Generate COA Message',
+          icon: "success",
+          html: messageHTML
+        })
+      }
+      else {
+        Swal.fire({
+          title: 'Generate COA Message',
+          icon: "error",
+          html: messageHTML
+        })
+      }
+
+      generateLog = {
+        message: [],
+        type: "success",
+      }
     }), colToInt(categoryGroup), colToInt(category));
   };
 
@@ -482,8 +573,8 @@ export default function COAGenerator() {
       workbook = await workbook.xlsx.load(data);
       let allData: AllDataType = {};
 
+      // if no sheetName specified, get data of all sheets
       if (sheetName == '') {
-        // run all of them
         workbook.eachSheet(async (worksheet: Worksheet, id: number) => {
           let currentSheetName = worksheet.name;
           if (!ignoreSheets.includes(currentSheetName)) {
@@ -491,6 +582,7 @@ export default function COAGenerator() {
           }
         })
       }
+      // else get data from sheetName sheet only
       else {
         const mySheet = workbook.getWorksheet(sheetName);
         // Check if sheetName exists in the workbook
@@ -508,7 +600,12 @@ export default function COAGenerator() {
     }
   }
 
-  // Given an attribute name, create a matching attribute Id
+  /**
+  * Given an attribute name, create a matching attribute Id
+  * @param cellValue: string holding attribute name
+  * @param attributeIdMap: array of all attribute configs from database (used for last digits)
+  * Output: string with either an attribute ID or msg saying "Config Not In DB" 
+  */
   const makeAttributeId = (cellValue: string, attributeIdMap: AttributeConfig[]) => {
     // store the string into an array and just do an array search
     let attributeId = ''
@@ -581,7 +678,12 @@ export default function COAGenerator() {
     }
   }
 
-  // Function to get attributes and categories from sheet
+  /** 
+   * Function to get attributes and categories from sheet
+   * @param currentSheet: excel worksheet that holds sheet data
+   * @param attributeIdMap: purely to be passed into makeAttributeId()
+   * @param categoryGroupColumn: 
+  */
   const getSheetData = async (currentSheet: Worksheet, attributeIdMap: AttributeConfig[], categoryGroupColumn: number, categoryColumn: number,) => {
     // convert PA and SA inputs to integers to use in excel
     const PACol = PA !== '' ? colToInt(PA) : ''
@@ -644,6 +746,16 @@ export default function COAGenerator() {
         let rawExcelValue = row.getCell(currentColumn).value
         let cellValue: string = ''
 
+        /*
+        the rawExcelValue might be various types
+        a formula will be an object like this: {formula: ..., result: ...}
+        - formula: the actual formula inputted (Eg: CurrentYear&" YE Actual")
+        - result: the resulting value (Eg: 2018-19 YE Actual)
+        text will be a string
+        numbers might be a string or a number type
+
+        if statement converts an excel formula and numbers to a string and assigns it to cellValue 
+        */
         if (rawExcelValue != null && typeof rawExcelValue === 'object') {
           // if cell contains some form of text
           if ("text" in rawExcelValue) {
@@ -683,12 +795,14 @@ export default function COAGenerator() {
           })
 
           if (isValid) {
+            // change currentYear and priorYear to reportingPeriod input
             let currentYear = reportingPeriod
             let priorYear = parseInt(attributeHeader) - 1 + "-" + attributeHeader.slice(-2)
 
             cellValue = cellValue.replace("Current Year", currentYear).replace("Current Yr", currentYear)
             cellValue = cellValue.replace("Prior Year", priorYear).replace("Prior Yr", priorYear)
 
+            // get the attributeID of an attribute name
             let attributeId = makeAttributeId(cellValue, attributeIdMap)
             console.log(attributeId)
             // if not in attributeIdMap
@@ -707,27 +821,25 @@ export default function COAGenerator() {
       }
     }
 
+    // if there are invalidAttributes (attributes with no config ID, add to output message)
     if (invalidAttributes.length > 0) {
-      let messageHTML = "<h5>The following attributes do not have a valid config ID. Any valid attributes and categories will still be imported.</h5>";
-      invalidAttributes.forEach(attributeName => {
-        messageHTML += `<p>${attributeName}</p>`
-      })
-
-      Swal.fire({
-        title: 'Attribute ID Config Errors',
-        icon: "error",
-        html: messageHTML
-      })
+      generateLog.message.push({ content: "Invalid Attributes", html: "h4" })
+      generateLog.message.push({ content: `Found ${invalidAttributes.length} attributes with no config ID`, html: "ul class=\"pl-0 text-left\"" })
+      invalidAttributes.forEach(attribute => generateLog.message.push({ content: attribute, html: "li class=\" text-left\"" }))
+      generateLog.type = "error"
     }
     returnSheetData['attributes'] = attributes
 
     const categoryIds: CatIDType = {};
+    let categoriesWithNoGroup: string[] = []
+    // loop through each row and get valid categories (has ID, has category group)
     currentSheet.eachRow((row, rowNumber) => {
       if (rowNumber === 0) {
         return;
       }
 
       let id: number | undefined = undefined
+      // ID might be a number or text, if statement gets ID from row and tries to convert to number
       if (row.getCell(colToInt('A')).value) {
         let tempVal = row.getCell(colToInt('A')).value
         if (typeof tempVal === 'string') {
@@ -742,35 +854,54 @@ export default function COAGenerator() {
         }
       }
 
+      // get category group name using categoryGroup input
       let groupName: string | undefined = row.getCell(categoryGroupColumn).value?.toString();
       if (typeof groupName === 'string' && groupName.split(' ')[0] === 'Total') {
         groupName = groupName.replace('Total ', '');
       }
-      // get cell values from specified columns, or set to empty string if no value
+      // get cell values from category input
       const name: string | undefined = row.getCell(categoryColumn).value?.toString();
 
+      // get unitOfMeasure if unitOfMeasureColumn was found
       let unitOfMeasure: string = ''
       if (unitOfMeasureColumn != -1) {
         unitOfMeasure = row.getCell(unitOfMeasureColumn).value?.toString() || '';
       }
+      // get PA and SA value if user inputs the columns
       const PAValue = PA != '' ? (row.getCell(PACol).value?.toString() || '') : '';
       const SAValue = SA != '' ? (row.getCell(SACol).value?.toString() || '') : '';
 
-      if (id && typeof id === 'number' && groupName && name) {
-        if (!categoryIds[groupName]) {
-          categoryIds[groupName] = [];
+      // if category has id but no group, don't add to DB and list them in output message so user can add groups
+      // else add to categoryTree
+      if (id && typeof id === 'number' && name) {
+        if (!groupName) {
+          categoriesWithNoGroup.push(name)
         }
-        if (name.split(' ')[0].toLowerCase() !== 'total') {
-          categoryIds[groupName].push({
-            id: id.toString(),
-            name,
-            unitOfMeasure,
-            COA: convertToQuery(PAValue, SAValue),
-            updatedAt: new Date().toString()
-          });
+        else {
+          if (!categoryIds[groupName]) {
+            categoryIds[groupName] = [];
+          }
+          if (name.split(' ')[0].toLowerCase() !== 'total') {
+            categoryIds[groupName].push({
+              id: id.toString(),
+              name,
+              unitOfMeasure,
+              COA: convertToQuery(PAValue, SAValue),
+              updatedAt: new Date().toString()
+            });
+          }
         }
+
       }
     });
+
+    //  if there are categoires with no group, add to output message
+    if (categoriesWithNoGroup.length > 0) {
+      generateLog.type = "error"
+      generateLog.message.push({ content: "Categories With No Group", html: "h4" })
+      generateLog.message.push({ content: `Found ${categoriesWithNoGroup.length} categories with no group, which are not added.`, html: "ul class=\" text-left\"" })
+      categoriesWithNoGroup.forEach(item => generateLog.message.push({ content: item, html: "li class=\"mb-2 text-left\"" }))
+    }
     returnSheetData['categoryTree'] = categoryIds;
     return returnSheetData;
   };
