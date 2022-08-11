@@ -3,6 +3,7 @@ import MaterialTable, { Column, Options } from 'material-table';
 import { Paper, Typography } from '@material-ui/core';
 import CreateAuditLog from '../../AuditLog_Global';
 import AttributeConfigController from '../../../controllers/AttributeConfig';
+import AppConfigController from '../../../controllers/AppConfig';
 import {
     controllerAddRow,
     controllerEditRow,
@@ -13,12 +14,16 @@ import {
 } from '../../../tools/misc'
 
 import AttributeConfig from '../../../types/attributeconfig';
+import AppConfig from '../../../types/appconfig';
 
 interface AttributeConfigMT extends AttributeConfig {
     tableData?: any;
 }
 
 const checkDuplicateKeyword = (rowData: AttributeConfigMT, tableData?: AttributeConfigMT[]) => {
+    if (rowData.attributeKeyword === undefined || rowData.attributeKeyword === '') {
+        return "Entry cannot be empty"
+    }
     if (!tableData) {
         return true
     }
@@ -39,10 +44,33 @@ const checkDuplicateKeyword = (rowData: AttributeConfigMT, tableData?: Attribute
     return duplicate ? "Duplicate Keyword Cannot Exist" : true
 }
 
-const validateCode = (rowData: AttributeConfigMT, tableData?: AttributeConfigMT[]) => {
-    // Entry must be 3 digit number
-    if (!(/^\d{3}$/).test(rowData.code)) {
-        return "Entry must be a 3 digit number"
+const validateCode = (rowData: AttributeConfigMT, tableData?: AttributeConfigMT[], appConfig?: AppConfig[]) => {
+    // console.log(tableData);
+    // console.log(appConfig);
+
+    let codeLength: string;
+    codeLength = 'undefined';
+
+    if (appConfig !== undefined) {
+        for (let i = 0; i < appConfig.length; i++) {
+            if (appConfig[i].key === "Length of Attribute Code") {
+                codeLength = appConfig[i].value;
+                break;
+            }
+        }
+    }
+
+    // if Length of Attribute Code not in App Config:
+    if (codeLength === "undefined") {
+        return "Length of Attribute Code is not in Application Configuration"
+    }
+    
+    // console.log("Code Length: " + codeLength);
+    // console.log("Row Data: " + rowData.code);
+
+    // Entry must be n digit number
+    if (!((/^-?\d+$/).test(rowData.code) && rowData.code.length === parseInt(codeLength))) {
+        return "Entry must be a "+ codeLength + " digit number"
     }
 
     if (!tableData) {
@@ -79,9 +107,11 @@ const AttributeConfigHeader = () => {
 const AttributeConfigTable = () => {
     const [attributeConfigs, setAttributeConfigs] = useState<AttributeConfig[] | undefined>(undefined);
     const [readRowNum, setRowNum] = useState(1);
+    const [appConfigs, setAppConfigs] = useState<AppConfig[] | undefined>(undefined)
     const [status, setStatus] = useState<'LOADING...' | 'NOT ALLOWED'>('LOADING...')
 
     useEffect(() => {
+        fetchWithStatus<AppConfig>(AppConfigController, setAppConfigs, setStatus)
         fetchWithStatus<AttributeConfig>(AttributeConfigController, setAttributeConfigs, setStatus)
     }, [])
 
@@ -106,7 +136,7 @@ const AttributeConfigTable = () => {
     const columns: Column<AttributeConfigMT>[] = useMemo(
         () => [
             { title: 'Attribute Keyword', field: 'attributeKeyword', validate: rowData => checkDuplicateKeyword(rowData, attributeConfigs) },
-            { title: 'Code', field: 'code', validate: rowData => validateCode(rowData, attributeConfigs) },
+            { title: 'Code', field: 'code', validate: rowData => validateCode(rowData, attributeConfigs, appConfigs) },
             {
                 title: 'Modified On',
                 field: 'updatedAt',
