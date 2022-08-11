@@ -193,7 +193,7 @@ const buildObjects = async (data: AllDataType) => {
   }
 
   // for output message
-  generateLog.message.push({ content: "Total Summary:", html: "h4" })
+  generateLog.message.push({ content: "Total Summary:", html: "h4 class=\"pl-0\"" })
   generateLog.message.push({ content: `Added ${allNewGroups.length} Category Groups`, html: "p" })
   generateLog.message.push({ content: `Added ${allNewAttributes.length} Attributes`, html: "p" })
   generateLog.message.push({ content: `Added ${allNewCategories.length} Categories`, html: "p" })
@@ -592,6 +592,7 @@ export default function COAGenerator() {
         workbook.eachSheet(async (worksheet: Worksheet, id: number) => {
           let currentSheetName = worksheet.name;
           if (!ignoreSheets.includes(currentSheetName)) {
+            generateLog.message.push({ content: "Importing " + currentSheetName, html: "h4 class=\"pl-0 mt-4 text-left\"" })
             allData[currentSheetName] = await getSheetData(worksheet, attributeIdMap, categoryGroupColumn, categoryColumn);
           }
         })
@@ -605,6 +606,7 @@ export default function COAGenerator() {
           return;
         }
         if (!ignoreSheets.includes(sheetName)) {
+          generateLog.message.push({ content: "Importing " + mySheet, html: "h4 class=\"pl-0 mt-4 text-left\"" })
           allData[sheetName] = await getSheetData(mySheet, attributeIdMap, categoryGroupColumn, categoryColumn);
         }
       }
@@ -637,7 +639,7 @@ export default function COAGenerator() {
         else {
           attributeId += splitHeader[i].split('/')[0];
         }
-        
+
         // remove splitHeader[i] (year that matched regex)
         splitHeader.splice(i, 1)
         break;
@@ -844,9 +846,9 @@ export default function COAGenerator() {
 
     // if there are invalidAttributes (attributes with no config ID, add to output message)
     if (invalidAttributes.length > 0) {
-      generateLog.message.push({ content: "Invalid Attributes", html: "h4" })
-      generateLog.message.push({ content: `Found ${invalidAttributes.length} attributes with no config ID`, html: "ul class=\"pl-0 text-left\"" })
-      invalidAttributes.forEach(attribute => generateLog.message.push({ content: attribute, html: "li class=\" text-left\"" }))
+      generateLog.message.push({ content: "Invalid Attributes", html: "h5 class=\"pl-0\"" })
+      generateLog.message.push({ content: `Found ${invalidAttributes.length} attributes with no config ID`, html: "ul class=\"pl-0 mb-2 text-left font-weight-bold\"" })
+      invalidAttributes.forEach(attribute => generateLog.message.push({ content: attribute, html: "li class=\"pl-0 text-left\"" }))
       generateLog.type = "error"
     }
     returnSheetData['attributes'] = attributes
@@ -919,9 +921,9 @@ export default function COAGenerator() {
     //  if there are categoires with no group, add to output message
     if (categoriesWithNoGroup.length > 0) {
       generateLog.type = "error"
-      generateLog.message.push({ content: "Categories With No Group", html: "h4" })
-      generateLog.message.push({ content: `Found ${categoriesWithNoGroup.length} categories with no group, which are not added.`, html: "ul class=\" text-left\"" })
-      categoriesWithNoGroup.forEach(item => generateLog.message.push({ content: item, html: "li class=\"mb-2 text-left\"" }))
+      generateLog.message.push({ content: "Categories With No Group", html: "h5 class=\"pl-0\"" })
+      generateLog.message.push({ content: `Found ${categoriesWithNoGroup.length} categories with no group, which are not added.`, html: "ul class=\"pl-0 mb-2 text-left font-weight-bold\"" })
+      categoriesWithNoGroup.forEach(item => generateLog.message.push({ content: item, html: "li class=\"pl-0 text-left\"" }))
     }
     returnSheetData['categoryTree'] = categoryIds;
     return returnSheetData;
