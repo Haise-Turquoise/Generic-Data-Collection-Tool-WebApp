@@ -535,14 +535,14 @@ export default function COAGenerator() {
       // check what type of Swal message should be sent
       if (generateLog.type === "success") {
         Swal.fire({
-          title: 'Generate COA Message',
+          title: 'Import Was Successfull!',
           icon: "success",
           html: messageHTML
         })
       }
       else {
         Swal.fire({
-          title: 'Generate COA Message',
+          title: 'The Import Had Errors, Please See Below',
           icon: "error",
           html: messageHTML
         })
