@@ -193,7 +193,7 @@ const buildObjects = async (data: AllDataType) => {
   }
 
   // for output message
-  generateLog.message.push({ content: "Total Summary:", html: "h4" })
+  generateLog.message.push({ content: "Total Summary:", html: "h4 class=\"pl-0\"" })
   generateLog.message.push({ content: `Added ${allNewGroups.length} Category Groups`, html: "p" })
   generateLog.message.push({ content: `Added ${allNewAttributes.length} Attributes`, html: "p" })
   generateLog.message.push({ content: `Added ${allNewCategories.length} Categories`, html: "p" })
@@ -316,7 +316,7 @@ const convertToQuery = (PA: string, SA: string) => {
       (SA_exc.length > 0 ? `&exclude=${SA_exc}` : "")
   }
   else if (PA_inc.length > 0) {
-    return `include=${PA_inc}` +
+    return `pa=${PA_inc}` +
       (PA_exc.length > 0 ? `exclude=${PA_exc}` : "")
   }
   else return ''
@@ -429,7 +429,14 @@ export default function COAGenerator() {
         if (value.length == 7 || value.length == 10) {
           if (value.length == 7) {
             // Validate YYYY-YY
-            const validator = value.split('-');
+            let validator: string[];
+            validator = ["", ""];
+            if (value.charAt(4) == '/') {
+              validator = value.split('/')
+            }
+            else {
+              validator = value.split('-');
+            }
             if (parseInt(validator[1]) != (parseInt(validator[0].substring(2, 4)) + 1)) {
               setErrorMsg("Year inputted incorrectly, must be inputted as example follows: 2020-21");
               break;
@@ -440,7 +447,14 @@ export default function COAGenerator() {
             // Split by ' '
             let splitYearAndQuarter: string[] = value.split(' ');
             // Follow same logic for YYYY-YY
-            const validator = splitYearAndQuarter[0].split('-');
+            let validator: string[];
+            validator = ["", ""];
+            if (value.charAt(4) == '/') {
+              validator = splitYearAndQuarter[0].split('/')
+            }
+            else {
+              validator = splitYearAndQuarter[0].split('-');
+            }
             if (parseInt(validator[1]) != (parseInt(validator[0].substring(2, 4)) + 1)) {
               setErrorMsg("Year inputted incorrectly, must be inputted as example follows: 2020-21");
               break;
@@ -455,7 +469,7 @@ export default function COAGenerator() {
           }
         }
         else if (value.length > 10) {
-          setErrorMsg("Reporting Period must be in the format: YYYY-YY or YYYY-YY XX");
+          setErrorMsg("Reporting Period must be in the format: YYYY-YY, YYYY/YY, YYYY-YY XX or YYYY/YY XX");
           setReportingPeriod("");
         }
         break;
@@ -516,7 +530,7 @@ export default function COAGenerator() {
 
     // If reporting period was inputted incorrectly
     if (attributeHeader == '') {
-      setErrorMsg("Reporting Period must be in the format: YYYY-YY or YYYY-YY XX")
+      setErrorMsg("Reporting Period must be in the format: YYYY-YY, YYYY/YY, YYYY-YY XX or YYYY/YY XX")
       return;
     }
 
@@ -578,6 +592,7 @@ export default function COAGenerator() {
         workbook.eachSheet(async (worksheet: Worksheet, id: number) => {
           let currentSheetName = worksheet.name;
           if (!ignoreSheets.includes(currentSheetName)) {
+            generateLog.message.push({ content: "Importing " + currentSheetName, html: "h4 class=\"pl-0 mt-4 text-left\"" })
             allData[currentSheetName] = await getSheetData(worksheet, attributeIdMap, categoryGroupColumn, categoryColumn);
           }
         })
@@ -591,6 +606,7 @@ export default function COAGenerator() {
           return;
         }
         if (!ignoreSheets.includes(sheetName)) {
+          generateLog.message.push({ content: "Importing " + mySheet, html: "h4 class=\"pl-0 mt-4 text-left\"" })
           allData[sheetName] = await getSheetData(mySheet, attributeIdMap, categoryGroupColumn, categoryColumn);
         }
       }
@@ -615,8 +631,15 @@ export default function COAGenerator() {
     // Iterate through string array, check if number exists in any of the indexes.
     for (let i = 0; i < splitHeader.length; i++) {
       // if valid year pattern matches, get the beginning year
-      if (/^\d{4}-\d{2}$/.test(splitHeader[i])) {
-        attributeId += splitHeader[i].split('-')[0];
+      if (/^\d{4}-\d{2}$/.test(splitHeader[i]) || /^\d{4}\/\d{2}$/.test(splitHeader[i])) {
+        console.log(splitHeader[i])
+        if (splitHeader[i].charAt(4) == '-') {
+          attributeId += splitHeader[i].split('-')[0];
+        }
+        else {
+          attributeId += splitHeader[i].split('/')[0];
+        }
+
         // remove splitHeader[i] (year that matched regex)
         splitHeader.splice(i, 1)
         break;
@@ -648,7 +671,7 @@ export default function COAGenerator() {
         splitHeader[i] = substitutions[splitHeader[i]]
       }
       // filter out any other years
-      if (/^\d{4}-\d{2}$/.test(splitHeader[i]) === false && !itemsToIgnore.includes(splitHeader[i])) {
+      if ((/^\d{4}-\d{2}$/.test(splitHeader[i]) === false && !itemsToIgnore.includes(splitHeader[i])) || (/^\d{4}\/\d{2}$/.test(splitHeader[i]) === false && !itemsToIgnore.includes(splitHeader[i]))) {
         attributeDefiners.push(splitHeader[i])
       }
     }
@@ -823,9 +846,9 @@ export default function COAGenerator() {
 
     // if there are invalidAttributes (attributes with no config ID, add to output message)
     if (invalidAttributes.length > 0) {
-      generateLog.message.push({ content: "Invalid Attributes", html: "h4" })
-      generateLog.message.push({ content: `Found ${invalidAttributes.length} attributes with no config ID`, html: "ul class=\"pl-0 text-left\"" })
-      invalidAttributes.forEach(attribute => generateLog.message.push({ content: attribute, html: "li class=\" text-left\"" }))
+      generateLog.message.push({ content: "Invalid Attributes", html: "h5 class=\"pl-0\"" })
+      generateLog.message.push({ content: `Found ${invalidAttributes.length} attributes with no config ID`, html: "ul class=\"pl-0 mb-2 text-left font-weight-bold\"" })
+      invalidAttributes.forEach(attribute => generateLog.message.push({ content: attribute, html: "li class=\"pl-0 text-left\"" }))
       generateLog.type = "error"
     }
     returnSheetData['attributes'] = attributes
@@ -898,9 +921,9 @@ export default function COAGenerator() {
     //  if there are categoires with no group, add to output message
     if (categoriesWithNoGroup.length > 0) {
       generateLog.type = "error"
-      generateLog.message.push({ content: "Categories With No Group", html: "h4" })
-      generateLog.message.push({ content: `Found ${categoriesWithNoGroup.length} categories with no group, which are not added.`, html: "ul class=\" text-left\"" })
-      categoriesWithNoGroup.forEach(item => generateLog.message.push({ content: item, html: "li class=\"mb-2 text-left\"" }))
+      generateLog.message.push({ content: "Categories With No Group", html: "h5 class=\"pl-0\"" })
+      generateLog.message.push({ content: `Found ${categoriesWithNoGroup.length} categories with no group, which are not added.`, html: "ul class=\"pl-0 mb-2 text-left font-weight-bold\"" })
+      categoriesWithNoGroup.forEach(item => generateLog.message.push({ content: item, html: "li class=\"pl-0 text-left\"" }))
     }
     returnSheetData['categoryTree'] = categoryIds;
     return returnSheetData;
