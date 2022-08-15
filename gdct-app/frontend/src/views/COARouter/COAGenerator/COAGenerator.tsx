@@ -606,7 +606,7 @@ export default function COAGenerator() {
           return;
         }
         if (!ignoreSheets.includes(sheetName)) {
-          generateLog.message.push({ content: "Importing " + mySheet, html: "h4 class=\"pl-0 mt-4 text-left\"" })
+          generateLog.message.push({ content: "Importing " + sheetName, html: "h4 class=\"pl-0 mt-4 text-left\"" })
           allData[sheetName] = await getSheetData(mySheet, attributeIdMap, categoryGroupColumn, categoryColumn);
         }
       }
@@ -740,9 +740,15 @@ export default function COAGenerator() {
       }
     }
 
+    let catCheck = true;
+    let catGroupCheck = true;
+
     // if "category" title was not found, return an error message and cancel function
     if (attributeRow === -1) {
-      setErrorMsg("Category index is incorrect");
+      // setErrorMsg("Category index is incorrect");
+      generateLog.message.push({ content: `Category Index is incorrect.`, html: "ul class=\"pl-0 mb-2 text-left font-weight-bold\"" })
+      generateLog.type = "error"
+      catCheck = false;
       console.log("category title not found")
     }
 
@@ -758,7 +764,10 @@ export default function COAGenerator() {
     }
 
     if (attributeRow === -1) {
-      setErrorMsg("Category Group index is incorrect")
+      // setErrorMsg("Category Group index is incorrect")
+      generateLog.message.push({ content: `Category Group index is incorrect.`, html: "ul class=\"pl-0 mb-2 text-left font-weight-bold\"" })
+      generateLog.type = "error"
+      catGroupCheck = false;
     }
 
     // if "Category" title was found, get all of the cells with attribute titles in that row
@@ -852,59 +861,62 @@ export default function COAGenerator() {
       generateLog.type = "error"
     }
     returnSheetData['attributes'] = attributes
-
     const categoryIds: CatIDType = {};
-    let categoriesWithNoGroup: string[] = []
-    // loop through each row and get valid categories (has ID, has category group)
-    currentSheet.eachRow((row, rowNumber) => {
-      if (rowNumber === 0) {
-        return;
-      }
-
-      let id: number | undefined = undefined
-      // ID might be a number or text, if statement gets ID from row and tries to convert to number
-      if (row.getCell(colToInt('A')).value) {
-        let tempVal = row.getCell(colToInt('A')).value
-        if (typeof tempVal === 'string') {
-          id = parseInt(tempVal)
+    // if categorygroup and category exists -> go through the statement below
+    if (catCheck && catGroupCheck) {
+      
+      let categoriesWithNoGroup: string[] = []
+      // loop through each row and get valid categories (has ID, has category group)
+      currentSheet.eachRow((row, rowNumber) => {
+        if (rowNumber === 0) {
+          return;
         }
-        else if (typeof tempVal === 'number') {
-          id = tempVal
-        }
-        else {
-          console.log('don\'t know what to do with this ID')
-          console.log(tempVal)
-        }
-      }
 
-      // get category group name using categoryGroup input
-      let groupName: string | undefined = row.getCell(categoryGroupColumn).value?.toString();
-      if (typeof groupName === 'string' && groupName.split(' ')[0] === 'Total') {
-        groupName = groupName.replace('Total ', '');
-      }
-      // get cell values from category input
-      const name: string | undefined = row.getCell(categoryColumn).value?.toString();
-
-      // get unitOfMeasure if unitOfMeasureColumn was found
-      let unitOfMeasure: string = ''
-      if (unitOfMeasureColumn != -1) {
-        unitOfMeasure = row.getCell(unitOfMeasureColumn).value?.toString() || '';
-      }
-      // get PA and SA value if user inputs the columns
-      const PAValue = PA != '' ? (row.getCell(PACol).value?.toString() || '') : '';
-      const SAValue = SA != '' ? (row.getCell(SACol).value?.toString() || '') : '';
-
-      // if category has id but no group, don't add to DB and list them in output message so user can add groups
-      // else add to categoryTree
-      if (id && typeof id === 'number' && name) {
-        if (!groupName) {
-          categoriesWithNoGroup.push(name)
-        }
-        else {
-          if (!categoryIds[groupName]) {
-            categoryIds[groupName] = [];
+        let id: number | undefined = undefined
+        // ID might be a number or text, if statement gets ID from row and tries to convert to number
+        if (row.getCell(colToInt('A')).value) {
+          let tempVal = row.getCell(colToInt('A')).value
+          if (typeof tempVal === 'string') {
+            id = parseInt(tempVal)
           }
-          if (name.split(' ')[0].toLowerCase() !== 'total') {
+          else if (typeof tempVal === 'number') {
+            id = tempVal
+          }
+          else {
+            console.log('don\'t know what to do with this ID')
+            console.log(tempVal)
+          }
+        }
+
+        // get category group name using categoryGroup input
+        let groupName: string | undefined = row.getCell(categoryGroupColumn).value?.toString();
+        if (typeof groupName === 'string' && groupName.split(' ')[0] === 'Total') {
+          groupName = groupName.replace('Total ', '');
+          groupName = groupName.replace('Total', '');
+          if (groupName === "") groupName = undefined;
+        }
+        // get cell values from category input
+        const name: string | undefined = row.getCell(categoryColumn).value?.toString();
+
+        // get unitOfMeasure if unitOfMeasureColumn was found
+        let unitOfMeasure: string = ''
+        if (unitOfMeasureColumn != -1) {
+          unitOfMeasure = row.getCell(unitOfMeasureColumn).value?.toString() || '';
+        }
+        // get PA and SA value if user inputs the columns
+        const PAValue = PA != '' ? (row.getCell(PACol).value?.toString() || '') : '';
+        const SAValue = SA != '' ? (row.getCell(SACol).value?.toString() || '') : '';
+
+        // if category has id but no group, don't add to DB and list them in output message so user can add groups
+        // else add to categoryTree
+        if (id && typeof id === 'number' && name && name.split(' ')[0].toLowerCase() !== 'total') {
+          if (!groupName) {
+            categoriesWithNoGroup.push(name)
+          }
+          else {
+            if (!categoryIds[groupName]) {
+              categoryIds[groupName] = [];
+            }
             categoryIds[groupName].push({
               id: id.toString(),
               name,
@@ -913,18 +925,19 @@ export default function COAGenerator() {
               updatedAt: new Date().toString()
             });
           }
+
         }
+      });
 
+      //  if there are categoires with no group, add to output message
+      if (categoriesWithNoGroup.length > 0) {
+        generateLog.type = "error"
+        generateLog.message.push({ content: "Categories With No Group", html: "h5 class=\"pl-0\"" })
+        generateLog.message.push({ content: `Found ${categoriesWithNoGroup.length} categories with no group, which are not added.`, html: "ul class=\"pl-0 mb-2 text-left font-weight-bold\"" })
+        categoriesWithNoGroup.forEach(item => generateLog.message.push({ content: item, html: "li class=\"pl-0 text-left\"" }))
       }
-    });
-
-    //  if there are categoires with no group, add to output message
-    if (categoriesWithNoGroup.length > 0) {
-      generateLog.type = "error"
-      generateLog.message.push({ content: "Categories With No Group", html: "h5 class=\"pl-0\"" })
-      generateLog.message.push({ content: `Found ${categoriesWithNoGroup.length} categories with no group, which are not added.`, html: "ul class=\"pl-0 mb-2 text-left font-weight-bold\"" })
-      categoriesWithNoGroup.forEach(item => generateLog.message.push({ content: item, html: "li class=\"pl-0 text-left\"" }))
     }
+    
     returnSheetData['categoryTree'] = categoryIds;
     return returnSheetData;
   };
