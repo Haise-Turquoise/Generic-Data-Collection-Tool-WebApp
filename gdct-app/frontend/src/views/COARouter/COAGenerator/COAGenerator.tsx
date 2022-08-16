@@ -625,23 +625,20 @@ export default function COAGenerator() {
   const makeAttributeId = (cellValue: string, attributeIdMap: AttributeConfig[]) => {
     // store the string into an array and just do an array search
     let attributeId = ''
+
     const splitHeader = cellValue.split(' ');
     const quarters: any = { "Q1": "91", "Q2": "92", "Q3": "93", "YE": "99" }
 
     // Iterate through string array, check if number exists in any of the indexes.
     for (let i = 0; i < splitHeader.length; i++) {
       // if valid year pattern matches, get the beginning year
-      if (/^\d{4}-\d{2}$/.test(splitHeader[i]) || /^\d{4}\/\d{2}$/.test(splitHeader[i])) {
+      if (/^\d{4}-\d{2}$/.test(splitHeader[i])) {
         console.log(splitHeader[i])
-        if (splitHeader[i].charAt(4) == '-') {
-          attributeId += splitHeader[i].split('-')[0];
-        }
-        else {
-          attributeId += splitHeader[i].split('/')[0];
-        }
+        attributeId += splitHeader[i].split('-')[0];
 
         // remove splitHeader[i] (year that matched regex)
         splitHeader.splice(i, 1)
+        console.log(splitHeader);
         break;
       }
     }
@@ -671,7 +668,7 @@ export default function COAGenerator() {
         splitHeader[i] = substitutions[splitHeader[i]]
       }
       // filter out any other years
-      if ((/^\d{4}-\d{2}$/.test(splitHeader[i]) === false && !itemsToIgnore.includes(splitHeader[i])) || (/^\d{4}\/\d{2}$/.test(splitHeader[i]) === false && !itemsToIgnore.includes(splitHeader[i]))) {
+      if ((/^\d{4}-\d{2}$/.test(splitHeader[i]) === false && !itemsToIgnore.includes(splitHeader[i]))) {
         attributeDefiners.push(splitHeader[i])
       }
     }
@@ -805,8 +802,6 @@ export default function COAGenerator() {
         else {
           cellValue = rawExcelValue?.toString() || ''
         }
-
-        console.log('!debug line 661')
         console.log(cellValue)
 
         // add valid attributes to the attributes array
@@ -833,6 +828,11 @@ export default function COAGenerator() {
 
             cellValue = cellValue.replace("Current Year", currentYear).replace("Current Yr", currentYear)
             cellValue = cellValue.replace("Prior Year", priorYear).replace("Prior Yr", priorYear)
+
+            if (cellValue.charAt(4) === '/') {
+              cellValue = cellValue.substring(0,4) + '-' + cellValue.substring(5);
+            }
+            console.log(cellValue);
 
             // get the attributeID of an attribute name
             let attributeId = makeAttributeId(cellValue, attributeIdMap)
