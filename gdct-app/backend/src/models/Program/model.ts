@@ -5,7 +5,7 @@ const Program = new Schema<ProgramDoc>(
   {
     name: { type: String, required: true },
     code: { type: String, required: true, unique: true },
-    timestamp: { type: Date },
+    timestamp: { type: String },
     updatedBy: { type: String },
     isActive: { type: Boolean },
   },

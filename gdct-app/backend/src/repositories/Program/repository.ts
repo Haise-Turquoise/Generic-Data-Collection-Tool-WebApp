@@ -39,6 +39,8 @@ export default class ProgramRepository extends BaseRepository<Program, ProgramDo
   }
 
   async create(program: Program) {
+    program.updatedAt = new Date().toLocaleString();
+    program.updatedBy = new Date().toLocaleString();
     return ProgramModel.create(program);
   }
 

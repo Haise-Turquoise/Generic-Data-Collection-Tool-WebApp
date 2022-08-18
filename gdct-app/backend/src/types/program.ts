@@ -4,7 +4,7 @@ export default interface Program {
   _id:ObjectId;
   name: string;
   code: string;
-  updatedAt: Date;
+  updatedAt: string;
   updatedBy: string;
   isActive: boolean;
 }
