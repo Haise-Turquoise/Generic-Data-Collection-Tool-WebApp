@@ -79,6 +79,7 @@ const ItemMap :{[key:string]:React.ReactElement<SvgIconProps>} =  {
   'COA': <DataUsageIcon style={MenuItemStyle} />,
   'Category Management': <ListIcon style={SubMenuItemStyle} />,
   'Attribute Management': <ViewColumnIcon style={SubMenuItemStyle} />,
+  'Attribute Configuration': <BuildIcon style={SubMenuItemStyle}/>,
   'Group Management': <GroupIcon style={SubMenuItemStyle} />,
   'Tree Management': <AccountTreeIcon style={SubMenuItemStyle} />,
   'Generate Tree': <NatureIcon style={SubMenuItemStyle} />,
