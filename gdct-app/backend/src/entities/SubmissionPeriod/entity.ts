@@ -6,9 +6,9 @@ export default class SubmissionPeriodEntity {
   public reportingPeriodId: ObjectId;
   public programId: ObjectId[];
   public name: string;
-  public startDate: Date;
-  public endDate: Date;
-  public updatedAt: Date;
+  public startDate: string;
+  public endDate: string;
+  public updatedAt: any;
   public updatedBy: string;
 
   constructor({ _id, reportingPeriodId, programId, name, startDate, endDate, updatedAt, updatedBy }: SubmissionPeriodDoc) {

@@ -6,7 +6,7 @@ export default class AuditLogEntity {
   public user: AuditLogDoc["user"];
   public activity: string;
   public moduleName: string;
-  public updatedAt: Date;
+  public updatedAt: string;
 
   constructor({ _id, user, activity, moduleName, updatedAt }: AuditLogDoc) {
     this._id = _id;

@@ -2,6 +2,7 @@ import AttributeConfigEntity from '../../entities/AttributeConfig/entity';
 import BaseRepository from '../repository';
 import AttributeConfigModel from '../../models/AttributeConfig/model';
 import AttributeConfig, { AttributeConfigDoc} from '../../types/attributeconfig';
+import {dateStringTranslate} from '../../utils/misc';
 import AppError from '../../utils/AppError';
 
 export default class AttributeConfigRepository extends BaseRepository<AttributeConfig, AttributeConfigDoc> {
@@ -26,10 +27,12 @@ export default class AttributeConfigRepository extends BaseRepository<AttributeC
 
   async create(AttributeConfig: AttributeConfig) {
     // AttributeConfig.isActive = true;
+    AttributeConfig.updatedAt =  dateStringTranslate(new Date(AttributeConfig.updatedAt));
     return AttributeConfigModel.create(AttributeConfig).then(AttributeConfig => new AttributeConfigEntity(AttributeConfig));
   }
 
   async update(id: string, AttributeConfig: Partial<AttributeConfig>) {
+    AttributeConfig.updatedAt = dateStringTranslate(new Date(AttributeConfig.updatedAt!));;
     return AttributeConfigModel.findByIdAndUpdate(id, AttributeConfig).then(
       (AttributeConfig: AttributeConfigDoc|null) => {
         if (!AttributeConfig) return undefined;

@@ -5,7 +5,7 @@ export default class COAGroupEntity {
   public _id: ObjectId;
   public name: string;
   public code: string;
-  public updatedAt: Date;
+  public updatedAt: any;
   public updatedBy: string;
   public isActive: boolean;
   

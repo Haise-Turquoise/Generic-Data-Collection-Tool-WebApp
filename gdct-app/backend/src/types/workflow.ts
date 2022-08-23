@@ -4,7 +4,7 @@ import { Document } from 'mongoose';
 export default interface Workflow {
   _id: ObjectId;
   name: string;
-  updatedAt: Date;
+  updatedAt: string;
   updatedBy: string;
   isActive: boolean;
 }

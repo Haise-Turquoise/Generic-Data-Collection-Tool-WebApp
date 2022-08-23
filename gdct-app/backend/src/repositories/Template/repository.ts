@@ -10,6 +10,7 @@ import Template, { TemplateDoc, SheetData } from '../../types/template';
 import { WorkflowProcessDoc } from '../../types/workflowprocess';
 import { FilterQuery } from 'mongoose';
 import AppError from '../../utils/AppError';
+import {dateStringTranslate} from '../../utils/misc';
 import WorkflowProcessEntity from '../../entities/WorkflowProcess/WorkflowProcess';
 
 // MongoDB implementation
@@ -27,62 +28,30 @@ export default class TemplateRepository extends BaseRepository<Template, Templat
     this.workflowProcessRepository = Container.get(WorkflowProcessRepository);
   }
 
-  async create({
-    name,
-    templateData,
-    templateTypeId,
-    userCreatorId,
-    creationDate,
-    expirationDate,
-    workflowProcessId,
-    googleSheetId,
-    updatedBy,
-    updatedAt,
-  }: Template) {
+  async create( temp: Template) {
+    
+    temp.updatedAt = dateStringTranslate(new Date(temp.updatedAt))
+    if(temp.expirationDate){temp.expirationDate = dateStringTranslate(new Date(temp.expirationDate));}
+    if(temp.creationDate){temp.creationDate = dateStringTranslate(new Date(temp.creationDate));}
+    if(temp.createdAt){temp.createdAt = dateStringTranslate(new Date(temp.createdAt));}
+
     return this.templateTypeRepository
-      .validate(templateTypeId)
+      .validate(temp.templateTypeId)
       .then(() =>
-        TemplateModel.create({
-          name,
-          templateData,
-          templateTypeId,
-          userCreatorId,
-          creationDate,
-          expirationDate,
-          workflowProcessId,
-          googleSheetId,
-          updatedBy,
-          updatedAt,
-        }),
+        TemplateModel.create(temp),
       ).then(template => new TemplateEntity(template));
   }
 
   async update(
-    id: string,
-    {
-      name,
-      templateData,
-      templateTypeId,
-      userCreatorId,
-      creationDate,
-      expirationDate,
-      workflowProcessId,
-      updatedBy,
-      updatedAt,
-    }: Partial<Template>,
+    id: string, temp: Partial<Template>,
   ) {
-    const formattedTemplate: Partial<Template> = {
-      name,
-      templateTypeId,
-      userCreatorId,
-      creationDate,
-      expirationDate,
-      workflowProcessId,
-      updatedBy,
-      updatedAt,
-    };
+    
+    temp.updatedAt = dateStringTranslate(new Date(temp.updatedAt!))
+    if(temp.expirationDate){temp.expirationDate = dateStringTranslate(new Date(temp.expirationDate));}
 
-    if (templateData) formattedTemplate.templateData = templateData;
+    const formattedTemplate: Partial<Template> = temp;
+    
+    if (temp.templateData) formattedTemplate.templateData = temp.templateData;
 
     const oldValue = await TemplateModel.findById(id);
     if (!oldValue) throw new AppError(`Update failed, Item not found for Template item with ID: ${id}`);
@@ -105,7 +74,7 @@ export default class TemplateRepository extends BaseRepository<Template, Templat
       if (diff.length == 0) throw new Error('Workflow head not found.');
       formattedTemplate.workflowProcessId = diff[0];
     }
-
+    console.log(formattedTemplate);
     return TemplateModel.findByIdAndUpdate(id, formattedTemplate, { new: true })
       .then((template: TemplateDoc | null) => {
         if (!template) throw new AppError(`Update failed, Item not found for Template item with ID: ${id}`)

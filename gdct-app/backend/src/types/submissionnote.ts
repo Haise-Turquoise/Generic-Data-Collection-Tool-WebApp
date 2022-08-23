@@ -5,7 +5,7 @@ export default interface SubmissionNote {
   id: number;
   note: string;
   submissionId: ObjectId;
-  updatedDate: Date;
+  updatedDate: string;
   userCreatorId: ObjectId;
   updatedBy: string;
   role: string;

@@ -6,8 +6,8 @@ const ReportingPeriodModel = model<ReportingPeriodDoc>(
   new Schema<ReportingPeriodDoc>(
     {
       name: { type: String },
-      startDate: { type: Date },
-      endDate: { type: Date },
+      startDate: { type: String },
+      endDate: { type: String },
       application: { type: String },
       code: { type: String },
       submissionClosed: { type: Boolean },

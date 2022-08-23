@@ -2,6 +2,7 @@ import AppRoleEntity from '../../entities/AppRole';
 import BaseRepository from '../repository';
 import AppRoleModel from '../../models/AppRole';
 import AppRole, { AppRoleDoc } from '../../types/approle';
+import {dateStringTranslate} from '../../utils/misc';
 import AppError from '../../utils/AppError';
 
 export default class AppRoleRepository extends BaseRepository<AppRole, AppRoleDoc> {
@@ -20,11 +21,13 @@ export default class AppRoleRepository extends BaseRepository<AppRole, AppRoleDo
   }
 
   async create(AppRole: AppRole) {
+    AppRole.updatedAt = dateStringTranslate(new Date(AppRole.updatedAt))
     AppRole.isActive = true;
     return AppRoleModel.create(AppRole).then(AppRole => new AppRoleEntity(AppRole));
   }
 
   async update(id: string, AppRole: Partial<AppRole>) {
+    AppRole.updatedAt = dateStringTranslate(new Date(AppRole.updatedAt))
     return AppRoleModel.findByIdAndUpdate(id, AppRole);
   }
 

@@ -5,7 +5,7 @@ export default class SheetNameEntity {
   public _id: ObjectId;
   public id: number;
   public name: string;
-  public updatedAt: Date;
+  public updatedAt: any;
   public templateTypeId: ObjectId;
   public updatedBy: string;
   public isActive: boolean;

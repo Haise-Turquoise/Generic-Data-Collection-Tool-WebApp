@@ -8,7 +8,7 @@ export default class ReportingPeriodEntity {
   public endDate: Date;
   public code: string;
   public submissionClosed: boolean;
-  public updatedAt: Date;
+  public updatedAt: any;
   public updatedBy: string;
 
   constructor({ _id, name, startDate, endDate, code, submissionClosed, updatedAt, updatedBy }: ReportingPeriodDoc) {

@@ -5,6 +5,7 @@ import TemplateRepository from '../Template';
 import SheetNameEntity from '../../entities/SheetName';
 import SheetName, { SheetNameDoc } from '../../types/sheetName';
 import { FilterQuery } from 'mongoose';
+import {dateStringTranslate} from '../../utils/misc';
 import { ObjectId } from 'mongodb'
 import AppError from '../../utils/AppError';
 
@@ -17,11 +18,13 @@ export default class SheetNameRepository extends BaseRepository<SheetName, Sheet
   }
 
   async create(sheetName: SheetName) {
+    sheetName.updatedAt = dateStringTranslate(new Date(sheetName.updatedAt))
     return SheetNameModel.create(sheetName)
       .then(sheetName => new SheetNameEntity(sheetName));
   }
 
   async update(id: string, sheetName: Partial<SheetName>) {
+    sheetName.updatedAt = dateStringTranslate(new Date(sheetName.updatedAt))
     return SheetNameModel.findByIdAndUpdate(id, sheetName)
       .then((sheetName: SheetNameDoc|null) => {
         if (!sheetName) throw new AppError(`Update failed for SheetName item with ID: ${id}`);

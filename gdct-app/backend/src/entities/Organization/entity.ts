@@ -21,7 +21,7 @@ export default class OrgEntity {
   public programId: ObjectId[];
   public effectiveDate: Date;
   public expiryDate: Date;
-  public updatedAt: Date;
+  public updatedAt: any;
   public updatedBy: string;
 
   constructor({

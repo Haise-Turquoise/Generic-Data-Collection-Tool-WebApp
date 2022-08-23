@@ -3,6 +3,7 @@ import BaseRepository from '../repository';
 import AppSysModel from '../../models/AppSys';
 import AppSys, { AppSysDoc } from '../../types/appsys';
 import AppError from '../../utils/AppError';
+import {dateStringTranslate} from '../../utils/misc';
 
 export default class AppSysRepository extends BaseRepository<AppSys, AppSysDoc> {
   constructor() {
@@ -21,10 +22,12 @@ export default class AppSysRepository extends BaseRepository<AppSys, AppSysDoc> 
 
   async create(AppSys: AppSys) {
     AppSys.isActive = true;
+    AppSys.updatedAt = dateStringTranslate(new Date(AppSys.updatedAt));
     return AppSysModel.create(AppSys).then(AppSys => new AppSysEntity(AppSys));
   }
 
   async update(id: string, AppSys: Partial<AppSys>) {
+    AppSys.updatedAt = dateStringTranslate(new Date(AppSys.updatedAt));
     return AppSysModel.findByIdAndUpdate(id, AppSys).then(
       (AppSys: AppSysDoc|null) => {
         if (!AppSys) throw new AppError(`Item update failed for AppSysModel item with ID: ${id}`);

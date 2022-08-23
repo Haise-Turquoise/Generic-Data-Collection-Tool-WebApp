@@ -14,7 +14,7 @@ export default class TemplateTypeEntity {
   public isInputtable: boolean;
   public isViewable: boolean;
   public isReportable: boolean;
-  public updatedAt: Date;
+  public updatedAt: string;
   public updatedBy: string;
   public isActive: boolean;
 

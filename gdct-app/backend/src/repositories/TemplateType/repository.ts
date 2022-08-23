@@ -7,6 +7,7 @@ import {ObjectId} from 'mongodb';
 import {FilterQuery, Types } from 'mongoose';
 import TemplateType, { TemplateTypeDoc } from '../../types/templatetype';
 import AppError from '../../utils/AppError';
+import {dateStringTranslate} from '../../utils/misc';
 
 // @Service()
 export default class TemplateTypeRepository extends BaseRepository<TemplateType, TemplateTypeDoc> {
@@ -17,41 +18,13 @@ export default class TemplateTypeRepository extends BaseRepository<TemplateType,
     this.programRepository = Container.get(ProgramRepository);
   }
 
-  async create({
-    name,
-    description,
-    templateWorkflowId,
-    submissionWorkflowId,
-    programId,
-    isApprovable,
-    isReviewable,
-    isSubmittable,
-    isInputtable,
-    isViewable,
-    isReportable,
-    isActive,
-    updatedAt,
-    updatedBy,
-  }: TemplateType) {
+  async create(temp : TemplateType) {
+    
+    temp.updatedAt = dateStringTranslate(new Date(temp.updatedAt));
     return this.programRepository
-      .validateMany(programId)
+      .validateMany(temp.programId)
       .then(() =>
-        TemplateTypeModel.create({
-          name,
-          description,
-          templateWorkflowId,
-          submissionWorkflowId,
-          programId,
-          isApprovable,
-          isReviewable,
-          isSubmittable,
-          isInputtable,
-          isViewable,
-          isReportable,
-          isActive,
-          updatedAt,
-          updatedBy,
-        }),
+        TemplateTypeModel.create(temp),
       )
       .then(templateType => new TemplateTypeEntity(templateType));
   }
@@ -67,6 +40,7 @@ export default class TemplateTypeRepository extends BaseRepository<TemplateType,
   }
 
   async update(id: string, templateType: Partial<TemplateType>) {
+    templateType.updatedAt = dateStringTranslate(new Date(templateType.updatedAt!));
     return this.programRepository
       .validateMany(templateType.programId || [])
       .then(() => TemplateTypeModel.findByIdAndUpdate(id, templateType))

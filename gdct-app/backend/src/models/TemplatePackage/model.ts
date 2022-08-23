@@ -11,7 +11,7 @@ const TemplatePackageModel = model<TemplatePackageDoc>(
       submissionPeriodId: { type: ObjectId, ref: 'SubmissionPeriod' },
       statusId: { type: ObjectId, ref: 'Status' },
       templateIds: [{ type: ObjectId, ref: 'Template' }],
-      creationDate: { type: Date, default: Date.now },
+      creationDate: { type: String },
       userCreatorId: { type: ObjectId, ref: 'User' },
       programIds: [{ type: ObjectId, ref: 'Program' }],
       forPackage: { type: Boolean, ref: 'ForPackage' },

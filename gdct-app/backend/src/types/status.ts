@@ -4,7 +4,7 @@ export default interface Status {
   _id:ObjectId,
   name: string,
   description: string,
-  updatedAt: Date,
+  updatedAt: any,
   updatedBy: string,
   isActive: boolean,
   forPackage: boolean,

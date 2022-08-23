@@ -18,7 +18,7 @@ export default class SubmissionEntity {
   public year: string | undefined;
   public submissionPeriodId: ObjectId;
   public createdAt: Date;
-  public updatedAt: Date;
+  public updatedAt: any;
   public updatedBy: ObjectId;
   public isPublished: boolean;
   public version: number;

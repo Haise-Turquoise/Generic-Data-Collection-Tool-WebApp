@@ -5,6 +5,7 @@ import Submission, { SubmissionAggregated, SubmissionDoc } from '../../types/sub
 import { ObjectId } from 'mongodb';
 import { FilterQuery } from 'mongoose';
 import AppError from '../../utils/AppError';
+import {dateStringTranslate} from '../../utils/misc';
 import UserSysRole from '../../types/usersysrole';
 
 export default class SubmissionRepository extends BaseRepository<Submission, SubmissionDoc> {
@@ -21,16 +22,19 @@ export default class SubmissionRepository extends BaseRepository<Submission, Sub
   }
 
   async create(submission: Submission) {
+    submission.updatedAt = dateStringTranslate(new Date(submission.updatedAt));
     return SubmissionModel.create(submission).then(
       submission => new SubmissionEntity(submission),
     );
   }
 
   async createMany(submissions: Submission[]) {
+    
     return SubmissionModel.create(...submissions).then(res => res);
   }
 
   async update(id: string, submission: Partial<Submission>) {
+    submission.updatedAt = dateStringTranslate(new Date(submission.updatedAt));
     return SubmissionModel.findByIdAndUpdate(id, submission)
     .then((submission: SubmissionDoc|null) => {
       if (!submission) throw new AppError(`Update failed, Item not found for submission item with ID: ${id}`);

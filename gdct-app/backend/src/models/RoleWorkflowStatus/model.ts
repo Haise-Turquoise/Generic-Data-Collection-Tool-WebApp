@@ -10,7 +10,7 @@ const RoleWorkflowStatusModel = model<RoleWorkflowStatusDoc>('RoleWorkflowStatus
       role:{type: String},
       workflowStatus:{type: Array},
       updatedBy: String,
-      modifiedOn: Date,
+      modifiedOn: String,
     },
     { minimize: false },
   ),
