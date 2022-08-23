@@ -7,9 +7,9 @@ export default interface UnitOfMeasurement {
     unitOfMeasurement: string,
     dataType: string,
     pattern: string,
-    createdAt: Date,
+    createdAt: string,
     updatedBy: string,
-    updatedAt: Date,
+    updatedAt: string ,
 }
 
 export interface UnitOfMeasurementDoc extends UnitOfMeasurement, Document {

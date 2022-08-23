@@ -4,6 +4,7 @@ import SubmissionPeriodModel from '../../models/SubmissionPeriod';
 import SubmissionPeriod, { SubmissionPeriodDoc } from '../../types/submissionperiod';
 import { FilterQuery } from 'mongoose';
 import AppError from '../../utils/AppError';
+import {dateStringTranslate} from '../../utils/misc';
 
 export default class SubmissionPeriodRepository extends BaseRepository<SubmissionPeriod, SubmissionPeriodDoc> {
   constructor() {
@@ -19,12 +20,17 @@ export default class SubmissionPeriodRepository extends BaseRepository<Submissio
   }
 
   async create(submissionPeriod: SubmissionPeriod) {
+
+    submissionPeriod.updatedAt =  dateStringTranslate(new Date(submissionPeriod.updatedAt));
+    if(submissionPeriod.startDate){ submissionPeriod.startDate = dateStringTranslate(new Date(submissionPeriod.startDate));}
+    if(submissionPeriod.endDate){ submissionPeriod.endDate =dateStringTranslate(new Date(submissionPeriod.endDate));}
     return SubmissionPeriodModel.create(submissionPeriod).then(
       submissionPeriod => new SubmissionPeriodEntity(submissionPeriod),
     );
   }
 
   async update(id: string, submissionPeriod: Partial<SubmissionPeriod>) {
+    submissionPeriod.updatedAt =  dateStringTranslate(new Date(submissionPeriod.updatedAt!));
     return SubmissionPeriodModel.findByIdAndUpdate(id, submissionPeriod)
     .then((submissionPeriod: SubmissionPeriodDoc|null) => {
       if (!submissionPeriod) throw new AppError(`Update failed for AppRoleResouece with ID: ${id}`);

@@ -6,7 +6,7 @@ export default class AppConfigEntity {
   public value: string;
   public key: string;
   public appSys: string;
-  public updatedAt: Date;
+  public updatedAt: string;
   public updatedBy: string;
   public isActive: boolean;
   

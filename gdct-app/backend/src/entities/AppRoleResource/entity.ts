@@ -5,7 +5,7 @@ export default class AppRoleResourceEntity {
   public _id: ObjectId;
   public appSysRoleId: AppRoleResourceDoc["appSysRoleId"];
   public resourceId: AppRoleResourceDoc["resourceId"];
-  public updatedAt: Date;
+  public updatedAt: string;
   public updatedBy: string;
 
   constructor({ _id, appSysRoleId, resourceId, updatedAt, updatedBy }: AppRoleResourceDoc) {

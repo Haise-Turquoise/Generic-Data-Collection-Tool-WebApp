@@ -4,6 +4,7 @@ import ProgramModel from '../../models/Program';
 import OrgModel from '../../models/Organization';
 import TemplateTypeModel from '../../models/TemplateType';
 import Program, { ProgramDoc } from '../../types/program';
+import {dateStringTranslate} from '../../utils/misc';
 import { FilterQuery, ObjectId } from 'mongoose';
 
 export default class ProgramRepository extends BaseRepository<Program, ProgramDoc> {
@@ -39,12 +40,15 @@ export default class ProgramRepository extends BaseRepository<Program, ProgramDo
   }
 
   async create(program: Program) {
-    program.updatedAt = new Date().toLocaleString();
-    program.updatedBy = new Date().toLocaleString();
+    
+    
+    program.updatedAt = dateStringTranslate(new Date(program.updatedAt))
+    
     return ProgramModel.create(program);
   }
 
   async update(id: string, program: Partial<Program>) {
+    program.updatedAt = dateStringTranslate(new Date(program.updatedAt))
     return ProgramModel.findByIdAndUpdate(id, program);
   }
 

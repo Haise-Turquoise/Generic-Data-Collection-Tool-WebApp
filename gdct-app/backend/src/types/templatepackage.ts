@@ -7,11 +7,11 @@ export default interface TemplatePackage {
   submissionPeriodId: ObjectId;
   statusId: ObjectId;
   templateIds: ObjectId[];
-  creationDate: Date;
+  creationDate: string;
   userCreatorId: ObjectId;
   programIds: ObjectId[];
   forPackage: boolean;
-  updatedAt: Date;
+  updatedAt: string;
   updatedBy: string;
   deadline: string;
 }

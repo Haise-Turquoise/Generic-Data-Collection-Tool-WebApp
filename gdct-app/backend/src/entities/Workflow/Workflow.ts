@@ -4,7 +4,7 @@ import { WorkflowDoc } from "../../types/workflow";
 export default class WorkflowEntity {
   public _id: ObjectId;
   public name: string;
-  public updatedAt: Date;
+  public updatedAt: string;
   public updatedBy: string;
   public isActive: boolean;
 

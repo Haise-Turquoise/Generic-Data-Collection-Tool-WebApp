@@ -10,7 +10,7 @@ const SubmissionNoteModel = model<SubmissionNoteDoc>(
       id: { type: Number },
       note: { type: String },
       submissionId: { type: ObjectId, ref: 'Submission' },
-      updatedDate: { type: Date },
+      updatedDate: { type: String },
       userCreatorId: { type: ObjectId, ref: 'User' },
       updatedBy: { type: String },
       role: { type: String },

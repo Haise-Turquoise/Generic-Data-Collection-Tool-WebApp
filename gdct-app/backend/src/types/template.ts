@@ -9,12 +9,12 @@ export default interface Template {
   templateData: SheetData[];
   templateTypeId: ObjectId;
   userCreatorId: ObjectId;
-  creationDate: Date;
-  createdAt: Date;
-  expirationDate: Date;
+  creationDate: string;
+  createdAt: string;
+  expirationDate: string;
   statusId: ObjectId;
   googleSheetId: ObjectId;
-  updatedAt: Date;
+  updatedAt: string;
   updatedBy: string;
 }
 

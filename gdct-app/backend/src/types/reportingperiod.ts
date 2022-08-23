@@ -1,13 +1,13 @@
 import { Document } from 'mongoose';
 
 export default interface ReportingPeriod {
-  name: string;
-  startDate: Date;
-  endDate: Date;
+  name: any;
+  startDate: any;
+  endDate: any;
   application: string;
   code: string;
   submissionClosed: boolean;
-  updatedAt: Date;
+  updatedAt: string;
   updatedBy: string;
 }
 

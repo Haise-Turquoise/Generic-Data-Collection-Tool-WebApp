@@ -2,6 +2,7 @@ import AppRoleResouceEntity from '../../entities/AppRoleResource';
 import BaseRepository from '../repository';
 import AppRoleResourceModel from '../../models/AppRoleResource';
 import AppRoleResource, { AppRoleResourceDoc } from '../../types/approleresource';
+import {dateStringTranslate} from '../../utils/misc';
 import { ObjectId } from 'mongodb'
 import AppError from '../../utils/AppError';
 export default class AppRoleResourceRepository extends BaseRepository<AppRoleResource, AppRoleResourceDoc> {
@@ -17,6 +18,7 @@ export default class AppRoleResourceRepository extends BaseRepository<AppRoleRes
 
   async create(appRoleResource: AppRoleResource) {
     const mongoose = require('mongoose');
+    appRoleResource.updatedAt = dateStringTranslate(new Date(appRoleResource.updatedAt));
     appRoleResource.appSysRoleId.roleId = mongoose.Types.ObjectId(appRoleResource.appSysRoleId.roleId);
     return AppRoleResourceModel.create(appRoleResource).then(
       
@@ -26,6 +28,7 @@ export default class AppRoleResourceRepository extends BaseRepository<AppRoleRes
 
   async update(id: string, appRoleResource: Partial<AppRoleResource>) {
     const mongoose = require('mongoose');
+    appRoleResource.updatedAt = dateStringTranslate(new Date(appRoleResource.updatedAt));
     if (appRoleResource.appSysRoleId) {
       appRoleResource.appSysRoleId.roleId = new ObjectId(appRoleResource.appSysRoleId.roleId);
     }

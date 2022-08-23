@@ -7,7 +7,7 @@ const AttributeConfig = new Schema<AttributeConfigDoc>(
     code: { type: String },
     timestamp: { type: Date },
     updatedBy: { type: String },
-    updatedAt: { type: Date },
+    updatedAt: { type: String },
   },
   { minimize: false },
 );

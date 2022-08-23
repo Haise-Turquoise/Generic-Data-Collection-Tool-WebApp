@@ -6,7 +6,7 @@ export default class SubmissionEntity {
   public id: number;
   public note: string;
   public submissionId: ObjectId;
-  public updatedDate: Date;
+  public updatedDate: any;
   public updatedBy: string;
   public role: string;
 

@@ -2,6 +2,7 @@ import BaseRepository from '../repository';
 import OrgModel from '../../models/Organization';
 import OrgEntity from '../../entities/Organization';
 import Organization, { OrganizationDoc } from '../../types/organization';
+import {dateStringTranslate} from '../../utils/misc';
 import { FilterQuery } from 'mongoose';
 import AppError from '../../utils/AppError';
 
@@ -19,10 +20,15 @@ export default class OrgRepository extends BaseRepository<Organization, Organiza
   }
 
   async create(Org: Organization) {
+    Org.updatedAt = dateStringTranslate(new Date(Org.updatedAt))
+    Org.effectiveDate = dateStringTranslate(new Date(Org.effectiveDate))
     return OrgModel.create(Org).then(Org => new OrgModel(Org));
   }
 
   async update(id: string, Org: Partial<Organization>) {
+    
+    Org.updatedAt = dateStringTranslate(new Date(Org.updatedAt!))
+    Org.effectiveDate = dateStringTranslate(new Date(Org.effectiveDate))
     return OrgModel.findByIdAndUpdate(id, Org, { new: true })
     .then((org: OrganizationDoc|null) => {
       if (!org) throw new AppError(`Update failed, Item not found for Org item with ID: ${id}`);

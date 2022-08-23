@@ -5,7 +5,7 @@ export default class StatusEntity {
   public _id: ObjectId;
   public name: string;
   public description: string;
-  public updatedAt: Date;
+  public updatedAt: string;
   public updatedBy: string;
   public isActive: boolean;
   public forPackage: boolean;

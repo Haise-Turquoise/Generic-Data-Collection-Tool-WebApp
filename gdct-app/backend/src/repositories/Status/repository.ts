@@ -4,6 +4,7 @@ import StatusModel from '../../models/Status';
 import Status, { StatusDoc } from '../../types/status';
 import { FilterQuery } from 'mongoose';
 import { ObjectId } from 'mongodb';
+import {dateStringTranslate} from '../../utils/misc';
 import AppError from '../../utils/AppError';
 
 export default class StatusRepository extends BaseRepository<Status, StatusDoc> {
@@ -20,10 +21,15 @@ export default class StatusRepository extends BaseRepository<Status, StatusDoc> 
   }
 
   async create(status: Status) {
+ 
+    status.updatedAt = dateStringTranslate(new Date(status.updatedAt))
+    
+    
     return StatusModel.create(status).then(status => new StatusEntity(status));
   }
 
   async update(id: string, status: Partial<Status>) {
+    status.updatedAt = dateStringTranslate(new Date(status.updatedAt))
     return StatusModel.findByIdAndUpdate(id, status)
     .then((status: StatusDoc|null) => {
       if (!status) throw new AppError(`Update failed, Item not found for Staus item with ID: ${id}`);
