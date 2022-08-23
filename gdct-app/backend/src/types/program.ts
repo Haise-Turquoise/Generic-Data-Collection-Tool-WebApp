@@ -2,6 +2,7 @@ import { Document} from 'mongoose';
 import { ObjectId } from "mongodb";
 export default interface Program {
   _id:ObjectId;
+  id: Number;
   name: string;
   code: string;
   updatedAt: Date;
@@ -10,5 +11,6 @@ export default interface Program {
 }
 
 export interface ProgramDoc extends Program, Document {
-    _id:ObjectId
+    _id:ObjectId,
+    id: Number
 }

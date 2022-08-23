@@ -3,6 +3,7 @@ import { ProgramDoc } from '../../types/program';
 
 const Program = new Schema<ProgramDoc>(
   {
+    id: {type: Number},
     name: { type: String, required: true },
     code: { type: String, required: true, unique: true },
     timestamp: { type: Date },
