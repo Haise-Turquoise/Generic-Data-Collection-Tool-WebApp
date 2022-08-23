@@ -679,6 +679,9 @@ export default function COAGenerator() {
       attributeIdMatcher += item + " "
     })
     attributeIdMatcher = attributeIdMatcher.trim()
+    attributeIdMatcher = attributeIdMatcher.replace(/ *\([^)]*\) */g, "");
+    console.log("ATTRIBUTE HEADER")
+    console.log(attributeIdMatcher);
 
     // check attributeIdConfig database object for a matching keyword for last 3 digits, if not found return an error
     // error allows us to find attributes not in config database
