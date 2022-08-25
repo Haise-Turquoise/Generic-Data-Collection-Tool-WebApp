@@ -16,26 +16,14 @@ import { RouterProps } from 'react-router';
 const buildDET = async (sheetNames: SheetName[]) => {
   const DETs: DetectEmptyTree[] = []
   const allTrees: CategoryTree[] = await COATreeController.fetchBySheetNames(sheetNames)
-  console.log("PRINTING SHEET NAMES")
-  console.log(sheetNames)
-  console.log("PRINTING ALL TREES")
-  console.log(allTrees);
   for (let sheetName of sheetNames) {
     const treeContent = allTrees.filter(tree => tree.sheetNameId === sheetName._id)
-    console.log("PRINTING TREE CONTENT");
-    console.log(treeContent);
-    if (treeContent.length !== 0) {
-      console.log(treeContent[0].categoryGroupId);
-      console.log("Printing Sheet Name Content");
-      console.log(sheetName);
-    }
-
     DETs.push({
       _id: sheetName._id,
       name: sheetName.name,
       // treeContent is an array that may be empty
-      updatedAt: treeContent.length > 0 ? sheetName.updatedAt: '',   
-      updatedBy: treeContent.length > 0 ? sheetName.updatedBy : 'N/A',
+      updatedAt: treeContent.length > 0 ? treeContent[0].updatedAt : '',   
+      updatedBy: treeContent.length > 0 ? treeContent[0].updatedBy : 'N/A',
       value: treeContent 
     })
   }
