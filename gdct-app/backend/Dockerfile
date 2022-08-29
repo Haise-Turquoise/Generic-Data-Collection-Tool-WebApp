@@ -1,6 +1,5 @@
 FROM node:14.10.1-alpine
 
-EXPOSE 3000
 
 WORKDIR /app
 
@@ -14,6 +13,6 @@ RUN apk --no-cache --virtual build-dependencies add \
 
 COPY . .
 
-
+EXPOSE 3000
 
 CMD [ "npm", "start" ]
