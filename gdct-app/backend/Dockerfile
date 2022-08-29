@@ -13,6 +13,6 @@ RUN apk --no-cache --virtual build-dependencies add \
 
 COPY . .
 
-EXPOSE 8181
+EXPOSE 3000
 
 CMD [ "npm", "start" ]
