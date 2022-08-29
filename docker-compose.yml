@@ -19,5 +19,5 @@ services:
       dockerfile: ./Dockerfile
     image: "gdctdockercontainer.azurecr.io/gdct-backend:latest"
     ports:
-      - "8181:8181"
+      - "3000:3000"
     platform: linux/amd64
