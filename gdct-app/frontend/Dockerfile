@@ -10,6 +10,6 @@ RUN npm install --no-optional && npm cache clean --force
 
 COPY . .
 
-EXPOSE 3000
+EXPOSE 8181
 
 CMD [ "npm", "start" ]
