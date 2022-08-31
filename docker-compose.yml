@@ -17,7 +17,7 @@ services:
     build:
       context: ./gdct-app/backend
       dockerfile: ./Dockerfile
-    image: "gdctdockercontainer.azurecr.io/gdct-backend:latest"
+    image: "gdctdockercontainer2.azurecr.io/gdct-backend2:latest"
     ports:
       - "3000:3000"
     platform: linux/amd64
