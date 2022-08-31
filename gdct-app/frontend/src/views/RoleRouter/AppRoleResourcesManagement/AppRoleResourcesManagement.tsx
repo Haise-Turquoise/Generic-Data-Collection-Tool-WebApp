@@ -91,7 +91,21 @@ const AppRoleResourceTable = ({ history }: RouteComponentProps) => {
   })
   const lookupSysRoles = appSysRoles?.reduce(function (acc: {[key: string]: string}, sysRole: SysRole) {
     acc[sysRole._id!] = `${sysRole.appSys} - ${sysRole.role}`;
-    return acc;
+    // store sorted values in new obj 
+    let sortedValues = Object.values(acc).sort()
+    // create new acc
+    let newAcc: {[key: string]: string};
+    newAcc = {};
+    // iterate through sorted values, if acc[sysRole._id!] matches sortedValue, store this in newAcc
+    for (let val in sortedValues) {
+      for (let key in acc) {
+        if (acc[key] === sortedValues[val]) {
+          newAcc[key] = sortedValues[val];
+        }
+      }
+    }
+
+    return newAcc;
   }, {});
 
   const lookupResources = appResources?.reduce(function (acc: {[key:string]: string}, resource: AppResource) {

@@ -25,6 +25,23 @@ interface AppSysRoleMT extends AppSysRole {
   tableData?: any,
 }
 
+const customCheckDuplicates = (rowData:any, tableData:any, appSys:string, role:string) => {
+  // field of element being edited -- null if not editing
+  let current:any = null;
+  if (rowData.tableData) {
+    if (rowData.tableData.editing === 'delete') {
+      return true;
+    } else if (rowData.tableData.editing === 'update') {
+      current = tableData.find((el:any) => el._id === rowData._id);
+    }
+  } else if (rowData._id) {
+    // this case runs while submitting a change
+    return true;
+  }
+  const duplicate = tableData.find((val:any) => val.appSys === rowData.appSys && val !== current && val.role === rowData.role)
+  return duplicate ? `Duplicate appSys and role not allowed` : true
+}
+
 const AppSysRolesHeader = () => {
   return (
     <Paper className="header">
@@ -66,12 +83,14 @@ const AppSysRolesTable = () => {
     appSysRole.updatedAt = formatTimestamp(appSysRole.updatedAt);
   });
   const lookupSysRoles = appSyses?.reduce(function (acc: {[key:string]: string}, appSys: AppSys) {
-    acc[appSys.code] = appSys.name;
+    acc[appSys.code] = appSys.code;
+    acc = Object.fromEntries(Object.entries(acc).sort());
     return acc;
   }, {});
 
   const lookupAppRoles = appRoles?.reduce(function (acc: {[key:string]: string}, appRole: AppRole) {
     acc[appRole.code] = appRole.name;
+    acc = Object.fromEntries(Object.entries(acc).sort());
     return acc;
   }, {});
 
@@ -80,9 +99,14 @@ const AppSysRolesTable = () => {
       {
         title: 'Application System',
         field: 'appSys',
-        validate: rowData => checkDuplicates(rowData, appSysRoles, 'appSys')
+        lookup: lookupSysRoles,
+        validate: rowData => customCheckDuplicates(rowData, appSysRoles, 'appSys', 'role')
       },
-      { title: 'Role', field: 'role', validate: rowData => checkDuplicates(rowData, appSysRoles, 'role') },
+      { title: 'Role', 
+        field: 'role', 
+        lookup: lookupAppRoles,
+        validate: rowData => customCheckDuplicates(rowData, appSysRoles, 'appSys', 'role'),
+      },
       {
         title: 'Modified On',
         field: 'updatedAt',

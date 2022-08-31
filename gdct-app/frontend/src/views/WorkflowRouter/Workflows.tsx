@@ -15,12 +15,13 @@ import {
 import ErrorBanner from '../ErrorBanner';
 import CreateAuditLog from '../AuditLog_Global';
 import workflowController from '../../controllers/workflow';
-
+import Swal from 'sweetalert2';
 import Workflow from '../../types/workflow';
 
 interface WorkflowMT extends Workflow {
   tableData?: any;
 }
+
 
 const WorkflowHeader = () => {
   const history = useHistory();
@@ -41,6 +42,7 @@ const Workflows = () => {
   const [readRowNum, setRowNum] = useState(1);
   const [workflows, setWorkflows] = useState<Workflow[] | undefined>(undefined)
   const [status, setStatus] = useState<'LOADING...' | 'NOT ALLOWED'>('LOADING...')
+
 
   useEffect(() => {
     fetchWithStatus<Workflow>(workflowController, setWorkflows, setStatus)
@@ -101,7 +103,10 @@ const Workflows = () => {
               if (res) {
                 resolve(res)
               }
-              reject()
+              else {
+                reject()
+                Swal.fire("Cannot Delete Workflow: " + workflow.name + " as it is referenced in template type");
+              }
             })
         }).then(() => {
           (async () => {
@@ -130,7 +135,7 @@ const Workflows = () => {
     [history],
   );
 
-  useEffect(()=>{
+  useEffect(() => {
     setRowNum(workflows?.length || 1)
   }, [workflows])
 
@@ -138,17 +143,19 @@ const Workflows = () => {
     <div>
       <WorkflowHeader />
       <ErrorBanner
-        title={'You cannnot delete this workflow because it is refernced in template type.'}
+        title={'You cannnot delete this workflow because it is referenced in template type.'}
         targetStore={selectWorkflowsStore}
       />
+
       <MaterialTable
-        key={readRowNum} 
+        key={readRowNum}
         columns={!!workflows ? columns : preColumns}
         data={!!workflows ? workflows : preWorkflows}
         editable={!!workflows ? editable : undefined}
         options={options}
         actions={!!workflows ? actions : undefined}
       />
+
     </div>
   );
 };
