@@ -5,7 +5,7 @@ export default interface AppSys {
   _id: ObjectId,
   code: string,
   name: string,
-  updatedAt: Date,
+  updatedAt: any,
   updatedBy: string,
   isActive: boolean,
 }

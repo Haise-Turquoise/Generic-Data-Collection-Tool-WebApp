@@ -3,6 +3,7 @@ import BaseRepository from '../repository';
 import WorkflowModel from '../../models/Workflow/Workflow';
 import Workflow, { WorkflowDoc } from '../../types/workflow';
 import { FilterQuery } from 'mongoose';
+import {dateStringTranslate} from '../../utils/misc';
 import AppError from '../../utils/AppError';
 
 export default class WorkflowRepository extends BaseRepository<Workflow, WorkflowDoc> {
@@ -19,10 +20,12 @@ export default class WorkflowRepository extends BaseRepository<Workflow, Workflo
   }
 
   async create(workflow: Workflow) {
+    workflow.updatedAt = dateStringTranslate(new Date(workflow.updatedAt));
     return WorkflowModel.create(workflow).then(workflow => new WorkflowEntity(workflow));
   }
 
   async update(id: string, workflow: Partial<Workflow>) {
+    workflow.updatedAt = dateStringTranslate(new Date(workflow.updatedAt!));
     const newWorkflow: Partial<WorkflowDoc> = { ...workflow };
     delete workflow._id;
     return WorkflowModel.findByIdAndUpdate(id, workflow)

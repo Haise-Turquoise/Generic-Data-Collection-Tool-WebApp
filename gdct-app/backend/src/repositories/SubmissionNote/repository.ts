@@ -2,6 +2,7 @@ import SubmissionNoteEntity from '../../entities/SubmissionNote/SubmissionNote';
 import BaseRepository from '../repository';
 import SubmissionNoteModel from '../../models/SubmissionNote';
 import SubmissionNote, { SubmissionNoteDoc } from '../../types/submissionnote';
+import {dateStringTranslate} from '../../utils/misc';
 
 export default class SubmissionNoteRepository extends BaseRepository<SubmissionNote, SubmissionNoteDoc> {
   constructor() {
@@ -9,7 +10,7 @@ export default class SubmissionNoteRepository extends BaseRepository<SubmissionN
   }
 
   async create(submissionNote: SubmissionNote) {
-    console.log(submissionNote);
+    submissionNote.updatedDate = dateStringTranslate(new Date(submissionNote.updatedDate));
     return SubmissionNoteModel.create(submissionNote);
   }
 

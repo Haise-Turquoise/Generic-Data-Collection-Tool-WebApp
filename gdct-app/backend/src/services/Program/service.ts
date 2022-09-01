@@ -14,6 +14,7 @@ export default class ProgramService {
   }
 
   async createProgram(program: Program) {
+    console.log("hit1")
     return this.programRepository.create(program);
   }
 

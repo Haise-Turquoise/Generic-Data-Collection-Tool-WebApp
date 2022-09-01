@@ -8,12 +8,12 @@ export default class TemplateEntity {
   public templateData: any[];
   public templateTypeId: ObjectId;
   public userCreatorId: ObjectId;
-  public creationDate: Date;
-  public expirationDate: Date;
+  public creationDate: string;
+  public expirationDate: string;
   public workflowProcessId: ObjectId;
-  public updatedAt: Date;
+  public updatedAt: string;
   public updatedBy: string;
-  public createdAt: Date;
+  public createdAt: string;
 
   constructor({
     _id,

@@ -6,6 +6,7 @@ import AppSysRoleModel from '../../models/AppSysRole';
 import AppError from '../../utils/AppError';
 import AppSysRole, { AppSysRoleDoc } from '../../types/appsysrole';
 import { FilterQuery } from 'mongoose';
+import {dateStringTranslate} from '../../utils/misc';
 import { ObjectId } from 'mongodb';
 
 export default class AppSysRoleRepository extends BaseRepository<AppSysRole, AppSysRoleDoc> {
@@ -25,12 +26,14 @@ export default class AppSysRoleRepository extends BaseRepository<AppSysRole, App
 
   async create(AppSysRole: AppSysRole) {
     AppSysRole.isActive = true;
+    AppSysRole.updatedAt =  dateStringTranslate(new Date(AppSysRole.updatedAt));
     return AppSysRoleModel.create(AppSysRole).then(
       AppSysRole => new AppSysRoleEntity(AppSysRole),
     );
   }
 
   async update(id: string, AppSysRole: Partial<AppSysRole>) {
+    AppSysRole.updatedAt =  dateStringTranslate(new Date(AppSysRole.updatedAt!));
     return AppSysRoleModel.findByIdAndUpdate(id, AppSysRole).then(
       (AppSysRole: AppSysRoleDoc|null) =>{
         if (!AppSysRole) throw new AppError(`Update failed for AppSysRole item with ID: ${id}, params: ${AppSysRole}`);

@@ -4,7 +4,7 @@ export default interface AttributeConfig {
     attributeKeyword: string;
     code: string;
     updatedBy: string;
-    updatedAt: Date;
+    updatedAt: string;
 }
 
 export interface AttributeConfigDoc extends AttributeConfig, Document {}

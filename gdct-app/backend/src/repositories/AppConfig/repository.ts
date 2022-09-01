@@ -2,6 +2,7 @@ import AppConfigEntity from '../../entities/AppConfig';
 import BaseRepository from '../repository';
 import AppConfigModel from '../../models/AppConfig';
 import AppConfig, { AppConfigDoc } from '../../types/appconfig';
+import {dateStringTranslate} from '../../utils/misc';
 import AppError from '../../utils/AppError';
 
 export default class AppConfigRepository extends BaseRepository<AppConfig, AppConfigDoc> {
@@ -21,10 +22,12 @@ export default class AppConfigRepository extends BaseRepository<AppConfig, AppCo
 
   async create(AppConfig: AppConfig) {
     AppConfig.isActive = true;
+    AppConfig.updatedAt = dateStringTranslate(new Date(AppConfig.updatedAt));
     return AppConfigModel.create(AppConfig).then(AppConfig => new AppConfigEntity(AppConfig));
   }
 
   async update(id: string, AppConfig: Partial<AppConfig>) {
+    AppConfig.updatedAt = dateStringTranslate(new Date(AppConfig.updatedAt));
     return AppConfigModel.findByIdAndUpdate(id, AppConfig).then(
       (AppConfig: AppConfigDoc|null) => {
         if (!AppConfig) return undefined;

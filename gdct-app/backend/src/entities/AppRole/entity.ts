@@ -5,7 +5,7 @@ export default class AppRoleEntity {
   public _id: ObjectId;
   public code: string;
   public name: string;
-  public updatedAt: Date;
+  public updatedAt: string;
   public updatedBy: string;
   public isActive: boolean;
 

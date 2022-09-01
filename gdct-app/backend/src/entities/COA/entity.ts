@@ -6,7 +6,7 @@ export default class COAEntity {
   public id: string;
   public name: string;
   public COA: string;
-  public updatedAt: Date;
+  public updatedAt: any;
   public updatedBy: string;
   public unitOfMeasure: string;
 

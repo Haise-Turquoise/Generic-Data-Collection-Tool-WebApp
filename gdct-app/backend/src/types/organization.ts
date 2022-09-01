@@ -19,9 +19,9 @@ export default interface Organization {
   contactUserId: string,
   authorizedUserId: string,
   programId: ObjectId[],
-  effectiveDate: Date,
-  expiryDate: Date,
-  updatedAt: Date,
+  effectiveDate: any,
+  expiryDate: any,
+  updatedAt: string,
   updatedBy: string,
 }
 

@@ -3,7 +3,7 @@ import { Document } from 'mongoose';
 export default interface RoleWorkflowStatus{
   role:string,
   workflowStatus:string[],
-  modifiedOn: Date,
+  modifiedOn: string,
   updatedBy: string,
 }
 

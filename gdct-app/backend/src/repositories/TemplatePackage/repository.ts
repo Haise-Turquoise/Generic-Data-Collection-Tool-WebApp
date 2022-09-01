@@ -10,6 +10,7 @@ import UsersRepository from '../Users';
 import TemplateModel from '../../models/Template';
 import TemplatePackage, { TemplatePackageDoc } from '../../types/templatepackage';
 import { FilterQuery } from 'mongoose';
+import {dateStringTranslate} from '../../utils/misc';
 import AppError from '../../utils/AppError';
 import { ObjectID } from 'bson';
 
@@ -34,68 +35,39 @@ export default class TemplatePackageRepository extends BaseRepository<TemplatePa
     this.statusRepository = Container.get(StatusRepository);
   }
 
-  async create({
-    name,
-    submissionPeriodId,
-    templateIds,
-    statusId,
-    creationDate,
-    userCreatorId,
-    programIds,
-    updatedBy,
-    updatedAt,
-    deadline,
-  }: TemplatePackage) {
+  async create( temp : TemplatePackage) {
+    temp.updatedAt = dateStringTranslate(new Date(temp.updatedAt));
+    temp.creationDate = dateStringTranslate(new Date(temp.creationDate));
+    
     return this.submissionPeriodRepository
-      .validate(submissionPeriodId)
-      .then(() => this.templateRepository.validateMany(templateIds))
-      .then(() => this.statusRepository.validate(statusId))
+      .validate(temp.submissionPeriodId)
+      .then(() => this.templateRepository.validateMany(temp.templateIds))
+      .then(() => this.statusRepository.validate(temp.statusId))
       .then(() =>
-        TemplatePackageModel.create({
-          name,
-          submissionPeriodId,
-          templateIds,
-          statusId,
-          creationDate,
-          userCreatorId,
-          programIds,
-          updatedBy,
-          updatedAt,
-          deadline,
-        }),
+        TemplatePackageModel.create(temp),
       )
       .then(templatePackage => new TemplatePackageEntity(templatePackage));
   }
 
   async update(
     id: string,
-    { name, submissionPeriodId, templateIds, statusId, creationDate, userCreatorId, programIds, updatedBy, updatedAt, deadline, }: Partial<TemplatePackage>,
+    temp: Partial<TemplatePackage>,
     isPopulated?: boolean,
   ) {
+    temp.updatedAt = dateStringTranslate(new Date(temp.updatedAt!));
     // console.log('programIds', programIds)
-    return (statusId ? this.statusRepository.validate(statusId) : new Promise<void>(resolve => resolve()))
+    return (temp.statusId ? this.statusRepository.validate(temp.statusId) : new Promise<void>(resolve => resolve()))
       .then(() => {
-        if (templateIds) return this.templateRepository.validateMany(templateIds);
+        if (temp.templateIds) return this.templateRepository.validateMany(temp.templateIds);
       })
       .then(() => {
-        if (submissionPeriodId) return this.submissionPeriodRepository.validate(submissionPeriodId);
+        if (temp.submissionPeriodId) return this.submissionPeriodRepository.validate(temp.submissionPeriodId);
       })
       .then(() =>
         
         TemplatePackageModel.findByIdAndUpdate(
           id,
-          {
-            name,
-            submissionPeriodId,
-            templateIds,
-            statusId,
-            creationDate,
-            userCreatorId,
-            programIds,
-            updatedBy,
-            updatedAt,
-            deadline,
-          },
+          temp,
           { upsert: true, new: true },
         ).populate(isPopulated ? populatedParams : ''),
       )

@@ -2,6 +2,7 @@ import BaseRepository from '../repository';
 import AuditLogModel from '../../models/AuditLog';
 import AuditLog, { AuditLogDoc } from '../../types/auditlog';
 import ArchiveLogModel from '../../models/ArchiveLog';
+import {dateStringTranslate} from '../../utils/misc';
 import PurgeLogModel from '../../models/PurgeLog';
 
 
@@ -19,6 +20,7 @@ export default class AuditLogRepository extends BaseRepository<AuditLog, AuditLo
   }
 
   async create(AuditLogInfo: AuditLog) {
+    AuditLogInfo.updatedAt = dateStringTranslate(new Date(AuditLogInfo.updatedAt));
     return AuditLogModel.create(AuditLogInfo);
   }
 

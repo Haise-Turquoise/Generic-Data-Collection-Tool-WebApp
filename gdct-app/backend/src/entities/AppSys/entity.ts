@@ -6,7 +6,7 @@ export default class AppSysEntity {
   public name: string;
   public code: string;
   public isActive: boolean;
-  public updatedAt: Date;
+  public updatedAt: string;
   public updatedBy: string;
 
   constructor({ _id, name, code, isActive, updatedAt, updatedBy, }: AppSys) {

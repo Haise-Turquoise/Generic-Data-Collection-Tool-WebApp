@@ -6,7 +6,7 @@ export default class AttributeConfigEntity {
   public attributeKeyword: string;
   public code: string;
   public updatedBy: string;
-  public updatedAt: Date;
+  public updatedAt: string;
   
   constructor({ _id, attributeKeyword, code, updatedBy, updatedAt }: AttributeConfigDoc) {
     this._id = _id;

@@ -2,6 +2,7 @@ import ReportingPeriodEntity from '../../entities/ReportingPeriod';
 import BaseRepository from '../repository';
 import ReportingPeriodModel from '../../models/ReportingPeriod';
 import ReportingPeriod, { ReportingPeriodDoc } from '../../types/reportingperiod';
+import {dateStringTranslate} from '../../utils/misc';
 import { FilterQuery } from 'mongoose';
 import AppError from '../../utils/AppError';
 
@@ -18,12 +19,19 @@ export default class ReportPeriodRepository extends BaseRepository<ReportingPeri
   }
 
   async create(reportingPeriod: ReportingPeriod) {
+    reportingPeriod.updatedAt = dateStringTranslate(new Date(reportingPeriod.updatedAt))
+    if(reportingPeriod.startDate) {reportingPeriod.startDate = dateStringTranslate(new Date(reportingPeriod.startDate))}
+    if(reportingPeriod.endDate){reportingPeriod.endDate = dateStringTranslate(new Date(reportingPeriod.endDate))}
+    
     return ReportingPeriodModel.create(reportingPeriod).then(
       reportingPeriod => new ReportingPeriodEntity(reportingPeriod),
     );
   }
 
   async update(id: string, reportingPeriod: Partial<ReportingPeriod>) {
+    reportingPeriod.updatedAt = dateStringTranslate(new Date(reportingPeriod.updatedAt!))
+    if(reportingPeriod.startDate) {reportingPeriod.startDate = dateStringTranslate(new Date(reportingPeriod.startDate))}
+    if(reportingPeriod.endDate){reportingPeriod.endDate = dateStringTranslate(new Date(reportingPeriod.endDate))}
     return ReportingPeriodModel.findByIdAndUpdate(id, reportingPeriod)
     .then((reportingPeriod: ReportingPeriodDoc|null) => {
       if (!reportingPeriod) throw new AppError(`Update failed, Item not found for ReportingPeriod item with ID: ${id}`);

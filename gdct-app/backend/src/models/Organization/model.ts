@@ -27,8 +27,8 @@ const OrgModel = model<OrganizationDoc>(
 
       programId: [{ type: ObjectId, ref: 'Program' }],
 
-      effectiveDate: { type: Date, required: true },
-      expiryDate: { type: Date, default: null },
+      effectiveDate: { type: String, required: true },
+      expiryDate: { type: String, default: null },
 
       timestamp: { type: Date },
       updatedBy: { type: String },

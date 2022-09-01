@@ -5,7 +5,7 @@ export default class AppSysRoleEntity {
   public _id: ObjectId;
   public appSys: string;
   public role: string;
-  public updatedAt: Date;
+  public updatedAt: string;
   public updatedBy: string;
   public isActive: boolean;
   public isSuperRole?: boolean;

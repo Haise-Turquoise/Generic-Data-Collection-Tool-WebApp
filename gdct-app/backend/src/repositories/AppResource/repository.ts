@@ -2,6 +2,7 @@ import AppResouceEntity from '../../entities/AppResource';
 import BaseRepository from '../repository';
 import AppResourceModel from '../../models/AppResource';
 import AppResource, { AppResourceDoc } from '../../types/appresource';
+import {dateStringTranslate} from '../../utils/misc';
 import AppError from '../../utils/AppError';
 
 export default class AppResourceRepository extends BaseRepository<AppResource, AppResourceDoc> {
@@ -16,10 +17,13 @@ export default class AppResourceRepository extends BaseRepository<AppResource, A
   }
 
   async create(appResource: AppResource) {
+    
+    appResource.updatedAt = dateStringTranslate(new Date(appResource.updatedAt));
     return AppResourceModel.create(appResource);
   }
 
   async update(id: string, appResource: Partial<AppResource>) {
+    appResource.updatedAt = dateStringTranslate(new Date(appResource.updatedAt));
     return AppResourceModel.findByIdAndUpdate(id, appResource).then(
       (appResource: AppResourceDoc|null) =>{
         if (appResource) return new AppResouceEntity(appResource);

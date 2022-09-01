@@ -25,7 +25,7 @@ export default interface Submission {
   year?: string;
   submissionPeriodId: ObjectId;
   createdAt: Date;
-  updatedAt: Date;
+  updatedAt: any;
   updatedBy: ObjectId;
   isPublished: boolean;
   version: number;

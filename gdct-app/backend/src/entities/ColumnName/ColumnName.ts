@@ -5,7 +5,7 @@ export default class ColumnName {
   public _id: ObjectId;
   public id: string;
   public name: string;
-  public updatedAt: Date;
+  public updatedAt: any;
   public updatedBy: string;
 
   constructor({ _id, id, name, updatedAt, updatedBy }: AttributeDoc) {

@@ -7,6 +7,7 @@ const Status = new Schema<StatusDoc>(
     description: { type: String },
     timestamp: { type: Date },
     updatedBy: { type: String },
+    updatedAt: {type: String },
     isActive: { type: Boolean },
     forPackage: { type: Boolean },
     order: { type: Number }

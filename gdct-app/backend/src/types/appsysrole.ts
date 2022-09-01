@@ -3,7 +3,7 @@ import { Document } from "mongoose";
 export default interface AppSysRole {
   appSys: string,
   role: string,
-  updatedAt: Date,
+  updatedAt: string,
   updatedBy: string,
   isActive: boolean,
   isSuperRole?: boolean,

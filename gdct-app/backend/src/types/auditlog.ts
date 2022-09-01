@@ -9,7 +9,7 @@ export default interface AuditLog {
   recordId: ObjectId,
   oldValue: any,
   newValue: any,
-  updatedAt: Date,
+  updatedAt: string,
 }
 
 export interface AuditLogDoc extends AuditLog, Document {}

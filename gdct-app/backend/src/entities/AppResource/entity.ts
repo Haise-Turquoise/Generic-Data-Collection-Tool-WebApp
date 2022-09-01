@@ -7,7 +7,7 @@ export default class AppResourceEntity {
   public resourceName: string;
   public resourcePath: string;
   public isProtected: AppResourceDoc["isProtected"];
-  public updatedAt: Date;
+  public updatedAt: string;
   public updatedBy: string;
 
   constructor({ _id, id, resourceName, resourcePath, isProtected, updatedAt, updatedBy }: AppResourceDoc) {

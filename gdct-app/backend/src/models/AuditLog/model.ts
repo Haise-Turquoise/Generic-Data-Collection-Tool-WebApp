@@ -12,7 +12,7 @@ const AuditLogModel = model<AuditLogDoc>(
             recordId: {type: ObjectId},
             oldValue: {type: Object},
             newValue: {type: Object},
-            updatedAt: {type: Date, default: Date.now},
+            updatedAt: {type: String},
         },
         {
             minimize: false

@@ -7,10 +7,10 @@ export default class TemplatePackageEntity {
   public submissionPeriodId: ObjectId;
   public templateIds: ObjectId[];
   public statusId: ObjectId;
-  public creationDate: Date;
+  public creationDate: string;
   public userCreatorId: ObjectId;
   public programIds: ObjectId[];
-  public updatedAt: Date;
+  public updatedAt: string;
   public updatedBy: string;
   public deadline: string;
 

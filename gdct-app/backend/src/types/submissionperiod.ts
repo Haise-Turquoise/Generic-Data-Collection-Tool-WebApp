@@ -5,9 +5,9 @@ export default interface SubmissionPeriod {
   _id:ObjectId
   reportingPeriodId: ObjectId,
   name: string,
-  startDate: Date,
-  endDate: Date,
-  updatedAt: Date,
+  startDate: string,
+  endDate: string,
+  updatedAt: string,
   updatedBy: string,
   programId: ObjectId[];
 }
