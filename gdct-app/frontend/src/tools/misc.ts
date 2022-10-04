@@ -132,7 +132,7 @@ export const excelJsStyle2Xspreadsheet = (style: Partial<Excel.Style>) => {
   if (style.alignment && style.alignment.horizontal) Object.assign(result, {align: style.alignment.horizontal});
 
   // Convert border Style (color not included since it use microsoft colour index)
-  if (style.border != {}) {
+  if (style.border) {
     const border = style.border;
     const resultBorder = {};
     if (border) {
