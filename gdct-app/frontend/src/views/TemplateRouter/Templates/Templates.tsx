@@ -202,7 +202,7 @@ const TemplatesTable = ({ history }: RouterProps) => {
           const convertedTemplate = Object.assign({}, template);
           convertedTemplate.templateTypeId = (readIndex && readIndex[template.templateTypeId]) || '';
           dispatch(updateTemplateRequest(convertedTemplate, resolve, reject));
-          CreateAuditLog(null, "Update Template", "Template", convertedTemplate._id, {}, convertedTemplate);
+          CreateAuditLog(null, "Update Template Design", "Template", convertedTemplate._id, {}, convertedTemplate);
         }),
       onRowDelete: (template: Template) =>
         new Promise((resolve, reject) => {

@@ -58,7 +58,7 @@ const COATreeActions = ({ sheetNameId }: { sheetNameId: string }) => {
         if (Auditlog_Operations.length > 0) {
           CreateAuditLog(
             null,
-            'Update COA Tree',
+            'Update Tree Management',
             'CategoryTree',
             sheetNameId,
             { 0: `Changes happened on Sheet: ${sheet?.name}` },
