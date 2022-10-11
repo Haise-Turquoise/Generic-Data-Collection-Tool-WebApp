@@ -40,7 +40,7 @@ const Header = () => (
 // The schema to validate user input
 const ProfileSchema = (originalUsername:string) =>
   yup.object().shape({
-    title: yup.string().required('Please enter your title'),
+    title: yup.string(),
     username: yup
       .string()
       .min(6, 'Username must be 6 to 20 characters long')
