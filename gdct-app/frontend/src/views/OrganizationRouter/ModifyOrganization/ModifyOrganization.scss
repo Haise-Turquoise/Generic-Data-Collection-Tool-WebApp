@@ -6,14 +6,19 @@
 }
 
 .tableContainer {
+    margin-top: 0.7%;
     display: flex;
     justify-content: space-between;
 }
 
-.tableWrapper {
+.tableWrapper-linked {
     width: 50%;
-    padding-left: 0.5%;
-    padding-right: 0.5%;
+    margin-right: 0.4%;
+}
+
+.tableWrapper-other {
+    width: 50%;
+    margin-left: 0.4%;
 }
 
 .formBody {
@@ -42,4 +47,16 @@
 
 .Mui-focused {
     outline: 'none'
+}
+
+.formActions {
+    padding-left: 1%;
+    padding-right: 1%;
+    justify-content: flex-start;
+}
+
+.SaveButton {
+    margin-left: 1% !important;
+    padding-left: 32.506px !important;
+    padding-right: 32.506px !important;
 }

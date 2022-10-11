@@ -27,7 +27,7 @@ module.exports = {
     'no-param-reassign': 'off',
     'import/no-named-as-default': 'off',
     'import/prefer-default-export': 'off',
-
+    'no-nested-ternary': 'off',
     'react/no-unescaped-entities': 'warn',
     'no-unused-vars': 'warn',
     'no-undef': 'warn',
@@ -59,7 +59,6 @@ module.exports = {
     'import/named': 'warn',
     'consistent-return': 'warn',
     'no-continue': 'warn',
-    'no-nested-ternary': 'warn',
     'import/no-mutable-exports': 'warn',
     'no-case-declarations': 'warn',
     eqeqeq: 'warn',

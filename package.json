@@ -6,12 +6,22 @@
   "author": "Bill Hu <william.hu@ontario.ca>",
   "license": "MIT",
   "scripts": {
-    "install": "yarn --cwd slate && yarn --cwd gdct-app",
+    "install": "yarn --cwd gdct-app",
     "start": "yarn --cwd gdct-app start",
-    "fix": "yarn --cwd gdct-app fix"
+    "fix": "yarn --cwd gdct-app fix",
+    "test": "jest"
+  },
+  "lint-staged": {
+    "./**/*.{js,ts}": [
+      "yarn fix"
+    ]
   },
   "dependencies": {
-    "passport-google-oauth": "^2.0.0",
-    "passport-remember-me": "^0.0.1"
+    "react": "^17.0.2",
+    "yarn": "^1.22.10"
+  },
+  "devDependencies": {
+    "jest": "^26.6.0",
+    "lint-staged": "^10.5.0"
   }
 }
