@@ -80,31 +80,31 @@ const auditMenu = () => {
         {getAuditNum(1) && <div className="rowContainer">
         <div className="rowCell">{result == undefined ? "loading": result[0]?.activity}</div>
         <div className="rowCell">{result == undefined  ? "loading": currentTime(result[0])}</div>
-        <div className="rowCell"> <Link to={result == undefined || menuitems == undefined ? "loading": getUrl(menuitems, result[0]?.activity)} className="btn btn-primary">Resume</Link> </div>
+        <div className="rowCell"> <Link to={result == undefined || menuitems == undefined ? "loading": getUrl(menuitems, result[0]?.activity) || '/'} className="btn btn-primary">Resume</Link> </div>
         </div>}
 
         {getAuditNum(2)&& <div className="rowContainer1">
         <div className="rowCell">{result == undefined ? "loading": result[1]?.activity}</div>
         <div className="rowCell">{result == undefined ? "loading": currentTime(result[1])}</div>
-        <div className="rowCell"> <Link to={result == undefined || menuitems == undefined ? "loading": getUrl(menuitems, result[1]?.activity)} className="btn btn-primary">Resume</Link> </div>
+        <div className="rowCell"> <Link to={result == undefined || menuitems == undefined ? "loading": getUrl(menuitems, result[1]?.activity)|| '/'} className="btn btn-primary">Resume</Link> </div>
         </div>}
 
         {getAuditNum(3)&& <div className="rowContainer">
         <div className="rowCell">{result == undefined ? "loading": result[2]?.activity}</div>
         <div className="rowCell">{result == undefined ? "loading": currentTime(result[2])}</div>
-        <div className="rowCell"> <Link to={result == undefined || menuitems == undefined ? "loading": getUrl(menuitems, result[2]?.activity)} className="btn btn-primary">Resume</Link> </div>
+        <div className="rowCell"> <Link to={result == undefined || menuitems == undefined ? "loading": getUrl(menuitems, result[2]?.activity)|| '/'} className="btn btn-primary">Resume</Link> </div>
         </div>}
 
         {getAuditNum(4) && <div className="rowContainer1">
         <div className="rowCell">{result == undefined ? "loading": result[3]?.activity}</div>
         <div className="rowCell">{result == undefined ? "loading": currentTime(result[3])}</div>
-        <div className="rowCell"> <Link to={result == undefined || menuitems == undefined ? "loading": getUrl(menuitems, result[3]?.activity)} className="btn btn-primary">Resume</Link> </div>
+        <div className="rowCell"> <Link to={result == undefined || menuitems == undefined ? "loading": getUrl(menuitems, result[3]?.activity)|| '/'} className="btn btn-primary">Resume</Link> </div>
         </div>}
 
         {getAuditNum(5) && <div className="rowContainer">
         <div className="rowCell">{result == undefined ? "loading": result[4]?.activity}</div>
         <div className="rowCell">{result == undefined ? "loading": currentTime(result[4])}</div>
-        <div className="rowCell"> <Link to={result == undefined || menuitems == undefined ? "loading": getUrl(menuitems, result[4]?.activity)} className="btn btn-primary">Resume</Link> </div>
+        <div className="rowCell"> <Link to={result == undefined || menuitems == undefined ? "loading": getUrl(menuitems, result[4]?.activity)|| '/'} className="btn btn-primary">Resume</Link> </div>
         </div>}
 
       </div>
