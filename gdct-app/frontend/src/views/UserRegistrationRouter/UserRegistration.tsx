@@ -90,7 +90,7 @@ const columns = [
 // The schema to validate user input
 const registerSchema = () =>
   yup.object().shape({
-    title: yup.string().required('Please select one title'),
+    title: yup.string(),
     username: yup
       .string()
       .min(6, 'Username must be 6 to 20 characters long')
