@@ -139,7 +139,7 @@ export default function Login({ setLoggedIn }:{setLoggedIn:(flag:boolean)=>void}
       case 'email':
         // @ts-ignore
         updatedErrors.email = !validEmailRegex.test(value) ? 'Not a Valid Email' : '';
-        setEmail(value);
+        setEmail(value.toLowerCase()); 
         setErrors(updatedErrors);
         break;
       case 'role':
