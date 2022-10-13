@@ -64,6 +64,7 @@ const RequestManagementTable = () => {
       return
     }
     const applierUser = await usersController.fetchByEmail(rowData.applierEmail);
+     CreateAuditLog(email, 'Approve Request', 'Request Management',null,{},{});
     return new Promise((resolve, reject) => {
       if (applierUser) {
         dispatch(approvePermission(rowData, applierUser, user, resolve, reject));
@@ -76,6 +77,7 @@ const RequestManagementTable = () => {
       return
     }
     const applierUser = await usersController.fetchByEmail(rowData.applierEmail);
+    CreateAuditLog(email, 'Reject Request', 'Request Management',null,{},{});
     return new Promise((resolve, reject) => {
       if (applierUser) {
         dispatch(rejectPermission(rowData, applierUser, user, resolve, reject));
