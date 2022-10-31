@@ -16,6 +16,5 @@ package-lock.json
 yarn-error.log
 
 # Ignore sensitive values
-.env
-gdct-app/backend/.env
 gdct-app/frontend/.env
+gdct-app/backend/.env
