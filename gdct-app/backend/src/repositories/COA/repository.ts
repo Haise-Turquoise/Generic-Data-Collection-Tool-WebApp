@@ -65,9 +65,6 @@ export default class COARepository extends BaseRepository<Category, CategoryDoc>
   }
 
   async updateMapping(id: string, COA: Partial<Category>) {
-    return COAModel.findOneAndUpdate(id, COA).then((COA: CategoryDoc | null) => {
-      if (!COA) throw new AppError(`Update failed, Item not found or not updated for COA item with ID: ${id}, params:${COA}`);
-      return new COAEntity(COA)
-    });
+    return COAModel.findOneAndUpdate(id, COA);
   }
 }
