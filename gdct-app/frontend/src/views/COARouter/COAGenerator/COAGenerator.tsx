@@ -16,6 +16,7 @@ import COAController from '../../../controllers/COA';
 import ColumnNameController from '../../../controllers/columnName';
 import AttributeConfigController from '../../../controllers/AttributeConfig';
 import Swal from 'sweetalert2';
+import COA from '../../../controllers/COA';
 
 let workbook = new ExcelJS.Workbook();
 
@@ -319,7 +320,9 @@ const convertToQuery = (PA: string, SA: string) => {
     return `pa=${PA_inc}` +
       (PA_exc.length > 0 ? `exclude=${PA_exc}` : "")
   }
-  else return ''
+  else {
+    return ''
+  }
 }
 
 const useStyles = makeStyles({
@@ -477,6 +480,61 @@ export default function COAGenerator() {
     }
   };
 
+  const updateMapping = async () => {
+    setErrorMsg("");
+    if (!file) {
+      setErrorMsg('No File Uploaded');
+      return;
+    }
+    // Check state variables to see if they are valid for reading
+    if (categoryGroup == '') {
+      setErrorMsg("Category Group cannot be empty");
+      return;
+    }
+
+    if (categoryGroup === category || categoryGroup === PA || categoryGroup === SA) {
+      setErrorMsg("Category Group cannot be the same index as Category, PA, or SA");
+      setCategoryGroup('');
+      return;
+    }
+
+    if (category == '') {
+      setErrorMsg("Category cannot be empty");
+      return;
+    }
+
+    if (categoryGroup === category || category === PA || category === SA) {
+      setErrorMsg("Category cannot be the same index as Category Group, PA, or SA");
+      setCategory('');
+      return;
+    }
+
+    // Cases when PA and SA are non-empty
+    if (PA != '') {
+      if (PA === categoryGroup || PA === category || PA === SA) {
+        setErrorMsg("PA cannot be the same index as Category Group, Category, or SA");
+        setPA('');
+        return;
+      }
+    }
+
+    if (SA != '') {
+      if (SA === categoryGroup || SA === category || PA === SA) {
+        setErrorMsg("SA cannot be the same index as Category Group, Category, or PA");
+        setSA('');
+        return;
+      }
+    }
+
+    // If reporting period was inputted incorrectly
+    if (attributeHeader == '') {
+      setErrorMsg("Reporting Period must be in the format: YYYY-YY, YYYY/YY, YYYY-YY XX or YYYY/YY XX")
+      return;
+    }
+    console.log("test: ");
+    
+    console.log(await COAController.testCOA({id: "100845637", COA: "testUpdate"}))
+  }
   /*
   Handles current file, checks if file and inputs are valid
   If valid, calls processData() and buildObjects() callback
@@ -574,7 +632,7 @@ export default function COAGenerator() {
    * @param file - The spreadsheet file to process
    * @param cb - The function to call with the processed data
    */
-  const processData = async (file: File, cb: (allData: AllDataType) => void, categoryGroupColumn: number, categoryColumn: number) => {
+  const  processData = async (file: File, cb: (allData: AllDataType) => void, categoryGroupColumn: number, categoryColumn: number) => {
     let reader = new FileReader();
     reader.readAsArrayBuffer(file);
     // reads necessary data
@@ -610,8 +668,9 @@ export default function COAGenerator() {
           allData[sheetName] = await getSheetData(mySheet, attributeIdMap, categoryGroupColumn, categoryColumn);
         }
       }
-      console.log('!debug line 381')
+      console.log("testOutput");
       console.log(allData);
+      console.log("complete");
       cb(allData);
     }
   }
@@ -869,6 +928,8 @@ export default function COAGenerator() {
     if (catCheck && catGroupCheck) {
       
       let categoriesWithNoGroup: string[] = []
+      let categoriesWithNoCOA: string[] = []
+      let categoriesWithInvalidCOA: string[] = []
       // loop through each row and get valid categories (has ID, has category group)
       currentSheet.eachRow((row, rowNumber) => {
         if (rowNumber === 0) {
@@ -920,24 +981,50 @@ export default function COAGenerator() {
             if (!categoryIds[groupName]) {
               categoryIds[groupName] = [];
             }
+            const COAFormat = convertToQuery(PAValue, SAValue);
             categoryIds[groupName].push({
               id: id.toString(),
               name,
               unitOfMeasure,
-              COA: convertToQuery(PAValue, SAValue),
+              COA: COAFormat,
               updatedAt: new Date().toString()
             });
+
+            //  if the COA is empty, record the name
+            if(COAFormat == ""){
+              if (PAValue == "" && SAValue == ""){
+                categoriesWithNoCOA.push(name)
+              }
+              else{
+                categoriesWithInvalidCOA.push(name)
+              }
+            }
           }
 
         }
       });
 
-      //  if there are categoires with no group, add to output message
+      //  output message according to the error catigories
       if (categoriesWithNoGroup.length > 0) {
         generateLog.type = "error"
         generateLog.message.push({ content: "Categories With No Group", html: "h5 class=\"pl-0\"" })
         generateLog.message.push({ content: `Found ${categoriesWithNoGroup.length} categories with no group, which are not added.`, html: "ul class=\"pl-0 mb-2 text-left font-weight-bold\"" })
         categoriesWithNoGroup.forEach(item => generateLog.message.push({ content: item, html: "li class=\"pl-0 text-left\"" }))
+        generateLog.message.push({ content: "", html: "h5 class=\"pl-0\"" })
+      }
+      if (categoriesWithNoCOA.length > 0) {
+        generateLog.type = "error"
+        generateLog.message.push({ content: "Categories With No COA", html: "h5 class=\"pl-0\"" })
+        generateLog.message.push({ content: `Found ${categoriesWithNoCOA.length} categories with no COA.`, html: "ul class=\"pl-0 mb-2 text-left font-weight-bold\"" })
+        categoriesWithNoCOA.forEach(item => generateLog.message.push({ content: item, html: "li class=\"pl-0 text-left\"" }))
+        generateLog.message.push({ content: "", html: "h5 class=\"pl-0\"" })
+      }
+      if (categoriesWithInvalidCOA.length > 0) {
+        generateLog.type = "error"
+        generateLog.message.push({ content: "Categories With invalid COA", html: "h5 class=\"pl-0\"" })
+        generateLog.message.push({ content: `Found ${categoriesWithInvalidCOA.length} categories with invalid COA`, html: "ul class=\"pl-0 mb-2 text-left font-weight-bold\"" })
+        categoriesWithInvalidCOA.forEach(item => generateLog.message.push({ content: item, html: "li class=\"pl-0 text-left\"" }))
+        generateLog.message.push({ content: "", html: "h5 class=\"pl-0\"" })
       }
     }
     
@@ -1049,6 +1136,9 @@ export default function COAGenerator() {
 
       <Button variant="contained" color="primary" onClick={processWorkbook}>
         Generate COA
+      </Button>
+      <Button variant="contained" color="primary" onClick={updateMapping}>
+        Update COA Mapping
       </Button>
       <br />
       <Typography>{errorMsg}</Typography>
