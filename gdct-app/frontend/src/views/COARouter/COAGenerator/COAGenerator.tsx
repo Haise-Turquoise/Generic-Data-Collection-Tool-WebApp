@@ -607,7 +607,7 @@ export default function COAGenerator() {
     }
     processData(file, data => updateCOAMapping(data), colToInt(categoryGroup), colToInt(category));
     
-    //console.log(await COAController.testCOA({id: "100845637", COA: "testUpdate"}))
+    //console.log(await COAController.testCOA({id: "100845650", COA: "testUpdate"}))
   }
   /*
   Handles current file, checks if file and inputs are valid

@@ -48,9 +48,11 @@ const COAController = Service([COAService], service => {
     });
 
     router.post('/COAs/testCOA', (req, res, next) => {
-      const { id, COA } = req.body;
+      const { COA } = req.body;
+      const id = COA.id;
+      const COAMap = COA.COA;
       service
-      .updateMapping(id, COA)
+      .updateMapping(id, COAMap)
       .then(COAs => res.json(COAs))
       .catch(next);
     });
