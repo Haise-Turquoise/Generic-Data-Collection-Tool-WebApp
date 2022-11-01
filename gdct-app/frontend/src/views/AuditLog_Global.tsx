@@ -1,3 +1,4 @@
+import moment from 'moment';
 import AuditLogController from '../controllers/AuditLog';
 
 // A global function for all views that may generate changes to the database.
@@ -28,6 +29,7 @@ const CreateAuditLog = async (
     recordId,
     oldValue: oldValue_trim,
     newValue: newValue_trim,
+    updatedAt: moment().format().toString()
   };
   // Create Auditlog
   await AuditLogController.create(AuditLogInfo);

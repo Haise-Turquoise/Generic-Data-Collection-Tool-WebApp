@@ -32,6 +32,7 @@ import CreateAuditLog from '../AuditLog_Global';
 import { selectModifyUserInfoStore } from '../../store/ModifyUserInfo/selectors';
 import { state } from '../../store/types';
 import User, { ToBeApproved } from '../../types/user';
+import userController from '../../controllers/user';
 
 const Header = () => (
   <div className="d-flex justify-content-between p-2 mb-3">
@@ -64,6 +65,9 @@ const RequestManagementTable = () => {
       return
     }
     const applierUser = await usersController.fetchByEmail(rowData.applierEmail);
+    const oldrowData = cloneDeep(rowData);
+    rowData.status = "approved";
+     CreateAuditLog(email, 'Approve Request', 'Request Management',null,{oldrowData},{rowData});
     return new Promise((resolve, reject) => {
       if (applierUser) {
         dispatch(approvePermission(rowData, applierUser, user, resolve, reject));
@@ -76,6 +80,9 @@ const RequestManagementTable = () => {
       return
     }
     const applierUser = await usersController.fetchByEmail(rowData.applierEmail);
+    const oldrowData = cloneDeep(rowData);
+    rowData.status = "rejected";
+    CreateAuditLog(email, 'Reject Request', 'Request Management',null,{oldrowData},{rowData});
     return new Promise((resolve, reject) => {
       if (applierUser) {
         dispatch(rejectPermission(rowData, applierUser, user, resolve, reject));

@@ -288,7 +288,7 @@ const queryREST = async (
     }
 
     try {
-      if (results[i] == []) {
+      if (JSON.stringify(results[i]) == '[]') {
         throw `Get Iteration ${i} has already failed, corresponding url is ${queries[i]}`;
         // I cast manually in elif because we know it's not []
       } else if ((results[i] as resultType).data.length > 0) {
@@ -429,7 +429,7 @@ const handleResume = async (
     }
 
     try {
-      if (results[i] !== [] && (results[i] as resultType).data.length > 0) {
+      if (JSON.stringify(results[i]) !== '[]' && (results[i] as resultType).data.length > 0) {
         console.log(`index ${i} has data`)
         const masterValue = cloneDeep(resumeQueries[i])
         masterValue.value = (results[i] as resultType).data[0][2];

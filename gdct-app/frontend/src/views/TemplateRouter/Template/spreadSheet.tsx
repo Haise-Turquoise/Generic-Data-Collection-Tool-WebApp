@@ -625,6 +625,7 @@ class SpreadSheet extends Component<SpreadSheetProps, { hasSheet: boolean }>{
               <Button variant="outlined" color="primary" onClick={()=>this.lineNumberInsertion(true)}>
                 Organize line numbers
               </Button>
+              
               <Button variant="outlined" color="primary" onClick={()=>this.downloadTemplate(this.sheet.getData())}>
                 Download Template
               </Button>
@@ -636,41 +637,35 @@ class SpreadSheet extends Component<SpreadSheetProps, { hasSheet: boolean }>{
                 hidden
                 id='upload-button'
               />
-             
+              
               <Button variant="outlined" color="primary" onClick={()=>this.openUploadMenu()}>
                 Upload Template
               </Button>
+
               <Button variant="outlined" color="primary" onClick={() => {this.validateSheet()}}>
                 Validate
               </Button>
 
-          <input
-            type="file"
-            accept=".xlsx, .xlsm"
-            onChange={(e) => this.fileImportHandler(e)}
-            hidden
-            id='upload-button'
-          />
+              <input
+                type="file"
+                accept=".xlsx, .xlsm"
+                onChange={(e) => this.fileImportHandler(e)}
+                hidden
+                id='upload-button'
+              />
+              
+              <Button variant="outlined" color="primary" onClick={() => { this.unitOfMeasure() }}>
+                Unit of Measure Validation
+              </Button>
 
-          <Button variant="outlined" color="primary" onClick={() => this.openUploadMenu()}>
-            Upload Template
-          </Button>
-          <Button variant="outlined" color="primary" onClick={() => { this.validateSheet() }}>
-            Validate
-          </Button>
+              <Button variant="outlined" color="primary" onClick={() => this.backButton()}>
+                Go Back
+              </Button>
 
-          <Button variant="outlined" color="primary" onClick={() => { this.unitOfMeasure() }}>
-            Unit of Measure Validation
-          </Button>
-
-          <Button variant="outlined" color="primary" onClick={() => this.backButton()}>
-            Go Back
-          </Button>
-
-          <Button variant="outlined" color="primary" onClick={() => this.reload()}>
-            Reload
-          </Button>
-        </div>
+              <Button variant="outlined" color="primary" onClick={() => this.reload()}>
+                Reload
+              </Button>
+            </div>
         <div id="x-spreadsheet"></div>
         <a id="download" style={{ display: 'none' }}></a>
       </div>
