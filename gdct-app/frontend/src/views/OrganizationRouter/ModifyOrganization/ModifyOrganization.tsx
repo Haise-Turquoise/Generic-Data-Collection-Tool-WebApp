@@ -78,6 +78,8 @@ const currentTime = () => {
 // using very generic object here
 const getValue = (object: { [key: string]: any }, attribute: string) => {
   let value;
+  //const name = object.authorizedPerson.name;
+  //const email = object.authorizedPerson.email;
   switch (typeof object[attribute]) {
     case 'undefined':
       value = '';
@@ -88,6 +90,16 @@ const getValue = (object: { [key: string]: any }, attribute: string) => {
   switch (attribute) {
     case 'effectiveDate':
       value = currentTime();
+    // case 'authorizedPerson.name':
+    //   value = name;
+    // case 'authorizedPerson.email':
+    //   value= email;
+  }
+  switch (attribute) {
+    case 'authorizedPerson.name':
+      value = object.authorizedPerson.name;
+    // case 'authorizedPerson.email':
+    //   value= email;
   }
   return { value };
 };
@@ -116,7 +128,8 @@ interface TextGroupProps extends InputProps {
 const Input = ({ object, attribute, text, handleChanges, type, cannotEdit }: InputProps) => {
   let errorSignal = false;
   let errorMessage = '';
-  
+  // const name = object.autho
+  // console.log(name);
   switch (attribute) {
     case 'id':
       if (isNaN(object.id ) && object.error_id) {
@@ -173,6 +186,10 @@ const ButtonGroup = (props: ButtonGroupProps) => (
   </div>
 );
 
+// const lastBox = (props: OrgFormProps) => {
+//   const authorizedPersonName = props.object.authorizedPerson.name;
+//   const authorizedPersonemail = props.object.authorizedPerson.email;
+// }
 
 const OrgInfo = (props: OrgFormProps) => (
   <div>
@@ -212,17 +229,17 @@ const OrgInfo = (props: OrgFormProps) => (
       <TextGroup {...props} attribute={'province'} text={'Province'} type="text" />
       <TextGroup {...props} attribute={'postalCode'} text={'Postal Code'} type="text" />
     </div>
-
+    
     <div className="formRow" id="userInfo">
       <TextGroup
         {...props}
-        attribute={'authorizedUserId'}
+        attribute={'authorizedPerson.name'}
         text={'Authoritative Person'}
         type="text"
       />
       <TextGroup
         {...props}
-        attribute={'contactUserId'}
+        attribute={'authorizedPerson.email'}
         text={"Authoritative Person's Email"}
         type="text"
       />

@@ -51,8 +51,8 @@ const Organizations = ({ history }: RouterProps) => {
       IFISNum: '',
       organizationGroupId: [''],
       programId: [''],
-      authorizedPerson: [''],
-    },
+      authorizedPerson:{name:'', email:''},
+    }
   ];
   const preColumns: Column<Organization>[] = [{ title: 'Name', field: 'name' }];
 
@@ -79,7 +79,9 @@ const Organizations = ({ history }: RouterProps) => {
         icon: EditIcon,
         tooltip: 'Edit Organization',
         onClick: (_: any, org: Organization | Organization[]) => {
+          console.log('organizations line 82');
           if (!Array.isArray(org)) {
+            console.log('organizations line 84');
             // previously only this behaviour is specified - ill keep that
             history.push(`/admin/organization/edit/${org._id}`);
           }

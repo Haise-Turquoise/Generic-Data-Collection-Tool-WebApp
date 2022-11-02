@@ -45,9 +45,10 @@ const EditOrganization = ({
       (elem: Organization) => elem._id === _id,
     ) || [{}])[0],
   }));
-
+  console.log('prepare data, editorganization.tsx line 48');
   const redirect = () => {
     history.push('/admin/organization/org');
+    console.log('prepare data, editorganization.tsx line 52');
   };
 
   const accept = () => {
@@ -72,6 +73,7 @@ const EditOrganization = ({
         oldOrganization,
         newOrganization,
       );
+      console.log('editorganization line 75 createauditlog ');
       // Add _id and trim tableData created by Material Table
       newOrganization['_id'] = oldOrganization?._id || '';
       const organization_trim = (({ tableData, ...o }) => o)(newOrganization);
@@ -96,7 +98,7 @@ const EditOrganization = ({
         manageUserIds: organization_trim.manageUserIds,
         postalCode: organization_trim.postalCode,
       }
-     
+      console.log('editorganization line 101 createauditlog ');
       dispatch(updateOrgsRequest(OrgData, accept, reject));
     })();
   };

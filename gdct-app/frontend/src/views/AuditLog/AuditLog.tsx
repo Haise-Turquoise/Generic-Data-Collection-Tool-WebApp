@@ -242,9 +242,11 @@ const AuditLogTable = () => {
   //merge the auditlogs with the fetched archivelogs, if they exist
   useEffect(() => { 
     if (archivelogs){
+      
       archivelogs?.forEach(auditlog => {
-        auditlog.updatedAt = moment(auditlog.updatedAt).format("YYYY-MM-DD HH:mm:ss")
+        auditlog.updatedAt = auditlog.updatedAt?.toString()//moment(auditlog.updatedAt).format("YYYY-MM-DD HH:mm:ss")
       })
+      console.log('aaaaaaaaaaaaaaaaaaa');
       if(auditlogs !== undefined ) {
         //setAuditLogs(auditlogs.concat(archivelogs)) 
         setCombinedLogs(auditlogs.concat(archivelogs).sort((a,b)=>b.updatedAt!.localeCompare(a.updatedAt!)))
@@ -255,12 +257,13 @@ const AuditLogTable = () => {
   //function to retrieve the archives from the archivelog
   const merge = (start: Date) => {
     if (start < archivedDate){
-      console.log(start + " " + archivedDate)
+      console.log(start + " mmm " + archivedDate);
       AuditLogController.fetchArchive(new Date(start), new Date(archivedDate))
       .then(res => { 
         setArchiveLogs(res)
-      })
-      setArchivedDate(start)
+      });
+      setArchivedDate(start);
+      console.log(start + " lll " + archivedDate);
     }
   }
 
