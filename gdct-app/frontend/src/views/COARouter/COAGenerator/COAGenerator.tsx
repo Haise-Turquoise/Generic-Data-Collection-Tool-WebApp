@@ -17,6 +17,7 @@ import ColumnNameController from '../../../controllers/columnName';
 import AttributeConfigController from '../../../controllers/AttributeConfig';
 import Swal from 'sweetalert2';
 import COA from '../../../controllers/COA';
+import './_btn.scss';
 
 let workbook = new ExcelJS.Workbook();
 
@@ -1207,11 +1208,10 @@ export default function COAGenerator() {
           />
         </div>
       </div>
-
-      <Button variant="contained" color="primary" onClick={processWorkbook}>
+      <Button className="btn1" variant="contained" color="primary" onClick={processWorkbook}>
         Generate COA
       </Button>
-      <Button variant="contained" color="primary" onClick={updateMapping}>
+      <Button className="btn2" variant="contained" color="primary" onClick={updateMapping}>
         Update COA Mapping
       </Button>
       <br />
