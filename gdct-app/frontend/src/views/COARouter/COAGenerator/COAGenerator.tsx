@@ -1208,10 +1208,11 @@ export default function COAGenerator() {
           />
         </div>
       </div>
-      <Button className="btn1" variant="contained" color="primary" onClick={processWorkbook}>
+      <Button variant="contained" color="primary" onClick={processWorkbook}>
         Generate COA
       </Button>
-      <Button className="btn2" variant="contained" color="primary" onClick={updateMapping}>
+      <div className='space'></div>
+      <Button variant="contained" color="primary" onClick={updateMapping}>
         Update COA Mapping
       </Button>
       <br />
