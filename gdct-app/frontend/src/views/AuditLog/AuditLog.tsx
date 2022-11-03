@@ -178,8 +178,8 @@ const AuditLogTable = () => {
   // Prepare the data for MaterialTable
   // Convert Auditlogs' time format
   auditlogs?.forEach(auditlog => {
-    auditlog.updatedAt = moment(auditlog.updatedAt).format("YYYY-MM-DD HH:mm:ss")
-  })
+    auditlog.updatedAt = moment(auditlog.updatedAt).format("YYYY-MM-DD HH:mm:ss").toString()
+  });
 
   //= =================================================================================================
   
