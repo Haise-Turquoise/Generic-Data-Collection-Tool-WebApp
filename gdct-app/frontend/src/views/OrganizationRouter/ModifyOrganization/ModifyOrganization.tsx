@@ -80,7 +80,12 @@ const getValue = (object: { [key: string]: any }, attribute: string) => {
   let value;
   switch (typeof object[attribute]) {
     case 'undefined':
-      value = '';
+      if(attribute.charAt(16) === '.'){
+        value = object['authorizedPerson']? object[attribute.substring(0,16)][attribute.substring(17)]: '';
+      }else{
+        value = '';
+      }
+      
       break;
     default:
       value = object[attribute];
@@ -116,7 +121,6 @@ interface TextGroupProps extends InputProps {
 const Input = ({ object, attribute, text, handleChanges, type, cannotEdit }: InputProps) => {
   let errorSignal = false;
   let errorMessage = '';
-  
   switch (attribute) {
     case 'id':
       if (isNaN(object.id ) && object.error_id) {
@@ -127,10 +131,10 @@ const Input = ({ object, attribute, text, handleChanges, type, cannotEdit }: Inp
         errorSignal = true;
         errorMessage = 'This ID is a duplicate';
       }
-
+    // case 'authorizedPerson.name':
+    //   object
     //add cases for other validations here, matching preliminary checks in componentDidUpdate
   }
-  
   return (
     <TextField
       name={attribute}
@@ -216,13 +220,13 @@ const OrgInfo = (props: OrgFormProps) => (
     <div className="formRow" id="userInfo">
       <TextGroup
         {...props}
-        attribute={'authorizedUserId'}
+        attribute={'authorizedPerson.name'}
         text={'Authoritative Person'}
         type="text"
       />
       <TextGroup
         {...props}
-        attribute={'contactUserId'}
+        attribute={'authorizedPerson.email'}
         text={"Authoritative Person's Email"}
         type="text"
       />
@@ -407,13 +411,21 @@ class ModifyOrganization extends React.Component<MOProps, MOState> {
   }
 
   updateState(name: any, value: any) {
-    this.setState(state => ({ ...state, [name]: value }));
+    if(name === 'authorizedPerson.name'){
+      const person = {name: value, email: this.state.authorizedPerson? this.state.authorizedPerson.email: ''};
+      this.setState(state => ({ ...state, ['authorizedPerson']: person }));
+    }else if(name === 'authorizedPerson.email'){
+      const person = {name: this.state.authorizedPerson? this.state.authorizedPerson.name: '', email: value};
+      this.setState(state => ({ ...state, ['authorizedPerson']: person }));
+    }else{
+      this.setState(state => ({ ...state, [name]: value }));
+    }
+    
   }
 
   handleChanges(e: Event) {
     const { name, value, checked, type } = e.target as HTMLInputElement;
     let updateValue;
-
     switch (type) {
       case 'checkbox':
         updateValue = !checked;
@@ -432,7 +444,6 @@ class ModifyOrganization extends React.Component<MOProps, MOState> {
         this.updateState('expiryDate', currentTime());
       }
     }
-
     this.updateState(name, updateValue);
   }
 
