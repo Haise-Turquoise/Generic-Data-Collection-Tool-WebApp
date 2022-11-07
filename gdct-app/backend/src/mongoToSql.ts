@@ -100,8 +100,8 @@ const orgTransfer = async(conn:any)=>{
 
       entry.province,
       JSON.stringify(entry.organizationGroupId),
-      entry.authorizedPerson?entry.authorizedPerson.name:null,
-      entry.authorizedPerson?entry.authorizedPerson.email:null,
+      entry.authorizedPerson?entry.authorizedPerson.name:'',
+      entry.authorizedPerson?entry.authorizedPerson.email:'',
 
       JSON.stringify(entry.programId),
       entry.address,

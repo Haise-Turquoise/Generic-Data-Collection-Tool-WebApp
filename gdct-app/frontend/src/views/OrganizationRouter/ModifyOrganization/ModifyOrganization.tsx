@@ -85,14 +85,15 @@ const getValue = (object: { [key: string]: any }, attribute: string) => {
       }else{
         value = '';
       }
-      
       break;
     default:
       value = object[attribute];
+      
   }
   switch (attribute) {
     case 'effectiveDate':
       value = currentTime();
+      break;
   }
   return { value };
 };
@@ -131,8 +132,6 @@ const Input = ({ object, attribute, text, handleChanges, type, cannotEdit }: Inp
         errorSignal = true;
         errorMessage = 'This ID is a duplicate';
       }
-    // case 'authorizedPerson.name':
-    //   object
     //add cases for other validations here, matching preliminary checks in componentDidUpdate
   }
   return (
@@ -420,7 +419,6 @@ class ModifyOrganization extends React.Component<MOProps, MOState> {
     }else{
       this.setState(state => ({ ...state, [name]: value }));
     }
-    
   }
 
   handleChanges(e: Event) {
