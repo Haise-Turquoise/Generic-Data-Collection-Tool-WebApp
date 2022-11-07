@@ -413,7 +413,7 @@ export default function Login({ setLoggedIn }:{setLoggedIn:(flag:boolean)=>void}
           </Button>
           <Grid container>
             <Grid item xs>
-              <Link href="#" variant="body2">
+              <Link href="/updatePassword" variant="body2">
                 Forgot password?
               </Link>
             </Grid>
