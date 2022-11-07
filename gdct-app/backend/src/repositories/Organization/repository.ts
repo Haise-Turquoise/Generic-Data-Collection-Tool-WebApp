@@ -29,6 +29,7 @@ export default class OrgRepository extends BaseRepository<Organization, Organiza
     
     Org.updatedAt = dateStringTranslate(new Date(Org.updatedAt!))
     Org.effectiveDate = dateStringTranslate(new Date(Org.effectiveDate))
+    console.log(' repository line 32');
     return OrgModel.findByIdAndUpdate(id, Org, { new: true })
     .then((org: OrganizationDoc|null) => {
       if (!org) throw new AppError(`Update failed, Item not found for Org item with ID: ${id}`);

@@ -60,11 +60,13 @@ const EditOrganization = ({
   };
 
   const submit = (newOrganization: Organization & { tableData: any }) => {
+    console.log('line 63');
     // we let tableData be any since we are just trimming it
     // This newOrgnization does not contain "_id" required for update (it does contain the artificial "id")
     (async () => {
       // Find the old value before updating in order to Auditlog
       const oldOrganization = await orgController.fetchById(newOrganization.id);
+      console.log('editorganization line 68');
       CreateAuditLog(
         null,
         'Update Organization',

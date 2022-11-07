@@ -78,28 +78,23 @@ const currentTime = () => {
 // using very generic object here
 const getValue = (object: { [key: string]: any }, attribute: string) => {
   let value;
-  //const name = object.authorizedPerson.name;
-  //const email = object.authorizedPerson.email;
   switch (typeof object[attribute]) {
     case 'undefined':
+      if(attribute.charAt(16) === '.'){
+        console.log(attribute.substring(0,16));
+        value = object[attribute.substring(0,16)][attribute.substring(17)];
+      }else{
       value = '';
+      }
       break;
     default:
       value = object[attribute];
+      
   }
   switch (attribute) {
     case 'effectiveDate':
       value = currentTime();
-    // case 'authorizedPerson.name':
-    //   value = name;
-    // case 'authorizedPerson.email':
-    //   value= email;
-  }
-  switch (attribute) {
-    case 'authorizedPerson.name':
-      value = object.authorizedPerson.name;
-    // case 'authorizedPerson.email':
-    //   value= email;
+      break;
   }
   return { value };
 };
@@ -128,6 +123,7 @@ interface TextGroupProps extends InputProps {
 const Input = ({ object, attribute, text, handleChanges, type, cannotEdit }: InputProps) => {
   let errorSignal = false;
   let errorMessage = '';
+  cannotEdit = false;
   // const name = object.autho
   // console.log(name);
   switch (attribute) {
@@ -140,7 +136,8 @@ const Input = ({ object, attribute, text, handleChanges, type, cannotEdit }: Inp
         errorSignal = true;
         errorMessage = 'This ID is a duplicate';
       }
-
+    case 'authorizedPerson.name':
+      console.log('modifyorganization line 140');
     //add cases for other validations here, matching preliminary checks in componentDidUpdate
   }
   
@@ -388,6 +385,7 @@ class ModifyOrganization extends React.Component<MOProps, MOState> {
     let error_id = false;
     
     if (!prevProps.object && this.props.object) {
+      console.log('line 387');
       this.setState({
         ...this.props.object
       })
@@ -425,6 +423,7 @@ class ModifyOrganization extends React.Component<MOProps, MOState> {
 
   updateState(name: any, value: any) {
     this.setState(state => ({ ...state, [name]: value }));
+    console.log(name + ' + ' + value);
   }
 
   handleChanges(e: Event) {
