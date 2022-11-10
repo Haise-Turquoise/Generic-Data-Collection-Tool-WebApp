@@ -2,13 +2,27 @@ import { Service } from 'typedi';
 import { Router } from 'express';
 import UserService from '../../services/User';
 
+/**
+IMPORTANT NOTE:
+Every backend service need to handle response by Response methods and error
+If response is not handled, the backend buffer will overflow after several hanging(pending) requests
+And the frontend and backend will be disconnected
+
+https://expressjs.com/en/guide/routing.html :
+Response methods
+The methods on the response object (res) in the following table can send a response to the client, 
+and terminate the request-response cycle. 
+If none of these methods are called from a route handler, the client request will be left hanging.
+**/
 const UserController = Service([UserService], service => {
   const router = Router();
 
   return (function () {
     router.post(`/users/registerUser`, (req, res, next) => {
       const { userData } = req.body;
-      service.register(userData).catch(next);
+      service.register(userData)
+      .then(() => res.json({ message: 'router.put /users/registerUser' }))
+      .catch(next);
     });
 
     // User Profile Update
@@ -18,6 +32,7 @@ const UserController = Service([UserService], service => {
       
       service
         .modifyUserInfo(_id, userData)
+        .then(() => res.json({ message: 'router.put /updatePopulatedUser' }))
         .catch(next);
     });
 
@@ -29,6 +44,7 @@ const UserController = Service([UserService], service => {
       
       service
         .modifyUserToBeApproved(_id, userData)
+        .then(() => res.json({ message: 'router.put updateToBeApprovedUser' }))//see IMPORTANT NOTE above
         .catch(next);
     });
 
@@ -39,6 +55,7 @@ const UserController = Service([UserService], service => {
           
       service
         .modifyUserPendingPermissions(_id, userData)
+        .then(() => res.json({ message: 'router.put updatePendingPermissions' }))
         .catch(next);
     });
 
@@ -87,6 +104,7 @@ const UserController = Service([UserService], service => {
       const { email, permissionData } = req.body;
       service
       .updatePermissionByUserEmail(email, permissionData)
+      .then(() => res.json({ message: 'router.put /users/updatePermission' }))
       .catch(next);
     });
     router.get(`/users/activeUser`, (req, res, next) => {
