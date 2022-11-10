@@ -50,7 +50,14 @@ const UserController = Service([UserService], service => {
         .then(user => res.json({ user }))
         .catch(next);
     });
+    router.post(`/fetchUserByEmail`, (req, res, next) => {
+      const { email } = req.body;
 
+      service
+        .fetchUserByEmail(email)
+        .then(user => res.json({ user }))
+        .catch(next);
+    });
     router.get(`/users/verifyUser`, (req, res, next) => {
       const { approve, _id, hashedUsername, orgId } = req.query;
       service
