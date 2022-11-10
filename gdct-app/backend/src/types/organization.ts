@@ -16,8 +16,8 @@ export default interface Organization {
   active: boolean,
   managerUserIds: ObjectId[],
   authorizedPerson: {name:string, email:string}
-  contactUserId: string,
-  authorizedUserId: string,
+  // contactUserId: string,
+  // authorizedUserId: string,
   programId: ObjectId[],
   effectiveDate: any,
   expiryDate: any,

@@ -16,8 +16,9 @@ export default class OrgEntity {
   public organizationGroupId: ObjectId[];
   public active: boolean;
   public managerUserIds: ObjectId[];
-  public contactUserId: string;
-  public authorizedUserId: string;
+  public authorizedPerson: {name: string, email: string};
+  // public contactUserId: string;
+  // public authorizedUserId: string;
   public programId: ObjectId[];
   public effectiveDate: Date;
   public expiryDate: Date;
@@ -39,8 +40,9 @@ export default class OrgEntity {
     organizationGroupId,
     active,
     managerUserIds,
-    contactUserId,
-    authorizedUserId,
+    authorizedPerson,
+    // contactUserId,
+    // authorizedUserId,
     programId,
     effectiveDate,
     expiryDate,
@@ -61,8 +63,10 @@ export default class OrgEntity {
     this.organizationGroupId = organizationGroupId;
     this.active = active;
     this.managerUserIds = managerUserIds;
-    this.contactUserId = contactUserId;
-    this.authorizedUserId = authorizedUserId;
+    this.authorizedPerson = authorizedPerson;
+
+    // this.contactUserId = contactUserId;
+    // this.authorizedUserId = authorizedUserId;
     this.programId = programId;
     this.effectiveDate = effectiveDate;
     this.expiryDate = expiryDate;
