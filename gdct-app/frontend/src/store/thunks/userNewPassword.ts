@@ -15,7 +15,7 @@ interface passwordData {
   passwordConfirm: string
 }
 
-export const submit = (values: passwordData) => (dispatch: Dispatch, getState: () => state) => {
+export const submit = (values: passwordData) => async (dispatch: Dispatch, getState: () => state) => {
   dispatch(UserNewPasswordStore.actions.setpasswordData(values));
     const {
       // @ts-ignore
@@ -25,6 +25,9 @@ export const submit = (values: passwordData) => (dispatch: Dispatch, getState: (
     const email = userData.email.toLowerCase();
     const password = bcrypt.hashSync(userData.password, bcrypt.genSaltSync(8));
     delete userData.passwordConfirm;
+
+    const fetchData = await userController.fetchUserByUserName(email);
+    console.log(fetchData);
 
     return userController.updatePasswordByUserEmail(email, password).catch(error => {
         throw new Error(error); 
