@@ -1,5 +1,5 @@
 //@ts-ignore
-import React, { useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import { Formik } from 'formik';
@@ -16,12 +16,15 @@ import Box from '@material-ui/core/Box';
 //@ts-ignore
 import * as yup from 'yup';
 
+import bcrypt from 'bcryptjs';
+
 import {
-  submit,
+  submit
   //@ts-ignore
-} from '../../store/thunks/userRegistration';
+} from '../../store/thunks/UserNewPassword';
 //@ts-ignore
 import UserController from '../../controllers/user';
+import userController from '../../controllers/user';
 
 // The schema to validate user input
 const registerSchema = () =>
@@ -50,7 +53,7 @@ const registerSchema = () =>
   });
 
 // Button on the bottom of page
-const ButtonBox = ({ handleSubmit }: { handleSubmit: () => void }) => (
+const ButtonBox = ({ values, handleSubmit }: { values: object; handleSubmit: (values: object) => void }) => (
   <Box border={1} color="primary" className="register__buttonBox" justifyContent="center">
 
     <Button variant="outlined" color="primary" className="register__button" href="/login">
@@ -61,7 +64,7 @@ const ButtonBox = ({ handleSubmit }: { handleSubmit: () => void }) => (
       variant="outlined"
       color="primary"
       className="register__button"
-      onClick={handleSubmit}
+      onClick={() => handleSubmit(values)}
     >
       Update
     </Button>
@@ -76,7 +79,7 @@ const ButtonBox = ({ handleSubmit }: { handleSubmit: () => void }) => (
 
 // Have the detail UI page for each step
 const getStepContent = (
-  handleSubmit: () => void,
+  handleSubmit: (values:any) => void,
   props: any,
 ) => {
   const { values, handleChange, touched, handleBlur, errors, isValid } = props;
@@ -161,6 +164,7 @@ const getStepContent = (
         <br />
         <ButtonBox
           handleSubmit={handleSubmit}
+          values={values}
         />
       </form>
     </div>
@@ -169,11 +173,10 @@ const getStepContent = (
 
 // Get the state and shown it on the website
 const Register_container = (props: any) => {
-  console.log(props)
   const dispatch = useDispatch();
   const history = useHistory();
-  const handleSubmit = useCallback(() => {
-    dispatch(submit());
+  const handleSubmit = useCallback((values: any) => {
+    dispatch(submit(values));
     Swal.fire({
       title: 'Success!',
       text: 'Your request has been submitted',
@@ -202,13 +205,24 @@ const Register_container = (props: any) => {
 const Register = () => {
   const handleSubmit = () => { };
   const dispatch = useDispatch();
-  const { registrationData } = useSelector(
+  const { passwordData } = useSelector(
     // @ts-ignore
-    ({ UserRegistrationStore: { registrationData } }) => ({
-      registrationData,
+    ({ UserNewPasswordStore: { passwordData } }) => ({
+      passwordData,
     }),
     shallowEqual,
   );
+  // const { passwordData } = useSelector(
+  //   // @ts-ignore
+  //   ({ UserNewPasswordStore: { passwordData: {
+  //     email: "",
+  //     password: "",
+  //     passwordConfirm: ""
+  //   } } }) => ({
+  //     passwordData,
+  //   }),
+  //   shallowEqual,
+  // );
 
   return (
     <div>
@@ -218,7 +232,7 @@ const Register = () => {
         <Paper className="register__container">
           <Formik
             validationSchema={registerSchema}
-            initialValues={registrationData}
+            initialValues={passwordData}
             onSubmit={handleSubmit}
             render={formikProps => <Register_container {...formikProps} />}
           />

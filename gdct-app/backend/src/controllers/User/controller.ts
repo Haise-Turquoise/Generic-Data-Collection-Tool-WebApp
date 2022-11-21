@@ -108,6 +108,14 @@ const UserController = Service([UserService], service => {
         .catch(next);
     });
 
+    router.post(`/users/updatePassword`, (req, res, next) => {
+      const { email, password } = req.body;
+      service
+      .updatePasswordByUserEmail(email, password)
+      .then(() => res.json({ message: 'Password is successfully changed' }))
+      .catch(next);
+    });
+
     return router;
   })();
 });

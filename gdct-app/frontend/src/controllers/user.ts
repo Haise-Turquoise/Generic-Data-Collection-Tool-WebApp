@@ -17,12 +17,14 @@ const userController = (() => {
       userAxios.put('/updateToBeApprovedUser', { userData }).then(res => res.data),
     updatePendingPermissions: async (userData: User): Promise<User | null> =>
       userAxios.put('/updatePendingPermissions', { userData }).then(res => res.data),
-    fetchUserByUserName: async (username: string): Promise<{user: User | null}> =>
+    fetchUserByUserName: async (username: string): Promise<{ user: User | null }> =>
       userAxios.post('/fetchUserByUserName', { username }).then(res => res.data),
     updatePermissionByUserEmail: async (email: string, permissionData: RawData): Promise<void> =>
-      userAxios.post(`/users/updatePermission`, {email, permissionData}).then(res => res.data),
+      userAxios.post(`/users/updatePermission`, { email, permissionData }).then(res => res.data),
     deletePermissionByUserEmail: async (email: string, permissionData: RawData): Promise<User | null> =>
-      userAxios.post(`/users/deletePermission`, {email, permissionData}).then(res => res.data),
+      userAxios.post(`/users/deletePermission`, { email, permissionData }).then(res => res.data),
+    updatePasswordByUserEmail: async (email: string, password: string): Promise<void> =>
+      userAxios.post(`/users/updatePassword`, { email, password }).then(res => res.data),
   };
 })();
 
