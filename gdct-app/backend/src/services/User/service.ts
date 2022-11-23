@@ -218,7 +218,9 @@ export default class UserService {
   async fetchUserByUserName(username: string) {
     return this.UserRepository.findByUserName(username);
   }
-
+  async fetchUserByEmail(email: string) {
+    return this.UserRepository.findByEmail(email);
+  }
   //TODO not sure what permissionData is here
   async deleteUserPermission(email: string, permissionData: any) {
     const userCopy: UserEntity | void = await this.UserRepository.findByEmail(email)
