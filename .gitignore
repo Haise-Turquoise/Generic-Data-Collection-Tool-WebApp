@@ -18,3 +18,4 @@ yarn-error.log
 # Ignore sensitive values
 gdct-app/frontend/.env
 gdct-app/backend/.env
+gdct-app/frontend/webpack.dev.js
