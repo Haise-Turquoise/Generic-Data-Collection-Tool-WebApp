@@ -79,7 +79,7 @@ const ButtonBox = ({ values, handleSubmit }: { values: object; handleSubmit: (va
 
 // Have the detail UI page for each step
 const getStepContent = (
-  handleSubmit: (values:any) => void,
+  handleSubmit: (values: any) => void,
   props: any,
 ) => {
   const { values, handleChange, touched, handleBlur, errors, isValid } = props;
@@ -173,14 +173,34 @@ const getStepContent = (
 
 // Get the state and shown it on the website
 const Register_container = (props: any) => {
-  const dispatch = useDispatch();
   const history = useHistory();
-  const handleSubmit = useCallback((values: any) => {
-    dispatch(submit(values));
-    Swal.fire({
-      title: 'Success!',
-      text: 'Your request has been submitted',
-      icon: 'success',
+  const handleSubmit = useCallback(async (values: any) => {
+    let { email, password } = values;
+    email = email.toLowerCase();
+    password = bcrypt.hashSync(password, bcrypt.genSaltSync(8));
+    const fetchData = await userController.fetchUserByEmail(email);
+
+    if (fetchData.user?._id != undefined) {
+      userController.updatePasswordByUserEmail(email, password).catch(error => {
+        throw new Error(error);
+      });
+      Swal.fire({
+        title: 'Success!',
+        text: 'Your request has been submitted',
+        icon: 'success',
+        confirmButtonColor: '#3085d6',
+        confirmButtonText: 'OK',
+      }).then((result: SweetAlertResult<any>) => {
+        if (result.isConfirmed) {
+          // window.location.reload();
+          history.push('/');
+        }
+      });
+    } else {
+      Swal.fire({
+      title: 'Error!',
+      text: 'You entered a wrong Email',
+      icon: 'error',
       confirmButtonColor: '#3085d6',
       confirmButtonText: 'OK',
     }).then((result: SweetAlertResult<any>) => {
@@ -188,7 +208,7 @@ const Register_container = (props: any) => {
         // window.location.reload();
         history.push('/');
       }
-    });
+    });}
   }, []);
 
   return (
