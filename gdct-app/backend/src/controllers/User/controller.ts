@@ -67,6 +67,7 @@ const UserController = Service([UserService], service => {
         .then(user => res.json({ user }))
         .catch(next);
     });
+
     router.post(`/fetchUserByEmail`, (req, res, next) => {
       const { email } = req.body;
 
@@ -75,6 +76,7 @@ const UserController = Service([UserService], service => {
         .then(user => res.json({ user }))
         .catch(next);
     });
+
     router.get(`/users/verifyUser`, (req, res, next) => {
       const { approve, _id, hashedUsername, orgId } = req.query;
       service
@@ -113,6 +115,14 @@ const UserController = Service([UserService], service => {
         .activeUser(_id)
         .then(() => res.json({ message: 'You have activated the account' }))
         .catch(next);
+    });
+
+    router.post(`/users/updatePassword`, (req, res, next) => {
+      const { email, password } = req.body;
+      service
+      .updatePasswordByUserEmail(email, password)
+      .then(() => res.json({ message: 'Password is successfully changed' }))
+      .catch(next);
     });
 
     return router;
