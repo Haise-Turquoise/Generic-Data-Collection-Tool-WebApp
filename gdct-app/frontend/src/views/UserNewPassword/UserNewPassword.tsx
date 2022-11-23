@@ -1,7 +1,7 @@
 //@ts-ignore
 import React, { useCallback, useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import { useDispatch, useSelector, shallowEqual } from 'react-redux';
+//import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import { Formik } from 'formik';
 //@ts-ignore
 import Swal, { SweetAlertResult } from 'sweetalert2';
@@ -18,12 +18,7 @@ import * as yup from 'yup';
 
 import bcrypt from 'bcryptjs';
 
-import {
-  submit
-  //@ts-ignore
-} from '../../store/thunks/UserNewPassword';
 //@ts-ignore
-import UserController from '../../controllers/user';
 import userController from '../../controllers/user';
 
 // The schema to validate user input
@@ -83,7 +78,7 @@ const getStepContent = (
   props: any,
 ) => {
   const { values, handleChange, touched, handleBlur, errors, isValid } = props;
-  const dispatch = useDispatch();
+  //const dispatch = useDispatch();
 
   return (
     <div>
@@ -186,7 +181,7 @@ const Register_container = (props: any) => {
       });
       Swal.fire({
         title: 'Success!',
-        text: 'Your request has been submitted',
+        text: 'Your Password is changed!',
         icon: 'success',
         confirmButtonColor: '#3085d6',
         confirmButtonText: 'OK',
@@ -222,16 +217,9 @@ const Register_container = (props: any) => {
 };
 
 // Main function to export
-const Register = () => {
+const NewPassword = () => {
   const handleSubmit = () => { };
-  const dispatch = useDispatch();
-  const { passwordData } = useSelector(
-    // @ts-ignore
-    ({ UserNewPasswordStore: { passwordData } }) => ({
-      passwordData,
-    }),
-    shallowEqual,
-  );
+  const passwordIniData = {email:'',password:'',passwordConfirm:''};
   // const { passwordData } = useSelector(
   //   // @ts-ignore
   //   ({ UserNewPasswordStore: { passwordData: {
@@ -252,7 +240,7 @@ const Register = () => {
         <Paper className="register__container">
           <Formik
             validationSchema={registerSchema}
-            initialValues={passwordData}
+            initialValues={passwordIniData}
             onSubmit={handleSubmit}
             render={formikProps => <Register_container {...formikProps} />}
           />
@@ -261,4 +249,4 @@ const Register = () => {
     </div>
   );
 };
-export default Register;
+export default NewPassword;
