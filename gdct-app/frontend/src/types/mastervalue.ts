@@ -9,6 +9,7 @@ export interface MasterValue{
   attributeId:string;
   attributeName:string;
   org:any;
+  orgGroup: any;
   template:string;
   value:number;
   categoryGroup:string;

@@ -58,7 +58,9 @@ export default class ProgramRepository extends BaseRepository<Program, ProgramDo
     let key: keyof Program
     for (key in query) {
       if (query[key]) realQuery[key] = query[key];
+      
     }
+    console.log(query);
     return ProgramModel.find(realQuery);
   }
 

@@ -1,4 +1,9 @@
 export default interface OrganizationGroup {
-    label:string;
-    value:{name:string, _id:string};
-  }
+  _id: string;
+  id: number;
+  name: string;
+  isActive: boolean;
+  createdBy: string;
+  updatedAt: string;
+  updatedBy: string;
+  } 

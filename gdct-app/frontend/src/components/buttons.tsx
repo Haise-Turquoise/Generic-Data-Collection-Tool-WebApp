@@ -20,10 +20,12 @@ import ReportingPeriodDialog from './dialogs/ReportingPeriodDialog';
 import DialogsStore from '../store/DialogsStore/store';
 import TemplateDialog from './dialogs/TemplateDialog';
 import OrganizationDialog from './dialogs/OrganizationDialog';
+import OrganizationGroupDialog from './dialogs/OrganizationGroupDialog';
 import WorkflowDialog from './dialogs/WorkflowDialog';
 import SubmissionPeriod from '../types/submissionperiod';
 import Template from '../types/template';
 import Organization from '../types/organization';
+import OrganizationGroup from '../types/organizationgroup';
 import Program from '../types/program';
 import Workflow from '../types/workflow';
 export const DeleteButton = ({ handleDelete }:{handleDelete:()=>void}) => (
@@ -124,6 +126,13 @@ export const StatusIdButton = (props:any) => {
     </SelectIdButton>
   );
 };
+
+export const OrganizationGroupIdButton = ({ value, onChange }:{value:string, onChange:(data:OrganizationGroup)=>void}) => (
+  <SelectIdButton value={value} action={DialogsStore.actions.OPEN_ORGANIZATION_GROUP_DIALOG}>
+    {/*@ts-ignore*/}
+    <OrganizationGroupDialog handleChange={onChange} />
+  </SelectIdButton>
+);
 
 export const ProgramIdButton = ({ value, onChange }:{value:string, onChange:(data:Program)=>void}) => (
   <SelectIdButton value={value} action={DialogsStore.actions.OPEN_PROGRAM_DIALOG}>
