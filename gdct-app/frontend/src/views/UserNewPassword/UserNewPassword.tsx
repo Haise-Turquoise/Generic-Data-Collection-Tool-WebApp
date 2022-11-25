@@ -19,7 +19,7 @@ import * as yup from 'yup';
 import bcrypt from 'bcryptjs';
 
 //@ts-ignore
-import userController from '../../controllers/user';
+import userController from '../../controllers/Users';
 
 // The schema to validate user input
 const registerSchema = () =>
@@ -173,10 +173,11 @@ const Register_container = (props: any) => {
     let { email, password } = values;
     email = email.toLowerCase();
     password = bcrypt.hashSync(password, bcrypt.genSaltSync(8));
-    const fetchData = await userController.fetchUserByEmail(email);
+    const fetchData = await userController.fetchByEmail(email);
 
-    if (fetchData.user?._id != undefined) {
-      userController.updatePasswordByUserEmail(email, password).catch(error => {
+    if (fetchData != undefined) {
+      fetchData.password = password;
+      userController.updatePasswordByUserEmail(email,password).catch(error => {
         throw new Error(error);
       });
       Swal.fire({

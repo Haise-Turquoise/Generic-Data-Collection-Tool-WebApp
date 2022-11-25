@@ -15,6 +15,8 @@ const usersController = (() => {
     create: async (user: User): Promise<User | null> => usersAxios.post('/create', { user }).then(res => res.data.user),
     update: async (user: User) => usersAxios.put('/update', { user }),
     delete: async (_id: string) => usersAxios.post('/delete', { _id }),
+    updatePasswordByUserEmail: async (email: string, password: string): Promise<void> =>
+      usersAxios.post(`/updatePassword`, { email, password }).then(res => res.data),
   };
 })();
 

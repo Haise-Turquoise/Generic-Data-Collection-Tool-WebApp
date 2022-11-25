@@ -354,10 +354,4 @@ export default class UserService {
     }
     // return this.UserRepository.updatePermissionByUserEmail(email.email,permissionData.permissionData,orgList)
   }
-  async fetchUserByEmail(email: string) {
-    return this.UserRepository.findByEmail(email);
-  }
-  async updatePasswordByUserEmail(email: string, newpassword: string) {
-    return this.UserRepository.updatePasswordByUserEmail(email, newpassword);
-  }
 }
