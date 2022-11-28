@@ -51,8 +51,8 @@ const Organizations = ({ history }: RouterProps) => {
       IFISNum: '',
       organizationGroupId: [''],
       programId: [''],
-      authorizedPerson:{name:'', email:''},
-    }
+      authorizedPerson: [''],
+    },
   ];
   const preColumns: Column<Organization>[] = [{ title: 'Name', field: 'name' }];
 

@@ -11,7 +11,6 @@ import Grid from '@material-ui/core/Grid';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 import { Button } from '@material-ui/core';
-import UserController from '../../controllers/user';
 
 const useStyles = makeStyles(theme => ({
   paper: {
@@ -55,26 +54,10 @@ export default function MandatoryInfo({
   const myFormSchema = Yup.object().shape({
     firstName: Yup.string().required('Required'),
     lastName: Yup.string().required('Required'),
-    username: Yup.string()
-    .test('Unique Username', 'Username has already been used', async function (value:string | null | undefined) {
-      const fetchData = await UserController.fetchUserByUserName(value || '');
-      if (Object.keys(fetchData.user || {}).length === 0 && fetchData.user?.constructor === Object) {
-        return true;
-      }
-      return false;
-    })
-    .required('Required'),
+    username: Yup.string().required('Required'),
     phoneNumber: Yup.string().required('Required').matches(phoneRegExp, 'Phone number is not valid'),
     ext: Yup.number().typeError("Extension must be a number"),
-    email: Yup.string().email('Must be a valid email')
-    .test('Unique Email', 'Email has already been used', async function (value:string | null | undefined) {
-      const fetchData = await UserController.fetchUserByEmail(value || '');
-      if (Object.keys(fetchData.user || {}).length === 0 && (fetchData.user == undefined || fetchData.user?.constructor === Object)) {
-        return true;
-      }
-      return false;
-    })
-    .required('Required'),
+    email: Yup.string().email('Must be a valid email').required('Required'),
     password: Yup.string().required('Required'),
     passwordConfirm: Yup.string()
       .oneOf([Yup.ref('password'), undefined], 'Password should match')
@@ -166,7 +149,6 @@ export default function MandatoryInfo({
                 <Grid item xs={12} sm={6}>
                   <TextField
                     variant="standard"
-                    required
                     fullWidth
                     id="phoneNumber"
                     label="Phone Number"
