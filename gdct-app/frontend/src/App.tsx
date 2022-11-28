@@ -22,6 +22,7 @@ import UserRouter from './views/UserRouter';
 import ReportRouter from './views/ReportingPeriods';
 import TemplateRouter from './views/TemplateRouter';
 import OrgRouter from './views/OrganizationRouter';
+import OrganizationGroups from './views/OrganizationGroup';
 import SubmissionRouter from './views/SubmissionRouter';
 import RoleRouter from './views/RoleRouter';
 import COARouter from './views/COARouter';
@@ -49,6 +50,7 @@ const PrivateRouter = ({ setLoggedIn }: {setLoggedIn: (value: boolean) => void})
       <Route path="/admin/auditlog" component={AuditLog} />
       <Route path="/admin/populate" component={MasterValuePopulation} />
       <Route path="/admin/organization" component={OrgRouter} />
+      <Route path="/admin/organization/group" component={ OrganizationGroups } />
       <Route path="/admin/submission" component={SubmissionRouter} />
       <Route path="/admin/role" component={RoleRouter} />
       <Route path={ROUTE_CATEGORY} component={COARouter} />

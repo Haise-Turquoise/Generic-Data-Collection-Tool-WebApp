@@ -48,6 +48,7 @@ export interface ControllerType {
 
 export interface DialogsStore {
   isOrganizationDialogOpen: boolean,
+  isOrganizationGroupDialogOpen: boolean,
   isCOADialogOpen: boolean,
   isCOAGroupDialogOpen: boolean,
   isUserDialogOpen: boolean,
@@ -229,6 +230,7 @@ export interface state {
   DialogsStore: DialogsStore,
   ReportingPeriodsStore: RestStateType,
   OrgsStore: RestStateType,
+  OrganizationGroupStore: RestStateType,
   UsersStore: RestStateType,
   ExcelStore: any,
   AppConfigsStore: RestStateType,
