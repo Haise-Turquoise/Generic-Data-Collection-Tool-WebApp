@@ -22,9 +22,8 @@ const OrgModel = model<OrganizationDoc>(
       active: { type: Boolean, default: true },
 
       managerUserIds: [{ type: ObjectId, ref: 'User' }],
-      authorizedPerson: {type: Object, ref: 'User', default: {name:'', email: ''}},
-      // contactUserId: { type: String, ref: 'User' },
-      // authorizedUserId: { type: String, ref: 'User' },
+      contactUserId: { type: String, ref: 'User' },
+      authorizedUserId: { type: String, ref: 'User' },
 
       programId: [{ type: ObjectId, ref: 'Program' }],
 

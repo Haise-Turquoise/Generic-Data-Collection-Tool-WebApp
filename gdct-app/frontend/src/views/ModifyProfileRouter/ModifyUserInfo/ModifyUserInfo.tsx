@@ -71,13 +71,6 @@ const ProfileSchema = (originalUsername:string) =>
       .string()
       .email('Please enter a valid email')
       .max(254, 'Email is too long')
-      .test('Unique Email', 'Email has already been used', async function (value?:string | null) {
-        const fetchData = await UserController.fetchUserByEmail(value || '');
-        const originalData = await UserController.fetchUserByUserName(value || '');
-        return (
-          fetchData.user?.email === originalData.user?.email|| fetchData.user?.email === undefined
-        );
-      })
       .required('Please enter your email'),
     ext: yup
       .string()

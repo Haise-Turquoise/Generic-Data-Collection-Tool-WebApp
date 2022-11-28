@@ -45,6 +45,7 @@ const EditOrganization = ({
       (elem: Organization) => elem._id === _id,
     ) || [{}])[0],
   }));
+
   const redirect = () => {
     history.push('/admin/organization/org');
   };
@@ -95,6 +96,7 @@ const EditOrganization = ({
         manageUserIds: organization_trim.manageUserIds,
         postalCode: organization_trim.postalCode,
       }
+     
       dispatch(updateOrgsRequest(OrgData, accept, reject));
     })();
   };

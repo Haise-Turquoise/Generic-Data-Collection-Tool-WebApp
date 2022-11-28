@@ -8,6 +8,3 @@ export const isSignInRequest = customRequestFactory(UserStore, AuthController);
 export const fetchUserByUsername = (username: string) => {
   UserController.fetchUserByUserName(username).then(user => user);
 };
-export const fetchUserByEmail = (email: string) => {
-  UserController.fetchUserByEmail(email).then(user => user);
-}
