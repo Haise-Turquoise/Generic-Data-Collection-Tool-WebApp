@@ -45,7 +45,7 @@ export const routerManager = (app: Application) => {
   app.use('/', Container.get(ProgramController));
   app.use('/role_manager', Container.get(AppSysController));
   app.use('/org_manager', Container.get(OrgController));
-  app.use('/orgGroup_manager', Container.get(OrgGroupController));
+  app.use('/', Container.get(OrgGroupController));
   app.use('/user_management', Container.get(UserController));
   app.use('/template_manager', Container.get(TemplateTypeController));
   app.use('/role_manager', Container.get(AppConfigController));
