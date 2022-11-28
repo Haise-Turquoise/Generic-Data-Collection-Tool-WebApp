@@ -187,14 +187,6 @@ export interface UserRegistrationStore {
   reference: string,
 }
 
-export interface UserNewPasswordStore {
-  passwordData: {
-    email: string,
-    password: string,
-    passwordConfirm: string
-  }
-}
-
 export interface workflowChart {
   offset: {
     x: number,
@@ -253,7 +245,6 @@ export interface state {
 
   ColumnNamesStore: RestStateType,
   UserRegistrationStore: Slice,
-  UserNewPasswordStore: Slice,
 
   WorkflowStore: WorkflowState,
   WorkflowsStore: RestStateType,
