@@ -14,7 +14,6 @@ const COAController = (() => {
     create: async (COA: Category | Category[]): Promise<Category | Category[]> => COAAxios.post('/create', { COA }).then(res => res.data.COA),
     update: async (COA: Partial<Category>) => COAAxios.put('/update', { COA }),
     delete: async (_id: string) => COAAxios.post('/delete', { _id }),
-    testCOA: async (COA: Partial<Category>) => COAAxios.post('/testCOA', { COA }),
   };
 })();
 
