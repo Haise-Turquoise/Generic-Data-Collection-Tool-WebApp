@@ -40,8 +40,4 @@ export default class COAService {
   async findCOA(COA: Partial<Category>) {
     return this.COARepository.find(COA);
   }
-
-  async updateMapping(id: string, COA: string) {
-    return this.COARepository.updateMapping(id,COA);
-  }
 }
