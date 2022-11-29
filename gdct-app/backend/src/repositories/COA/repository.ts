@@ -63,8 +63,4 @@ export default class COARepository extends BaseRepository<Category, CategoryDoc>
       }
     });
   }
-
-  async updateMapping(id: string, COAMap: string) {
-    return COAModel.findOneAndUpdate({"id": id}, {"COA": COAMap});
-  }
 }

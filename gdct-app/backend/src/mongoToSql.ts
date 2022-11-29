@@ -7,6 +7,7 @@ import MasterValueRepository from './repositories/MasterValue'
 import templateTypeRepository from './repositories/TemplateType'
 import programRepository from './repositories/Program'
 import organizationRepository from './repositories/Organization'
+import organizationgroupRepository from './repositories/OrganizationGroup'
 import reportingPeriodRepository from './repositories/ReportingPeriod'
 import COARepository from './repositories/COA'
 import attributeRepository from './repositories/ColumnName'
@@ -14,6 +15,7 @@ import categoryGroupRepository from './repositories/COAGroup'
 import transferStatusRepository from  './repositories/TransferStatus'
 import Container from 'typedi';
 import { OrganizationDoc } from './types/organization';
+import { OrganizationGroupDoc } from './types/organizationgroup';
 import { CategoryGroupDoc } from './types/categorygroup';
 import { CategoryDoc } from './types/category';
 import { ReportingPeriodDoc } from './types/reportingperiod';
@@ -127,7 +129,48 @@ const orgTransfer = async(conn:any)=>{
   console.log('=============================End of Transfer Satistics=============================\n');
   
 }
+ /* 
+  This function is use for organizationgroup transfer, implemented in a sycrhonized way for ease of benchmarking
+ */
+const organizationgroupTransfer = async(conn:any)=>{
+  await conn.query`DELETE FROM dbo.OrganizationGroup`
+  const orgGroupModel = Container.get(organizationgroupRepository);
+  console.log('\n\n');
+  console.log('===========================orgGroup Transfer Satistics==========================\n')
 
+  console.time('Total runtime');
+  console.time('Mongo query time');
+  const mongoOrgGroup:OrganizationGroupDoc[] = await orgGroupModel.find({});
+  console.timeEnd('Mongo query time');
+
+  console.time('mongo to SQL reformat time')
+  const table = new sql.Table('dbo.organizationgroup');
+  table.create = true;
+  table.columns.add('_id', sql.VarChar(50), { nullable: false });
+  table.columns.add('id', sql.BigInt, { nullable: false });
+  table.columns.add('name', sql.VarChar(500), { nullable: false });
+  table.columns.add('isActive', sql.Bit, { nullable: true });
+  
+  
+  mongoOrgGroup.forEach(entry=>{
+    table.rows.add(
+      entry._id,
+      entry.id,
+      entry.name,
+      entry.isActive,
+    )
+  })
+  console.timeEnd('mongo to SQL reformat time')
+
+  console.time('SQL insertion time')
+  const request = conn.request();
+  const responseCode = await request.bulk(table);
+  console.timeEnd('SQL insertion time');
+  console.timeEnd('Total runtime');
+  console.log('Row Inserted: ', responseCode);
+  console.log('=============================End of Transfer Satistics=============================\n');
+  
+}
 
 /* 
   This function is use for categoryGroup transfer, implemented in a sycrhonized way for ease of benchmarking

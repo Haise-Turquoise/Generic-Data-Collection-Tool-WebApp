@@ -16,8 +16,6 @@ import COAController from '../../../controllers/COA';
 import ColumnNameController from '../../../controllers/columnName';
 import AttributeConfigController from '../../../controllers/AttributeConfig';
 import Swal from 'sweetalert2';
-import COA from '../../../controllers/COA';
-import './_btn.scss';
 
 let workbook = new ExcelJS.Workbook();
 
@@ -118,80 +116,6 @@ const colToInt = (col: string) => {
   return Math.max(res, 1);
 };
 
-const updateCOAMapping = async (data: AllDataType) => {
-  // !Note: .fetch fetches all from DB and is slow
-  const sheets: SheetName[] = await SheetNameController.fetch();
-
-  // handle input data, add new attributes, categories, category groups to DB
-  // create a categoryTree object array (each array item is a categoryTree for a sheet)
-  for (let sheetName of Object.keys(data)) {
-    // get ID from existing sheetName, don't create categoryTree if no ID
-    const foundSheet = sheets.find(sheet => sheet.name === sheetName);
-    let sheetNameId;
-    if (!foundSheet) {
-      continue;
-    } else {
-      sheetNameId = foundSheet._id;
-    }
-
-    // // for attributes
-    // // loop through each attribute object and add new attributes to allNewAttributes array
-    // data[sheetName]['attributes'].forEach(attribute => {
-    //   // check if already in DB or prev added, add if it is not
-    //   const inAllNewAttributes = allNewAttributes.find(addedAttribute => addedAttribute.id.toString() === attribute.id.toString());
-    //   const inAttributeDB = DBAttributes.find(DBAttribute => DBAttribute.id.toString() === attribute.id.toString());
-    //   if (!inAllNewAttributes && !inAttributeDB) {
-    //     allNewAttributes.push(attribute);
-    //   }
-    // })
-
-    // for categoryTree
-    for (let ctgGroup of Object.keys(data[sheetName]['categoryTree'])) {
-      const newCategories: Category[] = data[sheetName]['categoryTree'][ctgGroup];
-      // add new categories to a list that will be added to DB later
-      newCategories.forEach(async category => {
-        await COAController.testCOA({id: category.id, COA: category.COA});
-      });
-
-      // // get categoryId
-      // const categoryId = newCategories.map(obj => obj.id.toString());
-      // // get categoryGroupId
-      // let foundGroup: CategoryGroup | undefined | null = groups.find(group => group.name === ctgGroup);
-      // if (!foundGroup) {
-      //   // make new group
-      //   const newGroup: CategoryGroup = {
-      //     name: ctgGroup,
-      //     updatedAt: new Date().toString(),
-      //     updatedBy: localStorage.getItem('currentUser') || '',
-      //   }
-      //   allNewGroups.push(newGroup)
-      // }
-      // // add categoryGroup name, which will be converted to categoryGroup ID later
-      // tempObjects.push({
-      //   categoryId,
-      //   sheetNameId,
-      //   ctgGroup,
-      // });
-    }
-  }
-
-  // // for output message
-  // generateLog.message.push({ content: "Total Summary:", html: "h4 class=\"pl-0\"" })
-  // generateLog.message.push({ content: `Added ${allNewGroups.length} Category Groups`, html: "p" })
-  // generateLog.message.push({ content: `Added ${allNewAttributes.length} Attributes`, html: "p" })
-  // generateLog.message.push({ content: `Added ${allNewCategories.length} Categories`, html: "p" })
-
-  // // for adding new groups, attributes, and categories into the database
-  // if (allNewGroups.length > 0) {
-  //   await COAGroupController.create(allNewGroups)
-  // }
-  // if (allNewAttributes.length > 0) {
-  //   await ColumnNameController.create(allNewAttributes);
-  // }
-  // if (allNewCategories.length > 0) {
-  //   await COAController.create(allNewCategories);
-  // }
-  };
 /**
  * Builds all tree objects from processed data 
  * @param data - the data processed in processData()
@@ -395,9 +319,7 @@ const convertToQuery = (PA: string, SA: string) => {
     return `pa=${PA_inc}` +
       (PA_exc.length > 0 ? `exclude=${PA_exc}` : "")
   }
-  else {
-    return ''
-  }
+  else return ''
 }
 
 const useStyles = makeStyles({
@@ -555,61 +477,6 @@ export default function COAGenerator() {
     }
   };
 
-  const updateMapping = async () => {
-    setErrorMsg("");
-    if (!file) {
-      setErrorMsg('No File Uploaded');
-      return;
-    }
-    // Check state variables to see if they are valid for reading
-    if (categoryGroup == '') {
-      setErrorMsg("Category Group cannot be empty");
-      return;
-    }
-
-    if (categoryGroup === category || categoryGroup === PA || categoryGroup === SA) {
-      setErrorMsg("Category Group cannot be the same index as Category, PA, or SA");
-      setCategoryGroup('');
-      return;
-    }
-
-    if (category == '') {
-      setErrorMsg("Category cannot be empty");
-      return;
-    }
-
-    if (categoryGroup === category || category === PA || category === SA) {
-      setErrorMsg("Category cannot be the same index as Category Group, PA, or SA");
-      setCategory('');
-      return;
-    }
-
-    // Cases when PA and SA are non-empty
-    if (PA != '') {
-      if (PA === categoryGroup || PA === category || PA === SA) {
-        setErrorMsg("PA cannot be the same index as Category Group, Category, or SA");
-        setPA('');
-        return;
-      }
-    }
-
-    if (SA != '') {
-      if (SA === categoryGroup || SA === category || PA === SA) {
-        setErrorMsg("SA cannot be the same index as Category Group, Category, or PA");
-        setSA('');
-        return;
-      }
-    }
-
-    // If reporting period was inputted incorrectly
-    if (attributeHeader == '') {
-      setErrorMsg("Reporting Period must be in the format: YYYY-YY, YYYY/YY, YYYY-YY XX or YYYY/YY XX")
-      return;
-    }
-    processData(file, data => updateCOAMapping(data), colToInt(categoryGroup), colToInt(category));
-    
-    //console.log(await COAController.testCOA({id: "100845650", COA: "testUpdate"}))
-  }
   /*
   Handles current file, checks if file and inputs are valid
   If valid, calls processData() and buildObjects() callback
@@ -707,7 +574,7 @@ export default function COAGenerator() {
    * @param file - The spreadsheet file to process
    * @param cb - The function to call with the processed data
    */
-  const  processData = async (file: File, cb: (allData: AllDataType) => void, categoryGroupColumn: number, categoryColumn: number) => {
+  const processData = async (file: File, cb: (allData: AllDataType) => void, categoryGroupColumn: number, categoryColumn: number) => {
     let reader = new FileReader();
     reader.readAsArrayBuffer(file);
     // reads necessary data
@@ -743,9 +610,8 @@ export default function COAGenerator() {
           allData[sheetName] = await getSheetData(mySheet, attributeIdMap, categoryGroupColumn, categoryColumn);
         }
       }
-      console.log("testOutput");
+      console.log('!debug line 381')
       console.log(allData);
-      console.log("complete");
       cb(allData);
     }
   }
@@ -1003,8 +869,6 @@ export default function COAGenerator() {
     if (catCheck && catGroupCheck) {
       
       let categoriesWithNoGroup: string[] = []
-      let categoriesWithNoCOA: string[] = []
-      let categoriesWithInvalidCOA: string[] = []
       // loop through each row and get valid categories (has ID, has category group)
       currentSheet.eachRow((row, rowNumber) => {
         if (rowNumber === 0) {
@@ -1056,50 +920,24 @@ export default function COAGenerator() {
             if (!categoryIds[groupName]) {
               categoryIds[groupName] = [];
             }
-            const COAFormat = convertToQuery(PAValue, SAValue);
             categoryIds[groupName].push({
               id: id.toString(),
               name,
               unitOfMeasure,
-              COA: COAFormat,
+              COA: convertToQuery(PAValue, SAValue),
               updatedAt: new Date().toString()
             });
-
-            //  if the COA is empty, record the name
-            if(COAFormat == ""){
-              if (PAValue == "" && SAValue == ""){
-                categoriesWithNoCOA.push(name)
-              }
-              else{
-                categoriesWithInvalidCOA.push(name)
-              }
-            }
           }
 
         }
       });
 
-      //  output message according to the error catigories
+      //  if there are categoires with no group, add to output message
       if (categoriesWithNoGroup.length > 0) {
         generateLog.type = "error"
         generateLog.message.push({ content: "Categories With No Group", html: "h5 class=\"pl-0\"" })
         generateLog.message.push({ content: `Found ${categoriesWithNoGroup.length} categories with no group, which are not added.`, html: "ul class=\"pl-0 mb-2 text-left font-weight-bold\"" })
         categoriesWithNoGroup.forEach(item => generateLog.message.push({ content: item, html: "li class=\"pl-0 text-left\"" }))
-        generateLog.message.push({ content: "", html: "h5 class=\"pl-0\"" })
-      }
-      if (categoriesWithNoCOA.length > 0) {
-        generateLog.type = "error"
-        generateLog.message.push({ content: "Categories With No COA", html: "h5 class=\"pl-0\"" })
-        generateLog.message.push({ content: `Found ${categoriesWithNoCOA.length} categories with no COA.`, html: "ul class=\"pl-0 mb-2 text-left font-weight-bold\"" })
-        categoriesWithNoCOA.forEach(item => generateLog.message.push({ content: item, html: "li class=\"pl-0 text-left\"" }))
-        generateLog.message.push({ content: "", html: "h5 class=\"pl-0\"" })
-      }
-      if (categoriesWithInvalidCOA.length > 0) {
-        generateLog.type = "error"
-        generateLog.message.push({ content: "Categories With invalid COA", html: "h5 class=\"pl-0\"" })
-        generateLog.message.push({ content: `Found ${categoriesWithInvalidCOA.length} categories with invalid COA`, html: "ul class=\"pl-0 mb-2 text-left font-weight-bold\"" })
-        categoriesWithInvalidCOA.forEach(item => generateLog.message.push({ content: item, html: "li class=\"pl-0 text-left\"" }))
-        generateLog.message.push({ content: "", html: "h5 class=\"pl-0\"" })
       }
     }
     
@@ -1208,12 +1046,9 @@ export default function COAGenerator() {
           />
         </div>
       </div>
+
       <Button variant="contained" color="primary" onClick={processWorkbook}>
         Generate COA
-      </Button>
-      <div className='space'></div>
-      <Button variant="contained" color="primary" onClick={updateMapping}>
-        Update COA Mapping
       </Button>
       <br />
       <Typography>{errorMsg}</Typography>

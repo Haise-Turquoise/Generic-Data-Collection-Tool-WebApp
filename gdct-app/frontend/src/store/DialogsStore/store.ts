@@ -25,6 +25,8 @@ const CLOSE_USER_DIALOG = (state: DialogsStore) => ({ ...state, isUserDialogOpen
 const OPEN_USER_DIALOG = (state: DialogsStore) => ({ ...state, isUserDialogOpen: true });
 const OPEN_STATUS_DIALOG = (state: DialogsStore) => ({ ...state, isStatusDialogOpen: true });
 const CLOSE_STATUS_DIALOG = (state: DialogsStore) => ({ ...state, isStatusDialogOpen: false });
+const OPEN_ORGANIZATION_GROUP_DIALOG = (state: DialogsStore) => ({ ...state, isOrganizationGroupDialogOpen: true });
+const CLOSE_ORGANIZATION_GROUP_DIALOG = (state: DialogsStore) => ({ ...state, isOrganizationGroupDialogOpen: false });
 const OPEN_PROGRAM_DIALOG = (state: DialogsStore) => ({ ...state, isProgramDialogOpen: true });
 const CLOSE_PROGRAM_DIALOG = (state: DialogsStore) => ({ ...state, isProgramDialogOpen: false });
 const OPEN_SUBMISSION_PERIOD_DIALOG = (state: DialogsStore) => ({
@@ -76,6 +78,8 @@ const reducers = {
   CLOSE_COA_DIALOG,
   OPEN_ORGANIZATION_DIALOG,
   CLOSE_ORGANIZATION_DIALOG,
+  OPEN_ORGANIZATION_GROUP_DIALOG,
+  CLOSE_ORGANIZATION_GROUP_DIALOG,
   CLOSE_USER_DIALOG,
   OPEN_USER_DIALOG,
   OPEN_STATUS_DIALOG,
@@ -96,6 +100,7 @@ const reducers = {
 
 const initialState = {
   isOrganizationDialogOpen: false,
+  isOrganizationGroupDialogOpen: false,
   isCOADialogOpen: false,
   isCOAGroupDialogOpen: false,
   isUserDialogOpen: false,
