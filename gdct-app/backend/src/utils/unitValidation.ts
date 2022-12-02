@@ -84,7 +84,7 @@ export default class unitValidation {
       let attr = this.getCell(this.attributeRow,ci,rows);
       let attrid = this.getCell(0,ci,rows);
       if(attr === null || attr.text === undefined || attrid === null || attrid.text === undefined){return false;}
-      if(Number(attrid.text) === NaN){return false;}
+      if(Number(attrid.text) === undefined){return false;}
       return true;
 
 
