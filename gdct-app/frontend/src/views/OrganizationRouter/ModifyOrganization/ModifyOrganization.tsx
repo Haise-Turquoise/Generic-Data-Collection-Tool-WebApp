@@ -369,7 +369,7 @@ class ModifyOrganization extends React.Component<MOProps, MOState> {
     });
   }
 
-  async componentDidUpdate (prevProps: MOProps, prevState: MOState) {
+  componentDidUpdate (prevProps: MOProps, prevState: MOState) {
     //error_id indicates that there is an error with the id field
     let error_id = false;
     
@@ -383,7 +383,7 @@ class ModifyOrganization extends React.Component<MOProps, MOState> {
     if (prevState.id !== this.state.id
         || prevState.name !== this.state.name
         || prevState.IFISNum !== this.state.IFISNum
-        || prevState.authorizedPerson.email !== this.state.authorizedPerson.email
+        //|| prevState.authorizedPerson.email !== this.state.authorizedPerson.email
       ) {
         if (this.state.takenIds.includes(Number(this.state.id))) {
           error_id = true;
@@ -408,11 +408,11 @@ class ModifyOrganization extends React.Component<MOProps, MOState> {
         if (!this.state.IFISNum) {
           this.setState({ error: 'IFISNum is required' })
         }
-        const fetchData = await userController.fetchUserByEmail(this.state.authorizedPerson.email);
-        console.log(fetchData.user);
-        if (fetchData.user === undefined){
-          this.setState({ error: 'Email is invalid' })
-        }
+        // const fetchData = await userController.fetchUserByEmail(this.state.authorizedPerson.email);
+        // console.log(fetchData.user);
+        // if (fetchData.user === undefined){
+        //   this.setState({ error: 'Email is invalid' })
+        // }
     }
 
   }
