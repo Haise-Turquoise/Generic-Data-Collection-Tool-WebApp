@@ -137,6 +137,13 @@ const registerSchema = () =>
       .string()
       .email('Please enter a valid email')
       .max(254, 'Email is too long')
+      .test('Unique Email', 'Email has already been used', async function (value:string | null | undefined) {
+        const fetchData = await UserController.fetchUserByEmail(value || '');
+        if (Object.keys(fetchData.user || {}).length === 0 && (fetchData.user == undefined || fetchData.user?.constructor === Object)) {
+          return true;
+        }
+        return false;
+      })
       .required('Please enter your email'),
     ext: yup
       .string()

@@ -19,6 +19,8 @@ const userController = (() => {
       userAxios.put('/updatePendingPermissions', { userData }).then(res => res.data),
     fetchUserByUserName: async (username: string): Promise<{user: User | null}> =>
       userAxios.post('/fetchUserByUserName', { username }).then(res => res.data),
+      fetchUserByEmail: async (email: string): Promise<{user: User | null}> =>
+      userAxios.post('/fetchUserByEmail', { email }).then(res => res.data),
     updatePermissionByUserEmail: async (email: string, permissionData: RawData): Promise<void> =>
       userAxios.post(`/users/updatePermission`, {email, permissionData}).then(res => res.data),
     deletePermissionByUserEmail: async (email: string, permissionData: RawData): Promise<User | null> =>
