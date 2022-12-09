@@ -18,7 +18,7 @@ import './ModifyOrganization.scss';
 import ProgList from '../ProgramList';
 import orgController from '../../../controllers/organization';
 import { connect } from 'react-redux';
-
+import userController from '../../../controllers/user';
 import Organization from '../../../types/organization';
 import Program from '../../../types/program';
 
@@ -369,7 +369,7 @@ class ModifyOrganization extends React.Component<MOProps, MOState> {
     });
   }
 
-  componentDidUpdate (prevProps: MOProps, prevState: MOState) {
+  async componentDidUpdate (prevProps: MOProps, prevState: MOState) {
     //error_id indicates that there is an error with the id field
     let error_id = false;
     
@@ -378,10 +378,12 @@ class ModifyOrganization extends React.Component<MOProps, MOState> {
         ...this.props.object
       })
     }
+
     // check errors
     if (prevState.id !== this.state.id
         || prevState.name !== this.state.name
         || prevState.IFISNum !== this.state.IFISNum
+        || prevState.authorizedPerson.email !== this.state.authorizedPerson.email
       ) {
         if (this.state.takenIds.includes(Number(this.state.id))) {
           error_id = true;
@@ -406,16 +408,21 @@ class ModifyOrganization extends React.Component<MOProps, MOState> {
         if (!this.state.IFISNum) {
           this.setState({ error: 'IFISNum is required' })
         }
+        const fetchData = await userController.fetchUserByEmail(this.state.authorizedPerson.email);
+        console.log(fetchData.user);
+        if (fetchData.user === undefined){
+          this.setState({ error: 'Email is invalid' })
+        }
     }
-  }
 
+  }
   updateState(name: any, value: any) {
     if(name === 'authorizedPerson.name'){
       const person = {name: value, email: this.state.authorizedPerson? this.state.authorizedPerson.email: ''};
       this.setState(state => ({ ...state, ['authorizedPerson']: person }));
     }else if(name === 'authorizedPerson.email'){
       const person = {name: this.state.authorizedPerson? this.state.authorizedPerson.name: '', email: value};
-      this.setState(state => ({ ...state, ['authorizedPerson']: person }));
+      this.setState(state => ({ ...state, ['authorizedPerson']: person }));   
     }else{
       this.setState(state => ({ ...state, [name]: value }));
     }

@@ -8,7 +8,7 @@ export default interface Organization {
   province?: string;
   organizationGroupId: string[];
   programId: string[];
-  authorizedPerson:{name: String, email: String};
+  authorizedPerson: {name: String, email: String};
   active?: boolean;
   address?: string;
   city?: string;

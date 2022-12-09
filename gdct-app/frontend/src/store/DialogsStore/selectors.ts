@@ -8,6 +8,10 @@ export const selectIsOrganizationDialogOpen = createSelector(
   dialogsStore => dialogsStore.isOrganizationDialogOpen,
 );
 
+export const selectIsOrganizationGroupDialogOpen = createSelector(
+  [selectDialogsStore],
+  dialogsStore => dialogsStore.isOrganizationGroupDialogOpen,
+);
 export const selectIsCOADialogOpen = createSelector(
   [selectDialogsStore],
   dialogsStore => dialogsStore.isCOADialogOpen,

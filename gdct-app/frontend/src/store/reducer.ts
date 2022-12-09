@@ -31,12 +31,12 @@ import DataResumeStore from './DataResumeStore/store';
 import SheetNamesStore from './SheetNamesStore/store';
 import ColumnNamesStore from './ColumnNamesStore/store';
 import OrgsStore from './OrganizationsStore/store';
+import OrganizationGroupStore from './OrganizationGroupStore/store';
 import WorkflowStore from './WorkflowStore/store';
 import WorkflowsStore from './WorkflowsStore/store';
 import UserStore from './UserStore/store';
 import UsersStore from './UsersStore/store';
 import UserRegistrationStore from './UserRegistrationStore/store';
-import UserNewPasswordStore from './UserNewPasswordStore/store';
 import WorkflowProcessesStore from './WorkflowProcessesStore/store';
 import TransferStatusStore from './TransferStatusStore/store';
 
@@ -60,6 +60,7 @@ export const appReducer = combineReducers({
   DialogsStore: DialogsStore.reducer,
   ReportingPeriodsStore: ReportingPeriodsStore.reducer,
   OrgsStore: OrgsStore.reducer,
+  OrganizationGroupStore: OrganizationGroupStore.reducer,
   UsersStore: UsersStore.reducer,
 
   AppConfigsStore: AppConfigsStore.reducer,
@@ -75,7 +76,6 @@ export const appReducer = combineReducers({
 
   ColumnNamesStore: ColumnNamesStore.reducer,
   UserRegistrationStore: UserRegistrationStore.reducer,
-  UserNewPasswordStore: UserNewPasswordStore.reducer,
 
   WorkflowStore: WorkflowStore.reducer,
   WorkflowsStore: WorkflowsStore.reducer,

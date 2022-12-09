@@ -48,6 +48,7 @@ export interface ControllerType {
 
 export interface DialogsStore {
   isOrganizationDialogOpen: boolean,
+  isOrganizationGroupDialogOpen: boolean,
   isCOADialogOpen: boolean,
   isCOAGroupDialogOpen: boolean,
   isUserDialogOpen: boolean,
@@ -187,14 +188,6 @@ export interface UserRegistrationStore {
   reference: string,
 }
 
-export interface UserNewPasswordStore {
-  passwordData: {
-    email: string,
-    password: string,
-    passwordConfirm: string
-  }
-}
-
 export interface workflowChart {
   offset: {
     x: number,
@@ -237,6 +230,7 @@ export interface state {
   DialogsStore: DialogsStore,
   ReportingPeriodsStore: RestStateType,
   OrgsStore: RestStateType,
+  OrganizationGroupStore: RestStateType,
   UsersStore: RestStateType,
   ExcelStore: any,
   AppConfigsStore: RestStateType,
@@ -253,7 +247,6 @@ export interface state {
 
   ColumnNamesStore: RestStateType,
   UserRegistrationStore: Slice,
-  UserNewPasswordStore: Slice,
 
   WorkflowStore: WorkflowState,
   WorkflowsStore: RestStateType,

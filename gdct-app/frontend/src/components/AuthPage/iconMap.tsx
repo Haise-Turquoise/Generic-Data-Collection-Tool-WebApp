@@ -95,6 +95,7 @@ const ItemMap :{[key:string]:React.ReactElement<SvgIconProps>} =  {
   'Organization': <AccountBalance style={MenuItemStyle} />,
   'Organizations': <AccountBalance style={SubMenuItemStyle} />,
   'Create Organization': <AddCircleOutlineIcon style={SubMenuItemStyle} />,
+  'Organization Group': <AccountBalance style={MenuItemStyle} />,
 
   // Admin Submission-lookup
   'Submission-Lookup': <FindReplaceIcon style={MenuItemStyle} />,

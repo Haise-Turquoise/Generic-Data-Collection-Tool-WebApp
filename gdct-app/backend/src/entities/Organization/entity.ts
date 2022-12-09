@@ -17,8 +17,6 @@ export default class OrgEntity {
   public active: boolean;
   public managerUserIds: ObjectId[];
   public authorizedPerson: {name: string, email: string};
-  // public contactUserId: string;
-  // public authorizedUserId: string;
   public programId: ObjectId[];
   public effectiveDate: Date;
   public expiryDate: Date;
@@ -41,8 +39,6 @@ export default class OrgEntity {
     active,
     managerUserIds,
     authorizedPerson,
-    // contactUserId,
-    // authorizedUserId,
     programId,
     effectiveDate,
     expiryDate,
@@ -64,9 +60,6 @@ export default class OrgEntity {
     this.active = active;
     this.managerUserIds = managerUserIds;
     this.authorizedPerson = authorizedPerson;
-
-    // this.contactUserId = contactUserId;
-    // this.authorizedUserId = authorizedUserId;
     this.programId = programId;
     this.effectiveDate = effectiveDate;
     this.expiryDate = expiryDate;

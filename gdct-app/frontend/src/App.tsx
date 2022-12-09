@@ -22,12 +22,12 @@ import UserRouter from './views/UserRouter';
 import ReportRouter from './views/ReportingPeriods';
 import TemplateRouter from './views/TemplateRouter';
 import OrgRouter from './views/OrganizationRouter';
+import OrganizationGroups from './views/OrganizationGroup';
 import SubmissionRouter from './views/SubmissionRouter';
 import RoleRouter from './views/RoleRouter';
 import COARouter from './views/COARouter';
 import WorkflowRouter from './views/WorkflowRouter';
 import Register from './views/UserRegistrationRouter';
-import UpdatePassword from './views/UserNewPassword';
 import MasterValuePopulation from './views/MasterValuePopulation';
 import AuditLog from './views/AuditLog';
 import TransferStatus from './views/TransferStatus/TransferStatus';
@@ -50,6 +50,7 @@ const PrivateRouter = ({ setLoggedIn }: {setLoggedIn: (value: boolean) => void})
       <Route path="/admin/auditlog" component={AuditLog} />
       <Route path="/admin/populate" component={MasterValuePopulation} />
       <Route path="/admin/organization" component={OrgRouter} />
+      <Route path="/admin/organization/group" component={ OrganizationGroups } />
       <Route path="/admin/submission" component={SubmissionRouter} />
       <Route path="/admin/role" component={RoleRouter} />
       <Route path={ROUTE_CATEGORY} component={COARouter} />
@@ -81,7 +82,6 @@ const PublicRouter = ({ setLoggedIn }: {setLoggedIn: (value: boolean) => void}) 
   return (
     <Switch>
       <Route exact path="/register" component={Register} />
-      <Route exact path="/updatePassword" component={UpdatePassword} />
       <Route exact path="/login" render={props => <Login {...props} setLoggedIn={setLoggedIn} />} />
       <Route exact path="/auth/error" component={Error} />
       <Redirect from="*" to="/login" />
