@@ -71,8 +71,9 @@ const orgTransfer = async(conn:any)=>{
 
   table.columns.add('province',sql.VarChar(10), { nullable: false });
   table.columns.add('organizationGroupId',sql.NVarChar(500), { nullable: false });
-  table.columns.add('authorizedPersonName',sql.VarChar(50), { nullable: true });
-  table.columns.add('authorizedPersonEmail',sql.VarChar(50), { nullable: true });
+  table.columns.add('authorizedPerson', sql.NVarChar(500), {nullable: true});
+  // table.columns.add('authorizedPersonName',sql.VarChar(50), { nullable: true });
+  // table.columns.add('authorizedPersonEmail',sql.VarChar(50), { nullable: true });
 
   table.columns.add('programId',sql.NVarChar(500), { nullable: true });
   table.columns.add('address', sql.VarChar(100), { nullable: true });
@@ -83,8 +84,8 @@ const orgTransfer = async(conn:any)=>{
 
   table.columns.add('managerUserIds', sql.NVarChar(500), { nullable: true });
   table.columns.add('postalCode', sql.VarChar(100), { nullable: true });
-  table.columns.add('authorizedUserId', sql.VarChar(100), { nullable: true });
-  table.columns.add('contactUserId', sql.VarChar(100), { nullable: true });
+  // table.columns.add('authorizedUserId', sql.VarChar(100), { nullable: true });
+  // table.columns.add('contactUserId', sql.VarChar(100), { nullable: true });
 
   /* 
     Insert all the rows to the table instantce. 
@@ -101,8 +102,8 @@ const orgTransfer = async(conn:any)=>{
 
       entry.province,
       JSON.stringify(entry.organizationGroupId),
-      entry.authorizedPerson?entry.authorizedPerson.name:null,
-      entry.authorizedPerson?entry.authorizedPerson.email:null,
+      entry.authorizedPerson?entry.authorizedPerson.name:'',
+      entry.authorizedPerson?entry.authorizedPerson.email:'',
 
       JSON.stringify(entry.programId),
       entry.address,
@@ -111,8 +112,8 @@ const orgTransfer = async(conn:any)=>{
       entry.legalName,
       JSON.stringify(entry.location),
       entry.postalCode,
-      entry.authorizedUserId,
-      entry.contactUserId
+      entry.authorizedPerson.name,
+      entry.authorizedPerson.email
     )
   })
   console.timeEnd('mongo to SQL reformat time')

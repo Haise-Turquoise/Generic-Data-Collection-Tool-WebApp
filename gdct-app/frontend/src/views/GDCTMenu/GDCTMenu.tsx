@@ -49,14 +49,14 @@ const MenuHeader = () => {
               url={url}
               icon={icon}
               type={type}
-              handleClick={()=>{}}
+              handleClick={() => { }}
               isSubMenu={false}
               option=''
             />
           </Button>
         ) : (
           <DrawerItem key={`${type}-${name}-${index}`} {...item} option="main" />
-        ); 
+        );
       })}
     </>
   );
@@ -72,7 +72,7 @@ const GDCTMenu = () => {
 
   const getSubmissions = async () => {
     submissionStatusController.fetchStatus()
-      .then( (res: any) => {
+      .then((res: any) => {
         if (res) {
           setStatuses(res);
         }
@@ -90,32 +90,32 @@ const GDCTMenu = () => {
 
 
   const barGroupStyle = {
-    position: "flex", 
-    margin:"0 auto"
+    position: "flex",
+    margin: "0 auto"
   }
 
   return (
-  <div>
-    <br/>
-    <div className="welcomeTitle">Welcome To GDCT</div>
-    <br/><br/><br/>
     <div>
-      <AuditMenu/>
-    </div>
-    <br/><br/><br/>
-    {localStorage.getItem('currentRole') === 'Business Admin' ?
-    <div >
-      {statuses === undefined ? <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', textAlign: 'center', flexFlow: 'row-wrap' }}>loading Submission Overview...</div> : 
-      statuses.length === 0 ? <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', textAlign: 'center', flexFlow: 'row-wrap' }}>No Submission Data Found</div> : <BarGroupComponent submissionData={statuses} events={true} /> }
-    </div>
-    :
-    <div>
-        <SubmissionMenu />
-    </div>
+      <br />
+      <div className="welcomeTitle">Welcome To GDCT</div>
+      <br /><br /><br />
+      <div>
+        <AuditMenu />
+      </div>
+      <br /><br /><br />
+      {localStorage.getItem('currentRole') === 'Business Admin' ?
+        <div >
+            {statuses === undefined ? <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', textAlign: 'center', flexFlow: 'row-wrap' }}>loading Submission Overview...</div> :
+              statuses.length === 0 ? <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', textAlign: 'center', flexFlow: 'row-wrap' }}>No Submission Data Found</div> : <BarGroupComponent submissionData={statuses} events={true} />}
+        </div>
+        :
+        <div>
+          <SubmissionMenu />
+        </div>
 
-    }
+      }
 
-  </div>
+    </div>
   );
 };
 
