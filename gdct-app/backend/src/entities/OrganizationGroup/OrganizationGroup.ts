@@ -3,7 +3,7 @@ import { OrganizationGroupDoc } from "../../types/organizationgroup";
 
 export default class OrgGroupEntity {
   public _id: ObjectId;
-  public id: string;
+  public id: number;
   public name: string;
   public isActive: boolean;
 

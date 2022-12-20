@@ -12,17 +12,19 @@ import {
   checkDuplicates,
   formatTimestamp,
 } from '../../tools/misc';
+import OrgController from '../../controllers/organization'
 import OrganizationGroupController from '../../controllers/organizationGroup'
 import OrganizationGroup from '../../types/organizationgroup'
 import CreateAuditLog from '../AuditLog_Global';
 import Swal, { SweetAlertResult } from 'sweetalert2';
 import { selectOrganizationGroupStore } from '../../store/OrganizationGroupStore/selectors';
 import ErrorBanner from '../ErrorBanner';
+import Organization from '../../types/organization';
 
 interface OrganizationGroupMT extends OrganizationGroup {
   tableData?: any;
 }
- 
+
 const OrganizationGroupHeader = () => {
   return (
     <Paper className="header">
@@ -36,7 +38,6 @@ const OrganizationGroupsTable = () => {
   const [readRowNum, setRowNum] = useState(1);
   const [OrgGroups, setOrgGroups] = useState<OrganizationGroup[] | undefined>(undefined)
   const [status, setStatus] = useState<'LOADING...' | 'NOT ALLOWED'>('LOADING...')
-console.log(OrgGroups);
   useEffect(() => {
     fetchWithStatus<OrganizationGroup>(OrganizationGroupController, setOrgGroups, setStatus)
   }, [])
@@ -60,22 +61,25 @@ console.log(OrgGroups);
   const columns: Column<OrganizationGroupMT>[] = useMemo(
     () => [
       { title: 'Name', field: 'name' },
+      { title: 'id', field: 'id' },
       { title: 'Active', type: 'boolean', field: 'isActive' },
       { title: 'Modified On', field: 'updatedAt',
-      editComponent: () => {
-        return <div></div>;
-      }, 
-    },
-      { title: 'Updated By', field: 'updatedBy', 
         editComponent: () => {
-        return <div></div>;
-      }, 
-    },
-      { title: 'Created At', field: 'createdAt',
-      editComponent: () => {
-        return <div></div>;
+          return <div></div>;
+        },
       },
-    },
+      {
+        title: 'Updated By', field: 'updatedBy',
+        editComponent: () => {
+          return <div></div>;
+        },
+      },
+      {
+        title: 'Created By', field: 'createdBy',
+        editComponent: () => {
+          return <div></div>;
+        },
+      },
     ],
     [OrgGroups],
   );
@@ -92,11 +96,10 @@ console.log(OrgGroups);
     () => ({
       onRowAdd: (OrgGroup: OrganizationGroupMT) =>
         new Promise<OrganizationGroup | undefined>((resolve, reject) => {
-          console.log('onrowadd');
           recordUpdate(OrgGroup);
+          OrgGroup.createdBy = localStorage.getItem('currentUser') || '';
           controllerAddRow(OrganizationGroupController, setOrgGroups, OrgGroup)
-            .then((res: OrganizationGroup) => {
-              
+            .then((res?: OrganizationGroup) => {
               if (res) {
                 resolve(res)
               }
@@ -128,57 +131,49 @@ console.log(OrgGroups);
         }),
 
       onRowDelete: (OrgGroup: OrganizationGroupMT) =>
-        new Promise((resolve, reject) => {
+        new Promise(async (resolve, reject) => {
           recordUpdate(OrgGroup);
           // For Auditlog
           const OrgGroup_trim = (({ tableData, ...o }) => o)(OrgGroup);
-          CreateAuditLog(null, "Delete Organization Group", "Organization Group", OrgGroup._id, OrgGroup_trim, {});
-          controllerDeleteRow(OrganizationGroupController, setOrgGroups, OrgGroup._id)
-            .then((res: boolean) => {
-              console.log("res : "  + res);
-              if (res) {
-                
+          await OrgController.fetchByOrgGroupId(OrgGroup._id).then((orgs: Organization[]) => {
+            if (orgs.length > 0) {
+              Swal.fire({
+                title: 'Warning!',
+                text:
+                  'This group can not be removed because it is referenced',
+                icon: 'error',
+                confirmButtonColor: '#3085d6',
+                confirmButtonText: 'OK',
+              }).then((result: SweetAlertResult<any>) => {
+                if (result.isConfirmed) {
+                  window.location.reload();
+                }
+              });
+              reject();
+            } else {
+              controllerDeleteRow(OrganizationGroupController, setOrgGroups, OrgGroup._id).then((res: boolean) => {
                 resolve(res)
-              }
-              else{
-
-                Swal.fire({
-                  title: 'Warning!',
-                  text:
-                    'Connot delete Organization Group',
-                  icon: 'error',
-                  confirmButtonColor: '#3085d6',
-                  confirmButtonText: 'OK',
-                }).then((result:SweetAlertResult<any>) => {
-                  if (result.isConfirmed) {
-                    window.location.reload();
-                  }
-                });
-              }
-              
-              reject()
-            })
+              });
+              CreateAuditLog(null, "Delete Organization Group", "Organization Group", OrgGroup._id, OrgGroup_trim, {});
+            }
+          });
         }),
     }),
     [],
   );
 
-  useEffect(() => { 
+  useEffect(() => {
     setRowNum(OrgGroups?.length || 1)
   }, [OrgGroups]);
-  // OrgGroups?.sort((a,b)=>a.name.localeCompare(b.name)); // sort in alphabetical order
-  
-  console.log(OrgGroups);
-  console.log(OrgGroups?.length);
   return (
-      <MaterialTable
-        key={readRowNum}
-        columns={!!OrgGroups ? columns : preColumns}
-        data={!!OrgGroups ? OrgGroups : preOrgGroups}
-        editable={!!OrgGroups ? editable : undefined}
-        //actions={!!OrgGroups ? actions : undefined}
-        options={options}
-      />
+    <MaterialTable
+      key={readRowNum}
+      columns={!!OrgGroups ? columns : preColumns}
+      data={!!OrgGroups ? OrgGroups : preOrgGroups}
+      editable={!!OrgGroups ? editable : undefined}
+      //actions={!!OrgGroups ? actions : undefined}
+      options={options}
+    />
   );
 };
 
