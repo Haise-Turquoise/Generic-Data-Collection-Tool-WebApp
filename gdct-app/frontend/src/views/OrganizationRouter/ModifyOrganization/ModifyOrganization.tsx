@@ -329,7 +329,7 @@ const OrganizationForm = (props: OrgFormProps) => {
               color="primary"
               variant="contained"
               size="large"
-              onClick={() => props.submit()}
+              onClick={() => {props.object.updatedBy = localStorage.getItem('currentUser') || ''; props.submit()}}
             >
               Save
             </Button>

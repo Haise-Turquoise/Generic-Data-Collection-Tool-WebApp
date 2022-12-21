@@ -17,4 +17,5 @@ export default interface Organization {
   location?: any[];
   manageUserIds?: string[];
   postalCode?: string;
+  updatedBy: string;
 }

@@ -20,6 +20,7 @@ const CreateOrganization = () => {
     programId: [],
     effectiveDate: moment().format(),
     expiryDate: null,
+    updatedBy: localStorage.getItem('currentUser')||'',
   }
 
   // After successfully create the organization, the new info will be store to the database and push back to the main
