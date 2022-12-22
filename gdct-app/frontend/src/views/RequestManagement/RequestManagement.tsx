@@ -108,6 +108,7 @@ const RequestManagementTable = () => {
       },
       { title: 'Program', field: 'program.name' },
       { title: 'Template', field: 'submission.name' },
+      { title: 'Created At', field: 'createdAt'}
     ],
     [],
   );

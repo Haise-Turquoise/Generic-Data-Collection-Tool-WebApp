@@ -82,6 +82,7 @@ export default class UserService {
     for (const template of newTemplates) {
       const appSysRole = await this.AppSysRoleRepository.findAndCreateAppSysRole(template.appSys, template.permission)
       template.appSysRoleId = appSysRole._id;
+      template.createdAt = new Date().toLocaleString();
       const orgApproverName = template.organization.authorizedPerson.name;
       const orgApprover:any = await this.fetchUserByUserName(orgApproverName);
       const orgApproverCopy = cloneDeep(orgApprover)
@@ -322,6 +323,7 @@ export default class UserService {
     for (const template of newTemplates) {
       const appSysRole = await this.AppSysRoleRepository.findAndCreateAppSysRole(template.appSys, template.permission)
       template.appSysRoleId = appSysRole._id;
+      template.createdAt = new Date().toLocaleString();
       const orgApproverName = template.organization.authorizedPerson.name;
       const orgApprover:any = await this.fetchUserByUserName(orgApproverName);
       const orgApproverCopy = cloneDeep(orgApprover)

@@ -123,7 +123,8 @@ export const approvePermission = (rowData: rowData, applierUser: User, user: Use
       ele.permission == rowData.permission &&
       ele.organization.id == rowData.organization.id &&
       ele.program._id == rowData.program._id &&
-      ele.submission._id == rowData.submission._id
+      ele.submission._id == rowData.submission._id &&
+      ele.createdAt == rowData.createdAt
     );
   });
   const applierUserCopy = cloneDeep(applierUser);
@@ -134,7 +135,8 @@ export const approvePermission = (rowData: rowData, applierUser: User, user: Use
       ele.permission == rowData.permission &&
       ele.organization.id == rowData.organization.id &&
       ele.program._id == rowData.program._id &&
-      ele.submission._id == rowData.submission._id
+      ele.submission._id == rowData.submission._id &&
+      ele.createdAt == rowData.createdAt
     );
   });
   handleInputSysRole(rowData, applierUserCopy.sysRole);
@@ -161,7 +163,8 @@ export const rejectPermission = (rowData: rowData, applierUser: User, user: User
       ele.permission == rowData.permission &&
       ele.organization.id == rowData.organization.id &&
       ele.program._id == rowData.program._id &&
-      ele.submission._id == rowData.submission._id
+      ele.submission._id == rowData.submission._id &&
+      ele.createdAt == rowData.createdAt
     );
   });
   const applierUserCopy = cloneDeep(applierUser);
@@ -172,7 +175,8 @@ export const rejectPermission = (rowData: rowData, applierUser: User, user: User
       ele.permission == rowData.permission &&
       ele.organization.id == rowData.organization.id &&
       ele.program._id == rowData.program._id &&
-      ele.submission._id == rowData.submission._id
+      ele.submission._id == rowData.submission._id &&
+      ele.createdAt == rowData.createdAt
     );
   });
   userController.updateToBeApproved(userCopy).then(result => {
