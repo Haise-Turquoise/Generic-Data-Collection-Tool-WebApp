@@ -52,7 +52,6 @@ const ProgramsTable = () => {
       updatedBy: '',
     },
   ];
-
   // Convert Date format
   programs?.forEach((program: Program) => {
     program.updatedAt = formatTimestamp(program.updatedAt);
@@ -85,7 +84,6 @@ const ProgramsTable = () => {
     ],
     [programs],
   );
-
   const options: Options<ProgramMT> = useMemo(() => calculateOptions(readRowNum), [readRowNum]);
 
   // Record who and when of the action
@@ -173,6 +171,8 @@ const ProgramsTable = () => {
     setRowNum(programs?.length || 1)
   }, [programs])
   programs?.sort((a,b)=>a.name.localeCompare(b.name)); // sort in alphabetical order - Tony x
+  console.log(programs);
+  console.log(programs?.length);
   return (
     <MaterialTable
       key={readRowNum}

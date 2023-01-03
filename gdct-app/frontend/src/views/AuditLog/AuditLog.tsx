@@ -255,12 +255,12 @@ const AuditLogTable = () => {
   //function to retrieve the archives from the archivelog
   const merge = (start: Date) => {
     if (start < archivedDate){
-      console.log(start + " mmm " + archivedDate);
+      console.log(start + " " + archivedDate)
       AuditLogController.fetchArchive(new Date(start), new Date(archivedDate))
       .then(res => { 
         setArchiveLogs(res)
       })
-      setArchivedDate(start);
+      setArchivedDate(start)
     }
   }
 
