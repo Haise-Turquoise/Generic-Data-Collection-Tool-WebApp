@@ -60,9 +60,9 @@ const UsersController = Service([UserService], service => {
     });
 
     router.post(`/updatePassword`, (req, res, next) => {
-      const { email, password } = req.body;
+      const { id, password } = req.body;
       service
-      .updatePasswordByUserEmail(email, password)
+      .updatePasswordById(id, password)
       .then(() => res.json({ message: 'Password is successfully changed' }))
       .catch(next);
     });

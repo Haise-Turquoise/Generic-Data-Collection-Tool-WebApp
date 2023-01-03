@@ -34,7 +34,7 @@ export default class UserService {
     return this.UsersRepository.findById(id);
   }
 
-  async updatePasswordByUserEmail(email: string, newpassword: string) {
-    return this.UsersRepository.updatePasswordByUserEmail(email, newpassword);
+  async updatePasswordById(id: string, newPassword: string) {
+    return this.UsersRepository.updatePasswordById(id, newPassword);
   }
 }

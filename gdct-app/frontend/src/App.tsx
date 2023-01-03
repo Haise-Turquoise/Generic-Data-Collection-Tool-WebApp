@@ -35,6 +35,7 @@ import { ROUTE_WORKFLOW, ROUTE_TEMPLATE_PCKGS, ROUTE_CATEGORY } from './constant
 
 import './App.scss';
 import UnitValidation from './views/UnitValidation';
+import verifyEmail from './views/verifyEmail';
 // import './i18n';
 
 //here are some comments
@@ -84,6 +85,7 @@ const PublicRouter = ({ setLoggedIn }: {setLoggedIn: (value: boolean) => void}) 
       <Route exact path="/updatePassword" component={UpdatePassword} />
       <Route exact path="/login" render={props => <Login {...props} setLoggedIn={setLoggedIn} />} />
       <Route exact path="/auth/error" component={Error} />
+      <Route exact path="/verifyEmail*" component={verifyEmail} />
       <Redirect from="*" to="/login" />
     </Switch>
   );
