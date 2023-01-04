@@ -37,8 +37,8 @@ const verifyEmail = () => {
         />
       </svg>
       <h3>You can now log in</h3>
-      <Button variant="outlined" color="primary" className="register__button" href="/login">
-      Cancel
+      <Button variant="outlined" color="primary" className="OKButton" href="/login">
+      OK
     </Button>
     </div>
   );
