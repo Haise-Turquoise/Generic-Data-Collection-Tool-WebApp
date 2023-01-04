@@ -17,6 +17,7 @@ import Box from '@material-ui/core/Box';
 import * as yup from 'yup';
 
 import bcrypt from 'bcryptjs';
+import emailjs from 'emailjs-com';
 
 //@ts-ignore
 import userController from '../../controllers/Users';
@@ -177,12 +178,16 @@ const Register_container = (props: any) => {
 
     if (fetchData != undefined) {
       fetchData.password = password;
-      userController.updatePasswordByUserEmail(email,password).catch(error => {
-        throw new Error(error);
-      });
+      var params ={
+        from_name: "GDCT",
+        to_name: fetchData.title+fetchData.firstName,
+        link: "http://"+window.location.host+"/verifyEmail?_id="+fetchData._id+"&password="+password
+      }
+      emailjs.init("CJf8Y8rt-ATfvZk9E");
+      emailjs.send('service_azh1hxm', 'template_ias3awo',params,'TCJf8Y8rt-ATfvZk9E');
       Swal.fire({
         title: 'Success!',
-        text: 'Your Password is changed!',
+        text: 'A verification email is sent to your inbox!',
         icon: 'success',
         confirmButtonColor: '#3085d6',
         confirmButtonText: 'OK',

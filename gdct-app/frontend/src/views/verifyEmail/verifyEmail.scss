@@ -1,0 +1,23 @@
+@import "../../styles/mixins/layouts";
+// body {
+//   margin: 0;
+//   padding: 0;
+//   color: #fff;
+//   font-family: "Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS",
+//     sans-serif;
+//   height: 100vh;
+//   display: flex;
+// }
+.pageContainer {
+  display: flex;
+  flex-direction: column;
+  margin: 0 auto;
+  align-items: center;
+  padding-bottom: 25px;
+  padding-top: 10px;
+  align-self: center;
+}
+// h2 {
+//   text-align: center;
+// }
+
