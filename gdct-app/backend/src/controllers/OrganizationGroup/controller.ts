@@ -12,18 +12,15 @@ const OrgGroupController = Service([OrganizationGroupService], service => {
         .catch(next);
     });
     router.post('/organization/group/create', (req, res, next) => {
-      console.log(req.body.orgGroup + ' ling 15 ............');
       service
-        .createOrgGroup(req.body.orgGroup)
-        .then(orgGroup => res.json({ orgGroup }))
+        .createOrgGroup(req.body.organizationgroup)
+        .then(organizationgroup => res.json({ organizationgroup }))
         .catch(next);
     });
 
     router.put('/organization/group/update', (req, res, next) => {
-      const { orgGroup } = req.body;
-      console.log(orgGroup);
+      const orgGroup = req.body.organizationgroup;
       const _id = orgGroup._id;
-
       service
         .updateOrgGroup(_id, orgGroup)
         .then(() => res.end())
@@ -31,7 +28,7 @@ const OrgGroupController = Service([OrganizationGroupService], service => {
     });
 
     router.post('/organization/group/delete', (req, res, next) => {
-      const { _id } = req.body;
+      const _id = req.body._id;
       service
         .deleteOrgGroup(_id)
         .then(() => res.end())
@@ -47,7 +44,7 @@ const OrgGroupController = Service([OrganizationGroupService], service => {
         .catch(next)
     });
 
-    router.post('/organization/group/searchOrgGroup', (req, res, next) => {
+    router.post('/organization/group/searchOrganizationGroup', (req, res, next) => {
       const { _id } = req.body;
 
       service
