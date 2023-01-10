@@ -1,8 +1,21 @@
 // ModifyOrganization is the parent page for CreateOrganization and EditOrganization
 import React, { useState, useEffect, ChangeEventHandler, ChangeEvent } from 'react';
+import { useDispatch, useSelector, shallowEqual } from 'react-redux';
+import { selectFactoryRESTResponseTableValues } from '../../../store/common/REST/selectors';
+import { selectOrgsStore } from '../../../store/OrganizationsStore/selectors';
 import PropTypes from 'prop-types';
 import moment from 'moment';
-
+import Grid from '@material-ui/core/Grid';
+import Input from '@material-ui/core/Input';
+import MenuItem from '@material-ui/core/MenuItem';
+import Select from '@material-ui/core/Select';
+import FormControl from '@material-ui/core/FormControl';
+//import Select, { SelectChangeEvent } from '@mui/material/Select';
+// import MenuItem from '@mui/material/MenuItem';
+import Chip from '@material-ui/core/Chip';
+import InputLabel from '@material-ui/core/InputLabel';
+import OrganizationGroup from '../../../types/organizationgroup';
+import { borders } from '@material-ui/system';
 import {
   Paper,
   Button,
@@ -21,11 +34,17 @@ import { connect } from 'react-redux';
 import userController from '../../../controllers/user';
 import Organization from '../../../types/organization';
 import Program from '../../../types/program';
-
+import organizationGroupController from '../../../controllers/organizationGroup';
 import Swal from 'sweetalert2'
 
 import { Formik } from 'formik';
 import * as yup from 'yup';
+//@ts-ignore
+import useStyles from '../../../styles/dropdownStyle';
+import { makeStyles, useTheme } from '@material-ui/core/styles';
+import { setEmitFlags } from 'typescript';
+//@ts-ignore
+import useStyles from '../../../styles/dropdownStyle';
 
 type genObject = { [key: string]: any };
 
@@ -76,7 +95,7 @@ const currentTime = () => {
 };
 
 // using very generic object here
-const getValue = (object: { [key: string]: any }, attribute: string) => {
+const getValue = async (object: { [key: string]: any }, attribute: string) => {
   let value;
   switch (typeof object[attribute]) {
     case 'undefined':
@@ -95,7 +114,7 @@ const getValue = (object: { [key: string]: any }, attribute: string) => {
       value = currentTime();
       break;
   }
-  return { value };
+  return { value: value };
 };
 
 interface LabelProps {
@@ -112,6 +131,7 @@ interface InputProps extends LabelProps {
 
 interface TextGroupProps extends InputProps {
   fullWidth?: boolean;
+  updateState: (name: any, value: any) => void;
 }
 
 
@@ -119,7 +139,7 @@ interface TextGroupProps extends InputProps {
 //first, it is checked in componentDidUpdate, 
 //then the necessary fields (error_item and object.item) are properly set in componentDidUpdate
 //
-const Input = ({ object, attribute, text, handleChanges, type, cannotEdit }: InputProps) => {
+const InputLocal = ({ object, attribute, text, handleChanges, type, cannotEdit }: InputProps) => {
   let errorSignal = false;
   let errorMessage = '';
   switch (attribute) {
@@ -134,12 +154,22 @@ const Input = ({ object, attribute, text, handleChanges, type, cannotEdit }: Inp
       }
     //add cases for other validations here, matching preliminary checks in componentDidUpdate
   }
+  const [val, setVal] = useState('stringVal');
+  useEffect(() => {
+    const getVal = async () => {
+      await getValue(object, attribute).then((res) => {
+        console.log(`useEffect val: ` + res.value);
+        setVal(res.value)
+      });
+    }
+    getVal();
+  }, []);
   return (
     <TextField
       name={attribute}
       type={type}
       placeholder={`Enter ${text}`}
-      {...getValue(object, attribute)}
+      {...{ value: val }}
       variant="outlined"
       onChange={handleChanges}
       fullWidth={true}
@@ -150,13 +180,74 @@ const Input = ({ object, attribute, text, handleChanges, type, cannotEdit }: Inp
   )
 };
 
-const TextGroup = (props: TextGroupProps) => (
+const TextGroup = (props: TextGroupProps) => {
+  const [organizationGroupNames, setOrganizationGroupNames] = useState<any[]>([]);
+  const [curOrgName, setCurOrgName] = useState<string>('');
+  let organizationGroupNames2: any[] = [];
+  const classes = useStyles();
+  useEffect(()=>{
+    let isMounted = true;
+    if (props.attribute === 'organizationGroup') {
+      const getOrgName = async () => {
+      
+        //  current org name list
+        await organizationGroupController.searchAll().then((res) => {
+          if(isMounted) organizationGroupNames2 = res;
+        });
+        //console.log('retrieved org groups2: ', organizationGroupNames2);
+        setOrganizationGroupNames(organizationGroupNames2);
+
+        //  current org name
+        await organizationGroupController.getOrganizationGroupName(props.object.organizationGroupId[0])
+          .then((res) => { setCurOrgName(res.name) });
+        
+      };
+      getOrgName();
+      
+      return () => { isMounted = false }
+    };
+  },[]);
+
+
+  const handleChange = async (event: React.ChangeEvent<{value: unknown}>) => {                                                                                                                                     
+    setCurOrgName(event.target.value as string);
+    let curOrgGroupIdStringList = ["wrong"];
+    // WARNING: ignore await may cause bugs
+    // await organizationGroupController.getOrganizationGroupIdByOrgName(curOrgName).then(res=>(curOrgGroupIdStringList=res));
+    //console.log('before search curOrgGroupNameId');
+    let curOrgGroupNameId = organizationGroupNames.find((item)=>(item.name==event.target.value))._id;
+    //console.log('after search curOrgGroupNameId');
+    //console.log('curOrgGroupNameId: ', curOrgGroupNameId);
+    curOrgGroupIdStringList[0]=curOrgGroupNameId;
+    // some code for retrive current id
+    if (curOrgGroupIdStringList[0] === "wrong") {
+      //console.log('ERROR: curOrgGroupIdStringList NOT UPDATED');
+    } else {
+      props.updateState('organizationGroupId', curOrgGroupIdStringList);
+      //console.log('curOrgName: ', curOrgName);
+    }
+  };
+  
+
+
+  return (
   <div className="InputGroup" style={{ width: props.fullWidth ? '100%' : '23%' }}>
     <Label {...props} />
     <br />
-    <Input {...props} type={'text'} />
+    {props.attribute !== 'organizationGroup' && <InputLocal {...props} type={'text'} />}
+    {(props.attribute === 'organizationGroup' && organizationGroupNames.length !== 0) &&
+      <FormControl variant="outlined" className={classes.formControl}>
+      <Select onChange={handleChange} value={curOrgName} fullWidth required className='classes.select'>
+        {organizationGroupNames.map(organizationGroupName => 
+          <MenuItem key = {organizationGroupName._id} value={`${organizationGroupName.name}`}>
+            {`${organizationGroupName.name}`}
+          </MenuItem>)}
+      </Select>
+      </FormControl>
+    }
   </div>
-);
+  );
+};
 
 interface ButtonGroupProps extends LabelProps {
   object: genObject;
@@ -191,6 +282,13 @@ const OrgInfo = (props: OrgFormProps) => (
       {...props}
       attribute={'name'}
       text={'Organization Name*'}
+      fullWidth={true}
+      type="text"
+    />
+     <TextGroup
+      {...props}
+      attribute={'organizationGroup'}
+      text={'Organization Group*'}
       fullWidth={true}
       type="text"
     />
@@ -409,7 +507,7 @@ class ModifyOrganization extends React.Component<MOProps, MOState> {
           this.setState({ error: 'IFISNum is required' })
         }
         const fetchData = await userController.fetchUserByEmail(this.state.authorizedPerson.email);
-        console.log(fetchData.user);
+        // console.log(fetchData.user);
         if (fetchData.user === undefined){
           this.setState({ error: 'Email is invalid' })
         }
@@ -485,7 +583,7 @@ class ModifyOrganization extends React.Component<MOProps, MOState> {
     );
   }
 }
-
+// This line below is not useful, but it may be required for the code to compile, check EditOrganization.tsx for database record shape
 const ConnectedModifyOrganization = connect(state => ({ ...state }))(ModifyOrganization);
 
 export default ConnectedModifyOrganization;

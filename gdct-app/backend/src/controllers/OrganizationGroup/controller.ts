@@ -44,14 +44,30 @@ const OrgGroupController = Service([OrganizationGroupService], service => {
         .catch(next)
     });
 
-    router.post('/organization/group/searchOrganizationGroup', (req, res, next) => {
+    router.post('/organization/group/searchOrgGroup', (req, res, next) => {
       const { _id } = req.body;
 
       service
-        .findOrgGroupById(_id)
+        .findOrgGroupByIdSingleString(_id)
         .then(orgGroup => res.json( orgGroup ))
         .catch(next)
     });
+
+    router.get('/organization/group/searchAllOrganizationGroup', (req, res, next) => {
+      service
+        .findAllOrgGroup()
+        .then(orgGroups => res.json({ orgGroups }))
+        .catch(next);
+    });
+
+    router.get('/organization/group/getOrganizationGroupIdByOrgName', (req, res, next) => {
+      const { orgName  } = req.body;
+      service
+        .findAllOrgGroup()
+        .then(orgGroupArray => res.json({ orgGroupArray }))
+        .catch(next);
+    });
+
     return router;
   })();
 });
