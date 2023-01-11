@@ -11,10 +11,6 @@ const organizationGroupController = (() => {
     fetch: async (): Promise<OrganizationGroup[]> =>
     organizationgroupAxios.get('/fetch').then(
       res => {
-        console.log('frontend controller organizationGroup fetch res');
-        console.log(res);
-        console.log('frontend controller organizationGroup fetch res.data.orgGroup');      console.log(res.data.orgGroup);
-        console.log('frontend controller organizationGroup fetch res.data.orgnization group');      console.log(res.data.organizationgroup);
         return res.data;
       }
   ),
@@ -30,18 +26,11 @@ const organizationGroupController = (() => {
     organizationgroupAxios.get(`/searchAllOrganizationGroup`).then(res => res.data.orgGroups),
   fetchLong: async (query: Partial<OrganizationGroup>): Promise<any> => organizationgroupAxios.post('/fetch', { query }).then(
     res => {
-      console.log('frontend controller organizationGroup fetch res');
-      console.log(res);
-      console.log('frontend controller organizationGroup fetch res.data');      console.log(res.data);
       return res.data;
     }
   ),
   getOrganizationGroupName: async (id: string): Promise<any> => 
     organizationgroupAxios.post('/getOrganizationGroupName', { id }).then(res => {
-      console.log('frontend controller organizationGroup fetch res');
-      console.log(res);
-      console.log('frontend controller organizationGroup fetch res.data.orgGroup');      console.log(res.data.orgGroup);
-      console.log('frontend controller organizationGroup fetch res.data.orgnization group');      console.log(res.data.organizationgroup);
       return res.data.orgGroup;
     }),
   getOrganizationGroupNames: async (id: string): Promise<any> => 
