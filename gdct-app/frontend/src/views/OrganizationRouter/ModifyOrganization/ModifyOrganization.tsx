@@ -43,8 +43,6 @@ import * as yup from 'yup';
 import useStyles from '../../../styles/dropdownStyle';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { setEmitFlags } from 'typescript';
-//@ts-ignore
-import useStyles from '../../../styles/dropdownStyle';
 
 type genObject = { [key: string]: any };
 
