@@ -1,5 +1,7 @@
-import organizationGroupController from '../../controllers/organizationGroup';
-import OrganizationGroupStore from '../OrganizationGroupStore/store';
+import orgGroupController from '../../controllers/organizationGroup';
+import OrgGroupStore from '../OrganizationGroupStore/store';
+import columnNameController from '../../controllers/organization';
+import ColumnNamesStore from '../ColumnNamesStore/store';
 
 import {
   getRequestFactory,
@@ -7,7 +9,22 @@ import {
   deleteRequestFactory,
   updateRequestFactory,
 } from './common/REST';
-export const getOrganizationGroupRequest = getRequestFactory(OrganizationGroupStore, organizationGroupController);
-export const createOrganizationGroupRequest = createRequestFactory(OrganizationGroupStore, organizationGroupController);
-export const deleteOrganizationGroupRequest = deleteRequestFactory(OrganizationGroupStore, organizationGroupController);
-export const updateOrganizationGroupRequest = updateRequestFactory(OrganizationGroupStore, organizationGroupController);
+
+const getOrgGroupRequest = getRequestFactory(OrgGroupStore, orgGroupController);
+// const createOrgGroupRequest = createRequestFactory(OrgGroupStore, orgGroupController);
+// const deleteOrgGroupRequest = deleteRequestFactory(OrgGroupStore, orgGroupController);
+// const updateOrgGroupRequest = updateRequestFactory(OrgGroupStore, orgGroupController);
+
+//const getColumnNamesRequest = getRequestFactory(ColumnNamesStore, columnNameController);
+// const createColumnNameRequest = createRequestFactory(ColumnNamesStore, columnNameController);
+// const deleteColumnNameRequest = deleteRequestFactory(ColumnNamesStore, columnNameController);
+// const updateColumnNameRequest = updateRequestFactory(ColumnNamesStore, columnNameController);
+
+export {
+  getOrgGroupRequest
+  // ,
+  // getColumnNamesRequest,
+  // createColumnNameRequest,
+  // deleteColumnNameRequest,
+  // updateColumnNameRequest,
+};

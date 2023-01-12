@@ -48,4 +48,8 @@ export default class OrgGroupRepository extends BaseRepository<OrganizationGroup
   async findById(id: number) {
     return OrgGroupModel.findById(id);
   }
+
+  async findByIdSingleString(id: string) {
+    return OrgGroupModel.findById(id);
+  }
 }
