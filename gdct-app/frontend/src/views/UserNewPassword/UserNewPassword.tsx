@@ -177,14 +177,14 @@ const Register_container = (props: any) => {
     const fetchData = await userController.fetchByEmail(email);
 
     if (fetchData != undefined) {
-      fetchData.password = password;
       var params ={
+        to_addr: "tonyxijierfu@gmail.com",//fetchData.email
         from_name: "GDCT",
         to_name: fetchData.title+fetchData.firstName,
         link: "http://"+window.location.host+"/verifyEmail?_id="+fetchData._id+"&password="+password
       }
       emailjs.init("CJf8Y8rt-ATfvZk9E");
-      emailjs.send('service_azh1hxm', 'template_ias3awo',params,'TCJf8Y8rt-ATfvZk9E');
+      emailjs.send('service_azh1hxm', 'template_ias3awo',params,'CJf8Y8rt-ATfvZk9E');
       Swal.fire({
         title: 'Success!',
         text: 'A verification email is sent to your inbox!',
