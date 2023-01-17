@@ -366,7 +366,7 @@ const getAppSys = () => {
 };
 
 const getOrgGroup = () => {
-  return organizationGroupController.fetch().then(organizationGroups => {
+  return organizationGroupController.searchAll().then(organizationGroups => {
     const options: any[] = [];
     organizationGroups.forEach((orgGroup) => {
       options.push({

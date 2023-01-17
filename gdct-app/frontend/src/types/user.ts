@@ -27,6 +27,7 @@ export interface UserSysRole extends SysRole {
 }
 
 export interface ToBeApproved {
+  createdAt: string;
   organization: {
     name: string,
     id: string,
