@@ -183,8 +183,9 @@ const Register_container = (props: any) => {
         to_name: fetchData.title+fetchData.firstName,
         link: "http://"+window.location.host+"/verifyEmail?_id="+fetchData._id+"&password="+password
       }
-      emailjs.init("CJf8Y8rt-ATfvZk9E");
-      emailjs.send('service_azh1hxm', 'template_ias3awo',params,'CJf8Y8rt-ATfvZk9E');
+      console.log("http://"+window.location.host+"/verifyEmail?_id="+fetchData._id+"&password="+password);
+      //emailjs.init("CJf8Y8rt-ATfvZk9E");
+      //emailjs.send('service_azh1hxm', 'template_ias3awo',params,'CJf8Y8rt-ATfvZk9E');
       Swal.fire({
         title: 'Success!',
         text: 'A verification email is sent to your inbox!',
