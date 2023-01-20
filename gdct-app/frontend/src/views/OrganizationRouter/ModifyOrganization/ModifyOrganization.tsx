@@ -92,8 +92,8 @@ const currentTime = () => {
   return moment().format();
 };
 
-// using very generic object here
-const getValue = async (object: { [key: string]: any }, attribute: string) => {
+// using very generic object here	
+const getValue = (object: { [key: string]: any }, attribute: string) => {
   let value;
   switch (typeof object[attribute]) {
     case 'undefined':
@@ -150,24 +150,14 @@ const InputLocal = ({ object, attribute, text, handleChanges, type, cannotEdit }
         errorSignal = true;
         errorMessage = 'This ID is a duplicate';
       }
-    //add cases for other validations here, matching preliminary checks in componentDidUpdate
-  }
-  const [val, setVal] = useState('stringVal');
-  useEffect(() => {
-    const getVal = async () => {
-      await getValue(object, attribute).then((res) => {
-        console.log(`useEffect val: ` + res.value);
-        setVal(res.value)
-      });
-    }
-    getVal();
-  }, []);
-  return (
-    <TextField
-      name={attribute}
-      type={type}
-      placeholder={`Enter ${text}`}
-      {...{ value: val }}
+    //add cases for other validations here, matching preliminary checks in componentDidUpdate	
+  }	
+  return (	
+    <TextField	
+      name={attribute}	
+      type={type}	
+      placeholder={`Enter ${text}`}	
+      {...getValue(object, attribute)}	
       variant="outlined"
       onChange={handleChanges}
       fullWidth={true}
@@ -211,18 +201,13 @@ const TextGroup = (props: TextGroupProps) => {
     setCurOrgName(event.target.value as string);
     let curOrgGroupIdStringList = ["wrong"];
     // WARNING: ignore await may cause bugs
-    // await organizationGroupController.getOrganizationGroupIdByOrgName(curOrgName).then(res=>(curOrgGroupIdStringList=res));
-    //console.log('before search curOrgGroupNameId');
     let curOrgGroupNameId = organizationGroupNames.find((item)=>(item.name==event.target.value))._id;
-    //console.log('after search curOrgGroupNameId');
-    //console.log('curOrgGroupNameId: ', curOrgGroupNameId);
     curOrgGroupIdStringList[0]=curOrgGroupNameId;
     // some code for retrive current id
     if (curOrgGroupIdStringList[0] === "wrong") {
-      //console.log('ERROR: curOrgGroupIdStringList NOT UPDATED');
+      console.log('ERROR: curOrgGroupIdStringList NOT UPDATED');
     } else {
       props.updateState('organizationGroupId', curOrgGroupIdStringList);
-      //console.log('curOrgName: ', curOrgName);
     }
   };
   
