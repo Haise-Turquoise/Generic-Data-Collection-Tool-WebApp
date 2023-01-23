@@ -457,59 +457,59 @@ class ModifyOrganization extends React.Component<MOProps, MOState> {
 
   async componentDidUpdate (prevProps: MOProps, prevState: MOState) {
     //error_id indicates that there is an error with the id field
-    let error_id = false;
+    // let error_id = false;
     
-    if (!prevProps.object && this.props.object) {
-      this.setState({
-        ...this.props.object
-      })
-    }
+    // if (!prevProps.object && this.props.object) {
+    //   this.setState({
+    //     ...this.props.object
+    //   })
+    // }
 
-    let prevStateAuthEmail = "pe";
-    let thisStateAuthEmail = "te";
-    if ( prevState.authorizedPerson !== undefined ) prevStateAuthEmail = prevState.authorizedPerson.email;
-    if ( this.state.authorizedPerson !== undefined ) thisStateAuthEmail = this.state.authorizedPerson.email;
+    // let prevStateAuthEmail = "pe";
+    // let thisStateAuthEmail = "te";
+    // if ( prevState.authorizedPerson !== undefined ) prevStateAuthEmail = prevState.authorizedPerson.email;
+    // if ( this.state.authorizedPerson !== undefined ) thisStateAuthEmail = this.state.authorizedPerson.email;
 
     
-    // check errors
-    if (prevState.id !== this.state.id
-        || prevState.name !== this.state.name
-        || prevState.IFISNum !== this.state.IFISNum
-        || prevStateAuthEmail !== thisStateAuthEmail
-      ) {
-        if (this.state.takenIds.includes(Number(this.state.id))) {// id collision
-          error_id = true;
-          this.setState({error_id: error_id});
-          this.setState({
-            error: 'Duplicate ID not allowed',
-          });
-        } else {// no id collision
-          this.setState({
-            error: '',
-          });
-        }
-        if (isNaN(this.state.id)) {// is id a number
-          error_id = true;
-          this.setState({ error: 'ID format is incorrect'})
-          this.setState({error_id: error_id});
-        }
-        if (!this.state.name) {// does name exist
-          this.setState({ error: 'Name is required' })
-          return
-        }
-        if (!this.state.IFISNum) {// does IFISNum exist
-          this.setState({ error: 'IFISNum is required' })
-        }
-        if (this.state.authorizedPerson!== undefined) {// does authorizedPerson exist
-          const fetchData = await userController.fetchUserByEmail(this.state.authorizedPerson.email);
-          if (fetchData.user === undefined){
-            this.setState({ error: 'Email is invalid' })
-          }
-        } else {
-          this.setState({ error: 'Email is required' })
-        }
+    // // check errors
+    // if (prevState.id !== this.state.id
+    //     || prevState.name !== this.state.name
+    //     || prevState.IFISNum !== this.state.IFISNum
+    //     || prevStateAuthEmail !== thisStateAuthEmail
+    //   ) {
+    //     if (this.state.takenIds.includes(Number(this.state.id))) {// id collision
+    //       error_id = true;
+    //       this.setState({error_id: error_id});
+    //       this.setState({
+    //         error: 'Duplicate ID not allowed',
+    //       });
+    //     } else {// no id collision
+    //       this.setState({
+    //         error: '',
+    //       });
+    //     }
+    //     if (isNaN(this.state.id)) {// is id a number
+    //       error_id = true;
+    //       this.setState({ error: 'ID format is incorrect'})
+    //       this.setState({error_id: error_id});
+    //     }
+    //     if (!this.state.name) {// does name exist
+    //       this.setState({ error: 'Name is required' })
+    //       return
+    //     }
+    //     if (!this.state.IFISNum) {// does IFISNum exist
+    //       this.setState({ error: 'IFISNum is required' })
+    //     }
+    //     if (this.state.authorizedPerson!== undefined) {// does authorizedPerson exist
+    //       const fetchData = await userController.fetchUserByEmail(this.state.authorizedPerson.email);
+    //       if (fetchData.user === undefined){
+    //         this.setState({ error: 'Email is invalid' })
+    //       }
+    //     } else {
+    //       this.setState({ error: 'Email is required' })
+    //     }
         
-    }
+    // }
 
   }
   updateState(name: any, value: any) {
