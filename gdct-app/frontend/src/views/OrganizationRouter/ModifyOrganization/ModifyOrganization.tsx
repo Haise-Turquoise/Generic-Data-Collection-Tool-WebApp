@@ -178,17 +178,22 @@ const TextGroup = (props: TextGroupProps) => {
     if (props.attribute === 'organizationGroup') {
       const getOrgName = async () => {
       
-        //  current org name list
+        //  get current org name list from database
         await organizationGroupController.searchAll().then((res) => {
           if(isMounted) organizationGroupNames2 = res;
         });
-        //console.log('retrieved org groups2: ', organizationGroupNames2);
+        // store current org name list in local state
         setOrganizationGroupNames(organizationGroupNames2);
 
-        //  current org name
-        await organizationGroupController.getOrganizationGroupName(props.object.organizationGroupId[0])
-          .then((res) => { setCurOrgName(res.name) });
-        
+        if (props.object.organizationGroupId === undefined) {
+          // console.log('ERROR: props.object.organizationGroupId is empty');
+          // console.log('ERROR: props.object shape:', props.object);
+          // this situation may happen either by creating a new object or by encountering the error
+        } else {  
+          // retrieve current org name
+          await organizationGroupController.getOrganizationGroupName(props.object.organizationGroupId[0])
+            .then((res) => { setCurOrgName(res.name) });
+        }
       };
       getOrgName();
       
@@ -460,40 +465,50 @@ class ModifyOrganization extends React.Component<MOProps, MOState> {
       })
     }
 
+    let prevStateAuthEmail = "pe";
+    let thisStateAuthEmail = "te";
+    if ( prevState.authorizedPerson !== undefined ) prevStateAuthEmail = prevState.authorizedPerson.email;
+    if ( this.state.authorizedPerson !== undefined ) thisStateAuthEmail = this.state.authorizedPerson.email;
+
+    
     // check errors
     if (prevState.id !== this.state.id
         || prevState.name !== this.state.name
         || prevState.IFISNum !== this.state.IFISNum
-        || prevState.authorizedPerson.email !== this.state.authorizedPerson.email
+        || prevStateAuthEmail !== thisStateAuthEmail
       ) {
-        if (this.state.takenIds.includes(Number(this.state.id))) {
+        if (this.state.takenIds.includes(Number(this.state.id))) {// id collision
           error_id = true;
           this.setState({error_id: error_id});
           this.setState({
             error: 'Duplicate ID not allowed',
           });
-        } else {
+        } else {// no id collision
           this.setState({
             error: '',
           });
         }
-        if (isNaN(this.state.id)) {
+        if (isNaN(this.state.id)) {// is id a number
           error_id = true;
           this.setState({ error: 'ID format is incorrect'})
           this.setState({error_id: error_id});
         }
-        if (!this.state.name) {
+        if (!this.state.name) {// does name exist
           this.setState({ error: 'Name is required' })
           return
         }
-        if (!this.state.IFISNum) {
+        if (!this.state.IFISNum) {// does IFISNum exist
           this.setState({ error: 'IFISNum is required' })
         }
-        const fetchData = await userController.fetchUserByEmail(this.state.authorizedPerson.email);
-        // console.log(fetchData.user);
-        if (fetchData.user === undefined){
-          this.setState({ error: 'Email is invalid' })
+        if (this.state.authorizedPerson!== undefined) {// does authorizedPerson exist
+          const fetchData = await userController.fetchUserByEmail(this.state.authorizedPerson.email);
+          if (fetchData.user === undefined){
+            this.setState({ error: 'Email is invalid' })
+          }
+        } else {
+          this.setState({ error: 'Email is required' })
         }
+        
     }
 
   }
