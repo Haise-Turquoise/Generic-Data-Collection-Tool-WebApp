@@ -89,7 +89,8 @@ export default class SubmissionStatusService {
       for (let r of roles) {
         const templateType: TemplateType = allTemplateTypes.find(tt => tt._id.toString() === r.templateTypeId.toString())!
         const workflowProcesses: WorkflowProcess[] = allWorkflowProcesses.filter(wp => {
-          return wp.workflowId.toString() === templateType.submissionWorkflowId.toString()
+          //console.log("testOut: "+ wp.workflowId +" 2: " + templateType.submissionWorkflowId);
+          return wp.workflowId.toString() === (templateType.submissionWorkflowId||"").toString()
         })
         const roleWorkflowStatuses = allRoleWorkflowStatuses.find(rws => rws.role === r.appSysRole)?.workflowStatus || []
         const roleStatuses = allStatuses.filter(s => roleWorkflowStatuses.includes(s.name))
