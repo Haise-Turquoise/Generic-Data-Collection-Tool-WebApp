@@ -86,7 +86,7 @@ export const middlewares = (app: Express) => {
     };
 
     // Check whether a logged in user is allowed to access requestUrls
-    if (isLoggedIn && requestUrl !== '/login') {
+    if (isLoggedIn && requestUrl !== '/login' && requestUrl !== '/admin/user_management/updatePassword') {
       if (allowedUrls.includes(requestUrl)) {
         // console.log("ALLOWED");
       } else {
