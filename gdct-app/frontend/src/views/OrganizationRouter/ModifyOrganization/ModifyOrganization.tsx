@@ -123,34 +123,61 @@ interface LabelProps {
 interface InputProps extends LabelProps {
   object: genObject;
   handleChanges: ChangeEventHandler;
-  type: string;
+  type: string;                                                                                                                                              
   cannotEdit?: boolean;
 }
 
 interface TextGroupProps extends InputProps {
   fullWidth?: boolean;
   updateState: (name: any, value: any) => void;
+  required?: boolean;
+  error?: boolean;
 }
 
 
 //Added validation scheme in here, and is extendable to the other form fields as well
 //first, it is checked in componentDidUpdate, 
 //then the necessary fields (error_item and object.item) are properly set in componentDidUpdate
-//
+//1
 const InputLocal = ({ object, attribute, text, handleChanges, type, cannotEdit }: InputProps) => {
   let errorSignal = false;
   let errorMessage = '';
   switch (attribute) {
     case 'id':
-      if (isNaN(object.id ) && object.error_id) {
+      if (!object.id) {// does id exist
+        errorSignal = true;
+        errorMessage = 'ID is required';
+        break;
+      }
+      if (isNaN(object.id )) {
         errorSignal = true;
         errorMessage = 'This ID is not valid';
+        break;
       }
       if(object.takenIds.includes(Number(object.id))) {
         errorSignal = true;
         errorMessage = 'This ID is a duplicate';
+        break;
       }
-    //add cases for other validations here, matching preliminary checks in componentDidUpdate	
+      break;
+    case 'name':
+      if (!object.name) {// does name exist
+        errorSignal = true;
+        errorMessage = 'Name is required';
+      }
+      break;
+    case 'IFISNum':
+      if (!object.IFISNum) {// does IFISNum exist
+        errorSignal = true;
+        errorMessage = 'IFISNum is required';
+      }
+      break;
+    case 'authorizedPerson.email':
+      if (object.authorizedPerson === undefined || !object.authorizedPerson.email) {// does email exist
+        errorSignal = true;
+        errorMessage = 'Email is required';
+      }
+      break;
   }	
   return (	
     <TextField	
@@ -524,6 +551,12 @@ class ModifyOrganization extends React.Component<MOProps, MOState> {
     }
   }
 
+
+  // validate(e: Event, name: any, value: any) {
+    
+  // }
+    
+
   handleChanges(e: Event) {
     const { name, value, checked, type } = e.target as HTMLInputElement;
     let updateValue;
@@ -546,9 +579,12 @@ class ModifyOrganization extends React.Component<MOProps, MOState> {
       }
     }
     this.updateState(name, updateValue);
+
+    // this.validate(e,name,updateValue);
   }
 
   preSubmit() {
+
     if (this.state.error) {
       Swal.fire({
         title: 'Error',
@@ -558,7 +594,7 @@ class ModifyOrganization extends React.Component<MOProps, MOState> {
       return false;
     } else {
       this.props.submit(this.state);
-    }
+    } 
   }
 
   render() {
