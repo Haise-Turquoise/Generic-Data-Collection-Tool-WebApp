@@ -84,7 +84,7 @@ const PublicRouter = ({ setLoggedIn }: {setLoggedIn: (value: boolean) => void}) 
   return (
     <Switch>
       <Route exact path="/register" component={Register} />
-      <Route exact path="/updatePassword" component={UpdatePassword} />
+      <Route exact path="/updatePassword*" component={UpdatePassword} />
       <Route exact path="/login" render={props => <Login {...props} setLoggedIn={setLoggedIn} />} />
       <Route exact path="/auth/error" component={Error} />
       <Route exact path="/verifyEmail*" component={verifyEmail} />
