@@ -100,6 +100,7 @@ const COAsTable = () => {
       { title: 'ID', field: 'id', validate: rowData => checkDuplicates(rowData, COAs, 'id') },
       { title: 'Name', field: 'name' },
       { title: 'OHFS Mapping', field: 'COA' },
+      { title: 'Unit Of Measure', field: 'unitOfMeasure' },
       {
         title: 'Modified On',
         field: 'updatedAt',
