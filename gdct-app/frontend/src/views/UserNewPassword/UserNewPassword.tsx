@@ -80,35 +80,7 @@ const getStepContent = (
 ) => {
   const { values, handleChange, touched, handleBlur, errors, isValid } = props;
   //const dispatch = useDispatch();
-  const thisUrl = new URL(window.location.href);
-  const id = thisUrl.searchParams.get('_id');
-  const password = thisUrl.searchParams.get('password');
-  
-  if (id != null && password != null) {
-    console.log("id: " + id + " password: " + password);
-    userController.updatePasswordById(id, password);
-    return (
-      <div className="pageContainer">
-        <h2>Email has been verified</h2>
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="85"
-          height="85"
-          fill="currentColor"
-          className="bi bi-check-circle-fill"
-          viewBox="0 0 16 16"
-        >
-          <path
-            d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"
-          />
-        </svg>
-        <h3>You can now log in</h3>
-        <Button variant="outlined" color="primary" className="OKButton" href="/login">
-        OK
-      </Button>
-      </div>
-    );
-  }
+
   return (
     <div>
       <form className="register__form">
@@ -206,17 +178,21 @@ const Register_container = (props: any) => {
 
     if (fetchData != undefined) {
       var params ={
-        to_addr: "tonyxijierfu@gmail.com",//fetchData.email
+        to_addr: "Yufei.Chen2@ontario.ca",//fetchData.email
         from_name: "GDCT",
         to_name: fetchData.title+fetchData.firstName,
-        link: "http://"+window.location.host+"/verifyEmail?_id="+fetchData._id+"&password="+password
+        link: "http://"+window.location.host+"/updatePassword",
       }
-      console.log("http://"+window.location.host+"/verifyEmail?_id="+fetchData._id+"&password="+password);
-      //emailjs.init("CJf8Y8rt-ATfvZk9E");
-      //emailjs.send('service_azh1hxm', 'template_ias3awo',params,'CJf8Y8rt-ATfvZk9E');
+      console.log("http://"+window.location.host+"/updatePassword");
+      emailjs.init("CJf8Y8rt-ATfvZk9E");
+      emailjs.send('service_azh1hxm', 'template_ias3awo',params,'CJf8Y8rt-ATfvZk9E');
+      fetchData.password = password;
+      userController.updatePasswordByUserEmail(email,password).catch(error => {
+        throw new Error(error);
+      });
       Swal.fire({
         title: 'Success!',
-        text: 'A verification email is sent to your inbox!',
+        text: 'Your Password is changed!',
         icon: 'success',
         confirmButtonColor: '#3085d6',
         confirmButtonText: 'OK',
