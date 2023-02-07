@@ -170,11 +170,13 @@ const InputLocal = ({ object, attribute, text, handleChanges, type, cannotEdit }
 
 const TextGroup = (props: TextGroupProps) => {
   const [organizationGroupNames, setOrganizationGroupNames] = useState<any[]>([]);
-  const [curOrgName, setCurOrgName] = useState<string>('');
+  const [curOrgName, setCurOrgName] = useState<string>('Health Service Provider');
+  const defaultOrgGroupIdStringList = ['5eac8e399a8fe3217fe81f9a'];
   let organizationGroupNames2: any[] = [];
   const classes = useStyles();
   useEffect(()=>{
     let isMounted = true;
+    props.updateState('organizationGroupId', defaultOrgGroupIdStringList);
     if (props.attribute === 'organizationGroup') {
       const getOrgName = async () => {
       
