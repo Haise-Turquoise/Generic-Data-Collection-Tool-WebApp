@@ -175,7 +175,7 @@ const TextGroup = (props: TextGroupProps) => {
   let organizationGroupNames2: any[] = [];
   const classes = useStyles();
   useEffect(()=>{
-  let isMounted = true;
+    let isMounted = true;
     if (props.attribute === 'organizationGroup') {
       const getOrgName = async () => {
       
