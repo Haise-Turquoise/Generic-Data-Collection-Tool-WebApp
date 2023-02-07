@@ -123,34 +123,61 @@ interface LabelProps {
 interface InputProps extends LabelProps {
   object: genObject;
   handleChanges: ChangeEventHandler;
-  type: string;
+  type: string;                                                                                                                                              
   cannotEdit?: boolean;
 }
 
 interface TextGroupProps extends InputProps {
   fullWidth?: boolean;
   updateState: (name: any, value: any) => void;
+  required?: boolean;
+  error?: boolean;
 }
 
 
 //Added validation scheme in here, and is extendable to the other form fields as well
 //first, it is checked in componentDidUpdate, 
 //then the necessary fields (error_item and object.item) are properly set in componentDidUpdate
-//
+//1
 const InputLocal = ({ object, attribute, text, handleChanges, type, cannotEdit }: InputProps) => {
   let errorSignal = false;
   let errorMessage = '';
   switch (attribute) {
     case 'id':
-      if (isNaN(object.id ) && object.error_id) {
+      if (!object.id) {// does id exist
+        errorSignal = true;
+        errorMessage = 'ID is required';
+        break;
+      }
+      if (isNaN(object.id )) {
         errorSignal = true;
         errorMessage = 'This ID is not valid';
+        break;
       }
       if(object.takenIds.includes(Number(object.id))) {
         errorSignal = true;
         errorMessage = 'This ID is a duplicate';
+        break;
       }
-    //add cases for other validations here, matching preliminary checks in componentDidUpdate	
+      break;
+    case 'name':
+      if (!object.name) {// does name exist
+        errorSignal = true;
+        errorMessage = 'Name is required';
+      }
+      break;
+    case 'IFISNum':
+      if (!object.IFISNum) {// does IFISNum exist
+        errorSignal = true;
+        errorMessage = 'IFISNum is required';
+      }
+      break;
+    case 'authorizedPerson.email':
+      if (object.authorizedPerson === undefined || !object.authorizedPerson.email) {// does email exist
+        errorSignal = true;
+        errorMessage = 'Email is required';
+      }
+      break;
   }	
   return (	
     <TextField	
@@ -170,12 +197,11 @@ const InputLocal = ({ object, attribute, text, handleChanges, type, cannotEdit }
 
 const TextGroup = (props: TextGroupProps) => {
   const [organizationGroupNames, setOrganizationGroupNames] = useState<any[]>([]);
-  const [curOrgName, setCurOrgName] = useState<string>('Health Service Provider');
-  const defaultOrgGroupIdStringList = ['5eac8e399a8fe3217fe81f9a'];
+  const [curOrgName, setCurOrgName] = useState<string>('');
   let organizationGroupNames2: any[] = [];
   const classes = useStyles();
   useEffect(()=>{
-  let isMounted = true;
+    let isMounted = true;
     if (props.attribute === 'organizationGroup') {
       const getOrgName = async () => {
       
@@ -457,7 +483,7 @@ class ModifyOrganization extends React.Component<MOProps, MOState> {
   }
 
   async componentDidUpdate (prevProps: MOProps, prevState: MOState) {
-    // //error_id indicates that there is an error with the id field
+    //error_id indicates that there is an error with the id field
     // let error_id = false;
     
     // if (!prevProps.object && this.props.object) {
@@ -466,40 +492,50 @@ class ModifyOrganization extends React.Component<MOProps, MOState> {
     //   })
     // }
 
+    // let prevStateAuthEmail = "pe";
+    // let thisStateAuthEmail = "te";
+    // if ( prevState.authorizedPerson !== undefined ) prevStateAuthEmail = prevState.authorizedPerson.email;
+    // if ( this.state.authorizedPerson !== undefined ) thisStateAuthEmail = this.state.authorizedPerson.email;
+
+    
     // // check errors
     // if (prevState.id !== this.state.id
     //     || prevState.name !== this.state.name
     //     || prevState.IFISNum !== this.state.IFISNum
-    //     || prevState.authorizedPerson.email !== this.state.authorizedPerson.email
+    //     || prevStateAuthEmail !== thisStateAuthEmail
     //   ) {
-    //     if (this.state.takenIds.includes(Number(this.state.id))) {
+    //     if (this.state.takenIds.includes(Number(this.state.id))) {// id collision
     //       error_id = true;
     //       this.setState({error_id: error_id});
     //       this.setState({
     //         error: 'Duplicate ID not allowed',
     //       });
-    //     } else {
+    //     } else {// no id collision
     //       this.setState({
     //         error: '',
     //       });
     //     }
-    //     if (isNaN(this.state.id)) {
+    //     if (isNaN(this.state.id)) {// is id a number
     //       error_id = true;
     //       this.setState({ error: 'ID format is incorrect'})
     //       this.setState({error_id: error_id});
     //     }
-    //     if (!this.state.name) {
+    //     if (!this.state.name) {// does name exist
     //       this.setState({ error: 'Name is required' })
     //       return
     //     }
-    //     if (!this.state.IFISNum) {
+    //     if (!this.state.IFISNum) {// does IFISNum exist
     //       this.setState({ error: 'IFISNum is required' })
     //     }
-    //     const fetchData = await userController.fetchUserByEmail(this.state.authorizedPerson.email);
-    //     // console.log(fetchData.user);
-    //     if (fetchData.user === undefined){
-    //       this.setState({ error: 'Email is invalid' })
+    //     if (this.state.authorizedPerson!== undefined) {// does authorizedPerson exist
+    //       const fetchData = await userController.fetchUserByEmail(this.state.authorizedPerson.email);
+    //       if (fetchData.user === undefined){
+    //         this.setState({ error: 'Email is invalid' })
+    //       }
+    //     } else {
+    //       this.setState({ error: 'Email is required' })
     //     }
+        
     // }
 
   }
@@ -514,6 +550,12 @@ class ModifyOrganization extends React.Component<MOProps, MOState> {
       this.setState(state => ({ ...state, [name]: value }));
     }
   }
+
+
+  // validate(e: Event, name: any, value: any) {
+    
+  // }
+    
 
   handleChanges(e: Event) {
     const { name, value, checked, type } = e.target as HTMLInputElement;
@@ -537,9 +579,12 @@ class ModifyOrganization extends React.Component<MOProps, MOState> {
       }
     }
     this.updateState(name, updateValue);
+
+    // this.validate(e,name,updateValue);
   }
 
   preSubmit() {
+
     if (this.state.error) {
       Swal.fire({
         title: 'Error',
@@ -549,7 +594,7 @@ class ModifyOrganization extends React.Component<MOProps, MOState> {
       return false;
     } else {
       this.props.submit(this.state);
-    }
+    } 
   }
 
   render() {
