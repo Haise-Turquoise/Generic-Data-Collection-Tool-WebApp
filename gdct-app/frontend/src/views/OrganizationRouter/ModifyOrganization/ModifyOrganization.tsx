@@ -453,50 +453,50 @@ class ModifyOrganization extends React.Component<MOProps, MOState> {
   }
 
   async componentDidUpdate (prevProps: MOProps, prevState: MOState) {
-    //error_id indicates that there is an error with the id field
-    let error_id = false;
+    // //error_id indicates that there is an error with the id field
+    // let error_id = false;
     
-    if (!prevProps.object && this.props.object) {
-      this.setState({
-        ...this.props.object
-      })
-    }
+    // if (!prevProps.object && this.props.object) {
+    //   this.setState({
+    //     ...this.props.object
+    //   })
+    // }
 
-    // check errors
-    if (prevState.id !== this.state.id
-        || prevState.name !== this.state.name
-        || prevState.IFISNum !== this.state.IFISNum
-        || prevState.authorizedPerson.email !== this.state.authorizedPerson.email
-      ) {
-        if (this.state.takenIds.includes(Number(this.state.id))) {
-          error_id = true;
-          this.setState({error_id: error_id});
-          this.setState({
-            error: 'Duplicate ID not allowed',
-          });
-        } else {
-          this.setState({
-            error: '',
-          });
-        }
-        if (isNaN(this.state.id)) {
-          error_id = true;
-          this.setState({ error: 'ID format is incorrect'})
-          this.setState({error_id: error_id});
-        }
-        if (!this.state.name) {
-          this.setState({ error: 'Name is required' })
-          return
-        }
-        if (!this.state.IFISNum) {
-          this.setState({ error: 'IFISNum is required' })
-        }
-        const fetchData = await userController.fetchUserByEmail(this.state.authorizedPerson.email);
-        // console.log(fetchData.user);
-        if (fetchData.user === undefined){
-          this.setState({ error: 'Email is invalid' })
-        }
-    }
+    // // check errors
+    // if (prevState.id !== this.state.id
+    //     || prevState.name !== this.state.name
+    //     || prevState.IFISNum !== this.state.IFISNum
+    //     || prevState.authorizedPerson.email !== this.state.authorizedPerson.email
+    //   ) {
+    //     if (this.state.takenIds.includes(Number(this.state.id))) {
+    //       error_id = true;
+    //       this.setState({error_id: error_id});
+    //       this.setState({
+    //         error: 'Duplicate ID not allowed',
+    //       });
+    //     } else {
+    //       this.setState({
+    //         error: '',
+    //       });
+    //     }
+    //     if (isNaN(this.state.id)) {
+    //       error_id = true;
+    //       this.setState({ error: 'ID format is incorrect'})
+    //       this.setState({error_id: error_id});
+    //     }
+    //     if (!this.state.name) {
+    //       this.setState({ error: 'Name is required' })
+    //       return
+    //     }
+    //     if (!this.state.IFISNum) {
+    //       this.setState({ error: 'IFISNum is required' })
+    //     }
+    //     const fetchData = await userController.fetchUserByEmail(this.state.authorizedPerson.email);
+    //     // console.log(fetchData.user);
+    //     if (fetchData.user === undefined){
+    //       this.setState({ error: 'Email is invalid' })
+    //     }
+    // }
 
   }
   updateState(name: any, value: any) {
