@@ -176,6 +176,7 @@ const TextGroup = (props: TextGroupProps) => {
   const classes = useStyles();
   useEffect(()=>{
     let isMounted = true;
+    props.updateState('organizationGroupId', defaultOrgGroupIdStringList); // set default org group id to state
     if (props.attribute === 'organizationGroup') {
       const getOrgName = async () => {
       
