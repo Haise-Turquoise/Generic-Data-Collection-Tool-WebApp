@@ -87,10 +87,10 @@ export default class UsersRepository extends BaseRepository<User, UserDoc> {
     return UserModel.findOne({ email });
   }
 
-  async updatePasswordById(id: string, newPassword: string) {
-    return UserModel.findById(id).then((user: UserDoc|null)=>{
-      if (!user) throw new AppError(`Cannot find User with id ${id}`);
-      return UserModel.findByIdAndUpdate(id,{password: newPassword});
+  async updatePasswordByUserEmail(email: string, newpassword: string) {
+    return UserModel.findOne({email}).then((user: UserDoc|null)=>{
+      if (!user) throw new AppError(`Cannot find User with email ${email}`);
+      return UserModel.findOneAndUpdate({ email }, { password: newpassword });
     })
   }
 }

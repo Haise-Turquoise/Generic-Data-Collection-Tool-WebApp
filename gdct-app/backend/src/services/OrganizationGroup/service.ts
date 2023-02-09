@@ -28,5 +28,10 @@ export default class OrganizationGroupService {
   async findOrgGroupByIds(ids: string[]) {
     return this.orgGroupRepository.findByIds(ids);
   }
+  async findOrgGroupByIdSingleString(id: string) {
+    return this.orgGroupRepository.findByIdSingleString(id);
+  }
+  async findAllOrgGroup() {
+    return this.orgGroupRepository.findAll();
+  }
 }
- 

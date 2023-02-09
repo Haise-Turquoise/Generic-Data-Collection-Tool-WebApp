@@ -130,7 +130,7 @@ class SpreadSheet extends Component<SpreadSheetProps, { hasSheet: boolean }>{
       console.log('got data', template?.templateData);
       // bandaid solution
       template?.templateData?.forEach(data => {
-        if (data.rows.len === 0) {
+        if (data.rows.len === undefined) {
           const newRows: { [key: string]: any } = {}
           Object.keys(data.rows).forEach(key => {
             if (key !== "len") {

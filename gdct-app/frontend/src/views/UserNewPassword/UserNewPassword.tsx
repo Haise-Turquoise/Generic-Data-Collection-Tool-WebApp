@@ -178,16 +178,21 @@ const Register_container = (props: any) => {
 
     if (fetchData != undefined) {
       var params ={
-        to_addr: "tonyxijierfu@gmail.com",//fetchData.email
+        to_addr: "Yufei.Chen2@ontario.ca",//fetchData.email
         from_name: "GDCT",
         to_name: fetchData.title+fetchData.firstName,
-        link: "http://"+window.location.host+"/verifyEmail?_id="+fetchData._id+"&password="+password
+        link: "http://"+window.location.host+"/updatePassword",
       }
+      console.log("http://"+window.location.host+"/updatePassword");
       emailjs.init("CJf8Y8rt-ATfvZk9E");
       emailjs.send('service_azh1hxm', 'template_ias3awo',params,'CJf8Y8rt-ATfvZk9E');
+      fetchData.password = password;
+      userController.updatePasswordByUserEmail(email,password).catch(error => {
+        throw new Error(error);
+      });
       Swal.fire({
         title: 'Success!',
-        text: 'A verification email is sent to your inbox!',
+        text: 'Your Password is changed!',
         icon: 'success',
         confirmButtonColor: '#3085d6',
         confirmButtonText: 'OK',

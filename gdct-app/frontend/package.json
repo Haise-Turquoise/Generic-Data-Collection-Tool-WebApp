@@ -24,7 +24,7 @@
     "@material-ui/pickers": "^3.2.7",
     "@material-ui/styles": "^4.5.0",
     "@mrblenny/react-flow-chart": "^0.0.13",
-    "@reduxjs/toolkit": "^1.4.0",
+    "@reduxjs/toolkit": "1.8.6",
     "@types/bcryptjs": "^2.4.2",
     "@types/object-hash": "^2.1.1",
     "@types/react-redux": "^7.1.16",
