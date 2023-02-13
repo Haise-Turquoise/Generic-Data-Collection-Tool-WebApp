@@ -76,6 +76,13 @@ const EditOrganization = ({
       newOrganization['_id'] = oldOrganization?._id || '';
       const organization_trim = (({ tableData, ...o }) => o)(newOrganization);
       // Update
+      const newDate = new Date();
+      const currentUser = localStorage.getItem('currentUser') || '';
+
+      const modifiedPersonData = {
+        modifiedDate: newDate.toLocaleString(),
+        name : currentUser
+      }
       const OrgData = {
         name: organization_trim.name,
         _id: organization_trim._id,
@@ -86,6 +93,7 @@ const EditOrganization = ({
         province: organization_trim.province,
         organizationGroupId: organization_trim.organizationGroupId,
         programId: organization_trim.programId,
+        modifiedPerson: modifiedPersonData,
         authorizedPerson: organization_trim.authorizedPerson,
         active: organization_trim.active,
         address: organization_trim.address,

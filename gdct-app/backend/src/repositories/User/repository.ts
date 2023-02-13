@@ -19,6 +19,10 @@ interface Organization  {
     telephone:string, 
     email:string,
   }
+  modifiedPerson:{
+    name:string,
+    modifiedDate:string,
+  }
   orgId:string,
   permission:string[],
 

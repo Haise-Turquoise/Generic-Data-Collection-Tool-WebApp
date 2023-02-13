@@ -25,6 +25,8 @@ const OrgModel = model<OrganizationDoc>(
       authorizedPerson: {type: Object, ref: 'User', default: {name:'', email: ''}},
       // contactUserId: { type: String, ref: 'User' },
       // authorizedUserId: { type: String, ref: 'User' },
+      modifiedPerson: {type: Object, ref: 'User', default: {name:'', modifiedDate: ''}},
+      
 
       programId: [{ type: ObjectId, ref: 'Program' }],
 

@@ -9,6 +9,7 @@ export default interface Organization {
   organizationGroupId: string[];
   programId: string[];
   authorizedPerson: {name: String, email: String};
+  modifiedPerson: {name:string, modifiedDate:string};
   active?: boolean;
   address?: string;
   city?: string;
