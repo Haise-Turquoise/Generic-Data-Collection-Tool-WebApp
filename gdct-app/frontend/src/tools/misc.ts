@@ -691,10 +691,22 @@ export const excelImportHandler = (event:React.ChangeEvent<HTMLInputElement>, da
             if (endCoord) Object.assign(currCell, {merge: calculateMergeArray(targetCell.address, endCoord)})
 
             // Check if there are formulas and copy the value of the cell
-            if (targetCell.formula) {
+            if (!!targetCell.formula) {
+
               Object.assign(currCell, {text: '=' + targetCell.formula})
+              
             } else {
-              if (targetCell.value) Object.assign(currCell, {text: String(targetCell.value)});
+              // if targetCell.value is string type and exist
+              if (targetCell.value !== undefined && targetCell.value !== null && typeof targetCell.value === 'string') {
+                Object.assign(currCell, {text: String(targetCell.value)});
+              }
+              
+              // if cell has newline character then targetCell.value is string type may be richText, extract richText property
+              // @ts-ignore
+              if (targetCell.value !== undefined && targetCell.value !== null && targetCell.value.richText!== undefined){
+                // @ts-ignore
+                Object.assign(currCell, {text: targetCell.value.richText[0].text});
+              }
             }
 
             const currCellStyle = targetCell.style;
