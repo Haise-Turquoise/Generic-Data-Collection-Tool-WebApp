@@ -52,6 +52,7 @@ const Organizations = ({ history }: RouterProps) => {
       organizationGroupId: [''],
       programId: [''],
       authorizedPerson:{name:'', email:''},
+      modifiedPerson:{name:'', modifiedDate: ''},
     },
   ];
   const preColumns: Column<Organization>[] = [{ title: 'Name', field: 'name' }];
@@ -64,8 +65,8 @@ const Organizations = ({ history }: RouterProps) => {
       { title: 'Organization ID', field: 'id' },
       { title: 'IFIS Number', field: 'IFISNum' },
       { title: 'Active', type: 'boolean', field: 'active' },
-      { title: 'Modified On', field: 'timesStamp' },
-      { title: 'Updated By', field: 'updatedBy' },
+      { title: 'Modified On', field: 'modifiedPerson.modifiedDate' },
+      { title: 'Updated By', field: 'modifiedPerson.name' },
     ],
     [],
   );

@@ -22,6 +22,7 @@ export default class OrgEntity {
   public expiryDate: Date;
   public updatedAt: any;
   public updatedBy: string;
+  public modifiedPerson: {name: string, modifiedDate: string};
 
   constructor({
     _id,
@@ -39,6 +40,7 @@ export default class OrgEntity {
     active,
     managerUserIds,
     authorizedPerson,
+    modifiedPerson,
     programId,
     effectiveDate,
     expiryDate,
@@ -60,6 +62,7 @@ export default class OrgEntity {
     this.active = active;
     this.managerUserIds = managerUserIds;
     this.authorizedPerson = authorizedPerson;
+    this.modifiedPerson = modifiedPerson;
     this.programId = programId;
     this.effectiveDate = effectiveDate;
     this.expiryDate = expiryDate;

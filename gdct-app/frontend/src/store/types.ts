@@ -109,7 +109,11 @@ export interface UserRegistrationStore {
       authorizedPerson: {
         name: string,
         email: string,
-      }
+      },
+      modifiedPerson: {
+        name:string, 
+        modifiedDate:string
+      },
     }
   }[],
   programOptions: {
@@ -129,6 +133,10 @@ export interface UserRegistrationStore {
       authorizedPerson: {
         name: string,
         email: string,
+      },
+      modifiedPerson: {
+        name:string, 
+        modifiedDate:string
       },
     },
     program: {
@@ -161,6 +169,10 @@ export interface UserRegistrationStore {
       authorizedPerson: {
         name: string,
         email: string,
+      },
+      modifiedPerson: {
+        name:string, 
+        modifiedDate:string
       },
     },
     program: {

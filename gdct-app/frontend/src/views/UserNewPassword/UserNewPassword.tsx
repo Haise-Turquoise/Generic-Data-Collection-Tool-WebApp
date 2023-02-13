@@ -178,7 +178,7 @@ const Register_container = (props: any) => {
 
     if (fetchData != undefined) {
       var params ={
-        to_addr: "Yufei.Chen2@ontario.ca",//fetchData.email
+        to_addr: "tony.xijierfu@ontario.ca",//fetchData.email
         from_name: "GDCT",
         to_name: fetchData.title+fetchData.firstName,
         link: "http://"+window.location.host+"/updatePassword",

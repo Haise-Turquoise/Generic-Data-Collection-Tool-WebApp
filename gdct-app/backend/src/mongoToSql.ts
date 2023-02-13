@@ -74,6 +74,7 @@ const orgTransfer = async(conn:any)=>{
   table.columns.add('authorizedPerson', sql.NVarChar(500), {nullable: true});
   // table.columns.add('authorizedPersonName',sql.VarChar(50), { nullable: true });
   // table.columns.add('authorizedPersonEmail',sql.VarChar(50), { nullable: true });
+  table.columns.add('modifiedPerson', sql.NVarChar(500), {nullable: true});
 
   table.columns.add('programId',sql.NVarChar(500), { nullable: true });
   table.columns.add('address', sql.VarChar(100), { nullable: true });
@@ -104,6 +105,8 @@ const orgTransfer = async(conn:any)=>{
       JSON.stringify(entry.organizationGroupId),
       entry.authorizedPerson?entry.authorizedPerson.name:'',
       entry.authorizedPerson?entry.authorizedPerson.email:'',
+      entry.modifiedPerson?entry.modifiedPerson.name:'',
+      entry.modifiedPerson?entry.modifiedPerson.modifiedDate:new Date(),
 
       JSON.stringify(entry.programId),
       entry.address,
@@ -113,7 +116,9 @@ const orgTransfer = async(conn:any)=>{
       JSON.stringify(entry.location),
       entry.postalCode,
       entry.authorizedPerson.name,
-      entry.authorizedPerson.email
+      entry.authorizedPerson.email,
+      entry.modifiedPerson.name,
+      entry.modifiedPerson.modifiedDate,
     )
   })
   console.timeEnd('mongo to SQL reformat time')
