@@ -1,0 +1,102 @@
+// import bcrypt from 'bcrypt';
+import {config} from 'dotenv';
+import { Schema, model } from 'mongoose';
+import { UserDoc } from '../../types/user';
+//@ts-ignore
+import bcrypt from 'bcryptjs';
+
+const { ObjectId } = Schema.Types;
+
+config();
+
+const User = new Schema<UserDoc>(
+  {
+    username: { type: String, lowercase: true, required: true },
+    hashedUsername: { type: String, default: '' },
+    email: { type: String, required: true, unique: false },
+
+    title: { type: String, default: '' },
+    ext: { type: String, default: '' },
+    firstName: { type: String, default: '' },
+    lastName: { type: String, default: '' },
+    newPermissionPending:{type: Boolean,default:false},
+    tempSysRole:[],
+    newTemplates:[],
+    toBeApproved:{type: Array},
+    phoneNumber: { type: String, default: '' },
+    pendingPermissions:{type:Array},
+    password: String,
+    sysRole: [
+      {
+        appSys: { type: String, default: '' },
+        role: { type: String, default: '' },
+        appSysRoleId: { type: ObjectId, ref: 'AppSysRole' },
+        org: [
+          {
+            orgId: { type: String, default: '' },
+            orgName: { type: String, default: '' },
+            IsActive: { type: Boolean },
+            program: [
+              {
+                programId: { type: ObjectId, ref: 'program' },
+                programCode: { type: String, default: '' },
+                template: [
+                  {
+                    templateTypeId: { type: ObjectId, ref: 'templateType' },
+                    templateCode: { type: String, default: '' },
+                    status:{type:String, default:'approved'},
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      },
+    ],
+    facebook: {
+      id: String,
+      token: String,
+      name: String,
+    },
+    google: {
+      id: String,
+      token: String,
+      name: String,
+    },
+    
+    isActive: {
+      type: Boolean,
+      default: false,
+      // select: false,
+    },
+    isEmailVerified: { type: Boolean, required: true, default: false },
+
+    creationDate: { type: Date, default: Date.now, required: true },
+    approvedDate: { type: Date, default: Date.now, required: true },
+
+    startDate: { type: Date },
+    endDate: { type: Date },
+
+    timestamp: { type: Date },
+    updatedBy: { type: String },
+  },
+  { timestamps: true, minimize: false },
+);
+
+//@ts-ignore
+User.post('save', async function (doc, next) {
+  await doc.populate('sysRoles').execPopulate();
+});
+
+User.methods.setHashedPassword = function (password) {
+  this.password = bcrypt.hashSync(password, bcrypt.genSaltSync(8));
+};
+
+User.methods.validatePassword = function (password) {
+  // console.log("password match: " + bcrypt.compareSync(password, this.password));
+  return bcrypt.compareSync(password, this.password);
+};
+
+const UserModel = model<UserDoc>('User', User, 'User');
+
+export default UserModel;

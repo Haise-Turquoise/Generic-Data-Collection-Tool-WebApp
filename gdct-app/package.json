@@ -1,0 +1,32 @@
+{
+  "name": "mohltc-v2",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "install": "yarn --cwd backend && yarn --cwd frontend",
+    "start": "concurrently \"yarn --cwd backend start\" \"yarn --cwd frontend start\"",
+    "start:cra": "concurrently \"yarn --cwd backend start\" \"yarn --cwd frontend start:cra\"",
+    "fix": "yarn --cwd frontend fix && yarn --cwd backend fix",
+    "start:frontend": "yarn --cwd frontend start",
+    "build:frontend": "yarn --cwd frontend build",
+    "build:frontend:cra": "yarn --cwd frontend build:cra",
+    "build:dev-run": "concurrently \"yarn --cwd backend start\" \"serve -s frontend/build\"",
+    "build:dev-full": "yarn build:frontend && yarn build:dev-run",
+    "build:dev-full:cra": "yarn build:frontend:cra && yarn build:dev-run",
+    "deploy:aws": "yarn --cwd frontend deploy:aws",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "concurrently": "^4.1.2"
+  },
+  "dependencies": {
+    "grunt": "^1.0.4",
+    "grunt-contrib-clean": "^2.0.0",
+    "grunt-contrib-copy": "^1.0.0",
+    "grunt-env": "^1.0.1",
+    "grunt-run": "^0.8.1"
+  }
+}

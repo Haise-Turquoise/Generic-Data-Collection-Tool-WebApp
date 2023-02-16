@@ -1,0 +1,132 @@
+import React, { useEffect } from 'react';
+import PropTypes from 'prop-types';
+import { useDispatch, useSelector } from 'react-redux';
+import { useHistory } from 'react-router-dom';
+import ModifyOrganization from '../ModifyOrganization';
+
+//@ts-ignore
+import { updateOrgsRequest, getOrgsRequest } from '../../../store/thunks/organization';
+//@ts-ignore
+import { selectOrgsStore } from '../../../store/OrganizationsStore/selectors';
+//@ts-ignore
+import { selectFactoryRESTResponseTableValues } from '../../../store/common/REST/selectors';
+//@ts-ignore
+import Loading from '../../../components/Loading'
+
+//@ts-ignore
+import orgController from '../../../controllers/organization';
+//@ts-ignore
+import CreateAuditLog from '../../AuditLog_Global';
+import Organization from '../../../types/organization';
+
+interface EditOrgProps {
+  match: {
+    params: {
+      _id: string;
+    };
+  };
+}
+
+const EditOrganization = ({
+  match: {
+    params: { _id },
+  },
+}: EditOrgProps) => {
+  const history = useHistory();
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(getOrgsRequest());
+  }, [dispatch]);
+
+  // Prepare the data
+  const { object } = useSelector(state => ({
+    object: (selectFactoryRESTResponseTableValues(selectOrgsStore)(state).filter(
+      (elem: Organization) => elem._id === _id,
+    ) || [{}])[0],
+  }));
+
+  const redirect = () => {
+    history.push('/admin/organization/org');
+  };
+
+  const accept = () => {
+    redirect();
+  };
+
+  const reject = () => {
+    alert('Missing or invalid parameters');
+  };
+
+  const submit = (newOrganization: Organization & { tableData: any }) => {
+    // we let tableData be any since we are just trimming it
+    // This newOrgnization does not contain "_id" required for update (it does contain the artificial "id")
+    (async () => {
+      // Find the old value before updating in order to Auditlog
+      const oldOrganization = await orgController.fetchById(newOrganization.id);
+      CreateAuditLog(
+        null,
+        'Update Organization',
+        'Organization',
+        oldOrganization?._id,
+        oldOrganization,
+        newOrganization,
+      );
+      // Add _id and trim tableData created by Material Table
+      newOrganization['_id'] = oldOrganization?._id || '';
+      const organization_trim = (({ tableData, ...o }) => o)(newOrganization);
+      // Update
+      const newDate = new Date();
+      const currentUser = localStorage.getItem('currentUser') || '';
+
+      const modifiedPersonData = {
+        modifiedDate: newDate.toLocaleString(),
+        name : currentUser
+      }
+      const OrgData = {
+        name: organization_trim.name,
+        _id: organization_trim._id,
+        id: organization_trim.id,
+        effectiveDate: organization_trim.effectiveDate,
+        expiryDate: organization_trim.expiryDate,
+        IFISNum: organization_trim.IFISNum,
+        province: organization_trim.province,
+        organizationGroupId: organization_trim.organizationGroupId,
+        programId: organization_trim.programId,
+        modifiedPerson: modifiedPersonData,
+        authorizedPerson: organization_trim.authorizedPerson,
+        active: organization_trim.active,
+        address: organization_trim.address,
+        city: organization_trim.city,
+        code: organization_trim.code,
+        legalName: organization_trim.legalName,
+        location: organization_trim.location,
+        manageUserIds: organization_trim.manageUserIds,
+        postalCode: organization_trim.postalCode,
+      }
+     
+      dispatch(updateOrgsRequest(OrgData, accept, reject));
+    })();
+  };
+
+  const cancel = () => {
+    redirect();
+  };
+  //@ts-ignore
+  return !object ? <Loading /> : (
+    <div>
+      <ModifyOrganization
+        title={'Edit Organization'}
+        object={object}
+        submit={submit}
+        cancel={cancel}
+      />
+    </div>
+  );
+};
+
+EditOrganization.propTypes = {
+  match: PropTypes.object,
+};
+
+export default EditOrganization;

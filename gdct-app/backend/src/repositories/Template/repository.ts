@@ -1,0 +1,119 @@
+import Container from 'typedi';
+import TemplateEntity from '../../entities/Template';
+import TemplateModel from '../../models/Template';
+import UserRepository from '../User';
+import TemplateTypeRepository from '../TemplateType';
+import BaseRepository from '../repository';
+import WorkflowProcessRepository from '../WorkflowProcess/WorkflowProcess';
+import { ObjectId } from 'mongodb';
+import Template, { TemplateDoc, SheetData } from '../../types/template';
+import { WorkflowProcessDoc } from '../../types/workflowprocess';
+import { FilterQuery } from 'mongoose';
+import AppError from '../../utils/AppError';
+import {dateStringTranslate} from '../../utils/misc';
+import WorkflowProcessEntity from '../../entities/WorkflowProcess/WorkflowProcess';
+
+// MongoDB implementation
+// @Service()
+export default class TemplateRepository extends BaseRepository<Template, TemplateDoc> {
+  private userRepository: UserRepository;
+  private templateTypeRepository: TemplateTypeRepository;
+  private workflowProcessRepository: WorkflowProcessRepository;
+
+  constructor() {
+    super(TemplateModel);
+
+    this.userRepository = Container.get(UserRepository);
+    this.templateTypeRepository = Container.get(TemplateTypeRepository);
+    this.workflowProcessRepository = Container.get(WorkflowProcessRepository);
+  }
+
+  async create( temp: Template) {
+    
+    temp.updatedAt = dateStringTranslate(new Date(temp.updatedAt))
+    if(temp.expirationDate){temp.expirationDate = dateStringTranslate(new Date(temp.expirationDate));}
+    if(temp.creationDate){temp.creationDate = dateStringTranslate(new Date(temp.creationDate));}
+    if(temp.createdAt){temp.createdAt = dateStringTranslate(new Date(temp.createdAt));}
+
+    return this.templateTypeRepository
+      .validate(temp.templateTypeId)
+      .then(() =>
+        TemplateModel.create(temp),
+      ).then(template => new TemplateEntity(template));
+  }
+
+  async update(
+    id: string, temp: Partial<Template>,
+  ) {
+    
+    temp.updatedAt = dateStringTranslate(new Date(temp.updatedAt!))
+    if(temp.expirationDate){temp.expirationDate = dateStringTranslate(new Date(temp.expirationDate));}
+
+    const formattedTemplate: Partial<Template> = temp;
+    
+    if (temp.templateData) formattedTemplate.templateData = temp.templateData;
+
+    const oldValue = await TemplateModel.findById(id);
+    if (!oldValue) throw new AppError(`Update failed, Item not found for Template item with ID: ${id}`);
+    if (oldValue.templateTypeId != formattedTemplate.templateTypeId) {
+      const templateWorkFlow = await this.templateTypeRepository.findById(formattedTemplate.templateTypeId || '');
+      const workFlowItems: WorkflowProcessEntity[] = await this.workflowProcessRepository.find({ workflowId: templateWorkFlow.templateWorkflowId });
+      const referencedIds: ObjectId[] = [];
+      workFlowItems.forEach(e => {
+        e.to.forEach(element => {
+          referencedIds.push(element)
+        })
+      });
+      const itemIds = workFlowItems.map(e => e._id);
+      const diff = itemIds.filter(item => {
+        for (const ids of referencedIds) {
+          if (item.equals(ids)) return false;
+        }
+        return true;
+      });
+      if (diff.length == 0) throw new Error('Workflow head not found.');
+      formattedTemplate.workflowProcessId = diff[0];
+    }
+    console.log(formattedTemplate);
+    return TemplateModel.findByIdAndUpdate(id, formattedTemplate, { new: true })
+      .then((template: TemplateDoc | null) => {
+        if (!template) throw new AppError(`Update failed, Item not found for Template item with ID: ${id}`)
+        return new TemplateEntity(template)
+      });
+  }
+
+  async updateWorkflowProcess(_id: string, workflowProcessId: ObjectId) {
+    return this.workflowProcessRepository
+      //@ts-ignore Unsure about this
+      .validate(workflowProcessId)
+      .then(() => TemplateModel.findByIdAndUpdate(_id, { workflowProcessId }))
+      .then((template: TemplateDoc | null) => {
+        if (!template) throw new AppError(`Update WorkflowProcess, Item not found for workflowprocess item with ID: ${_id}`)
+        return new TemplateEntity(template);
+      });
+  }
+
+  async find(query: Partial<Template>) {
+    const realQuery: FilterQuery<TemplateDoc> = {};
+    let key: keyof Template
+    for (key in query) {
+      if (query[key]) realQuery[key] = query[key];
+    }
+    //console.log(TemplateModel.find(realQuery))
+    return TemplateModel.find(realQuery)
+      .select('-templateData')
+      .then((templates: TemplateDoc[]) => templates.map(template => new TemplateEntity(template)));
+  }
+
+  async updateTemplate(_id: string, templateData: any[]) {
+    return TemplateModel.findByIdAndUpdate(_id, { templateData })
+  }
+
+  async updateSheetData(_id: string, sheetData: SheetData[]) {
+    return TemplateModel.findByIdAndUpdate(_id, { $set: { templateData: sheetData } })
+  }
+
+  async findTemplateIDByTypeID(typeID: string) {
+    return TemplateModel.find({ templateTypeId: new ObjectId(typeID) }, { _id: 1 })
+  }
+}

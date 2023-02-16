@@ -1,0 +1,69 @@
+import AppRoleResouceEntity from '../../entities/AppRoleResource';
+import BaseRepository from '../repository';
+import AppRoleResourceModel from '../../models/AppRoleResource';
+import AppRoleResource, { AppRoleResourceDoc } from '../../types/approleresource';
+import {dateStringTranslate} from '../../utils/misc';
+import { ObjectId } from 'mongodb'
+import AppError from '../../utils/AppError';
+export default class AppRoleResourceRepository extends BaseRepository<AppRoleResource, AppRoleResourceDoc> {
+  constructor() {
+    super(AppRoleResourceModel);
+  }
+
+  async delete(id: string) {
+    const result = await AppRoleResourceModel.findByIdAndDelete(id);
+    if (!result) throw new AppError(`Cannot delete app role resource: ID ${id} does not exist`);
+    return new AppRoleResouceEntity(result);
+  }
+
+  async create(appRoleResource: AppRoleResource) {
+    const mongoose = require('mongoose');
+    appRoleResource.updatedAt = dateStringTranslate(new Date(appRoleResource.updatedAt));
+    appRoleResource.appSysRoleId.roleId = mongoose.Types.ObjectId(appRoleResource.appSysRoleId.roleId);
+    return AppRoleResourceModel.create(appRoleResource).then(
+      
+      appRoleResource => new AppRoleResouceEntity(appRoleResource),
+    );
+  }
+
+  async update(id: string, appRoleResource: Partial<AppRoleResource>) {
+    const mongoose = require('mongoose');
+    appRoleResource.updatedAt = dateStringTranslate(new Date(appRoleResource.updatedAt));
+    if (appRoleResource.appSysRoleId) {
+      appRoleResource.appSysRoleId.roleId = new ObjectId(appRoleResource.appSysRoleId.roleId);
+    }
+    appRoleResource.resourceId?.forEach(resource=>{
+      resource.id = mongoose.Types.ObjectId(resource.id);
+    })
+
+    return AppRoleResourceModel.findByIdAndUpdate(id, appRoleResource).then(
+      (appRoleResource: AppRoleResourceDoc|null) => {
+        if (!appRoleResource) throw new AppError(`Update AppoleResource Failed: Cannot update ID: ${id} to ${appRoleResource} `);
+        return new AppRoleResouceEntity(appRoleResource);
+      });
+  }
+
+  async find(query: Partial<AppRoleResource>) {
+    return AppRoleResourceModel.find(query).then((appRoleResources: AppRoleResourceDoc[]|null) => {
+      if (!appRoleResources) throw new AppError(`Query failed for AppRoleResouece with query: ${query}`);
+      return appRoleResources.map(
+        appRoleResource => new AppRoleResouceEntity(appRoleResource),
+      );
+    });
+  }
+
+  async findById(_id: string) {
+    return AppRoleResourceModel.findById(_id).then((appRoleResource: AppRoleResourceDoc|null) => {
+      if (!appRoleResource) throw new AppError(`Query failed for AppRoleResouece with ID: ${_id}`);
+      return new AppRoleResouceEntity(appRoleResource);
+    });
+  }
+
+  async findByAppSysRoleId(RoleId: string | ObjectId) {
+    return AppRoleResourceModel.findOne({ 'appSysRoleId.roleId': RoleId })
+    .then((appRoleResource: AppRoleResourceDoc|null) => {
+      if (!appRoleResource) throw new AppError(`Query failed for AppRoleResouece with Role ID: ${RoleId}`);
+      return new AppRoleResouceEntity(appRoleResource);
+    });
+  }
+}

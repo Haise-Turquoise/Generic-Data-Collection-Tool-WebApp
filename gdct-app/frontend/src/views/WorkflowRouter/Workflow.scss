@@ -1,0 +1,90 @@
+@import '../../styles/mixins/shadows';
+
+.workflowContainer {
+  height: 100%;
+  max-height: 100% !important;
+
+  display: flex;
+  flex-flow: column nowrap;
+}
+
+.workflowNode {
+  padding: 40px;
+  display: flex;
+  justify-content: center;
+}
+
+.workflowHeader {
+  @include shadow;
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+
+  // border: 1px solid lightgray;
+  border-radius: 3px;
+  padding: 10px 20px;
+}
+
+.workflow {
+  height: calc(100vh - 175px);
+
+  display: flex;
+  padding: 10px 0;
+}
+
+.scroll-bar {
+  width: 70%;
+  overflow: auto;
+}
+
+.sections {
+  @include shadow;
+  border: 1px solid lightgray;
+  border-radius: 4px;
+
+  padding: 15px;
+}
+
+.workflowPicker {
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: space-between;
+
+  margin-left: 20px;
+  width: 400px;
+
+  padding: 5px;
+
+  // color: white;
+  // background-color: rgb(14, 71, 194);
+  overflow: auto;
+
+  &__search {
+    width: 100%;
+    // margin: 8px 0 !important;
+    & input {
+      // background-color: white !important;
+
+      border-radius: 3px;
+    }
+  }
+
+  &__title {
+    padding: 5px !important;
+    justify-content: center;
+  }
+}
+
+.statuses {
+  overflow: auto;
+  &__status {
+    font-size: 15px;
+    border-radius: 4px;
+    border: 2px solid transparent !important;
+
+    &:hover {
+      background-color: lightgray !important;
+      border: 2px solid white;
+    }
+  }
+}

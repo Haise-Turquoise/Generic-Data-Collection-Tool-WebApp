@@ -1,0 +1,62 @@
+.formRow {
+    width: 100%;
+    padding-top: 1%;
+    display: flex;
+    justify-content: flex-start;
+}
+
+.tableContainer {
+    margin-top: 0.7%;
+    display: flex;
+    justify-content: space-between;
+}
+
+.tableWrapper-linked {
+    width: 50%;
+    margin-right: 0.4%;
+}
+
+.tableWrapper-other {
+    width: 50%;
+    margin-left: 0.4%;
+}
+
+.formBody {
+    padding: 1%;
+}
+
+.formActions {
+    display: flex;
+    justify-content: space-between;
+}
+
+.tabpanel {
+    padding: 1%;
+    padding-bottom: 2%;
+}
+
+.InputGroup {
+    padding: 0.15%;
+    padding-top: 0.25%;
+    padding-bottom: 0.25%;
+}
+
+.Mui-selected {
+    outline: 'none'
+}
+
+.Mui-focused {
+    outline: 'none'
+}
+
+.formActions {
+    padding-left: 1%;
+    padding-right: 1%;
+    justify-content: flex-start;
+}
+
+.SaveButton {
+    margin-left: 1% !important;
+    padding-left: 32.506px !important;
+    padding-right: 32.506px !important;
+}

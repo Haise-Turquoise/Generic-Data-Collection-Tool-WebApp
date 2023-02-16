@@ -1,0 +1,19 @@
+export default interface Presubmission {
+    organization:any;
+    program:any;
+    submission:any;
+    approveAvailable:boolean;
+    reviewAvailable:boolean;
+    submitAvailable:boolean;
+    inputAvailable:boolean;
+    viewAvailable:boolean;
+    viewCognosAvailable:boolean;
+    approve:boolean;
+    review:boolean;
+    submit:boolean;
+    input:boolean;
+    view:boolean;
+    Reporter?:boolean;
+    viewCognos:boolean;
+    index?:number
+}

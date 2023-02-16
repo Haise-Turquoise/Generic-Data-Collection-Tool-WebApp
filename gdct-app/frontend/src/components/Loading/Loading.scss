@@ -1,0 +1,10 @@
+@import "../../styles/mixins/layouts";
+
+.loadingContainer {
+  @include center;
+}
+
+.loadingContent {
+  text-align: center;
+  padding: 50px;
+}

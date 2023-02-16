@@ -1,0 +1,27 @@
+{
+  "name": "wp",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/greylemon/Web-Prototype.git",
+  "author": "Bill Hu <william.hu@ontario.ca>",
+  "license": "MIT",
+  "scripts": {
+    "install": "yarn --cwd gdct-app",
+    "start": "yarn --cwd gdct-app start",
+    "fix": "yarn --cwd gdct-app fix",
+    "test": "jest"
+  },
+  "lint-staged": {
+    "./**/*.{js,ts}": [
+      "yarn fix"
+    ]
+  },
+  "dependencies": {
+    "react": "^17.0.2",
+    "yarn": "^1.22.10"
+  },
+  "devDependencies": {
+    "jest": "^26.6.0",
+    "lint-staged": "^10.5.0"
+  }
+}

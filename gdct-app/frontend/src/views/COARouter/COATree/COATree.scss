@@ -1,0 +1,14 @@
+// TODO: Fit content of node or change to full height
+.COATreeContent {
+  height: 600px;
+}
+
+.header {
+  &__actions {
+    display: flex;
+  }
+}
+
+.searchBar {
+  margin-right: 10px !important;
+}

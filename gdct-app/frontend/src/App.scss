@@ -1,0 +1,29 @@
+@use "~font-awesome/css/font-awesome.min.css";
+@use "~bootstrap/dist/css/bootstrap.min.css";
+@import './styles/styles.scss';
+
+.appContainer {
+  min-height: fit-content;
+}
+
+.app {
+  min-width: fit-content;
+  min-height: fit-content;
+
+  height: 100vh;
+
+  &__page {
+    height: 100%;
+    min-height: fit-content;
+    min-width: fit-content;
+
+    &--online {
+      display: flex;
+    }
+  }
+}
+
+.appPage {
+  margin: 20px;
+  width: 100%;
+}
