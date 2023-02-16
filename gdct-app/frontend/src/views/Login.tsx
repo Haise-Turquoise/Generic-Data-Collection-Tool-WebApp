@@ -115,6 +115,8 @@ export default function Login({ setLoggedIn }:{setLoggedIn:(flag:boolean)=>void}
   const [open, setOpen] = React.useState(false);
   const [selectedRole, setSelectedRole] = useState('');
   const [roles, setRoles] = useState([]);
+  const [attempts, setCount] = useState(4);
+
 
   const displayUserFeedback = () => {
     setOpen(true);
@@ -196,6 +198,20 @@ export default function Login({ setLoggedIn }:{setLoggedIn:(flag:boolean)=>void}
       }
       if (!checkLogin) {
         console.log('not login in');
+
+
+        setCount(attempts-1);
+        if(attempts>0){
+          alert(attempts+" MORE ATTEMPTS");
+        } else {
+          alert("NO MORE LOGIN ATTEMPTS");
+          (document.getElementById("loginform") as any).disabled=true;
+          (document.getElementById("email") as any).disabled=true;
+          (document.getElementById("password") as any).disabled=true;
+          (document.getElementById("loginbutton") as any).disabled=true;
+          (document.getElementById("googlebutton") as any).disabled=true;
+          (document.getElementById("facebookbutton") as any).disabled=true;
+        }
 
         displayUserFeedback();
       }
@@ -300,7 +316,10 @@ export default function Login({ setLoggedIn }:{setLoggedIn:(flag:boolean)=>void}
         <Typography component="h1" variant="h5">
           Sign in
         </Typography>
-        <form onSubmit={handleSubmit} onClick={Timer} className={classes.form} noValidate>
+
+        <form id="loginform" onSubmit={handleSubmit} onClick={Timer} className={classes.form} noValidate>
+
+
           <TextField
             variant="outlined"
             margin="normal"
@@ -360,6 +379,7 @@ export default function Login({ setLoggedIn }:{setLoggedIn:(flag:boolean)=>void}
             </Alert>
           </Snackbar>
           <Button
+            id="loginbutton"
             type="submit"
             fullWidth
             variant="contained"
@@ -368,10 +388,14 @@ export default function Login({ setLoggedIn }:{setLoggedIn:(flag:boolean)=>void}
             style={{
               marginBottom: '24px',
             }}
+            onClick={() => {
+              if(attempts==0) alert("NO MORE LOGIN ATTEMPTS");
+            }}
           >
             Sign In
           </Button>
           <Button
+            id="googlebutton"
             fullWidth
             variant="outlined"
             color="default"
@@ -381,7 +405,11 @@ export default function Login({ setLoggedIn }:{setLoggedIn:(flag:boolean)=>void}
               marginBottom: 0,
             }}
             onClick={() => {
-              window.location.href = `${host}/auth/google/`;
+              if(attempts>0) {
+                window.location.href = `${host}/auth/google/`;
+              } else {
+                alert("NO MORE LOGIN ATTEMPTS");
+              }
             }}
           >
             <div>
@@ -394,12 +422,17 @@ export default function Login({ setLoggedIn }:{setLoggedIn:(flag:boolean)=>void}
             </div>
           </Button>
           <Button
+            id="facebookbutton"
             fullWidth
             variant="contained"
             color="primary"
             className={classes.submit}
             onClick={() => {
-              window.location.href = `${host}/auth/facebook/`;
+              if(attempts>0) {
+                window.location.href = `${host}/auth/facebook/`;
+              } else {
+                alert("NO MORE LOGIN ATTEMPTS");
+              }
             }}
           >
             <div>
