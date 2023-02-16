@@ -117,6 +117,7 @@ export default function Login({ setLoggedIn }:{setLoggedIn:(flag:boolean)=>void}
   const [roles, setRoles] = useState([]);
   const [attempts, setCount] = useState(4);
 
+
   const displayUserFeedback = () => {
     setOpen(true);
   };
@@ -198,6 +199,7 @@ export default function Login({ setLoggedIn }:{setLoggedIn:(flag:boolean)=>void}
       if (!checkLogin) {
         console.log('not login in');
 
+
         setCount(attempts-1);
         if(attempts>0){
           alert(attempts+" MORE ATTEMPTS");
@@ -210,6 +212,7 @@ export default function Login({ setLoggedIn }:{setLoggedIn:(flag:boolean)=>void}
           (document.getElementById("googlebutton") as any).disabled=true;
           (document.getElementById("facebookbutton") as any).disabled=true;
         }
+
         displayUserFeedback();
       }
     } catch (err) {
@@ -313,7 +316,10 @@ export default function Login({ setLoggedIn }:{setLoggedIn:(flag:boolean)=>void}
         <Typography component="h1" variant="h5">
           Sign in
         </Typography>
+
         <form id="loginform" onSubmit={handleSubmit} onClick={Timer} className={classes.form} noValidate>
+
+
           <TextField
             variant="outlined"
             margin="normal"
