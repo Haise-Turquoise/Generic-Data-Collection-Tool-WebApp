@@ -97,7 +97,7 @@ const GDCTMenu = () => {
   return (
     <div>
       <br />
-      <div className="welcomeTitle">Welcome to MOH - OHFS Budgeting and Forecasting</div>
+      <div className="welcomeTitle">Welcome To GDCT</div>
       <br /><br /><br />
       <div>
         <AuditMenu />
