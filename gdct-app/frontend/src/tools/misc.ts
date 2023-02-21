@@ -8,6 +8,7 @@ import User from '../types/user';
 import { Submission } from '../types/submissions';
 import reportingPeriodController from '../controllers/reportingPeriod';
 import UserSysRole from '../types/usersysrole';
+import IndexedColors from './excelColorIndexToHex';
 
 export const isObjectEmpty = (object:any) => {
   for (let key in object) return false;
@@ -152,7 +153,32 @@ export const excelJsStyle2Xspreadsheet = (style: Partial<Excel.Style>) => {
   // @ts-ignore
   if (style.fill && style.fill.fgColor && style.fill.fgColor.argb) {
     // @ts-ignore
-    Object.assign(result, {bgcolor: '#' + style.fill.fgColor.argb.slice(2)});
+    let targetColor = '#' + style.fill.fgColor.argb.slice(2);
+    // @ts-ignore
+    Object.assign(result, {bgcolor: targetColor});
+    // @ts-ignore
+    // fill the target color to border if there is no border,, avoid the border color is white in block color background
+    if (result.border == undefined) {
+      Object.assign(result, {border: {bottom: ['thick', targetColor], left: ['thick', targetColor],
+        right: ['thick', targetColor], top: ['thick', targetColor]}}); // need border color processing
+    }
+    // need border color processing
+  }
+
+  // Convert index color fill
+  // @ts-ignore
+  if (style.fill && style.fill.fgColor && style.fill.fgColor.indexed && style.fill.fgColor.indexed !== 64 && (style.fill.bgColor.indexed >= 64 || style.fill.bgColor.indexed < 0) ){
+    let indexDict = new IndexedColors();
+    // @ts-ignore
+    let targetColor = '#' + (indexDict.excelColorIndexToHex(style.fill.fgColor.indexed));
+    // @ts-ignore
+    Object.assign(result, {bgcolor: targetColor});
+    // @ts-ignore
+    // fill the target color to border if there is no border, avoid the border color is white in block color background
+    if (result.border == undefined) {
+      Object.assign(result, {border: {bottom: ['thick', targetColor], left: ['thick', targetColor],
+       right: ['thick', targetColor], top: ['thick', targetColor]}});
+    }
   }
 
   // Convert Font
@@ -176,6 +202,8 @@ export const excelJsStyle2Xspreadsheet = (style: Partial<Excel.Style>) => {
   }
 
   if (style.alignment && style.alignment.wrapText) Object.assign(result, {textwarp: true});
+  // @ts-ignore
+  // Object.assign(result, {bgcolor: '#30D5C8' });
 
   return result;
 };
@@ -696,7 +724,7 @@ export const excelImportHandler = (event:React.ChangeEvent<HTMLInputElement>, da
             if (!!targetCell.formula) {
 
               Object.assign(currCell, {text: '=' + targetCell.formula})
-              
+
             } else {
               // if targetCell.value is string type and exist
               if (targetCell.value !== undefined && targetCell.value !== null && typeof targetCell.value === 'string') {
@@ -712,6 +740,17 @@ export const excelImportHandler = (event:React.ChangeEvent<HTMLInputElement>, da
             }
 
             const currCellStyle = targetCell.style;
+
+            // if ((targetSheet.name === 'Main Menu' && endCoord === 'V7')) {
+            //   console.log('targetCell: ', targetCell);
+            //   console.log('currCellStyle: ', currCellStyle);
+            // }
+
+            // if (targetCell.value !== undefined && targetCell.value !== null && targetCell.value == 'REVENUE') {
+            //   console.log('targetCell: ', targetCell);
+            //   console.log('currCellStyle: ', currCellStyle);
+            // }
+
             // Check if there is style related to this cell.
             if (!isObjectEmpty(currCellStyle)) {
               const currStyle = excelJsStyle2Xspreadsheet(currCellStyle);
@@ -719,13 +758,20 @@ export const excelImportHandler = (event:React.ChangeEvent<HTMLInputElement>, da
               // Compare object using Json
               // Since json cannot be compared, we need to convert it to Json string first
               let jsonReference = JSON.stringify(currStyle);
+              
+              // if (targetSheet.name === 'Main Menu' && endCoord === 'V7') {
+              //   console.log('jsonReference: ', jsonReference);
+              //   console.log('styleMap: ', styleMap);
+              // }
 
               if (styleMap.has(jsonReference)) {
                 Object.assign(currCell, {style: styleMap.get(jsonReference)});
+                //if (targetSheet.name === 'Main Menu' && endCoord === 'V7') {console.log('case1');}
               } else {
                 styleMap.set(jsonReference, sheetData.styles.length);
                 sheetData.styles.push(currStyle);
                 Object.assign(currCell, {style: styleMap.get(jsonReference)});
+                //if (targetSheet.name === 'Main Menu' && endCoord === 'V7') {console.log('case2');}
               }
             }
           }
