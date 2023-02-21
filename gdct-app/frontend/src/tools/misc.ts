@@ -153,7 +153,16 @@ export const excelJsStyle2Xspreadsheet = (style: Partial<Excel.Style>) => {
   // @ts-ignore
   if (style.fill && style.fill.fgColor && style.fill.fgColor.argb) {
     // @ts-ignore
-    Object.assign(result, {bgcolor: '#' + style.fill.fgColor.argb.slice(2)});
+    let targetColor = '#' + style.fill.fgColor.argb.slice(2);
+    // @ts-ignore
+    Object.assign(result, {bgcolor: targetColor});
+    // @ts-ignore
+    // fill the target color to border if there is no border,, avoid the border color is white in block color background
+    if (result.border == undefined) {
+      Object.assign(result, {border: {bottom: ['thick', targetColor], left: ['thick', targetColor],
+        right: ['thick', targetColor], top: ['thick', targetColor]}}); // need border color processing
+    }
+    // need border color processing
   }
 
   // Convert index color fill
@@ -161,7 +170,15 @@ export const excelJsStyle2Xspreadsheet = (style: Partial<Excel.Style>) => {
   if (style.fill && style.fill.fgColor && style.fill.fgColor.indexed && style.fill.fgColor.indexed !== 64 && (style.fill.bgColor.indexed >= 64 || style.fill.bgColor.indexed < 0) ){
     let indexDict = new IndexedColors();
     // @ts-ignore
-    Object.assign(result, {bgcolor: '#' + (indexDict.excelColorIndexToHex(style.fill.fgColor.indexed))});
+    let targetColor = '#' + (indexDict.excelColorIndexToHex(style.fill.fgColor.indexed));
+    // @ts-ignore
+    Object.assign(result, {bgcolor: targetColor});
+    // @ts-ignore
+    // fill the target color to border if there is no border, avoid the border color is white in block color background
+    if (result.border == undefined) {
+      Object.assign(result, {border: {bottom: ['thick', targetColor], left: ['thick', targetColor],
+       right: ['thick', targetColor], top: ['thick', targetColor]}});
+    }
   }
 
   // Convert Font
