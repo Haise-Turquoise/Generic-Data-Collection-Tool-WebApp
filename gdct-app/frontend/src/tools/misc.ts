@@ -170,6 +170,8 @@ export const excelJsStyle2Xspreadsheet = (style: Partial<Excel.Style>) => {
 
     if (font.family) Object.assign(resultFont, {family: font.family});
 
+    if (font.underline) Object.assign(result, {underline: font.underline});
+
     if (!isObjectEmpty(resultFont)) Object.assign(result, {font: resultFont});
   }
 
