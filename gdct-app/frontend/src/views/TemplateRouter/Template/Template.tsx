@@ -24,6 +24,12 @@ import TemplatesStore from '../../../store/TemplatesStore/store';
 import Template from '../../../types/template';
 import WorkflowProcess from '../../../types/workflowprocess';
 import { state } from '../../../store/types';
+import Snackbar from '@material-ui/core/Snackbar';
+import IconButton from '@material-ui/core/IconButton';
+import CheckCircleIcon from '@material-ui/icons/CheckCircle';
+import CancelIcon from '@material-ui/icons/Cancel';
+import { withStyles } from '@material-ui/core/styles';
+import SnackbarContent from '@material-ui/core/SnackbarContent';
 
 interface ProcessPopulated extends Omit<WorkflowProcess, 'to'> {
   to: WorkflowProcess[],
@@ -34,7 +40,11 @@ const TemplatePhases = ({ template }: { template: Template }) => {
   let buttonStatus = true;
   const dispatch = useDispatch();
   const currRole = localStorage.getItem('currentRole');
-
+  const [confirmPhase, setConfirmPhase] = useState(false);
+  const [confirmWinOpen, setConfirmWinOpen] = useState(false);
+  const [message, setMessage] = useState('');
+  const [action, setAction] = useState('confirm');
+  const [curProcessId, setCurProcessId] = useState('');
   if (currRole === 'Template Designer' || currRole === 'Business Admin') {
     buttonStatus = false;
   }
@@ -47,12 +57,66 @@ const TemplatePhases = ({ template }: { template: Template }) => {
         .then((workflowProcess: ProcessPopulated[]) => setWorkflowProcess(workflowProcess || undefined));
   }, [template]);
 
+// trigger phase action change
   const handleClickWorkflow = useCallback(
     (processId: any) => {
       dispatch(updateTemplateWorkflowProcess(template._id, processId));
     },
     [template, dispatch],
   );
+
+  // proceed handleClickWorkflow phase change only if user press confirm button
+  const handleConfirmClickWorkflow = (processId: any) => {
+    setMessage('Do you want to confirm or reject? The next phase will be executed.');
+    setAction('confirm');
+    setConfirmWinOpen(true);
+    setCurProcessId(processId);
+  };
+
+  // Note: useEffect is called after confirmPhase is set to true. 
+  // If this code block is in handleConfirmClickWorkflow,
+  // before SnackBar being clicked, confirmPhase checking is already triggered, 
+  // the effect will not be triggered immediately after SnackBar clicked.
+  useEffect(() => {
+    if (confirmPhase) { 
+      setConfirmPhase(false);
+      if (curProcessId !== '') handleClickWorkflow(curProcessId);
+    } else {}
+  }, [confirmPhase]);
+
+  // handle confirm button in SnackBar
+  const handleConfirm = () => {
+    setMessage('Confirmed!');
+    setAction('');
+    setConfirmPhase(true);
+    setConfirmWinOpen(false);
+  };
+
+  // handle reject button in SnackBar
+  const handleReject = () => {
+    setMessage('Rejected!');
+    setAction('');
+    setConfirmPhase(false);
+    setConfirmWinOpen(false);
+  };
+
+  // handle close button in SnackBar
+  const handleClose = (event: React.SyntheticEvent | Event, reason?: string) => {
+    setConfirmWinOpen(false);
+  };
+
+  // handle exit situation in SnackBar to avoid async issue
+  const handleExited = () => {
+    setConfirmWinOpen(false);
+  };
+
+  // set the style of SnackBar to white background and black text
+  const WhiteSnackbarContent = withStyles({
+    root: {
+      color: 'black',
+      backgroundColor: 'white',
+    },
+  })(SnackbarContent);
 
   return (
     <div>
@@ -62,13 +126,44 @@ const TemplatePhases = ({ template }: { template: Template }) => {
           <Chip className="rounded" color="primary" label="Phase Actions:" />
           {workflowProcess && workflowProcess.to.length ? (
             workflowProcess.to.map((outwardProcess) => (
+              <div>
               <Button
                 disabled={buttonStatus}
                 key={outwardProcess._id}
-                onClick={() => handleClickWorkflow(outwardProcess._id)}
+                onClick={() => handleConfirmClickWorkflow(outwardProcess._id)}
               >
                 {outwardProcess.statusId.name}
               </Button>
+              
+                <Snackbar
+                  open={confirmWinOpen}
+                  onClose={handleClose}
+                  message={message}
+                  TransitionProps={{ onExited: handleExited }}
+                  style={{ position: 'absolute', top: '130px', left: '50%', transform: 'translate(-50%, -50%)' }}
+                >
+                  <WhiteSnackbarContent 
+                  message={message} 
+                  action={
+                    action === 'confirm' ? (
+                      <React.Fragment>
+                        <Button color="secondary" size="small" onClick={handleReject}>
+                          Reject
+                        </Button>
+                        <IconButton size="small" color="inherit" onClick={handleConfirm}>
+                          <CheckCircleIcon />
+                        </IconButton>
+                      </React.Fragment>
+                    ) : (
+                      <IconButton size="small" color="inherit" onClick={handleClose}>
+                        <CancelIcon />
+                      </IconButton>
+                    )
+                  }
+                  />
+                </Snackbar>
+            
+            </div>
             ))
           ) : (
             <Chip className="rounded" color="secondary" label="Finalized" />
