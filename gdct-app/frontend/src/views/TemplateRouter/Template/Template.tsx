@@ -16,7 +16,7 @@ import Loading from '../../../components/Loading/Loading';
 
 import { getTemplateRequest, updateTemplateWorkflowProcess } from '../../../store/thunks/template';
 
-import './Template.scss';
+import './Template.scss'; 
 import { selectTemplatesStore } from '../../../store/TemplatesStore/selectors';
 import { selectFactoryValueById } from '../../../store/common/REST/selectors';
 import workflowController from '../../../controllers/workflow';
@@ -79,9 +79,9 @@ const TemplatePhases = ({ template }: { template: Template }) => {
   // the effect will not be triggered immediately after SnackBar clicked.
   useEffect(() => {
     if (confirmPhase) { 
-      setConfirmPhase(false);
       if (curProcessId !== '') handleClickWorkflow(curProcessId);
     } else {}
+    return () => {setConfirmPhase(false);};
   }, [confirmPhase]);
 
   // handle confirm button in SnackBar
@@ -102,12 +102,7 @@ const TemplatePhases = ({ template }: { template: Template }) => {
 
   // handle close button in SnackBar
   const handleClose = (event: React.SyntheticEvent | Event, reason?: string) => {
-    setConfirmWinOpen(false);
-  };
-
-  // handle exit situation in SnackBar to avoid async issue
-  const handleExited = () => {
-    setConfirmWinOpen(false);
+    // do nothing
   };
 
   // set the style of SnackBar to white background and black text
@@ -139,7 +134,6 @@ const TemplatePhases = ({ template }: { template: Template }) => {
                   open={confirmWinOpen}
                   onClose={handleClose}
                   message={message}
-                  TransitionProps={{ onExited: handleExited }}
                   style={{ position: 'absolute', top: '130px', left: '50%', transform: 'translate(-50%, -50%)' }}
                 >
                   <WhiteSnackbarContent 
