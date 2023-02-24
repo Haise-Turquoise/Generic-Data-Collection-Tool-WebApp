@@ -30,6 +30,7 @@ import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 import CancelIcon from '@material-ui/icons/Cancel';
 import { withStyles } from '@material-ui/core/styles';
 import SnackbarContent from '@material-ui/core/SnackbarContent';
+import statusController from '../../../controllers/status';
 
 interface ProcessPopulated extends Omit<WorkflowProcess, 'to'> {
   to: WorkflowProcess[],
@@ -45,6 +46,8 @@ const TemplatePhases = ({ template }: { template: Template }) => {
   const [message, setMessage] = useState('');
   const [action, setAction] = useState('confirm');
   const [curProcessId, setCurProcessId] = useState('');
+  const [curPhase, setCurPhase] = useState('NULL'); // current phase of the template
+
   if (currRole === 'Template Designer' || currRole === 'Business Admin') {
     buttonStatus = false;
   }
@@ -113,12 +116,27 @@ const TemplatePhases = ({ template }: { template: Template }) => {
     },
   })(SnackbarContent);
 
+  // console log workflowProcess for debugging
+  useEffect(() => {
+    if (workflowProcess) {
+      //setCurPhase(workflowProcess.statusId.name);
+      console.log('workflowProcess: ', workflowProcess);
+      // search current status name by status id
+      // @ts-ignore
+      statusController.findStatusByID(workflowProcess.statusId).then((status) => {
+        if (status) {
+          setCurPhase(status.name);
+        }
+      });
+    } else {}
+  }, [workflowProcess,confirmPhase]);
+
   return (
     <div>
       <Paper className="header">
         <Typography variant="h5">{template.name}</Typography>
         <div className="mb-3 d-flex justify-content-end">
-          <Chip className="rounded" color="primary" label="Phase Actions:" />
+          <Chip className="rounded" color="primary" label={"Current Phase: "+ curPhase} />
           {workflowProcess && workflowProcess.to.length ? (
             workflowProcess.to.map((outwardProcess) => (
               <div>
@@ -126,8 +144,9 @@ const TemplatePhases = ({ template }: { template: Template }) => {
                 disabled={buttonStatus}
                 key={outwardProcess._id}
                 onClick={() => handleConfirmClickWorkflow(outwardProcess._id)}
+                style={{ textTransform: 'none' }} 
               >
-                {outwardProcess.statusId.name}
+                {"Next Phase: " + outwardProcess.statusId.name}
               </Button>
               
                 <Snackbar
