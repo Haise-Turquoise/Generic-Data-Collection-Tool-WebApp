@@ -143,7 +143,17 @@ const SubmissionStatusTable = () => {
     [],
   );
 
-  const options: Options<SubmissionStatus> = useMemo(() => ({...calculateOptions(readRowNum), filtering: true}), [readRowNum]);
+  //const options: Options<SubmissionStatus> = useMemo(() => ({...calculateOptions(readRowNum), filtering: true}), [readRowNum]);
+  const options: Options<SubmissionStatus> = useMemo(() => ({
+    ...calculateOptions(readRowNum),
+    padding:'dense',
+    headerStyle: {
+      fontSize: '7px',
+      padding: '7px',
+      margin: '7px',
+    },
+  }), [readRowNum]);
+  
 
   const actions: ((rowData: SubmissionStatus) => Action<SubmissionStatus>)[] = [
     (actionRowData: SubmissionStatus) => ({
@@ -163,7 +173,9 @@ const SubmissionStatusTable = () => {
   }, [submissionStatus])
 
   return (
-    <div>
+    <div style={{ fontSize: '7px',
+    padding: '7px',
+    margin: '7px', }}>
       <MaterialTable
         key={readRowNum}
         columns={!!submissionStatus ? columns : preColumns}
