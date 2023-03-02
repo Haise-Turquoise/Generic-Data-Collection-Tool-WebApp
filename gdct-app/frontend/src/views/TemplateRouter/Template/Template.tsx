@@ -62,13 +62,13 @@ const WorkflowPane = ({ stateActions }: { stateActions: IFlowChartCallbacks }) =
   return (
     <FlowChart
       chart={chart}
-      readonly={true}
       callbacks={stateActions}
       config={{
         validateLink: ({ fromNodeId, toNodeId, chart }) => {
           // no links between same type nodes
           return chart.nodes[fromNodeId].type !== chart.nodes[toNodeId].type;
         },
+        readonly={true}
       }}
       Components={{ NodeInner: NodeInnerCustom }}
     />
