@@ -83,4 +83,17 @@ export default class TemplateTypeRepository extends BaseRepository<TemplateType,
       return new TemplateTypeEntity(templateType)
     });
   }
+
+  async getWorkflowIdByTemplateTypeId (id: string): 
+    Promise<string | undefined | null> {
+    try {
+      const templateType = await this.findById(id);
+      if (!templateType) {
+        throw new Error(`Item not found for TemplateType item with ID: ${id}`);
+      }
+      return templateType.templateWorkflowId;
+    } catch (error) {
+      // handle error
+    }
+  };
 }
