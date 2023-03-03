@@ -109,6 +109,7 @@ const WorkflowContainer = ({ type,templateTypeId }: { type: actionType,templateT
         if (res) {
           set_id(res);
         } else {
+          console.log("res: ", res);
           console.log("No workflow id found");
         }
       });
