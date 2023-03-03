@@ -1,4 +1,4 @@
-import React, { useState, useEffect,ChangeEvent } from 'react';
+import React, { useState, useEffect,ChangeEvent,useCallback } from 'react';
 import {
   Avatar,
   Button,
@@ -115,7 +115,7 @@ export default function Login({ setLoggedIn }:{setLoggedIn:(flag:boolean)=>void}
   const [open, setOpen] = React.useState(false);
   const [selectedRole, setSelectedRole] = useState('');
   const [roles, setRoles] = useState([]);
-  const [attempts, setCount] = useState(4);
+  let flag = true;
 
 
   const displayUserFeedback = () => {
@@ -158,7 +158,7 @@ export default function Login({ setLoggedIn }:{setLoggedIn:(flag:boolean)=>void}
 
     let checkLogin;
     try {
-      if (email && validateForm(errors)) {
+      if (email && validateForm(errors) && flag) {
         // logic to verify validity of submitter role
         const { sysRole } = await usersController.fetchByEmail(email) || { sysRole: null };
         if (!sysRole) {
@@ -198,21 +198,7 @@ export default function Login({ setLoggedIn }:{setLoggedIn:(flag:boolean)=>void}
       }
       if (!checkLogin) {
         console.log('not login in');
-
-
         setCount(attempts-1);
-        if(attempts>0){
-          alert(attempts+" MORE ATTEMPTS");
-        } else {
-          alert("NO MORE LOGIN ATTEMPTS");
-          (document.getElementById("loginform") as any).disabled=true;
-          (document.getElementById("email") as any).disabled=true;
-          (document.getElementById("password") as any).disabled=true;
-          (document.getElementById("loginbutton") as any).disabled=true;
-          (document.getElementById("googlebutton") as any).disabled=true;
-          (document.getElementById("facebookbutton") as any).disabled=true;
-        }
-
         displayUserFeedback();
       }
     } catch (err) {
@@ -220,6 +206,46 @@ export default function Login({ setLoggedIn }:{setLoggedIn:(flag:boolean)=>void}
       setLoggedIn(false);
     }
   };
+
+  
+  
+
+  function useAttempt() {
+    let tryagain = "";
+    if(attempts > 0) {
+      tryagain = "Incorrect password or email. "+attempts+" more attempts.";
+    } else {
+      
+      if(seconds<=0) {
+        tryagain = "Incorrect password or email. "+attempts+" more attempts.";
+        //(document.getElementById("loginform") as any).disabled=false;
+        // (document.getElementById("email") as any).disabled=false;
+        // (document.getElementById("password") as any).disabled=false;
+        //(document.getElementById("loginbutton") as any).disabled=false;
+        // (document.getElementById("googlebutton") as any).disabled=false;
+        // (document.getElementById("facebookbutton") as any).disabled=false;
+        console.log('enabled');
+        flag = true;
+        setCount(1);
+      } else {
+
+        tryagain = "NO MORE LOGIN ATTEMPTS! You may attempt to login again in "+seconds+" seconds";
+        //(document.getElementById("loginform") as any).disabled=true;
+        // (document.getElementById("email") as any).disabled=true;
+        // (document.getElementById("password") as any).disabled=true;
+        //(document.getElementById("loginbutton") as any).disabled=true;
+        // (document.getElementById("googlebutton") as any).disabled=true;
+        // (document.getElementById("facebookbutton") as any).disabled=true;
+        console.log('disabled');
+        flag = false;
+      }
+
+    }
+
+    
+
+    return tryagain;
+  }  
 
   const handleUpdateRoles = () => {
     usersController
@@ -306,6 +332,46 @@ export default function Login({ setLoggedIn }:{setLoggedIn:(flag:boolean)=>void}
     }
   };
 
+  const [attempts,setCount] = useState(5);
+
+  const interval = (delay = 0) => (
+    callback:any
+  ) =>
+    useEffect(() => {
+      const id = setInterval(callback, delay);
+
+      return () => clearInterval(id);
+    }, [callback]);
+
+  const use1Second = interval(1000);
+
+  const useTimer = ({
+    initialSeconds = 10,
+    initiallyRunning = false
+  } = {}) => {
+    const [seconds, setSeconds] = useState(initialSeconds);
+    const [running, setRunning] = useState(initiallyRunning);
+    const tick = useCallback(
+      () => (running ? setSeconds((seconds) => seconds - 1) : undefined),
+      [running]
+    );
+    const start = () => { setRunning(true);}
+    const pause = () => setRunning(false);
+    const reset = () => setSeconds(10);
+    const stop = () => {
+      pause();
+      reset();
+    };
+
+    use1Second(tick);
+
+    return { pause, reset, running, seconds, start, stop };
+  };
+
+  const { seconds, start, pause, running, stop } = useTimer();
+
+
+  
   return (
     <Container component="main" maxWidth="xs">
       <CssBaseline />
@@ -375,7 +441,7 @@ export default function Login({ setLoggedIn }:{setLoggedIn:(flag:boolean)=>void}
           />
           <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
             <Alert onClose={handleClose} severity="error">
-              Please enter the correct password or email
+              {useAttempt()}
             </Alert>
           </Snackbar>
           <Button
@@ -388,9 +454,8 @@ export default function Login({ setLoggedIn }:{setLoggedIn:(flag:boolean)=>void}
             style={{
               marginBottom: '24px',
             }}
-            onClick={() => {
-              if(attempts==0) alert("NO MORE LOGIN ATTEMPTS");
-            }}
+            onClick={() => {stop(); start();}}
+          
           >
             Sign In
           </Button>
@@ -408,7 +473,7 @@ export default function Login({ setLoggedIn }:{setLoggedIn:(flag:boolean)=>void}
               if(attempts>0) {
                 window.location.href = `${host}/auth/google/`;
               } else {
-                alert("NO MORE LOGIN ATTEMPTS");
+                displayUserFeedback();
               }
             }}
           >
@@ -431,7 +496,7 @@ export default function Login({ setLoggedIn }:{setLoggedIn:(flag:boolean)=>void}
               if(attempts>0) {
                 window.location.href = `${host}/auth/facebook/`;
               } else {
-                alert("NO MORE LOGIN ATTEMPTS");
+                displayUserFeedback();
               }
             }}
           >
