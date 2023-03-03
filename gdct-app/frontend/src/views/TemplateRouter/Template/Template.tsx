@@ -68,7 +68,7 @@ const WorkflowPane = ({ stateActions }: { stateActions: IFlowChartCallbacks }) =
           // no links between same type nodes
           return chart.nodes[fromNodeId].type !== chart.nodes[toNodeId].type;
         },
-        readonly={true}
+        readonly: true,
       }}
       Components={{ NodeInner: NodeInnerCustom }}
     />
