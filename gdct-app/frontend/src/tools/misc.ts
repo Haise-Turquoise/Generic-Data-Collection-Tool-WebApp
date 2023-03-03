@@ -195,7 +195,15 @@ export const excelJsStyle2Xspreadsheet = (style: Partial<Excel.Style>) => {
     if (font.name) Object.assign(resultFont, {name: font.name});
 
     if (font.family) Object.assign(resultFont, {family: font.family});
-
+    
+    if (font.color){
+      const indexDict = new IndexedColors();
+      if (font.color.argb) Object.assign(result, {color: '#' + font.color.argb.substring(2,8)});
+      if (font.color.theme && font.color.theme>1) Object.assign(result, {color: '#' + indexDict.excelColorThemeToHex(font.color.theme)});
+      // @ts-ignore
+      if (font.color.indexed) Object.assign(result, {color: '#' + indexDict.excelColorIndexToHex(font.color.indexed)});
+    }
+    
     if (font.underline) Object.assign(result, {underline: font.underline});
 
     if (!isObjectEmpty(resultFont)) Object.assign(result, {font: resultFont});
@@ -723,7 +731,8 @@ export const excelImportHandler = (event:React.ChangeEvent<HTMLInputElement>, da
             // Check if there are formulas and copy the value of the cell
             if (!!targetCell.formula) {
 
-              Object.assign(currCell, {text: '=' + targetCell.formula})
+              //Object.assign(currCell, {text: '=' + targetCell.formula})
+              Object.assign(currCell, {text: targetCell.text})
 
             } else {
               // if targetCell.value is string type and exist
@@ -740,16 +749,6 @@ export const excelImportHandler = (event:React.ChangeEvent<HTMLInputElement>, da
             }
 
             const currCellStyle = targetCell.style;
-
-            // if ((targetSheet.name === 'Main Menu' && endCoord === 'V7')) {
-            //   console.log('targetCell: ', targetCell);
-            //   console.log('currCellStyle: ', currCellStyle);
-            // }
-
-            // if (targetCell.value !== undefined && targetCell.value !== null && targetCell.value == 'REVENUE') {
-            //   console.log('targetCell: ', targetCell);
-            //   console.log('currCellStyle: ', currCellStyle);
-            // }
 
             // Check if there is style related to this cell.
             if (!isObjectEmpty(currCellStyle)) {
