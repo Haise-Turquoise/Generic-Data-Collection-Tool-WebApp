@@ -45,4 +45,9 @@ export default class TemplateTypeService {
   async findById(id: string) {
     return this.templateTypeRepository.findById(id);
   }
+
+  async getWorkflowIdByTemplateTypeId(id: string) {
+    console.log('backend/services/getWorkflowIdByTemplateTypeId before return id:', id);
+    return this.templateTypeRepository.getWorkflowIdByTemplateTypeId(id);
+  }
 }

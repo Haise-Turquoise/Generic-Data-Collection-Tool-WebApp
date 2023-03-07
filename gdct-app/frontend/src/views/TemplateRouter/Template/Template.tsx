@@ -2,7 +2,7 @@
 // This file exports a page that users can go in to edit templatate spreadsheet files.
 // Since the application is moving onto using google sheets by opening a new tab, this file is currently not being used.
 
-import React, { useEffect, useCallback, useState } from 'react';
+import React, { useEffect, useCallback, useState, useMemo } from 'react';
 
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import { RouteComponentProps, RouterProps, useHistory } from 'react-router-dom';
@@ -31,10 +31,107 @@ import CancelIcon from '@material-ui/icons/Cancel';
 import { withStyles } from '@material-ui/core/styles';
 import SnackbarContent from '@material-ui/core/SnackbarContent';
 import statusController from '../../../controllers/status';
-
+import {
+  FlowChart,
+  actions,
+  IFlowChartCallbacks,
+} from '@mrblenny/react-flow-chart';
+import {
+  selectWorkflowChart
+} from '../../../store/WorkflowStore/selectors';
+import Workflow, { Node } from '../../../types/workflow';
+import { mapValues } from 'lodash';
+import {loadWorkflow } from '../../../store/thunks/workflow';
+import { WorkflowStoreActions } from '../../../store/WorkflowStore/store';
+import templateTypeController from '../../../controllers/templateType';
+type actionType = 'create' | 'update';
+ 
 interface ProcessPopulated extends Omit<WorkflowProcess, 'to'> {
   to: WorkflowProcess[],
 }
+
+
+const NodeInnerCustom = ({ node }: {node: Node}) => {
+  const name = typeof node.type === 'string' ? node.type : node.type.name
+  return <div className="workflowNode">{name}</div>
+};
+
+const WorkflowPane = ({ stateActions }: { stateActions: IFlowChartCallbacks }) => {
+  const chart = useSelector((state: state) => selectWorkflowChart(state), shallowEqual);
+
+  return (
+    <FlowChart
+      chart={chart}
+      callbacks={stateActions}
+      config={{
+        validateLink: ({ fromNodeId, toNodeId, chart }) => {
+          // no links between same type nodes
+          return chart.nodes[fromNodeId].type !== chart.nodes[toNodeId].type;
+        },
+        readonly: true,
+      }}
+      Components={{ NodeInner: NodeInnerCustom }}
+    />
+  );
+};
+
+const Workflow = () => {
+  const dispatch = useDispatch();
+
+  const stateActions: IFlowChartCallbacks = useMemo(
+    () =>
+      mapValues(actions, func => (...args: any) => {
+        // @ts-ignore
+        dispatch(WorkflowStoreActions.UPDATE_WORKFLOW_CHART(func(...args)));
+      }),
+    [dispatch, actions],
+  );
+
+  return (
+    <div className="workflow">
+      <div className="scroll-bar">
+        <WorkflowPane stateActions={stateActions} />
+      </div>
+    </div>
+  );
+};
+
+
+
+const WorkflowContainer = ({ type,templateTypeId }: { type: actionType,templateTypeId:string }) => {
+  const dispatch = useDispatch();
+  // Get the workflow id inside the url
+  const [_id, set_id] = useState<string>('');
+
+  useEffect(() => {
+    async function fetchWorkflow() {
+      await templateTypeController.getWorkflowIdByTemplateTypeId(templateTypeId).then((res)=>{  
+        if (res) {
+          set_id(res);
+        } else {
+          console.log("res: ", res);
+          console.log("No workflow id found");
+        }
+      });
+    }
+    fetchWorkflow();
+    if (_id) {
+      dispatch(loadWorkflow(_id));
+    }
+
+    return () => {
+      dispatch(WorkflowStoreActions.RESET());
+    }
+  }, [dispatch, _id]);
+
+  return (
+    <div className="workflowContainer">
+      <Workflow />
+    </div>
+  );
+};
+
+
 
 const TemplatePhases = ({ template }: { template: Template }) => {
   const [workflowProcess, setWorkflowProcess] = useState<ProcessPopulated | undefined>();
@@ -47,6 +144,7 @@ const TemplatePhases = ({ template }: { template: Template }) => {
   const [action, setAction] = useState('confirm');
   const [curProcessId, setCurProcessId] = useState('');
   const [curPhase, setCurPhase] = useState('NULL'); // current phase of the template
+  const [showHiddenComponent, setShowHiddenComponent] = useState(false);
 
   if (currRole === 'Template Designer' || currRole === 'Business Admin') {
     buttonStatus = false;
@@ -116,11 +214,10 @@ const TemplatePhases = ({ template }: { template: Template }) => {
     },
   })(SnackbarContent);
 
-  // console log workflowProcess for debugging
+
   useEffect(() => {
     if (workflowProcess) {
       //setCurPhase(workflowProcess.statusId.name);
-      console.log('workflowProcess: ', workflowProcess);
       // search current status name by status id
       // @ts-ignore
       statusController.findStatusByID(workflowProcess.statusId).then((status) => {
@@ -131,11 +228,22 @@ const TemplatePhases = ({ template }: { template: Template }) => {
     } else {}
   }, [workflowProcess,confirmPhase]);
 
+  function toggleHiddenComponent() {
+    setShowHiddenComponent(!showHiddenComponent);
+  }
+
   return (
     <div>
       <Paper className="header">
         <Typography variant="h5">{template.name}</Typography>
         <div className="mb-3 d-flex justify-content-end">
+          <Button
+            onClick={toggleHiddenComponent}
+            style={{ textTransform: 'none' }} 
+          > Peek Workflow </Button>
+          {showHiddenComponent && <div className="hidden-component">
+              <WorkflowContainer type='update' templateTypeId={template.templateTypeId} />
+            </div>}
           <Chip className="rounded" color="primary" label={"Current Phase: "+ curPhase} />
           {workflowProcess && workflowProcess.to.length ? (
             workflowProcess.to.map((outwardProcess) => (
