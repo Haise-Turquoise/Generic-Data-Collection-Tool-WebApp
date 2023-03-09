@@ -225,7 +225,7 @@ const TextGroup = (props: TextGroupProps) => {
     <Label {...props} />
     <br />
     {props.attribute !== 'organizationGroup' && <InputLocal {...props} type={'text'} />}
-    {(props.attribute === 'organizationGroup' && organizationGroupNames.length !== 0) &&
+    {(props.attribute === 'organizationGroup' && organizationGroupNames !== null) &&
       <FormControl variant="outlined" className={classes.formControl}>
       <Select onChange={handleChange} value={curOrgName} fullWidth required className='classes.select'>
         {organizationGroupNames.map(organizationGroupName => 
