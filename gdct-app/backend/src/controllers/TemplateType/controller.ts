@@ -60,11 +60,9 @@ const TemplateTypeController = Service([TemplateTypeService], service => {
 
     router.post('/templateTypes/getWorkflowIdByTemplateTypeId', (req, res, next) => {
       const { _id } = req.body;
-      console.log('backend/controller/getWorkflowIdByTemplateTypeId before service called _id:', _id);
       service.getWorkflowIdByTemplateTypeId(_id)
         .then(workflowId => res.json({ workflowId }))
         .catch(next);
-      console.log('backend/controller/getWorkflowIdByTemplateTypeId after service called _id:', _id);
     });
 
     return router;
