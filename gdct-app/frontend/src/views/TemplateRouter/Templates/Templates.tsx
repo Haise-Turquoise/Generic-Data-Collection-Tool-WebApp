@@ -132,7 +132,8 @@ const TemplatesTable = ({ history }: RouterProps) => {
         // editable: 'onAdd',
         // initialEditValue: new Date(),
       },
-      { title: 'Expiration Date', field: 'expirationDate' },
+      //@ts-ignore
+      { title: 'Expiration Date', type:'date', field: 'expirationDate', validate: rowData => rowData.expirationDate ? '' : 'Expiration Date is required' },
       { title: 'Workflow', field: 'workflowProcessId', lookup: lookupProcesses, editable: 'never' },
       {
         title: 'Modified On',
