@@ -15,9 +15,9 @@ import { OpenInNew } from '@material-ui/icons';
 
 const UsersHeader = () => {
   return (
-    <Paper className="header">
+    <div className="d-flex justify-content-between p-2 mb-3">
       <Typography variant="h5">User Management</Typography>
-    </Paper>
+    </div>
   );
 };
 

@@ -45,10 +45,10 @@ import CreateAuditLog from '../../AuditLog_Global';
 // TODO : Finish Excel integration
 const TemplateHeader = () => {
   return (
-    <Paper className="header">
+    <div className="d-flex justify-content-between p-2 mb-3">
       <Typography variant="h5">Template Design</Typography>
       {/* <HeaderActions/> */}
-    </Paper>
+    </div>
   );
 };
 

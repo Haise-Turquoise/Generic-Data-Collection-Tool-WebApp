@@ -28,12 +28,12 @@ const WorkflowHeader = () => {
   const handleCreate = () => history.push(ROUTE_WORKFLOW_CREATE);
 
   return (
-    <Paper className="header">
+    <div className="d-flex justify-content-between p-2 mb-3">
       <Typography variant="h5">Workflow</Typography>
       <Button variant="contained" color="primary" onClick={handleCreate}>
         Create
       </Button>
-    </Paper>
+    </div>
   );
 };
 

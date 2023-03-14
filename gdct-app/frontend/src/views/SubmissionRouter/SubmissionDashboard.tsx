@@ -57,9 +57,9 @@ const useStyles = makeStyles((theme) => ({
 
 
 const SubmissionHeader = () => (
-  <Paper className="header">
+  <div className="d-flex justify-content-between p-2 mb-3">
     <Typography variant="h5">Submissions</Typography>
-  </Paper>
+  </div>
 );
 
 const SubmissionDashboard = ({ history }:{history:History}) => {

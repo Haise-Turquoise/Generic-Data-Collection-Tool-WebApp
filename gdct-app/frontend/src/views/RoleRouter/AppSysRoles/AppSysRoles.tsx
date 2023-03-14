@@ -44,9 +44,9 @@ const customCheckDuplicates = (rowData:any, tableData:any, appSys:string, role:s
 
 const AppSysRolesHeader = () => {
   return (
-    <Paper className="header">
+    <div className="d-flex justify-content-between p-2 mb-3">
       <Typography variant="h5">Application System Role</Typography>
-    </Paper>
+    </div>
   );
 };
 

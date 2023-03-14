@@ -21,9 +21,9 @@ import { fetchWithStatus, calculateOptions } from '../../tools/misc';
 // Title Text
 const AuditLogHeader = () => {
   return (
-    <Paper className="header">
+    <div className="d-flex justify-content-between p-2 mb-3">
       <Typography variant="h5" component={'span'}>Audit Log</Typography>
-    </Paper>
+    </div>
   );
 };
 
