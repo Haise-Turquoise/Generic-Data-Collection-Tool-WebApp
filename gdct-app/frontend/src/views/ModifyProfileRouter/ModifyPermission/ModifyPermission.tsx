@@ -597,6 +597,14 @@ const ModifyPermission_container = (props:any) => {
   );
 };
 
+const SubmissionPermissionsHeader = () => {
+  return (
+    <Paper className="header">
+      <Typography variant="h5">Submission Permissions</Typography>
+    </Paper>
+  );
+};
+
 // Main function to export
 const ModifyPermission = () => {
   const handleSubmit = () => {};
@@ -615,8 +623,8 @@ const ModifyPermission = () => {
   );
 
   return (
-    <>
-      {/* <SRIHeader/> */}
+    <div>
+      <SubmissionPermissionsHeader/>
       <div className="modifyPermission">
         <br />
         <Paper className="modifyPermission__container">
@@ -627,7 +635,7 @@ const ModifyPermission = () => {
           />
         </Paper>
       </div>
-    </>
+    </div>
   );
 };
 export default ModifyPermission;
