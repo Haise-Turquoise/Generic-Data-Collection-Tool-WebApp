@@ -132,7 +132,7 @@ const ItemMap :{[key:string]:React.ReactElement<SvgIconProps>} =  {
   'Status': <CachedIcon style={MenuItemStyle} />,
 
   // Admin OHFS Data Population
-  'OHFS Data Populate': <StorageIcon style={MenuItemStyle} />,
+  'OHFS Prepopulate': <StorageIcon style={MenuItemStyle} />,
 
   // Admin Workflow
   'Workflow': <CallSplitIcon style={MenuItemStyle} />,
@@ -144,7 +144,7 @@ const ItemMap :{[key:string]:React.ReactElement<SvgIconProps>} =  {
   'AuditLog': <SubjectIcon style={MenuItemStyle} />,
 
   // Admin ETL
-  'ETL': <QueryBuilderIcon style={MenuItemStyle} />,
+  'ETL Status': <QueryBuilderIcon style={MenuItemStyle} />,
 
   // UNKNOWN
   'Download': <CloudDownloadIcon style={MenuItemStyle} />,

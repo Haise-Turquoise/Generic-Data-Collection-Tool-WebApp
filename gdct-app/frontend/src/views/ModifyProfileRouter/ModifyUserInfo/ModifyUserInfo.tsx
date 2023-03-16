@@ -34,7 +34,7 @@ import Paper from '@material-ui/core/Paper';
 // The header or the title of this page
 const Header = () => (
   <div className="d-flex justify-content-between p-2 mb-3">
-    <Typography variant="h5">Modify User Info</Typography>
+    <Typography variant="h5">Personal Details</Typography>
   </div>
 );
 

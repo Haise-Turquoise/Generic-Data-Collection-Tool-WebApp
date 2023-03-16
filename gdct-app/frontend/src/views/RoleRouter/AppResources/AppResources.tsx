@@ -21,9 +21,9 @@ interface AppResourceMT extends AppResource {
 
 const AppResourcesHeader = () => {
   return (
-    <Paper className="header">
+    <div className="d-flex justify-content-between p-2 mb-3">
       <Typography variant="h5">Application Resource</Typography>
-    </Paper>
+    </div>
   );
 };
 
