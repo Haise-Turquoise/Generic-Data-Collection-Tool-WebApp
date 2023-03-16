@@ -29,6 +29,7 @@ import User from '../../../types/user';
 
 import './ModifyUserInfo.scss';
 import { state } from '../../../store/types';
+import Paper from '@material-ui/core/Paper';
 
 // The header or the title of this page
 const Header = () => (
@@ -306,22 +307,46 @@ const ModifyUserInfo = () => {
   );
 
   return (
-    <Formik
-      enableReinitialize
-      validationSchema={ProfileSchema(originalUsername)}
-      initialValues={user}
-      onSubmit={handleSubmit}
-    >
-      {props => {
-        return (
-          <div>
-            <Header />
-            <Content {...props} />
-            <Buttons {...props} />
-          </div>
-        );
-      }}
-    </Formik>
+    <>
+      {/* <SRIHeader/> */}
+      <div className="modifyPermission">
+        <br />
+        <Paper className="modifyPermission__container">
+          <Formik
+            enableReinitialize
+            validationSchema={ProfileSchema(originalUsername)}
+            initialValues={user}
+            onSubmit={handleSubmit}
+          >
+            {props => {
+              return (
+                <div>
+                  <Header />
+                  <Content {...props} />
+                  <Buttons {...props} />
+                </div>
+              );
+            }}
+          </Formik>
+        </Paper>
+      </div>
+    </>
+    // <Formik
+    //   enableReinitialize
+    //   validationSchema={ProfileSchema(originalUsername)}
+    //   initialValues={user}
+    //   onSubmit={handleSubmit}
+    // >
+    //   {props => {
+    //     return (
+    //       <div>
+    //         <Header />
+    //         <Content {...props} />
+    //         <Buttons {...props} />
+    //       </div>
+    //     );
+    //   }}
+    // </Formik>
   );
 };
 
