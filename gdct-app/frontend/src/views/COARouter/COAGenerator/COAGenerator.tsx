@@ -1108,6 +1108,10 @@ export default function COAGenerator() {
   };
 
   return (
+    <div>
+    <div className="d-flex justify-content-between p-2 mb-3">
+    <Typography variant="h5">Category Generate Tree</Typography>
+    </div>
     <div className={classes.container}>
       <Typography>{fileName && `Uploaded: ${fileName}`}</Typography>
       <Button variant="contained" startIcon={<Publish />} component="label">
@@ -1217,6 +1221,7 @@ export default function COAGenerator() {
       </Button>
       <br />
       <Typography>{errorMsg}</Typography>
+    </div>
     </div>
   );
 }

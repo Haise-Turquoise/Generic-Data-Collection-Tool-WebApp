@@ -23,7 +23,7 @@ function FilesHeader() {
 
 const OfflineToolHeader = () => (
   <div className="d-flex justify-content-between p-2 mb-3">
-    <Typography variant="h5">Offline Tool:</Typography>
+    <Typography variant="h5">Offline Tool</Typography>
   </div>
 );
 
