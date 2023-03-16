@@ -451,7 +451,7 @@ const handleResume = async (
 const HeaderActions = (props: headerActionsProps) => {
   return (
     <div className="d-flex justify-content-between p-2 mb-3">
-      <Typography variant="h5">Prepopulate from OHFS</Typography>
+      <Typography variant="h5">OHFS Prepopulate</Typography>
 
       <Selection {...props} />
     </div>

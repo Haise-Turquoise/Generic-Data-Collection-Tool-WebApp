@@ -45,7 +45,7 @@ const customCheckDuplicates = (rowData:AppConfigMT, tableData?: AppConfigMT[]) =
 const AppConfigsHeader = () => {
   return (
     <div className="d-flex justify-content-between p-2 mb-3">
-      <Typography variant="h5">Configuration</Typography>
+      <Typography variant="h5">Application Configuration</Typography>
     </div>
   );
 };
