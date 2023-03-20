@@ -1,50 +1,75 @@
 .title {
-    position: absolute;
+    position: relative;
     margin-top: 1%;
-    // margin-bottom: 50%;
     margin-left: 0%;
 }
 
 .lastName {
-    position: absolute;
+    position: relative;
     margin-top: 1%;
-    margin-left: 20%;
+    margin-left: 5%;
 }
 
 .firstName {
-    position: absolute;
+    position: relative;
     margin-top: 1%;
-    margin-left: 40%;
+    margin-left: 5%;
 }
 
 .phoneNumber {
-    position: absolute;
-    margin-top: 10%;
+    position: relative;
+    margin-top: 1%;
     margin-left: 0%;
 }
 
 .ext {
-    position: absolute;
-    margin-top: 10%;
-    margin-left: 20%;
+    position: relative;
+    margin-top: 1%;
+    margin-left: 5%;
 }
 
 .email {
-    position: absolute;
-    margin-top: 28%;
+    position: relative;
+    margin-top: 1%;
     margin-left: 0%;
 }
 
 .username {
-    position: absolute;
-    margin-top: 19%;
+    position: relative;
+    margin-top: 1%;
     margin-left: 0%;
 }
 
 .modifyUserInfo {
     &__buttonBox {
         position: relative;
-        margin-top: 40%;
+        margin-top: 20%;
         margin-left: 0%;
-    }  
+    }
+
+    &__container {
+        width: 100%;
+        height: 70%;
+        flex-flow: column nowrap;
+        padding-top: 5px;
+        padding-right: 50px;
+        padding-bottom: 50px;
+        padding-left: 50px;
+        background-color: #f2f5f7;
+        text-align: left;
+    }
+}
+
+.formRow {
+    width: 100%;
+    padding-top: 1%;
+    display: flex;
+    justify-content: flex-start;
+}
+
+.formButton {
+    width: 100%;
+    padding-top: 1%;
+    margin-left: 0%;
+    position: relative;
 }
