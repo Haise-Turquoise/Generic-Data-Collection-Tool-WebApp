@@ -102,7 +102,7 @@ const EditSubmission = ({ history }:{history:History}) => {
 
   const noteInput = React.useRef(null);
 
-  const options = useMemo(() => ({ actionsColumnIndex: -1, search: false, showTitle: true }), []);
+  const options = useMemo(() => ({ actionsColumnIndex: -1, search: false, showTitle: true, filtering: true, }), []);
 
   const handleNoteChange = (event:ChangeEvent<{ value: string }>) => {
     dispatch(SubmissionNoteStore.actions.RECEIVE(event.target.value));

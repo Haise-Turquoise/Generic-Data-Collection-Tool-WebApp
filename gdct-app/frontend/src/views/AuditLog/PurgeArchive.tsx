@@ -136,7 +136,7 @@ const PurgeArchive = (props: any) => {
       [],
     );
 
-    const options = useMemo(() => calculateOptions(readRowNum,{search: true, showTitle: true, filtering: false, pageSize: 5}), [readRowNum]);
+    const options = useMemo(() => calculateOptions(readRowNum,{search: true, showTitle: true, filtering: true, pageSize: 5}), [readRowNum]);
 
 
     return (

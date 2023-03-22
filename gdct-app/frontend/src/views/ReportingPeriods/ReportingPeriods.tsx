@@ -100,9 +100,9 @@ const ReportingPeriodsTable = () => {
     [reportingPeriods],
   );
 
-  const options: Options<ReportingPeriodMT> = useMemo(() => calculateOptions(readRowNum), [
-    readRowNum,
-  ]);
+  const options: Options<ReportingPeriod> = useMemo(() => ({...calculateOptions(readRowNum), filtering: true}), [readRowNum]);
+
+
 
   // Record who and when of the action
   function recordUpdate(reportingPeriod: ReportingPeriodMT) {

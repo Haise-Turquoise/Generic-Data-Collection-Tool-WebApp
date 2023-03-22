@@ -240,6 +240,7 @@ const getStepContent = (
       showTitle: false,
       maxBodyHeight: '400px',
       pageSize: length,
+      filtering: true,
     };
   };
 

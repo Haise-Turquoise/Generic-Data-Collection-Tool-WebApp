@@ -889,6 +889,7 @@ const MasterValuePopulation = () => {
       search: true,
       maxBodyHeight: 400,
       minBodyHeight: 400,
+      filtering: true,
     }),
     [],
   );

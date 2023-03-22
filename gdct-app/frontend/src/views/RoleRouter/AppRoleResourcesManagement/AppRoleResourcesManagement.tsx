@@ -151,7 +151,8 @@ const AppRoleResourceTable = ({ history }: RouteComponentProps) => {
     [history],
   );
 
-  const options: Options<AppRoleResourceMT> = useMemo(() => calculateOptions(readRowNum), [readRowNum]);
+  const options: Options<AppRoleResourceMT> = useMemo(() => ({...calculateOptions(readRowNum), filtering: true}), [readRowNum]);
+
 
   // Record user and time when an action occurs 
   function recordUpdate(appRoleResource: AppRoleResourceMT) {

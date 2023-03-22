@@ -78,6 +78,7 @@ const AppResourceList = ({ resourceId, isEditable = true, onClickAdd, onClickDel
       showTitle: true,
       maxBodyHeight: '400px',
       minBodyHeight: '400px',
+      filtering: true
     }),
     [],
   );

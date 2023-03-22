@@ -83,7 +83,8 @@ const COAGroupsTable = () => {
 
   
 
-  const options: Options<CategoryGroupMT> = useMemo(() => calculateOptions(readRowNum), [readRowNum]);
+  const options: Options<CategoryGroupMT> = useMemo(() => ({...calculateOptions(readRowNum), filtering: true}), [readRowNum]);
+
   
   // Record user and time when an action occurs 
   function recordUpdate(COAGroup: CategoryGroupMT) {
