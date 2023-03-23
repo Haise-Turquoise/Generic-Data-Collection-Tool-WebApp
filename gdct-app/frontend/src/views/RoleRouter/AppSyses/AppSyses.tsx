@@ -73,7 +73,8 @@ const AppSysesTable = () => {
     [appSyses],
   );
   
-  const options: Options<AppSysMT> = useMemo(() => calculateOptions(readRowNum), [readRowNum]);
+  const options: Options<AppSysMT> = useMemo(() => ({...calculateOptions(readRowNum), filtering: true}), [readRowNum]);
+
 
   // Record who and when of the action
   function recordUpdate(appSys: AppSysMT) {

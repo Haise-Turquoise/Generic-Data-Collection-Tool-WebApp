@@ -160,7 +160,7 @@ const SubmissionPeriod = () => {
     submissionPeriod.updatedAt = new Date().toLocaleString();
   }
 
-  const options: Options<SubmissionPeriod> = useMemo(() => calculateOptions(readRowNum), [readRowNum]);
+  const options: Options<SubmissionPeriod> = useMemo(() => ({...calculateOptions(readRowNum), filtering: true}), [readRowNum]);
 
   const editable = useMemo(
     () => ({

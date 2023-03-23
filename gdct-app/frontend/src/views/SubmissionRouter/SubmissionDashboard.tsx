@@ -283,7 +283,7 @@ const SubmissionDashboard = ({ history }:{history:History}) => {
       {statuses.length > 0 ? 
         statuses.map(status => {
           const data = getSubmissionsInRange(status)
-          const options = calculateOptions(data.length)
+          const options = useMemo(() => ({...calculateOptions(data.length), filtering: true}), [data.length]);
           return data.length >= 0 && (
             <ExpansionPanel>
               <ExpansionPanelSummary 

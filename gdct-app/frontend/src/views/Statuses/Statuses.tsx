@@ -91,8 +91,8 @@ const StatusesTable = () => {
     [statuses],
   );
 
-  const options: Options<StatusMT> = useMemo(() => calculateOptions(readRowNum), [readRowNum]);
-
+  const options: Options<StatusMT> = useMemo(() => ({...calculateOptions(readRowNum), filtering: true}), [readRowNum]);
+  
   // Record who and when of the action
   function recordUpdate(status: StatusMT) {
     //get username and record in Modified By column

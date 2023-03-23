@@ -152,6 +152,7 @@ const SubmissionStatusTable = () => {
       padding: '7px',
       margin: '7px',
     },
+    filtering: true,
   }), [readRowNum]);
   
 

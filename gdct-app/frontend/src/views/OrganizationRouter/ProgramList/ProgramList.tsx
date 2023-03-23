@@ -53,6 +53,7 @@ const ProgList = ({ programIds, onClickAdd, onClickDelete, isEditable = true }: 
       showTitle: true,
       maxBodyHeight: '400px',
       minBodyHeight: '400px',
+      filtering: true,
     }),
     [],
   );

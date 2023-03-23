@@ -287,7 +287,7 @@ const TemplatePackages = () => {
     [lookupStatuses, lookupSubmissionPeriods, templatePackages],
   );
 
-  const options: Options<TemplatePackageMT> = useMemo(() => calculateOptions(readRowNum), [readRowNum]);
+  const options: Options<TemplatePackageMT> = useMemo(() => ({...calculateOptions(readRowNum), filtering: true}), [readRowNum]);
 
   // Record user and time when an action occurs 
   function recordUpdate(templatePackage: TemplatePackageMT) {

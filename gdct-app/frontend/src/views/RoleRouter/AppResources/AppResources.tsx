@@ -91,7 +91,8 @@ const AppResourcesTable = () => {
     [appResources],
   );
 
-  const options: Options<AppResourceMT> = useMemo(() => (calculateOptions(readRowNum)), [readRowNum]);
+  const options: Options<AppResourceMT> = useMemo(() => ({...calculateOptions(readRowNum), filtering: true}), [readRowNum]);
+
 
   // Record who and when action took place
   const recordUpdate = (appResource: AppResourceMT) => {

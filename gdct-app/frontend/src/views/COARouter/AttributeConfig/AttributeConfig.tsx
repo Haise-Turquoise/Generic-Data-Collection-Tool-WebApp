@@ -156,7 +156,8 @@ const AttributeConfigTable = () => {
     );
 
     // Prepare the options
-    const options = useMemo(() => calculateOptions(readRowNum), [readRowNum]);
+    const options = useMemo(() => ({...calculateOptions(readRowNum), filtering: true}), [readRowNum]);
+
 
     // Record who and when of the action
     function recordUpdate(attributeConfig: AttributeConfigMT) {

@@ -84,7 +84,9 @@ const ProgramsTable = () => {
     ],
     [programs],
   );
-  const options: Options<ProgramMT> = useMemo(() => calculateOptions(readRowNum), [readRowNum]);
+ 
+  const options: Options<ProgramMT> = useMemo(() => ({...calculateOptions(readRowNum), filtering: true}), [readRowNum]);
+
 
   // Record who and when of the action
   function recordUpdate(program: ProgramMT) {

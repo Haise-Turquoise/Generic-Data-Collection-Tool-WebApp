@@ -169,7 +169,8 @@ const TemplatesTable = ({ history }: RouterProps) => {
     [history],
   );
 
-  const options = useMemo(() => calculateOptions(readRowNum), [readRowNum]);
+  const options = useMemo(() => ({...calculateOptions(readRowNum), filtering: true}), [readRowNum]);
+
   const foo = async  (template: Template) => {
     let oldTemplate = await dispatch(getTemplatesRequest(template._id ));
     console.log(oldTemplate)

@@ -83,7 +83,9 @@ const OrganizationGroupsTable = () => {
     ],
     [OrgGroups],
   );
-  const options: Options<OrganizationGroupMT> = useMemo(() => calculateOptions(readRowNum), [readRowNum]);
+
+  const options: Options<OrganizationGroupMT> = useMemo(() => ({...calculateOptions(readRowNum), filtering: true}), [readRowNum]);
+
 
   function recordUpdate(OrgGroup: OrganizationGroupMT) {
     //get username and record in Modified By column
