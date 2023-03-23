@@ -19,6 +19,7 @@ import {
 } from '@material-ui/core';
 import PurgeLog from "../../types/purgelog";
 
+
 const useStyles = makeStyles(theme => ({
   root: {
 
@@ -142,49 +143,73 @@ const PurgeArchive = (props: any) => {
     return (
       <Box mx="auto" className={classes.root}>
         <Paper>
-          <Typography variant="h6" component={'span'} >
-              Records up to {startDate.toDateString()} have been archived
+          <Typography variant="h6" component={'span'}>
+            Records up to {startDate.toDateString()} have been archived
           </Typography>
           <br />
-          <Typography variant="h6"  component={'span'}>
-              Select a new archive date
+          <Typography variant="h6" component={'span'}>
+            Select a new archive date
           </Typography>
-
-        <Box  
-          p={2}  
-          m={0}
-          sx={{ paddingLeft: 0}}
-
-        >
-          <DatePicker 
-            selected={selectedDate} 
-            popperPlacement="right"
-            dateFormat={"yyyy-MM-dd HH:mm"}
-            onChange={(date: Date) => setSelectedDate(date)} 
-            minDate={new Date(startDate)}
-            maxDate={new Date()}
-            showTimeSelect
-            showMonthDropdown
-            showYearDropdown
-          />
-          <Button
-            type="button"
-            className="SaveButton"
-            color="primary"
-            variant="contained"
-            size="medium"
-            onClick={callMove}
-            style={{position:"static"}}
+    
+          <Box
+            p={2}
+            m={0}
+            sx={{ paddingLeft: 0 }}
+            position="relative" // Establish a new stacking context for child elements with absolute positioning
+            display="flex" // Set display to flex to enable flexbox properties
+            alignItems="center" // Set alignItems to center to vertically center the contents
           >
-            Archive
-          </Button>
-
-        </Box>
-
-
-          {/* <Typography variant="h6" component={'span'} >
-              Purge records
-          </Typography> */}
+            <div
+              style={{
+                flexGrow: 1, // Determines how the element grows relative to other flex items in the container
+                marginLeft: "3%",
+                marginRight: "5%",
+              }}
+            >
+              <DatePicker
+                selected={selectedDate}
+                dateFormat={"yyyy-MM-dd HH:mm"}
+                onChange={(date: Date) => setSelectedDate(date)}
+                minDate={new Date(startDate)}
+                maxDate={new Date()}
+                showTimeSelect // Enables the time selection feature in the date picker
+                showMonthDropdown // Enables the month dropdown feature in the date picker
+                showYearDropdown // Enables the year dropdown feature in the date picker
+                popperModifiers={{
+                  // modified popperModifiers prop
+                  preventOverflow: {
+                    enabled: true, // Determines if the preventOverflow modifier is enabled
+                    boundariesElement: "viewport", // Sets the container for the date picker to be constrained within
+                    padding: 10, // Sets the distance from the container boundary to the date picker
+                  },
+                  flip: {
+                    enabled: true, // Determines if the flip modifier is enabled (flips the date picker when it would be off-screen)
+                  },
+                }}
+              />
+            </div>
+            <div
+              style={{
+                position: "absolute", // Positions the element relative to its nearest positioned ancestor (Box)
+                                      // to avoid position changes when the calendar dropdown is opened
+                top: 0, // Sets the distance from the top edge of the positioned ancestor
+                left: "20%", // Sets the distance from the left edge of the positioned ancestor
+                marginTop: "1%", // Sets the top margin of the element
+              }}
+            >
+              <Button
+                type="button"
+                className="SaveButton"
+                color="primary"
+                variant="contained"
+                size="medium"
+                onClick={callMove}
+              >
+                Archive
+              </Button>
+            </div>
+          </Box>
+    
           <MaterialTable
             title="Purge and Archive log"
             key={readRowNum}
@@ -192,11 +217,12 @@ const PurgeArchive = (props: any) => {
             options={options}
             columns={!!purgelogs ? columns : preColumns}
             data={!!purgelogs ? purgelogs : preLogs}
+            style={{ zIndex: 0, marginTop: "5%" }} // Sets the stacking order and top margin of the table to avoid blocking calendar display
           />
         </Paper>
       </Box>
-
-    )
+    );
+    
 }
 
 
