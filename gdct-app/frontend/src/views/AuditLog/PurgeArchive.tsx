@@ -143,11 +143,11 @@ const PurgeArchive = (props: any) => {
     return (
       <Box mx="auto" className={classes.root}>
         <Paper>
-          <Typography variant="h6" component={'span'}>
+          <Typography variant="h6" component={'span'} style={{ marginLeft: "1.5%" }}>
             Records up to {startDate.toDateString()} have been archived
           </Typography>
           <br />
-          <Typography variant="h6" component={'span'}>
+          <Typography variant="h6" component={'span'} style={{ marginLeft: "1.5%" }}>
             Select a new archive date
           </Typography>
     
@@ -161,9 +161,9 @@ const PurgeArchive = (props: any) => {
           >
             <div
               style={{
-                flexGrow: 1, // Determines how the element grows relative to other flex items in the container
+                maxWidth: "90%",
                 marginLeft: "3%",
-                marginRight: "5%",
+                flexShrink: 0, // Determines how the element shrinks relative to other flex items in the container
               }}
             >
               <DatePicker
@@ -190,11 +190,12 @@ const PurgeArchive = (props: any) => {
             </div>
             <div
               style={{
-                position: "absolute", // Positions the element relative to its nearest positioned ancestor (Box)
-                                      // to avoid position changes when the calendar dropdown is opened
-                top: 0, // Sets the distance from the top edge of the positioned ancestor
-                left: "20%", // Sets the distance from the left edge of the positioned ancestor
-                marginTop: "1%", // Sets the top margin of the element
+                // position: "absolute", // Positions the element relative to its nearest positioned ancestor (Box)
+                //                       // to avoid position changes when the calendar dropdown is opened
+                // top: 0, // Sets the distance from the top edge of the positioned ancestor
+                // left: "20%", // Sets the distance from the left edge of the positioned ancestor
+                // marginTop: "1%", // Sets the top margin of the element
+                marginLeft: "16px", // Sets the left margin of the element
               }}
             >
               <Button
