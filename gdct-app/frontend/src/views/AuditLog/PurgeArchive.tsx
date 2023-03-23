@@ -175,6 +175,7 @@ const PurgeArchive = (props: any) => {
                 showTimeSelect // Enables the time selection feature in the date picker
                 showMonthDropdown // Enables the month dropdown feature in the date picker
                 showYearDropdown // Enables the year dropdown feature in the date picker
+                popperPlacement="bottom-start" // Sets the placement of the date picker
                 popperModifiers={{
                   // modified popperModifiers prop
                   preventOverflow: {
@@ -183,7 +184,7 @@ const PurgeArchive = (props: any) => {
                     padding: 10, // Sets the distance from the container boundary to the date picker
                   },
                   flip: {
-                    enabled: true, // Determines if the flip modifier is enabled (flips the date picker when it would be off-screen)
+                    enabled: false, // Determines if the flip modifier is enabled (flips the date picker when it would be off-screen)
                   },
                 }}
               />
