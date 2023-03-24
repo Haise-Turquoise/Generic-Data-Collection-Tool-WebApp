@@ -46,7 +46,7 @@ const PurgeArchive = (props: any) => {
       // startDate is the initial date in the selector, we will grab the latest log in the purgelog and set it to startDate
     const [startDate, setStartDate] = useState(new Date("2010-05-10 00:00"));
       // selectedDate is the currently selected date in the selector, this will initially be the same as startDate
-    const [selectedDate, setSelectedDate] = useState(new Date("2010-05-10 00:00"));
+    const [selectedDate, setSelectedDate] = useState(new Date());
 
       // state used to store the purgearchive logs we get from the database
     const [purgelogs, setPurgeLogs] = useState<PurgeLog[] | undefined>(undefined);
@@ -87,7 +87,7 @@ const PurgeArchive = (props: any) => {
         .then(res => { 
           if (res != null){
             setStartDate(new Date(res.archiveMarkerDate))
-            setSelectedDate(new Date(res.archiveMarkerDate))
+            setSelectedDate(new Date())
           }
       })
       AuditLogController.fetchPurge()
