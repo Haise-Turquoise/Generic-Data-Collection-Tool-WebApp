@@ -20,7 +20,7 @@ export default class unitValidation {
 
 
     findAttirbuteCol(rows: any,id:string | undefined){
-        var search_row = rows[9].cells;
+        var search_row = rows[9] ? rows[9] .cells : undefined;
     
         for(var key in search_row){
           if(search_row[key].text != undefined && search_row[key].text === id){

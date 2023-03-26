@@ -243,7 +243,7 @@ const CreateSubmission = ({ history }: RouterProps) => {
         setPrevSubmission(res.data.submission)
         // datasheet.current.update()
         setSave('visible');
-        setMessage('Sucessfully uplaoded to database');
+        setMessage('Sucessfully uploaded to database');
         setMessageColour('green');
         setNotUploaded(false)
       }

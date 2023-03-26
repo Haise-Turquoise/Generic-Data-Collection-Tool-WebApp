@@ -140,7 +140,7 @@ const SubmissionDashboard = ({ history }:{history:History}) => {
 
     // find submission periods
     let periods = new Set<string>()
-    submissions.forEach(sub => periods.add(sub.submissionPeriodId.name))
+    submissions.forEach(sub => {periods.add(sub.submissionPeriodId ? sub.submissionPeriodId.name : "");})
     setFilterOptions([...periods])
   }, [submissions])
 
