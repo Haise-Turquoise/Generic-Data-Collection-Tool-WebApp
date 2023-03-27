@@ -35,9 +35,9 @@ import objectHash from 'object-hash';
 
 
 const SubmissionHeader = () => (
-  <Paper className="header">
+  <div className="d-flex justify-content-between p-2 mb-3">
     <Typography variant="h5">Submissions</Typography>
-  </Paper>
+  </div>
 );
 
 

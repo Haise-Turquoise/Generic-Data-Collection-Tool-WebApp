@@ -76,9 +76,9 @@ interface TabPanelProps {
 
 const OrganizationHeader = ({ title }: { title: string }) => {
   return (
-    <Paper className="header">
+    <div className="d-flex justify-content-between p-2 mb-3">
       <Typography variant="h5">{title}</Typography>
-    </Paper>
+    </div>
   );
 };
 
@@ -225,7 +225,7 @@ const TextGroup = (props: TextGroupProps) => {
     <Label {...props} />
     <br />
     {props.attribute !== 'organizationGroup' && <InputLocal {...props} type={'text'} />}
-    {(props.attribute === 'organizationGroup' && organizationGroupNames.length !== 0) &&
+    {(props.attribute === 'organizationGroup' && organizationGroupNames !== null) &&
       <FormControl variant="outlined" className={classes.formControl}>
       <Select onChange={handleChange} value={curOrgName} fullWidth required className='classes.select'>
         {organizationGroupNames.map(organizationGroupName => 
@@ -357,7 +357,9 @@ const OrganizationForm = (props: OrgFormProps) => {
   const [programIds, setProgramIds] = useState(props.object.programId);
   const handleChange = (event: ChangeEvent<{}>, value: number) => setCurrent(value);
   useEffect(() => {
+    const controller = new AbortController();
     props.updateState('programId', programIds);
+    return () => controller.abort();
   }, [programIds]);
 
   const onClickAdd = (_event: Event, program: Program | Program[]) => {

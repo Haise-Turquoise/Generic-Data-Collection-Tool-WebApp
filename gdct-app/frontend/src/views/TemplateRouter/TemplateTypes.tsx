@@ -27,9 +27,9 @@ interface TemplateTypeMT extends TemplateType {
 
 const TemplateTypeHeader = () => {
   return (
-    <Paper className="header">
+    <div className="d-flex justify-content-between p-2 mb-3">
       <Typography variant="h5">Template Type</Typography>
-    </Paper>
+    </div>
   );
 };
 
@@ -125,7 +125,7 @@ const TemplateTypesTable = ({ history }: RouterProps) => {
     [history],
   );
 
-  const options = useMemo(() => calculateOptions(readRowNum), [readRowNum]);
+  const options = useMemo(() => ({...calculateOptions(readRowNum), filtering: true}), [readRowNum]);
 
   // Record user and time when an action occurs 
   function recordUpdate(templateType: TemplateTypeMT) {

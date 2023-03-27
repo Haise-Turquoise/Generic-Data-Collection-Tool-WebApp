@@ -16,16 +16,22 @@ const useStyles = makeStyles((theme) => ({
 function FilesHeader() {
   return (
     <div>
-      <Typography variant='h4'>Offline Tool:</Typography>
       <Button download="GT.xlam" href={'../../../public/GT.xlam'} color="primary" variant="contained">Download</Button>
     </div>
   )
 }
 
+const OfflineToolHeader = () => (
+  <div className="d-flex justify-content-between p-2 mb-3">
+    <Typography variant="h5">Offline Tool</Typography>
+  </div>
+);
+
 export default function Files() {
   const classes = useStyles()
   return (
     <div>
+      <OfflineToolHeader />
       <Paper elevation={5} className={classes.paper}>
         <FilesHeader />
         <Typography variant='h6'>Instructions:</Typography>

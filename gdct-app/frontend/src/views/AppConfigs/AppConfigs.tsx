@@ -44,9 +44,9 @@ const customCheckDuplicates = (rowData:AppConfigMT, tableData?: AppConfigMT[]) =
 
 const AppConfigsHeader = () => {
   return (
-    <Paper className="header">
-      <Typography variant="h5">Configuration</Typography>
-    </Paper>
+    <div className="d-flex justify-content-between p-2 mb-3">
+      <Typography variant="h5">Application Configuration</Typography>
+    </div>
   );
 };
 
@@ -112,7 +112,8 @@ const AppConfigsTable = () => {
   );
 
   // Prepare the options
-  const options = useMemo(() => calculateOptions(readRowNum), [readRowNum]);
+  const options = useMemo(() => ({...calculateOptions(readRowNum), filtering: true}), [readRowNum]);
+
 
   // Record who and when of the action
   function recordUpdate(appConfig: AppConfigMT) {

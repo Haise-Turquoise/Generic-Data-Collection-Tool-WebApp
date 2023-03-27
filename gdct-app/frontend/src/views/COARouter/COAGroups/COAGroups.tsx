@@ -24,9 +24,9 @@ interface CategoryGroupMT extends CategoryGroup {
 
 const COAGroupsHeader = () => {
   return (
-    <Paper className="header">
+    <div className="d-flex justify-content-between p-2 mb-3">
       <Typography variant="h5">Category Group Management</Typography>
-    </Paper>
+    </div>
   );
 };
 
@@ -83,7 +83,8 @@ const COAGroupsTable = () => {
 
   
 
-  const options: Options<CategoryGroupMT> = useMemo(() => calculateOptions(readRowNum), [readRowNum]);
+  const options: Options<CategoryGroupMT> = useMemo(() => ({...calculateOptions(readRowNum), filtering: true}), [readRowNum]);
+
   
   // Record user and time when an action occurs 
   function recordUpdate(COAGroup: CategoryGroupMT) {

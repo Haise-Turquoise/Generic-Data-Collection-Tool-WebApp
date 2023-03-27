@@ -29,11 +29,12 @@ import User from '../../../types/user';
 
 import './ModifyUserInfo.scss';
 import { state } from '../../../store/types';
+import Paper from '@material-ui/core/Paper';
 
 // The header or the title of this page
 const Header = () => (
   <div className="d-flex justify-content-between p-2 mb-3">
-    <Typography variant="h5">Modify User Info</Typography>
+    <Typography variant="h5">Personal Details</Typography>
   </div>
 );
 
@@ -88,7 +89,7 @@ const ProfileSchema = (originalUsername:string) =>
 // Button on the bottom of page
 const Buttons = ({ values, handleSubmit}:{values:User; handleSubmit:(values:any)=>void;}) => {
   return (
-    <Box color="primary" className="modifyUserInfo__buttonBox" justifyContent="center">
+    <Box color="primary" className="formButton" justifyContent="center">
       <Button variant="outlined" color="primary" href="/" style={{ marginTop: '0.8%' }}>
         <ArrowBackIcon></ArrowBackIcon>
         Back
@@ -159,6 +160,7 @@ const Content = (props:any) => {
   const { values, handleChange, touched, handleBlur, errors } = props;
   return (
     <form className="modifyUserInfo__form">
+      <div className="formRow">
       <CustomTextField
         values={values}
         label="title"
@@ -189,6 +191,8 @@ const Content = (props:any) => {
         errors={errors}
         disabled={false}
       />
+      </div>
+      <div className="formRow">
       <CustomTextField
         values={values}
         label="phoneNumber"
@@ -209,16 +213,8 @@ const Content = (props:any) => {
         errors={errors}
         disabled={false}
       />
-      <CustomTextField
-        values={values}
-        label="email"
-        labelText="Email"
-        handleChange={handleChange}
-        touched={touched}
-        handleBlur={handleBlur}
-        errors={errors}
-        disabled={true}
-      />
+      </div>
+      <div className="formRow">
       <CustomTextField
         values={values}
         label="username"
@@ -229,6 +225,19 @@ const Content = (props:any) => {
         errors={errors}
         disabled={false}
       />
+      </div>
+      <div className="formRow">
+      <CustomTextField
+        values={values}
+        label="email"
+        labelText="Email"
+        handleChange={handleChange}
+        touched={touched}
+        handleBlur={handleBlur}
+        errors={errors}
+        disabled={true}
+      />
+      </div>
     </form>
   );
 };
@@ -241,6 +250,14 @@ const init = {
   ext: '',
   email: '',
   username: '',
+};
+
+const ModifyUserInfoHeader = () => {
+  return (
+    <div className="d-flex justify-content-between p-2 mb-3">
+      <Typography variant="h5">Personal Details</Typography>
+    </div>
+  );
 };
 
 // Main function to export
@@ -306,22 +323,30 @@ const ModifyUserInfo = () => {
   );
 
   return (
-    <Formik
-      enableReinitialize
-      validationSchema={ProfileSchema(originalUsername)}
-      initialValues={user}
-      onSubmit={handleSubmit}
-    >
-      {props => {
-        return (
-          <div>
-            <Header />
-            <Content {...props} />
-            <Buttons {...props} />
-          </div>
-        );
-      }}
-    </Formik>
+    <>
+      <ModifyUserInfoHeader />
+      <div className="modifyUserInfo">
+        <br />
+        <Paper className="modifyUserInfo__container">
+          <Formik
+            enableReinitialize
+            validationSchema={ProfileSchema(originalUsername)}
+            initialValues={user}
+            onSubmit={handleSubmit}
+          >
+            {props => {
+              return (
+                <div>
+                  
+                  <Content {...props} />
+                  <Buttons {...props} />
+                </div>
+              );
+            }}
+          </Formik>
+        </Paper>
+      </div>
+    </>
   );
 };
 

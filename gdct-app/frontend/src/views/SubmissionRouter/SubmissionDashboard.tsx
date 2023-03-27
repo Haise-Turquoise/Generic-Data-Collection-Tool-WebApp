@@ -57,9 +57,9 @@ const useStyles = makeStyles((theme) => ({
 
 
 const SubmissionHeader = () => (
-  <Paper className="header">
+  <div className="d-flex justify-content-between p-2 mb-3">
     <Typography variant="h5">Submissions</Typography>
-  </Paper>
+  </div>
 );
 
 const SubmissionDashboard = ({ history }:{history:History}) => {
@@ -283,7 +283,7 @@ const SubmissionDashboard = ({ history }:{history:History}) => {
       {statuses.length > 0 ? 
         statuses.map(status => {
           const data = getSubmissionsInRange(status)
-          const options = calculateOptions(data.length)
+          const options = useMemo(() => ({...calculateOptions(data.length), filtering: true}), [data.length]);
           return data.length >= 0 && (
             <ExpansionPanel>
               <ExpansionPanelSummary 

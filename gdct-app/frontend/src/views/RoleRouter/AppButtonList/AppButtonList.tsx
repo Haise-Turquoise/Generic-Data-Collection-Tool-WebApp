@@ -95,6 +95,7 @@ const AppButtonList = ({ role, isEditable = true, onClickAdd, onClickDelete }: {
       showTitle: true,
       maxBodyHeight: '400px',
       minBodyHeight: '400px',
+      filtering: true,
     }),
     [],
   );

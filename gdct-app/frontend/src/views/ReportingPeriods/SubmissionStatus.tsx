@@ -18,9 +18,9 @@ import SubmissionNote from '../../types/submissionnote';
 
 const SubmissionStatusHeader = () => {
   return (
-    <Paper className="header">
+    <div className="d-flex justify-content-between p-2 mb-3">
       <Typography variant="h5">Submission Status Report</Typography>
-    </Paper>
+    </div>
   );
 };
 
@@ -143,7 +143,18 @@ const SubmissionStatusTable = () => {
     [],
   );
 
-  const options: Options<SubmissionStatus> = useMemo(() => ({...calculateOptions(readRowNum), filtering: true}), [readRowNum]);
+  //const options: Options<SubmissionStatus> = useMemo(() => ({...calculateOptions(readRowNum), filtering: true}), [readRowNum]);
+  const options: Options<SubmissionStatus> = useMemo(() => ({
+    ...calculateOptions(readRowNum),
+    padding:'dense',
+    headerStyle: {
+      fontSize: '7px',
+      padding: '7px',
+      margin: '7px',
+    },
+    filtering: true,
+  }), [readRowNum]);
+  
 
   const actions: ((rowData: SubmissionStatus) => Action<SubmissionStatus>)[] = [
     (actionRowData: SubmissionStatus) => ({
@@ -163,7 +174,9 @@ const SubmissionStatusTable = () => {
   }, [submissionStatus])
 
   return (
-    <div>
+    <div style={{ fontSize: '7px',
+    padding: '7px',
+    margin: '7px', }}>
       <MaterialTable
         key={readRowNum}
         columns={!!submissionStatus ? columns : preColumns}

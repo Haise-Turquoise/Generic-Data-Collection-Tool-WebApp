@@ -32,9 +32,9 @@ const buildDET = async (sheetNames: SheetName[]) => {
 
 const COATreesHeader = () => {
   return (
-    <Paper className="header">
+    <div className="d-flex justify-content-between p-2 mb-3">
       <Typography variant="h5">Category Tree Management</Typography>
-    </Paper>
+    </div>
   );
 };
 
@@ -131,7 +131,8 @@ const COATreesTable = ({ history }: RouterProps) => {
     [],
   );
 
-  const options: Options<DetectEmptyTree> = useMemo(() => calculateOptions(readRowNum), [readRowNum]);
+  const options: Options<DetectEmptyTree> = useMemo(() => ({...calculateOptions(readRowNum), filtering: true}), [readRowNum]);
+
 
   useEffect(()=>{
     setRowNum(sheetNames?.length || 1)

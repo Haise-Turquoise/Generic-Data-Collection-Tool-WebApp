@@ -45,10 +45,10 @@ import CreateAuditLog from '../../AuditLog_Global';
 // TODO : Finish Excel integration
 const TemplateHeader = () => {
   return (
-    <Paper className="header">
+    <div className="d-flex justify-content-between p-2 mb-3">
       <Typography variant="h5">Template Design</Typography>
       {/* <HeaderActions/> */}
-    </Paper>
+    </div>
   );
 };
 
@@ -132,7 +132,8 @@ const TemplatesTable = ({ history }: RouterProps) => {
         // editable: 'onAdd',
         // initialEditValue: new Date(),
       },
-      { title: 'Expiration Date', field: 'expirationDate' },
+      //@ts-ignore
+      { title: 'Expiration Date', type:'date', field: 'expirationDate', validate: rowData => rowData.expirationDate ? '' : 'Expiration Date is required' },
       { title: 'Workflow', field: 'workflowProcessId', lookup: lookupProcesses, editable: 'never' },
       {
         title: 'Modified On',
@@ -168,7 +169,8 @@ const TemplatesTable = ({ history }: RouterProps) => {
     [history],
   );
 
-  const options = useMemo(() => calculateOptions(readRowNum), [readRowNum]);
+  const options = useMemo(() => ({...calculateOptions(readRowNum), filtering: true}), [readRowNum]);
+
   const foo = async  (template: Template) => {
     let oldTemplate = await dispatch(getTemplatesRequest(template._id ));
     console.log(oldTemplate)

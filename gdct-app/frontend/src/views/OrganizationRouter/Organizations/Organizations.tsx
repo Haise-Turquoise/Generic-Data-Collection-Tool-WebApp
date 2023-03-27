@@ -25,10 +25,10 @@ const HeaderActions = () => {
 
 const OrganizationHeader = () => {
   return (
-    <Paper className="header">
+    <div className="d-flex justify-content-between p-2 mb-3">
       <Typography variant="h5">Organization</Typography>
       <HeaderActions />
-    </Paper>
+    </div>
   );
 };
 
@@ -66,12 +66,14 @@ const Organizations = ({ history }: RouterProps) => {
       { title: 'IFIS Number', field: 'IFISNum' },
       { title: 'Active', type: 'boolean', field: 'active' },
       { title: 'Modified On', field: 'modifiedPerson.modifiedDate' },
-      { title: 'Updated By', field: 'modifiedPerson.name' },
+      { title: 'Updated By', field: 'modifiedPerson.name',editComponent: (props: any) => {
+        return <div></div>;
+      }, },
     ],
     [],
   );
 
-  const options = useMemo(() => calculateOptions(readRowNum), [readRowNum]);
+  const options = useMemo(() => ({...calculateOptions(readRowNum), filtering: true}), [readRowNum]);
 
   // Prepare the actions for material table
   const actions: Action<Organization>[] = useMemo(
