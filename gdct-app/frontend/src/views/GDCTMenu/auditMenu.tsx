@@ -32,7 +32,9 @@ const menuItemTolist = (fetchedMenuItems : any[]) =>{
 }
 
 const getUrl = (m:Map<any,any> , activiy_name: String) =>{
-  return m.get(activiy_name.substr(activiy_name.indexOf(' ')+1));
+  let auditName = activiy_name.substr(activiy_name.indexOf(' ')+1);
+  if (auditName == "Request" || auditName ==  "Submission workbook") auditName = "Dashboard";
+  return m.get(auditName);
 }
 
 const auditMenu = () => {
@@ -76,7 +78,6 @@ const auditMenu = () => {
         <div className="subDasboardTitle">
           <div className="subleft">Jump back in...</div>
         </div>
-
         {getAuditNum(1) && <div className="rowContainer">
         <div className="rowCell">{result == undefined ? "loading": result[0]?.activity}</div>
         <div className="rowCell">{result == undefined  ? "loading": currentTime(result[0])}</div>
