@@ -72,18 +72,19 @@ const SubmissionMenu = () => {
         </div>
         {
           renderSubmissions.length < 1 ? <div>Loading...</div> : renderSubmissions.slice(0,5).map((item, i) => {
+            let subName = item.submissionPeriodId ? item.submissionPeriodId.name : "";
 
             if(i % 2 == 0){
               return <div className="rowContainer">
                     <div className="rowCellSub" style={{width: '35%'}}>{item.name}</div>
-                    <div className="rowCellSub" style={{width: '20%'}}>{item.submissionPeriodId.name}</div>
+                    <div className="rowCellSub" style={{width: '20%'}}>{subName}</div>
                     <div className="rowCellSub" style={{width: '20%'}}>{item.statusId.name }</div>
                     <div className="rowCellSub" style={{width: '25%'}}>{ formatTimestamp(new Date(item.updatedAt).toLocaleString())}</div>
                    </div>
             }
             return <div className="rowContainer1">
                     <div className="rowCellSub" style={{width: '35%'}}>{item.name}</div>
-                    <div className="rowCellSub" style={{width: '20%'}}>{item.submissionPeriodId.name}</div>
+                    <div className="rowCellSub" style={{width: '20%'}}>{subName}</div>
                     <div className="rowCellSub" style={{width: '20%'}}>{item.statusId.name }</div>
                     <div className="rowCellSub" style={{width: '25%'}}>{formatTimestamp(new Date(item.updatedAt).toLocaleString())}</div>
                    </div>

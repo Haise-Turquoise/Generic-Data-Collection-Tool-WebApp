@@ -25,9 +25,9 @@ interface ProgramMT extends Program {
 
 const ProgramHeader = () => {
   return (
-    <Paper className="header">
+    <div className="d-flex justify-content-between p-2 mb-3">
       <Typography variant="h5">Program</Typography>
-    </Paper>
+    </div>
   );
 };
 
@@ -84,7 +84,9 @@ const ProgramsTable = () => {
     ],
     [programs],
   );
-  const options: Options<ProgramMT> = useMemo(() => calculateOptions(readRowNum), [readRowNum]);
+ 
+  const options: Options<ProgramMT> = useMemo(() => ({...calculateOptions(readRowNum), filtering: true}), [readRowNum]);
+
 
   // Record who and when of the action
   function recordUpdate(program: ProgramMT) {

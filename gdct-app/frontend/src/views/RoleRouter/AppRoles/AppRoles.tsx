@@ -20,9 +20,9 @@ interface AppRoleMT extends AppRole {
 
 const AppRolesHeader = () => {
   return (
-    <Paper className="header">
+    <div className="d-flex justify-content-between p-2 mb-3">
       <Typography variant="h5">Application Role</Typography>
-    </Paper>
+    </div>
   );
 };
 
@@ -74,7 +74,8 @@ const AppRolesTable = () => {
     [appRoles],
   );
 
-  const options: Options<AppRoleMT> = useMemo(() => calculateOptions(readRowNum), [readRowNum]);
+  const options: Options<AppRoleMT> = useMemo(() => ({...calculateOptions(readRowNum), filtering: true}), [readRowNum]);
+
 
   // Record user and time when an action occurs 
   function recordUpdate(appRole: AppRoleMT) {

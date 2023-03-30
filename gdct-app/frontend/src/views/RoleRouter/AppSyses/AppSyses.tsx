@@ -21,9 +21,9 @@ interface AppSysMT extends AppSys {
 
 const AppSysesHeader = () => {
   return (
-    <Paper className="header">
+    <div className="d-flex justify-content-between p-2 mb-3">
       <Typography variant="h5">Application System</Typography>
-    </Paper>
+    </div>
   );
 };
 
@@ -73,7 +73,8 @@ const AppSysesTable = () => {
     [appSyses],
   );
   
-  const options: Options<AppSysMT> = useMemo(() => calculateOptions(readRowNum), [readRowNum]);
+  const options: Options<AppSysMT> = useMemo(() => ({...calculateOptions(readRowNum), filtering: true}), [readRowNum]);
+
 
   // Record who and when of the action
   function recordUpdate(appSys: AppSysMT) {

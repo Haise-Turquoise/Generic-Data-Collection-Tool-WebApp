@@ -98,9 +98,9 @@ const validateCode = (rowData: AttributeConfigMT, tableData?: AttributeConfigMT[
 
 const AttributeConfigHeader = () => {
     return (
-        <Paper className="header">
+        <div className="d-flex justify-content-between p-2 mb-3">
             <Typography variant="h5">Attribute Configuration</Typography>
-        </Paper>
+        </div>
     );
 }
 
@@ -156,7 +156,8 @@ const AttributeConfigTable = () => {
     );
 
     // Prepare the options
-    const options = useMemo(() => calculateOptions(readRowNum), [readRowNum]);
+    const options = useMemo(() => ({...calculateOptions(readRowNum), filtering: true}), [readRowNum]);
+
 
     // Record who and when of the action
     function recordUpdate(attributeConfig: AttributeConfigMT) {

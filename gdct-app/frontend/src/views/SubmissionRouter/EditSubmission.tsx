@@ -84,9 +84,9 @@ const EditSubmission = ({ history }:{history:History}) => {
   const [nextStepIdMap, setNextStepIdMap] = useState({});
   const [submissionHasBeen, setSubmissionHasBeen] = useState<string | undefined>(undefined);
   const SubmissionHeader = () => (
-    <Paper className="header">
+    <div className="d-flex justify-content-between p-2 mb-3">
       <Typography variant="h5">Submissions</Typography>
-    </Paper>
+    </div>
   );
 
   let submissionNotes = [];
@@ -102,7 +102,7 @@ const EditSubmission = ({ history }:{history:History}) => {
 
   const noteInput = React.useRef(null);
 
-  const options = useMemo(() => ({ actionsColumnIndex: -1, search: false, showTitle: true }), []);
+  const options = useMemo(() => ({ actionsColumnIndex: -1, search: false, showTitle: true, filtering: true, }), []);
 
   const handleNoteChange = (event:ChangeEvent<{ value: string }>) => {
     dispatch(SubmissionNoteStore.actions.RECEIVE(event.target.value));

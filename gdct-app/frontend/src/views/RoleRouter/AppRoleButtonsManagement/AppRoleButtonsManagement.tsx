@@ -17,9 +17,9 @@ interface AppRolePlus extends AppRole {
 
 const AppRoleResourceHeader = () => {
   return (
-    <Paper className="header">
+    <div className="d-flex justify-content-between p-2 mb-3">
       <Typography variant="h5">App Role Buttons Management</Typography>
-    </Paper>
+    </div>
   );
 };
 
@@ -94,7 +94,8 @@ const AppRoleResourceTable = ({ history }: RouteComponentProps) => {
     [history],
   );
 
-  const options: Options<AppRolePlus> = useMemo(() => calculateOptions(readRowNum), [readRowNum]);
+  const options: Options<AppRolePlus> = useMemo(() => ({...calculateOptions(readRowNum), filtering: true}), [readRowNum]);
+
 
   return (
     <MaterialTable

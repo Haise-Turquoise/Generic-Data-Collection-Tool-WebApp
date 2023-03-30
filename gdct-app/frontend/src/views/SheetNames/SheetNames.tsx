@@ -26,9 +26,9 @@ interface SheetNameMT extends SheetName {
 
 const SheetNameHeader = () => {
   return (
-    <Paper className="header">
+    <div className="d-flex justify-content-between p-2 mb-3">
       <Typography variant="h5">Sheet Name</Typography>
-    </Paper>
+    </div>
   );
 };
 
@@ -144,8 +144,8 @@ const SheetNamesTable = () => {
     [sheetNames],
   );
 
-  const options: Options<SheetNameMT> = useMemo(() => calculateOptions(readRowNum), [readRowNum]);
-
+  const options: Options<SheetNameMT> = useMemo(() => ({...calculateOptions(readRowNum), filtering: true}), [readRowNum]);
+  
   // Record who and when of the action
   const recordUpdate = (sheetName: SheetNameMT) => {
     //get username and record in Modified By column

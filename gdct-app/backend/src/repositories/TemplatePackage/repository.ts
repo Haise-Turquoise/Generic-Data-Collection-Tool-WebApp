@@ -12,7 +12,7 @@ import TemplatePackage, { TemplatePackageDoc } from '../../types/templatepackage
 import { FilterQuery } from 'mongoose';
 import {dateStringTranslate} from '../../utils/misc';
 import AppError from '../../utils/AppError';
-import { ObjectID } from 'bson';
+import { ObjectId } from 'bson';
 
 const populatedParams = 'submissionPeriodId templateIds statusId programIds';
 
@@ -83,7 +83,7 @@ export default class TemplatePackageRepository extends BaseRepository<TemplatePa
   }
 
 
-  async retrieveFullPkgInfoByProgramId(programIds:ObjectID[]){
+  async retrieveFullPkgInfoByProgramId(programIds:ObjectId[]){
     //@ts-ignore
     const result = await TemplatePackageModel.find({ programIds: {$in:programIds}})
     .populate('templateIds', 'templateTypeId')

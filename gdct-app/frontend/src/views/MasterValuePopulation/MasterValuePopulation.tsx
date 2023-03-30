@@ -450,11 +450,11 @@ const handleResume = async (
 }
 const HeaderActions = (props: headerActionsProps) => {
   return (
-    <Paper className="header">
-      <Typography variant="h5">Prepopulate from OHFS</Typography>
+    <div className="d-flex justify-content-between p-2 mb-3">
+      <Typography variant="h5">OHFS Prepopulate</Typography>
 
       <Selection {...props} />
-    </Paper>
+    </div>
   );
 };
 function CircularProgressWithLabel(props: CircularProgressProps) {
@@ -889,6 +889,7 @@ const MasterValuePopulation = () => {
       search: true,
       maxBodyHeight: 400,
       minBodyHeight: 400,
+      filtering: true,
     }),
     [],
   );

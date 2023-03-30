@@ -24,9 +24,9 @@ interface ReportingPeriodMT extends ReportingPeriod {
 
 const ReportingPeriodHeader = () => {
   return (
-    <Paper className="header">
+    <div className="d-flex justify-content-between p-2 mb-3">
       <Typography variant="h5">Reporting Period</Typography>
-    </Paper>
+    </div>
   );
 };
 
@@ -100,9 +100,9 @@ const ReportingPeriodsTable = () => {
     [reportingPeriods],
   );
 
-  const options: Options<ReportingPeriodMT> = useMemo(() => calculateOptions(readRowNum), [
-    readRowNum,
-  ]);
+  const options: Options<ReportingPeriod> = useMemo(() => ({...calculateOptions(readRowNum), filtering: true}), [readRowNum]);
+
+
 
   // Record who and when of the action
   function recordUpdate(reportingPeriod: ReportingPeriodMT) {

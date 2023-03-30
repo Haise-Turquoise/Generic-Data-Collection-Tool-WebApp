@@ -35,9 +35,9 @@ import objectHash from 'object-hash';
 
 
 const SubmissionHeader = () => (
-  <Paper className="header">
+  <div className="d-flex justify-content-between p-2 mb-3">
     <Typography variant="h5">Submissions</Typography>
-  </Paper>
+  </div>
 );
 
 
@@ -243,7 +243,7 @@ const CreateSubmission = ({ history }: RouterProps) => {
         setPrevSubmission(res.data.submission)
         // datasheet.current.update()
         setSave('visible');
-        setMessage('Sucessfully uplaoded to database');
+        setMessage('Sucessfully uploaded to database');
         setMessageColour('green');
         setNotUploaded(false)
       }

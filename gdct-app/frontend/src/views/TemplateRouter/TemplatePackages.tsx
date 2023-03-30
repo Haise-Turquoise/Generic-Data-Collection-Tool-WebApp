@@ -96,9 +96,9 @@ const CostumeDatePicker = (props: any) =>{
 
 const TemplatePackageHeader = () => {
   return (
-    <Paper className="header">
+    <div className="d-flex justify-content-between p-2 mb-3">
       <Typography variant="h5">Template Package</Typography>
-    </Paper>
+    </div>
   );
 };
 
@@ -287,7 +287,7 @@ const TemplatePackages = () => {
     [lookupStatuses, lookupSubmissionPeriods, templatePackages],
   );
 
-  const options: Options<TemplatePackageMT> = useMemo(() => calculateOptions(readRowNum), [readRowNum]);
+  const options: Options<TemplatePackageMT> = useMemo(() => ({...calculateOptions(readRowNum), filtering: true}), [readRowNum]);
 
   // Record user and time when an action occurs 
   function recordUpdate(templatePackage: TemplatePackageMT) {
