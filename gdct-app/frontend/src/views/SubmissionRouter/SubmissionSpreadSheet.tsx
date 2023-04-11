@@ -81,6 +81,7 @@ class SubmissionSpreadSheet extends Component<submissionSpreadsheetProps>{
     this.orginalValue = [];
     this.clearComponentChild = this.clearComponentChild.bind(this);
     this.insertOrg = this.insertOrg.bind(this);
+    //this.handleChanges = this.handleChanges.bind(this);
     //@ts-ignore
     this.history = this.props.history;
   }

@@ -357,9 +357,14 @@ const OrganizationForm = (props: OrgFormProps) => {
   const [programIds, setProgramIds] = useState(props.object.programId);
   const handleChange = (event: ChangeEvent<{}>, value: number) => setCurrent(value);
   useEffect(() => {
-    const controller = new AbortController();
-    props.updateState('programId', programIds);
-    return () => controller.abort();
+    let isMounted = true;
+
+    const getState = async () => {
+      if(isMounted) props.updateState('programId', programIds);
+    }
+    getState();
+   
+    return () => { isMounted = false; }
   }, [programIds]);
 
   const onClickAdd = (_event: Event, program: Program | Program[]) => {

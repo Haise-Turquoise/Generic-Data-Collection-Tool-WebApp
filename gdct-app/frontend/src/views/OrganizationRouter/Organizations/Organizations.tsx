@@ -65,10 +65,8 @@ const Organizations = ({ history }: RouterProps) => {
       { title: 'Organization ID', field: 'id' },
       { title: 'IFIS Number', field: 'IFISNum' },
       { title: 'Active', type: 'boolean', field: 'active' },
-      { title: 'Modified On', field: 'modifiedPerson.modifiedDate' },
-      { title: 'Updated By', field: 'modifiedPerson.name',editComponent: (props: any) => {
-        return <div></div>;
-      }, },
+      { title: 'Modified OnAAA', field: 'modifiedPerson.modifiedDate', },
+      { title: 'Updated By', field: 'modifiedPerson.name', },
     ],
     [],
   );
