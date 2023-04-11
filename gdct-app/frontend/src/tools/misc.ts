@@ -917,6 +917,7 @@ export const controllerDeleteRow = async (Controller:any, setState:Function, _id
 // returns properly formatted date or empty string
 export const formatTimestamp = (updatedAt: string) => {
   let time = moment(new Date(updatedAt)).format('YYYY-MM-DD HH:mm:ss');
+  //console.log(time);
   return (time === 'Invalid date') ? '' : time
 }
 

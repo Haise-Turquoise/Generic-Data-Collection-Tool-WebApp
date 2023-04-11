@@ -42,7 +42,7 @@ import SubmissionPeriod from '../../types/submissionperiod';
 
 const SubmissionPeriodHeader = () => {
   return (
-    <div className="d-flex justify-content-between p-2 mb-3">
+  <div Name="d-flex justify-content-between p-2 mb-3">
       <Typography variant="h5">Submission Periods</Typography>
     </div>
   );
@@ -72,7 +72,18 @@ const SubmissionPeriod = () => {
 
   // table vars for loading
   const preColumns = [{ title: 'Name', field: 'name' }];
-  const prePeriods = [{ name: status }];
+  const prePeriods = [
+    { 
+      name: status ,
+      _id: '',
+      reportingPeriodId: '',
+      programId: [''],
+      startDate: '',
+      endDate: '',
+      updatedAt: '',
+      updatedBy: '',
+    }
+  ];
 
   const { lookupReportingPeriods}: {
     lookupReportingPeriods: {[key:string]: any}
@@ -121,7 +132,11 @@ const SubmissionPeriod = () => {
   
   // Convert Date format
   submissionPeriods?.forEach(submissionPeriod => {
-    submissionPeriod.updatedAt = formatTimestamp(submissionPeriod.updatedAt);
+    if(submissionPeriod.updatedAt==='NaN-aN-aN aN:aN:aN') {
+      submissionPeriod.updatedAt='';
+    }
+    //console.log(submissionPeriod.updatedAt);
+    //submissionPeriod.updatedAt = formatTimestamp(submissionPeriod.updatedAt);
   });
 
   const columns: Column<SubmissionPeriod>[] = useMemo(
@@ -137,14 +152,14 @@ const SubmissionPeriod = () => {
       {
         title: 'Modified On',
         field: 'updatedAt',
-        editComponent: () => {
+        editComponent: (props) => {
           return <div></div>;
         },
       },
       {
         title: 'Updated By',
         field: 'updatedBy',
-        editComponent: () => {
+        editComponent: (props) => {
           return <div></div>;
         },
       },
@@ -154,10 +169,11 @@ const SubmissionPeriod = () => {
 
   // Record who and when of the action
   function recordUpdate(submissionPeriod: SubmissionPeriod) {
+    // console.log("AA");
     //get username and record in Modified By column
     submissionPeriod.updatedBy = localStorage.getItem('currentUser');
     // record new date and time in Modified On column
-    submissionPeriod.updatedAt = new Date().toLocaleString();
+    submissionPeriod.updatedAt = new Date().toLocaleString();//////!!!!!!!!!!
   }
 
   const options: Options<SubmissionPeriod> = useMemo(() => ({...calculateOptions(readRowNum), filtering: true}), [readRowNum]);
