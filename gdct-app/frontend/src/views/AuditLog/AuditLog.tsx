@@ -28,12 +28,12 @@ const AuditLogHeader = () => {
 };
 
 // A calendar for selecting dates
-const CustomDatePicker = (props: {
+const RangeDatePicker = (props: {
   columnDef: Column<AuditLog>,
   onFilterChanged: (rowId: string, value: any) => void,
   merge: (start: Date) => void, 
 }) => {
-  const [startDate, setStartDate] = React.useState(new Date());
+  const [startDate, setStartDate] = React.useState<Date | null>(new Date());
   const [endDate, setEndDate] = React.useState(new Date());
 
   useEffect(()=>{
@@ -54,18 +54,22 @@ const CustomDatePicker = (props: {
         dateFormat={"yyyy-MM-dd HH:mm"}
         popperPlacement="bottom-start"
         onChange={(selectedDate:any) => {
-
-          if (!selectedDate) {
-            return
-          } else if (Array.isArray(selectedDate)) {
-            selectedDate = selectedDate[0]
+          if (Array.isArray(selectedDate)) {
+            selectedDate = selectedDate[0];
           }
-          if (selectedDate != undefined){
-            props.merge(new Date(selectedDate))
-            setStartDate(selectedDate)
+        
+          if (selectedDate !== null && selectedDate !== undefined) {
+            props.merge(new Date(selectedDate));
+            setStartDate(selectedDate);
             props.onFilterChanged(
               (props.columnDef as EditCellColumnDef).tableData.id.toString(),
               selectedDate
+            );
+          } else {
+            setStartDate(null);
+            props.onFilterChanged(
+              (props.columnDef as EditCellColumnDef).tableData.id.toString(),
+              null
             );
           }
         }}
@@ -154,15 +158,22 @@ const AuditLogTable = () => {
         title: 'Time',
         field: 'updatedAt',
         // Use Datepicker as filter
-        filterComponent: props => <CustomDatePicker {...props }  merge={merge}/>,
+        filterComponent: props => <RangeDatePicker {...props }  merge={merge}/>,
         //must have "term" as an input even it is not used
         customFilterAndSearch: (_term, rowData) => {
           const startDate = document.getElementById("startDatePicker")!.getAttribute("value")
           const endDate = document.getElementById("endDatePicker")!.getAttribute("value")
+
+          const startDateObj = startDate ? new Date(startDate) : new Date(-8640000000000000);
+          const endDateObj = endDate ? new Date(endDate) : new Date(8640000000000000);
+
+          if (!rowData.updatedAt) {
+            return false;
+          }
           return (
-            new Date(rowData.updatedAt || '') >= new Date(startDate || '') && 
-            new Date (rowData.updatedAt || '') <= new Date(endDate || '')
-          )
+            new Date(rowData.updatedAt || "") >= startDateObj &&
+            new Date(rowData.updatedAt || "") <= endDateObj
+          );
         }
       },
       { title: 'User Email', field: 'user.email' },
